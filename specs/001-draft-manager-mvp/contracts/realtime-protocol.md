@@ -30,7 +30,7 @@ y se descarta.
 | `draft.terminado` | `{ plantillas: { participanteId, jugadores: JugadorResumen[] }[] }` | Fin del draft: las plantillas de todos pasan a ser visibles. |
 | `torneo.actualizado` | `{ jornadaActual, clasificacion? , cuadro?, resultados: PartidoResumen[] }` | Se cierra un partido o una jornada. |
 | `preparacion.inicio` | `{ partidoId, rival: { id, nombre, bajas }, venceEn }` | Abre la ventana de preparación. |
-| `partido.inicio` | `{ partidoId, modalidad: 'rapida' \| '2d', local, visitante, alineaciones: { local, visitante }, colores }` | Empieza el partido. Aquí se revelan las alineaciones (FR-054a). |
+| `partido.inicio` | `{ partidoId, modalidad: 'rapida' \| '2d', local, visitante, alineaciones: { local, visitante }, dorsales: { [jugadorId]: n }, equipaciones: { local: Equipacion, visitante: Equipacion } }` (la equipación que usa cada uno en este partido, FR-031b) | Empieza el partido. Aquí se revelan las alineaciones (FR-054a). |
 | `partido.tramo` | `{ desdeTick, hastaTick, eventos: EventoPartido[], marcador, estadisticas, fotogramas?: Fotograma[] }` | Simulación de un tramo: hasta el descanso o el final en la rápida, hasta la siguiente interrupción en 2D. |
 | `partido.pausa_decision` | `{ motivo: 'descanso' \| 'pre_prorroga', venceEn, listos: participanteId[] }` | Descanso o antes de la prórroga en la modalidad rápida (FR-045, FR-046). |
 | `partido.decision_aplicada` | `{ participanteId, tipo, datos, aplicadaEnTick }` | A ambos participantes, cuando la decisión se hace efectiva (FR-050). |

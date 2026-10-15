@@ -2,8 +2,9 @@
 
 **Feature**: [spec.md](./spec.md) · **Plan**: [plan.md](./plan.md) · **Research**: [research.md](./research.md)
 
-Modelo del dominio (`packages/domain`) y su persistencia (`apps/server`). Los nombres de campo van en
-español y sin tildes, igual que el objeto base de la especificación. Las referencias `FR-xxx` y
+Modelo del dominio (`packages/domain`) y su persistencia (`apps/server`). Los nombres de campo y los
+valores enumerados van en español y **sin tildes** en el código y en los datos (p. ej. `Epico`,
+`Capitania`); las tildes solo aparecen en los textos de la interfaz. Las referencias `FR-xxx` y
 `SC-xxx` remiten a [spec.md](./spec.md).
 
 ---
@@ -25,7 +26,7 @@ español y sin tildes, igual que el objeto base de la especificación. Las refer
 | `stats` | `StatsPOR \| StatsDEF \| StatsMED \| StatsDEL` | Exactamente las 6 claves de su demarcación (FR-019); enteros 1–99 (FR-020). |
 | `media` | número | **Derivado**: promedio de los 6 stats; se recalcula al cargar y debe coincidir (±0,01) con el valor del fichero. |
 | `specials` | `Special[]` (sin repetidos) | Cantidad ≤ máximo del nivel (FR-021); permitidos según la demarcación (FR-022) y la regla de carrileros (FR-023). |
-| `nivel` | `'Superclase' \| 'Épico' \| 'Legendario' \| 'GOAT'` | — |
+| `nivel` | `'Superclase' \| 'Epico' \| 'Legendario' \| 'GOAT'` | Sin tildes en código y datos; la interfaz muestra "Épico". |
 | `coleccion` | texto | En el MVP, `"Core"`. |
 
 **Posiciones por demarcación**:
@@ -67,7 +68,7 @@ alguna regla, e informa del `id` y de la regla incumplida.
 |-------|------|--------|
 | `id` | `'3-4-3' \| '4-3-3' \| '4-4-2' \| '4-4-2-diamante' \| '4-2-3-1' \| '3-5-2' \| '5-4-1' \| '5-3-2' \| '4-5-1' \| '3-3-3-1'` | FR-025. |
 | `casillas` | `Casilla[11]` | Una `POR` más 10 de campo según la tabla de Assumptions. |
-| `perfil` | `{ ofensividad: -2..2, amplitud: -2..2 }` | Alimenta el estilo de juego (FR-034); valor en los parámetros de equilibrado. |
+| `perfil` | `{ ofensividad: -2..2, amplitud: -2..2 }` | Alimenta el estilo de juego (FR-034). Valores de ofensividad iniciales según la tabla de Assumptions de la especificación (3-4-3 y 3-3-3-1 +2 … 5-4-1 −2); se ajustan en los parámetros de equilibrado. Más ofensividad = más ocasiones propias **y** más ocasiones concedidas. |
 
 `Casilla` = `{ id: string, posicionesAdmitidas: Posicion[], zona: {x, y} }`:
 - `posicionesAdmitidas` normalmente tiene un solo código.
@@ -76,7 +77,7 @@ alguna regla, e informa del `id` y de la regla incumplida.
 
 ### 1.5 Parámetros de equilibrado (`ParametrosEquilibrado`) — versionados
 
-Fichero versionado (`version: semver`). Contiene, entre otros:
+Fichero versionado (`version: semver`) en `packages/domain/src/parametros/`, porque lo usan el generador de sobres, la pantalla de alineación y el motor. Contiene, entre otros:
 - `penalizacionFueraPosicion` (0,25) y `penalizacionPorteria` (0,60).
 - `cansancio`: minuto de inicio (65; 55 con Presión alta), ritmo de degradación y factores de Incansable y Motivador.
 - Bonificaciones de los specials que la especificación no cuantifica.
@@ -115,6 +116,7 @@ La gestión de credenciales y sesiones corresponde a la librería de autenticaci
 | `ritmo` | `'directo' \| 'asincrono'` | FR-056. Un invitado solo puede usar `directo`. |
 | `plazoJornadaHoras` | entero | 24 por defecto; solo con `asincrono`. |
 | `npcConfig` | `{ nivel: NivelNPC }[]` | NPC añadidos por el anfitrión; `PRO` solo aquí (FR-059). |
+| `colecciones` | `string[]` | Colecciones habilitadas para generar los sobres (FR-015). En el MVP, siempre `['Core']`. |
 | `tiempos` | `{ busquedaS, turnoDraftS, preparacionS, preparacionInicialS, descansoS }` | Por defecto: 180, 45, 180, 300, 120. |
 | `estado` | ver transiciones | — |
 | `semilla` | entero de 128 bits (hex) | Semilla raíz; de ella se derivan las de mesas y partidos. |
@@ -128,7 +130,7 @@ buscando ──(plazas completas | vence búsqueda | anfitrión inicia)──►
 en_draft ──(todas las mesas terminan)──► en_torneo
 en_torneo ──(final jugada | última jornada de liga)──► terminada
 buscando ──(anfitrión cancela)──► cancelada
-cualquiera ──(invitado cierra sesión, partida de invitado)──► abandonada
+cualquiera ──(partida de invitado: cierra sesión | 10 min seguidos sin conexión)──► abandonada
 ```
 
 ### 2.3 Participante (`Participante`)
@@ -141,7 +143,7 @@ cualquiera ──(invitado cierra sesión, partida de invitado)──► abandon
 | `usuarioId` | `Usuario.id` \| null | Obligatorio si `humano`. |
 | `nivelNPC` | `'amateur' \| 'intermedio' \| 'avanzado' \| 'PRO'` \| null | Obligatorio si `npc`. El relleno automático elige al azar entre los tres primeros (FR-059). |
 | `nombreEquipo` | texto | Generado si no se indica. |
-| `color` | color | Distinto del rival en cada partido (para el 2D). |
+| `equipaciones` | `{ primera: Equipacion, segunda: Equipacion }` | `Equipacion = { principal: color hex, secundario: color hex }`. Se asignan al azar al terminar el draft y son editables (FR-031b). Local: primera. Visitante: primera, salvo que su color principal se confunda con el del local (distancia de color por debajo del umbral de los parámetros); entonces, segunda. |
 | `mesaId`, `asiento` | `MesaDraft.id`, entero 0..N−1 | Asiento fijo (FR-005). |
 | `estadoConexion` | `'conectado' \| 'desconectado'` | Solo en tiempo de ejecución. |
 | `controladoPorNPC` | booleano | `true` si un humano abandonó (Edge Cases); en ese caso, nivel intermedio. |
@@ -182,7 +184,7 @@ resolviendo ──(t = 8, r = 3)──► terminada
 | `id` | UUID | — |
 | `mesaId`, `ronda` | — | — |
 | `asientoOrigen` | entero | Participante que lo abre. |
-| `cartas` | `Jugador.id[8]` | FR-014: 1 POR o DEF, 2 DEF, 3 MED, 2 DEL; 4 Superclase, 2 Épico, 1 Legendario y 1 alta (Legendario o GOAT). |
+| `cartas` | `Jugador.id[8]` | FR-014: 1 POR o DEF, 2 DEF, 3 MED, 2 DEL; 4 Superclase, 2 Epico, 1 Legendario y 1 alta (Legendario o GOAT). |
 | `restantes` | `Jugador.id[]` | Se reduce en 1 en cada turno. |
 | `poseedorActual` | asiento | Calculado con la dirección de la ronda. |
 
@@ -207,6 +209,7 @@ Mientras el turno está abierto, la elección solo se envía al propio participa
 |-------|------|--------|
 | `participanteId` | — | 1:1. |
 | `jugadores` | `Jugador.id[24]` | Derivada de sus 24 elecciones (FR-012). Visible para todos los participantes al terminar el draft (FR-054a). |
+| `dorsales` | `{ [jugadorId]: 1..99 }` \| null | `null` hasta la primera alineación. Entonces se asignan según FR-031a: por casilla (POR 1, LD/CD 2, LI/CI 3, DCD 4, DCI 5, MD 6, MC/MII/MID 8, MCO 10, EI 7, DC 9, ED 11); si dos casillas comparten dorsal, lo recibe la primera en el orden de la formación; aleatorios libres para el resto. **Únicos** en la plantilla. Fijos para todo el torneo; solo cambian si el participante los edita. |
 
 ---
 

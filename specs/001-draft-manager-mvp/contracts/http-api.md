@@ -63,7 +63,7 @@ Validación: liga 4–8; playoff ∈ {4, 8, 16}; mixto = 8 (`422 NUM_PARTICIPANT
 
 | Método y ruta | Descripción | Reglas |
 |---------------|-------------|--------|
-| `GET /api/partidas/:id/plantillas` | Las 24 cartas de **todos** los participantes, con sus bajas activas | Solo después del draft (`409 DRAFT_EN_CURSO`), FR-054a. |
+| `GET /api/partidas/:id/plantillas` | Las 24 cartas de **todos** los participantes, con sus bajas activas, dorsales y equipaciones | Solo después del draft (`409 DRAFT_EN_CURSO`), FR-054a. |
 | `GET /api/partidas/:id/alineacion` | Alineación vigente del usuario, con los stats efectivos por casilla y los lanzadores propuestos | FR-028, FR-029a. |
 | `POST /api/partidas/:id/alineacion/previsualizar` | Calcula los stats efectivos sin guardar | Para la interfaz de arrastrar y soltar. |
 | `PUT /api/partidas/:id/alineacion` | Confirma la alineación (cuerpo en el ejemplo de abajo) | `422 ALINEACION_INVALIDA` (con la lista de motivos), `422 TACTICA_INCOMPATIBLE`, `422 JUGADOR_NO_DISPONIBLE`. |
@@ -81,6 +81,11 @@ Ejemplo de cuerpo de `PUT /api/partidas/:id/alineacion`:
 ```
 
 En el ejemplo, `titulares` está abreviado: en una petición real lleva 11 elementos.
+
+| Método y ruta | Descripción | Reglas |
+|---------------|-------------|--------|
+| `PUT /api/partidas/:id/dorsales` | `{ dorsales: { [jugadorId]: n } }`: edita uno o varios dorsales (FR-031a) | `422 DORSAL_REPETIDO` y `422 DORSAL_FUERA_DE_RANGO` (1–99). `409 PARTIDO_EN_CURSO` durante un partido propio. |
+| `PUT /api/partidas/:id/equipaciones` | `{ primera: { principal, secundario }, segunda: { principal, secundario } }` en colores hex (FR-031b) | `422 COLOR_INVALIDO`; `422 EQUIPACIONES_IGUALES` si las dos tienen el mismo color principal. |
 
 La alineación del **rival** no se expone por ninguna ruta hasta que empieza el partido (FR-054a).
 

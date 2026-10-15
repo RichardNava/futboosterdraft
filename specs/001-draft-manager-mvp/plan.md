@@ -32,7 +32,7 @@ El MVP implementa el ciclo central del juego: **draft → alineación → partid
 
 **Package Manager**: **pnpm 9** (obligatorio; R17). Workspaces de pnpm, `packageManager` fijado en el `package.json` raíz, `only-allow pnpm` en `preinstall`, un único `pnpm-lock.yaml`, e instalación en CI con `--frozen-lockfile`. npm, yarn y bun no se usan.
 
-**Storage**: PostgreSQL 16, con JSONB para stats, alineaciones y eventos de cada partido. El catálogo Core se carga desde un JSON validado ([contracts/player-data.schema.json](./contracts/player-data.schema.json)).
+**Storage**: PostgreSQL 16, con JSONB para stats, alineaciones y eventos de cada partido. El catálogo Core se carga desde un JSON validado contra `packages/protocol/schemas/player-data.schema.json`, la fuente única del esquema, copiada desde [contracts/player-data.schema.json](./contracts/player-data.schema.json).
 
 **Testing**: Vitest, fast-check (propiedades), Testcontainers (PostgreSQL), Playwright (de principio a fin), herramienta `balance` (Monte Carlo para los SC estadísticos) y k6 (carga).
 
@@ -119,6 +119,7 @@ packages/
 │   │   ├── draft/                # mesa, turnos, rotación, auto-elección (FR-006 a FR-013)
 │   │   ├── equipo/               # formaciones, casillas, alineación, táctica, lanzadores (FR-025 a FR-031)
 │   │   ├── torneo/               # calendario, cuadro, clasificación, bajas, amarillas (FR-043, FR-051 a FR-056)
+│   │   ├── parametros/           # ParametrosEquilibrado versionados (JSON); los usan sobres, equipo y motor
 │   │   └── rng/                  # xoshiro128** y derivación de semillas
 │   └── tests/
 ├── engine/                       # Motor de simulación único (Principios IV y V)
@@ -127,14 +128,14 @@ packages/
 │   │   ├── acciones/             # pase, regate, entrada, remate, parada, falta, tarjeta, lesión…
 │   │   ├── modificadores/        # posición, cansancio, specials, táctica, formación
 │   │   ├── tramos/               # avanzar hasta un punto de decisión; decisiones encoladas
-│   │   ├── penaltis/
-│   │   └── parametros/           # ParametrosEquilibrado versionados (JSON)
+│   │   └── penaltis/
 │   └── tests/                    # determinismo, equivalencia entre modalidades, reglas
 ├── ai/                           # NPC: evaluador común y perfiles amateur, intermedio, avanzado y PRO
 │   ├── src/
 │   └── tests/
 └── protocol/                     # Esquemas Zod de HTTP y WebSocket compartidos
-    └── src/
+    ├── src/
+    └── schemas/                  # player-data.schema.json (fuente única para el seed)
 
 apps/
 ├── server/

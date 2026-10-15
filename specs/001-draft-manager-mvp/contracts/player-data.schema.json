@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://futboosterdraft/schemas/player-data.schema.json",
   "title": "Catálogo de jugadores de una colección",
-  "description": "Formato del fichero de seed (p. ej. data/core.json). Las reglas que JSON Schema no expresa bien se validan además en packages/domain (FR-024): media = promedio de stats (±0,01), specials de MED solo para DEF con CI/CD (FR-023), posiciones de un POR solo 'POR', ids únicos en la colección.",
+  "description": "Formato del fichero de seed (p. ej. data/core.json). Fuente única en código: packages/protocol/schemas/player-data.schema.json (este fichero es su copia de diseño). Las reglas que JSON Schema no expresa bien se validan además en packages/domain (FR-024): media = promedio de stats (±0,01), specials de MED solo para DEF con CI/CD (FR-023), posiciones de un POR solo 'POR', ids únicos en la colección.",
   "type": "object",
   "required": ["coleccion", "version", "jugadores"],
   "additionalProperties": false,
@@ -68,12 +68,12 @@
         "stats": { "type": "object" },
         "media": { "type": "number", "minimum": 1, "maximum": 99 },
         "specials": { "type": "array", "uniqueItems": true, "maxItems": 4, "items": { "type": "string" } },
-        "nivel": { "enum": ["Superclase", "Épico", "Legendario", "GOAT"] },
+        "nivel": { "enum": ["Superclase", "Epico", "Legendario", "GOAT"] },
         "coleccion": { "type": "string", "const": "Core" }
       },
       "allOf": [
         { "if": { "properties": { "nivel": { "const": "Superclase" } } }, "then": { "properties": { "specials": { "maxItems": 1 } } } },
-        { "if": { "properties": { "nivel": { "const": "Épico" } } }, "then": { "properties": { "specials": { "maxItems": 2 } } } },
+        { "if": { "properties": { "nivel": { "const": "Epico" } } }, "then": { "properties": { "specials": { "maxItems": 2 } } } },
         { "if": { "properties": { "nivel": { "const": "Legendario" } } }, "then": { "properties": { "specials": { "maxItems": 3 } } } },
         {
           "if": { "properties": { "demarcacion": { "const": "POR" } } },
