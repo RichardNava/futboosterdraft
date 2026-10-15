@@ -1,24 +1,11 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.0.1 (PATCH: renombrado del proyecto, títulos y aclaraciones de
-  redacción; ninguna regla se elimina ni se redefine)
-- Proyecto renombrado: "Fútbol Manager Online" → "Fútboosterdraft"
-- Principios modificados (solo título o redacción):
-  III. Las reglas del dominio se definen explícitamente → III. Las reglas del dominio deben estar
-       definidas explícitamente
-  IV. La simulación es coherente, verificable y equilibrada → IV. La simulación debe ser coherente,
-      verificable y equilibrada
-  VII. Las colecciones y la monetización respetan las reglas comunes de draft → VII. Las colecciones
-       y la monetización deben respetar las reglas comunes de draft (+ aclaraciones sobre variedad
-       de combinaciones y ventajas que eludan las reglas comunes)
-  VIII. Arquitectura modular → VIII. La arquitectura debe favorecer la modularidad
-  IX. La calidad se demuestra mediante pruebas → IX. La calidad debe demostrarse mediante pruebas
-  X. Desarrollo incremental y trazable → X. El desarrollo será incremental y trazable
-  V. (aclaración: responsabilidades del motor frente a las modalidades de visualización)
-- Secciones modificadas: Governance (alcance de la constitución; las decisiones no definidas no son
-  requisitos aprobados)
-- Secciones añadidas / eliminadas: ninguna ("Decisiones pendientes" y la política de versionado se
-  conservan de la versión 1.0.0)
+- Version change: 1.0.1 → 1.0.2 (PATCH: se actualiza el estado de la sección "Decisiones pendientes";
+  ningún principio se añade, elimina ni redefine)
+- Principios modificados: ninguno
+- Secciones modificadas: "Decisiones pendientes" se divide en "Decisiones resueltas" (con referencia al
+  documento donde se concretan) y "Decisiones aún pendientes"
+- Secciones añadidas / eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
 - TODOs pendientes: ninguno
 -->
@@ -212,17 +199,39 @@ relacionados. Las decisiones técnicas concretas se documentan en la fase de pla
 
 ## Decisiones pendientes
 
-Lo siguiente NO está aprobado como requisito y DEBE concretarse en las especificaciones funcionales
-o técnicas correspondientes:
+Las decisiones que esta constitución dejó abiertas se concretan en las especificaciones funcionales y
+técnicas, no en este documento. La constitución solo registra su estado y dónde están documentadas.
+Esos documentos DEBEN respetar los principios anteriores.
 
-- Número de participantes por draft y si los rivales de IA participan en el draft.
-- Resolución exacta del turno simultáneo, límites de tiempo y selección por defecto ante retrasos,
-  desconexiones o selecciones no realizadas.
-- Atributos, estadísticas, habilidades especiales, niveles y fórmulas concretas del motor.
-- Reglas de elegibilidad posicional, formaciones y tácticas disponibles.
-- Formato de torneos y clasificaciones.
-- Composición de sobres, rarezas y mecanismos de obtención y compra de colecciones.
-- Pila tecnológica, persistencia y protocolo cliente-servidor.
+### Decisiones resueltas
+
+Resueltas para el MVP en `specs/001-draft-manager-mvp/`:
+
+- **Participantes y NPC en el draft**: número de participantes por modo de juego y participación de
+  los NPC en el draft, con sus niveles → `spec.md` (FR-006, FR-051 a FR-053, FR-057 a FR-060).
+- **Turno simultáneo**: resolución, límites de tiempo, elección automática, duplicados,
+  desconexiones y reconexiones → `spec.md` (FR-007 a FR-010, FR-062, Edge Cases) y
+  `contracts/realtime-protocol.md`.
+- **Jugadores y motor**: atributos, estadísticas, habilidades especiales y niveles → `spec.md`
+  (FR-016 a FR-024, FR-037). Las fórmulas y magnitudes concretas del motor están en los parámetros de
+  equilibrado versionados (`research.md` R7 y R8).
+- **Posiciones, formaciones y tácticas**: elegibilidad posicional, formaciones, tácticas,
+  dorsales y equipaciones → `spec.md` (FR-025 a FR-031b, Assumptions).
+- **Torneos**: formato de torneos, clasificaciones, ritmo en directo o asíncrono, sanciones y
+  lesiones → `spec.md` (FR-041 a FR-043, FR-051 a FR-056c).
+- **Sobres**: composición de los sobres, distribución de niveles y tamaño de la colección Core →
+  `spec.md` (FR-011, FR-014, Assumptions).
+- **Tecnología**: pila tecnológica, persistencia y protocolo cliente-servidor → `plan.md` y
+  `research.md`.
+
+### Decisiones aún pendientes
+
+Lo siguiente NO está aprobado como requisito y DEBE concretarse en una especificación propia antes de
+implementarse:
+
+- Colecciones adicionales a "Core": mecanismos de obtención jugando, compra con dinero real y su
+  efecto en la composición de los sobres. Siempre dentro de los límites del Principio VII.
+- Modos de juego adicionales a liga, playoff y mixto.
 
 ## Governance
 
@@ -241,4 +250,4 @@ o técnicas correspondientes:
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.0.1 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-15
+**Version**: 1.0.2 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-15
