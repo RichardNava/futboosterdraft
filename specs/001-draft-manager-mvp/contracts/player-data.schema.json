@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://futboosterdraft/schemas/player-data.schema.json",
+  "title": "Catálogo de jugadores de una colección",
+  "description": "Formato del fichero de seed (p. ej. data/core.json). Las reglas que JSON Schema no expresa bien se validan además en packages/domain (FR-024): media = promedio de stats (±0,01), specials de MED solo para DEF con CI/CD (FR-023), posiciones de un POR solo 'POR', ids únicos en la colección.",
+  "type": "object",
+  "required": ["coleccion", "version", "jugadores"],
+  "additionalProperties": false,
+  "properties": {
+    "coleccion": { "type": "string", "const": "Core" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "jugadores": { "type": "array", "minItems": 192, "items": { "$ref": "#/$defs/jugador" } }
+  },
+  "$defs": {
+    "stat": { "type": "integer", "minimum": 1, "maximum": 99 },
+    "posicion": { "enum": ["POR", "LI", "LD", "DCI", "DCD", "CI", "CD", "MD", "MC", "MII", "MID", "MCO", "DC", "SD", "EI", "ED"] },
+    "specialGenerico": { "enum": ["Incansable", "Motivador", "LanzadorFaltas", "LanzadorPenalties", "Aura", "Capitania", "Filigranas", "FortalezaMental", "Intimidante", "Elegante", "Presionador", "RecuperadorTrasPerdida", "Carismatico", "Potente", "Robusto"] },
+    "specialPOR": { "enum": ["Parapenalties", "OneToOne", "Santo", "Ordenabarreras", "JugadorDeCampo"] },
+    "specialDEF": { "enum": ["Infranqueable", "Jerarquia", "Volador", "Libero", "MuroDefensivo"] },
+    "specialMED": { "enum": ["Llegador", "BoxToBox", "PrimerToque", "Todocampista", "JugadorEntreLineas"] },
+    "specialDEL": { "enum": ["Matador", "Rematador", "Cabeceador", "Desbordante", "GuanteEnElPie"] },
+    "statsPOR": {
+      "type": "object", "additionalProperties": false,
+      "required": ["agilidad", "colocacion", "distribucion", "aereo", "defensa", "liderazgo"],
+      "properties": {
+        "agilidad": { "$ref": "#/$defs/stat" }, "colocacion": { "$ref": "#/$defs/stat" }, "distribucion": { "$ref": "#/$defs/stat" },
+        "aereo": { "$ref": "#/$defs/stat" }, "defensa": { "$ref": "#/$defs/stat" }, "liderazgo": { "$ref": "#/$defs/stat" }
+      }
+    },
+    "statsDEF": {
+      "type": "object", "additionalProperties": false,
+      "required": ["velocidad", "tecnica", "tackling", "anticipacion", "marcaje", "liderazgo"],
+      "properties": {
+        "velocidad": { "$ref": "#/$defs/stat" }, "tecnica": { "$ref": "#/$defs/stat" }, "tackling": { "$ref": "#/$defs/stat" },
+        "anticipacion": { "$ref": "#/$defs/stat" }, "marcaje": { "$ref": "#/$defs/stat" }, "liderazgo": { "$ref": "#/$defs/stat" }
+      }
+    },
+    "statsMED": {
+      "type": "object", "additionalProperties": false,
+      "required": ["velocidad", "tecnica", "pase", "posicionamiento", "vision", "disparo"],
+      "properties": {
+        "velocidad": { "$ref": "#/$defs/stat" }, "tecnica": { "$ref": "#/$defs/stat" }, "pase": { "$ref": "#/$defs/stat" },
+        "posicionamiento": { "$ref": "#/$defs/stat" }, "vision": { "$ref": "#/$defs/stat" }, "disparo": { "$ref": "#/$defs/stat" }
+      }
+    },
+    "statsDEL": {
+      "type": "object", "additionalProperties": false,
+      "required": ["velocidad", "regate", "finalizacion", "desmarque", "creatividad", "agresividad"],
+      "properties": {
+        "velocidad": { "$ref": "#/$defs/stat" }, "regate": { "$ref": "#/$defs/stat" }, "finalizacion": { "$ref": "#/$defs/stat" },
+        "desmarque": { "$ref": "#/$defs/stat" }, "creatividad": { "$ref": "#/$defs/stat" }, "agresividad": { "$ref": "#/$defs/stat" }
+      }
+    },
+    "jugador": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nombre", "apellidos", "nacionalidad", "fecha_nacimiento", "altura", "demarcacion", "posicion", "historia", "stats", "media", "specials", "nivel", "coleccion"],
+      "properties": {
+        "id": { "type": "integer", "minimum": 1 },
+        "nombre": { "type": "string", "minLength": 1 },
+        "apellidos": { "type": "string", "minLength": 1 },
+        "nacionalidad": { "type": "string", "minLength": 2 },
+        "fecha_nacimiento": { "type": "string", "format": "date" },
+        "altura": { "type": "integer", "minimum": 150, "maximum": 215 },
+        "demarcacion": { "enum": ["POR", "DEF", "MED", "DEL"] },
+        "posicion": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/posicion" } },
+        "historia": { "type": "string" },
+        "stats": { "type": "object" },
+        "media": { "type": "number", "minimum": 1, "maximum": 99 },
+        "specials": { "type": "array", "uniqueItems": true, "maxItems": 4, "items": { "type": "string" } },
+        "nivel": { "enum": ["Superclase", "Épico", "Legendario", "GOAT"] },
+        "coleccion": { "type": "string", "const": "Core" }
+      },
+      "allOf": [
+        { "if": { "properties": { "nivel": { "const": "Superclase" } } }, "then": { "properties": { "specials": { "maxItems": 1 } } } },
+        { "if": { "properties": { "nivel": { "const": "Épico" } } }, "then": { "properties": { "specials": { "maxItems": 2 } } } },
+        { "if": { "properties": { "nivel": { "const": "Legendario" } } }, "then": { "properties": { "specials": { "maxItems": 3 } } } },
+        {
+          "if": { "properties": { "demarcacion": { "const": "POR" } } },
+          "then": { "properties": {
+            "stats": { "$ref": "#/$defs/statsPOR" },
+            "posicion": { "items": { "const": "POR" } },
+            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialPOR" }] } }
+          } }
+        },
+        {
+          "if": { "properties": { "demarcacion": { "const": "DEF" } } },
+          "then": { "properties": {
+            "stats": { "$ref": "#/$defs/statsDEF" },
+            "posicion": { "items": { "not": { "const": "POR" } } },
+            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialDEF" }, { "$ref": "#/$defs/specialMED" }] } }
+          } }
+        },
+        {
+          "if": { "properties": { "demarcacion": { "const": "MED" } } },
+          "then": { "properties": {
+            "stats": { "$ref": "#/$defs/statsMED" },
+            "posicion": { "items": { "not": { "const": "POR" } } },
+            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialMED" }] } }
+          } }
+        },
+        {
+          "if": { "properties": { "demarcacion": { "const": "DEL" } } },
+          "then": { "properties": {
+            "stats": { "$ref": "#/$defs/statsDEL" },
+            "posicion": { "items": { "not": { "const": "POR" } } },
+            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialDEL" }] } }
+          } }
+        }
+      ]
+    }
+  }
+}
