@@ -59,6 +59,11 @@ Cada apartado resuelve una incógnita del *Technical Context* con el formato
 - **Alternativas consideradas**:
   - Estado compartido en Redis con varios procesos: necesario por encima de la escala beta, no ahora. El diseño por actores permite repartir las partidas entre procesos más adelante.
   - Bloqueos optimistas en la base de datos por cada elección: más E/S y más latencia por turno.
+- **Ajuste tras la prueba de carga (T140)**:
+  - Un comando largo puede adelantar con `ctx.publicar()` los mensajes de lo que ya está guardado. Lo usa el final de un partido, que se anuncia antes de cerrar la jornada y abrir la siguiente dentro del mismo comando.
+  - Se probó a pasar ese cierre a un comando aparte, pero así otros comandos (por ejemplo, `GET /torneo`) veían estados intermedios.
+  - Las elecciones del draft se siguen guardando una a una antes de confirmarlas, como exige esta decisión. Agruparlas por turno habría sido más rápido, pero confirmaría elecciones aún no guardadas.
+  - Con 100 partidas en una sola máquina junto al generador de carga, el proceso queda casi saturado (ver `checklists/validacion.md`). Si en hardware dedicado no basta, la siguiente palanca es simular los partidos en *worker threads*.
 
 ## R5. Persistencia
 
@@ -74,9 +79,10 @@ Cada apartado resuelve una incógnita del *Technical Context* con el formato
 
 - **Decisión**:
   - **Temporizadores cortos** (turno de draft, preparación, descanso): en memoria dentro del actor de la partida, guardando la hora absoluta de vencimiento. Al reiniciar el servidor, se reprograman a partir de esa hora.
-  - **Plazos largos** (24 h por jornada, aviso a 2 h): `pg-boss`, una cola de trabajos sobre la propia PostgreSQL.
-- **Razón**: no exige más infraestructura (sin Redis), los trabajos sobreviven a los reinicios y cada trabajo se ejecuta una sola vez.
-- **Alternativas consideradas**: BullMQ (requiere Redis); cron por *polling* de la tabla de jornadas (más simple, pero con peor precisión y más carga).
+  - **Plazos largos** (24 h por jornada, aviso a 2 h): el mismo mecanismo que los cortos. La hora de vencimiento se guarda en la tabla `jornadas` (`vence_en`) y, al rehidratar la partida tras un reinicio, se reprograman el vencimiento y el aviso previo.
+- **Razón**: no exige más infraestructura (sin Redis ni cola de trabajos). Cada vencimiento se ejecuta dentro del actor de la partida y comprueba el estado antes de actuar (que la jornada siga abierta y el partido siga programado), así que repetirlo no tiene efecto. Esto da la garantía de "una sola vez" sin coordinación externa.
+- **Desviación respecto al plan inicial**: el plan preveía `pg-boss` para los plazos largos y los avisos. En la implementación no hizo falta: con un único proceso, el actor ya serializa los comandos y la persistencia de `vence_en` cubre los reinicios. Si en el futuro hay varias réplicas del servidor, habrá que repartir las partidas entre réplicas (cada partida en una sola), o volver a una cola compartida como `pg-boss`.
+- **Alternativas consideradas**: `pg-boss` (cola sobre PostgreSQL; descartada por ahora, ver arriba); BullMQ (requiere Redis); cron por *polling* de la tabla de jornadas (más simple, pero con peor precisión y más carga).
 
 ## R7. Diseño del motor de simulación
 
@@ -141,7 +147,7 @@ Cada apartado resuelve una incógnita del *Technical Context* con el formato
 
 ## R13. Avisos del modo asíncrono (FR-056b)
 
-- **Decisión**: avisos dentro de la aplicación (bandeja y aviso en tiempo real si está conectado) y **correo transaccional** a través de un proveedor SMTP configurable. Los avisos se encolan en `pg-boss`.
+- **Decisión**: avisos dentro de la aplicación (bandeja y aviso en tiempo real si está conectado) y **correo transaccional** a través de un proveedor SMTP configurable. Los avisos se guardan en la tabla `avisos` y el correo se envía en el momento (si falla, queda registrado en el log y el aviso sigue en la bandeja).
 - **Alternativas consideradas**: Web Push (requiere permisos del navegador y service worker; queda como mejora posterior); solo avisos dentro de la aplicación (insuficiente si el usuario no está conectado).
 
 ## R14. Pruebas

@@ -7,9 +7,10 @@ formación, once inicial y táctica, y compite en un torneo contra otros partici
 controlados por la IA. Un motor de simulación resuelve los partidos a partir de los atributos de los
 jugadores, sus habilidades especiales y las decisiones tácticas.
 
-> **Estado del proyecto:** en fase de especificación y diseño. Todavía no hay código. Ya están
-> aprobadas la especificación funcional y el plan técnico del MVP; el siguiente paso es desglosarlo en
-> tareas e implementarlo.
+> **Estado del proyecto:** MVP implementado (las 6 historias de usuario del
+> [plan](specs/001-draft-manager-mvp/plan.md)): draft, preparación del equipo, partidos en simulación
+> rápida y 2D, torneos en directo y asíncronos, y NPC de cuatro niveles. Está en validación antes de la
+> beta.
 
 ## Cómo se juega
 
@@ -40,7 +41,7 @@ También se puede jugar como **invitado**, sin cuenta, contra la IA.
 | [Contratos](specs/001-draft-manager-mvp/contracts/) | API HTTP, protocolo WebSocket, motor de simulación, formato del catálogo de jugadores |
 | [Quickstart](specs/001-draft-manager-mvp/quickstart.md) | Cómo levantar y validar el sistema de principio a fin |
 
-## Pila tecnológica prevista
+## Pila tecnológica
 
 - **Lenguaje**: TypeScript en un monorepo.
 - **Servidor**: Node.js 22, Fastify, WebSocket.
@@ -55,19 +56,52 @@ decisiones, un partido siempre da el mismo resultado, se vea en modo rápido o e
 
 Este proyecto usa **pnpm** como único gestor de paquetes. npm, yarn y bun no están permitidos.
 
-Requisitos: Node.js 22 LTS, pnpm 9 y Docker.
+Requisitos: Node.js 22 LTS, pnpm 9 (con `corepack enable`) y Docker.
 
-Cuando exista el código, la puesta en marcha será:
+### Puesta en marcha
 
 ```bash
 pnpm install
-docker compose up -d db
+cp .env.example .env            # ajusta AUTH_SECRET
+docker compose up -d            # PostgreSQL 16 y buzón de correo de pruebas (http://localhost:8025)
 pnpm db:migrate
-pnpm seed --file data/core.json
-pnpm dev
+pnpm seed --file data/core.json # catálogo Core (300 jugadores ficticios)
+pnpm dev                        # API en :3000 y web en http://localhost:5173
 ```
 
-El [quickstart](specs/001-draft-manager-mvp/quickstart.md) detalla las pruebas y los escenarios de validación.
+Con `pnpm --filter @fbd/server dev -- --fake-clock` el servidor usa un
+reloj simulado que se adelanta con `POST /api/dev/reloj/avanzar { "ms": … }`: sirve para probar plazos
+de turno, preparación y jornada sin esperar.
+
+### Estructura
+
+| Carpeta | Contenido |
+|---------|-----------|
+| `packages/domain` | Reglas del juego, puras y deterministas: catálogo, sobres, draft, equipo, torneo, PRNG |
+| `packages/engine` | Motor de simulación de partidos (rápida y 2D, mismo motor) |
+| `packages/ai` | NPC: evaluador común y niveles amateur, intermedio, avanzado y PRO |
+| `packages/protocol` | Contratos HTTP y WebSocket (Zod) y esquema del catálogo |
+| `apps/server` | Fastify + WebSocket, actor por partida, PostgreSQL (Drizzle), autenticación |
+| `apps/web` | React + Vite; Canvas 2D para el partido |
+| `tools/balance` | Equilibrado por simulación masiva (criterios SC-004 a SC-007, SC-010, SC-015) |
+| `tools/fixtures` | Generador del catálogo Core y semillas de escenarios de prueba |
+| `tools/load` | Prueba de carga con k6 (SC-017) |
+
+### Pruebas
+
+| Comando | Qué ejecuta |
+|---------|-------------|
+| `pnpm lint` / `pnpm typecheck` | ESLint (prohíbe `Math.random` y `Date` en `domain` y `engine`) y TypeScript estricto |
+| `pnpm test` | Pruebas unitarias y de propiedades (dominio, motor, IA, protocolo, servidor sin base de datos) |
+| `pnpm test:integration` | Servidor con PostgreSQL real (Testcontainers; necesita Docker) |
+| `pnpm test:equivalence` | Equivalencia entre simulación rápida y 2D con 200 semillas (SC-008) |
+| `pnpm e2e` | Recorridos de principio a fin con Playwright (necesita la base de datos con el catálogo) |
+| `pnpm balance --n 1000` | Comprobaciones estadísticas de partido |
+| `pnpm balance --torneos 100 --pro-vs-amateur` | Niveles de NPC (SC-010; tarda unos 10 minutos) |
+| `k6 run tools/load/beta-100.js` | Carga de beta: 100 partidas simultáneas (ver [tools/load](tools/load/README.md)) |
+
+El [quickstart](specs/001-draft-manager-mvp/quickstart.md) detalla los escenarios de validación
+manual, y [docs/despliegue.md](docs/despliegue.md) cómo construir la imagen Docker y desplegarla.
 
 ### Flujo de trabajo
 

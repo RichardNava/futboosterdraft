@@ -1,0 +1,21 @@
+{
+  "name": "@fbd/balance",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "balance": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@fbd/domain": "workspace:*",
+    "@fbd/engine": "workspace:*",
+    "@fbd/ai": "workspace:*"
+  },
+  "bin": {
+    "balance": "./src/cli.ts"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "version": "1.0.0",
+  "penalizacionFueraPosicion": 0.25,
+  "penalizacionPorteria": 0.6,
+  "cansancio": {
+    "inicioMin": 65,
+    "inicioMinPresionAlta": 55,
+    "degradacionPorMinuto": 0.004,
+    "factorIncansable": 0.5,
+    "factorMotivador": 0.75
+  },
+  "lesiones": {
+    "probabilidadPorEntrada": 0.0025,
+    "reduccionRobusto": 0.45,
+    "reparto": {
+      "leve": 0.55,
+      "media": 0.28,
+      "grave": 0.15,
+      "larga": 0.02
+    },
+    "partidos": {
+      "leve": 1,
+      "media": 2,
+      "grave": 3,
+      "larga": 5
+    }
+  },
+  "disciplina": {
+    "probabilidadFaltaPorEntrada": 0.12,
+    "probabilidadAmarillaPorFalta": 0.13,
+    "probabilidadRojaDirectaPorFalta": 0.003,
+    "probabilidadPenaltiPorFaltaEnArea": 0.3
+  },
+  "sobres": {
+    "probPorteroEnHuecoPorDef": 0.5,
+    "probGoatEnAlta": 0.2
+  },
+  "specials": {
+    "capitania": 1,
+    "fortalezaMental": 2,
+    "intimidante": 1,
+    "infranqueable": 2,
+    "infranqueableUmbralRegate": 95,
+    "jerarquia": 1,
+    "libero": 2,
+    "boxToBox": 1,
+    "bonusProbabilidadLeve": 0.04,
+    "bonusProbabilidadMedio": 0.08,
+    "bonusProbabilidadAlto": 0.15,
+    "santoMinutoInicio": 80
+  },
+  "duelo": {
+    "pendiente": 0.056,
+    "probabilidadMinima": 0.03,
+    "probabilidadMaxima": 0.97
+  },
+  "formaciones": {
+    "efectoOfensividad": 0.3,
+    "efectoAmplitud": 0.08
+  },
+  "tacticas": {
+    "individual": {
+      "recuperacion": 0.04,
+      "cansancio": 0.1,
+      "vulnerableDesmarque": 0.04
+    },
+    "catenaccio": {
+      "ofensiva": -0.35,
+      "defensiva": 0.5,
+      "posesionRival": 0.08
+    },
+    "presionAlta": {
+      "recuperacionCampoRival": 0.35,
+      "cansancio": 0.25,
+      "vulnerableEspalda": 0.05
+    },
+    "lineaAdelantada": {
+      "fuerasDeJuegoProvocados": 0.18,
+      "vulnerableEspalda": 0.08
+    },
+    "contraataque": {
+      "posesion": -0.12,
+      "peligroTransicion": 0.1
+    },
+    "combinativo": {
+      "posesion": 0.12,
+      "perdidasPase": -0.05
+    },
+    "vertical": {
+      "accionesBanda": 0.15,
+      "pasesLargos": 0.12
+    }
+  },
+  "equipaciones": {
+    "umbralDistanciaColor": 120
+  },
+  "acciones": {
+    "paseCorto": 1.2,
+    "paseLargo": 0.1,
+    "conduccion": 0.5,
+    "regate": -0.3,
+    "paseEspacio": -0.6,
+    "centro": 0.0,
+    "duelaAereo": 0.0,
+    "despejeBalonParado": 0.0,
+    "puerta": {
+      "normal": 0.3,
+      "cabeza": 0.0,
+      "lejano": -0.6,
+      "manoAMano": 0.8,
+      "falta": -0.3,
+      "penalti": 1.6
+    },
+    "gol": {
+      "normal": -0.6,
+      "cabeza": -0.7,
+      "lejano": -1.4,
+      "manoAMano": -0.6,
+      "falta": -1.2,
+      "penalti": 1.2
+    },
+    "probabilidadFueraDeJuegoBase": 0.06,
+    "probabilidadCornerTrasParada": 0.3,
+    "probabilidadCornerTrasDespeje": 0.35,
+    "probabilidadBalonFuera": 0.08,
+    "probabilidadFaltaDirectaTiro": 0.55,
+    "dificultadZona": 1.05,
+    "probabilidadManoAMano": 0.25
+  }
+}

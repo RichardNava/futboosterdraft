@@ -85,7 +85,7 @@ Cada escenario se puede repetir sin conocer el código (Principio IX).
 1. Crea con una cuenta registrada una **liga de 6, asíncrona, con plazo de 24 h**. Usa el reloj simulado del entorno de pruebas (`pnpm dev --fake-clock`).
 2. Llega a una jornada sin jugar tu partido y adelanta el reloj 24 h: el partido se simula solo y la jornada siguiente se abre.
 3. Comprueba los avisos de jornada abierta, rival listo y plazo próximo (en la aplicación y en el buzón de pruebas en `http://localhost:8025`).
-4. Fuerza una roja (escenario de prueba con semilla documentada en `tools/fixtures`) y comprueba la sanción de 1 partido. Haz lo mismo con 3 amarillas acumuladas y con una lesión.
+4. Fuerza una roja (escenario de prueba con semilla documentada en `tools/fixtures/escenarios/roja.json`) y comprueba la sanción de 1 partido. Haz lo mismo con 3 amarillas acumuladas (`tres-amarillas.json`) y con una lesión (`lesion-grave.json`, `lesion-larga.json`). Si cambian los parámetros del motor, regenera las semillas con `pnpm --filter @fbd/fixtures generar-escenarios`.
 
 **Esperado**: FR-043, FR-056 a FR-056c, SC-014 y SC-016.
 
