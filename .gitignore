@@ -1,0 +1,28 @@
+# Dependencias y builds
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Solo pnpm: ningún otro lockfile
+package-lock.json
+yarn.lock
+bun.lockb
+
+# Entorno y logs
+.env
+.env.*
+!.env.example
+*.log
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.idea/

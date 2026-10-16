@@ -1,0 +1,36 @@
+{
+  "name": "futboosterdraft",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev": "pnpm --parallel --filter @fbd/server --filter @fbd/web dev",
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "test:integration": "pnpm --filter @fbd/server test:integration",
+    "test:equivalence": "vitest run --project engine equivalencia",
+    "e2e": "pnpm --filter @fbd/web e2e",
+    "balance": "pnpm --filter @fbd/balance balance",
+    "seed": "pnpm --filter @fbd/server seed",
+    "db:migrate": "pnpm --filter @fbd/server db:migrate",
+    "generar-core": "pnpm --filter @fbd/fixtures generar-core"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.15.0",
+    "fast-check": "^3.23.1",
+    "globals": "^15.12.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0",
+    "vitest": "^2.1.8"
+  }
+}

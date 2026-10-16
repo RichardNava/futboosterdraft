@@ -27,7 +27,7 @@ El MVP implementa el ciclo central del juego: **draft → alineación → partid
 **Language/Version**: TypeScript 5.x; Node.js 22 LTS (servidor); navegadores modernos (las dos últimas versiones de Chrome, Firefox, Safari y Edge).
 
 **Primary Dependencies**:
-- Servidor: Fastify + `ws` (HTTP y WebSocket), Zod (contratos), Drizzle ORM, `pg-boss` (plazos largos), Better Auth (cuentas e invitados), `pino` (logs).
+- Servidor: Fastify + `ws` (HTTP y WebSocket), Zod (contratos), Drizzle ORM, temporizadores en memoria con vencimiento persistido (plazos; ver research R6), Better Auth (cuentas e invitados), `pino` (logs).
 - Cliente: React 19 + Vite, Zustand, Canvas 2D nativo.
 
 **Package Manager**: **pnpm 9** (obligatorio; R17). Workspaces de pnpm, `packageManager` fijado en el `package.json` raíz, `only-allow pnpm` en `preinstall`, un único `pnpm-lock.yaml`, e instalación en CI con `--frozen-lockfile`. npm, yarn y bun no se usan.
@@ -144,7 +144,7 @@ apps/
 │   │   ├── ws/                   # pasarela WebSocket, filtrado de visibilidad
 │   │   ├── actores/              # actor por partida: sala, draft, preparación, partido, torneo
 │   │   ├── persistencia/         # Drizzle: esquema, migraciones, repositorios
-│   │   ├── programador/          # temporizadores cortos y pg-boss (plazos, avisos)
+│   │   ├── programador/          # reloj inyectable y temporizadores (turnos, descansos, plazos de jornada)
 │   │   ├── auth/                 # Better Auth, invitados (FR-000)
 │   │   ├── avisos/               # en la aplicación y por correo (FR-056b)
 │   │   └── observabilidad/       # pino, métricas, healthz
