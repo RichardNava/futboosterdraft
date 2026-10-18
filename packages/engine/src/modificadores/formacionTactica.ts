@@ -106,6 +106,8 @@ export function probabilidadAvance(estado: EstadoMotor, atacante: EquipoEstado, 
   if (t.estiloConBalon === 'combinativo') p -= 0.1;
   if (t.estiloConBalon === 'contraataque') p += 0.08;
   if (t.alturaBloque === 'catenaccio') p -= 0.15;
+  // El catenaccio no instala el juego en campo rival: le cuesta más pisarlo y quedarse en él.
+  if (t.alturaBloque === 'catenaccio' && zona >= 2) p -= estado.parametros.tacticas.catenaccio.posesionRival;
   // Más ofensividad propia, más llegada; más ofensividad del rival, más espacios a su espalda.
   p += 0.04 * (ofensividad(atacante) + ofensividad(defensor));
   if (defensor.tactica.alturaBloque === 'catenaccio' && zona >= 2) p -= 0.08;
