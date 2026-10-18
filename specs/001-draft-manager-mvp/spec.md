@@ -148,7 +148,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **Elección de una carta que no está en el sobre del participante**: se rechaza y el participante puede volver a elegir dentro del tiempo restante.
 - **Ningún portero en la plantilla**: el participante puede alinear a un jugador de campo en la portería, que sufre la penalización máxima por posición; el sistema le avisa antes de confirmar.
 - **Equipo con menos de 7 jugadores**: por lesiones o expulsiones sin cambios disponibles, o por tener menos de 7 jugadores disponibles por bajas antes del partido. El equipo juega con los que tenga mientras sean al menos 7. Si baja de 7 en el campo, o no llega a 7 al empezar, pierde el partido 3-0, o se mantiene el resultado si era peor para él.
-- **Desconexión de un humano durante un partido**: el partido nunca se detiene. Sus decisiones pendientes vencen por tiempo (en el descanso continúa sin cambios) y, al reconectar, recibe el estado completo del partido. En 2D, el servidor deja de esperar su reloj de reproducción tras 10 s de desconexión.
+- **Desconexión de un humano durante un partido**: el partido nunca se detiene. Sus decisiones pendientes vencen por tiempo (en el descanso continúa sin cambios) y, al reconectar, recibe el estado completo del partido. En 2D, el servidor deja de esperar su reloj de reproducción tras 10 s de desconexión. *[Actualizado por la spec 002: deja de aplicarse, incluida la espera de 10 s del reloj de reproducción, porque ya no hay partidos síncronos entre humanos (002/FR-030).]*
 - **Expulsión del portero sin portero en el banquillo o sin cambios**: un jugador de campo pasa a la portería con la penalización correspondiente.
 - **Empate en la clasificación de liga**: se desempata por puntos, diferencia de goles, goles a favor, enfrentamientos directos y, finalmente, sorteo.
 - **Abandono definitivo de un humano durante el torneo**: su plaza pasa a estar controlada por un NPC del nivel "intermedio" para que el torneo pueda terminar.
@@ -169,7 +169,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 #### Sala, partida y participantes
 
 - **FR-000**: El sistema DEBE permitir jugar como invitado, sin cuenta, solo en partidas en directo en las que el invitado sea el único humano y el resto de participantes sean NPC. Para unirse a una partida con otros humanos, crearla o jugar un torneo asíncrono DEBE ser necesaria una cuenta registrada. Una partida de invitado pasa a "abandonada" si el invitado cierra la sesión o pasa 10 minutos seguidos sin ninguna conexión; antes de ese plazo puede reconectar y continuar donde lo dejó.
-- **FR-001**: El sistema DEBE permitir a un usuario (registrado, o invitado según FR-000) crear una partida como anfitrión, eligiendo modo de juego (liga, playoff o mixto), número de participantes, tipo de simulación (rápida o 2D), ritmo del torneo (en directo o asíncrono) y la configuración de NPC.
+- **FR-001**: El sistema DEBE permitir a un usuario (registrado, o invitado según FR-000) crear una partida como anfitrión, eligiendo modo de juego (liga, playoff o mixto), número de participantes, tipo de simulación (rápida o 2D), ritmo del torneo (en directo o asíncrono) y la configuración de NPC. *[Actualizado por la spec 002: desaparece el ritmo «en directo» entre humanos; los torneos son siempre asíncronos y con un solo humano no hay plazos (002/FR-030).]*
 - **FR-002**: El sistema DEBE permitir a otros usuarios unirse a una partida abierta hasta completar las plazas.
 - **FR-003**: El sistema DEBE rellenar las plazas libres con NPC cuando venza el tiempo de búsqueda (por defecto, 3 minutos) o cuando el anfitrión lo solicite.
 - **FR-004**: El tipo de simulación elegido al crear la partida DEBE aplicarse a todos los partidos de ese torneo.
@@ -213,10 +213,10 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 
 #### Formaciones, alineación y táctica
 
-- **FR-025**: El participante DEBE poder elegir entre las formaciones 3-4-3, 4-3-3, 4-4-2 en cuadrado, 4-4-2 en diamante, 4-2-3-1, 3-5-2, 5-4-1, 5-3-2, 4-5-1 y 3-3-3-1, cada una con 11 casillas de posición definidas (ver tabla en Assumptions).
+- **FR-025**: El participante DEBE poder elegir entre las formaciones 3-4-3, 4-3-3, 4-4-2 en cuadrado, 4-4-2 en diamante, 4-2-3-1, 3-5-2, 5-4-1, 5-3-2, 4-5-1 y 3-3-3-1, cada una con 11 casillas de posición definidas (ver tabla en Assumptions). *[Actualizado por la spec 002: las formaciones son colocaciones de partida; cada titular se puede colocar libremente y su posición efectiva es la de su zona (002/FR-034).]*
 - **FR-025a**: En las formaciones con defensa de 3 o de 5, la casilla del central del medio ("central del medio") NO es una posición de jugador: ningún jugador la tiene en su lista de posiciones. Un jugador con DCI o DCD entre sus posiciones DEBE poder ocuparla sin penalización; cualquier otro jugador recibe la penalización normal por estar fuera de posición.
 - **FR-026**: Una alineación válida DEBE tener 11 titulares distintos, uno por casilla, y hasta 7 suplentes elegidos entre los 13 jugadores restantes de la plantilla.
-- **FR-027**: Un jugador colocado en una casilla cuya posición no figure en su lista de posiciones DEBE sufrir una penalización severa en sus stats; la penalización DEBE ser mayor para un jugador de campo en la portería o un portero fuera de ella. El special Todocampista anula la penalización salvo en la portería.
+- **FR-027**: Un jugador colocado en una casilla cuya posición no figure en su lista de posiciones DEBE sufrir una penalización severa en sus stats; la penalización DEBE ser mayor para un jugador de campo en la portería o un portero fuera de ella. El special Todocampista anula la penalización salvo en la portería. *[Sustituido por la spec 002: penalización graduada por demarcación de origen y destino (002/FR-031 a FR-033).]*
 - **FR-028**: El sistema DEBE mostrar en la pantalla de alineación, para cada titular, sus stats y su media efectivos en la casilla asignada, y señalar visualmente los jugadores fuera de posición.
 - **FR-029**: El participante DEBE poder configurar las opciones tácticas agrupadas así (radio = excluyentes, casilla = combinable):
   - Sistema defensivo (radio, obligatorio): Defensa en zona (por defecto) | Marcaje individual.
@@ -230,7 +230,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   - Si el designado no está en el campo (sustituido, expulsado o lesionado), lanza el siguiente mejor candidato según el mismo criterio. En una tanda de penaltis, los jugadores que no estaban en el campo al final del partido NO DEBEN lanzar.
 - **FR-030**: El sistema DEBE rechazar configuraciones tácticas incompatibles y alineaciones inválidas, tanto desde la interfaz como en la validación del servidor.
 - **FR-031**: Si un participante no confirma alineación a tiempo, el sistema DEBE usar su última alineación válida o, si no existe, generar una alineación automática que minimice las posiciones incorrectas.
-- **FR-031a**: Al definir por primera vez el once (en el tiempo de preparación tras el draft, o al generarse la alineación automática), el sistema DEBE asignar automáticamente un dorsal a cada uno de los 24 jugadores de la plantilla:
+- **FR-031a**: Al definir por primera vez el once (en el tiempo de preparación tras el draft, o al generarse la alineación automática), el sistema DEBE asignar automáticamente un dorsal a cada uno de los 24 jugadores de la plantilla: *[Actualizado por la spec 002: los dorsales iniciales van del 1 al 24 (002/FR-035); reasignar un dorsal deja sin dorsal a quien lo llevaba (002/FR-037) y al empezar un partido los convocados sin dorsal reciben el libre más bajo (002/FR-038).]*
   - **Titulares**, según la casilla que ocupan: POR → 1, LD y CD (carrilero derecho) → 2, LI y CI (carrilero izquierdo) → 3, central derecho (DCD) → 4, central izquierdo (DCI) → 5, MD → 6, MC/MII/MID → 8, MCO → 10, EI → 7, DC → 9 y ED → 11.
   - Si dos casillas comparten dorsal fijo (p. ej. dos MC, o MII y MID), lo recibe la primera en el orden de la formación (de atrás adelante y de derecha a izquierda) y las demás reciben uno aleatorio.
   - **Resto de jugadores**, y titulares en casillas sin dorsal fijo (el central del medio de una defensa de 3 o 5, el SD): un dorsal aleatorio libre.
@@ -243,7 +243,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 
 - **FR-032**: Existirá un único motor de simulación; la simulación rápida y la 2D DEBEN usar el mismo motor y, con las mismas condiciones iniciales, decisiones y semilla, DEBEN producir los mismos eventos y el mismo resultado.
 - **FR-033**: El motor DEBE simular el partido como una secuencia de acciones de juego (salida de balón, pase, conducción, regate, entrada, intercepción, centro, remate, parada, despeje, falta, tarjeta, fuera de juego, córner, falta directa, penalti, lesión, sustitución) cuyo éxito se resuelve enfrentando los stats relevantes de los jugadores implicados, modificados por specials, posición, formación, táctica, cansancio y contexto del partido.
-- **FR-034**: La formación DEBE cambiar el comportamiento de los jugadores y el algoritmo de simulación, según su **ofensividad** (ver la tabla de Assumptions):
+- **FR-034**: La formación DEBE cambiar el comportamiento de los jugadores y el algoritmo de simulación, según su **ofensividad** (ver la tabla de Assumptions): *[Actualizado por la spec 002: la ofensividad y la amplitud se calculan a partir de la colocación real sobre la formación de partida (002/FR-034b).]*
   - Una formación más ofensiva (p. ej. 3-4-3) DEBE aumentar la probabilidad de **marcar y también de recibir** goles: más jugadores en ataque, más ocasiones propias y más espacios a la espalda.
   - Una formación más defensiva (p. ej. 5-4-1) DEBE reducir la probabilidad **tanto de marcar como de recibir**: bloque más ordenado y reactivo, menos ocasiones para ambos.
   - La formación también DEBE influir en la zona y el tipo de las acciones: por bandas o por dentro, juego directo o elaborado.
@@ -275,13 +275,13 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 
 - **FR-044**: En simulación rápida, al empezar el partido el sistema DEBE mostrar inmediatamente el marcador al descanso y el resumen de eventos relevantes de la primera parte (goles con autor y asistente, tarjetas, ocasiones claras, lesiones), cada uno con su minuto.
 - **FR-045**: En el descanso (y antes de la prórroga), el participante DEBE poder hacer sustituciones y cambios de formación y táctica, que se aplicarán al resto del partido.
-- **FR-046**: En un partido entre dos humanos, la segunda parte (o la prórroga) NO DEBE empezar hasta que ambos pulsen "Seguir" o venza el tiempo de descanso (por defecto, 2 minutos). En un partido contra un NPC, empieza cuando el humano pulse "Seguir".
+- **FR-046**: En un partido entre dos humanos, la segunda parte (o la prórroga) NO DEBE empezar hasta que ambos pulsen "Seguir" o venza el tiempo de descanso (por defecto, 2 minutos). En un partido contra un NPC, empieza cuando el humano pulse "Seguir". *[Actualizado por la spec 002: no hay partidos síncronos entre humanos ni «Seguir» de ambos; en el descanso espera solo el único humano del partido (002/FR-012, FR-030).]*
 - **FR-047**: Al terminar, el sistema DEBE mostrar el resumen completo del partido, incluidas prórroga y tanda de penaltis si las hubo, y estadísticas básicas (posesión, tiros, tiros a puerta, córners, faltas, tarjetas).
 
 #### Simulación 2D
 
 - **FR-048**: En simulación 2D, el sistema DEBE mostrar el campo, los jugadores como círculos con los colores de la equipación que use su equipo en ese partido, su dorsal y su nombre, el balón, el marcador y el minuto.
-- **FR-049**: El usuario DEBE poder elegir entre las velocidades x2, x4, x8, x16 y x32 en cualquier momento, sin que cambie el desarrollo del partido. En un partido entre dos humanos, la reproducción DEBE avanzar a la menor de las velocidades elegidas por ambos.
+- **FR-049**: El usuario DEBE poder elegir entre las velocidades x2, x4, x8, x16 y x32 en cualquier momento, sin que cambie el desarrollo del partido. En un partido entre dos humanos, la reproducción DEBE avanzar a la menor de las velocidades elegidas por ambos. *[Actualizado por la spec 002: velocidades x2, x4 y x8, con partidos de 4, 2 y 1 minuto; desaparece la velocidad mínima común (002/FR-025).]*
 - **FR-050**: El participante DEBE poder solicitar sustituciones y cambios tácticos en cualquier momento; el sistema DEBE aplicarlos en la siguiente interrupción del juego y notificar a ambos participantes cuándo se hacen efectivos.
 
 #### Torneos
@@ -296,11 +296,11 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   - La alineación, la formación y la táctica de un rival NO DEBEN ser visibles antes de que empiece el partido. Se revelan al comenzar, y los cambios hechos durante el partido se ven cuando se aplican.
   - El servidor NO DEBE enviar a un participante información que todavía no le corresponde ver.
 - **FR-055**: Los partidos entre dos NPC DEBEN resolverse sin intervención humana y sus resultados DEBEN estar disponibles al mismo tiempo que los del resto de la jornada.
-- **FR-056**: Al crear la partida, el anfitrión DEBE elegir el ritmo del torneo:
+- **FR-056**: Al crear la partida, el anfitrión DEBE elegir el ritmo del torneo: *[Actualizado por la spec 002: los torneos son siempre asíncronos (002/FR-030).]*
   - **En directo**: todas las jornadas se juegan seguidas en una única sesión. Cada jornada empieza cuando ha terminado la anterior y ha vencido el tiempo de preparación del equipo.
   - **Asíncrono**: cada jornada tiene un plazo (por defecto, 24 horas). Un partido entre dos humanos se juega en cuanto ambos están conectados y confirman que están listos. Un partido contra un NPC se juega cuando el humano lo inicia.
-- **FR-056a**: En modo asíncrono, si vence el plazo de la jornada sin que se haya jugado un partido, el sistema DEBE simularlo automáticamente con las últimas alineaciones válidas, sin intervención en el descanso, y la jornada siguiente DEBE abrirse al terminar todos los partidos de la anterior.
-- **FR-056b**: En modo asíncrono, el sistema DEBE notificar a cada participante cuándo se abre una jornada, cuándo su rival está listo para jugar y cuándo queda poco para que venza el plazo (por defecto, 2 horas antes).
+- **FR-056a**: En modo asíncrono, si vence el plazo de la jornada sin que se haya jugado un partido, el sistema DEBE simularlo automáticamente con las últimas alineaciones válidas, sin intervención en el descanso, y la jornada siguiente DEBE abrirse al terminar todos los partidos de la anterior. *[Actualizado por la spec 002: se resuelve con `resolverResto` y decisiones automáticas; con un solo humano no hay plazos (002/FR-030, research R7).]*
+- **FR-056b**: En modo asíncrono, el sistema DEBE notificar a cada participante cuándo se abre una jornada, cuándo su rival está listo para jugar y cuándo queda poco para que venza el plazo (por defecto, 2 horas antes). *[Actualizado por la spec 002: sin el aviso «rival listo» (no hay partidos síncronos entre humanos); se añade el aviso de dorsales asignados (002/FR-038).]*
 - **FR-056c**: El draft se juega siempre en directo, sea cual sea el ritmo del torneo.
 
 #### NPC
@@ -343,7 +343,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **SC-002**: En el 100 % de los turnos, los sobres llegan al vecino correcto según la ronda (izquierda, derecha, izquierda), comprobado en drafts de 4, 5, 6, 7 y 8 participantes.
 - **SC-003**: Un usuario nuevo completa su primer draft y deja su alineación lista para jugar sin ayuda externa en menos de 30 minutos en al menos el 90 % de los casos.
 - **SC-004**: En una serie de 1.000 partidos simulados entre equipos idénticos salvo en que uno tiene 5 puntos más de media en todos sus titulares, el equipo mejor gana al menos el 60 % de los partidos y el peor gana al menos el 10 % (la estrategia pesa, pero el fútbol mantiene su incertidumbre).
-- **SC-005**: En una serie de 1.000 partidos, un equipo con los 11 titulares en posiciones naturales gana al menos el 65 % de los partidos contra el mismo equipo con 3 titulares fuera de posición.
+- **SC-005**: En una serie de 1.000 partidos, un equipo con los 11 titulares en posiciones naturales gana al menos el 65 % de los partidos contra el mismo equipo con 3 titulares fuera de posición. *[Sustituido por la spec 002: SC-011 con las penalizaciones graduadas.]*
 - **SC-006**: En series de 1.000 partidos frente al mismo rival, cada opción táctica y cada formación produce una diferencia medible en al menos una estadística del partido (posesión, tiros, fueras de juego provocados, recuperaciones en campo rival o cansancio), **en la dirección esperada**:
   - La media de goles a favor **y** en contra crece con la ofensividad de la formación. 3-4-3 > 4-4-2 > 5-4-1 en ambos.
   - Presión alta produce más recuperaciones en campo rival y más cansancio que Bloque medio.
@@ -368,6 +368,8 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 
 ## Assumptions
 
+- **Descuento** *[añadido por la spec 002]*: el descuento de cada parte reglamentaria está entre 1 y 3 minutos (antes, hasta 6), para que el partido 2D dure siempre 4, 2 o 1 minuto (002/FR-025, research R2).
+
 - **Plataforma y cuentas**: juego online en navegador. Las cuentas son obligatorias salvo en el modo invitado de FR-000; la gestión de cuentas (registro, inicio de sesión, recuperación) se resuelve con prácticas estándar y no se detalla en esta especificación.
 - **Alcance del MVP**: solo existe la colección "Core"; la compra de colecciones, la monetización y la obtención de recursos jugando quedan fuera de este MVP (sin contradecir el Principio VII).
 - **Tamaño de la colección Core**: una mesa de 8 participantes abre 24 sobres (192 cartas) y no puede repetir cartas.
@@ -389,7 +391,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **Tiempos por defecto (ajustables en la configuración del juego)**: búsqueda de participantes 3 min; turno de draft 45 s; preparación de equipo antes de cada partido 3 min (5 min antes del primero); descanso 2 min.
 - **Elección automática**: al vencer el turno se elige la carta de mayor media del sobre; si hay empate, la primera en el orden del sobre.
 - **Escala de stats**: enteros de 1 a 99 (coherente con el umbral "regate +95" de Infranqueable). Un nivel PUEDE tener menos specials que su máximo (p. ej. un Superclase con 0 specials).
-- **Penalización por posición** (valores iniciales sujetos a equilibrado): −25 % a todos los stats para un jugador de campo fuera de sus posiciones; −60 % para un jugador de campo en la portería o un portero fuera de ella.
+- **Penalización por posición** (valores iniciales sujetos a equilibrado): −25 % a todos los stats para un jugador de campo fuera de sus posiciones; −60 % para un jugador de campo en la portería o un portero fuera de ella. *[Sustituida por la spec 002: tabla de 002/FR-031 a FR-033.]*
 - **Mapeo de casillas por formación** (la casilla "DCI/DCD" es el central del medio de una defensa de 3 o 5 y admite sin penalización a jugadores con DCI o DCD, ver FR-025a; en defensas de 4 se usan laterales LI/LD y en defensas de 3 o 5 carrileros CI/CD; las bandas de una línea de 4 o 5 medios las ocupan extremos EI/ED):
 
   | Formación | Casillas (además de POR) |
@@ -405,7 +407,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   | 4-5-1 | LI, DCI, DCD, LD · EI, MII, MD, MID, ED · DC |
   | 3-3-3-1 | DCI, DCI/DCD, DCD · CI, MD, CD · EI, MCO, ED · DC |
 
-- **Ofensividad de cada formación** (valores iniciales, ajustables en los parámetros de equilibrado; escala de −2, muy defensiva, a +2, muy ofensiva):
+- **Ofensividad de cada formación** (valores iniciales, ajustables en los parámetros de equilibrado; escala de −2, muy defensiva, a +2, muy ofensiva): *[Actualizada por la spec 002: es la de la formación de partida; con colocación libre se ajusta según 002/FR-034b.]*
 
   | Formación | 3-4-3 | 3-3-3-1 | 4-3-3 | 3-5-2 | 4-2-3-1 | 4-4-2 | 4-4-2 en diamante | 4-5-1 | 5-3-2 | 5-4-1 |
   |---|---|---|---|---|---|---|---|---|---|---|
@@ -414,7 +416,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **Agrupación de opciones tácticas**: la agrupación en radios y casillas de FR-029 es una propuesta derivada de las descripciones; las opciones en sí son las indicadas por el usuario.
 - **Formato de playoff**: la final también se juega a partido único. Los emparejamientos de la primera ronda se sortean, respetando en el playoff de 16 que los octavos enfrenten a participantes de mesas distintas.
 - **Mixto**: requiere exactamente 8 participantes, según la descripción.
-- **Partidos entre humanos**: el partido en sí se juega siempre de forma síncrona (ambos conectados). En el ritmo "en directo", si un humano no está presente, su equipo juega con su última alineación válida y los tiempos de decisión vencen automáticamente. En el ritmo "asíncrono", el partido espera hasta que ambos estén listos o venza el plazo de la jornada.
+- **Partidos entre humanos**: el partido en sí se juega siempre de forma síncrona (ambos conectados). En el ritmo "en directo", si un humano no está presente, su equipo juega con su última alineación válida y los tiempos de decisión vencen automáticamente. En el ritmo "asíncrono", el partido espera hasta que ambos estén listos o venza el plazo de la jornada. *[Actualizado por la spec 002: se resuelven una sola vez, de forma asíncrona, y cada humano los ve cuando quiere sin que se le revele antes el resultado (002/FR-030, US11).]*
 - **Valores del modo asíncrono** (ajustables): plazo de jornada 24 h; aviso 2 h antes de que venza.
 - **Ritmo de las lesiones**: la gravedad se decide al producirse la lesión; la probabilidad base, el reparto entre gravedades (con un 2 % de larga duración por defecto) y la reducción de Robusto se fijarán en el documento de equilibrado.
 - **Amarillas en el modo mixto**: las sanciones por acumulación pendientes al terminar la liga se cumplen en la eliminatoria; las amarillas acumuladas que no llegaron a 3 se descartan al empezar la eliminatoria.

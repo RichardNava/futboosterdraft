@@ -28,7 +28,7 @@ describe('draft (US1)', () => {
     const invitado = await crearInvitado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: invitado.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ritmo: 'directo', ...cuerpo },
+      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ...cuerpo },
     });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     return { invitado, partida: r.cuerpo };
@@ -82,11 +82,47 @@ describe('draft (US1)', () => {
     await ws.cerrar();
   });
 
+  it('animacion solo en el primer envío del turno 1 de cada ronda (3 veces), nunca al reconectar; ese turno suma el margen (T143)', async () => {
+    const { invitado, partida } = await partidaInvitado();
+    const inicio = await iniciarConCliente(invitado, partida.id);
+    const ws = inicio.ws;
+    let turno = inicio.turno;
+    const turnos = [turno];
+    expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(TURNO_MS + 6_000);
+    for (let i = 0; i < 23; i++) {
+      const desde = ws.recibidos.length;
+      await ws.enviarYEsperarAck({ t: 'draft.elegir', ronda: turno.ronda, turno: turno.turno, jugadorId: turno.sobre.cartas[0].id });
+      turno = await siguienteTurno(ws, desde);
+      turnos.push(turno);
+      // Al reconectar en el primer turno de la segunda ronda: la instantánea no pide la animación.
+      if (turno.ronda === 2 && turno.turno === 1) {
+        expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(TURNO_MS + 6_000);
+        const otra = await ClienteWs.conectar(srv.urlWs, partida.id, invitado.cookie);
+        const estado = await otra.esperar('estado');
+        expect(estado.vista.draft.turno).toBe(1);
+        expect(estado.vista.draft.animacion).toBeUndefined();
+        expect(otra.recibidos.some((m) => m.t === 'draft.turno')).toBe(false);
+        await otra.cerrar();
+      } else if (turno.turno !== 1) {
+        expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(TURNO_MS);
+      }
+    }
+    expect(turnos.filter((t) => t.animacion).map((t) => [t.ronda, t.turno])).toEqual([
+      [1, 1],
+      [2, 1],
+      [3, 1],
+    ]);
+    await ws.cerrar();
+  });
+
   it('el turno no avanza hasta que vence el plazo; entonces se autoelige la carta de mayor media (FR-009)', async () => {
     const { invitado, partida } = await partidaInvitado();
     const { ws, turno } = await iniciarConCliente(invitado, partida.id);
     const desde = ws.recibidos.length;
-    srv.reloj.avanzar(TURNO_MS - 1000);
+    // El primer turno de la ronda suma el margen de la animación de apertura (FR-008).
+    const plazo = Date.parse(turno.venceEn) - srv.reloj.ahora();
+    expect(plazo).toBe(TURNO_MS + 6_000);
+    srv.reloj.avanzar(plazo - 1000);
     await new Promise((r) => setTimeout(r, 100));
     expect(ws.recibidos.slice(desde).some((m) => m.t === 'draft.turno')).toBe(false);
 
@@ -103,7 +139,8 @@ describe('draft (US1)', () => {
     const { invitado, partida } = await partidaInvitado();
     const { ws, turno } = await iniciarConCliente(invitado, partida.id);
     const progreso = await ws.esperar('draft.progreso');
-    expect(Object.keys(progreso).sort()).toEqual(['eligieron', 'ronda', 't', 'turno']);
+    // `pendientes` lista solo a los humanos que faltan por elegir (spec 002, FR-013): nunca la carta.
+    expect(Object.keys(progreso).sort()).toEqual(['eligieron', 'pendientes', 'ronda', 't', 'turno']);
     // Los 3 NPC ya han elegido al abrirse el turno.
     expect(progreso.eligieron).toHaveLength(3);
     const r = await peticion(srv.url, `/api/partidas/${partida.id}/plantillas`, { cookie: invitado.cookie });
@@ -160,12 +197,14 @@ describe('draft (US1)', () => {
     const anfitrion = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida', ritmo: 'directo' },
+      cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida' },
     });
     await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: anfitrion.cookie });
     const inicio = srv.reloj.ahora();
+    const c = await srv.gestor.obtenerOError(r.cuerpo.id);
     for (let i = 0; i < 30; i++) {
-      srv.reloj.avanzar(TURNO_MS + 1);
+      // Hasta el plazo del turno abierto (45 s, o 51 s en el primero de cada ronda).
+      srv.reloj.avanzar(Math.max(1, (c.mesas[0]?.mesa.venceEn ?? srv.reloj.ahora()) - srv.reloj.ahora() + 1));
       await new Promise((res) => setTimeout(res, 150));
       const estado = (await peticion(srv.url, `/api/partidas/${r.cuerpo.id}`, { cookie: anfitrion.cookie })).cuerpo.estado;
       if (estado === 'en_torneo') break;
@@ -181,7 +220,7 @@ describe('draft (US1)', () => {
     const anfitrion = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion.cookie,
-      cuerpo: { modo: 'playoff', numParticipantes: 16, tipoSimulacion: 'rapida', ritmo: 'directo' },
+      cuerpo: { modo: 'playoff', numParticipantes: 16, tipoSimulacion: 'rapida' },
     });
     await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: anfitrion.cookie });
     const mesas = await bd.db.execute(sql`select indice, array_length(participantes, 1) as n from mesas order by indice`);

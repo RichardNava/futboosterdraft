@@ -33,6 +33,7 @@ export class RepoEquipo {
       suplentes: fila.suplentes,
       tactica: fila.tactica as Alineacion['tactica'],
       lanzadores: fila.lanzadores as Alineacion['lanzadores'],
+      ...(fila.colocacion ? { colocacion: fila.colocacion as NonNullable<Alineacion['colocacion']> } : {}),
       version: fila.version,
       confirmadaEn: fila.confirmadaEn,
     };
@@ -49,6 +50,7 @@ export class RepoEquipo {
       suplentes: a.suplentes,
       tactica: a.tactica,
       lanzadores: a.lanzadores,
+      colocacion: a.colocacion ?? null,
       confirmadaEn: new Date(ahora),
     });
     return version;

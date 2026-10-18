@@ -1,9 +1,11 @@
 /**
- * Comprobaciones estadísticas de partido (T078): SC-004, SC-005, SC-006 (con dirección), SC-007 y
- * SC-015. Todas usan semillas fijas, así que el resultado es reproducible.
+ * Comprobaciones estadísticas de partido (T078, T074): SC-004, SC-006 (con dirección), SC-007 y SC-015 de
+ * la spec 001, y SC-007 y SC-008 de la spec 002 (el partido 2D parece fútbol y los stats de pase se notan).
+ * SC-005 lo sustituye SC-011 de la spec 002 (checks/colocacion.ts). Todas usan semillas fijas, así que el
+ * resultado es reproducible.
  */
 import type { EstadisticasEquipo } from '@fbd/engine';
-import { clonar, conStatsDesplazados, conTresFueraDePosicion, equipoSintetico, type OpcionesEquipo } from '../equipos';
+import { clonar, conPaseDeMedios, conStatsDesplazados, equipoSintetico, type OpcionesEquipo } from '../equipos';
 import { mayorSignificativo, media, serie } from '../series';
 
 export interface Comprobacion {
@@ -14,7 +16,9 @@ export interface Comprobacion {
 }
 
 const pct = (x: number, n: number) => `${((100 * x) / n).toFixed(1)} %`;
-const col = (r: { estadisticasA: EstadisticasEquipo[] }, campo: keyof EstadisticasEquipo) => r.estadisticasA.map((e) => e[campo]);
+/** Campos numéricos de las estadísticas (todos menos el histograma de secuencias). */
+type Campo = Exclude<keyof EstadisticasEquipo, 'secuencias'>;
+const col = (r: { estadisticasA: EstadisticasEquipo[] }, campo: Campo) => r.estadisticasA.map((e) => e[campo]);
 
 export function comprobarSC004(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'sc004' });
@@ -25,17 +29,6 @@ export function comprobarSC004(n: number, semilla: number): Comprobacion {
     descripcion: '+5 de media: el mejor gana ≥ 60 % y el peor ≥ 10 %',
     ok,
     detalle: `mejor ${pct(r.victoriasA, n)}, empates ${pct(r.empates, n)}, peor ${pct(r.victoriasB, n)}`,
-  };
-}
-
-export function comprobarSC005(n: number, semilla: number): Comprobacion {
-  const base = equipoSintetico({ semilla: 'sc005' });
-  const r = serie(base, conTresFueraDePosicion(clonar(base, 'b')), n, semilla, 'sc005');
-  return {
-    id: 'SC-005',
-    descripcion: 'Posiciones naturales frente a 3 fuera de posición: gana ≥ 65 %',
-    ok: r.victoriasA / n >= 0.65,
-    detalle: `naturales ${pct(r.victoriasA, n)}, empates ${pct(r.empates, n)}, fuera de posición ${pct(r.victoriasB, n)}`,
   };
 }
 
@@ -129,6 +122,74 @@ export function comprobarSC015(n: number, semilla: number): Comprobacion {
   };
 }
 
+/**
+ * 002/SC-007: entre equipos equilibrados con la táctica por defecto, de media entre los dos equipos, las
+ * estadísticas de un partido de fútbol de verdad.
+ */
+export function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
+  const base = equipoSintetico({ semilla: 'sc007-2d' });
+  const r = serie(base, clonar(base, 'b'), n, semilla, 'sc007-2d');
+  const ambos = (campo: Campo) => media(r.estadisticasA.map((e, i) => e[campo] + r.estadisticasB[i]![campo]));
+  let posesiones = 0;
+  let largas = 0;
+  for (const e of [...r.estadisticasA, ...r.estadisticasB]) {
+    for (const [pases, cuantas] of Object.entries(e.secuencias)) {
+      posesiones += cuantas;
+      if (Number(pases) >= 3) largas += cuantas;
+    }
+  }
+  const umbrales: [Campo, string, number][] = [
+    ['pasesCompletados', 'pases completados', 150],
+    ['centros', 'centros', 10],
+    ['tiros', 'tiros', 15],
+    ['conducciones', 'conducciones', 30],
+    ['paredes', 'paredes', 3],
+    ['cambiosOrientacion', 'cambios de orientación', 5],
+    ['contraataques', 'contraataques', 3],
+  ];
+  const valores = umbrales.map(([campo, nombre, minimo]) => ({ nombre, minimo, valor: ambos(campo) }));
+  const proporcion = posesiones ? largas / posesiones : 0;
+  return [
+    {
+      id: '002/SC-007a',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 150 pases completados, 10 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 3 contraataques',
+      ok: valores.every((v) => v.valor >= v.minimo),
+      detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
+    },
+    {
+      id: '002/SC-007b',
+      descripcion: 'Al menos el 30 % de las posesiones con 3 o más pases seguidos',
+      ok: proporcion >= 0.3,
+      detalle: `${(proporcion * 100).toFixed(1)} % de ${posesiones} posesiones`,
+    },
+  ];
+}
+
+/** 002/SC-008: +10 de pase en los centrocampistas titulares → ≥ 10 % más pases completados (en número absoluto). */
+export function comprobarSC008Pase(n: number, semilla: number): Comprobacion {
+  const base = equipoSintetico({ semilla: 'sc008-2d' });
+  const rival = equipoSintetico({ semilla: 'referencia', participanteId: 'rival' });
+  const sin = serie(base, rival, n, semilla, 'sc008-2d');
+  const con = serie(conPaseDeMedios(base, 10), rival, n, semilla, 'sc008-2d');
+  const a = media(col(sin, 'pasesCompletados'));
+  const b = media(col(con, 'pasesCompletados'));
+  const aumento = a > 0 ? b / a - 1 : 0;
+  return {
+    id: '002/SC-008',
+    descripcion: '+10 de pase en los centrocampistas titulares: ≥ 10 % más pases completados',
+    ok: aumento >= 0.1,
+    detalle: `${b.toFixed(1)} frente a ${a.toFixed(1)} pases completados por partido (+${(aumento * 100).toFixed(1)} %)`,
+  };
+}
+
 export function comprobacionesPartido(n: number, semilla: number): Comprobacion[] {
-  return [comprobarSC004(n, semilla), comprobarSC005(n, semilla), ...comprobarSC006(n, semilla), comprobarSC007(n, semilla), comprobarSC015(n, semilla)];
+  // 001/SC-005 lo sustituye SC-011 de la spec 002 (checks/colocacion.ts).
+  return [
+    comprobarSC004(n, semilla),
+    ...comprobarSC006(n, semilla),
+    comprobarSC007(n, semilla),
+    comprobarSC015(n, semilla),
+    ...comprobarSC007Partido2D(n, semilla),
+    comprobarSC008Pase(n, semilla),
+  ];
 }

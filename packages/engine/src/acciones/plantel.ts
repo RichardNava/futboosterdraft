@@ -2,7 +2,8 @@
  * Cambios en los jugadores del campo: sustituciones, retiradas por lesión o expulsión, relevo del
  * portero y la regla de los 7 jugadores (FR-042; Edge Cases de la especificación).
  */
-import { maxSustituciones, rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
+import { anclaDeCasilla, maxSustituciones, rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
+import { repartirAnclas } from '../espacio/geometria';
 import type { Lado } from '../tipos';
 import { emitir, esPortero, type Contexto } from './contexto';
 
@@ -15,6 +16,14 @@ export function sustitucionesDisponibles(ctx: Contexto, equipo: EquipoEstado): n
 /** Ejecuta una sustitución: el que entra ocupa la casilla del que sale. */
 export function sustituir(ctx: Contexto, equipo: EquipoEstado, sale: JugadorEnPartido, entra: JugadorEnPartido, automatica = false): void {
   entra.casillaId = sale.casillaId;
+  // El que entra ocupa el sitio del que sale y hereda su ancla (research R13).
+  entra.ancla = sale.ancla ? { ...sale.ancla } : undefined;
+  if (sale.posicion) entra.posicion = sale.posicion;
+  const esp = ctx.estado.espacio;
+  const donde = esp.jugadores[sale.id];
+  if (donde) esp.jugadores[entra.id] = { x: donde.x, y: donde.y, vx: 0, vy: 0, papel: -1000 };
+  delete esp.jugadores[sale.id];
+  delete esp.destinos[sale.id];
   entra.enCampo = true;
   sale.enCampo = false;
   sale.retirado = true;
@@ -53,8 +62,16 @@ export function retirarLesionado(ctx: Contexto, equipo: EquipoEstado, j: Jugador
   j.enCampo = false;
   j.retirado = true;
   j.casillaId = null;
+  quitarDelCampo(ctx, j);
   if (casilla === 'POR') cubrirPorteria(ctx, equipo);
+  repartirAnclas(equipo);
   comprobarInferioridad(ctx, equipo.lado);
+}
+
+/** El jugador desaparece de la capa espacial. */
+function quitarDelCampo(ctx: Contexto, j: JugadorEnPartido): void {
+  delete ctx.estado.espacio.jugadores[j.id];
+  delete ctx.estado.espacio.destinos[j.id];
 }
 
 /** Expulsión: el jugador se va sin sustituto. Si era el portero, alguien tiene que cubrir la portería. */
@@ -64,8 +81,10 @@ export function expulsar(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartid
   j.enCampo = false;
   j.retirado = true;
   j.casillaId = null;
+  quitarDelCampo(ctx, j);
   if (ctx.estado.balon.portadorId === j.id) ctx.estado.balon.portadorId = 0;
   if (eraPortero) cubrirPorteria(ctx, equipo);
+  repartirAnclas(equipo);
   comprobarInferioridad(ctx, equipo.lado);
 }
 
@@ -82,6 +101,7 @@ function cubrirPorteria(ctx: Contexto, equipo: EquipoEstado): void {
     // y la casilla del que sale queda vacía (el equipo juega con uno menos).
     const sale = [...enCampo].sort((a, b) => a.jugador.media - b.jugador.media || a.id - b.id)[0]!;
     sale.casillaId = 'POR';
+    sale.ancla = anclaDeCasilla(equipo.formacion, 'POR');
     sustituir(ctx, equipo, sale, porteroSuplente, true);
     return;
   }
@@ -89,6 +109,8 @@ function cubrirPorteria(ctx: Contexto, equipo: EquipoEstado): void {
     (a, b) => b.jugador.altura - a.jugador.altura || a.jugador.media - b.jugador.media || a.id - b.id,
   )[0]!;
   relevo.casillaId = 'POR';
+  relevo.ancla = anclaDeCasilla(equipo.formacion, 'POR');
+  delete relevo.posicion;
 }
 
 /** Regla de los 7 jugadores: el equipo pierde 3-0, o se mantiene el resultado si era peor para él. */

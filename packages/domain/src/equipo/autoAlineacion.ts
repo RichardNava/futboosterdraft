@@ -12,7 +12,7 @@ import type { Alineacion, Titular } from './alineacion';
 import { MAX_SUPLENTES, TITULARES } from './alineacion';
 import { FORMACIONES_IDS, FORMACIONES, type Casilla, type FormacionId } from './formaciones';
 import { proponerLanzadores } from './lanzadores';
-import { penalizacionPorCasilla, statsEfectivos } from './statsEfectivos';
+import { penalizacionPorPosicion, statsEfectivos } from './statsEfectivos';
 import { tacticaPorDefecto, type Tactica } from './tactica';
 
 interface Asignacion {
@@ -92,7 +92,7 @@ function asignar(formacionId: FormacionId, jugadores: readonly Jugador[], p: Par
     const j = porCasilla.get(c.id);
     if (!j) continue;
     total += valor(j, c);
-    if (penalizacionPorCasilla(j, c, p) > 0) fuera++;
+    if (penalizacionPorPosicion(j, c, p) > 0) fuera++;
   }
   return { formacion: formacionId, titulares, total, fuera };
 }

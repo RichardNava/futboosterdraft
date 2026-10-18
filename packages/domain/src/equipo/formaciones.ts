@@ -69,9 +69,9 @@ const defensaTres: Casilla[] = [
   c('DCI', ['DCI'], X.def - 10, Y.interiorAncho),
 ];
 const defensaCinco: Casilla[] = [
-  c('CD', ['CD'], X.carril - 60, der(Y.banda)),
+  c('CD', ['CD'], 250, der(Y.banda)),
   ...defensaTres,
-  c('CI', ['CI'], X.carril - 60, Y.banda),
+  c('CI', ['CI'], 250, Y.banda),
 ];
 
 const FORMACIONES_LISTA: readonly Formacion[] = [
@@ -143,7 +143,7 @@ const FORMACIONES_LISTA: readonly Formacion[] = [
     casillas: [
       POR,
       ...defensaCuatro,
-      c('MC', ['MC'], X.md, der(Y.centroAncho)),
+      c('MC', ['MC'], 410, der(Y.centroAncho)),
       c('MD', ['MD'], X.md, Y.centroAncho),
       c('ED', ['ED'], X.mco, der(Y.banda + 20)),
       c('MCO', ['MCO'], X.mco, Y.centro),
@@ -158,11 +158,11 @@ const FORMACIONES_LISTA: readonly Formacion[] = [
     casillas: [
       POR,
       ...defensaTres,
-      c('CD', ['CD'], X.med - 20, der(Y.banda)),
+      c('CD', ['CD'], 410, der(Y.banda)),
       c('MID', ['MID'], X.med, der(Y.interior - 20)),
       c('MD', ['MD'], X.md, Y.centro),
       c('MII', ['MII'], X.med, Y.interior - 20),
-      c('CI', ['CI'], X.med - 20, Y.banda),
+      c('CI', ['CI'], 410, Y.banda),
       c('DC', ['DC'], X.del, der(Y.centroAncho)),
       c('SD', ['SD'], X.del - 40, Y.centroAncho),
     ],
@@ -178,7 +178,7 @@ const FORMACIONES_LISTA: readonly Formacion[] = [
       c('MC-1', ['MC'], X.med - 30, der(Y.centroAncho)),
       c('MC-2', ['MC'], X.med - 30, Y.centroAncho),
       c('EI', ['EI'], X.med, Y.banda),
-      c('DC', ['DC'], X.del - 40, Y.centro),
+      c('DC', ['DC'], 770, Y.centro),
     ],
   },
   {
@@ -191,7 +191,7 @@ const FORMACIONES_LISTA: readonly Formacion[] = [
       c('MD', ['MD'], X.md, Y.centro),
       c('MID', ['MID'], X.med, der(Y.interior)),
       c('MII', ['MII'], X.med, Y.interior),
-      c('DC', ['DC'], X.del - 20, der(Y.centroAncho)),
+      c('DC', ['DC'], 770, der(Y.centroAncho)),
       c('SD', ['SD'], X.del - 60, Y.centroAncho),
     ],
   },
@@ -207,7 +207,7 @@ const FORMACIONES_LISTA: readonly Formacion[] = [
       c('MD', ['MD'], X.md, Y.centro),
       c('MII', ['MII'], X.med, Y.interior),
       c('EI', ['EI'], X.med + 20, Y.banda),
-      c('DC', ['DC'], X.del - 20, Y.centro),
+      c('DC', ['DC'], 770, Y.centro),
     ],
   },
   {

@@ -1,7 +1,9 @@
 /**
- * Dibujo del partido 2D en un Canvas (T137; FR-048): el campo, los jugadores como círculos con los
- * colores de la equipación que usa su equipo en este partido (de `partido.inicio.equipaciones`), con el
- * dorsal dentro y el nombre debajo, el balón, el marcador y el minuto.
+ * Dibujo del partido 2D en un Canvas (FR-048, FR-023): el campo, los jugadores como chapas con los colores
+ * de la equipación que usa su equipo en este partido (de `partido.inicio.equipaciones`), con el dorsal
+ * dentro, el nombre debajo y una muesca hacia donde corren; el balón con su sombra y un tamaño según su
+ * altura; el marcador, el minuto, el rótulo breve de la acción en curso y los avisos («¡GOL!», descanso…).
+ * En la tanda de penaltis solo se ven el lanzador, el portero y el balón.
  *
  * Las coordenadas del motor son 0–1000 (largo) × 0–640 (ancho); se escalan al tamaño del lienzo.
  */
@@ -23,8 +25,21 @@ export interface Escena {
   marcador: { local: number; visitante: number };
   nombres: { local: string; visitante: string };
   minuto: string;
-  /** Texto superpuesto (descanso, esperando al rival…). */
+  /** Texto superpuesto («¡GOL!», descanso, «Cargando…»). */
   aviso?: string | null;
+  /** Rótulo breve de la acción en curso («Pase», «Centro»…). */
+  accion?: string | null;
+  /** Tanda de penaltis: el lanzamiento en curso, con su avance de 0 a 1. */
+  tanda?: Lanzamiento | null;
+}
+
+export interface Lanzamiento {
+  lanzadorId: number;
+  porteroId: number | null;
+  /** Hacia qué portería se tira (la de x = 1000 o la de x = 0). */
+  haciaDerecha: boolean;
+  gol: boolean;
+  progreso: number;
 }
 
 const CESPED = '#2f7d3b';
@@ -83,9 +98,9 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
   const radio = Math.max(7, 15 * e);
   const tamDorsal = Math.max(8, radio * 0.95);
   const tamNombre = Math.max(8, 11 * e);
-  for (const [id, [x, y]] of escena.posiciones.jugadores) {
+  const chapa = (id: number, x: number, y: number, vx: number, vy: number) => {
     const j = escena.jugadores.get(id);
-    if (!j) continue;
+    if (!j) return;
     const colores = escena.equipaciones[j.lado];
     ctx.beginPath();
     ctx.arc(x * e, y * e, radio, 0, Math.PI * 2);
@@ -94,18 +109,59 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
     ctx.lineWidth = Math.max(1.5, 3 * e);
     ctx.strokeStyle = colores.secundario;
     ctx.stroke();
+    // Muesca hacia donde corre (solo si se mueve de verdad, para que no baile parado).
+    const rapidez = Math.hypot(vx, vy);
+    if (rapidez > 0.4) {
+      const [ux, uy] = [vx / rapidez, vy / rapidez];
+      const [cx, cy] = [x * e + ux * radio, y * e + uy * radio];
+      const w = radio * 0.45;
+      ctx.beginPath();
+      ctx.moveTo(cx + ux * w * 0.9, cy + uy * w * 0.9);
+      ctx.lineTo(cx - uy * w, cy + ux * w);
+      ctx.lineTo(cx + uy * w, cy - ux * w);
+      ctx.closePath();
+      ctx.fillStyle = colores.secundario;
+      ctx.fill();
+    }
     if (j.dorsal !== null) {
       ctx.font = `800 ${tamDorsal}px system-ui, sans-serif`;
       ctx.fillStyle = colores.secundario;
       ctx.fillText(String(j.dorsal), x * e, y * e + 1);
     }
     if (ancho >= 480) texto(ctx, j.nombre, x * e, y * e + radio + tamNombre * 0.8, tamNombre);
+  };
+
+  let [bx, by, bz] = escena.posiciones.balon;
+  if (escena.tanda) {
+    // Tanda: el lanzador en el punto de penalti, el portero en su línea y el balón hacia la portería.
+    const l = escena.tanda;
+    const meta = l.haciaDerecha ? LARGO - 8 : 8;
+    const punto = l.haciaDerecha ? LARGO - 110 : 110;
+    const p = Math.min(1, Math.max(0, l.progreso));
+    // El portero se lanza a un lado; el balón entra por el otro (gol) o acaba en sus manos (parada).
+    const vuelo = Math.min(1, Math.max(0, (p - 0.3) / 0.4));
+    const lado = l.gol ? -1 : 1;
+    const porteroY = ANCHO / 2 + lado * 35 * vuelo;
+    const destinoY = l.gol ? ANCHO / 2 + 30 : porteroY;
+    const destinoX = l.gol ? meta + (l.haciaDerecha ? 4 : -4) : meta + (l.haciaDerecha ? -12 : 12);
+    chapa(l.lanzadorId, punto + (l.haciaDerecha ? -30 : 30) * (1 - Math.min(1, p / 0.3)), ANCHO / 2, 0, 0);
+    if (l.porteroId !== null) chapa(l.porteroId, meta + (l.haciaDerecha ? -10 : 10), porteroY, 0, 0);
+    [bx, by, bz] = [punto + (destinoX - punto) * vuelo, ANCHO / 2 + (destinoY - ANCHO / 2) * vuelo, 0];
+  } else {
+    for (const [id, [x, y]] of escena.posiciones.jugadores) {
+      const [vx, vy] = escena.posiciones.velocidades.get(id) ?? [0, 0];
+      chapa(id, x, y, vx, vy);
+    }
   }
 
-  // Balón.
-  const [bx, by] = escena.posiciones.balon;
+  // Balón: la sombra en el suelo y el balón más arriba y más grande cuanto más alto va.
+  const radioBalon = Math.max(4, 7 * e) * (1 + Math.min(bz, 60) / 60);
   ctx.beginPath();
-  ctx.arc(bx * e, by * e, Math.max(4, 7 * e), 0, Math.PI * 2);
+  ctx.ellipse(bx * e, by * e, Math.max(3, 6 * e), Math.max(2, 3.5 * e), 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgb(0 0 0 / 35%)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(bx * e, (by - bz * 0.6) * e, radioBalon, 0, Math.PI * 2);
   ctx.fillStyle = '#ffffff';
   ctx.fill();
   ctx.lineWidth = 1.5;
@@ -120,6 +176,12 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
   ctx.fillStyle = 'rgb(0 0 0 / 55%)';
   ctx.fillRect((ancho - w) / 2, 10 * e, w, tam * 1.6);
   texto(ctx, `${marcador}   ${escena.minuto}`, ancho / 2, 10 * e + tam * 0.8, tam);
+
+  if (escena.accion) {
+    ctx.textAlign = 'left';
+    texto(ctx, escena.accion, 16 * e, ANCHO * e - 22 * e, Math.max(10, 16 * e));
+    ctx.textAlign = 'center';
+  }
 
   if (escena.aviso) {
     const t = Math.max(14, 26 * e);

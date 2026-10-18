@@ -26,7 +26,7 @@ describe('contrato HTTP de alineación (US2)', () => {
 
   it('no se puede preparar el equipo durante el draft (409 DRAFT_EN_CURSO)', async () => {
     const g = await crearInvitado(srv.url);
-    const p = (await peticion(srv.url, '/api/partidas', { cookie: g.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ritmo: 'directo' } })).cuerpo;
+    const p = (await peticion(srv.url, '/api/partidas', { cookie: g.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } })).cuerpo;
     await peticion(srv.url, `/api/partidas/${p.id}/iniciar`, { metodo: 'POST', cookie: g.cookie });
     const r = await peticion(srv.url, `/api/partidas/${p.id}/alineacion`, { cookie: g.cookie });
     expect(r.estado).toBe(409);
@@ -38,7 +38,8 @@ describe('contrato HTTP de alineación (US2)', () => {
     expect(r.estado).toBe(200);
     expect(r.cuerpo.confirmada).toBe(false);
     expect(r.cuerpo.alineacion.titulares).toHaveLength(11);
-    expect(r.cuerpo.previsualizacion).toHaveLength(11);
+    expect(r.cuerpo.previsualizacion.titulares).toHaveLength(11);
+    expect(r.cuerpo.previsualizacion.personalizada).toBe(false);
     expect(r.cuerpo.plantilla).toHaveLength(24);
     expect(r.cuerpo.alineacion.lanzadores.tanda).toHaveLength(5);
     expect(r.cuerpo.dorsales).toBeNull();
@@ -100,21 +101,60 @@ describe('contrato HTTP de alineación (US2)', () => {
     );
     const r = await peticion(srv.url, `${ruta}/alineacion/previsualizar`, { cookie: anfitrion.cookie, cuerpo: { ...alineacion, titulares: cambiada } });
     expect(r.estado).toBe(200);
-    expect(r.cuerpo.previsualizacion.find((c: any) => c.casillaId === 'POR')).toMatchObject({ fueraDePosicion: true, penalizacion: 0.6 });
+    expect(r.cuerpo.previsualizacion.titulares.find((c: any) => c.casillaId === 'POR')).toMatchObject({ fueraDePosicion: true, penalizacion: 0.6 });
     const despues = (await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo;
     expect(despues.version).toBe(version);
   });
 
-  it('dorsales: 422 DORSAL_REPETIDO y DORSAL_FUERA_DE_RANGO; un cambio válido se guarda', async () => {
+  it('colocación libre: PUT la guarda y previsualizar devuelve la Previsualizacion (FR-034, T118)', async () => {
+    const { alineacion } = (await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo;
+    const campo = alineacion.titulares.find((t: any) => t.casillaId !== 'POR');
+    const colocacion = [{ jugadorId: campo.jugadorId, x: 800, y: 300 }];
+    const vista = await peticion(srv.url, `${ruta}/alineacion/previsualizar`, { cookie: anfitrion.cookie, cuerpo: { ...alineacion, colocacion } });
+    expect(vista.estado).toBe(200);
+    const p = vista.cuerpo.previsualizacion;
+    expect(Object.keys(p).sort()).toEqual(['amplitud', 'avisos', 'ofensividad', 'personalizada', 'reparto', 'titulares']);
+    expect(p.personalizada).toBe(true);
+    const movido = p.titulares.find((t: any) => t.jugadorId === campo.jugadorId);
+    expect(movido).toMatchObject({ x: 800, y: 300, posicionEfectiva: 'DC', zonaId: 'C-DC-ATQ' });
+    expect(movido).toHaveProperty('penalizacion');
+    expect(p.reparto.defensa + p.reparto.medio + p.reparto.ataque).toBe(10);
+
+    const r = await peticion(srv.url, `${ruta}/alineacion`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { ...alineacion, colocacion } });
+    expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
+    expect(r.cuerpo.alineacion.colocacion).toEqual(colocacion);
+  });
+
+  it('colocación no válida: 422 ALINEACION_INVALIDA con los motivos nuevos (FR-034a)', async () => {
+    const { alineacion } = (await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo;
+    const portero = alineacion.titulares.find((t: any) => t.casillaId === 'POR').jugadorId;
+    const campo = alineacion.titulares.find((t: any) => t.casillaId !== 'POR').jugadorId;
+    for (const [colocacion, motivo] of [
+      [[{ jugadorId: portero, x: 500, y: 320 }], 'PORTERO_FUERA_DE_PORTERIA'],
+      [[{ jugadorId: campo, x: 50, y: 320 }], 'JUGADOR_EN_PORTERIA'],
+      [[{ jugadorId: campo, x: 1200, y: 320 }], 'COLOCACION_FUERA_DEL_CAMPO'],
+    ] as const) {
+      const r = await peticion(srv.url, `${ruta}/alineacion`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { ...alineacion, colocacion } });
+      expect(r.estado).toBe(422);
+      expect(r.cuerpo.error.codigo).toBe('ALINEACION_INVALIDA');
+      expect(r.cuerpo.error.detalles.motivos).toContain(motivo);
+    }
+  });
+
+  it('dorsales: { jugadorId, dorsal } → { dorsales, sinDorsal }; 422 DORSAL_FUERA_DE_RANGO (FR-037)', async () => {
     const { dorsales } = (await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo;
-    const [a, b] = Object.keys(dorsales);
-    const repetido = await peticion(srv.url, `${ruta}/dorsales`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { dorsales: { [a!]: dorsales[b!] } } });
-    expect(repetido.cuerpo.error.codigo).toBe('DORSAL_REPETIDO');
-    const rango = await peticion(srv.url, `${ruta}/dorsales`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { dorsales: { [a!]: 100 } } });
+    const [a, b] = Object.keys(dorsales).map(Number);
+    const rango = await peticion(srv.url, `${ruta}/dorsales`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { jugadorId: a, dorsal: 100 } });
+    expect(rango.estado).toBe(422);
     expect(rango.cuerpo.error.codigo).toBe('DORSAL_FUERA_DE_RANGO');
-    const libre = [...Array(99).keys()].map((i) => i + 1).find((n) => !Object.values(dorsales).includes(n))!;
-    const ok = await peticion(srv.url, `${ruta}/dorsales`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { dorsales: { [a!]: libre } } });
-    expect(ok.cuerpo.dorsales[a!]).toBe(libre);
+    // El dorsal de b pasa a a, y b se queda sin dorsal (ya no hay DORSAL_REPETIDO).
+    const r = await peticion(srv.url, `${ruta}/dorsales`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { jugadorId: a, dorsal: dorsales[b!] } });
+    expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
+    expect(r.cuerpo.dorsales[a!]).toBe(dorsales[b!]);
+    expect(r.cuerpo.dorsales[b!]).toBeUndefined();
+    expect(r.cuerpo.sinDorsal).toEqual([b]);
+    const valores = Object.values(r.cuerpo.dorsales as Record<string, number>);
+    expect(new Set(valores).size).toBe(valores.length);
   });
 
   it('equipaciones: 422 COLOR_INVALIDO y EQUIPACIONES_IGUALES; un cambio válido se guarda', async () => {

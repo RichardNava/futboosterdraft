@@ -1,0 +1,383 @@
+/*
+ * Cartas de jugador (US1; FR-001 a FR-005, research R16).
+ *
+ * La carta completa tiene proporción de carta (≈ 5:7) y se lee igual de 160 a 280 px de ancho: los tamaños
+ * salen del ancho de la propia carta (container queries, unidades cqi) con `clamp()`. Si el contenido no cabe
+ * en la proporción, la carta crece en alto en lugar de recortar (SC-002).
+ *
+ * La carta es un objeto "físico": su superficie es clara en los dos temas y el texto, oscuro, con un
+ * contraste de al menos 4,5:1 sobre cualquier punto del degradado de cada nivel.
+ */
+
+.carta {
+  --carta-texto: #1b1f24;
+  --carta-texto-suave: #3d4651;
+  --carta-marco: #7d8895;
+  --carta-fondo: linear-gradient(160deg, #f1f4f7 0%, #d6dce3 55%, #c3cbd4 100%);
+  --carta-franja: #4a5562;
+  --carta-franja-texto: #ffffff;
+  position: relative;
+  container-type: inline-size;
+}
+
+.carta.nivel-epico {
+  --carta-marco: #7b3fb5;
+  --carta-fondo: linear-gradient(160deg, #f6effd 0%, #e2cff7 55%, #cfb2f0 100%);
+  --carta-franja: #6a31a1;
+}
+
+.carta.nivel-legendario {
+  --carta-marco: #a8740f;
+  --carta-fondo: linear-gradient(160deg, #fff8e3 0%, #f6dd94 50%, #e8c063 100%);
+  --carta-franja: #7d5406;
+}
+
+.carta.nivel-goat {
+  --carta-marco: #b8203f;
+  --carta-fondo: conic-gradient(from var(--carta-giro, 0deg) at 30% 25%, #ffe0ea, #e3e8ff, #dcfff3, #fff6d8, #f3dcff, #ffe0ea);
+  --carta-franja: #9c1834;
+}
+
+/* ---------- Carta completa ---------- */
+
+.carta.completa {
+  aspect-ratio: 5 / 7;
+  max-width: 280px;
+  width: 100%;
+  border-radius: clamp(8px, 5cqi, 14px);
+  border: clamp(3px, 2.4cqi, 6px) solid var(--carta-marco);
+  background: var(--carta-fondo);
+  color: var(--carta-texto);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 18%);
+  /* Sin overflow: hidden, para que la proporción ceda y la carta crezca si el contenido no cabe. */
+  isolation: isolate;
+}
+
+.carta.completa.seleccionada {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* Brillo del Legendario y holografía del GOAT. */
+.carta.nivel-legendario.completa::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 55%) 50%, transparent 65%);
+  background-size: 250% 100%;
+  animation: carta-brillo 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@property --carta-giro {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+.carta.nivel-goat.completa {
+  animation: carta-holo 8s linear infinite;
+}
+
+@keyframes carta-brillo {
+  0% {
+    background-position: 120% 0;
+  }
+  60%,
+  100% {
+    background-position: -40% 0;
+  }
+}
+
+@keyframes carta-holo {
+  to {
+    --carta-giro: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carta.nivel-legendario.completa::before,
+  .carta.nivel-goat.completa {
+    animation: none;
+  }
+}
+
+.carta-cuerpo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* min-height (no height): si el contenido no cabe en la proporción, la carta crece. */
+  min-height: 100%;
+  padding: clamp(6px, 4.5cqi, 12px);
+  gap: clamp(3px, 2.2cqi, 6px);
+  cursor: default;
+}
+
+.carta-cuerpo[role='button'] {
+  cursor: pointer;
+}
+
+.carta-cuerpo[role='button']:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: -3px;
+}
+
+/* Cabecera: media, demarcación y silueta. */
+.carta-cabecera {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: clamp(4px, 3cqi, 8px);
+}
+
+.carta-cifras {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.carta-media {
+  font-size: clamp(1.6rem, 17cqi, 3rem);
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.carta-demarcacion {
+  font-size: clamp(0.65rem, 6cqi, 0.95rem);
+  font-weight: 800;
+  color: var(--carta-texto-suave);
+}
+
+.carta-silueta {
+  justify-self: center;
+  width: 70%;
+  max-height: clamp(48px, 34cqi, 96px);
+  color: var(--carta-marco);
+}
+
+.carta-nombre {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.carta-nombre-pila {
+  font-size: clamp(0.65rem, 6cqi, 0.9rem);
+  color: var(--carta-texto-suave);
+}
+
+.carta-apellidos {
+  font-size: clamp(0.85rem, 8.5cqi, 1.3rem);
+  font-weight: 800;
+}
+
+/* Franja de posiciones, justo debajo del nombre. */
+.carta-posiciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(2px, 1.6cqi, 4px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carta-posicion {
+  padding: 0.1em 0.45em;
+  border-radius: 999px;
+  background: var(--carta-franja);
+  color: var(--carta-franja-texto);
+  font-size: clamp(0.68rem, 6.2cqi, 0.92rem);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+/* Pie: 6 stats y specials. */
+.carta-pie {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3px, 2.2cqi, 6px);
+}
+
+.carta-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(2px, 1.5cqi, 4px) clamp(4px, 3cqi, 8px);
+  margin: 0;
+}
+
+.carta-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px;
+  border-bottom: 1px solid rgb(0 0 0 / 15%);
+  line-height: 1.25;
+}
+
+.carta-stat dt {
+  font-size: clamp(0.55rem, 4.8cqi, 0.75rem);
+  font-weight: 700;
+  color: var(--carta-texto-suave);
+}
+
+.carta-stat dd {
+  margin: 0;
+  font-size: clamp(0.7rem, 6cqi, 0.95rem);
+  font-weight: 800;
+}
+
+.carta-specials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(2px, 1.5cqi, 4px);
+}
+
+.carta-special {
+  padding: 0.15em 0.5em;
+  border-radius: 999px;
+  border: 1px solid var(--carta-marco);
+  background: rgb(255 255 255 / 70%);
+  color: var(--carta-texto);
+  font-size: clamp(0.55rem, 4.6cqi, 0.74rem);
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: help;
+}
+
+/* Con 4 specials, más pequeños para que quepan en dos líneas. */
+.carta-specials[data-cantidad='4'] .carta-special {
+  font-size: clamp(0.52rem, 4.2cqi, 0.7rem);
+  padding: 0.12em 0.4em;
+}
+
+.carta-special:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+}
+
+.carta-descripcion[popover] {
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--texto);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 25%);
+}
+
+.carta-descripcion strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.carta-dorsal {
+  position: absolute;
+  top: clamp(6px, 4.5cqi, 12px);
+  right: clamp(30px, 18cqi, 40px);
+  font-size: clamp(0.65rem, 5.5cqi, 0.9rem);
+  font-weight: 800;
+  color: var(--carta-texto-suave);
+}
+
+.carta-ficha {
+  position: absolute;
+  top: clamp(4px, 3cqi, 8px);
+  right: clamp(4px, 3cqi, 8px);
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 85%);
+  color: var(--carta-texto);
+  border: 1px solid var(--carta-marco);
+}
+
+/* ---------- Carta compacta (listas largas) ---------- */
+
+.carta.compacta .carta-cuerpo {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'media nombre' 'media posiciones';
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  width: 100%;
+  padding: 6px 36px 6px 10px;
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-left: 6px solid var(--carta-marco);
+  text-align: left;
+}
+
+.carta.compacta.seleccionada .carta-cuerpo {
+  border-color: var(--acento);
+  border-left-color: var(--carta-marco);
+  box-shadow: 0 0 0 2px var(--acento);
+}
+
+.carta.compacta .carta-media {
+  grid-area: media;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.carta.compacta .carta-nombre {
+  grid-area: nombre;
+  display: block;
+  text-align: left;
+  font-weight: 600;
+}
+
+.carta.compacta .carta-posiciones {
+  grid-area: posiciones;
+  justify-content: flex-start;
+}
+
+.carta.compacta .carta-posicion {
+  font-size: 0.68rem;
+}
+
+.carta.compacta .carta-dorsal {
+  top: 6px;
+  right: 36px;
+  color: var(--texto-suave);
+}
+
+.carta.compacta .carta-ficha {
+  top: 50%;
+  translate: 0 -50%;
+}
+
+/* ---------- Rejilla de cartas completas ---------- */
+
+.rejilla-cartas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+  gap: 12px;
+  justify-items: center;
+}
+
+@media (max-width: 420px) {
+  .rejilla-cartas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+/* Carta dentro de la ficha del jugador. */
+.ficha-carta {
+  display: grid;
+  justify-items: center;
+  margin: 8px auto 12px;
+  width: min(260px, 100%);
+}

@@ -5,7 +5,9 @@ import {
   asignarDorsalesIniciales,
   autoAlineacion,
   derivarSemilla,
-  editarDorsales,
+  asignarDorsal,
+  posicionesColocadas,
+  sinDorsal,
   ErrorDorsales,
   parametrosActuales,
   previsualizar,
@@ -114,6 +116,7 @@ export async function confirmarAlineacion(c: ControladorPartida, participanteId:
         a.titulares,
         a.formacion,
         derivarSemilla(c.partida.semilla, `dorsales:${participanteId}`),
+        posicionesColocadas(a.formacion, a.titulares, a.colocacion, parametrosActuales()),
       );
       await repoEquipo.guardarDorsales(participanteId, dorsales, tx);
     }
@@ -121,7 +124,8 @@ export async function confirmarAlineacion(c: ControladorPartida, participanteId:
   });
 }
 
-export async function cambiarDorsales(c: ControladorPartida, participanteId: string, cambios: Record<number, number>) {
+/** Reasigna un dorsal (FR-037): si otro jugador lo llevaba, se queda sin dorsal. */
+export async function cambiarDorsal(c: ControladorPartida, participanteId: string, jugadorId: number, dorsal: number) {
   exigirEquipoEditable(c);
   if (c.partidoEnCurso?.(participanteId)) throw errores.conflicto('PARTIDO_EN_CURSO', 'No se pueden cambiar dorsales durante un partido');
   const { repoEquipo } = c.servicios;
@@ -134,12 +138,14 @@ export async function cambiarDorsales(c: ControladorPartida, participanteId: str
       alineacion.titulares,
       alineacion.formacion,
       derivarSemilla(c.partida.semilla, `dorsales:${participanteId}`),
+      posicionesColocadas(alineacion.formacion, alineacion.titulares, alineacion.colocacion, parametrosActuales()),
     );
   }
   try {
-    const nuevos = editarDorsales(actuales, cambios);
+    const ids = (await plantillaDe(c, participanteId)).map((j) => j.id);
+    const nuevos = asignarDorsal(actuales, jugadorId, dorsal, ids);
     await repoEquipo.guardarDorsales(participanteId, nuevos);
-    return nuevos;
+    return { dorsales: nuevos, sinDorsal: sinDorsal(nuevos, ids) };
   } catch (e) {
     if (e instanceof ErrorDorsales) throw errores.regla(e.codigo, e.message);
     throw e;

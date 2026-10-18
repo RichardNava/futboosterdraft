@@ -2,6 +2,10 @@ type EstadisticasEquipo = Record<string, number>;
 
 const FILAS: [string, string, string?][] = [
   ['posesion', 'Posesión', '%'],
+  ['pases', 'Pases intentados'],
+  ['pasesCompletados', 'Pases completados'],
+  ['precisionPase', 'Precisión de pase', '%'],
+  ['centros', 'Centros'],
   ['tiros', 'Tiros'],
   ['tirosPuerta', 'Tiros a puerta'],
   ['corners', 'Córners'],
@@ -11,7 +15,7 @@ const FILAS: [string, string, string?][] = [
   ['fuerasDeJuego', 'Fueras de juego'],
 ];
 
-/** Estadísticas básicas del partido (FR-047). */
+/** Estadísticas del partido (001/FR-047; con pases, precisión de pase y centros, FR-024). */
 export function Estadisticas({ datos, nombres }: { datos: { local: EstadisticasEquipo; visitante: EstadisticasEquipo }; nombres: { local: string; visitante: string } }) {
   return (
     <table className="estadisticas">

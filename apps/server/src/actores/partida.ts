@@ -27,15 +27,17 @@ export class ControladorPartida {
   readonly desconectados = new Map<string, number>();
   /** Partidos en juego (o recién terminados) de la jornada actual. */
   readonly partidosEnCurso = new Map<string, PartidoEnCurso>();
-  /** Jornada en preparación o en juego. */
+  /** Jornada abierta: sus partidos y su plazo (null con un solo humano, research R9). */
   jornada: {
     numero: number;
     partidoIds: string[];
     cruces: { partidoId: string; local: string; visitante: string }[];
-    preparacionVenceEn: number | null;
+    venceEn: number | null;
   } | null = null;
   /** Se llama al terminar cada partido, antes de anunciarlo: el torneo registra el resultado y devuelve las bajas nuevas. */
   alTerminarPartido?: (ctx: ContextoComando, p: PartidoEnCurso) => Promise<Baja[]>;
+  /** Dorsales dados al empezar un partido que se resolvió sin el participante (aviso `dorsal_asignado`). */
+  alAsignarDorsales?: (participanteId: string, asignados: { jugadorId: number; dorsal: number }[]) => Promise<void>;
   /** Se llama después de anunciar el final: el torneo cierra la jornada y abre la siguiente. */
   trasTerminarPartido?: (ctx: ContextoComando, p: PartidoEnCurso) => Promise<void>;
   /** Estado del torneo (null hasta que termina el draft). */
@@ -45,8 +47,6 @@ export class ControladorPartida {
    * calcularla en cada partido era de lo más caro con carga (T140).
    */
   readonly autoAlineaciones = new Map<string, { bajas: string; alineacion: Alineacion }>();
-  /** Humanos listos para jugar cada partido (ritmo asíncrono). */
-  readonly listosAsincrono = new Map<string, Set<string>>();
   /** Crea el torneo y abre la primera jornada (las pruebas pueden sustituirlo para fijar los cruces). */
   programarPrimeraJornada?: (ctx: ContextoComando) => Promise<void>;
 

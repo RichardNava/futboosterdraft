@@ -7,7 +7,8 @@ import { expect, test, type Page } from '@playwright/test';
 
 async function composicionDelSobre(page: Page) {
   const demarcaciones = await page.locator('section[aria-label="Sobre actual"] .carta-demarcacion').allTextContents();
-  const niveles = await page.locator('section[aria-label="Sobre actual"] .carta-nivel').allTextContents();
+  // El nivel se reconoce por el acabado de la carta (spec 002, FR-002): se lee de `data-nivel`.
+  const niveles = await page.locator('section[aria-label="Sobre actual"] .carta').evaluateAll((cs) => cs.map((c) => c.getAttribute('data-nivel') ?? ''));
   const cuenta = (lista: string[], valor: string) => lista.filter((x) => x === valor).length;
   return {
     total: demarcaciones.length,
@@ -16,7 +17,7 @@ async function composicionDelSobre(page: Page) {
     MED: cuenta(demarcaciones, 'MED'),
     DEL: cuenta(demarcaciones, 'DEL'),
     Superclase: cuenta(niveles, 'Superclase'),
-    Epico: cuenta(niveles, 'Épico'),
+    Epico: cuenta(niveles, 'Epico'),
     altas: cuenta(niveles, 'Legendario') + cuenta(niveles, 'GOAT'),
   };
 }
@@ -46,15 +47,15 @@ test('un invitado completa el draft contra 3 NPC', async ({ page }) => {
   expect(c.Epico).toBe(2);
   expect(c.altas).toBe(2);
 
-  // Dejar vencer el turno: se elige automáticamente la carta de mayor media.
-  await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 46_000 } });
+  // Dejar vencer el turno (45 s más los 6 s de margen de la apertura del sobre): se elige la de mayor media.
+  await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 52_000 } });
   await expect(page.getByRole('status')).toContainText('Se acabó el tiempo');
   await expect(page.getByRole('heading', { name: /Turno 2 de 8/ })).toBeVisible();
   await page.getByRole('button', { name: 'Entendido' }).click();
 
   // Resto del draft: elegir siempre la primera carta.
   for (let i = 1; i < 24; i++) {
-    const cartas = page.locator('section[aria-label="Sobre actual"] .carta-cuerpo');
+    const cartas = page.locator('section[aria-label="Sobre actual"] .carta-cuerpo[role="button"]');
     await cartas.first().click();
     await page.getByRole('button', { name: 'Confirmar elección' }).click();
     if (i < 23) {
@@ -65,7 +66,10 @@ test('un invitado completa el draft contra 3 NPC', async ({ page }) => {
     }
   }
 
-  // Al terminar: 24 jugadores propios y las plantillas de los rivales visibles (FR-054a).
+  // Al terminar: «Preparar equipo» (spec 002, FR-011) o las plantillas, con los 24 jugadores propios y las de
+  // los rivales visibles (FR-054a).
+  await expect(page.getByRole('button', { name: 'Preparar equipo' })).toBeVisible();
+  await page.getByRole('button', { name: 'Ver las plantillas' }).click();
   await expect(page.getByRole('heading', { name: 'Plantillas' })).toBeVisible();
   await expect(page.getByRole('tab')).toHaveCount(4);
   await expect(page.locator('.columnas-demarcacion .carta')).toHaveCount(24);

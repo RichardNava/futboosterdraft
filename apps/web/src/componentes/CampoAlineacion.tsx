@@ -49,7 +49,7 @@ export function CampoAlineacion({ casillas, titulares, jugadores, previsualizaci
             }}
             draggable={j !== undefined}
             onDragStart={(e) => j && e.dataTransfer.setData('text/plain', String(j.id))}
-            aria-label={`${c.etiqueta}: ${j ? `${j.nombre} ${j.apellidos}` : 'vacía'}${fuera ? ', fuera de posición' : ''}`}
+            aria-label={`${c.etiqueta}: ${j ? `${j.nombre} ${j.apellidos}` : 'vacía'}${fuera ? `, fuera de posición (−${Math.round((vista?.penalizacion ?? 0) * 100)} %)` : ''}`}
           >
             <span className="casilla-codigo">{c.etiqueta}</span>
             {j ? (

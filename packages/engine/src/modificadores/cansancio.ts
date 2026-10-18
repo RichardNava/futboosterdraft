@@ -19,12 +19,14 @@ export function acumularCansancio(estado: EstadoMotor, equipo: EquipoEstado, seg
   let ritmo = p.cansancio.degradacionPorMinuto;
   if (t.alturaBloque === 'presion_alta') ritmo *= 1 + p.tacticas.presionAlta.cansancio;
   if (t.sistemaDefensivo === 'individual') ritmo *= 1 + p.tacticas.individual.cansancio;
+  // Motivadores en el campo: ralentizan el cansancio de sus compañeros (no el suyo propio).
+  let motivadores = 0;
+  for (const o of equipo.jugadores) if (o.enCampo && tiene(o, 'Motivador')) motivadores++;
   for (const j of equipo.jugadores) {
     if (!j.enCampo) continue;
     let r = ritmo;
     if (tiene(j, 'Incansable')) r *= p.cansancio.factorIncansable;
-    // Un Motivador en el campo ralentiza el cansancio de sus compañeros (no el suyo propio).
-    if (equipo.jugadores.some((o) => o !== j && o.enCampo && tiene(o, 'Motivador'))) r *= p.cansancio.factorMotivador;
+    if (motivadores - (tiene(j, 'Motivador') ? 1 : 0) > 0) r *= p.cansancio.factorMotivador;
     j.cansancio = Math.min(0.6, j.cansancio + (r * segundos) / 60);
   }
 }

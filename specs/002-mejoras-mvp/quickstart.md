@@ -78,18 +78,20 @@ Cada escenario se puede repetir sin conocer el código (Principio IX).
 
 ### F. Simulación 2D (US3; SC-005 a SC-007a, SC-009)
 
-1. Partido 2D a x2: cronometra una parte (unos 2 min) y el partido entero (unos 4 min, sin el descanso).
-2. Pasa a x4 y a x8: el partido avanza el doble y el cuádruple de rápido.
-3. Cronometra 5 minutos de juego seguidos con el reloj del marcador: cada uno dura lo mismo, con un margen de ±10 %.
-4. Observa 5 minutos:
+1. Partido 2D: empieza a x2 (o a la última velocidad elegida). Cronometra una parte (unos 2 min) y el partido entero (unos 4 min, descuento incluido y sin el descanso).
+2. Pasa a x4 y a x8: el partido avanza el doble y el cuádruple de rápido, y el cambio es inmediato. Recarga: se mantiene la velocidad elegida.
+3. La comprobación por minuto (SC-005) es automática (`pnpm test`); a mano, comprueba solo que no hay tirones a simple vista.
+4. Pide una sustitución a x8 con el balón en juego: el aviso «Se aplicará en el minuto N» indica, como mucho, 1 minuto de juego más hasta la siguiente interrupción.
+5. Observa 5 minutos:
    - hay secuencias de varios pases;
    - el balón viaja de un jugador a otro en menos de 1 s en los pases de unos 25 m;
    - hay centros desde la línea de fondo con rematadores entrando al área;
    - la defensa mantiene la forma, y solo uno o dos jugadores van al balón;
    - nadie tiembla, salta de sitio ni atraviesa a otro.
-5. Al final, en las estadísticas aparecen los pases intentados y completados, la precisión de pase, los centros y los tiros.
+   - en córners y faltas laterales hay rematadores en el área, y tras un gol los equipos se colocan para el saque de centro.
+6. Al final, en las estadísticas aparecen los pases intentados y completados, la precisión de pase, los centros y los tiros.
 
-**Esperado**: SC-007a se comprueba revisando 3 partidos completos a x2. SC-009 se comprueba con una encuesta a 5 personas que comparan esta versión con la anterior.
+**Esperado**: SC-007a se comprueba revisando 3 partidos completos a x2, más la prueba automática de cinemática. SC-009 se comprueba con 5 personas que ven 2 min de la versión anterior (etiqueta en `95d9962`) y 2 min de la nueva, y puntúan la nueva de 1 a 5.
 
 ### G. Finalizar partido (US5; SC-010)
 
@@ -97,7 +99,7 @@ Cada escenario se puede repetir sin conocer el código (Principio IX).
 2. Repite con el mismo escenario fijo (`tools/fixtures`, semilla fija, mismas decisiones) sin finalizar: el resultado y los eventos son idénticos.
 3. Pide una sustitución y finaliza antes de la siguiente interrupción: en el resumen, la sustitución aparece aplicada en la siguiente interrupción.
 4. En una eliminatoria empatada, finaliza en el minuto 80: la simulación incluye la prórroga y, si hace falta, los penaltis.
-5. En la simulación rápida, «Finalizar partido» en el descanso lleva al resultado final.
+5. En la simulación rápida, «Finalizar partido» durante la primera parte y en el descanso lleva al resultado final.
 
 ### H. Penalizaciones por posición (US4; SC-011, SC-012)
 

@@ -3,16 +3,23 @@
  * modo que el mismo estado de partida siempre produce el mismo resultado (FR-040).
  */
 import {
+  calcularColocacion,
   estadoDesdeSemilla,
   FORMACIONES,
+  zonaEn,
+  type PuntoColocacion,
   type EstadoRng,
   type FormacionId,
   type Jugador,
   type Lanzadores,
   type ParametrosEquilibrado,
+  type Posicion,
   type Tactica,
+  versionMayor,
+  VersionNoSoportada,
 } from '@fbd/domain';
 import type {
+  AccionVisible,
   DecisionRegistrada,
   EntradaPartido,
   EquipoPartido,
@@ -23,6 +30,7 @@ import type {
   Lado,
   Marcador,
 } from '../tipos';
+import { colocarSaqueInicial } from '../espacio/colocacion';
 
 export interface JugadorEnPartido {
   id: number;
@@ -37,6 +45,10 @@ export interface JugadorEnPartido {
   amarillas: number;
   /** Fracción de stats perdida por cansancio (0 = fresco). */
   cansancio: number;
+  /** Punto de la colocación en unidades y coordenadas del equipo (research R13); si falta, el de su casilla. */
+  ancla?: { x: number; y: number };
+  /** Posición efectiva (la de la zona de su ancla) si se colocó libremente (US7). */
+  posicion?: Posicion;
 }
 
 export interface EquipoEstado {
@@ -47,6 +59,8 @@ export interface EquipoEstado {
   lanzadores: Lanzadores;
   jugadores: JugadorEnPartido[];
   sustitucionesUsadas: number;
+  /** Ofensividad y amplitud calculadas con la colocación (FR-034b); las de la formación si no se movió nadie. */
+  perfil: { ofensividad: number; amplitud: number };
   /** Lanzadores de la tanda: jugadores en el campo al final del partido, en el orden designado. */
 }
 
@@ -73,6 +87,75 @@ export interface RelojPartido {
   descuento: number | null;
 }
 
+/** Posición y velocidad de una chapa, en décimas de unidad y décimas por tick (coordenadas absolutas). */
+export interface PosicionMovil {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  /**
+   * Último tick en que tuvo un papel en la jugada (llevar el balón, recibir, presionar, ir a su sitio en
+   * un balón parado al área). Hasta `TICKS_VUELTA` después aún vuelve a su sitio y no cuenta para la altura
+   * de su línea.
+   */
+  papel: number;
+}
+
+export type TipoAccionVisible = AccionVisible['tipo'];
+
+/** Acción con balón en curso en la capa espacial (data-model §7.4). */
+export interface AccionEnCurso {
+  tipo: TipoAccionVisible;
+  deId: number;
+  /** Jugador hacia el que va el balón (lo sigue hasta llegar a él). */
+  aId?: number;
+  inicioTick: number;
+  finTick: number;
+  origen: { x: number; y: number };
+  /** Punto de destino del balón si no va hacia un jugador. */
+  destino: { x: number; y: number };
+  aerea: boolean;
+  exito: boolean;
+  /** Velocidad del balón en vuelo (décimas por tick): va hacia su destino a esta velocidad. */
+  velocidad?: number;
+  /** El balón ya pasó por el punto de destino: ahora va hacia el jugador `aId`. */
+  enPunto?: boolean;
+  /** Reanudación a balón parado: córner, falta, saque de centro… (colocación de los jugadores, FR-022a). */
+  motivo?: string;
+  /** Orden de los jugadores del equipo que saca, del más adelantado al más retrasado, al empezar el saque. */
+  orden?: number[];
+}
+
+export interface EstadoEspacio {
+  jugadores: Record<number, PosicionMovil>;
+  balon: { x: number; y: number; z: number };
+  accion: AccionEnCurso | null;
+  /** Puntos a los que deben llegar algunos jugadores: el receptor de un pase, el que conduce. */
+  destinos: Record<number, { x: number; y: number }>;
+  /** Objetivos de forma de cada titular (se recalculan cada pocos ticks; research R3). */
+  objetivos: Record<number, { x: number; y: number }>;
+  /**
+   * Referencia del balón para la forma de los equipos: sigue al balón a una velocidad acotada, para que el
+   * bloque bascule de forma progresiva y no salte con cada pase.
+   */
+  referencia: { x: number; y: number; tick: number };
+  /** Quién va al balón en el equipo que defiende (como mucho 2; 3 en una presión coordinada). */
+  presion: { lado: Lado | null; presionadores: number[]; coordinada: boolean };
+  /** Tiempo de parada de la última interrupción, que se consume al recolocar el balón. */
+  paradaPendiente: number;
+}
+
+/** Posesión en curso, para las estadísticas de secuencias, paredes y contraataques (research R4). */
+export interface EstadoPosesion {
+  lado: Lado;
+  inicioTick: number;
+  pases: number;
+  /** La posesión empezó en el campo propio (para contar contraataques). */
+  enCampoPropio: boolean;
+  /** Último pase completado de esta posesión, para detectar paredes (A → B → A). */
+  ultimoPase: { de: number; a: number } | null;
+}
+
 export interface EstadoMotor {
   version: string;
   parametros: ParametrosEquilibrado;
@@ -92,6 +175,16 @@ export interface EstadoMotor {
   derrotaPorInferioridad: Lado | null;
   /** Saque de la segunda parte: el equipo que no sacó en la primera. */
   sacoPrimeraParte: Lado;
+  /** Capa espacial: posiciones de jugadores y balón (research R3). */
+  espacio: EstadoEspacio;
+  /** Acciones con balón ya jugadas (research R4); la salida de cada tramo lleva las suyas. */
+  acciones: AccionVisible[];
+  posesion: EstadoPosesion;
+  /**
+   * El último tramo paró en un punto de decisión (interrupción, descanso…). Un tramo cortado por ticks en
+   * pleno juego no lo es: las decisiones pendientes esperan a la siguiente interrupción (research R6).
+   */
+  puntoDecision: boolean;
 }
 
 export const DURACION_PARTE = 45 * 60;
@@ -116,12 +209,19 @@ function estadisticasVacias(): EstadisticasEquipo {
     recuperacionesCampoRival: 0,
     pases: 0,
     pasesCompletados: 0,
+    centros: 0,
+    precisionPase: 0,
+    secuencias: {},
+    conducciones: 0,
+    paredes: 0,
+    cambiosOrientacion: 0,
+    contraataques: 0,
     lesiones: 0,
     cansancioMedio: 0,
   };
 }
 
-function crearEquipo(lado: Lado, e: EquipoPartido): EquipoEstado {
+function crearEquipo(lado: Lado, e: EquipoPartido, parametros: ParametrosEquilibrado): EquipoEstado {
   const casillasValidas = new Set(FORMACIONES[e.formacion].casillas.map((c) => c.id));
   const ids = new Set<number>();
   const jugadores: JugadorEnPartido[] = [];
@@ -136,7 +236,7 @@ function crearEquipo(lado: Lado, e: EquipoPartido): EquipoEstado {
     ids.add(j.id);
     jugadores.push(nuevoJugador(j, null, false));
   }
-  return {
+  const equipo: EquipoEstado = {
     lado,
     participanteId: e.participanteId,
     formacion: e.formacion,
@@ -144,16 +244,54 @@ function crearEquipo(lado: Lado, e: EquipoPartido): EquipoEstado {
     lanzadores: { ...e.lanzadores, tanda: [...e.lanzadores.tanda] },
     jugadores,
     sustitucionesUsadas: 0,
+    perfil: { ...FORMACIONES[e.formacion].perfil },
   };
+  const colocacion = e.titulares.flatMap((t) => (t.ancla ? [{ jugadorId: t.jugador.id, x: t.ancla.x, y: t.ancla.y }] : []));
+  colocar(equipo, colocacion, parametros);
+  return equipo;
+}
+
+/**
+ * Coloca a los titulares (research R13): su ancla es su punto de la colocación (o el de su casilla); si
+ * está en una zona distinta de la de su casilla, juega con la posición efectiva de esa zona. El perfil del
+ * equipo (ofensividad y amplitud) es el calculado con la colocación.
+ */
+export function colocar(equipo: EquipoEstado, colocacion: readonly PuntoColocacion[] | undefined, parametros: ParametrosEquilibrado): void {
+  const enCampo = equipo.jugadores.filter((j) => j.enCampo && j.casillaId);
+  const r = calcularColocacion(
+    equipo.formacion,
+    enCampo.map((j) => ({ casillaId: j.casillaId!, jugadorId: j.id })),
+    colocacion,
+    parametros,
+    (id) => equipo.jugadores.find((j) => j.id === id)!.jugador.posicion,
+  );
+  for (const t of r.titulares) {
+    const j = enCampo.find((x) => x.id === t.jugadorId)!;
+    j.ancla = { x: t.x, y: t.y };
+    const casilla = FORMACIONES[equipo.formacion].casillas.find((c) => c.id === t.casillaId)!;
+    if (zonaEn(casilla.zona.x, casilla.zona.y).id === t.zona.id) delete j.posicion;
+    else j.posicion = t.posicionEfectiva;
+  }
+  equipo.perfil = { ofensividad: r.ofensividad, amplitud: r.amplitud };
 }
 
 function nuevoJugador(jugador: Jugador, casillaId: string | null, enCampo: boolean): JugadorEnPartido {
   return { id: jugador.id, jugador, casillaId, enCampo, retirado: false, expulsado: false, lesionado: false, amarillas: 0, cansancio: 0 };
 }
 
+/** Ancla de un titular: el punto de su casilla en la formación (unidades, coordenadas del equipo). */
+export function anclaDeCasilla(formacion: FormacionId, casillaId: string | null): { x: number; y: number } | undefined {
+  const c = casillaId ? FORMACIONES[formacion].casillas.find((x) => x.id === casillaId) : undefined;
+  return c ? { x: c.zona.x, y: c.zona.y } : undefined;
+}
+
 export function crearPartido(entrada: EntradaPartido): EstadoMotor {
-  const local = crearEquipo('local', entrada.local);
-  const visitante = crearEquipo('visitante', entrada.visitante);
+  // El motor de la spec 002 no puede volver a simular partidos de los parámetros 1.x (research R12).
+  if (versionMayor(entrada.parametros.version) < 2 || versionMayor(entrada.version) < 2) {
+    throw new VersionNoSoportada(entrada.parametros.version);
+  }
+  const local = crearEquipo('local', entrada.local, entrada.parametros);
+  const visitante = crearEquipo('visitante', entrada.visitante, entrada.parametros);
   const estado: EstadoMotor = {
     version: entrada.version,
     parametros: entrada.parametros,
@@ -171,7 +309,21 @@ export function crearPartido(entrada: EntradaPartido): EstadoMotor {
     decisiones: [],
     derrotaPorInferioridad: null,
     sacoPrimeraParte: 'local',
+    espacio: {
+      jugadores: {},
+      balon: { x: 5000, y: 3200, z: 0 },
+      accion: null,
+      destinos: {},
+      objetivos: {},
+      referencia: { x: 5000, y: 3200, tick: 0 },
+      presion: { lado: null, presionadores: [], coordinada: false },
+      paradaPendiente: 0,
+    },
+    acciones: [],
+    posesion: { lado: 'local', inicioTick: 0, pases: 0, enCampoPropio: true, ultimoPase: null },
+    puntoDecision: true,
   };
+  colocarSaqueInicial(estado, 'local');
   return estado;
 }
 

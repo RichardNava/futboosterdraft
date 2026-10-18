@@ -10,4 +10,5 @@ export default defineWorkspace([
   { test: { name: 'balance', root: './tools/balance', include: ['tests/**/*.test.ts'] } },
   { test: { name: 'server-unit', root: './apps/server', include: ['tests/unit/**/*.test.ts'] } },
   { test: { name: 'fixtures', root: './tools/fixtures', include: ['tests/**/*.test.ts'] } },
+  { test: { name: 'web', root: './apps/web', include: ['tests/unit/**/*.test.ts'] } },
 ]);

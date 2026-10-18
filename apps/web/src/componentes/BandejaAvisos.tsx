@@ -4,7 +4,7 @@ import { api } from '../api/cliente';
 
 interface Aviso {
   id: string;
-  tipo: 'jornada_abierta' | 'rival_listo' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado';
+  tipo: 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado';
   partidaId: string;
   partidoId: string | null;
   texto: string;

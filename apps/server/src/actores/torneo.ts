@@ -1,19 +1,25 @@
 /**
- * Torneo en el servidor (T113; FR-051 a FR-056c).
+ * Torneo en el servidor (T113; FR-051 a FR-056c; spec 002: FR-030, research R8 y R9).
  *
  * - Al terminar el draft se crea el torneo (calendario o cuadro) y se abre la primera jornada.
- * - En directo: preparación → partidos → cierre → siguiente jornada tras el tiempo de preparación.
- * - En asíncrono: la jornada se abre con un plazo; un partido empieza cuando sus humanos están listos
- *   (contra un NPC, cuando el humano lo inicia); al vencer el plazo, lo pendiente se resuelve
- *   automáticamente sin descanso interactivo, y la siguiente jornada se abre al cerrarse la anterior.
- * - Tras cada partido: resultado, bajas y amarillas, `torneo.actualizado`, y cierre de jornada, paso a
- *   la fase final del mixto o campeón.
+ * - El ritmo se deduce del número de humanos activos:
+ *   - con uno solo, no hay plazos: los NPC contra NPC se resuelven al abrir la jornada, su partido empieza
+ *     cuando lo abre, y la siguiente jornada se abre con «Siguiente jornada»;
+ *   - con varios, cada jornada tiene plazo; los partidos contra un NPC se juegan en directo cuando el
+ *     humano los abre, los partidos entre humanos se resuelven al abrirlos uno de ellos (research R8), y al
+ *     vencer el plazo se resuelve lo pendiente y se abre la siguiente jornada.
+ * - Tras cada partido: resultado, bajas y amarillas, `torneo.actualizado` (filtrado por participante:
+ *   nadie ve el resultado de un partido propio que aún no ha visto) y cierre de jornada, paso a la fase
+ *   final del mixto o campeón.
  *
  * Los plazos de jornada se guardan en la tabla `jornadas` y se reprograman al rehidratar la partida
  * (research R6, ver nota sobre pg-boss): cada vencimiento comprueba el estado antes de actuar, así que
  * se ejecuta una sola vez.
  */
 import {
+  tablaAsistentes,
+  tablaGoleadores,
+  type FilaTabla,
   abrirJornada,
   bajasActivas,
   cerrarJornadaSiCompleta,
@@ -22,16 +28,19 @@ import {
   esEliminatoria,
   jornadaActual,
   registrarResultado,
+  soloUnHumano,
   transicion,
   type Baja,
   type EstadoTorneo,
 } from '@fbd/domain';
 import type { EventoPartido } from '@fbd/engine';
 import type { ServicioAvisos, TipoAviso } from '../avisos/servicio';
+import { resueltoAutomaticamente } from '../persistencia/repos/partidos';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
-import { forzarFinal, iniciarPartido, nivelNPCDe, type PartidoEnCurso } from './partidoRapido';
-import { crearPartidosJornada, emitirPreparacion, programarInicio } from './preparacion';
+import { entreHumanos, resolverPartidoEntreHumanos, terminarPartidoEntreHumanosEnJuego } from './partidoEntreHumanos';
+import { esHumano, forzarFinal, iniciarPartido, nivelNPCDe, type PartidoEnCurso } from './partidoRapido';
+import { crearPartidosJornada, emitirPreparacion, resolverPartidosSinHumanos } from './preparacion';
 
 /** Aviso anticipado antes de que venza el plazo de una jornada asíncrona. */
 export const AVISO_PLAZO_MS = 2 * 60 * 60 * 1000;
@@ -58,6 +67,10 @@ export function engancharTorneo(c: ControladorPartida, deps: DependenciasTorneo)
   c.bajasActivas = (pid) => (c.torneo ? bajasActivas(c.torneo.bajas, pid) : new Set());
   c.alTerminarPartido = (ctx, p) => registrarPartido(c, ctx, p);
   c.trasTerminarPartido = (ctx) => despuesDePartido(c, ctx, deps);
+  c.alAsignarDorsales = async (pid, asignados) => {
+    const texto = `Nuevos dorsales en tu equipo: ${asignados.map((a) => `${c.servicios.catalogo.resumen(a.jugadorId).apellidos.split(' ')[0]} lleva el ${a.dorsal}`).join(', ')}.`;
+    await avisarHumanos(c, deps, [pid], 'dorsal_asignado', texto);
+  };
   c.programarPrimeraJornada ??= (ctx) => iniciarTorneo(c, ctx, deps);
 }
 
@@ -66,39 +79,27 @@ export async function iniciarTorneo(c: ControladorPartida, ctx: ContextoComando,
   const mesas = c.mesas.map((m) => m.mesa.participantes);
   c.torneo = crearTorneo(c.partida.modo as EstadoTorneo['modo'], participantes, mesas, c.partida.semilla);
   await c.servicios.repoTorneo.guardar(c.id, c.torneo);
-  await abrirSiguienteJornada(c, ctx, deps, true);
+  await abrirSiguienteJornada(c, ctx, deps);
 }
 
-async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo, inicial = false): Promise<void> {
+async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
   const t = c.torneo!;
   const j = jornadaActual(t);
   if (!j) return;
   c.torneo = abrirJornada(t, j.numero);
   const { reloj, repoTorneo } = c.servicios;
   const ahora = reloj.ahora();
-  const asincrono = c.partida.ritmo === 'asincrono';
-  const tiempos = c.partida.tiempos as { preparacionS: number; preparacionInicialS: number };
-  const venceEn = asincrono
-    ? ahora + c.partida.plazoJornadaHoras * 3600_000
-    : ahora + (inicial ? tiempos.preparacionInicialS : tiempos.preparacionS) * 1000;
+  // Con un solo humano no hay plazos (research R9).
+  const conPlazo = !soloUnHumano(c.participantes);
+  const venceEn = conPlazo ? ahora + c.partida.plazoJornadaHoras * 3600_000 : null;
   const jornadaId = await repoTorneo.guardarJornada(c.id, { ...j, estado: 'abierta' }, { abreEn: ahora, venceEn });
   await repoTorneo.guardar(c.id, c.torneo);
-  await crearPartidosJornada(c, j.numero, j.cruces, { eliminatoria: esEliminatoria(j), jornadaId }, asincrono ? null : venceEn);
-  ctx.emitirATodos({ t: 'torneo.actualizado', ...(await vistaTorneo(c)) });
-
-  if (!asincrono) {
-    emitirPreparacion(c, ctx, venceEn);
-    programarInicio(c, j.numero, venceEn);
-    return;
-  }
-  // Asíncrono: los partidos sin humanos se resuelven ya; el resto espera a que estén listos.
-  for (const cruce of c.jornada!.cruces) {
-    const humanos = [cruce.local, cruce.visitante].filter((pid) => esHumanoActivo(c, pid));
-    if (humanos.length === 0) {
-      const fila = await c.servicios.repoPartidos.obtener(cruce.partidoId);
-      if (fila?.estado === 'programado') await iniciarPartido(c, ctx, fila);
-    }
-  }
+  await crearPartidosJornada(c, j.numero, j.cruces, { eliminatoria: esEliminatoria(j), jornadaId }, venceEn);
+  await emitirTorneo(c, ctx);
+  emitirPreparacion(c, ctx, venceEn);
+  // Los partidos sin humanos se resuelven ya; los demás esperan a que su humano los abra.
+  await resolverPartidosSinHumanos(c, ctx);
+  if (venceEn === null) return;
   await avisarHumanos(
     c,
     deps,
@@ -108,8 +109,6 @@ async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando
   );
   programarPlazos(c, deps, j.numero, venceEn);
 }
-
-const esHumanoActivo = (c: ControladorPartida, pid: string) => c.participante(pid)?.tipo === 'humano' && !c.participante(pid)?.controladoPorNPC;
 
 function programarPlazos(c: ControladorPartida, deps: DependenciasTorneo, numero: number, venceEn: number): void {
   const { temporizadores, logger } = c.servicios;
@@ -131,7 +130,7 @@ function programarPlazos(c: ControladorPartida, deps: DependenciasTorneo, numero
   });
 }
 
-/** Vence el plazo de una jornada asíncrona: se resuelve todo lo pendiente (FR-056a). */
+/** Vence el plazo de una jornada: se resuelve todo lo pendiente (FR-056a; spec 002, FR-030). */
 async function vencerJornada(c: ControladorPartida, ctx: ContextoComando, numero: number): Promise<void> {
   if (!c.jornada || c.jornada.numero !== numero) return;
   for (const cruce of [...c.jornada.cruces]) {
@@ -141,28 +140,58 @@ async function vencerJornada(c: ControladorPartida, ctx: ContextoComando, numero
       continue;
     }
     const fila = await c.servicios.repoPartidos.obtener(cruce.partidoId);
-    if (fila?.estado === 'programado') await iniciarPartido(c, ctx, fila, { automatico: true });
+    if (fila?.estado !== 'programado') continue;
+    if (entreHumanos(c, fila)) await resolverPartidoEntreHumanos(c, ctx, fila.id, { resolucion: 'plazo' });
+    else await iniciarPartido(c, ctx, fila, { automatico: true });
   }
 }
 
-/** Asíncrono: un humano está listo para jugar su partido (POST /api/partidos/:id/listo). */
-export async function marcarListo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo, participanteId: string, partidoId: string) {
-  const cruce = c.jornada?.cruces.find((x) => x.partidoId === partidoId);
-  if (!cruce || (cruce.local !== participanteId && cruce.visitante !== participanteId)) return { error: 'PARTIDO_NO_ENCONTRADO' as const };
+export type ResultadoAbrir = { modo: 'directo' | 'reproduccion' } | { error: 'PARTIDO_NO_ENCONTRADO' | 'JORNADA_NO_ABIERTA' };
+
+/**
+ * «Comenzar partido» o «Ver partido» (`POST /api/partidos/:id/abrir`, research R8 y R9). Contra un NPC,
+ * empieza el partido en directo; contra un humano, lo resuelve si aún no lo está. Es idempotente.
+ */
+export async function abrirPartido(c: ControladorPartida, ctx: ContextoComando, participanteId: string, partidoId: string): Promise<ResultadoAbrir> {
   const fila = await c.servicios.repoPartidos.obtener(partidoId);
-  if (fila?.estado !== 'programado') return { error: 'PARTIDO_INICIADO' as const };
-  const listos = c.listosAsincrono.get(partidoId) ?? new Set<string>();
-  listos.add(participanteId);
-  c.listosAsincrono.set(partidoId, listos);
-  const humanos = [cruce.local, cruce.visitante].filter((pid) => esHumanoActivo(c, pid));
-  if (humanos.every((pid) => listos.has(pid))) {
-    c.listosAsincrono.delete(partidoId);
-    await iniciarPartido(c, ctx, fila);
-    return { iniciado: true };
+  if (!fila || fila.partidaId !== c.id || (fila.localId !== participanteId && fila.visitanteId !== participanteId)) {
+    return { error: 'PARTIDO_NO_ENCONTRADO' };
   }
-  const rival = cruce.local === participanteId ? cruce.visitante : cruce.local;
-  await avisarHumanos(c, deps, [rival], 'rival_listo', `${nombre(c, participanteId)} está listo para jugar vuestro partido.`, partidoId);
-  return { iniciado: false };
+  const rival = fila.localId === participanteId ? fila.visitanteId : fila.localId;
+  const contraHumano = esHumano(c, rival) && esHumano(c, participanteId);
+  if (fila.estado === 'finalizado') return { modo: 'reproduccion' };
+  if (fila.estado !== 'programado') return { modo: 'directo' };
+  if (!c.jornada?.cruces.some((x) => x.partidoId === partidoId)) return { error: 'JORNADA_NO_ABIERTA' };
+  if (contraHumano) {
+    await resolverPartidoEntreHumanos(c, ctx, fila.id, { resolucion: 'apertura', abiertoPorId: participanteId });
+    return { modo: 'reproduccion' };
+  }
+  await iniciarPartido(c, ctx, fila);
+  return { modo: 'directo' };
+}
+
+export type ResultadoSiguienteJornada = { ok: true } | { error: 'JORNADA_ABIERTA' | 'TORNEO_TERMINADO' | 'HAY_VARIOS_HUMANOS' };
+
+/**
+ * «Siguiente jornada» (`POST /api/partidas/:id/siguiente-jornada`, research R9): solo con un humano y con
+ * la jornada anterior cerrada. La idempotencia por `Idempotency-Key` la da la ruta.
+ */
+export async function siguienteJornada(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<ResultadoSiguienteJornada> {
+  if (!soloUnHumano(c.participantes)) return { error: 'HAY_VARIOS_HUMANOS' };
+  const t = c.torneo;
+  if (!t || t.campeon || c.partida.estado !== 'en_torneo') return { error: 'TORNEO_TERMINADO' };
+  const j = jornadaActual(t);
+  if (!j) return { error: 'TORNEO_TERMINADO' };
+  if (j.estado === 'abierta') return { error: 'JORNADA_ABIERTA' };
+  await abrirSiguienteJornada(c, ctx, deps);
+  return { ok: true };
+}
+
+/** Titulares iniciales de cada equipo (para saber quién jugó, research R15). */
+function titularesIniciales(p: PartidoEnCurso): { titulares?: { local: number[]; visitante: number[] } } {
+  const entrada = p.fila.entrada as { local?: { titulares: { jugador: { id: number } }[] }; visitante?: { titulares: { jugador: { id: number } }[] } } | null;
+  if (!entrada?.local || !entrada.visitante) return {};
+  return { titulares: { local: entrada.local.titulares.map((t) => t.jugador.id), visitante: entrada.visitante.titulares.map((t) => t.jugador.id) } };
 }
 
 /** Registra el resultado de un partido terminado (antes de anunciar el final) y devuelve las bajas nuevas. */
@@ -181,6 +210,7 @@ async function registrarPartido(c: ControladorPartida, _ctx: ContextoComando, p:
     ...(marcador.penaltis ? { penaltis: marcador.penaltis } : {}),
     partidoId: p.fila.id,
     eventos: p.eventos as EventoPartido[],
+    ...titularesIniciales(p),
   });
   c.torneo = torneo;
   await c.servicios.repoTorneo.guardar(c.id, torneo);
@@ -200,12 +230,14 @@ async function despuesDePartido(c: ControladorPartida, ctx: ContextoComando, dep
     c.servicios.temporizadores.cancelar(c.clave(`plazo:${numero}`));
     c.servicios.temporizadores.cancelar(c.clave(`aviso-plazo:${numero}`));
   }
-  ctx.emitirATodos({ t: 'torneo.actualizado', ...(await vistaTorneo(c)) });
+  await emitirTorneo(c, ctx);
   if (!cerrada) return;
   if (torneo.campeon) {
     await terminarTorneo(c, ctx, deps);
     return;
   }
+  // Con un solo humano, la siguiente jornada se abre cuando él lo pide (research R9).
+  if (soloUnHumano(c.participantes)) return;
   await abrirSiguienteJornada(c, ctx, deps);
 }
 
@@ -223,37 +255,72 @@ async function terminarTorneo(c: ControladorPartida, ctx: ContextoComando, deps:
   await emitirEstadoATodos(c, ctx);
 }
 
-/** Reprograma los plazos tras un reinicio del servidor. */
+/**
+ * Reprograma los plazos tras un reinicio del servidor. Además, al desplegar la spec 002 (research R9):
+ * - una jornada con varios humanos que se abrió con el ritmo "en directo" de la spec 001 (un plazo más
+ *   corto que el de la partida) recibe un plazo completo desde ahora;
+ * - un partido entre humanos que estaba en juego (síncrono) se termina con `resolverResto`.
+ */
 export async function reprogramarTorneo(c: ControladorPartida, deps: DependenciasTorneo): Promise<void> {
   if (!c.torneo || c.partida.estado !== 'en_torneo') return;
   const j = jornadaActual(c.torneo);
   if (!j || j.estado !== 'abierta') return;
-  const filas = await c.servicios.repoTorneo.jornadas(c.id);
-  const fila = filas.find((x) => x.numero === j.numero);
-  const partidos = (await c.servicios.repoPartidos.resumenesDePartida(c.id)).filter((x) => x.jornadaNumero === j.numero);
-  const venceEn = fila?.venceEn?.getTime() ?? c.servicios.reloj.ahora();
-  const pendientePreparacion = c.partida.ritmo === 'directo' && partidos.every((x) => x.estado === 'programado');
+  const { repoTorneo, repoPartidos, reloj } = c.servicios;
+  const fila = (await repoTorneo.jornadas(c.id)).find((x) => x.numero === j.numero);
+  const partidos = (await repoPartidos.resumenesDePartida(c.id)).filter((x) => x.jornadaNumero === j.numero);
+  const ahora = reloj.ahora();
+  const plazoMs = c.partida.plazoJornadaHoras * 3600_000;
+  let venceEn = fila?.venceEn?.getTime() ?? null;
+  if (soloUnHumano(c.participantes)) venceEn = null;
+  else {
+    const abreEn = fila?.abreEn?.getTime() ?? ahora;
+    if (venceEn === null || venceEn - abreEn < plazoMs) {
+      venceEn = ahora + plazoMs;
+      await repoTorneo.guardarJornada(c.id, j, { abreEn, venceEn });
+    }
+  }
   c.jornada = {
     numero: j.numero,
     partidoIds: partidos.map((x) => x.id),
     cruces: partidos.map((x) => ({ partidoId: x.id, local: x.localId, visitante: x.visitanteId })),
-    preparacionVenceEn: pendientePreparacion ? venceEn : null,
+    venceEn,
   };
-  if (c.partida.ritmo === 'directo') {
-    if (pendientePreparacion) programarInicio(c, j.numero, venceEn);
-  } else {
-    programarPlazos(c, deps, j.numero, venceEn);
+  if (venceEn !== null) programarPlazos(c, deps, j.numero, venceEn);
+  const enJuego = partidos.filter((x) => x.estado !== 'programado' && x.estado !== 'finalizado' && entreHumanos(c, x));
+  if (enJuego.length) {
+    await c.ejecutar(async (ctx) => {
+      for (const x of enJuego) await terminarPartidoEntreHumanosEnJuego(c, ctx, x.id);
+    });
   }
 }
 
-/** Vista del torneo: jornadas con resultados, clasificación o cuadro, y campeón (FR-054). */
-export async function vistaTorneo(c: ControladorPartida) {
+/** Partidos del participante que aún no ha visto (research R8). */
+async function pendientesDe(c: ControladorPartida, participanteId: string | undefined): Promise<string[]> {
+  if (!participanteId) return [];
+  return c.servicios.repoVisionados.pendientesDe(participanteId, c.id);
+}
+
+/**
+ * Vista del torneo para un participante (FR-054; spec 002, FR-030): jornadas con resultados,
+ * clasificación o cuadro, y campeón. Sus partidos "pendientes de ver" aparecen sin marcador y no cuentan
+ * en la clasificación ni en el cuadro.
+ */
+export async function vistaTorneo(c: ControladorPartida, participanteId?: string) {
   const t = c.torneo;
-  if (!t) return { modo: c.partida.modo, fase: null, jornadas: [], clasificacion: [], cuadro: null, campeon: null, jornadaActual: null };
+  const siguiente = soloUnHumano(c.participantes) ? ('manual' as const) : ('automatica' as const);
+  if (!t) {
+    return { modo: c.partida.modo, fase: null, jornadas: [], clasificacion: [], cuadro: null, campeon: null, jornadaActual: null, pendientesDeVer: [], siguienteJornada: siguiente, goleadores: [], asistentes: [] };
+  }
   const filasJornadas = await c.servicios.repoTorneo.jornadas(c.id);
   const partidos = await c.servicios.repoPartidos.resumenesDePartida(c.id);
+  const pendientes = await pendientesDe(c, participanteId);
+  const oculto = new Set(pendientes);
   // Cada NPC muestra su nivel en el torneo (T129); también el que sustituye a un humano que abandona.
   const ref = (pid?: string) => (pid ? { id: pid, nombre: nombre(c, pid), nivelNPC: nivelNPCDe(c, pid) } : null);
+  // Cruces del cuadro decididos por un partido que este participante aún no ha visto: sin ganador.
+  const crucesOcultos = new Set(
+    partidos.filter((x) => oculto.has(x.id)).map((x) => [x.localId, x.visitanteId].sort().join()),
+  );
   return {
     modo: t.modo,
     fase: t.fase,
@@ -269,30 +336,91 @@ export async function vistaTorneo(c: ControladorPartida) {
         descansa: ref(j.descansa),
         partidos: j.cruces.map((cruce) => {
           const partido = partidos.find((x) => x.jornadaNumero === j.numero && x.localId === cruce.local && x.visitanteId === cruce.visitante);
+          const pendiente = partido !== undefined && oculto.has(partido.id);
           return {
             partidoId: partido?.id ?? null,
             local: ref(cruce.local),
             visitante: ref(cruce.visitante),
-            marcador: partido?.marcador ?? null,
-            estado: partido?.estado ?? 'pendiente',
-            resueltoAutomaticamente: partido?.resueltoAutomaticamente ?? false,
-            listos: partido ? [...(c.listosAsincrono.get(partido.id) ?? [])] : [],
+            marcador: pendiente ? null : (partido?.marcador ?? null),
+            estado: pendiente ? 'pendiente_de_ver' : (partido?.estado ?? 'pendiente'),
+            resueltoAutomaticamente: partido && !pendiente ? resueltoAutomaticamente(partido) : false,
+            resolucion: partido && !pendiente ? (partido.resolucion as 'directo' | 'apertura' | 'plazo' | 'npc') : null,
           };
         }),
       };
     }),
     clasificacion:
-      t.modo === 'playoff' ? [] : clasificacionActual(t).map((f, i) => ({ posicion: i + 1, nombre: nombre(c, f.participanteId), nivelNPC: nivelNPCDe(c, f.participanteId), ...f })),
+      t.modo === 'playoff'
+        ? []
+        : clasificacionActual(t, { excluirPartidos: pendientes }).map((f, i) => ({
+            posicion: i + 1,
+            nombre: nombre(c, f.participanteId),
+            nivelNPC: nivelNPCDe(c, f.participanteId),
+            ...f,
+          })),
     cuadro: t.cuadro
       ? {
           rondas: t.cuadro.rondas.map((r) => ({
             tipo: r.tipo,
-            cruces: r.cruces.map((x) => ({ local: ref(x.local), visitante: ref(x.visitante), ganador: ref(x.ganador) })),
+            cruces: r.cruces.map((x) => {
+              const sinGanador = x.local && x.visitante && crucesOcultos.has([x.local, x.visitante].sort().join());
+              return { local: ref(x.local), visitante: ref(x.visitante), ganador: sinGanador ? null : ref(x.ganador) };
+            }),
           })),
         }
       : null,
-    campeon: ref(t.campeon ?? undefined),
+    // El campeón solo se oculta si la final es un partido que este participante aún no ha visto.
+    campeon: finalOculta(t, crucesOcultos) ? null : ref(t.campeon ?? undefined),
+    pendientesDeVer: pendientes,
+    siguienteJornada: siguiente,
+    // Máximos goleadores y asistentes (FR-039 a FR-042): sin los partidos que aún no ha visto.
+    goleadores: await filasTabla(c, tablaGoleadores(t, { excluirPartidos: pendientes }), 10),
+    asistentes: await filasTabla(c, tablaAsistentes(t, { excluirPartidos: pendientes }), 10),
   };
+}
+
+/**
+ * Filas de una tabla de goleadores o asistentes para la vista, con el desempate final por nombre y apellidos
+ * (FR-042) y las `limite` primeras (todas si es `null`).
+ */
+export async function filasTabla(c: ControladorPartida, filas: FilaTabla[], limite: number | null) {
+  const { catalogo, repoEquipo } = c.servicios;
+  const dorsales = new Map<string, Record<number, number> | null>();
+  for (const pid of new Set(filas.map((f) => f.participanteId))) dorsales.set(pid, await repoEquipo.dorsales(pid));
+  const conNombre = filas
+    .map((f) => ({ f, j: catalogo.resumen(f.jugadorId) }))
+    .sort((a, b) => b.f.total - a.f.total || a.f.partidosJugados - b.f.partidosJugados || `${a.j.nombre} ${a.j.apellidos}`.localeCompare(`${b.j.nombre} ${b.j.apellidos}`, 'es'));
+  return conNombre.slice(0, limite ?? undefined).map(({ f, j }, i) => {
+    const dorsal = dorsales.get(f.participanteId)?.[f.jugadorId];
+    return {
+      posicion: i + 1,
+      jugador: { id: j.id, nombre: j.nombre, apellidos: j.apellidos, ...(dorsal !== undefined ? { dorsal } : {}) },
+      equipo: { id: f.participanteId, nombre: nombre(c, f.participanteId) },
+      total: f.total,
+      partidosJugados: f.partidosJugados,
+    };
+  });
+}
+
+/** Tabla completa de goleadores o asistentes para un participante (`?todos=true`). */
+export async function tablaCompleta(c: ControladorPartida, participanteId: string, cual: 'goleadores' | 'asistentes') {
+  if (!c.torneo) return [];
+  const excluirPartidos = await pendientesDe(c, participanteId);
+  const filas = cual === 'goleadores' ? tablaGoleadores(c.torneo, { excluirPartidos }) : tablaAsistentes(c.torneo, { excluirPartidos });
+  return filasTabla(c, filas, null);
+}
+
+function finalOculta(t: EstadoTorneo, crucesOcultos: ReadonlySet<string>): boolean {
+  const final = t.cuadro?.rondas[t.cuadro.rondas.length - 1]?.cruces[0];
+  return !!final?.local && !!final.visitante && crucesOcultos.has([final.local, final.visitante].sort().join());
+}
+
+/** `torneo.actualizado` a cada humano con su propia vista (research R8). */
+export async function emitirTorneo(c: ControladorPartida, ctx: ContextoComando, soloA?: string): Promise<void> {
+  for (const p of c.humanos()) {
+    if (soloA && p.id !== soloA) continue;
+    ctx.emitirA(p.id, { t: 'torneo.actualizado', ...(await vistaTorneo(c, p.id)) });
+  }
 }
 
 /** Un humano abandona el torneo: su plaza pasa a un NPC intermedio (Edge Cases). */
@@ -302,9 +430,17 @@ export async function abandonar(c: ControladorPartida, ctx: ContextoComando, par
   await c.servicios.repoPartidas.pasarANPC(participanteId);
   p.controladoPorNPC = true;
   p.nivelNPC = 'intermedio';
+  // En el draft (spec 002, FR-019): el NPC que ocupa su plaza elige ya si no lo había hecho.
+  if (c.partida.estado === 'en_draft') {
+    const { abandonarDraft } = await import('./draft');
+    await abandonarDraft(c, ctx, participanteId);
+    return;
+  }
   // Si estaba en un descanso, cuenta como listo.
   for (const partido of c.partidosEnCurso.values()) {
     if (partido.pausa && (partido.fila.localId === participanteId || partido.fila.visitanteId === participanteId)) partido.listos.add(participanteId);
   }
-  ctx.emitirATodos({ t: 'torneo.actualizado', ...(await vistaTorneo(c)) });
+  await emitirTorneo(c, ctx);
+  // Sus partidos pendientes contra NPC se quedan sin humanos: se resuelven ya, como los NPC contra NPC.
+  await resolverPartidosSinHumanos(c, ctx);
 }

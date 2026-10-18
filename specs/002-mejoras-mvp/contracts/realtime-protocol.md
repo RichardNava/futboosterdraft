@@ -24,15 +24,15 @@ Sobre [001/contracts/realtime-protocol.md](../../001-draft-manager-mvp/contracts
 |-----|--------|---------------------------|
 | `partido.seguir` | Cambia | Durante `pausa_decision`, por el único humano del partido. Reanuda de inmediato (FR-012). |
 | `partido.decision` | Sin cambios de forma | 2D: se aplica en la primera interrupción aún no simulada (R6). `recolocacion` admite `colocacion`. |
-| `partido.reproduccion` | Cambia | `{ partidoId, tick, velocidad: 2 \| 4 \| 8 }`. Lo usa el búfer de anticipación (R6). Ya no bloquea a ningún otro humano. Solo se acepta en un partido en directo contra un NPC. |
+| `partido.reproduccion` | Cambia | `{ partidoId, tick, velocidad: 2 \| 4 \| 8 }`, cada ~250 ms. Lo usa el búfer de anticipación de 60 ticks (R6). Ya no bloquea a ningún otro humano. Solo se acepta en un partido en directo contra un NPC. |
 | `partido.velocidad` | **Se elimina** | — |
-| `partido.finalizar` | **Nuevo** | `{ requestId, partidoId }`. En un partido en directo del participante, en cualquier fase menos `finalizado`: el servidor ejecuta `resolverResto` (R7) y responde con `ack`, los `partido.tramo` que falten y `partido.fin`. Es idempotente. |
+| `partido.finalizar` | **Nuevo** | `{ requestId, partidoId }`. En un partido en directo del participante, 2D o rápido, en cualquier fase menos `finalizado`: el servidor ejecuta `resolverResto` (R7) y responde con `ack`, los `partido.tramo` que falten y `partido.fin`. Es idempotente. |
 | `partida.pausar` | **Nuevo** | `{ requestId }`. Se envía al navegar desde la barra. Solo tiene efecto si el participante es el único humano (FR-021, R10). Al reconectar, la partida se reanuda sola. |
 
 Un partido entre humanos ya resuelto no usa el WebSocket para reproducirse: se pide por HTTP (ver [http-api.md](./http-api.md)).
 
 ## Garantías de orden (añadidas)
 
-- En la 2D en directo, los `partido.tramo` llegan en orden y sin huecos de ticks. El búfer nunca adelanta un descanso ni el final del tiempo reglamentario.
+- En la 2D en directo, los `partido.tramo` llegan en orden y sin huecos de ticks. El búfer nunca adelanta un descanso ni el final del tiempo reglamentario, y nunca simula más de 60 ticks por delante del último tick informado.
 - Tras `partido.finalizar`, no llega ningún `partido.pausa_decision` más de ese partido.
 - `torneo.actualizado` llega después de `partido.fin` del partido que lo provoca (001/R4, `ctx.publicar`).

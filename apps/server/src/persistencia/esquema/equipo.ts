@@ -17,6 +17,8 @@ export const alineaciones = pgTable(
     suplentes: integer('suplentes').array().notNull(),
     tactica: jsonb('tactica').notNull(),
     lanzadores: jsonb('lanzadores').notNull(),
+    /** Colocación libre de los titulares (FR-034): `{ jugadorId, x, y }[]`, o null con la de las casillas. */
+    colocacion: jsonb('colocacion'),
     confirmadaEn: timestamp('confirmada_en', { withTimezone: true }).notNull(),
   },
   (t) => [uniqueIndex('alineaciones_version_uq').on(t.participanteId, t.version)],

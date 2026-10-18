@@ -52,6 +52,24 @@ Al arrancar, el servidor:
 2. **Rehidrata las partidas activas** (en sala, draft o torneo) y reprograma sus plazos: turnos de draft, preparación y vencimientos de jornada. **Limitación conocida del MVP**: un partido que se estaba jugando justo en el momento del reinicio no se reanuda a mitad. Evita reiniciar con partidos en juego (consulta `partidas_activas` en `/metrics`).
 3. Empieza a escuchar en `PORT`.
 
+### Desplegar la versión con los parámetros 2.0.0 (spec 002)
+
+El motor de la spec 002 (capa espacial, parámetros de equilibrado 2.0.0) **no puede volver a simular
+partidos jugados con los parámetros 1.x** (research R12): se rechazan con `VersionNoSoportada`.
+
+1. Antes de desplegar, deja que terminen los partidos en juego (o termínalos) con la versión anterior:
+   comprueba que `partidas_activas` en `/metrics` no tiene partidos en curso.
+2. Los partidos ya terminados con 1.x siguen visibles por su resumen; su reproducción 2D responde
+   `409 VERSION_NO_REPRODUCIBLE`.
+3. Un partido entre humanos que quede en juego (síncrono, de la spec 001) se termina al arrancar con
+   `resolverResto` y las decisiones automáticas de los dos lados (research R9).
+4. Las migraciones `0004_mejoras` y `0005_colocacion` se aplican solas al arrancar.
+
+### Rendimiento del motor
+
+`pnpm --filter @fbd/engine bench` mide el coste por partido (con y sin fotogramas). Úsalo para dimensionar
+el servidor: cada partido en directo y cada «Finalizar partido» simulan con este motor.
+
 ### Proxy inverso
 
 El proxy debe dejar pasar la mejora de conexión a WebSocket en `/ws`. Además, conviene que el tiempo de inactividad sea de al menos 60 s, porque el cliente envía un `ping` cada 25 s. Por ejemplo, en nginx:

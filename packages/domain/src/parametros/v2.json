@@ -1,0 +1,287 @@
+{
+  "version": "2.0.0",
+  "penalizacionPosicion": {
+    "mismaDemarcacion": 0.1,
+    "porteria": 0.6,
+    "cruces": [
+      {
+        "origen": "DEL",
+        "destino": "MED",
+        "valor": 0.2
+      },
+      {
+        "origen": "DEL",
+        "destino": "MED_MCO",
+        "valor": 0.2
+      },
+      {
+        "origen": "DEL",
+        "destino": "DEF",
+        "valor": 0.4
+      },
+      {
+        "origen": "MED",
+        "destino": "DEL",
+        "valor": 0.2
+      },
+      {
+        "origen": "MED",
+        "destino": "DEF",
+        "valor": 0.2
+      },
+      {
+        "origen": "MED_MCO",
+        "destino": "DEL",
+        "valor": 0.1
+      },
+      {
+        "origen": "MED_MCO",
+        "destino": "DEF",
+        "valor": 0.3
+      },
+      {
+        "origen": "MED_MD",
+        "destino": "DEL",
+        "valor": 0.3
+      },
+      {
+        "origen": "MED_MD",
+        "destino": "DEF",
+        "valor": 0.1
+      },
+      {
+        "origen": "DEF",
+        "destino": "DEL",
+        "valor": 0.4
+      },
+      {
+        "origen": "DEF",
+        "destino": "MED",
+        "valor": 0.2
+      },
+      {
+        "origen": "DEF",
+        "destino": "MED_MCO",
+        "valor": 0.3
+      }
+    ]
+  },
+  "cansancio": {
+    "inicioMin": 65,
+    "inicioMinPresionAlta": 55,
+    "degradacionPorMinuto": 0.004,
+    "factorIncansable": 0.5,
+    "factorMotivador": 0.75
+  },
+  "lesiones": {
+    "probabilidadPorEntrada": 0.0025,
+    "reduccionRobusto": 0.45,
+    "reparto": {
+      "leve": 0.55,
+      "media": 0.28,
+      "grave": 0.15,
+      "larga": 0.02
+    },
+    "partidos": {
+      "leve": 1,
+      "media": 2,
+      "grave": 3,
+      "larga": 5
+    }
+  },
+  "disciplina": {
+    "probabilidadFaltaPorEntrada": 0.12,
+    "probabilidadAmarillaPorFalta": 0.13,
+    "probabilidadRojaDirectaPorFalta": 0.003,
+    "probabilidadPenaltiPorFaltaEnArea": 0.3
+  },
+  "sobres": {
+    "probPorteroEnHuecoPorDef": 0.5,
+    "probGoatEnAlta": 0.2
+  },
+  "specials": {
+    "capitania": 1,
+    "fortalezaMental": 2,
+    "intimidante": 1,
+    "infranqueable": 2,
+    "infranqueableUmbralRegate": 95,
+    "jerarquia": 1,
+    "libero": 2,
+    "boxToBox": 1,
+    "bonusProbabilidadLeve": 0.04,
+    "bonusProbabilidadMedio": 0.08,
+    "bonusProbabilidadAlto": 0.15,
+    "santoMinutoInicio": 80
+  },
+  "duelo": {
+    "pendiente": 0.05,
+    "probabilidadMinima": 0.03,
+    "probabilidadMaxima": 0.97
+  },
+  "formaciones": {
+    "efectoOfensividad": 0.3,
+    "efectoAmplitud": 0.08
+  },
+  "tacticas": {
+    "individual": {
+      "recuperacion": 0.04,
+      "cansancio": 0.1,
+      "vulnerableDesmarque": 0.04
+    },
+    "catenaccio": {
+      "ofensiva": -0.35,
+      "defensiva": 0.5,
+      "posesionRival": 0.08
+    },
+    "presionAlta": {
+      "recuperacionCampoRival": 0.35,
+      "cansancio": 0.25,
+      "vulnerableEspalda": 0.05
+    },
+    "lineaAdelantada": {
+      "fuerasDeJuegoProvocados": 0.18,
+      "vulnerableEspalda": 0.08
+    },
+    "contraataque": {
+      "posesion": -0.12,
+      "peligroTransicion": 0.1
+    },
+    "combinativo": {
+      "posesion": 0.12,
+      "perdidasPase": -0.05
+    },
+    "vertical": {
+      "accionesBanda": 0.15,
+      "pasesLargos": 0.12
+    }
+  },
+  "equipaciones": {
+    "umbralDistanciaColor": 120
+  },
+  "acciones": {
+    "paseCorto": 3.0,
+    "paseLargo": 0.9,
+    "conduccion": 0.5,
+    "regate": -0.3,
+    "paseEspacio": 0.3,
+    "centro": 0.0,
+    "duelaAereo": 0.0,
+    "despejeBalonParado": 0.0,
+    "puerta": {
+      "normal": 0.3,
+      "cabeza": 0.0,
+      "lejano": -0.6,
+      "manoAMano": 0.8,
+      "falta": -0.3,
+      "penalti": 1.6
+    },
+    "gol": {
+      "normal": -0.2,
+      "cabeza": -0.35,
+      "lejano": -1.3,
+      "manoAMano": -0.3,
+      "falta": -1.2,
+      "penalti": 1.2
+    },
+    "probabilidadFueraDeJuegoBase": 0.06,
+    "probabilidadCornerTrasParada": 0.3,
+    "probabilidadCornerTrasDespeje": 0.35,
+    "probabilidadBalonFuera": 0.08,
+    "probabilidadFaltaDirectaTiro": 0.55,
+    "dificultadZona": 0.4,
+    "probabilidadManoAMano": 0.25,
+    "avanceZonaBaja": 0.45,
+    "avanceZonaAlta": 0.35,
+    "llegadaArea": 0.5,
+    "pesoPasePorStat": 0.5,
+    "statPaseReferencia": 70,
+    "pendientePase": 1,
+    "atraccionPasador": 2,
+    "controlPaseTicks": 6,
+    "controlPorStat": 2.5
+  },
+  "reproduccion": {
+    "ticksPorSegundoX2": 23.5,
+    "descuentoMinS": 60,
+    "descuentoMaxS": 180,
+    "pausaGolMs": 2000,
+    "tandaLanzamientoMsX2": 3000,
+    "anticipacionTicks": 60
+  },
+  "colocacion": {
+    "beta": 0.6,
+    "gamma": 0.5,
+    "limite": 3,
+    "separacionMinima": 30
+  },
+  "asincrono": {
+    "nivelDecisiones": "avanzado"
+  },
+  "draft": {
+    "margenAnimacionS": 6
+  },
+  "espacio": {
+    "velocidadJugadorMin": 22,
+    "velocidadJugadorMax": 36,
+    "statVelocidadMin": 50,
+    "statVelocidadMax": 95,
+    "factorVelocidadConBalon": 0.92,
+    "aceleracion": 3,
+    "frenada": 5,
+    "radioSeparacion": 110,
+    "velocidadBalon": {
+      "raso": 200,
+      "largo": 175,
+      "centro": 150,
+      "tiro": 210,
+      "despeje": 160,
+      "suelto": 120
+    },
+    "vueloMinimoTicks": 4,
+    "controlMinimoTicks": 1,
+    "controlMaximoTicks": 4,
+    "basculacionLarga": {
+      "porteria": 0.12,
+      "defensa": 0.4,
+      "medio": 0.5,
+      "ataque": 0.55
+    },
+    "basculacionAncha": {
+      "porteria": 0.1,
+      "defensa": 0.3,
+      "medio": 0.35,
+      "ataque": 0.3
+    },
+    "desplazamientoFase": {
+      "conBalon": 500,
+      "sinBalon": -450
+    },
+    "aperturaConBalon": 0.12,
+    "cierreSinBalon": 0.12,
+    "desplazamientoBloque": {
+      "catenaccio": -900,
+      "medio": 0,
+      "presion_alta": 800
+    },
+    "lineaAdelantada": 450,
+    "separacionLineasConBalon": [
+      952,
+      2381
+    ],
+    "separacionLineasSinBalon": [
+      762,
+      1714
+    ],
+    "presionadores": 2,
+    "presionCoordinada": {
+      "jugadores": 3,
+      "ticks": 118
+    },
+    "distanciaPresion": 2500,
+    "marcajeIndividual": 0.6,
+    "conduccionMaxima": 500,
+    "esperaSaqueMaxima": 12,
+    "esperaColocacionMaxima": 150,
+    "velocidadBasculacion": 24
+  }
+}

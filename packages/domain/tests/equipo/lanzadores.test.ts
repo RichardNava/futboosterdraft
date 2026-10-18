@@ -5,7 +5,7 @@ import { autoAlineacion } from '../../src/equipo/autoAlineacion';
 import { casilla } from '../../src/equipo/formaciones';
 import { lanzadorEfectivo, proponerLanzadores } from '../../src/equipo/lanzadores';
 import { statsEfectivos } from '../../src/equipo/statsEfectivos';
-import { PARAMETROS_V1 } from '../../src/parametros/index';
+import { PARAMETROS_V2 } from '../../src/parametros/index';
 import { Rng, semillaDesdeTexto } from '../../src/rng/xoshiro';
 import { catalogoCore, jugador, plantillaEquilibrada } from './ayudas';
 
@@ -52,9 +52,9 @@ describe('lanzadores (FR-029a)', () => {
 describe('autoAlineacion (FR-031)', () => {
   it('con una plantilla equilibrada no deja a nadie fuera de posición y pone un portero', () => {
     const plantilla = plantillaEquilibrada();
-    const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V1);
+    const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V2);
     const porId = new Map(plantilla.map((j) => [j.id, j]));
-    const fuera = a.titulares.filter((t) => statsEfectivos(porId.get(t.jugadorId)!, casilla(a.formacion, t.casillaId)!, PARAMETROS_V1).fueraDePosicion);
+    const fuera = a.titulares.filter((t) => statsEfectivos(porId.get(t.jugadorId)!, casilla(a.formacion, t.casillaId)!, PARAMETROS_V2).fueraDePosicion);
     expect(fuera).toHaveLength(0);
     expect(porId.get(a.titulares.find((t) => t.casillaId === 'POR')!.jugadorId)!.demarcacion).toBe('POR');
     expect(a.suplentes).toHaveLength(7);
@@ -68,7 +68,7 @@ describe('autoAlineacion (FR-031)', () => {
         const rng = new Rng(semillaDesdeTexto(texto));
         const plantilla = rng.barajar(core).slice(0, 24);
         const bajas = new Set(rng.barajar(plantilla.map((j) => j.id)).slice(0, numBajas));
-        const a = autoAlineacion(plantilla, bajas, PARAMETROS_V1);
+        const a = autoAlineacion(plantilla, bajas, PARAMETROS_V2);
         expect(validarAlineacion(a, plantilla.map((j) => j.id), bajas)).toEqual([]);
         expect(a.titulares).toHaveLength(Math.min(11, 24 - numBajas));
       }),
@@ -78,7 +78,7 @@ describe('autoAlineacion (FR-031)', () => {
 
   it('sin porteros, coloca a un jugador de campo en la portería', () => {
     const plantilla = plantillaEquilibrada().filter((j) => j.demarcacion !== 'POR');
-    const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V1);
+    const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V2);
     expect(a.titulares.some((t) => t.casillaId === 'POR')).toBe(true);
   });
 });

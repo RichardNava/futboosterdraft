@@ -49,7 +49,7 @@ export class Limitador {
 
 /** HTTP: ráfagas de 60 peticiones y 20 por segundo sostenidas por sesión. */
 export const LIMITE_HTTP: OpcionesLimitador = { capacidad: 60, porSegundo: 20 };
-/** WebSocket: ráfagas de 40 mensajes y 10 por segundo por participante (la reproducción 2D envía 2/s). */
+/** WebSocket: ráfagas de 40 mensajes y 10 por segundo por participante (la reproducción 2D envía 4/s). */
 export const LIMITE_WS: OpcionesLimitador = { capacidad: 40, porSegundo: 10 };
 /** Tamaño máximo de un mensaje (cuerpo HTTP o mensaje WebSocket). */
 export const TAMANO_MAXIMO_MENSAJE = 64 * 1024;

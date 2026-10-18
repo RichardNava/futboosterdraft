@@ -18,8 +18,8 @@ El fichero pasa a `packages/domain/src/parametros/v2.json`. Es un cambio de vers
 | `penalizacionFueraPosicion` | **Se elimina**. | FR-032 |
 | `penalizacionPorteria` | Pasa a `penalizacionPosicion.porteria` (0,60). | FR-032 |
 | `penalizacionPosicion` | **Nuevo**: `{ mismaDemarcacion: 0.10, porteria: 0.60, cruces: { origen, destino, valor }[] }` con las filas de la tabla de FR-032. Valores fijados por la spec, con una prueba que los compara con ella. | FR-031, FR-032 |
-| `reproduccion` | **Nuevo**: `{ ticksPorSegundoX2: 23.5, descuentoMinS: 60, descuentoMaxS: 180, pausaGolMs: 2000 }`. | R2 |
-| `espacio` | **Nuevo**: velocidades máximas de los jugadores (según el stat de velocidad), aceleración y frenada, radio de separación, velocidades del balón por tipo de acción (raso, largo, centro, tiro, despeje), factores de basculación por línea, desplazamiento del bloque por táctica y número máximo de presionadores (1, o 2 en una presión coordinada). Las velocidades están en unidades por tick. | R3 |
+| `reproduccion` | **Nuevo**: `{ ticksPorSegundoX2: 23.5, descuentoMinS: 60, descuentoMaxS: 180, pausaGolMs: 2000, tandaLanzamientoMsX2: 3000, anticipacionTicks: 60 }`. | R2, R6 |
+| `espacio` | **Nuevo**: velocidades máximas de los jugadores (según el stat de velocidad: +20 puntos → al menos +15 %, y como mucho 9 m/s visuales a x2), aceleración y frenada, radio de separación, velocidades del balón por tipo de acción (raso, largo, centro, tiro, despeje) dentro de los límites de FR-025, factores de basculación por línea, distancias entre líneas (10–25 m con balón, 8–18 m sin balón), desplazamiento del bloque por táctica (tabla de FR-023) y presionadores (2 como máximo; 3 en una presión coordinada, solo con Presión alta y durante ≤ 5 s tras una pérdida rival en su campo). Las velocidades están en unidades por tick. | R3, FR-023 |
 | `acciones` | Se recalibra entero. Las duraciones fijas se sustituyen por tiempos de control por stat. Se añaden los pesos de la puntuación espacial de los pases (lo libre que está el receptor, distancia, líneas superadas). | R4 |
 | `colocacion` | **Nuevo**: `{ beta: 0.6, gamma: 0.5, limite: 3, separacionMinima: 30 }`, para la ofensividad y la amplitud calculadas y la separación de jugadores superpuestos. | R13 |
 | `asincrono` | **Nuevo**: `{ nivelDecisiones: 'avanzado' }`. | R8 |
@@ -225,7 +225,8 @@ Desaparecen las transiciones con «Seguir» de dos humanos y la espera al reloj 
 | `pasesCompletados` | Igual que `pases`, pero solo los completados. |
 | `centros` | **Nuevo**: centros intentados. |
 | `precisionPase` | **Nuevo**, derivado: `pasesCompletados / pases`, en porcentaje entero. |
-| `secuencias` | **Nuevo**, interno: histograma de pases seguidos por posesión `{ [n]: posesiones }`. Lo usa `balance` (SC-007) y no se muestra. |
+| `secuencias` | **Nuevo**, interno: histograma de pases seguidos por posesión `{ [n]: posesiones }`. Una posesión va de que el equipo gana el balón a que lo pierde; las interrupciones en las que lo conserva no la cortan (FR-024). Lo usa `balance` (SC-007) y no se muestra. |
+| `conducciones`, `paredes`, `cambiosOrientacion`, `contraataques` | **Nuevo**, interno: recuentos para SC-007, con las definiciones de research R4. No se muestran. |
 
 ### 7.4 Estado del motor (`EstadoMotor`) — cambios
 

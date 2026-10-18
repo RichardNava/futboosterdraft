@@ -1,33 +1,72 @@
+/**
+ * Fotogramas v2 (research R5; data-model §7.5; T066): un array de enteros por fotograma, uno cada 2 ticks
+ * más uno al empezar y al terminar cada acción, y pedirlos no cambia el partido (invariante 7).
+ */
 import { describe, expect, it } from 'vitest';
-import { avanzar, crearPartido } from '../src/index';
+import { avanzar, crearPartido, type EstadoMotor, type ResultadoTramo } from '../src/index';
 import { entrada } from './ayudas';
 
-describe('fotogramas 2D (T134)', () => {
-  it('hay un fotograma por segundo de juego, con los 22 jugadores y coordenadas dentro del campo', () => {
-    const e = entrada('fotogramas');
-    const r = avanzar(crearPartido(e), 'parte', { fotogramas: true });
-    const fs = r.fotogramas!;
-    expect(fs.length).toBeGreaterThan(2000);
-    for (let i = 1; i < fs.length; i++) expect(Math.floor(fs[i]!.tick)).toBe(Math.floor(fs[i - 1]!.tick) + 1);
-    for (const f of fs) {
-      expect(Object.keys(f.j)).toHaveLength(22);
-      for (const [x, y] of [f.balon, ...Object.values(f.j)]) {
-        expect(x).toBeGreaterThanOrEqual(0);
-        expect(x).toBeLessThanOrEqual(1000);
-        expect(y).toBeGreaterThanOrEqual(0);
-        expect(y).toBeLessThanOrEqual(640);
+const ENTRADA = entrada('fotogramas-v2');
+
+function jugar(fotogramas: boolean) {
+  let estado: EstadoMotor = crearPartido(ENTRADA);
+  const tramos: Omit<ResultadoTramo, 'estado'>[] = [];
+  for (let i = 0; i < 400 && estado.fase !== 'finalizado'; i++) {
+    const { estado: e, ...t } = avanzar(estado, 'interrupcion', { fotogramas });
+    tramos.push(t);
+    estado = e;
+  }
+  return { estado, tramos };
+}
+
+describe('fotogramas v2 (T066)', () => {
+  const { tramos, estado } = jugar(true);
+
+  it('formato [tick, bx, by, bz, x0, y0, …] en el orden de ordenJugadores, enteros dentro del campo o (-1, -1)', () => {
+    const orden = tramos[0]!.ordenJugadores!;
+    const todos = [...estado.equipos.local.jugadores, ...estado.equipos.visitante.jugadores].map((j) => j.id);
+    expect(orden).toEqual(todos);
+    for (const t of tramos) {
+      expect(t.ordenJugadores).toEqual(orden);
+      for (const f of t.fotogramas!) {
+        expect(f).toHaveLength(4 + 2 * orden.length);
+        expect(f.every((v) => Number.isInteger(v))).toBe(true);
+        const [, bx, by, bz] = f;
+        expect(bx).toBeGreaterThanOrEqual(-60);
+        expect(bx).toBeLessThanOrEqual(1060);
+        expect(by).toBeGreaterThanOrEqual(-60);
+        expect(by).toBeLessThanOrEqual(700);
+        expect(bz).toBeGreaterThanOrEqual(0);
+        for (let i = 4; i < f.length; i += 2) {
+          const [x, y] = [f[i]!, f[i + 1]!];
+          if (x === -1 && y === -1) continue;
+          expect(x).toBeGreaterThanOrEqual(0);
+          expect(x).toBeLessThanOrEqual(1000);
+          expect(y).toBeGreaterThanOrEqual(0);
+          expect(y).toBeLessThanOrEqual(640);
+        }
       }
     }
   });
 
-  it('los jugadores se mueven con el balón y el portador va pegado a él', () => {
-    const r = avanzar(crearPartido(entrada('fotogramas-2')), 'parte', { fotogramas: true });
-    const fs = r.fotogramas!;
-    const id = Number(Object.keys(fs[0]!.j).find((k) => k !== String(r.estado.balon.portadorId)));
-    const xs = new Set(fs.map((f) => Math.round(f.j[id]![0])));
-    expect(xs.size).toBeGreaterThan(10);
-    const ultimo = fs.at(-1)!;
-    const portador = ultimo.j[r.estado.balon.portadorId];
-    if (portador) expect(Math.hypot(portador[0] - ultimo.balon[0], portador[1] - ultimo.balon[1])).toBeLessThan(20);
+  it('un fotograma cada 2 ticks como mucho de separación, y uno al inicio y al final de cada acción', () => {
+    for (const t of tramos) {
+      const ticks = t.fotogramas!.map((f) => f[0]!);
+      for (let i = 1; i < ticks.length; i++) expect(ticks[i]! - ticks[i - 1]!).toBeLessThanOrEqual(2);
+      const enTramo = new Set(ticks);
+      for (const a of t.acciones) {
+        if (a.inicioTick > t.desdeTick) expect(enTramo.has(a.inicioTick), `inicio de ${a.tipo} en ${a.inicioTick}`).toBe(true);
+        if (a.finTick <= t.hastaTick) expect(enTramo.has(a.finTick), `fin de ${a.tipo} en ${a.finTick}`).toBe(true);
+      }
+    }
+  });
+
+  it('pedir fotogramas no cambia el estado, los eventos ni las acciones (invariante 7)', () => {
+    const sin = jugar(false);
+    expect(sin.estado.marcador).toEqual(estado.marcador);
+    expect(sin.tramos.flatMap((t) => t.eventos)).toEqual(tramos.flatMap((t) => t.eventos));
+    expect(sin.tramos.flatMap((t) => t.acciones)).toEqual(tramos.flatMap((t) => t.acciones));
+    expect(sin.estado.espacio).toEqual(estado.espacio);
+    expect(sin.tramos.every((t) => t.fotogramas === undefined)).toBe(true);
   });
 });

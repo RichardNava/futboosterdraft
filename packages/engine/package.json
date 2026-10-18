@@ -7,7 +7,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p .",
+    "bench": "vitest bench --run"
   },
   "dependencies": {
     "@fbd/domain": "workspace:*"

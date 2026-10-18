@@ -1,4 +1,4 @@
-import { FORMACIONES_IDS, NIVELES_NPC, PARAMETROS_V1, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
+import { FORMACIONES_IDS, NIVELES_NPC, PARAMETROS_V2, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
 import { crearPartido, avanzar } from '@fbd/engine';
 import { describe, expect, it } from 'vitest';
 import { decidirAlineacion, LIMITE_PRO_MS } from '../src/alineacion';
@@ -9,7 +9,7 @@ import { PERFILES, TODAS_LAS_FORMACIONES } from '../src/perfiles';
 import { equipoDesdeAlineacion } from '../src/pro/simulacionPrueba';
 import { jugador, plantilla } from './ayudas';
 
-const p = PARAMETROS_V1;
+const p = PARAMETROS_V2;
 
 describe('niveles de los NPC (T120)', () => {
   const sobre = [jugador('MC', 84), jugador('POR', 79), jugador('DC', 82), jugador('LI', 80), jugador('DCD', 81), jugador('MCO', 83), jugador('ED', 80), jugador('MD', 78)];

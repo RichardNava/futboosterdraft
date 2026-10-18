@@ -23,7 +23,9 @@ interface EquipoPartido {
 
 ```ts
 function crearPartido(entrada: EntradaPartido): EstadoMotor;
-function avanzar(estado: EstadoMotor, modo: 'parte' | 'interrupcion' | 'final', opciones?: { fotogramas: boolean }): ResultadoTramo;
+function avanzar(estado: EstadoMotor, modo: 'parte' | 'interrupcion' | 'final' | 'ticks', opciones?: { fotogramas?: boolean; hastaTick?: number }): ResultadoTramo;
+// NUEVO modo 'ticks': para en `hastaTick` o en la siguiente interrupción, lo que llegue antes. Parar en un tick no
+// es una interrupción: las decisiones solo se aplican en interrupciones y la secuencia del PRNG no cambia (research R6).
 function aplicarDecision(estado: EstadoMotor, d: DecisionPartido | DecisionRegistrada): ResultadoDecision;
 
 interface ResultadoTramo {
@@ -77,6 +79,7 @@ Se mantienen los cuatro de la spec 001 (determinismo, equivalencia entre modalid
    - ninguna pareja de chapas queda más cerca que el radio de separación durante más de 2 ticks seguidos;
    - el balón solo cambia de posición dentro de una `AccionVisible` o pegado a su portador;
    - en fase defensiva, como mucho 2 jugadores del equipo sin balón tienen como objetivo el balón, salvo en una presión coordinada marcada en el estado.
+6b. **Cortes por ticks inocuos**: encadenar `avanzar('ticks', { hastaTick })` con cortes arbitrarios da los mismos eventos, acciones, marcador y estado final que encadenar `avanzar('interrupcion')`.
 7. **Fotogramas inocuos**: `avanzar(e, m, { fotogramas: true })` y `avanzar(e, m)` dan el mismo `estado` (salvo la salida) y los mismos eventos y acciones.
 8. **Colocación**:
    - con la colocación de la propia formación, `ofensividad` y `amplitud` son las de la tabla de la spec 001;

@@ -27,6 +27,10 @@ export const mesas = pgTable(
     estado: text('estado').notNull(),
     /** SobreEnJuego[]: { id, ronda, asientoOrigen, cartas[8], restantes[] }. */
     sobres: jsonb('sobres').notNull(),
+    /** Partida de un solo humano pausada con `partida.pausar` (research R10; data-model §6.2). */
+    pausadaEn: timestamp('pausada_en', { withTimezone: true }),
+    /** Tiempo de turno que quedaba al pausar; al reanudar, `venceEn = ahora + restanteMs`. */
+    restanteMs: integer('restante_ms'),
   },
   (t) => [
     uniqueIndex('mesas_partida_indice_uq').on(t.partidaId, t.indice),

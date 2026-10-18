@@ -2,7 +2,7 @@
  * Repositorio de partidas y participantes.
  */
 import { plazasHumanasEfectivas, type ConfigPartida, type EstadoPartida, type NivelNPC } from '@fbd/domain';
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
 import { participantes, partidas, usuarios } from '../esquema/index';
 
@@ -27,7 +27,6 @@ export class RepoPartidas {
         numParticipantes: config.numParticipantes,
         plazasHumanas: plazasHumanasEfectivas(config),
         tipoSimulacion: config.tipoSimulacion,
-        ritmo: config.ritmo,
         plazoJornadaHoras: config.plazoJornadaHoras,
         npcConfig: config.npc,
         tiempos: config.tiempos,
@@ -123,6 +122,16 @@ export class RepoPartidas {
   async transferirParticipaciones(deUsuarioId: string, aUsuarioId: string): Promise<void> {
     await this.db.update(participantes).set({ usuarioId: aUsuarioId }).where(eq(participantes.usuarioId, deUsuarioId));
     await this.db.update(partidas).set({ anfitrionId: aUsuarioId }).where(eq(partidas.anfitrionId, deUsuarioId));
+  }
+
+  /** Todas las partidas de un usuario con su participante, de la más reciente a la más antigua («Mis partidas»). */
+  async partidasDeUsuario(usuarioId: string): Promise<{ partida: FilaPartida; participanteId: string }[]> {
+    return this.db
+      .select({ partida: partidas, participanteId: participantes.id })
+      .from(partidas)
+      .innerJoin(participantes, eq(participantes.partidaId, partidas.id))
+      .where(eq(participantes.usuarioId, usuarioId))
+      .orderBy(desc(partidas.actualizadaEn));
   }
 
   async partidasActivasDeUsuario(usuarioId: string): Promise<FilaPartida[]> {

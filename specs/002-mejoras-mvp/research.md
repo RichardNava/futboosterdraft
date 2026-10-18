@@ -35,9 +35,11 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
   - El reloj de reproducción avanza de forma lineal: `ticks por segundo real = K × (velocidad / 2)`, con **K = 23,5** a x2, 47 a x4 y 94 a x8.
   - K se fija para un partido de 90 minutos más un descuento total típico de 4 minutos: 5.640 s de juego en 240 s reales.
   - Para que la duración real quede dentro de ±5 % (SC-006), el descuento de cada parte reglamentaria se acota a **1–3 minutos**. La fórmula actual (001, `calcularDescuento`) llega a 6. Con esa acotación, un partido dura entre 92 y 96 minutos de juego, es decir, entre 3 min 55 s y 4 min 5 s a x2 (±2,2 %), y cada parte entre 1 min 57 s y 2 min 3 s.
-  - La prórroga usa la misma K.
-  - Los valores (K, límites del descuento) viven en `ParametrosEquilibrado.reproduccion` (R12).
-  - El reloj solo se detiene en las **pausas anunciadas**: descanso, antes de la prórroga y celebración de un gol (2 s reales con un rótulo, sin avanzar el reloj de juego). Las interrupciones del juego (faltas, saques) no paran el reloj: el motor ya las cuenta como tiempo de parada para el descuento.
+  - La prórroga usa la misma K: sus 30 minutos duran unos 77 s a x2, más su descuento.
+  - La **tanda de penaltis** tiene un ritmo propio: cada lanzamiento dura `tandaLanzamientoMsX2` (3.000 ms) a x2, y la mitad con cada duplicación de velocidad.
+  - Los valores (K, límites del descuento, pausa del gol, ritmo de la tanda) viven en `ParametrosEquilibrado.reproduccion` (R12).
+  - El reloj solo se detiene en las **pausas anunciadas**: descanso, antes de la prórroga, gol (2 s reales fijos a cualquier velocidad, con un rótulo) y «Cargando…» cuando el búfer se vacía (R6). Las interrupciones del juego (faltas, saques) no paran el reloj: el motor ya las cuenta como tiempo de parada para el descuento.
+  - La velocidad por defecto es x2, y el cliente recuerda la última elegida (`localStorage['fbd.velocidad2d']`). Un cambio de velocidad se aplica al instante; durante una pausa no cambia su duración.
 - **Razón**:
   - Un reloj lineal es la definición de homogeneidad de FR-022. Hoy los tirones vienen de esperar a cada tramo en cada interrupción (001/R11) y de fotogramas que saltan entre celdas de la rejilla (R3).
   - Acotar el descuento es la única forma de cumplir SC-006 sin cambiar el ritmo a mitad de una parte, porque el descuento de una parte solo se conoce al llegar a su minuto 45.
@@ -62,6 +64,8 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
        - la táctica: la altura del bloque desplaza el ancla longitudinal; la línea adelantada adelanta la defensa; el marcaje individual pega al jugador a su par.
     2. **Movimiento**: dirección "steering" hacia el objetivo, con una velocidad máxima que depende del stat de velocidad y del cansancio, y una aceleración y una frenada máximas. Así las trayectorias son continuas, sin saltos ni temblores.
     3. **Separación**: una repulsión mínima entre compañeros y rivales (radio de una chapa) impide que se atraviesen o se amontonen.
+  - **Balón parado** (FR-022a): en cada interrupción, los objetivos pasan a una colocación simplificada (sacador en el punto del saque, rematadores en el área en córners y faltas laterales, los dos equipos en su campo en el saque de centro), y el balón sale desde ese punto. Sin barrera ni jugadas ensayadas.
+  - **Expulsiones y lesiones sin cambio**: las anclas de la línea afectada se reparten de nuevo entre los que quedan (separación lateral uniforme dentro de la línea). Un sustituto hereda el ancla del jugador al que sustituye.
   - **El balón** se mueve solo por acciones (R4): pegado al pie del portador en conducción, en vuelo entre origen y destino en pases, centros, tiros y despejes, y parado en las interrupciones. Lleva una altura `z` para los balones aéreos, que el 2D dibuja como sombra y tamaño.
   - **Influencia en el resultado**: la capa espacial se calcula siempre, también en la simulación rápida y en `balance`. Determina:
     - quién puede recibir;
@@ -105,8 +109,9 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
 
     Desaparecen las duraciones aleatorias fijas de 2 a 6 s (001, `DURACION`).
   - **Densidad**: con K = 23,5 y velocidades de balón creíbles (un pase de 25 m tarda ≤ 0,9 s reales a x2), el presupuesto de tiempo visual de 240 s admite unos 180–260 pases, 50–80 conducciones y regates, 25–40 centros, tiros y saques, y las interrupciones.
-    - Es coherente con SC-007, que pide al menos 150 pases completados, 10 centros y 15 tiros entre los dos equipos, y al menos el 30 % de posesiones de 3 o más pases.
-    - Las velocidades del balón y el rango de distancias preferidas se calibran con `balance`.
+    - SC-007 pide al menos 150 pases completados, así que la calibración apunta a **≥ 220 pases intentados** (con una precisión de ~70–80 %), en la mitad alta del rango. También pide 10 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 3 contraataques, y al menos el 30 % de posesiones de 3 o más pases.
+    - Las velocidades del balón y el rango de distancias preferidas se calibran con `balance`, dentro de los límites visuales de FR-025. Si la densidad choca con los SC estadísticos, mandan los SC (Assumption de la spec).
+    - `balance` detecta los patrones así: una **pared** es A → B → A en menos de 4 ticks entre pases; un **cambio de orientación**, un pase con desplazamiento lateral de más de 350 unidades; un **contraataque**, una posesión que empieza en campo propio y termina en tiro en menos de 15 ticks.
   - **Recalibrado**: hoy hay unas 1.500 acciones por partido; ahora habrá unas 400–500. Las probabilidades base de las acciones y del tiro (`parametros.acciones`) se recalibran para que sigan cumpliendo los SC estadísticos de la spec 001 (goles por partido, ventaja de la estrategia, orden de los NPC).
   - **Estadísticas nuevas** (FR-024):
     - `pases` pasa a contar solo los pases intentados (corto, largo y al espacio) y ya no incluye los centros;
@@ -141,15 +146,18 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
 
 - **Decisión**:
   - **Sustituye a 001/R11**: ya no hay velocidad mínima común ni mensaje `partido.velocidad`. La velocidad es solo del cliente.
-  - **Búfer de anticipación**: el servidor mantiene simulados los tramos (de interrupción a interrupción) necesarios para cubrir al menos **3 s reales** a la velocidad que indica el cliente, contados desde el tick de reproducción que este informa (`partido.reproduccion`, cada ~500 ms). Así el cliente nunca se queda esperando a un tramo y el reloj es lineal (R2).
+  - **Búfer de anticipación medido en tiempo de juego** (FR-025a): el servidor mantiene simulados **60 ticks** (1 minuto de juego, `reproduccion.anticipacionTicks`) por delante del tick de reproducción que informa el cliente (`partido.reproduccion`, cada ~250 ms). Son 2,6 s reales a x2, 1,3 s a x4 y 0,64 s a x8.
+    - Para no pasarse de esa frontera, el servidor simula por trozos acotados en ticks con el modo nuevo `avanzar(e, 'ticks', { hastaTick })`. Este modo para en un tick concreto sin crear una interrupción; las decisiones se siguen aplicando solo en interrupciones, así que la secuencia del PRNG no cambia (invariante 2 de la 001).
+    - Si el búfer se vacía (red lenta o servidor cargado), el cliente detiene el reloj con «Cargando…», que es una pausa anunciada, y sigue a la misma velocidad cuando llegan los datos. Nunca acelera para recuperar.
   - **Paradas duras**: el descanso y el final del tiempo reglamentario de una eliminatoria nunca se adelantan. El servidor espera a «Seguir» o a que venza la ventana (`descansoS`).
-  - **Momento en que se aplica una decisión**: en la **primera interrupción aún no simulada**. Con el búfer de 3 s, eso ocurre a lo sumo 3 s reales después de lo que se ve en pantalla. La interfaz indica el minuto en que se aplicará en cuanto el servidor lo confirma (`partido.decision_aplicada`). Es el mismo comportamiento que ya tenía la simulación rápida, que aplica las decisiones "al inicio del siguiente tramo".
+  - **Momento en que se aplica una decisión**: en la **primera interrupción aún no simulada**, que está como mucho 60 ticks por delante de lo que se ve en pantalla, más lo que tarde en llegar esa interrupción. La interfaz indica el minuto en que se aplicará en cuanto el servidor lo confirma (`partido.decision_aplicada`). Es el mismo comportamiento que ya tenía la simulación rápida, que aplica las decisiones "al inicio del siguiente tramo".
   - **Salir de la pantalla** (FR-021): sin informes de reproducción, el búfer no crece y el partido queda en pausa sin coste. Al volver, `estado` devuelve los tramos simulados y el último tick informado, y la reproducción sigue desde ahí. Si vence el plazo de la jornada (solo con varios humanos), se aplica `resolverResto` (R7).
   - **Los NPC** deciden en el descanso y antes de la prórroga, como en la spec 001 (`decidirNPCEnPausa`).
 - **Razón**:
   - Simular de uno en uno los tramos provoca un tirón de un viaje de ida y vuelta al servidor en cada interrupción, y hay unas 60 por partido.
   - Simular todo el partido de una vez impediría las decisiones en directo.
 - **Alternativas consideradas**:
+  - **búfer de 3 s reales** (primera versión de este apartado): es más robusto ante la latencia, pero a x8 un cambio podía llegar casi 5 minutos de juego tarde. Se descarta en la revisión de la checklist (FR-025a);
   - **tramos provisionales**: simular por adelantado y volver a simular si llega una decisión. Es exacto al tick, pero obliga a reemplazar fotogramas ya enviados y a guardar dos estados; el beneficio es invisible para el usuario;
   - **simular el partido entero y descartar el futuro con cada decisión**: es la misma idea a mayor escala, con más cómputo desperdiciado.
 
@@ -158,7 +166,7 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
 - **Decisión**:
   - Un único procedimiento, `resolverResto(motor, niveles, semilla)`, en `@fbd/ai` (que ya depende del motor). Encadena `avanzar(estado, 'parte')`. En cada parada (descanso, antes de la prórroga) aplica `decidirNPCEnPausa` para los lados controlados por un NPC, cierra la ventana de decisión sin cambios para el humano y sigue hasta `finalizado`, con prórroga y tanda si corresponden.
   - Lo usan:
-    - «Finalizar partido» (2D y rápida);
+    - «Finalizar partido» (2D y rápida, en cualquier momento, FR-028);
     - el vencimiento del plazo de una jornada;
     - la resolución de un partido entre humanos (R8);
     - los partidos NPC contra NPC.

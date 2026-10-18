@@ -5,7 +5,6 @@ import { Rng, type Semilla } from '../rng/xoshiro';
 
 export type Modo = 'liga' | 'playoff' | 'mixto';
 export type TipoSimulacion = 'rapida' | '2d';
-export type Ritmo = 'directo' | 'asincrono';
 export type NivelNPC = 'amateur' | 'intermedio' | 'avanzado' | 'PRO';
 export type EstadoPartida = 'buscando' | 'en_draft' | 'en_torneo' | 'terminada' | 'cancelada' | 'abandonada';
 export type TipoUsuario = 'registrado' | 'invitado';
@@ -16,8 +15,7 @@ export const NIVELES_RELLENO: readonly NivelNPC[] = ['amateur', 'intermedio', 'a
 export interface TiemposPartida {
   busquedaS: number;
   turnoDraftS: number;
-  preparacionS: number;
-  preparacionInicialS: number;
+  /** Ventana del descanso en el directo contra un NPC, como límite frente a un humano ausente. */
   descansoS: number;
 }
 
@@ -25,7 +23,7 @@ export interface ConfigPartida {
   modo: Modo;
   numParticipantes: number;
   tipoSimulacion: TipoSimulacion;
-  ritmo: Ritmo;
+  /** Plazo de cada jornada; solo se aplica con 2 o más humanos activos (FR-030, research R9). */
   plazoJornadaHoras: number;
   /** NPC añadidos explícitamente por el anfitrión (PRO solo por esta vía, FR-059). */
   npc: { nivel: NivelNPC }[];
@@ -41,8 +39,6 @@ export interface ConfigPartida {
 export const TIEMPOS_POR_DEFECTO: TiemposPartida = {
   busquedaS: 180,
   turnoDraftS: 45,
-  preparacionS: 180,
-  preparacionInicialS: 300,
   descansoS: 120,
 };
 
@@ -51,7 +47,6 @@ export function configPorDefecto(): ConfigPartida {
     modo: 'liga',
     numParticipantes: 4,
     tipoSimulacion: 'rapida',
-    ritmo: 'directo',
     plazoJornadaHoras: 24,
     npc: [],
     tiempos: { ...TIEMPOS_POR_DEFECTO },
@@ -102,9 +97,6 @@ export function validarConfigPartida(c: ConfigPartida, anfitrion: TipoUsuario): 
   }
   if (c.colecciones.length === 0) errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'Debe haber al menos una colección' });
   if (anfitrion === 'invitado') {
-    if (c.ritmo !== 'directo') {
-      errores.push({ codigo: 'INVITADO_NO_PERMITIDO', mensaje: 'Un invitado solo puede jugar partidas en directo' });
-    }
     if (humanas !== 1) {
       errores.push({
         codigo: 'INVITADO_NO_PERMITIDO',
@@ -141,6 +133,26 @@ export function rellenarConNPC(cantidad: number, semilla: Semilla): NivelNPC[] {
 /** Asientos sorteados con la semilla de la partida (FR-005). */
 export function sortearAsientos<T>(participantes: readonly T[], semilla: Semilla): T[] {
   return new Rng(semilla).barajar(participantes);
+}
+
+/** Participante visto desde el ritmo de la partida: solo importa si es humano y si sigue controlándolo él. */
+export interface ParticipanteRitmo {
+  /** `'humano'` o `'npc'`. */
+  tipo: string;
+  controladoPorNPC: boolean;
+}
+
+/** Humanos que siguen jugando la partida (los que han abandonado los controla un NPC). */
+export function humanosActivos(participantes: readonly ParticipanteRitmo[]): number {
+  return participantes.filter((p) => p.tipo === 'humano' && !p.controladoPorNPC).length;
+}
+
+/**
+ * Ritmo deducido (research R9): con un solo humano activo no hay plazos y la siguiente jornada se abre
+ * cuando él lo pide; con varios, cada jornada tiene plazo.
+ */
+export function soloUnHumano(participantes: readonly ParticipanteRitmo[]): boolean {
+  return humanosActivos(participantes) <= 1;
 }
 
 /** Minutos seguidos sin conexión tras los que se abandona una partida de invitado. */

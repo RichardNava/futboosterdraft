@@ -93,6 +93,7 @@ export const avisos = pgTable(
   },
   (t) => [
     index('avisos_usuario_idx').on(t.usuarioId),
-    check('avisos_tipo_ck', sql`${t.tipo} in ('jornada_abierta','rival_listo','plazo_proximo','partido_auto_resuelto','torneo_terminado')`),
+    // 'rival_listo' ya no se emite (spec 002: no hay partidos síncronos entre humanos); se admite por los avisos antiguos.
+    check('avisos_tipo_ck', sql`${t.tipo} in ('jornada_abierta','rival_listo','plazo_proximo','partido_auto_resuelto','torneo_terminado','dorsal_asignado')`),
   ],
 );

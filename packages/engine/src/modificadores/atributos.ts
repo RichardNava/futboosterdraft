@@ -91,19 +91,24 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S) => Record<Atributo, number
  * calcularlos cada vez, pero el motor los pide miles de veces por partido (T140). La clave es el objeto
  * del jugador en el estado, que `avanzar` copia en cada llamada, así que la caché nunca cruza partidos.
  */
-const cacheAtributos = new WeakMap<JugadorEnPartido, { clave: string; valores: Record<Atributo, number> }>();
+const cacheAtributos = new WeakMap<JugadorEnPartido, { formacion: string; casilla: string | null; posicion: string | undefined; bonus: number; valores: Record<Atributo, number> }>();
 
 /** Atributo de un jugador en el partido. */
 export function atributo(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido, nombre: Atributo): number {
-  const bonus = bonusEquipo(estado, equipo, j);
-  const clave = `${equipo.formacion}|${j.casillaId ?? ''}|${bonus}`;
+  return atributoConBonus(estado, equipo, j, nombre, bonusEquipo(estado, equipo, j));
+}
+
+/** Igual que `atributo`, con la bonificación de equipo ya calculada (la capa espacial la calcula una vez por tick). */
+export function atributoConBonus(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido, nombre: Atributo, bonus: number): number {
   let entrada = cacheAtributos.get(j);
-  if (entrada?.clave !== clave) {
+  if (!entrada || entrada.formacion !== equipo.formacion || entrada.casilla !== j.casillaId || entrada.posicion !== j.posicion || entrada.bonus !== bonus) {
     const casilla = j.casillaId ? FORMACIONES[equipo.formacion].casillas.find((c) => c.id === j.casillaId) : undefined;
-    const efectivos = casilla
-      ? statsEfectivos(j.jugador, casilla, estado.parametros, { bonus }).stats
+    // Colocado fuera de la zona de su casilla, juega con la posición efectiva de su zona (FR-034).
+    const destino = casilla && j.posicion && casilla.id !== 'POR' ? { posicionesAdmitidas: [j.posicion] } : casilla;
+    const efectivos = destino
+      ? statsEfectivos(j.jugador, destino, estado.parametros, { bonus }).stats
       : (j.jugador.stats as unknown as S);
-    entrada = { clave, valores: TRADUCCION[j.jugador.demarcacion](efectivos) };
+    entrada = { formacion: equipo.formacion, casilla: j.casillaId, posicion: j.posicion, bonus, valores: TRADUCCION[j.jugador.demarcacion](efectivos) };
     cacheAtributos.set(j, entrada);
   }
   return entrada.valores[nombre] * (1 - j.cansancio);

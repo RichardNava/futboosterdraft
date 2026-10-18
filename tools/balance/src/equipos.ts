@@ -107,16 +107,35 @@ export function conStatsDesplazados(equipo: EquipoPartido, delta: number): Equip
   return { ...equipo, titulares, suplentes: equipo.suplentes.map(ajustar), lanzadores: proponerLanzadores(titulares.map((t) => t.jugador)) };
 }
 
-/** Mismo equipo con 3 titulares rotados entre líneas: un defensa, un medio y un delantero fuera de posición (SC-005). */
-export function conTresFueraDePosicion(equipo: EquipoPartido): EquipoPartido {
-  const titulares = equipo.titulares.map((t) => ({ ...t }));
-  const indice = (dem: Demarcacion) => titulares.findIndex((t) => t.jugador.demarcacion === dem && t.casillaId !== 'POR');
-  const [d, m, a] = [indice('DEF'), indice('MED'), indice('DEL')];
-  const casillas = [titulares[d]!.casillaId, titulares[m]!.casillaId, titulares[a]!.casillaId];
-  titulares[d]!.casillaId = casillas[1]!;
-  titulares[m]!.casillaId = casillas[2]!;
-  titulares[a]!.casillaId = casillas[0]!;
-  return { ...equipo, titulares };
+/** Mismo equipo con `delta` puntos más en el stat de pase de sus centrocampistas titulares (002/SC-008). */
+export function conPaseDeMedios(equipo: EquipoPartido, delta: number): EquipoPartido {
+  const titulares = equipo.titulares.map((t) => {
+    const j = t.jugador;
+    if (j.demarcacion !== 'MED') return t;
+    const stats = { ...(j.stats as unknown as Record<string, number>) };
+    stats.pase = Math.max(1, Math.min(99, stats.pase! + delta));
+    const nuevos = stats as unknown as Jugador['stats'];
+    return { ...t, jugador: { ...j, id: siguienteId++, stats: nuevos, media: calcularMedia({ demarcacion: j.demarcacion, stats: nuevos }) } };
+  });
+  return { ...equipo, titulares, lanzadores: proponerLanzadores(titulares.map((t) => t.jugador)) };
+}
+
+/**
+ * Mismo equipo con 3 titulares de una demarcación sustituidos por jugadores sintéticos de la misma media en
+ * otra posición, que juegan en las casillas de los sustituidos (SC-011).
+ */
+export function conTresSustituidos(equipo: EquipoPartido, de: Demarcacion, demarcacion: Demarcacion, posicion: Posicion): EquipoPartido {
+  const rng = new Rng(semillaDesdeTexto(`sustituidos-${de}-${posicion}`));
+  let pendientes = 3;
+  const titulares = equipo.titulares.map((t) => {
+    if (pendientes === 0 || t.jugador.demarcacion !== de || t.casillaId === 'POR') return t;
+    pendientes--;
+    const media = Math.round(t.jugador.media);
+    const j = jugadorSintetico(posicion, media, rng);
+    if (j.demarcacion !== demarcacion) throw new Error(`${posicion} no es de ${demarcacion}`);
+    return { ...t, jugador: j };
+  });
+  return { ...equipo, titulares, lanzadores: proponerLanzadores(titulares.map((t) => t.jugador)) };
 }
 
 /** Clona un equipo con ids nuevos (para enfrentar un equipo contra sí mismo). */

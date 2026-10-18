@@ -29,6 +29,20 @@
       "when": 1792098226763,
       "tag": "0003_torneo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792159580993,
+      "tag": "0004_mejoras",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792190790998,
+      "tag": "0005_colocacion",
+      "breakpoints": true
     }
   ]
 }

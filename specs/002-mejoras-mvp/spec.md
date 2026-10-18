@@ -19,6 +19,21 @@
 - Q: ¿La animación de apertura de sobre entra en esta fase? → A: Sí, una versión básica: efectos 2D, sonido, se puede saltar y dura como máximo 6 s. La versión elaborada queda para la fase de diseño visual.
 - Q: ¿Qué velocidades y duraciones tiene la simulación 2D? → A: Tres velocidades, x2, x4 y x8. El partido completo dura 4, 2 y 1 minuto respectivamente, y cada parte, la mitad. El comportamiento de los jugadores debe parecer un partido de fútbol de verdad, con pases, centros y conducciones, natural y nunca errático ni artificial.
 
+### Session 2026-10-16 (revisión de la checklist de la simulación 2D)
+
+- Q: ¿Los 4, 2 y 1 minutos incluyen el descuento? → A: Sí. El descuento de cada parte reglamentaria se acota a 1–3 minutos para que la duración quede dentro de ±5 %.
+- Q: ¿Cómo se ven la prórroga y la tanda de penaltis? → A: La prórroga usa la misma proporción que el resto del partido. La tanda tiene un ritmo propio: unos 3 s reales por lanzamiento a x2, 1,5 s a x4 y 0,75 s a x8.
+- Q: ¿Cómo es la pausa por gol? → A: 2 s reales fijos a cualquier velocidad. Las pausas anunciadas son el gol, el descanso y antes de la prórroga, más «Cargando…» si faltan datos.
+- Q: ¿Cuánto puede tardar en aplicarse un cambio pedido durante la 2D en directo? → A: Como mucho 1 minuto de juego desde que se pide.
+- Q: ¿En qué tiempo se expresan las velocidades de jugadores y balón? → A: En tiempo visual a x2. El reloj de juego es un marcador condensado.
+- Q: Densidad de pases frente a SC-007 → A: Se mantiene SC-007. Si la densidad visual choca con los SC estadísticos, mandan los SC estadísticos.
+- Q: ¿La 2D tiene que funcionar en móviles de 360 px? → A: No debe romperse, pero no es un objetivo completo.
+- Q: ¿Cómo se ven las jugadas a balón parado? → A: De forma simplificada: colocación creíble y el balón sale desde su punto, sin barrera ni jugadas ensayadas.
+- Q: ¿Llevan umbral numérico los patrones de juego que SC-007 no mide? → A: Sí, mínimos medidos con `balance` (SC-007).
+- Q: ¿Cómo se mide SC-009? → A: Con una nota absoluta de 1 a 5 tras ver la versión anterior y la nueva.
+- Q: ¿Se puede «Finalizar partido» en la simulación rápida? → A: Sí, en cualquier momento, no solo en el descanso.
+- Los demás puntos de la revisión (definiciones, magnitudes y criterios de medida) se aprobaron con los valores propuestos, y están en los requisitos y criterios de abajo.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Cartas de jugador vistosas y legibles (Priority: P1)
@@ -101,7 +116,7 @@ Cuando el participante coloca a un jugador fuera de sus posiciones, la penalizac
 
 ### User Story 5 - Finalizar el partido en cualquier momento (Priority: P2)
 
-Mientras ve un partido, el participante puede pulsar «Finalizar partido» y obtener al instante el resultado final. El tiempo restante se simula de golpe con el mismo motor, de modo que el resultado es exactamente el que habría visto si hubiera seguido mirando.
+Mientras ve un partido, en 2D o en simulación rápida, el participante puede pulsar «Finalizar partido» y obtener al instante el resultado final. El tiempo restante se simula de golpe con el mismo motor, de modo que el resultado es exactamente el que habría visto si hubiera seguido mirando.
 
 **Why this priority**: Completa la experiencia de "no esperar" de la US2 para el momento más largo del juego, el partido en 2D, pero no bloquea el resto de mejoras.
 
@@ -113,7 +128,8 @@ Mientras ve un partido, el participante puede pulsar «Finalizar partido» y obt
 2. **Given** las mismas condiciones, decisiones y semilla, **When** un partido se finaliza de forma anticipada y otro se ve hasta el final, **Then** ambos tienen el mismo resultado y los mismos eventos.
 3. **Given** un participante con una sustitución pendiente, **When** finaliza el partido, **Then** la sustitución se aplica en la siguiente interrupción del juego, como si hubiera seguido mirando.
 4. **Given** una eliminatoria empatada, **When** el participante finaliza el partido antes del minuto 90, **Then** la simulación incluye la prórroga y la tanda de penaltis si hacen falta.
-5. **Given** que el cálculo del resto del partido tarda más de un instante, **When** el participante espera, **Then** ve un indicador de progreso y los eventos a medida que se conocen.
+5. **Given** que el cálculo del resto del partido tarda más de 300 ms, **When** el participante espera, **Then** ve un indicador de progreso y los eventos a medida que se conocen.
+6. **Given** un partido en simulación rápida en la primera parte, **When** el participante pulsa «Finalizar partido», **Then** ve el resultado final sin pasar por el descanso.
 
 ---
 
@@ -238,6 +254,10 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 - **Partida con un único humano abandonada en mitad de un turno**: sus temporizadores quedan detenidos hasta que vuelva (FR-021). Para un invitado sigue aplicando la regla de pérdida de partida de 001/FR-000.
 - **«Finalizar partido» durante una ventana de decisión** (descanso, antes de la prórroga): se cierra la ventana sin cambios y se simula el resto.
 - **«Finalizar partido» con el balón en juego y una decisión pendiente**: la decisión se aplica en la siguiente interrupción, como en la reproducción normal.
+- **«Finalizar partido» durante la pausa de un gol**: se cierra la pausa y se simula el resto. En la reproducción de un partido entre humanos ya resuelto, «Finalizar» salta directamente al final.
+- **Faltan datos de la reproducción** (conexión lenta o servidor cargado): el reloj de juego se detiene con el rótulo «Cargando…», que cuenta como pausa anunciada, y la reproducción sigue a la misma velocidad cuando llegan los datos. Nunca se acelera para recuperar el tiempo perdido.
+- **Cambio de velocidad en mitad de una acción** (balón en el aire): se aplica al instante y la acción sigue a la nueva velocidad. Durante una pausa anunciada, la duración de la pausa no cambia.
+- **Expulsión o lesión sin cambio**: el equipo vuelve a repartir las anclas de la línea afectada para cubrir el hueco, y la forma del equipo se mantiene coherente. Un sustituto hereda el ancla del jugador al que sustituye.
 - **Jugador con varias posiciones que dan penalizaciones distintas**: se aplica la más favorable (ver Assumptions).
 - **Special Todocampista**: sigue anulando la penalización por posición salvo en la portería, por encima de la nueva tabla.
 - **Casilla "central del medio" de una defensa de 3 o 5** (001/FR-025a): un DEF sin DCI ni DCD recibe la penalización dentro de la demarcación (−10 %).
@@ -301,7 +321,11 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 
 #### Simulación 2D
 
-- **FR-022**: Homogeneidad: a una velocidad fija, el reloj de juego DEBE avanzar a un ritmo constante respecto al tiempo real durante todo el partido. Solo se permiten pausas anunciadas en pantalla (descanso, antes de la prórroga, ventanas de decisión, celebración de un gol). El movimiento de jugadores y balón DEBE ser continuo, sin congelarse ni acelerarse mientras el balón está en juego.
+- **FR-022**: Homogeneidad: a una velocidad fija, el reloj de juego DEBE avanzar a un ritmo constante respecto al tiempo real durante todo el partido. El movimiento de jugadores y balón DEBE ser continuo, sin congelarse ni acelerarse mientras el balón está en juego. Solo se permiten estas pausas anunciadas en pantalla, que no avanzan el reloj de juego:
+  - **gol**: rótulo «¡GOL!» durante 2 s reales, a cualquier velocidad;
+  - **descanso** y **antes de la prórroga**: son las ventanas de decisión del partido;
+  - **«Cargando…»**: solo si faltan datos de la reproducción (ver Edge Cases).
+- **FR-022a**: Balón parado: los saques de banda, de puerta y de esquina, las faltas, los penaltis y el saque de centro tras un gol DEBEN representarse de forma simplificada. Los jugadores se colocan de forma creíble (rematadores en el área en los córners y las faltas laterales, sacador en su punto) y el balón sale desde el punto del saque. No hay barrera ni jugadas ensayadas.
 - **FR-023**: Realismo del comportamiento. Es el objetivo principal de la mejora de la 2D: el partido DEBE parecer fútbol de verdad.
   - **Juego colectivo con balón**: el equipo DEBE construir jugadas reconocibles:
     - salida de balón desde atrás y juego directo;
@@ -309,30 +333,67 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
     - conducciones y regates para progresar;
     - ataques por banda que terminan en centros al área con rematadores atacando el espacio;
     - tiros desde fuera y dentro del área, y contraataques tras recuperación.
-  - **Balón**: DEBE desplazarse de forma visible y creíble según el tipo de acción (pase raso, pase largo, centro, tiro, despeje), con una velocidad y una trayectoria proporcionadas a la distancia y a la potencia. NO DEBE haber toques sin desplazamiento apreciable del balón, salvo controles y conducciones, en los que el balón acompaña al jugador.
-  - **Jugadores sin balón del equipo atacante**: DEBEN moverse para ofrecer líneas de pase, desmarcarse, abrir el campo y acompañar la jugada, manteniendo distancias razonables entre líneas.
-  - **Equipo defensor**: DEBE mantener su forma, basculando, cubriendo y cerrando espacios según su posición y la táctica (p. ej. Presión alta adelanta el bloque y Catenaccio lo retrasa). Solo el jugador o los jugadores asignados a presionar van al balón; NO DEBEN acudir varios a la vez salvo en una presión coordinada.
+
+    La frecuencia de cada patrón depende de la táctica y de los stats, así que no se exige que aparezcan todos en cada partido. Los mínimos medios se fijan en SC-007.
+  - **Balón**: DEBE desplazarse de forma visible y creíble según el tipo de acción (pase raso, pase largo, centro, tiro, despeje), con una velocidad y una trayectoria proporcionadas a la distancia y a la potencia (límites en FR-025). NO DEBE haber toques sin desplazamiento apreciable del balón, salvo controles y conducciones, en los que el balón acompaña al jugador.
+  - **Jugadores sin balón del equipo atacante**: DEBEN moverse para ofrecer líneas de pase, desmarcarse, abrir el campo y acompañar la jugada. La distancia entre líneas consecutivas del mismo equipo DEBE estar entre 10 y 25 m con balón y entre 8 y 18 m sin balón, salvo en las transiciones.
+  - **Equipo defensor**: DEBE mantener su forma, basculando, cubriendo y cerrando espacios según su posición y la táctica (tabla de efectos de abajo). Como mucho van al balón uno o dos jugadores; NO DEBEN acudir más a la vez salvo en una **presión coordinada**. Una presión coordinada permite hasta 3 jugadores sobre el balón, solo con altura de bloque Presión alta y durante un máximo de 5 s tras una pérdida del rival en su propio campo.
+  - **Efecto de la táctica en el movimiento** (opciones de 001/FR-035):
+
+    | Opción | Efecto visible |
+    |---|---|
+    | Zona | Cada defensor cubre su zona y bascula con el bloque. |
+    | Individual | Cada defensor sigue a su par cuando entra en su zona, aunque se descoloque el bloque. |
+    | Catenaccio | Bloque retrasado: la línea defensiva cerca del área y los medios por detrás de la mitad de su campo. |
+    | Bloque medio | Bloque alrededor del círculo central. |
+    | Presión alta | Bloque adelantado: los delanteros presionan la salida de balón rival y se permite la presión coordinada. |
+    | Línea adelantada | La línea defensiva sube hacia el centro del campo cuando el equipo tiene el balón. |
+    | Equilibrado | Mezcla de pases cortos y largos, y de juego por dentro y por banda. |
+    | Contraataque | Tras recuperar, pases verticales rápidos y desmarques de ruptura; en ataque estático, menos pases. |
+    | Combinativo | Pases cortos, paredes, apoyos cercanos y posesiones largas. |
+    | Juego vertical | Más balones largos y centros, y menos pases horizontales. |
   - **Porteros**: DEBEN colocarse según la posición del balón, salir en centros y mano a mano, y poner en juego el balón tras una parada o un saque de puerta.
   - **Movimiento natural, nunca errático ni artificial**:
     - trayectorias continuas;
     - aceleración y frenada progresivas;
     - orientación coherente con la jugada;
     - sin cambios de dirección bruscos sin motivo, temblores, saltos de posición, jugadores que se atraviesan ni aglomeraciones sin sentido.
-  - **Coherencia con el motor**: cada acción visible DEBE corresponder a una acción calculada por el motor, y su éxito DEBE depender de los stats de los jugadores implicados (001/FR-033). En pantalla DEBEN notarse los stats y la táctica: los jugadores más rápidos se desplazan más rápido, los equipos con mejor pase encadenan más pases y el estilo elegido (combinativo, contraataque, juego vertical) se reconoce en la forma de atacar.
-- **FR-024**: Las estadísticas del partido (001/FR-047) DEBEN incluir, para cada equipo, pases intentados, pases completados, precisión de pase, centros y tiros.
+  - **Coherencia con el motor**: cada acción visible DEBE corresponder a una acción calculada por el motor, y su éxito DEBE depender de los stats de los jugadores implicados (001/FR-033). En pantalla DEBEN notarse los stats y la táctica: un jugador con 20 puntos más de velocidad DEBE correr al menos un 15 % más rápido; los equipos con mejor pase encadenan más pases (SC-008), y el estilo elegido se reconoce en la forma de atacar.
+  - **Equivalencia entre modalidades**: la capa espacial forma parte del cálculo del motor, así que la simulación rápida y la 2D DEBEN seguir dando exactamente el mismo partido con las mismas condiciones (001/SC-008).
+- **FR-024**: Las estadísticas del partido (001/FR-047) DEBEN incluir, para cada equipo, pases intentados, pases completados, precisión de pase, centros y tiros. Los centros NO cuentan como pases. Una **posesión** empieza cuando un equipo gana el balón y termina cuando lo pierde; las interrupciones en las que conserva el balón (falta a favor, saque de banda propio) no la cortan.
 - **FR-025**: Velocidades:
-  - El usuario DEBE poder elegir entre tres velocidades, x2, x4 y x8, que sustituyen a las de 001/FR-049.
-  - Un partido completo de 90 minutos DEBE durar 4 minutos reales a x2, 2 minutos a x4 y 1 minuto a x8. Cada parte dura la mitad (2 minutos, 1 minuto y 30 segundos). La prórroga mantiene la misma proporción, sin contar las pausas anunciadas.
-  - Cada velocidad DEBE reproducir el partido exactamente al doble de rápido que la anterior.
-  - Incluso a x2, los movimientos DEBEN verse ágiles y creíbles, nunca a cámara lenta: un pase de unos 25 m llega en menos de un segundo.
-  - Cambiar de velocidad NO DEBE alterar el desarrollo del partido. Cada participante elige su velocidad sin afectar a nadie más (FR-030).
-- **FR-026**: Finalización anticipada: en un partido 2D, el participante DEBE poder pulsar «Finalizar partido» en cualquier momento. Entonces:
-  - El sistema DEBE simular al instante el tiempo restante con el mismo motor, las mismas decisiones registradas y la misma semilla, de modo que el resultado y los eventos coincidan con los de la reproducción completa.
+  - El usuario DEBE poder elegir entre tres velocidades, x2, x4 y x8, que sustituyen a las de 001/FR-049. La velocidad por defecto es x2, y la aplicación recuerda en el navegador la última que eligió el usuario.
+  - Un partido completo DEBE durar 4 minutos reales a x2, 2 minutos a x4 y 1 minuto a x8, **incluido el descuento** y sin contar las pausas anunciadas. Cada parte dura la mitad (2 minutos, 1 minuto y 30 segundos).
+  - Para que esas duraciones se cumplan, el descuento de cada parte reglamentaria DEBE estar entre 1 y 3 minutos de juego.
+  - La prórroga mantiene la misma proporción: sus 30 minutos duran unos 77 s a x2, más su descuento.
+  - La tanda de penaltis se ve en el campo con un ritmo propio: unos 3 s reales por lanzamiento a x2, 1,5 s a x4 y 0,75 s a x8.
+  - Cada velocidad DEBE reproducir el partido exactamente al doble de rápido que la anterior. Un cambio de velocidad se aplica al instante y NO DEBE alterar el desarrollo del partido. Cada participante elige su velocidad sin afectar a nadie más (FR-030).
+  - **Tiempo visual**: las velocidades de jugadores y balón se definen en tiempo real de reproducción a x2, y el reloj de juego es un marcador condensado (Assumptions). A x2, los movimientos DEBEN verse ágiles y creíbles, nunca a cámara lenta ni acelerados:
+
+    | Acción a x2 | Duración real |
+    |---|---|
+    | Pase raso de unos 25 m | entre 0,5 y 0,9 s |
+    | Pase largo de unos 40 m | 1,5 s como máximo |
+    | Centro | 1,3 s como máximo |
+    | Tiro | 0,7 s como máximo |
+    | Despeje | 1,5 s como máximo |
+    | Velocidad máxima de un jugador | 9 m/s |
+
+    A x4 y x8 todo va dos y cuatro veces más rápido.
+- **FR-025a**: Decisiones durante la 2D en directo: un cambio pedido con el balón en juego DEBE aplicarse en la primera interrupción que ocurra después de, como mucho, **1 minuto de juego** desde que se pide, a cualquier velocidad. La interfaz indica el minuto en que se aplicará en cuanto el servidor lo confirma.
+- **FR-025b**: Presentación de la 2D:
+  - la reproducción DEBE ir a 60 fps en un portátil medio, y nunca por debajo de 30 fps;
+  - en móviles de 360 px de ancho la 2D NO DEBE romperse (campo, marcador y controles visibles), aunque no es un objetivo de diseño completo;
+  - con preferencia de movimiento reducido, se quitan los rótulos animados, pero la reproducción se mantiene;
+  - si las equipaciones de los dos equipos se confunden, se aplica la regla de choque de colores de 001/FR-031b.
+- **FR-026**: Finalización anticipada: en un partido 2D o en simulación rápida, el participante DEBE poder pulsar «Finalizar partido» en cualquier momento. Entonces:
+  - El sistema DEBE simular el tiempo restante en menos de 3 s (SC-010) con el mismo motor, las mismas decisiones registradas y la misma semilla, de modo que el resultado y los eventos coincidan con los de ver el partido hasta el final **sin tomar más decisiones después de pulsar el botón**.
   - Las decisiones pendientes DEBEN aplicarse en la siguiente interrupción, y las ventanas de decisión restantes se cierran sin cambios para ese participante.
   - Las decisiones de los NPC DEBEN tomarse como de costumbre.
   - DEBEN simularse la prórroga y la tanda de penaltis cuando correspondan.
-- **FR-027**: Si el cálculo del resto del partido no es inmediato, el sistema DEBE mostrar un indicador de progreso y los eventos relevantes a medida que se conozcan, y al terminar DEBE mostrar el resumen completo.
-- **FR-028**: En simulación rápida, el participante DEBE poder pulsar «Finalizar partido» en el descanso para pasar directamente al resultado final sin hacer cambios.
+- **FR-027**: Si el cálculo del resto del partido tarda más de 300 ms, el sistema DEBE mostrar un indicador de progreso y los eventos relevantes a medida que se conozcan, y al terminar DEBE mostrar el resumen completo.
+- **FR-028**: En simulación rápida, «Finalizar partido» DEBE estar disponible en cualquier momento, incluido el descanso, y lleva directamente al resultado final sin hacer cambios.
+- **FR-028a**: Rendimiento del motor, para que se cumplan SC-003, SC-010 y la carga de la beta (001/SC-017): un partido completo sin fotogramas DEBE costar como mucho 25 ms de CPU, 40 ms con fotogramas, y el cálculo del resto del partido desde el minuto 0, como mucho 30 ms.
 
 #### Modelo de competición entre humanos (viabilidad del modelo síncrono)
 
@@ -402,6 +463,8 @@ Al cerrar esta spec DEBEN actualizarse en la 001:
 - **001/FR-001, FR-046, FR-056, FR-056a, FR-056b y la Assumption "Partidos entre humanos"**: desaparece el ritmo "en directo" para los partidos entre humanos y el «Seguir» de ambos en el descanso. Los torneos son siempre asíncronos (FR-030), y en un torneo con un solo humano no hay plazos.
 - **001, Edge Case "Desconexión de un humano durante un partido"** (incluida la espera de 10 s del reloj de reproducción): deja de aplicarse, porque no hay partidos síncronos entre humanos.
 - **001/SC-005**: se recalibra con las nuevas penalizaciones (SC-011).
+- **Descuento** (regla del motor de la spec 001): el descuento de cada parte reglamentaria pasa a estar entre 1 y 3 minutos (antes, hasta 6) (FR-025).
+- **SC estadísticos de la 001** (goles por partido, ventaja de la estrategia, orden de los NPC, lesiones y equivalencia entre modalidades, 001/SC-004, SC-006, SC-007, SC-008, SC-010 y SC-015): siguen vigentes con el motor nuevo, aunque el número de acciones por partido baje mucho. Se vuelven a comprobar con `balance` antes de cerrar la US3.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -424,13 +487,16 @@ Al cerrar esta spec DEBEN actualizarse en la 001:
 - **SC-002**: El 100 % de las cartas de la colección Core muestran toda su información sin desplazamiento interno ni ampliación, en escritorio y en un móvil de 360 px de ancho.
 - **SC-003**: En una partida de 1 humano contra NPC, desde que el participante pulsa un botón de avanzar hasta que aparece la siguiente pantalla pasa menos de 1 segundo en el 95 % de los casos, y en ningún momento hay que esperar a que venza un temporizador.
 - **SC-004**: Un draft de 1 humano y 7 NPC en el que el humano elige al instante se completa en menos de 5 minutos, incluidas las animaciones de apertura si están activas.
-- **SC-005**: A velocidad fija, la duración real de cada minuto de juego en 2D varía como máximo un ±10 % respecto a la media del partido, sin contar las pausas anunciadas. Se puede comprobar cronometrando el reloj de juego en pantalla.
-- **SC-006**: Un partido completo de 90 minutos dura 4 minutos a x2, 2 minutos a x4 y 1 minuto a x8, y cada parte la mitad, con un margen de ±5 % y sin contar las pausas anunciadas.
-- **SC-007**: En partidos 2D entre equipos equilibrados, las estadísticas del partido muestran de media al menos 150 pases completados, 10 centros y 15 tiros entre los dos equipos, y al menos el 30 % de las posesiones incluyen 3 o más pases seguidos.
-- **SC-007a**: En la revisión visual de 3 partidos completos a x2, no aparece ningún caso de jugador que se teletransporte, tiemble o atraviese a otro, ni de balón que se mueva sin una acción que lo explique. En el 100 % de las fases defensivas observadas, como mucho dos jugadores del mismo equipo van a la vez al balón, salvo en una presión coordinada.
-- **SC-008**: En series de 1.000 partidos, un equipo cuyos centrocampistas tienen 10 puntos más de pase completa al menos un 10 % más de pases que el mismo equipo sin esa mejora.
-- **SC-009**: En una prueba con al menos 5 personas, al menos el 80 % valora con 4 o más sobre 5 que la simulación 2D "parece un partido de fútbol", frente a la versión anterior.
-- **SC-010**: Tras pulsar «Finalizar partido», el resultado final aparece en menos de 3 segundos en el 95 % de los casos y, en el 100 % de las comparaciones con la misma semilla y las mismas decisiones, coincide con el de ver el partido hasta el final.
+- **SC-005**: A velocidad fija, la duración real de cada minuto de juego en 2D varía como máximo un ±10 % respecto a la media del partido, sin contar las pausas anunciadas. Se comprueba con una prueba automática que registra el reloj de juego durante la reproducción a x2, x4 y x8 (a x8 un minuto dura menos de 1 s y no se puede cronometrar a mano).
+- **SC-006**: Un partido completo, incluido el descuento, dura 4 minutos a x2, 2 minutos a x4 y 1 minuto a x8, y cada parte la mitad, con un margen de ±5 % y sin contar las pausas anunciadas. Se comprueba con la misma prueba automática que SC-005.
+- **SC-007**: En partidos 2D entre equipos equilibrados (media de equipo con una diferencia de ±2 como máximo) y con la táctica por defecto, las estadísticas muestran de media, entre los dos equipos:
+  - al menos 150 pases completados, 10 centros y 15 tiros;
+  - al menos 30 conducciones, 3 paredes, 5 cambios de orientación y 3 contraataques;
+  - al menos el 30 % de las posesiones (FR-024) con 3 o más pases seguidos.
+- **SC-007a**: En la revisión visual de 3 partidos completos a x2, no aparece ningún caso de jugador que se teletransporte, tiemble o atraviese a otro, ni de balón que se mueva sin una acción que lo explique. En el 100 % de las fases defensivas observadas, como mucho dos jugadores del mismo equipo van a la vez al balón, salvo en una presión coordinada. Además, la prueba automática de cinemática del motor (velocidades y aceleraciones máximas, separación, balón solo dentro de una acción y número de presionadores) pasa en 50 partidos con semilla.
+- **SC-008**: En series de 1.000 partidos, un equipo cuyos centrocampistas titulares tienen 10 puntos más en el stat de pase completa al menos un 10 % más de pases (en número absoluto) que el mismo equipo sin esa mejora.
+- **SC-009**: En una prueba con al menos 5 personas, cada una ve 2 minutos de la versión anterior (etiqueta git en el commit `95d9962`, el merge de la spec 001) y 2 minutos de la nueva, y puntúa de 1 a 5 si la nueva "parece un partido de fútbol". Al menos el 80 % la puntúa con 4 o más.
+- **SC-010**: Tras pulsar «Finalizar partido», con el servidor bajo la carga de la beta (100 partidas simultáneas), el resultado final aparece en menos de 3 segundos en el 95 % de los casos. En el 100 % de las comparaciones con la misma semilla y las mismas decisiones, coincide con el de ver el partido hasta el final sin tomar más decisiones después del corte.
 - **SC-011**: En series de 1.000 partidos, un equipo con los 11 titulares en posiciones naturales gana al menos el 60 % de los partidos contra el mismo equipo con 3 titulares en una demarcación con −40 % de penalización. Contra el mismo equipo con 3 titulares penalizados dentro de su demarcación (−10 %), la diferencia de goles media sigue favoreciendo al equipo natural. Sustituye a 001/SC-005.
 - **SC-012**: En el 100 % de las combinaciones de demarcación de origen y posición de destino, la penalización mostrada en la pantalla de alineación coincide con FR-031 y FR-032.
 - **SC-013**: Desde cualquier pantalla, el participante llega al menú principal con 2 clics o menos. El modal de confirmación aparece en el 100 % de las navegaciones que sacan de un draft en curso con otros humanos y en ninguna de las demás.
@@ -446,7 +512,9 @@ Al cerrar esta spec DEBEN actualizarse en la 001:
 - **Imagen de la carta**: en esta fase todas las cartas usan el mismo icono genérico de personaje (como mucho, una variante por demarcación). Las imágenes propias de cada jugador quedan para una fase de diseño visual.
 - **Varias posiciones con penalizaciones distintas**: se calcula la penalización con cada una de las posiciones del jugador como origen y se aplica la más baja. Así, un MED con posiciones MC y MD que juega de DEL recibe −20 % (por MC), y solo un MD puro recibe −30 %.
 - **Alcance de la penalización**: igual que en la spec 001, el porcentaje se aplica a los seis stats del jugador. Los valores de la tabla son reglas confirmadas por el usuario; el equilibrado posterior solo puede cambiarlos con una actualización de esta spec.
-- **Duración del partido 2D**: las duraciones de 4, 2 y 1 minuto son decisión del usuario. El reloj de juego avanza mucho más rápido que el tiempo real (a x2, unas 22 veces más), así que la 2D muestra un partido condensado. Las acciones se reproducen a una velocidad visual creíble, y el número de acciones visibles se ajusta a la duración. El motor deberá generar las jugadas con esa densidad, sin que el partido parezca acelerado ni a cámara lenta.
+- **Duración del partido 2D**: las duraciones de 4, 2 y 1 minuto son decisión del usuario. El reloj de juego avanza mucho más rápido que el tiempo real (a x2, unas 23 veces más), así que la 2D muestra un partido condensado. Las velocidades de jugadores y balón se definen en tiempo visual a x2 (FR-025), y el número de acciones visibles se ajusta a la duración. El motor deberá generar las jugadas con esa densidad, sin que el partido parezca acelerado ni a cámara lenta.
+- **Densidad frente a estadística**: si la densidad visual de acciones choca con los SC estadísticos (SC-007, SC-008, SC-011, SC-018 y los de la spec 001), mandan los SC estadísticos (Principio I), y las velocidades visuales se ajustan dentro de los límites de FR-025.
+- **Partidos con parámetros 1.x**: los partidos en juego se terminan con la versión anterior antes de desplegar. Después, los partidos antiguos solo muestran su resumen guardado, sin reproducción 2D.
 - **Velocidades**: desaparecen la velocidad Normal (x1), x16 y x32. Para ir más rápido que x8 está «Finalizar partido».
 - **Decisiones automáticas en partidos entre humanos**: se usa la misma lógica de decisión de los NPC, con un nivel común para ambos equipos (por defecto, avanzado). El nivel exacto se fija en la planificación.
 - **Fuera de alcance**: la versión elaborada de la animación de apertura (3D, partículas, música) y las imágenes reales de los jugadores quedan para una fase de diseño visual.

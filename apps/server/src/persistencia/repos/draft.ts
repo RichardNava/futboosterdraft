@@ -14,6 +14,8 @@ export interface MesaPersistida {
   indice: number;
   semilla: string;
   mesa: Mesa;
+  /** Partida de un humano pausada con `partida.pausar` (research R10): el turno no corre. */
+  pausa?: { pausadaEn: number; restanteMs: number } | null;
 }
 
 export class RepoDraft {
@@ -47,6 +49,16 @@ export class RepoDraft {
       .update(mesas)
       .set({ ronda: mesa.ronda, turno: mesa.turno, venceEn: new Date(mesa.venceEn), estado: mesa.estado, sobres: mesa.sobres })
       .where(eq(mesas.id, mesaId));
+  }
+
+  /** Pausa el turno en curso guardando lo que le quedaba (research R10; data-model §6.2). */
+  async pausar(mesaId: string, pausadaEn: number, restanteMs: number): Promise<void> {
+    await this.db.update(mesas).set({ pausadaEn: new Date(pausadaEn), restanteMs }).where(eq(mesas.id, mesaId));
+  }
+
+  /** Reanuda el turno: nuevo plazo y sin pausa. */
+  async reanudar(mesaId: string, venceEn: number): Promise<void> {
+    await this.db.update(mesas).set({ venceEn: new Date(venceEn), pausadaEn: null, restanteMs: null }).where(eq(mesas.id, mesaId));
   }
 
   async guardarElecciones(mesaId: string, nuevas: Eleccion[], ahora: number, ejecutor: Ejecutor = this.db): Promise<void> {
@@ -96,7 +108,8 @@ export class RepoDraft {
         venceEn: f.venceEn.getTime(),
         estado: f.estado as Mesa['estado'],
       };
-      return { id: f.id, indice: f.indice, semilla: f.semilla, mesa };
+      const pausa = f.pausadaEn && f.restanteMs !== null ? { pausadaEn: f.pausadaEn.getTime(), restanteMs: f.restanteMs } : null;
+      return { id: f.id, indice: f.indice, semilla: f.semilla, mesa, pausa };
     });
   }
 

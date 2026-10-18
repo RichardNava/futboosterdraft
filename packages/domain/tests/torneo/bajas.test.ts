@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { autoAlineacion } from '../../src/equipo/autoAlineacion';
-import { PARAMETROS_V1 } from '../../src/parametros/index';
+import { PARAMETROS_V2 } from '../../src/parametros/index';
 import {
   aplicarConsecuencias,
   bajasActivas,
@@ -83,9 +83,9 @@ describe('bajas y amarillas (FR-043, SC-014)', () => {
 
   it('la alineación automática sustituye a un jugador de baja', () => {
     const plantilla = plantillaEquilibrada();
-    const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V1);
+    const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V2);
     const lesionado = a.titulares.find((t) => t.casillaId !== 'POR')!.jugadorId;
-    const b = autoAlineacion(plantilla, new Set([lesionado]), PARAMETROS_V1);
+    const b = autoAlineacion(plantilla, new Set([lesionado]), PARAMETROS_V2);
     expect(b.titulares.some((t) => t.jugadorId === lesionado)).toBe(false);
     expect(b.suplentes).not.toContain(lesionado);
   });

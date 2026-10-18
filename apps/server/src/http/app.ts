@@ -6,6 +6,7 @@
  */
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import fastifyCompress from '@fastify/compress';
 import fastifyCookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
 import fastifyWebsocket from '@fastify/websocket';
@@ -56,7 +57,11 @@ export async function construirApp(deps: DependenciasApp): Promise<FastifyInstan
   }) as unknown as FastifyInstance;
 
   await app.register(fastifyCookie);
-  await app.register(fastifyWebsocket, { options: { maxPayload: TAMANO_MAXIMO_MENSAJE } });
+  // Respuestas grandes (reproducción de partidos, research R5) comprimidas; el WebSocket, con permessage-deflate.
+  await app.register(fastifyCompress, { global: true, threshold: 1024, encodings: ['br', 'gzip'] });
+  await app.register(fastifyWebsocket, {
+    options: { maxPayload: TAMANO_MAXIMO_MENSAJE, perMessageDeflate: { threshold: 1024 } },
+  });
 
   // Límite de peticiones por sesión (T141). Sin sesión (registro, entrada como invitado) no se limita aquí.
   const limitador = new Limitador(deps.limiteHttp ?? LIMITE_HTTP);

@@ -32,7 +32,7 @@ La spec 002 mejora el MVP en tres frentes. Se construye sobre el código de la s
 - **Modelo síncrono frente a asíncrono**: la evaluación de FR-029 está en R1.
 - **Motor**: se amplía con un módulo `espacio/` (R3) y una selección de acciones con datos espaciales (R4). Ambos se calculan siempre, así que la rápida y la 2D siguen siendo un único cálculo.
 - **Servidor**: sustituye la espera al reloj del humano más lento (001/R11) por:
-  - un búfer de anticipación de 3 s en la 2D en directo contra un NPC (R6);
+  - un búfer de anticipación de 1 minuto de juego (60 ticks) en la 2D en directo contra un NPC (R6, FR-025a);
   - un procedimiento único `resolverResto` para finalizar, vencer un plazo y resolver los partidos entre humanos y los NPC contra NPC (R7);
   - una resolución única al abrir el partido, con la vista filtrada "pendiente de ver" (R8).
 
@@ -71,7 +71,8 @@ La alineación (con `colocacion`) y el estado del torneo (con `aportaciones`) si
 **Performance Goals**:
 - Motor: ≤ 25 ms por partido sin fotogramas, ≤ 40 ms con fotogramas y `resolverResto` ≤ 30 ms (R3, R7).
 - Avanzar: < 1 s en el 95 % de los casos (SC-003); finalizar: < 3 s en el 95 % (SC-010).
-- 2D: reloj lineal con un margen de ±10 % por minuto (SC-005) y ±5 % por parte y partido (SC-006), a 60 fps.
+- 2D: reloj lineal con un margen de ±10 % por minuto (SC-005) y ±5 % por parte y partido (SC-006), a 60 fps (nunca por debajo de 30 fps, FR-025b).
+- Decisiones en la 2D en directo: aplicadas en la primera interrupción tras como mucho 1 minuto de juego (FR-025a).
 - Cálculo de la colocación en el cliente: < 1 ms (SC-016).
 - Draft de 1 humano y 7 NPC: < 5 min (SC-004).
 

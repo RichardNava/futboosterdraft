@@ -3,15 +3,15 @@ import { previsualizar, validarAlineacion, type Alineacion } from '../../src/equ
 import { autoAlineacion } from '../../src/equipo/autoAlineacion';
 import { FORMACIONES } from '../../src/equipo/formaciones';
 import { tacticaPorDefecto } from '../../src/equipo/tactica';
-import { PARAMETROS_V1 } from '../../src/parametros/index';
-import { plantillaEquilibrada } from './ayudas';
+import { PARAMETROS_V2 } from '../../src/parametros/index';
+import { jugador, plantillaEquilibrada } from './ayudas';
 
 const plantilla = plantillaEquilibrada();
 const porId = new Map(plantilla.map((j) => [j.id, j]));
 const buscar = (id: number) => porId.get(id)!;
 
 function alineacionValida(): Alineacion {
-  return autoAlineacion(plantilla, new Set(), PARAMETROS_V1);
+  return autoAlineacion(plantilla, new Set(), PARAMETROS_V2);
 }
 const codigos = (a: Alineacion, bajas = new Set<number>()) =>
   validarAlineacion(a, plantilla.map((j) => j.id), bajas).map((e) => e.codigo);
@@ -70,7 +70,7 @@ describe('validarAlineacion (FR-026, FR-030)', () => {
 
   it('con menos de 11 disponibles se juega con los que haya', () => {
     const bajas = new Set(plantilla.slice(9).map((j) => j.id));
-    const corta = autoAlineacion(plantilla, bajas, PARAMETROS_V1);
+    const corta = autoAlineacion(plantilla, bajas, PARAMETROS_V2);
     expect(corta.titulares).toHaveLength(9);
     expect(corta.suplentes).toEqual([]);
     expect(validarAlineacion(corta, plantilla.map((j) => j.id), bajas).map((e) => e.codigo)).toEqual([]);
@@ -88,9 +88,71 @@ describe('validarAlineacion (FR-026, FR-030)', () => {
         t === portero ? { ...t, jugadorId: campo.jugadorId } : t === campo ? { ...t, jugadorId: portero.jugadorId } : t,
       ),
     };
-    const vista = previsualizar(cambiado, buscar, PARAMETROS_V1);
+    const vista = previsualizar(cambiado, buscar, PARAMETROS_V2).titulares;
     expect(vista).toHaveLength(11);
     expect(vista.find((c) => c.casillaId === 'POR')).toMatchObject({ fueraDePosicion: true, penalizacion: 0.6 });
     expect(vista.every((c) => FORMACIONES[a.formacion].casillas.some((x) => x.id === c.casillaId))).toBe(true);
+  });
+});
+
+describe('validación de la colocación libre (FR-034a, T116)', () => {
+  const motivos = (a: Alineacion) => validarAlineacion(a, plantilla.map((j) => j.id), new Set()).flatMap((e) => e.motivos);
+  const punto = (a: Alineacion, casillaId: string) => a.titulares.find((t) => t.casillaId === casillaId)!.jugadorId;
+
+  it('acepta una colocación dentro del campo con el portero en su zona', () => {
+    const a = alineacionValida();
+    const delantero = a.titulares.find((t) => t.casillaId !== 'POR')!;
+    expect(codigos({ ...a, colocacion: [{ jugadorId: delantero.jugadorId, x: 700, y: 320 }, { jugadorId: punto(a, 'POR'), x: 50, y: 320 }] })).toEqual([]);
+  });
+
+  it('cada jugador de la colocación es titular y aparece una sola vez', () => {
+    const a = alineacionValida();
+    const titular = a.titulares[3]!.jugadorId;
+    expect(motivos({ ...a, colocacion: [{ jugadorId: a.suplentes[0]!, x: 500, y: 300 }] })).toContain('COLOCACION_INVALIDA');
+    expect(motivos({ ...a, colocacion: [{ jugadorId: titular, x: 500, y: 300 }, { jugadorId: titular, x: 600, y: 300 }] })).toContain('COLOCACION_INVALIDA');
+  });
+
+  it('coordenadas enteras dentro del campo', () => {
+    const a = alineacionValida();
+    const j = a.titulares[3]!.jugadorId;
+    for (const [x, y] of [
+      [1001, 300],
+      [500, -1],
+      [500.5, 300],
+    ]) {
+      expect(motivos({ ...a, colocacion: [{ jugadorId: j, x: x!, y: y! }] })).toContain('COLOCACION_FUERA_DEL_CAMPO');
+    }
+  });
+
+  it('el portero en la zona de portería y ningún otro en ella', () => {
+    const a = alineacionValida();
+    expect(motivos({ ...a, colocacion: [{ jugadorId: punto(a, 'POR'), x: 300, y: 320 }] })).toContain('PORTERO_FUERA_DE_PORTERIA');
+    const otro = a.titulares.find((t) => t.casillaId !== 'POR')!.jugadorId;
+    expect(motivos({ ...a, colocacion: [{ jugadorId: otro, x: 60, y: 300 }] })).toContain('JUGADOR_EN_PORTERIA');
+  });
+});
+
+describe('autoAlineacion con la penalización graduada (US4, T025)', () => {
+  it('para un hueco sin jugador natural prefiere al de su misma demarcación (−10 %) frente a otro mejor de otra (−40 %)', () => {
+    // 4-4-2 sin LD: un LI (75) pierde un 10 % y queda en 67,5; un DC (80) perdería un 40 % y quedaría en 48.
+    const lateralIzquierdo = jugador('DEF', ['LI'], 75);
+    const delanteroSobrante = jugador('DEL', ['DC'], 80);
+    const plantillaSinLd = [
+      jugador('POR', ['POR'], 80),
+      jugador('DEF', ['LI'], 75),
+      lateralIzquierdo,
+      jugador('DEF', ['DCI'], 80),
+      jugador('DEF', ['DCD'], 80),
+      jugador('MED', ['MC'], 80),
+      jugador('MED', ['MC'], 80),
+      jugador('DEL', ['ED'], 80),
+      jugador('DEL', ['EI'], 80),
+      jugador('DEL', ['DC'], 80),
+      jugador('DEL', ['SD'], 80),
+      delanteroSobrante,
+    ];
+    const a = autoAlineacion(plantillaSinLd, new Set(), PARAMETROS_V2, { formaciones: ['4-4-2'] });
+    const enLd = plantillaSinLd.find((j) => j.id === a.titulares.find((t) => t.casillaId === 'LD')!.jugadorId)!;
+    expect(enLd.demarcacion).toBe('DEF');
   });
 });

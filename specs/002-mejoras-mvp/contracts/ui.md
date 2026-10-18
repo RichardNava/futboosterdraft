@@ -50,11 +50,16 @@ El botón se desactiva al pulsarlo hasta recibir respuesta, y cada pulsación ll
 
 ## Partido 2D
 
-- **Velocidades**: x2, x4, x8. Por defecto x2.
-- **«Finalizar partido»**: siempre visible. Muestra un indicador de progreso si la respuesta tarda más de 300 ms (FR-027).
+- **Velocidades**: x2, x4, x8. Por defecto x2; se recuerda la última elegida (`localStorage['fbd.velocidad2d']`, con `try/catch`). El cambio es inmediato.
+- **«Finalizar partido»**: siempre visible, también en la simulación rápida (FR-028). Muestra un indicador de progreso si la respuesta tarda más de 300 ms (FR-027).
 - **Pausas anunciadas**:
-  - «¡GOL!» durante 2 s;
-  - descanso y antes de la prórroga, con «Seguir» (en directo) o «Continuar» (en una reproducción).
+  - «¡GOL!» durante 2 s reales a cualquier velocidad;
+  - descanso y antes de la prórroga, con «Seguir» (en directo) o «Continuar» (en una reproducción);
+  - «Cargando…» si se vacía el búfer; al llegar los datos, sigue a la misma velocidad.
+- **Cambio pedido en directo**: tras confirmarlo el servidor, «Se aplicará en el minuto N».
+- **Tanda de penaltis**: en el campo, lanzador, portero y balón, a 3 s por lanzamiento a x2 (1,5 s a x4 y 0,75 s a x8).
+- **Movimiento reducido**: sin rótulos animados; la reproducción se mantiene.
+- **Móvil (360 px)**: el campo, el marcador y los controles deben verse sin desbordar, aunque no es un objetivo completo.
 - **Reproducción de un partido entre humanos**: sin el panel de cambios; con «Finalizar partido» y velocidades.
 - **Estadísticas al final**: pases intentados y completados, precisión de pase, centros y tiros (FR-024).
 

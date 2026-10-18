@@ -1,8 +1,10 @@
 /**
  * Auditoría de visibilidad (T141; FR-007, FR-054a): recorre todos los mensajes que recibe cada humano en
  * un torneo de prueba y comprueba que ninguno revela lo que aún no puede ver: las elecciones ajenas
- * durante el draft y la alineación del rival antes de que empiece el partido.
+ * durante el draft, la alineación del rival antes de que se resuelva el partido y, en la spec 002, el
+ * resultado de un partido entre humanos "pendiente de ver" (FR-030, research R8; T035).
  */
+import { abrirJornada, crearTorneo } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import WebSocket from 'ws';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -10,7 +12,7 @@ import { programarJornada } from '../../src/actores/preparacion';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
 import { ClienteWs } from '../helpers/clienteWs';
-import { crearRegistrado, peticion } from '../helpers/usuarios';
+import { crearRegistrado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
 type Mensaje = { t: string } & Record<string, any>;
@@ -26,6 +28,9 @@ function claves(valor: unknown, acumuladas = new Set<string>()): Set<string> {
   }
   return acumuladas;
 }
+
+/** Partidos que una vista del torneo muestra como terminados. */
+const finalizados = (vista: any): number => vista.jornadas.flatMap((j: any) => j.partidos).filter((x: any) => x.estado === 'finalizado').length;
 
 const TIPOS_DRAFT = new Set(['estado', 'sala.actualizada', 'draft.turno', 'draft.progreso', 'draft.eleccion_auto', 'ack', 'pong']);
 
@@ -46,11 +51,11 @@ describe('auditoría de visibilidad (FR-054a)', () => {
     await bd?.detener();
   });
 
-  it('ningún mensaje revela elecciones ajenas en el draft ni la alineación rival antes del partido', { timeout: 180_000 }, async () => {
+  it('ningún mensaje revela elecciones ajenas, la alineación rival antes del partido ni un resultado pendiente de ver', { timeout: 180_000 }, async () => {
     const humanos = [await crearRegistrado(srv.url), await crearRegistrado(srv.url)];
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: humanos[0]!.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ritmo: 'directo', plazasHumanas: 2 },
+      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 },
     });
     const partidaId: string = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: humanos[1]!.cookie });
@@ -61,7 +66,12 @@ describe('auditoría de visibilidad (FR-054a)', () => {
     c.programarPrimeraJornada = async (ctx) => {
       const [h1, h2] = c.participantes.filter((p) => p.tipo === 'humano').map((p) => p.id);
       const [n1, n2] = c.participantes.filter((p) => p.tipo === 'npc').map((p) => p.id);
-      await programarJornada(c, ctx, 1, [{ local: h1!, visitante: h2! }, { local: n1!, visitante: n2! }], { inicial: true });
+      // Torneo con esa primera jornada, para que los resultados se registren y se emita `torneo.actualizado`.
+      const ids = [h1!, h2!, n1!, n2!];
+      const base = crearTorneo('liga', ids, [ids], c.partida.semilla);
+      const cruces = [{ local: h1!, visitante: h2! }, { local: n1!, visitante: n2! }];
+      c.torneo = abrirJornada({ ...base, jornadas: base.jornadas.map((j) => (j.numero === 1 ? { ...j, cruces } : j)) }, 1);
+      await programarJornada(c, ctx, 1, cruces, { inicial: true });
     };
 
     // A elige a mano (la primera carta de cada sobre); B deja que venzan sus turnos.
@@ -91,10 +101,51 @@ describe('auditoría de visibilidad (FR-054a)', () => {
     const prep = await a.esperar('preparacion.inicio');
     expect((await peticion(srv.url, `/api/partidos/${prep.partidoId}`, { cookie: humanos[0]!.cookie })).cuerpo.alineaciones).toBeUndefined();
 
-    srv.reloj.avanzar(300_001);
-    for (const cl of clientes) await cl.esperar('partido.pausa_decision');
-    for (const cl of clientes) await cl.enviarYEsperarAck({ t: 'partido.seguir', partidoId: prep.partidoId });
-    for (const cl of clientes) await cl.esperar('partido.fin');
+    // A abre el partido: se resuelve sin B (spec 002, FR-030). Nadie lo ve en directo.
+    const desdeResolucion = clientes.map((cl) => cl.recibidos.length);
+    const abierto = await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: humanos[0]!.cookie });
+    expect(abierto.cuerpo.modo).toBe('reproduccion');
+    // Antes de verlo, ni A ni B reciben el resultado por ninguna vía.
+    for (const [i, cl] of clientes.entries()) {
+      await cl.esperar('torneo.actualizado', { desde: desdeResolucion[i] });
+      for (const m of cl.recibidos.slice(desdeResolucion[i]) as Mensaje[]) {
+        expect(m.t, `${m.t} tras resolver el partido`).not.toBe('partido.fin');
+        expect(m.t).not.toBe('partido.tramo');
+        if (m.t === 'torneo.actualizado') {
+          const p = m.jornadas.flatMap((j: any) => j.partidos).find((x: any) => x.partidoId === prep.partidoId);
+          expect(p.estado).toBe('pendiente_de_ver');
+          expect(p.marcador).toBeNull();
+          expect(m.pendientesDeVer).toContain(prep.partidoId);
+          // La clasificación solo cuenta los partidos que se muestran terminados, no el pendiente de ver (la
+          // jornada 2 puede haberse abierto ya, con sus NPC contra NPC resueltos).
+          expect(m.clasificacion.reduce((s: number, f: any) => s + f.pj, 0)).toBe(2 * finalizados(m));
+        }
+      }
+      const vista = (await peticion(srv.url, `/api/partidas/${partidaId}/torneo`, { cookie: humanos[i]!.cookie })).cuerpo;
+      expect(vista.pendientesDeVer).toEqual([prep.partidoId]);
+    }
+    // Ningún aviso sobre ese partido incluye el marcador.
+    const avisosB = (await peticion(srv.url, '/api/avisos', { cookie: humanos[1]!.cookie })).cuerpo as { texto: string; partidoId?: string }[];
+    expect(avisosB.filter((x) => x.partidoId === prep.partidoId).every((x) => !/\d+\s*-\s*\d+/.test(x.texto))).toBe(true);
+
+    // Cuando A lo marca como visto, A ve el resultado y B sigue sin verlo.
+    const desdeVisto = clientes.map((cl) => cl.recibidos.length);
+    expect((await peticion(srv.url, `/api/partidos/${prep.partidoId}/visto`, { metodo: 'POST', cookie: humanos[0]!.cookie })).estado).toBe(200);
+    const paraA = await clientes[0]!.esperar('torneo.actualizado', { desde: desdeVisto[0] });
+    const partidoA = paraA.jornadas.flatMap((j: any) => j.partidos).find((x: any) => x.partidoId === prep.partidoId);
+    expect(partidoA.marcador).not.toBeNull();
+    expect(paraA.clasificacion.reduce((s: number, f: any) => s + f.pj, 0)).toBe(2 * finalizados(paraA));
+    const vistaB = (await peticion(srv.url, `/api/partidas/${partidaId}/torneo`, { cookie: humanos[1]!.cookie })).cuerpo;
+    expect(vistaB.jornadas.flatMap((j: any) => j.partidos).find((x: any) => x.partidoId === prep.partidoId).marcador).toBeNull();
+    expect(clientes[1]!.recibidos.slice(desdeVisto[1]).some((m) => m.t === 'torneo.actualizado')).toBe(false);
+    // Las tablas de goleadores y asistentes (spec 002, US9) tampoco cuentan el partido que B no ha visto.
+    const total = async (u: UsuarioPrueba, cual: string) =>
+      ((await peticion(srv.url, `/api/partidas/${partidaId}/torneo/${cual}?todos=true`, { cookie: u.cookie })).cuerpo.filas as { total: number }[]).reduce((x, f) => x + f.total, 0);
+    const eventosPartido = (await peticion(srv.url, `/api/partidos/${prep.partidoId}`, { cookie: humanos[0]!.cookie })).cuerpo.eventos as { tipo: string; jugadores: { rol: string }[] }[];
+    const golesPartido = eventosPartido.filter((e) => e.tipo === 'gol').length;
+    const asistenciasPartido = eventosPartido.filter((e) => e.tipo === 'gol' && e.jugadores.some((j) => j.rol === 'asistente')).length;
+    expect((await total(humanos[0]!, 'goleadores')) - (await total(humanos[1]!, 'goleadores'))).toBe(golesPartido);
+    expect((await total(humanos[0]!, 'asistentes')) - (await total(humanos[1]!, 'asistentes'))).toBe(asistenciasPartido);
 
     const filas = await bd.db.execute<{ participante_id: string; jugador_id: number; origen: string }>(
       sql`select participante_id, jugador_id, origen from elecciones`,
@@ -108,16 +159,14 @@ describe('auditoría de visibilidad (FR-054a)', () => {
       const recibidos = cl.recibidos as Mensaje[];
       // El draft acaba con el primer mensaje del torneo: la preparación se anuncia antes que `draft.terminado`.
       const finDraft = recibidos.findIndex((m) => m.t === 'draft.terminado' || m.t === 'preparacion.inicio' || (m.t === 'estado' && m.fase === 'torneo'));
-      const inicioPartido = recibidos.findIndex((m) => m.t === 'partido.inicio');
       expect(finDraft, `humano ${i}`).toBeGreaterThan(0);
-      expect(inicioPartido).toBeGreaterThan(finDraft);
 
       // Durante el draft: solo tipos permitidos, el progreso no dice qué se eligió y cada uno solo ve lo suyo.
       for (const m of recibidos.slice(0, finDraft)) {
         expect(TIPOS_DRAFT.has(m.t), `tipo ${m.t} durante el draft`).toBe(true);
         const k = claves(m);
         expect(k.has('elecciones') || k.has('plantillas'), `${m.t} revela elecciones`).toBe(false);
-        if (m.t === 'draft.progreso') expect(Object.keys(m).sort()).toEqual(['eligieron', 'ronda', 't', 'turno']);
+        if (m.t === 'draft.progreso') expect(Object.keys(m).filter((x) => x !== 'pendientes').sort()).toEqual(['eligieron', 'ronda', 't', 'turno']);
         if (m.t === 'draft.turno') for (const j of m.misElecciones) expect(mias.has(j.id)).toBe(true);
         if (m.t === 'draft.eleccion_auto') expect(autoMias.has(m.jugador.id)).toBe(true);
         if (m.t === 'estado' && m.vista.draft) {
@@ -125,25 +174,25 @@ describe('auditoría de visibilidad (FR-054a)', () => {
           if (m.vista.draft.eleccionActual) expect(mias.has(m.vista.draft.eleccionActual.id)).toBe(true);
         }
       }
-      // Hasta que empieza el partido: ni alineaciones, ni titulares, ni dorsales de nadie.
-      for (const m of recibidos.slice(0, inicioPartido)) {
+      // Ningún mensaje lleva alineaciones, titulares ni dorsales: el partido entre humanos se ve por HTTP.
+      for (const m of recibidos) {
         const k = claves(m);
         for (const prohibida of ['alineacion', 'alineaciones', 'titulares', 'suplentes', 'dorsales']) {
-          expect(k.has(prohibida), `${m.t} contiene "${prohibida}" antes del partido`).toBe(false);
+          expect(k.has(prohibida), `${m.t} contiene "${prohibida}"`).toBe(false);
         }
-        if (m.t === 'preparacion.inicio') expect(Object.keys(m.rival).sort()).toEqual(['bajas', 'id', 'nombre']);
+        if (m.t === 'preparacion.inicio') expect(Object.keys(m.rival).sort()).toEqual(['bajas', 'humano', 'id', 'nombre']);
       }
-      // Al empezar, las dos alineaciones son visibles.
-      const inicio = recibidos[inicioPartido]!;
-      expect(inicio.alineaciones.local.titulares).toHaveLength(11);
-      expect(inicio.alineaciones.visitante.titulares).toHaveLength(11);
     }
+    // Ya resuelto, la reproducción muestra las dos alineaciones a sus participantes.
+    const repro = (await peticion(srv.url, `/api/partidos/${prep.partidoId}/reproduccion`, { cookie: humanos[1]!.cookie })).cuerpo;
+    expect(repro.inicio.alineaciones.local.titulares).toHaveLength(11);
+    expect(repro.inicio.alineaciones.visitante.titulares).toHaveLength(11);
     for (const cl of clientes) await cl.cerrar();
   });
 
   it('el WebSocket rechaza a un navegador desde otra web (Origin) y admite la web pública', async () => {
     const u = await crearRegistrado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ritmo: 'directo' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
     const abrir = (origin: string) =>
       new Promise<number | 'abierto'>((resolve) => {
         const ws = new WebSocket(`${srv.urlWs}/ws?partidaId=${r.cuerpo.id}`, { headers: { cookie: u.cookie, origin } });

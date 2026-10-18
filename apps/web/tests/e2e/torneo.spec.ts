@@ -5,9 +5,10 @@ interface Torneo {
   campeon: { id: string; nombre: string } | null;
   jornadaActual: number | null;
   clasificacion: { nombre: string; pj: number }[];
+  jornadas: { estado: string; partidos: { partidoId: string | null; estado: string }[] }[];
 }
 
-/** Escenario E del quickstart (lo que no depende del correo): liga de 4 en directo hasta el campeón. */
+/** Escenario E del quickstart (lo que no depende del correo): liga de 4 de un humano hasta el campeón. */
 test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) => {
   test.setTimeout(300_000);
   const partidaId = await partidaTrasDraft(page);
@@ -18,7 +19,8 @@ test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) =>
   await expect(page.getByRole('tab', { name: 'Clasificación' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('.clasificacion tbody tr')).toHaveCount(4);
 
-  // Se juega el torneo adelantando el reloj simulado: vence cada preparación y cada descanso sin «Seguir».
+  // Se juega el torneo como el único humano (spec 002, research R9): abre su partido, deja que venza el
+  // descanso sin «Seguir» adelantando el reloj, y pide la siguiente jornada al cerrarse cada una.
   await page.goto('/');
   let bajasVistas = false;
   let torneo: Torneo | null = null;
@@ -36,6 +38,10 @@ test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) =>
         bajasVistas = true;
       }
     }
+    const abierta = torneo.jornadas.find((j) => j.estado === 'abierta');
+    const mio = abierta?.partidos.find((p) => p.estado === 'programado');
+    if (mio) await page.request.post(`/api/partidos/${mio.partidoId}/abrir`);
+    else if (!abierta) await page.request.post(`/api/partidas/${partidaId}/siguiente-jornada`);
     await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 130_000 } });
     await page.waitForTimeout(250);
   }

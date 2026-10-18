@@ -21,5 +21,12 @@ jobs:
       - run: pnpm test
       - run: pnpm test:integration
       - run: pnpm test:equivalence
+      - run: pnpm --filter @fbd/engine bench
+      # Umbral de FR-028a (≤ 25 ms por partido sin fotogramas y ≤ 30 ms resolverResto desde el minuto 0).
+      # El motor de la spec 002 mide hoy unos 80 ms (T086 sigue abierta): el paso informa sin bloquear
+      # hasta que la optimización lo cumpla; entonces hay que quitar `continue-on-error`.
+      - run: pnpm --filter @fbd/balance umbral-motor
+        continue-on-error: true
       # 500 partidos por serie: con 200, algunas diferencias reales (4-4-2 frente a 5-4-1) no llegan a ser significativas.
+      # Incluye las comprobaciones de la spec 002 (SC-007, SC-008, SC-011 y SC-018).
       - run: pnpm balance --n 500

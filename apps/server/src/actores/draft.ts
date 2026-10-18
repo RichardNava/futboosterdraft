@@ -88,12 +88,27 @@ export async function abrirTurno(c: ControladorPartida, ctx: ContextoComando, in
     await resolver(c, ctx, indice);
     return;
   }
+  // El turno 1 de cada ronda abre el sobre propio: animación de apertura y su margen de tiempo, que no resta
+  // tiempo de elección (FR-006 a FR-008; research R17). Solo en este primer envío, nunca al reconectar.
+  const animacion = m.mesa.turno === 1;
+  if (animacion) {
+    m.mesa = { ...m.mesa, venceEn: m.mesa.venceEn + parametrosActuales().draft.margenAnimacionS * 1000 };
+    await c.servicios.repoDraft.actualizarMesa(m.id, m.mesa);
+  }
   for (const pid of m.mesa.participantes) {
-    if (c.participante(pid)?.tipo === 'humano') ctx.emitirA(pid, mensajeTurno(c, m.indice, m.mesa, pid));
+    const p = c.participante(pid);
+    if (p?.tipo === 'humano' && !p.controladoPorNPC) ctx.emitirA(pid, { ...mensajeTurno(c, m.indice, m.mesa, pid), animacion });
   }
   emitirProgreso(c, ctx, m.mesa);
+  programarTurno(c, indice);
+}
+
+/** Programa el vencimiento del turno abierto de una mesa (al abrirlo, al reanudarlo o al rehidratar). */
+export function programarTurno(c: ControladorPartida, indice: number): void {
+  const m = c.mesas.find((x) => x.indice === indice);
+  if (!m) return;
   c.servicios.temporizadores.programar(c.clave(`turno:${indice}`), m.mesa.venceEn + 1, () => {
-    void c.ejecutar((ctx2) => vencerTurno(c, ctx2, indice)).catch((err: unknown) =>
+    void c.ejecutar((ctx) => vencerTurno(c, ctx, indice)).catch((err: unknown) =>
       c.servicios.logger.error({ err, partidaId: c.id }, 'Error al vencer un turno de draft'),
     );
   });
@@ -138,10 +153,29 @@ export async function procesarEleccion(
   return { ok: true };
 }
 
+/**
+ * Un humano abandona durante el draft (FR-019; research R11): su plaza pasa a un NPC intermedio que, si no
+ * había elegido en el turno abierto, elige al instante; el turno se resuelve en cuanto han elegido todos.
+ */
+export async function abandonarDraft(c: ControladorPartida, ctx: ContextoComando, participanteId: string): Promise<void> {
+  const m = c.mesaDe(participanteId);
+  if (!m || m.mesa.estado !== 'en_turno') return;
+  const yaEligio = m.mesa.elecciones.some((e) => e.participanteId === participanteId && e.ronda === m.mesa.ronda && e.turno === m.mesa.turno);
+  if (!yaEligio) {
+    const ahora = c.servicios.reloj.ahora();
+    const antes = m.mesa.elecciones.length;
+    m.mesa = elegir(m.mesa, participanteId, eleccionNPC(c, m.mesa, m.semilla, participanteId, 'intermedio'), ahora, 'npc');
+    await c.servicios.repoDraft.guardarElecciones(m.id, m.mesa.elecciones.slice(antes), ahora);
+  }
+  emitirProgreso(c, ctx, m.mesa);
+  if (todosEligieron(m.mesa)) await resolver(c, ctx, m.indice);
+}
+
 /** Vencimiento del plazo de un turno. */
 export async function vencerTurno(c: ControladorPartida, ctx: ContextoComando, indice: number): Promise<void> {
   const m = c.mesas.find((x) => x.indice === indice);
-  if (!m || m.mesa.estado !== 'en_turno' || c.servicios.reloj.ahora() <= m.mesa.venceEn) return;
+  // Una mesa pausada (research R10) no vence: el turno sigue al reanudarse.
+  if (!m || m.pausa || m.mesa.estado !== 'en_turno' || c.servicios.reloj.ahora() <= m.mesa.venceEn) return;
   await resolver(c, ctx, indice);
 }
 
@@ -209,16 +243,29 @@ async function terminarDraft(c: ControladorPartida, ctx: ContextoComando): Promi
   });
 }
 
+/** Humanos activos de la mesa que aún no han elegido en el turno (los NPC eligen al abrirlo; FR-013, FR-014). */
+function pendientesDeMesa(c: ControladorPartida, mesa: Mesa): { id: string; nombre: string }[] {
+  return mesa.participantes
+    .filter((pid) => {
+      const p = c.participante(pid);
+      return p?.tipo === 'humano' && !p.controladoPorNPC && !mesa.elecciones.some((e) => e.participanteId === pid && e.ronda === mesa.ronda && e.turno === mesa.turno);
+    })
+    .map((pid) => ({ id: pid, nombre: c.nombreDe(c.participante(pid)!) }));
+}
+
 function emitirProgreso(c: ControladorPartida, ctx: ContextoComando, mesa: Mesa): void {
   const eligieron = mesa.participantes.filter((p) => mesa.elecciones.some((e) => e.participanteId === p && e.ronda === mesa.ronda && e.turno === mesa.turno));
+  // «Esperando a…»: quién falta, sin revelar qué carta ha elegido nadie.
+  const pendientes = pendientesDeMesa(c, mesa);
   for (const pid of mesa.participantes) {
-    if (c.participante(pid)?.tipo === 'humano') {
-      ctx.emitirA(pid, { t: 'draft.progreso', ronda: mesa.ronda, turno: mesa.turno, eligieron });
+    const p = c.participante(pid);
+    if (p?.tipo === 'humano' && !p.controladoPorNPC) {
+      ctx.emitirA(pid, { t: 'draft.progreso', ronda: mesa.ronda, turno: mesa.turno, eligieron, pendientes });
     }
   }
 }
 
-function mensajeTurno(c: ControladorPartida, indice: number, mesa: Mesa, participanteId: string) {
+export function mensajeTurno(c: ControladorPartida, indice: number, mesa: Mesa, participanteId: string) {
   const v = vistaParticipante(mesa, participanteId);
   const { catalogo } = c.servicios;
   return {
@@ -230,6 +277,7 @@ function mensajeTurno(c: ControladorPartida, indice: number, mesa: Mesa, partici
     sobre: { id: v.sobre.id, cartas: v.sobre.cartas.map((id) => catalogo.resumen(id)) },
     venceEn: new Date(v.venceEn).toISOString(),
     misElecciones: v.misElecciones.map((id) => catalogo.resumen(id)),
+    animacion: false,
   };
 }
 
@@ -250,6 +298,7 @@ export function vistaDraft(c: ControladorPartida, participanteId: string) {
     misElecciones: v.misElecciones.map((id) => catalogo.resumen(id)),
     eleccionActual: v.eleccionActual === null ? null : catalogo.resumen(v.eleccionActual),
     eligieron: v.eligieron,
+    pendientes: pendientesDeMesa(c, m.mesa),
     participantes: m.mesa.participantes.map((pid) => {
       const p = c.participante(pid);
       return { id: pid, nombre: p ? c.nombreDe(p) : pid, tipo: p?.tipo ?? 'npc', asiento: m.mesa.participantes.indexOf(pid) };
@@ -259,12 +308,5 @@ export function vistaDraft(c: ControladorPartida, participanteId: string) {
 
 /** Rehidratación: reprograma los temporizadores de turno y deja que venzan si ya pasó el plazo. */
 export function reprogramarTurnos(c: ControladorPartida): void {
-  for (const m of c.mesas) {
-    if (m.mesa.estado !== 'en_turno') continue;
-    c.servicios.temporizadores.programar(c.clave(`turno:${m.indice}`), m.mesa.venceEn + 1, () => {
-      void c.ejecutar((ctx) => vencerTurno(c, ctx, m.indice)).catch((err: unknown) =>
-        c.servicios.logger.error({ err, partidaId: c.id }, 'Error al vencer un turno de draft'),
-      );
-    });
-  }
+  for (const m of c.mesas) if (m.mesa.estado === 'en_turno' && !m.pausa) programarTurno(c, m.indice);
 }

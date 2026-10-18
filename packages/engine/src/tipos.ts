@@ -8,7 +8,8 @@ export type Lado = 'local' | 'visitante';
 export interface EquipoPartido {
   participanteId: string;
   formacion: FormacionId;
-  titulares: { casillaId: string; jugador: Jugador }[];
+  /** `ancla`: punto de la colocación libre en unidades y coordenadas del equipo (FR-034); si falta, el de la casilla. */
+  titulares: { casillaId: string; jugador: Jugador; ancla?: { x: number; y: number } }[];
   suplentes: Jugador[];
   tactica: Tactica;
   lanzadores: Lanzadores;
@@ -81,8 +82,23 @@ export interface EstadisticasEquipo {
   fuerasDeJuegoProvocados: number;
   recuperaciones: number;
   recuperacionesCampoRival: number;
+  /** Pases intentados (corto, largo y al espacio); los centros no cuentan (FR-024). */
   pases: number;
   pasesCompletados: number;
+  /** Centros intentados (FR-024). */
+  centros: number;
+  /** pasesCompletados / pases, en porcentaje entero (se calcula en la salida). */
+  precisionPase: number;
+  /** Histograma interno de pases seguidos por posesión: { [n]: posesiones } (SC-007). */
+  secuencias: Record<number, number>;
+  /** Conducciones y regates intentados (SC-007). */
+  conducciones: number;
+  /** Dos pases completados seguidos A → B → A (research R4). */
+  paredes: number;
+  /** Pases completados con un desplazamiento lateral de más de 35 m (research R4). */
+  cambiosOrientacion: number;
+  /** Posesiones que empiezan en campo propio y acaban en tiro con 4 pases o menos y en menos de 150 ticks. */
+  contraataques: number;
   lesiones: number;
   /** Cansancio medio de los jugadores en el campo al final (0 = frescos). */
   cansancioMedio: number;
@@ -95,18 +111,36 @@ export interface Estadisticas {
 
 export type DecisionPartido =
   | { participanteId: string; tipo: 'sustitucion'; datos: { sale: number; entra: number } }
-  | { participanteId: string; tipo: 'formacion'; datos: { formacion: FormacionId; asignacion?: { casillaId: string; jugadorId: number }[] } }
+  | {
+      participanteId: string;
+      tipo: 'formacion';
+      datos: { formacion: FormacionId; asignacion?: { casillaId: string; jugadorId: number }[]; colocacion?: { jugadorId: number; x: number; y: number }[] };
+    }
   | { participanteId: string; tipo: 'tactica'; datos: { tactica: Tactica } }
   | { participanteId: string; tipo: 'lanzadores'; datos: { lanzadores: Lanzadores } }
-  | { participanteId: string; tipo: 'recolocacion'; datos: { asignacion: { casillaId: string; jugadorId: number }[] } };
+  | {
+      participanteId: string;
+      tipo: 'recolocacion';
+      datos: { asignacion: { casillaId: string; jugadorId: number }[]; colocacion?: { jugadorId: number; x: number; y: number }[] };
+    };
 
 /** Decisión registrada: la del participante más el tick en que se pidió y en que se aplicó. */
 export type DecisionRegistrada = DecisionPartido & { solicitadaEnTick: number; aplicadaEnTick?: number };
 
-export type ModoAvance = 'parte' | 'interrupcion' | 'final';
+export type ModoAvance = 'parte' | 'interrupcion' | 'final' | 'ticks';
 
-export interface Fotograma {
-  tick: number;
-  balon: [number, number];
-  j: Record<number, [number, number]>;
+/**
+ * Fotograma v2 (research R5; data-model §7.5): `[tick, bx, by, bz, x0, y0, x1, y1, …]` en unidades enteras
+ * de campo, con los jugadores en el orden de `ordenJugadores`; (-1, -1) = fuera del campo.
+ */
+export type Fotograma = number[];
+
+/** Acción con balón visible en la 2D (research R4; data-model §7.5). */
+export interface AccionVisible {
+  tipo: 'pase_corto' | 'pase_largo' | 'pase_espacio' | 'conduccion' | 'regate' | 'centro' | 'tiro' | 'despeje' | 'saque' | 'control';
+  inicioTick: number;
+  finTick: number;
+  de: number;
+  a?: number;
+  exito: boolean;
 }

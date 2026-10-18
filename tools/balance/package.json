@@ -8,7 +8,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
-    "balance": "tsx src/cli.ts"
+    "balance": "tsx src/cli.ts",
+    "umbral-motor": "tsx src/umbralMotor.ts"
   },
   "dependencies": {
     "@fbd/domain": "workspace:*",

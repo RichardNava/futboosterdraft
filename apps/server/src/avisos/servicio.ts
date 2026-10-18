@@ -9,7 +9,7 @@ import type { BaseDatos } from '../persistencia/db';
 import { avisos, usuarios } from '../persistencia/esquema/index';
 import type { Reloj } from '../programador/reloj';
 
-export type TipoAviso = 'jornada_abierta' | 'rival_listo' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado';
+export type TipoAviso = 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado';
 
 export interface NuevoAviso {
   usuarioId: string;

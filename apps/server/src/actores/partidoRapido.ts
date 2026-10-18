@@ -3,18 +3,21 @@
  *
  * - `partido.inicio` revela las alineaciones, dorsales y equipaciones (FR-054a).
  * - Cada tramo (`avanzar('parte')`) se persiste antes de anunciarse con `partido.tramo`.
- * - En el descanso (y antes de la prórroga) se admiten decisiones hasta que todos los humanos pulsan
- *   «Seguir» o vence el tiempo (`descansoS`). Los NPC cuentan siempre como listos.
+ * - En el descanso (y antes de la prórroga) se admiten decisiones hasta que el humano pulsa «Seguir», que
+ *   reanuda al instante (FR-012), o vence el tiempo (`descansoS`). En directo solo hay un humano por
+ *   partido: los partidos entre humanos se resuelven sin ellos (spec 002, FR-030).
  * - NPC contra NPC: `avanzar('final')` sin pausas.
  */
-import { decidirAlineacion, decidirNPCEnPausa, jugarHastaElFinal, type NivelesPartido } from '@fbd/ai';
+import { decidirAlineacion, decidirNPCEnPausa, jugarHastaElFinal, resolverResto, type NivelesPartido } from '@fbd/ai';
 import {
   asignarDorsalesIniciales,
+  completarDorsales,
   derivarSemilla,
   equipacionEnPartido,
   equipacionesAleatorias,
   parametrosActuales,
   parametrosPorVersion,
+  posicionesColocadas,
   type Alineacion,
   type Dorsales,
   type Equipaciones,
@@ -25,6 +28,7 @@ import {
   avanzar,
   crearPartido,
   minutoMostrable,
+  ordenJugadores,
   type DecisionPartido,
   type DecisionRegistrada,
   type EntradaPartido,
@@ -37,7 +41,7 @@ import type { FilaPartido } from '../persistencia/repos/partidos';
 import type { ContextoComando } from './actor';
 import { alineacionVigente, bajasActivas, plantillaDe } from './equipo';
 import type { ControladorPartida } from './partida';
-import { avanzar2D, cancelarEspera2D, crearEstado2D, vista2D, type Estado2D } from './partido2d';
+import { avanzar2D, crearEstado2D, vista2D, type Estado2D } from './partido2d';
 
 export interface PartidoEnCurso {
   fila: FilaPartido;
@@ -45,9 +49,10 @@ export interface PartidoEnCurso {
   inicio: Record<string, unknown> & { t: string };
   eventos: EventoPartido[];
   ultimo: Omit<ResultadoTramo, 'estado'> | null;
-  pausa: { motivo: 'descanso' | 'pre_prorroga'; venceEn: number } | null;
+  /** Ventana de decisión abierta; `restanteMs` si la partida de un humano está pausada (research R10). */
+  pausa: { motivo: 'descanso' | 'pre_prorroga'; venceEn: number; restanteMs?: number } | null;
   listos: Set<string>;
-  /** Solo en 2D con algún humano: velocidades y relojes de reproducción (ver `partido2d.ts`). */
+  /** Solo en la 2D en directo contra un NPC: búfer de anticipación y tramos enviados (ver `partido2d.ts`). */
   dosD: Estado2D | null;
 }
 
@@ -94,12 +99,12 @@ async function alineacionParaPartido(c: ControladorPartida, participanteId: stri
 }
 
 /** Equipo para el motor a partir de la alineación con la que juega el participante. */
-async function equipoParaMotor(
+export async function equipoParaMotor(
   c: ControladorPartida,
   participanteId: string,
   rivalId: string,
   semilla: string,
-): Promise<{ equipo: EquipoPartido; dorsales: Dorsales }> {
+): Promise<{ equipo: EquipoPartido; dorsales: Dorsales; asignados: { jugadorId: number; dorsal: number }[] }> {
   const { alineacion, plantilla } = await alineacionParaPartido(c, participanteId, rivalId, semilla);
   const porId = new Map(plantilla.map((j) => [j.id, j]));
   let dorsales = await c.servicios.repoEquipo.dorsales(participanteId);
@@ -109,15 +114,28 @@ async function equipoParaMotor(
       alineacion.titulares,
       alineacion.formacion,
       derivarSemilla(c.partida.semilla, `dorsales:${participanteId}`),
+      posicionesColocadas(alineacion.formacion, alineacion.titulares, alineacion.colocacion, parametrosActuales()),
     );
+    await c.servicios.repoEquipo.guardarDorsales(participanteId, dorsales);
+  }
+  // Al empezar, cada convocado sin dorsal recibe el libre más bajo (FR-038).
+  const convocados = [...alineacion.titulares.map((t) => t.jugadorId), ...alineacion.suplentes];
+  const completados = completarDorsales(dorsales, convocados);
+  if (completados.asignados.length) {
+    dorsales = completados.dorsales;
     await c.servicios.repoEquipo.guardarDorsales(participanteId, dorsales);
   }
   return {
     dorsales,
+    asignados: completados.asignados,
     equipo: {
       participanteId,
       formacion: alineacion.formacion,
-      titulares: alineacion.titulares.map((t) => ({ casillaId: t.casillaId, jugador: porId.get(t.jugadorId)! })),
+      // Con colocación libre, cada titular juega desde su punto (FR-034; research R13).
+      titulares: alineacion.titulares.map((t) => {
+        const punto = alineacion.colocacion?.find((c) => c.jugadorId === t.jugadorId);
+        return { casillaId: t.casillaId, jugador: porId.get(t.jugadorId)!, ...(punto ? { ancla: { x: punto.x, y: punto.y } } : {}) };
+      }),
       suplentes: alineacion.suplentes.map((id) => porId.get(id)!),
       tactica: alineacion.tactica,
       lanzadores: alineacion.lanzadores,
@@ -135,13 +153,14 @@ export function equipacionesDelPartido(c: ControladorPartida, localId: string, v
 }
 
 /** Entrada sin los parámetros (se recuperan por versión al reconstruir). */
-type EntradaGuardada = Omit<EntradaPartido, 'parametros'>;
+export type EntradaGuardada = Omit<EntradaPartido, 'parametros'>;
 
 /** Alineaciones iniciales de los dos equipos, tal como se anuncian al empezar el partido. */
 export function resumenAlineaciones(c: ControladorPartida, entrada: Pick<EntradaGuardada, 'local' | 'visitante'>) {
   const resumen = (e: EquipoPartido) => ({
     formacion: e.formacion,
     titulares: e.titulares.map((t) => ({ casillaId: t.casillaId, jugador: c.servicios.catalogo.resumen(t.jugador.id) })),
+    colocacion: e.titulares.flatMap((t) => (t.ancla ? [{ jugadorId: t.jugador.id, x: t.ancla.x, y: t.ancla.y }] : [])),
     suplentes: e.suplentes.map((j) => c.servicios.catalogo.resumen(j.id)),
     tactica: e.tactica,
     lanzadores: e.lanzadores,
@@ -174,7 +193,7 @@ export async function iniciarPartido(
     estado: 'primera_parte',
     versionParametros: parametros.version,
     iniciadoEn: new Date(reloj.ahora()),
-    resueltoAutomaticamente: opciones.automatico === true,
+    resolucion: opciones.automatico === true ? 'plazo' : sinHumanos(c, fila) ? 'npc' : 'directo',
   });
   const nombre = (pid: string) => (c.participante(pid) ? c.nombreDe(c.participante(pid)!) : pid);
   const inicio = {
@@ -186,17 +205,24 @@ export async function iniciarPartido(
     alineaciones: resumenAlineaciones(c, entrada),
     dorsales: { ...local.dorsales, ...visitante.dorsales },
     equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId),
+    decisiones: true,
+    ordenJugadores: ordenJugadores(motor),
+    dorsalesAsignados: [...local.asignados, ...visitante.asignados],
   };
-  const p: PartidoEnCurso = { fila: { ...fila, estado: 'primera_parte' }, motor, inicio, eventos: [], ultimo: null, pausa: null, listos: new Set(), dosD: null };
+  const p: PartidoEnCurso = { fila: { ...fila, estado: 'primera_parte', entrada: guardada }, motor, inicio, eventos: [], ultimo: null, pausa: null, listos: new Set(), dosD: null };
   c.partidosEnCurso.set(fila.id, p);
   metricas.partidosSimuladosTotal.inc();
   emitirAParticipantes(c, ctx, fila, inicio);
+  // Resuelto sin el participante (al vencer el plazo): el aviso de los dorsales nuevos va a su bandeja.
+  if (opciones.automatico === true) {
+    for (const [pid, r] of [[fila.localId, local], [fila.visitanteId, visitante]] as const) if (r.asignados.length) await c.alAsignarDorsales?.(pid, r.asignados);
+  }
 
   // Sin humanos, o resuelto al vencer el plazo de la jornada: de una vez y sin pausas (FR-056a).
   const conHumanos = [fila.localId, fila.visitanteId].some((pid) => esHumano(c, pid));
   if (conHumanos && !opciones.automatico && c.partida.tipoSimulacion === '2d') {
-    // 2D: de interrupción en interrupción, al ritmo de la reproducción de los humanos (FR-049).
-    p.dosD = crearEstado2D(c, p);
+    // 2D: con el búfer de anticipación, al ritmo de la reproducción del humano (research R6).
+    p.dosD = crearEstado2D();
     await avanzar2D(c, ctx, p);
     return;
   }
@@ -223,6 +249,9 @@ async function jugarTramo(c: ControladorPartida, ctx: ContextoComando, p: Partid
  */
 export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, r: ResultadoTramo): Promise<Record<string, unknown> & { t: string }> {
   const decisionesAntes = p.motor.decisiones.length;
+  // Las decisiones se aplican al reanudar, en el punto en que acabó el tramo anterior.
+  const minutoAntes = minutoMostrable(p.motor.reloj);
+  const tickAntes = p.motor.tick;
   p.motor = r.estado;
   p.eventos.push(...r.eventos);
   const { estado: _estado, fotogramas: _fotogramas, ...sinEstado } = r;
@@ -238,13 +267,15 @@ export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando
   });
 
   for (const d of r.estado.decisiones.slice(decisionesAntes)) {
+    const tick = d.aplicadaEnTick ?? r.estado.tick;
     emitirAParticipantes(c, ctx, p.fila, {
       t: 'partido.decision_aplicada',
       partidoId: p.fila.id,
       participanteId: d.participanteId,
       tipo: d.tipo,
       datos: d.datos,
-      aplicadaEnTick: d.aplicadaEnTick ?? r.estado.tick,
+      aplicadaEnTick: tick,
+      minuto: tick === tickAntes ? minutoAntes : minutoMostrable(r.estado.reloj),
     });
   }
   const tramo = {
@@ -258,13 +289,15 @@ export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando
     fase: r.fase,
     /** Minuto de juego en que acaba el tramo (la reproducción 2D lo usa para el reloj del marcador). */
     minuto: minutoMostrable(r.estado.reloj),
+    acciones: r.acciones,
     ...(r.fotogramas ? { fotogramas: r.fotogramas } : {}),
+    provisional: false,
   };
   emitirAParticipantes(c, ctx, p.fila, tramo);
   return tramo;
 }
 
-function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, motivo: 'descanso' | 'pre_prorroga'): void {
+export function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, motivo: 'descanso' | 'pre_prorroga'): void {
   const descansoS = (c.partida.tiempos as { descansoS: number }).descansoS;
   const venceEn = c.servicios.reloj.ahora() + descansoS * 1000;
   p.pausa = { motivo, venceEn };
@@ -272,23 +305,28 @@ function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCur
   // El NPC rival decide al empezar la pausa; sus cambios se aplican al reanudar, como los del humano.
   decidirNPCEnPausa(p.motor, nivelesDe(c, p.fila), p.fila.semilla);
   emitirPausa(c, ctx, p);
-  c.servicios.temporizadores.programar(c.clave(`pausa:${p.fila.id}`), venceEn, () => {
+  programarVentana(c, p);
+}
+
+/** Programa el cierre de la ventana de decisión abierta (al abrirla o al reanudar una partida pausada). */
+export function programarVentana(c: ControladorPartida, p: PartidoEnCurso): void {
+  if (!p.pausa) return;
+  c.servicios.temporizadores.programar(c.clave(`pausa:${p.fila.id}`), p.pausa.venceEn, () => {
     void c
-      .ejecutar(async (ctx2) => {
-        if (p.pausa && c.partidosEnCurso.get(p.fila.id) === p) await reanudar(c, ctx2, p);
+      .ejecutar(async (ctx) => {
+        if (p.pausa && p.pausa.restanteMs === undefined && c.partidosEnCurso.get(p.fila.id) === p) await reanudar(c, ctx, p);
       })
       .catch((err: unknown) => c.servicios.logger.error({ err, partidaId: c.id }, 'Error al reanudar el partido'));
   });
 }
 
-function emitirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): void {
+export function emitirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): void {
   if (!p.pausa) return;
   emitirAParticipantes(c, ctx, p.fila, {
     t: 'partido.pausa_decision',
     partidoId: p.fila.id,
     motivo: p.pausa.motivo,
     venceEn: new Date(p.pausa.venceEn).toISOString(),
-    listos: [...p.listos],
   });
 }
 
@@ -296,7 +334,9 @@ async function reanudar(c: ControladorPartida, ctx: ContextoComando, p: PartidoE
   c.servicios.temporizadores.cancelar(c.clave(`pausa:${p.fila.id}`));
   p.pausa = null;
   p.listos.clear();
-  await jugarTramo(c, ctx, p, 'parte');
+  // En la 2D en directo se sigue con el búfer de anticipación; en la rápida, hasta la siguiente parada.
+  if (p.dosD) await avanzar2D(c, ctx, p);
+  else await jugarTramo(c, ctx, p, 'parte');
 }
 
 export async function terminarPartido(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): Promise<void> {
@@ -316,14 +356,21 @@ export async function terminarPartido(c: ControladorPartida, ctx: ContextoComand
   await c.trasTerminarPartido?.(ctx, p);
 }
 
+/** Ninguno de los dos lados lo controla un humano (NPC contra NPC, también tras un abandono). */
+export function sinHumanos(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): boolean {
+  return [fila.localId, fila.visitanteId].every((pid) => {
+    const p = c.participante(pid);
+    return !p || p.tipo !== 'humano' || p.controladoPorNPC;
+  });
+}
+
 /** Termina sin más pausas un partido que sigue en juego (al vencer el plazo de la jornada). */
 export async function forzarFinal(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): Promise<void> {
   if (p.fila.estado === 'finalizado') return;
   c.servicios.temporizadores.cancelar(c.clave(`pausa:${p.fila.id}`));
-  cancelarEspera2D(c, p);
   p.pausa = null;
   p.listos.clear();
-  await c.servicios.repoPartidos.actualizar(p.fila.id, { resueltoAutomaticamente: true });
+  await c.servicios.repoPartidos.actualizar(p.fila.id, { resolucion: 'plazo' });
   await jugarTramo(c, ctx, p, 'final');
 }
 
@@ -346,6 +393,32 @@ export async function procesarSeguir(c: ControladorPartida, ctx: ContextoComando
   const humanos = [p.fila.localId, p.fila.visitanteId].filter((pid) => esHumano(c, pid));
   if (humanos.every((pid) => p.listos.has(pid))) await reanudar(c, ctx, p);
   else emitirPausa(c, ctx, p);
+  return { ok: true };
+}
+
+/**
+ * «Finalizar partido» (FR-026 a FR-028; research R7): en cualquier fase menos `finalizado`, también en
+ * plena primera parte o durante la pausa de un gol en la 2D. Cierra la ventana de decisión abierta sin
+ * cambios, resuelve el resto con `resolverResto` (los NPC deciden en las paradas; las decisiones pendientes
+ * del humano se aplican en la primera interrupción no simulada), guarda y anuncia un `partido.tramo` por
+ * parte y después `partido.fin`. Es idempotente.
+ */
+export async function procesarFinalizar(c: ControladorPartida, ctx: ContextoComando, participanteId: string, partidoId: string): Promise<ResultadoComandoPartido> {
+  const p = c.partidosEnCurso.get(partidoId);
+  if (!p || (p.fila.localId !== participanteId && p.fila.visitanteId !== participanteId)) {
+    // Ya terminado (y fuera de los partidos en curso): no hay nada más que hacer.
+    const fila = await c.servicios.repoPartidos.obtener(partidoId);
+    if (fila?.estado === 'finalizado' && (fila.localId === participanteId || fila.visitanteId === participanteId)) return { ok: true };
+    return fallo('PARTIDO_NO_ENCONTRADO', 'No juegas ese partido');
+  }
+  if (p.fila.estado === 'finalizado') return { ok: true };
+  c.servicios.temporizadores.cancelar(c.clave(`pausa:${p.fila.id}`));
+  p.pausa = null;
+  p.listos.clear();
+  const tramos: ResultadoTramo[] = [];
+  resolverResto(p.motor, nivelesDe(c, p.fila), p.fila.semilla, (t) => tramos.push(t));
+  for (const t of tramos) await registrarTramo(c, ctx, p, t);
+  await terminarPartido(c, ctx, p);
   return { ok: true };
 }
 
@@ -381,9 +454,10 @@ export function vistaPartido(c: ControladorPartida, participanteId: string) {
     marcador: p.ultimo?.marcador ?? p.motor.marcador,
     estadisticas: p.ultimo?.estadisticas ?? null,
     fase: p.fila.estado,
-    pausa: p.pausa ? { motivo: p.pausa.motivo, venceEn: new Date(p.pausa.venceEn).toISOString(), listos: [...p.listos] } : null,
-    // 2D: los tramos ya simulados (sin fotogramas, salvo el último, para seguir reproduciendo) y la velocidad.
-    ...(p.dosD ? { dosD: vista2D(p, participanteId) } : {}),
+    pausa: p.pausa ? { motivo: p.pausa.motivo, venceEn: new Date(p.pausa.venceEn).toISOString() } : null,
+    // 2D en directo: los tramos ya simulados (con fotogramas los que aún no se han visto) y el último tick
+    // informado, para seguir reproduciendo desde ahí.
+    ...(p.dosD ? { dosD: vista2D(p) } : {}),
   };
 }
 
