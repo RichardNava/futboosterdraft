@@ -1,13 +1,14 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.2 → 1.0.3 (PATCH: se añade a "Decisiones resueltas" la referencia a
-  `specs/002-mejoras-mvp/` para el ritmo de los torneos; ningún principio se añade, elimina ni redefine)
-- Principios modificados: ninguno
-- Secciones modificadas: "Decisiones resueltas" (torneos: los torneos son siempre asíncronos según la
-  spec 002, FR-030)
+- Version change: 1.0.3 → 1.0.4 (PATCH: aclaración del Principio IX sobre cómo comprueba una persona no
+  técnica los criterios estadísticos; ningún principio se añade, elimina ni redefine)
+- Principios modificados: IX (aclaración: los criterios estadísticos se comprueban leyendo el informe
+  legible que genera la herramienta de equilibrado del proyecto)
+- Secciones modificadas: ninguna más
 - Secciones añadidas / eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
-- TODOs pendientes: ninguno
+- TODOs pendientes: añadir a "Decisiones resueltas" la referencia a `specs/003-mejoras-ux-simulacion/`
+  al cerrar esa spec (tasks.md T126)
 -->
 # Fútboosterdraft Constitution
 
@@ -159,7 +160,10 @@ relacionados. Las decisiones técnicas concretas se documentan en la fase de pla
 ### IX. La calidad debe demostrarse mediante pruebas
 
 - **Verificable por una persona no técnica:** cada criterio de éxito de una especificación DEBE
-  poder comprobarse usando la aplicación, sin leer código.
+  poder comprobarse usando la aplicación, sin leer código. Los criterios estadísticos, que se miden
+  sobre series de partidos o de torneos simulados, se comprueban leyendo el informe legible que genera
+  la herramienta de equilibrado del proyecto, con cada criterio, su objetivo, el valor medido y si se
+  cumple.
 - Las funcionalidades relevantes DEBEN acompañarse de pruebas adecuadas a su impacto y complejidad.
 - Se priorizan pruebas automatizadas para: reglas y límites del draft; selección simultánea y
   circulación de sobres; cálculo de plantillas y validación de posiciones; aplicación de
@@ -252,4 +256,4 @@ implementarse:
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.0.3 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-17
+**Version**: 1.0.4 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-19
