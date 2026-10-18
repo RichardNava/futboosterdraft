@@ -1,7 +1,7 @@
 {
   "nombre": "lesion-grave",
   "descripcion": "Un jugador sufre una lesión grave (baja de varios partidos).",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "local": {
     "participanteId": "local",
     "jugadores": [
@@ -50,10 +50,10 @@
   },
   "eliminatoria": false,
   "semillas": [
-    "e75ef9653e302d791c37d06700fa7469"
+    "5a631dd2102ca69335cbc2f88d93bd6e"
   ],
   "esperado": {
-    "jugadorId": 38,
-    "lado": "local"
+    "jugadorId": 142,
+    "lado": "visitante"
   }
 }

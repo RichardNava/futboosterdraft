@@ -1,4 +1,4 @@
-import { PARAMETROS_V1 } from '@fbd/domain';
+import { PARAMETROS_V2 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { expulsar } from '../src/acciones/plantel';
 import type { Contexto } from '../src/acciones/contexto';
@@ -131,7 +131,7 @@ describe('reglas del motor', () => {
     const e = crearPartido(entrada('capitania', { local: equipo('local', { specials: ['Capitania'] }) }));
     const eq = local(e);
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V1.specials.capitania);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V2.specials.capitania);
   });
 
   it('Fortaleza mental solo actúa yendo por detrás', () => {
@@ -140,7 +140,7 @@ describe('reglas del motor', () => {
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
     expect(bonusEquipo(e, eq, j)).toBe(0);
     e.marcador = { local: 0, visitante: 1 };
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V1.specials.fortalezaMental);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V2.specials.fortalezaMental);
   });
 
   it('Santo: desde el minuto 80, en la prórroga y en eliminatoria yendo ganando o empatado; en liga antes del 80, no', () => {

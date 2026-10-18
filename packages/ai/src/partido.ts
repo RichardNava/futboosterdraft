@@ -7,6 +7,7 @@
  * Nunca pide más cambios de los que quedan (FR-042) y deja de reserva los que marca su perfil para
  * posibles lesiones. Las lesiones y expulsiones las resuelve el motor.
  */
+import { resolverResto } from './resolverResto';
 import { derivarSemilla, Rng, tacticaPorDefecto, validarTactica, type NivelNPC, type Semilla, type Tactica } from '@fbd/domain';
 import {
   aplicarDecision,
@@ -88,17 +89,11 @@ export function decidirNPCEnPausa(estado: EstadoMotor, niveles: NivelesPartido, 
 /**
  * Juega hasta el final un partido en el que no hay que esperar a ningún humano (NPC contra NPC,
  * resolución automática, simulaciones de equilibrado), parándose en el descanso y antes de la prórroga
- * para que los NPC decidan. Sin NPC equivale a `avanzar(estado, 'final')`.
+ * para que los NPC decidan. Devuelve un único tramo con todos los eventos (ver `resolverResto`).
  */
 export function jugarHastaElFinal(estado: EstadoMotor, niveles: NivelesPartido, semilla: Semilla): ResultadoTramo {
-  if (!niveles.local && !niveles.visitante) return avanzar(estado, 'final');
-  let r = avanzar(estado, 'parte');
-  const desdeTick = r.desdeTick;
-  const eventos = [...r.eventos];
-  for (let i = 0; i < 8 && r.fase !== 'finalizado'; i++) {
-    if (r.fase === 'descanso' || r.fase === 'pre_prorroga') decidirNPCEnPausa(r.estado, niveles, semilla);
-    r = avanzar(r.estado, 'parte');
-    eventos.push(...r.eventos);
-  }
-  return { ...r, desdeTick, eventos };
+  const r = resolverResto(estado, niveles, semilla);
+  const ultimo = r.tramos[r.tramos.length - 1];
+  if (!ultimo) return avanzar(estado, 'final');
+  return { ...ultimo, estado: r.estado, desdeTick: r.tramos[0]!.desdeTick, eventos: r.eventos };
 }

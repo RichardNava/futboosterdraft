@@ -8,6 +8,7 @@ import type { RepoEquipo } from '../persistencia/repos/equipo';
 import type { RepoPartidas } from '../persistencia/repos/partidas';
 import type { RepoPartidos } from '../persistencia/repos/partidos';
 import type { RepoTorneo } from '../persistencia/repos/torneo';
+import type { RepoVisionados } from '../persistencia/repos/visionados';
 import type { Logger } from '../observabilidad/logger';
 import type { Metricas } from '../observabilidad/metricas';
 import type { Reloj } from '../programador/reloj';
@@ -21,6 +22,7 @@ export interface ServiciosPartida {
   repoEquipo: RepoEquipo;
   repoPartidos: RepoPartidos;
   repoTorneo: RepoTorneo;
+  repoVisionados: RepoVisionados;
   catalogo: Catalogo;
   reloj: Reloj;
   temporizadores: Temporizadores;

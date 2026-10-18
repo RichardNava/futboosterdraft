@@ -83,7 +83,7 @@ de turno, preparación y jornada sin esperar.
 | `packages/protocol` | Contratos HTTP y WebSocket (Zod) y esquema del catálogo |
 | `apps/server` | Fastify + WebSocket, actor por partida, PostgreSQL (Drizzle), autenticación |
 | `apps/web` | React + Vite; Canvas 2D para el partido |
-| `tools/balance` | Equilibrado por simulación masiva (criterios SC-004 a SC-007, SC-010, SC-015) |
+| `tools/balance` | Equilibrado por simulación masiva (spec 001: SC-004, SC-006, SC-007, SC-010, SC-015; spec 002: SC-007, SC-008, SC-011, SC-018) |
 | `tools/fixtures` | Generador del catálogo Core y semillas de escenarios de prueba |
 | `tools/load` | Prueba de carga con k6 (SC-017) |
 
@@ -94,14 +94,15 @@ de turno, preparación y jornada sin esperar.
 | `pnpm lint` / `pnpm typecheck` | ESLint (prohíbe `Math.random` y `Date` en `domain` y `engine`) y TypeScript estricto |
 | `pnpm test` | Pruebas unitarias y de propiedades (dominio, motor, IA, protocolo, servidor sin base de datos) |
 | `pnpm test:integration` | Servidor con PostgreSQL real (Testcontainers; necesita Docker) |
-| `pnpm test:equivalence` | Equivalencia entre simulación rápida y 2D con 200 semillas (SC-008) |
+| `pnpm test:equivalence` | Equivalencia entre simulación rápida y 2D, por trozos de ticks y «Finalizar partido» (001/SC-008, 002/SC-010) |
 | `pnpm e2e` | Recorridos de principio a fin con Playwright (necesita la base de datos con el catálogo) |
 | `pnpm balance --n 1000` | Comprobaciones estadísticas de partido |
+| `pnpm --filter @fbd/engine bench` | Coste del motor por partido, con y sin fotogramas (FR-028a) |
 | `pnpm balance --torneos 100 --pro-vs-amateur` | Niveles de NPC (SC-010; tarda unos 10 minutos) |
 | `k6 run tools/load/beta-100.js` | Carga de beta: 100 partidas simultáneas (ver [tools/load](tools/load/README.md)) |
 
-El [quickstart](specs/001-draft-manager-mvp/quickstart.md) detalla los escenarios de validación
-manual, y [docs/despliegue.md](docs/despliegue.md) cómo construir la imagen Docker y desplegarla.
+Los quickstarts de la [spec 001](specs/001-draft-manager-mvp/quickstart.md) y de la
+[spec 002](specs/002-mejoras-mvp/quickstart.md) detallan los escenarios de validación manual, y [docs/despliegue.md](docs/despliegue.md) cómo construir la imagen Docker y desplegarla.
 
 ### Flujo de trabajo
 

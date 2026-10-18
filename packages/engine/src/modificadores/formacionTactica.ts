@@ -5,13 +5,13 @@
  * defensor (más espacios a su espalda). Así una formación ofensiva genera más ocasiones propias y
  * también concede más; una defensiva, menos de ambas.
  */
-import { FORMACIONES } from '@fbd/domain';
 import type { EquipoEstado, EstadoMotor } from '../estado/estado';
 
 export type TipoAccion = 'pase_corto' | 'pase_largo' | 'conduccion' | 'regate' | 'pase_espacio' | 'centro' | 'tiro_lejano' | 'remate';
 
-export const ofensividad = (e: EquipoEstado) => FORMACIONES[e.formacion].perfil.ofensividad;
-export const amplitud = (e: EquipoEstado) => FORMACIONES[e.formacion].perfil.amplitud;
+/** Perfil calculado con la colocación (FR-034b): el de la formación si nadie se ha movido de su zona. */
+export const ofensividad = (e: EquipoEstado) => e.perfil.ofensividad;
+export const amplitud = (e: EquipoEstado) => e.perfil.amplitud;
 
 /** Pesos de cada acción según la zona del balón, la táctica y la formación del equipo atacante. */
 export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: number): [TipoAccion, number][] {
@@ -99,12 +99,15 @@ export function desplazamientoAtaque(estado: EstadoMotor, atacante: EquipoEstado
 }
 
 /** Probabilidad (0–1) de avanzar una zona tras un pase corto completado. */
-export function probabilidadAvance(atacante: EquipoEstado, defensor: EquipoEstado, zona: number): number {
+export function probabilidadAvance(estado: EstadoMotor, atacante: EquipoEstado, defensor: EquipoEstado, zona: number): number {
   const t = atacante.tactica;
-  let p = zona >= 3 ? 0.25 : 0.35;
+  const a = estado.parametros.acciones;
+  let p = zona >= 3 ? a.avanceZonaAlta : a.avanceZonaBaja;
   if (t.estiloConBalon === 'combinativo') p -= 0.1;
   if (t.estiloConBalon === 'contraataque') p += 0.08;
   if (t.alturaBloque === 'catenaccio') p -= 0.15;
+  // El catenaccio no instala el juego en campo rival: le cuesta más pisarlo y quedarse en él.
+  if (t.alturaBloque === 'catenaccio' && zona >= 2) p -= estado.parametros.tacticas.catenaccio.posesionRival;
   // Más ofensividad propia, más llegada; más ofensividad del rival, más espacios a su espalda.
   p += 0.04 * (ofensividad(atacante) + ofensividad(defensor));
   if (defensor.tactica.alturaBloque === 'catenaccio' && zona >= 2) p -= 0.08;

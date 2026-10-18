@@ -3,6 +3,7 @@
  * y en cada cambio de fase (contracts/realtime-protocol.md). Solo incluye lo que ese participante
  * puede ver (FR-054a).
  */
+import { soloUnHumano } from '@fbd/domain';
 import type { ContextoComando } from './actor';
 import { vistaDraft } from './draft';
 import { detalleBajas } from './equipo';
@@ -18,7 +19,7 @@ export function resumenPartida(c: ControladorPartida, usuarioId: string | undefi
     modo: p.modo,
     numParticipantes: p.numParticipantes,
     tipoSimulacion: p.tipoSimulacion,
-    ritmo: p.ritmo,
+    conPlazos: !soloUnHumano(c.participantes),
     plazoJornadaHoras: p.plazoJornadaHoras,
     estado: p.estado,
     participantes: resumenSala(c).participantes,
@@ -47,22 +48,28 @@ export async function vistaEstado(c: ControladorPartida, participanteId: string)
   if (c.partida.estado === 'en_draft') return { fase: 'draft', vista: { partida, draft: vistaDraft(c, participanteId) } };
   return {
     fase: 'torneo',
-    vista: { partida, plantillas: await plantillasVisibles(c), preparacion: vistaPreparacion(c, participanteId), partido: vistaPartido(c, participanteId) },
+    vista: { partida, plantillas: await plantillasVisibles(c), preparacion: await vistaPreparacion(c, participanteId), partido: vistaPartido(c, participanteId) },
   };
 }
 
-/** Partido que el participante está preparando (con su rival y el plazo), si lo hay. */
-function vistaPreparacion(c: ControladorPartida, participanteId: string) {
-  if (!c.jornada || c.jornada.preparacionVenceEn === null) return null;
+/**
+ * Partido que el participante tiene por jugar en la jornada abierta (con su rival y, si hay varios humanos,
+ * el plazo), si aún no ha empezado.
+ */
+async function vistaPreparacion(c: ControladorPartida, participanteId: string) {
+  if (!c.jornada) return null;
+  const venceEn = c.jornada.venceEn === null ? null : new Date(c.jornada.venceEn).toISOString();
   const cruce = c.jornada.cruces.find((x) => x.local === participanteId || x.visitante === participanteId);
-  if (!cruce) return { jornada: c.jornada.numero, venceEn: new Date(c.jornada.preparacionVenceEn).toISOString(), partidoId: null, rival: null };
+  if (!cruce) return { jornada: c.jornada.numero, venceEn, partidoId: null, rival: null };
+  const fila = await c.servicios.repoPartidos.obtener(cruce.partidoId);
+  if (fila?.estado !== 'programado') return null;
   const rivalId = cruce.local === participanteId ? cruce.visitante : cruce.local;
   const rival = c.participante(rivalId);
   return {
     jornada: c.jornada.numero,
-    venceEn: new Date(c.jornada.preparacionVenceEn).toISOString(),
+    venceEn,
     partidoId: cruce.partidoId,
-    rival: { id: rivalId, nombre: rival ? c.nombreDe(rival) : rivalId, bajas: [...(c.bajasActivas?.(rivalId) ?? [])] },
+    rival: { id: rivalId, nombre: rival ? c.nombreDe(rival) : rivalId, bajas: [...(c.bajasActivas?.(rivalId) ?? [])], humano: rival?.tipo === 'humano' && !rival.controladoPorNPC },
   };
 }
 

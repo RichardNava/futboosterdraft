@@ -22,10 +22,13 @@ export const AlineacionEntrada = z.object({
     corners: z.number().int(),
     tanda: z.array(z.number().int()).max(5),
   }),
+  /** Colocación libre de los titulares (FR-034): puntos enteros en coordenadas del equipo. */
+  colocacion: z.array(z.object({ jugadorId: z.number().int(), x: z.number(), y: z.number() })).max(11).optional(),
 });
 export type AlineacionEntrada = z.infer<typeof AlineacionEntrada>;
 
-export const DorsalesEntrada = z.object({ dorsales: z.record(z.string().regex(/^\d+$/), z.number().int()) });
+/** Reasignación de un dorsal (FR-037): si otro jugador lo llevaba, se queda sin dorsal. */
+export const DorsalesEntrada = z.object({ jugadorId: z.number().int(), dorsal: z.number() });
 
 const Color = z.string();
 export const EquipacionesEntrada = z.object({

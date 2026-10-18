@@ -6,7 +6,7 @@
  * Los JSON viven en `tools/fixtures/escenarios/` y se regeneran con `pnpm --filter @fbd/fixtures
  * generar-escenarios` si cambian los parámetros del motor.
  */
-import { autoAlineacion, parametrosPorVersion, PARAMETROS_V1, type Demarcacion, type Jugador } from '@fbd/domain';
+import { autoAlineacion, parametrosPorVersion, PARAMETROS_V2, type Demarcacion, type Jugador } from '@fbd/domain';
 import { avanzar, crearPartido, type EntradaPartido, type EquipoPartido, type EventoPartido, type Marcador } from '@fbd/engine';
 import { generarCore } from './generarCore';
 
@@ -104,4 +104,4 @@ export function cumpleEscenario(e: Escenario, core: readonly Jugador[] = generar
   }
 }
 
-export const VERSION_ESCENARIOS = PARAMETROS_V1.version;
+export const VERSION_ESCENARIOS = PARAMETROS_V2.version;

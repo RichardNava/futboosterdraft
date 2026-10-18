@@ -21,11 +21,13 @@ export interface Duelo {
   desplazamiento?: number;
   /** Ajustes directos de probabilidad (specials como Aura: +0,04). */
   ajuste?: number;
+  /** Multiplicador de la pendiente de la diferencia de stats (los pases dependen más del pase, SC-008). */
+  pendiente?: number;
 }
 
 /** Probabilidad de éxito del atacante, en milésimas (0–1000). */
 export function probabilidad(d: Duelo, p: ParametrosEquilibrado): number {
-  const x = d.base + p.duelo.pendiente * (d.atacante - d.defensor) + (d.desplazamiento ?? 0);
+  const x = d.base + p.duelo.pendiente * (d.pendiente ?? 1) * (d.atacante - d.defensor) + (d.desplazamiento ?? 0);
   const prob = sigmoide(x) + (d.ajuste ?? 0);
   const recortada = Math.min(p.duelo.probabilidadMaxima, Math.max(p.duelo.probabilidadMinima, prob));
   return Math.round(recortada * 1000);

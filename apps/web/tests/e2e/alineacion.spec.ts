@@ -12,6 +12,14 @@ interface Carta {
   specials: string[];
 }
 
+/**
+ * Penalización en una casilla de defensa de un jugador que no tiene posiciones de defensa (FR-032): la menor
+ * entre todas sus posiciones como origen (un MED puede tener también posiciones de DEL).
+ */
+const DEL = ['DC', 'SD', 'EI', 'ED'];
+const penalizacionMedEnDefensa = (j: Carta) =>
+  Math.min(...j.posicion.map((p) => (p === 'MCO' ? 30 : p === 'MD' ? 10 : DEL.includes(p) ? 40 : 20)));
+
 const casilla = (page: Page, etiqueta: string) => page.getByRole('button', { name: new RegExp(`^${etiqueta.replace('/', '\\/')}:`) });
 
 /** Selecciona a un jugador esté donde esté (campo, banquillo o resto) y lo coloca en una casilla. */
@@ -29,7 +37,8 @@ test('preparar el equipo: penalizaciones, táctica, lanzadores y confirmación',
   const central = datos.plantilla.find((j) => j.posicion.includes('DCI') || j.posicion.includes('DCD'));
   const medio = datos.plantilla.find((j) => j.demarcacion === 'MED' && !j.specials.includes('Todocampista'));
   const defensa = datos.plantilla.find((j) => j.demarcacion === 'DEF' && j !== central);
-  test.skip(!central || !medio || !defensa, 'La plantilla del draft no tiene los perfiles necesarios');
+  const delantero = datos.plantilla.find((j) => j.demarcacion === 'DEL' && !j.specials.includes('Todocampista'));
+  test.skip(!central || !medio || !defensa || !delantero, 'La plantilla del draft no tiene los perfiles necesarios');
 
   await page.goto(`/partidas/${partidaId}/alineacion`);
   await expect(page.getByRole('heading', { name: 'Alineación' })).toBeVisible();
@@ -39,10 +48,14 @@ test('preparar el equipo: penalizaciones, táctica, lanzadores y confirmación',
   await colocar(page, central!, 'DCI/DCD');
   await expect(casilla(page, 'DCI/DCD')).not.toHaveAccessibleName(/fuera de posición/);
 
-  // Un medio en esa casilla: fuera de posición, −25 %.
+  // Un medio en esa casilla: fuera de posición, con la penalización de la tabla de FR-032 (escenario H).
   await colocar(page, medio!, 'DCI/DCD');
   await expect(casilla(page, 'DCI/DCD')).toHaveAccessibleName(/fuera de posición/);
-  await expect(casilla(page, 'DCI/DCD')).toContainText('−25 %');
+  await expect(casilla(page, 'DCI/DCD')).toContainText(`−${penalizacionMedEnDefensa(medio!)} %`);
+
+  // Un delantero en una casilla de defensa: −40 % (menos si también tiene posiciones de medio).
+  await colocar(page, delantero!, 'DCD');
+  await expect(casilla(page, 'DCD')).toContainText(`−${penalizacionMedEnDefensa(delantero!)} %`);
 
   // Un defensa en la portería: −60 % y aviso.
   await colocar(page, defensa!, 'POR');

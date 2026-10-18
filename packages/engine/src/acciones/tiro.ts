@@ -4,9 +4,12 @@
  * One-to-One, Ordenabarreras y el reroll de Santo).
  */
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
+import { aAbsoluta, CENTRO_Y, LARGO, type Punto } from '../espacio/geometria';
+import { sacadorDeCentro } from '../espacio/colocacion';
 import { atributo } from '../modificadores/atributos';
 import { desplazamientoAtaque } from '../modificadores/formacionTactica';
 import { ajusteDuelo, santoActivo, tiene } from '../modificadores/specials';
+import { controlar, reponer, volar } from './animaciones';
 import { emitir, interrumpir, pasarTiempo, portero, rivalCercano, type Contexto } from './contexto';
 import { probabilidad, resolver } from './duelo';
 
@@ -27,7 +30,12 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
   const defensor = e.equipos[rival(atacante.lado)];
   const stats = e.estadisticas[atacante.lado];
   stats.tiros++;
-  pasarTiempo(ctx, 2);
+  // Contraataque: posesión que empezó en campo propio y llega al tiro rápido y con pocos pases (research R4).
+  if (e.posesion.lado === atacante.lado && e.posesion.enCampoPropio && e.tick - e.posesion.inicioTick < 150 && e.posesion.pases <= 4) {
+    stats.contraataques++;
+    e.posesion.enCampoPropio = false;
+  }
+  if (tipo !== 'penalti') controlar(ctx, tirador.id, 2);
 
   const remate = atributo(e, atacante, tirador, tipo === 'cabeza' ? 'aereo' : 'remate');
   const cercania = tipo === 'normal' || tipo === 'cabeza' || tipo === 'manoAMano';
@@ -61,6 +69,8 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
   const autor = [{ rol: 'autor' as const, jugadorId: tirador.id }];
   if (!resolver(ctx.rng, puerta)) {
     const bloqueado = bloqueador !== undefined && ctx.rng.probabilidad(450);
+    if (bloqueado) volar(ctx, 'tiro', tirador.id, { jugadorId: bloqueador!.id }, { exito: false, aerea: tipo === 'cabeza' });
+    else volar(ctx, 'tiro', tirador.id, { punto: puntoFuera(ctx, atacante) }, { exito: false, aerea: tipo === 'cabeza' || tipo === 'lejano' });
     emitir(ctx, 'tiro', atacante.lado, autor, { tipo, resultado: bloqueado ? 'bloqueado' : 'fuera' });
     if (bloqueado && ctx.rng.probabilidad(Math.round(p.acciones.probabilidadCornerTrasDespeje * 1000))) {
       corner(ctx, atacante);
@@ -93,12 +103,15 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
   );
   const santo = arquero !== undefined && tiene(arquero, 'Santo') && santoActivo(e, defensor);
   const marca = resolver(ctx.rng, gol, { rerollDefensor: santo });
+  // El balón va a la red o a las manos del portero.
+  if (marca || !arquero) volar(ctx, 'tiro', tirador.id, { punto: puntoGol(ctx, atacante) }, { exito: marca, aerea: tipo === 'cabeza' });
+  else volar(ctx, 'tiro', tirador.id, { jugadorId: arquero.id }, { exito: false, aerea: tipo === 'cabeza' });
 
   if (marca) {
     e.marcador[atacante.lado]++;
     const jugadores = opciones.asistente ? [...autor, { rol: 'asistente' as const, jugadorId: opciones.asistente.id }] : autor;
     emitir(ctx, 'gol', atacante.lado, jugadores, { tipo, marcador: { ...e.marcador } }, true);
-    interrumpir(ctx, 'gol', 60, defensor.lado);
+    interrumpir(ctx, 'gol', 40, defensor.lado);
     saqueDeCentro(ctx, defensor);
     return 'gol';
   }
@@ -110,20 +123,43 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
   if (ctx.rng.probabilidad(Math.round(p.acciones.probabilidadCornerTrasParada * 1000))) {
     corner(ctx, atacante);
   } else {
+    // El portero atrapa el balón y lo pone en juego.
     e.balon = { posesion: defensor.lado, zona: 0, carril: 1, portadorId: arquero?.id ?? 0, transicion: false };
     pasarTiempo(ctx, 4);
   }
   return 'parada';
 }
 
-export function saqueDePuerta(ctx: Contexto, equipo: EquipoEstado): void {
-  interrumpir(ctx, 'saque_puerta', 20, equipo.lado);
-  ctx.estado.balon = { posesion: equipo.lado, zona: 0, carril: 1, portadorId: portero(equipo)?.id ?? 0, transicion: false };
+/** Punto de la red donde entra un gol (coordenadas absolutas), según el tick: no consume números del PRNG. */
+function puntoGol(ctx: Contexto, atacante: EquipoEstado): Punto {
+  const desvio = ((ctx.estado.tick * 37) % 600) - 300;
+  return aAbsoluta(atacante.lado, { x: LARGO + 60, y: CENTRO_Y + desvio });
 }
 
+/** Punto fuera de la portería, por la línea de fondo, por donde se va un tiro desviado. */
+function puntoFuera(ctx: Contexto, atacante: EquipoEstado): Punto {
+  const lado = ctx.estado.tick % 2 === 0 ? 1 : -1;
+  return aAbsoluta(atacante.lado, { x: LARGO + 150, y: CENTRO_Y + lado * (450 + ((ctx.estado.tick * 53) % 900)) });
+}
+
+export function saqueDePuerta(ctx: Contexto, equipo: EquipoEstado): void {
+  interrumpir(ctx, 'saque_puerta', 14, equipo.lado);
+  const arquero = portero(equipo);
+  ctx.estado.balon = { posesion: equipo.lado, zona: 0, carril: 1, portadorId: arquero?.id ?? 0, transicion: false };
+  if (arquero) reponer(ctx, 'saque_puerta', aAbsoluta(equipo.lado, { x: 550, y: CENTRO_Y }), arquero.id);
+}
+
+/** Pone el balón en el centro para que saque `equipo` (sin recolocar a nadie: al empezar una parte). */
+export function balonAlCentro(ctx: Contexto, equipo: EquipoEstado): JugadorEnPartido | undefined {
+  const sacador = sacadorDeCentro(equipo) ?? equipo.jugadores.find((j) => j.enCampo);
+  ctx.estado.balon = { posesion: equipo.lado, zona: 2, carril: 1, portadorId: sacador?.id ?? 0, transicion: false };
+  return sacador;
+}
+
+/** Saque de centro tras un gol: todos vuelven a su campo mientras el balón va al centro. */
 export function saqueDeCentro(ctx: Contexto, equipo: EquipoEstado): void {
-  const mc = equipo.jugadores.find((j) => j.enCampo && j.jugador.demarcacion === 'MED') ?? equipo.jugadores.find((j) => j.enCampo);
-  ctx.estado.balon = { posesion: equipo.lado, zona: 2, carril: 1, portadorId: mc?.id ?? 0, transicion: false };
+  const sacador = balonAlCentro(ctx, equipo);
+  if (sacador) reponer(ctx, 'saque_centro', { x: LARGO / 2, y: CENTRO_Y }, sacador.id);
 }
 
 /** Córner: el lanzador designado centra y se disputa el balón aéreo (Volador, Cabeceador). */
@@ -133,7 +169,7 @@ export function corner(ctx: Contexto, atacante: EquipoEstado): void {
   const defensor = e.equipos[rival(atacante.lado)];
   e.estadisticas[atacante.lado].corners++;
   emitir(ctx, 'corner', atacante.lado);
-  interrumpir(ctx, 'corner', 25, atacante.lado);
+  interrumpir(ctx, 'corner', 90, atacante.lado);
   rematarBalonParado(ctx, atacante, defensor, 'corners', p.acciones.duelaAereo);
 }
 
@@ -167,6 +203,14 @@ export function rematarBalonParado(
       atributo(e, defensor, b, 'aereo') + (tiene(b, 'Volador') ? 6 : 0) - (atributo(e, defensor, a, 'aereo') + (tiene(a, 'Volador') ? 6 : 0)),
   )[0];
   if (!rematador) return;
+  // El que saca va al banderín (córner) o al punto de la falta; los demás, a sus sitios.
+  const b = ctx.estado.espacio.balon;
+  const puntoSaque =
+    tipo === 'corners'
+      ? aAbsoluta(atacante.lado, { x: LARGO, y: (atacante.lado === 'local' ? b.y : 6400 - b.y) < CENTRO_Y ? 0 : 6400 })
+      : { x: b.x, y: b.y };
+  e.balon = { posesion: atacante.lado, zona: tipo === 'corners' ? 5 : e.balon.zona, carril: e.balon.carril, portadorId: lanzador.id, transicion: false };
+  reponer(ctx, tipo === 'corners' ? 'corner' : 'falta_area', puntoSaque, lanzador.id);
   let ajuste = 0;
   if (marcador && tiene(marcador, 'Volador')) ajuste -= s.bonusProbabilidadAlto;
   const centro = probabilidad(
@@ -178,12 +222,16 @@ export function rematarBalonParado(
     },
     p,
   );
-  e.balon = { posesion: atacante.lado, zona: 5, carril: 1, portadorId: rematador.id, transicion: false };
+  // El centro de un balón parado también es un centro (FR-024).
+  e.estadisticas[atacante.lado].centros++;
   if (resolver(ctx.rng, centro, { rerollAtacante: tiene(lanzador, 'GuanteEnElPie') })) {
+    volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: true, aerea: true });
+    e.balon = { posesion: atacante.lado, zona: 5, carril: 1, portadorId: rematador.id, transicion: false };
     tirar(ctx, atacante, rematador, 'cabeza', { asistente: lanzador, trasCentro: true });
   } else {
     // Despeje: la defensa se hace con el balón cerca de su área.
-    pasarTiempo(ctx, 3);
-    e.balon = { posesion: defensor.lado, zona: 1, carril: ctx.rng.entero(0, 2), portadorId: marcador?.id ?? defensores[0]?.id ?? 0, transicion: false };
+    const despejador = marcador ?? defensores[0];
+    if (despejador) volar(ctx, 'centro', lanzador.id, { jugadorId: despejador.id }, { exito: false, aerea: true });
+    e.balon = { posesion: defensor.lado, zona: 1, carril: ctx.rng.entero(0, 2), portadorId: despejador?.id ?? 0, transicion: false };
   }
 }

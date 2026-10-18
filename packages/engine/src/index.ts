@@ -10,6 +10,7 @@ export { crearPartido } from './estado/estado';
 export type { EstadoMotor, JugadorEnPartido, EquipoEstado } from './estado/estado';
 export { maxSustituciones, minutoDeJuego, minutoMostrable } from './estado/estado';
 export { avanzar, type ResultadoTramo } from './tramos/avanzar';
+export { ordenJugadores } from './espacio/paso';
 export { validarDecision, type ResultadoDecision } from './tramos/decisiones';
 export * from './tipos';
 

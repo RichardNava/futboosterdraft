@@ -24,6 +24,8 @@ export const ParticipanteSala = z.object({
   nivelNPC: z.enum(['amateur', 'intermedio', 'avanzado', 'PRO']).nullable(),
   conectado: z.boolean(),
   esAnfitrion: z.boolean(),
+  /** Humano cuya plaza ocupa un NPC tras abandonar (spec 002, research R11). */
+  controladoPorNPC: z.boolean().optional(),
 });
 export type ParticipanteSala = z.infer<typeof ParticipanteSala>;
 
@@ -46,6 +48,8 @@ export const MsgDraftTurno = z.object({
   sobre: z.object({ id: z.string(), cartas: z.array(JugadorResumen) }),
   venceEn: z.string().datetime(),
   misElecciones: z.array(JugadorResumen),
+  /** Primer envío del turno 1 de cada ronda (el sobre propio): animación de apertura (FR-006; research R17). */
+  animacion: z.boolean(),
 });
 export type MsgDraftTurno = z.infer<typeof MsgDraftTurno>;
 
@@ -55,6 +59,8 @@ export const MsgDraftProgreso = z.object({
   ronda: z.number().int(),
   turno: z.number().int(),
   eligieron: z.array(z.string()),
+  /** Humanos que aún no han elegido en el turno: «Esperando a…» (FR-013). */
+  pendientes: z.array(z.object({ id: z.string(), nombre: z.string() })),
 });
 export type MsgDraftProgreso = z.infer<typeof MsgDraftProgreso>;
 

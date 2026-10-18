@@ -9,7 +9,12 @@ export type FilaPartido = typeof partidos.$inferSelect;
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
-export type ResumenPartido = Pick<FilaPartido, 'id' | 'jornadaNumero' | 'localId' | 'visitanteId' | 'marcador' | 'estado' | 'resueltoAutomaticamente'>;
+export type ResumenPartido = Pick<FilaPartido, 'id' | 'jornadaNumero' | 'localId' | 'visitanteId' | 'marcador' | 'estado' | 'resolucion'>;
+
+export type Resolucion = 'directo' | 'apertura' | 'plazo' | 'npc';
+
+/** Derivado de la spec 001 que se conserva en las vistas: el partido se resolvió al vencer el plazo. */
+export const resueltoAutomaticamente = (p: Pick<FilaPartido, 'resolucion'>): boolean => p.resolucion === 'plazo';
 
 export class RepoPartidos {
   constructor(private readonly db: BaseDatos) {}
@@ -48,7 +53,7 @@ export class RepoPartidos {
         visitanteId: partidos.visitanteId,
         marcador: partidos.marcador,
         estado: partidos.estado,
-        resueltoAutomaticamente: partidos.resueltoAutomaticamente,
+        resolucion: partidos.resolucion,
       })
       .from(partidos)
       .where(eq(partidos.partidaId, partidaId))

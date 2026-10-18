@@ -4,7 +4,7 @@ import { programarJornada } from '../../src/actores/preparacion';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
 import { ClienteWs } from '../helpers/clienteWs';
-import { crearInvitado, crearRegistrado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
+import { crearInvitado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
 const TURNO = 46_000;
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -37,7 +37,7 @@ describe('partido rápido (US3)', () => {
     const [anfitrion, ...otros] = humanos;
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion!.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ritmo: 'directo', ...(anfitrion!.tipo === 'invitado' ? {} : { plazasHumanas: humanos.length }) },
+      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ...(anfitrion!.tipo === 'invitado' ? {} : { plazasHumanas: humanos.length }) },
     });
     const partidaId: string = r.cuerpo.id;
     for (const o of otros) await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: o.cookie });
@@ -59,7 +59,15 @@ describe('partido rápido (US3)', () => {
     return { partidaId, clientes, c };
   }
 
-  it('tras la preparación empieza el partido: alineaciones reveladas, descanso en ≤ 3 s y final tras «Seguir»', async () => {
+  /** «Comenzar partido»: el humano abre su partido de la jornada (spec 002; ya no hay temporizador de preparación). */
+  async function comenzar(ws: ClienteWs, u: UsuarioPrueba): Promise<string> {
+    const prep = await ws.esperar('preparacion.inicio');
+    const r = await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie });
+    expect(r.cuerpo.modo).toBe('directo');
+    return prep.partidoId as string;
+  }
+
+  it('al pulsar «Comenzar partido» empieza el partido: alineaciones reveladas, descanso en ≤ 3 s y final tras «Seguir»', async () => {
     const invitado = await crearInvitado(srv.url);
     const { partidaId, clientes } = await hastaPreparacion([invitado]);
     const ws = clientes[0]!;
@@ -70,7 +78,7 @@ describe('partido rápido (US3)', () => {
     expect(antes.cuerpo.alineaciones).toBeUndefined();
 
     const desde = ws.recibidos.length;
-    srv.reloj.avanzar(300_000 + 1); // preparación inicial: 5 min
+    await comenzar(ws, invitado);
     const inicio = await ws.esperar('partido.inicio', { desde });
     const t0 = Date.now();
     // Sin alineación confirmada se usa la automática.
@@ -104,7 +112,7 @@ describe('partido rápido (US3)', () => {
     const { clientes } = await hastaPreparacion([invitado]);
     const ws = clientes[0]!;
     const desde = ws.recibidos.length;
-    srv.reloj.avanzar(300_001);
+    await comenzar(ws, invitado);
     const inicio = await ws.esperar('partido.inicio', { desde });
     await ws.esperar('partido.pausa_decision', { desde });
     const yo = inicio.local.id === (await ws.esperar('estado')).vista.partida.miParticipanteId ? 'local' : 'visitante';
@@ -129,7 +137,7 @@ describe('partido rápido (US3)', () => {
     const { clientes } = await hastaPreparacion([invitado]);
     const ws = clientes[0]!;
     const desde = ws.recibidos.length;
-    srv.reloj.avanzar(300_001);
+    await comenzar(ws, invitado);
     const inicio = await ws.esperar('partido.inicio', { desde });
     await ws.esperar('partido.pausa_decision', { desde });
     await ws.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
@@ -138,46 +146,15 @@ describe('partido rápido (US3)', () => {
     expect(tarde.ok).toBe(false);
   });
 
-  it('entre dos humanos el partido espera a que pulsen los dos, o a que venza el descanso', async () => {
-    const a = await crearRegistrado(srv.url);
-    const b = await crearRegistrado(srv.url);
-    const { clientes } = await hastaPreparacion([a, b], {
-      cruces: ({ humanos, npc }) => [
-        { local: humanos[0]!, visitante: humanos[1]! },
-        { local: npc[0]!, visitante: npc[1]! },
-      ],
-    });
-    const [wa, wb] = clientes as [ClienteWs, ClienteWs];
-    const desdeA = wa.recibidos.length;
-    const desdeB = wb.recibidos.length;
-    srv.reloj.avanzar(300_001);
-    const inicio = await wa.esperar('partido.inicio', { desde: desdeA });
-    await wa.esperar('partido.pausa_decision', { desde: desdeA });
-    await wb.esperar('partido.pausa_decision', { desde: desdeB });
-    await wa.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
-    await espera(200);
-    expect(wa.recibidos.slice(desdeA).some((m) => m.t === 'partido.fin')).toBe(false);
-    // Pulsa el segundo: continúa.
-    await wb.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
-    await wa.esperar('partido.fin', { desde: desdeA });
-    await wb.esperar('partido.fin', { desde: desdeB });
-  });
-
-  it('si nadie pulsa «Seguir», el partido continúa al vencer el descanso', async () => {
-    const a = await crearRegistrado(srv.url);
-    const b = await crearRegistrado(srv.url);
-    const { clientes } = await hastaPreparacion([a, b], {
-      cruces: ({ humanos, npc }) => [
-        { local: humanos[0]!, visitante: humanos[1]! },
-        { local: npc[0]!, visitante: npc[1]! },
-      ],
-    });
-    const [wa] = clientes as [ClienteWs, ClienteWs];
-    const desde = wa.recibidos.length;
-    srv.reloj.avanzar(300_001);
-    await wa.esperar('partido.pausa_decision', { desde });
+  it('si el humano no pulsa «Seguir», el partido contra el NPC continúa al vencer el descanso', async () => {
+    const invitado = await crearInvitado(srv.url);
+    const { clientes } = await hastaPreparacion([invitado]);
+    const ws = clientes[0]!;
+    const desde = ws.recibidos.length;
+    await comenzar(ws, invitado);
+    await ws.esperar('partido.pausa_decision', { desde });
     srv.reloj.avanzar(120_001);
-    await wa.esperar('partido.fin', { desde });
+    await ws.esperar('partido.fin', { desde });
   });
 
   it('en eliminatoria con empate hay pausa antes de la prórroga y después la tanda', async () => {
@@ -197,7 +174,7 @@ describe('partido rápido (US3)', () => {
       });
       const ws = clientes[0]!;
       const desde = ws.recibidos.length;
-      srv.reloj.avanzar(300_001);
+      await comenzar(ws, invitado);
       const inicio = await ws.esperar('partido.inicio', { desde });
       await ws.esperar('partido.pausa_decision', { desde });
       await ws.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });

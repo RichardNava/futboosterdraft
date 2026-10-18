@@ -131,93 +131,7 @@ select {
   text-align: center;
 }
 
-/* ---------- Carta de jugador ---------- */
-
-.carta {
-  position: relative;
-  --color-nivel: var(--nivel-superclase);
-}
-
-.carta.nivel-epico {
-  --color-nivel: var(--nivel-epico);
-}
-.carta.nivel-legendario {
-  --color-nivel: var(--nivel-legendario);
-}
-.carta.nivel-goat {
-  --color-nivel: var(--nivel-goat);
-}
-
-.carta-cuerpo {
-  display: grid;
-  gap: 4px;
-  width: 100%;
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: var(--radio);
-  background: var(--superficie);
-  color: var(--texto);
-  border: 2px solid var(--borde);
-  border-top: 6px solid var(--color-nivel);
-  font-weight: 400;
-}
-
-.carta.seleccionada .carta-cuerpo {
-  border-color: var(--acento);
-  box-shadow: 0 0 0 2px var(--acento);
-}
-
-.carta-cabecera {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.carta-media {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-nivel);
-}
-
-.carta-demarcacion,
-.carta-dorsal {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--texto-suave);
-}
-
-.carta-nombre {
-  font-weight: 600;
-}
-
-.carta-posiciones,
-.carta-specials {
-  font-size: 0.85rem;
-  color: var(--texto-suave);
-}
-
-.carta-nivel {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--color-nivel);
-}
-
-.carta-ficha {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border-radius: 50%;
-  background: var(--fondo);
-  color: var(--texto);
-  border: 1px solid var(--borde);
-}
-
-.carta.compacta .carta-media {
-  font-size: 1.1rem;
-}
+/* La carta de jugador tiene su propia hoja: cartas.css. */
 
 /* ---------- Ventana modal ---------- */
 
@@ -397,12 +311,6 @@ legend {
   border-radius: var(--radio);
   background: var(--superficie);
   border-left: 4px solid var(--nivel-legendario);
-}
-
-.rejilla-cartas {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 12px;
 }
 
 .columnas-demarcacion {
@@ -592,8 +500,35 @@ button.mini {
   margin: 12px 0;
 }
 
+.rejilla-dorsales {
+  list-style: none;
+  padding: 0;
+}
+
+.rejilla-dorsales li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .rejilla-dorsales input {
   width: 64px;
+}
+
+.dorsal-actual {
+  min-width: 2.2em;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.distintivo-sin-dorsal {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid currentcolor;
+  color: var(--texto-suave);
+  white-space: nowrap;
 }
 
 .equipaciones {
@@ -625,6 +560,24 @@ button.mini {
   display: block;
   width: 100%;
   aspect-ratio: 1000 / 640;
+}
+
+.finalizar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 12px 0;
+}
+
+.marcador-2d {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 8px 0 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .velocidades {
@@ -940,4 +893,262 @@ a.boton.secundario {
 .resultado-partido {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Barra de navegación (Marco; FR-017) ---------- */
+
+.barra-navegacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--borde);
+  background: var(--superficie);
+}
+
+.barra-navegacion a {
+  color: var(--texto);
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.barra-navegacion a.active {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Durante el partido 2D, solo iconos en una franja de 40 px como máximo. */
+.interruptor-sonido {
+  margin-left: auto;
+  padding: 2px 8px;
+}
+
+.barra-navegacion.compacta {
+  max-height: 40px;
+  padding: 4px 12px;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.barra-navegacion.compacta a {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+button.peligro {
+  background: #b3261e;
+  color: #ffffff;
+}
+
+/* ---------- Mis partidas ---------- */
+
+.lista-partidas {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.lista-partidas li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+
+/* ---------- Colocación libre (CampoTacticas; FR-034) ---------- */
+
+.colocacion-rejilla {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .colocacion-rejilla {
+    grid-template-columns: 1fr;
+  }
+}
+
+.campo-tacticas {
+  touch-action: none;
+  user-select: none;
+}
+
+.zona-resaltada {
+  position: absolute;
+  background: rgb(255 255 255 / 18%);
+  outline: 2px dashed rgb(255 255 255 / 70%);
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+
+.zona-resaltada span {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 70%);
+}
+
+.ficha-tactica {
+  position: absolute;
+  transform: translate(-50%, 50%);
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  padding: 2px 4px;
+  border-radius: 10px;
+  background: rgb(0 0 0 / 35%);
+  color: #fff;
+  border: 2px solid transparent;
+  font-size: 0.72rem;
+  cursor: grab;
+  touch-action: none;
+}
+
+.ficha-tactica.arrastrando {
+  cursor: grabbing;
+  z-index: 2;
+}
+
+.ficha-tactica.seleccionada {
+  border-color: var(--acento);
+}
+
+.ficha-tactica-posicion {
+  font-weight: 700;
+}
+
+.avisos-colocacion {
+  color: var(--aviso, #b45309);
+  padding-left: 18px;
+}
+
+/* ---------- Apertura de sobre (AperturaSobre; FR-006 a FR-010) ---------- */
+
+.apertura-sobre {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 70%);
+  cursor: pointer;
+}
+
+.apertura-sobre .saltar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.sobre-cerrado {
+  width: 160px;
+  height: 230px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #b8860b, #f5d76e 45%, #b8860b);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 50%);
+  animation: sobre-tiembla 0.9s ease-in-out, sobre-rasga 0.3s ease-in 0.9s forwards;
+}
+
+@keyframes sobre-tiembla {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-4deg); }
+  40% { transform: rotate(4deg); }
+  60% { transform: rotate(-3deg); }
+  80% { transform: rotate(3deg); }
+}
+
+@keyframes sobre-rasga {
+  to { clip-path: polygon(0 18%, 100% 8%, 100% 100%, 0 100%); opacity: 0.2; transform: scale(1.1); }
+}
+
+.apertura-cartas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 150px));
+  gap: 10px;
+  padding: 16px;
+  max-width: 100vw;
+}
+
+@media (max-width: 640px) {
+  .apertura-cartas {
+    grid-template-columns: repeat(2, minmax(0, 150px));
+  }
+}
+
+.apertura-carta {
+  position: relative;
+  min-height: 120px;
+  opacity: 0;
+  animation: carta-reparte 0.35s ease-out forwards;
+  perspective: 800px;
+}
+
+@keyframes carta-reparte {
+  from { opacity: 0; transform: translateY(-40px) scale(0.8); }
+  to { opacity: 1; transform: none; }
+}
+
+.apertura-carta-dorso,
+.apertura-carta-frente {
+  backface-visibility: hidden;
+  transition: transform 0.5s ease;
+}
+
+.apertura-carta-dorso {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: repeating-linear-gradient(45deg, #1d3557 0 8px, #274b7a 8px 16px);
+  border: 2px solid #f5d76e;
+}
+
+.apertura-carta-frente {
+  transform: rotateY(180deg);
+}
+
+.fase-volteo .apertura-carta-dorso {
+  transform: rotateY(180deg);
+}
+
+.fase-volteo .apertura-carta-frente {
+  transform: rotateY(0);
+}
+
+.fase-volteo .apertura-carta.especial .apertura-carta-frente {
+  animation: destello 0.6s ease-out 0.4s;
+}
+
+@keyframes destello {
+  0% { filter: brightness(1); box-shadow: none; }
+  40% { filter: brightness(1.8); box-shadow: 0 0 24px 8px #ffd700; }
+  100% { filter: brightness(1); box-shadow: none; }
+}
+
+.fase-fundido {
+  animation: fundido 0.3s ease forwards;
+}
+
+@keyframes fundido {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sobre-cerrado,
+  .apertura-carta,
+  .fase-volteo .apertura-carta.especial .apertura-carta-frente {
+    animation: none;
+    opacity: 1;
+  }
 }

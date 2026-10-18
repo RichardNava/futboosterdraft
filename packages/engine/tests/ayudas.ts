@@ -4,7 +4,7 @@ import {
   CASILLA_CENTRAL,
   CLAVES_STATS,
   FORMACIONES,
-  PARAMETROS_V1,
+  PARAMETROS_V2,
   proponerLanzadores,
   Rng,
   semillaDesdeTexto,
@@ -69,8 +69,8 @@ export function equipo(
 
 export function entrada(semilla: string, cambios: Partial<EntradaPartido> = {}): EntradaPartido {
   return {
-    version: PARAMETROS_V1.version,
-    parametros: PARAMETROS_V1,
+    version: PARAMETROS_V2.version,
+    parametros: PARAMETROS_V2,
     semilla: semillaDesdeTexto(semilla),
     eliminatoria: false,
     local: equipo('local'),

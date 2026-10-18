@@ -2,10 +2,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
 import { ClienteWs } from '../helpers/clienteWs';
-import { avanzarHasta, espera, seguirSiempre, torneo } from '../helpers/torneo';
+import { avanzarHasta, espera, jugarSolo, seguirSiempre, torneo } from '../helpers/torneo';
 import { crearInvitado, crearRegistrado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
-describe('torneo en directo (US4)', () => {
+describe('torneo de un humano y abandonos (spec 001/US4; spec 002/US11)', () => {
   let bd: BdPruebas;
   let srv: ServidorPruebas;
 
@@ -25,7 +25,7 @@ describe('torneo en directo (US4)', () => {
   async function crear(u: UsuarioPrueba, cuerpo: Record<string, unknown>) {
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: u.cookie,
-      cuerpo: { tipoSimulacion: 'rapida', ritmo: 'directo', ...cuerpo },
+      cuerpo: { tipoSimulacion: 'rapida', ...cuerpo },
     });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     const ws = await ClienteWs.conectar(srv.urlWs, r.cuerpo.id, u.cookie);
@@ -37,7 +37,8 @@ describe('torneo en directo (US4)', () => {
   it('una liga de 4 con 1 humano completa sus 6 jornadas: 12 partidos, clasificación y campeón', async () => {
     const u = await crearInvitado(srv.url);
     const { partidaId, ws, parar } = await crear(u, { modo: 'liga', numParticipantes: 4 });
-    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).campeon !== null, 400);
+    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).jornadaActual === 1);
+    await jugarSolo(srv, partidaId, u, async () => (await torneo(srv, partidaId, u)).campeon !== null);
     const t = await torneo(srv, partidaId, u);
     expect(t.jornadas).toHaveLength(6);
     expect(t.jornadas.every((j: any) => j.estado === 'cerrada')).toBe(true);
@@ -59,7 +60,8 @@ describe('torneo en directo (US4)', () => {
     await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).jornadaActual === 1);
     const desde = ws.recibidos.length;
     const inicio = Date.now();
-    srv.reloj.avanzar(300_001);
+    const prep = await ws.esperar('preparacion.inicio');
+    await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie });
     await ws.esperar('partido.inicio', { desde });
     await avanzarHasta(srv, 1, async () => {
       const t = await torneo(srv, partidaId, u);
@@ -74,7 +76,8 @@ describe('torneo en directo (US4)', () => {
   it('un mixto de 8 pasa de la liga (14 jornadas) a semifinales 1.º–4.º y 2.º–3.º, y a la final', { timeout: 300_000 }, async () => {
     const u = await crearInvitado(srv.url);
     const { partidaId, ws, parar } = await crear(u, { modo: 'mixto', numParticipantes: 8 });
-    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).fase === 'eliminatoria', 1000);
+    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).jornadaActual === 1);
+    await jugarSolo(srv, partidaId, u, async () => (await torneo(srv, partidaId, u)).fase === 'eliminatoria');
     const t = await torneo(srv, partidaId, u);
     expect(t.jornadas.filter((j: any) => j.tipo === 'liga')).toHaveLength(14);
     const semis = t.jornadas.find((j: any) => j.tipo === 'semifinal');
@@ -83,7 +86,7 @@ describe('torneo en directo (US4)', () => {
       [c[0].nombre, c[3].nombre],
       [c[1].nombre, c[2].nombre],
     ]);
-    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).campeon !== null, 400);
+    await jugarSolo(srv, partidaId, u, async () => (await torneo(srv, partidaId, u)).campeon !== null);
     const final = await torneo(srv, partidaId, u);
     expect(final.jornadas.at(-1).tipo).toBe('final');
     expect(final.jornadas.flatMap((j: any) => j.partidos)).toHaveLength(59);
@@ -96,7 +99,7 @@ describe('torneo en directo (US4)', () => {
     const b = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: a.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ritmo: 'directo', plazasHumanas: 2 },
+      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 },
     });
     const partidaId = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: b.cookie });
@@ -106,8 +109,10 @@ describe('torneo en directo (US4)', () => {
     await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, a)).jornadaActual === 1);
     const abandono = await peticion(srv.url, `/api/partidas/${partidaId}/abandonar`, { metodo: 'POST', cookie: b.cookie });
     expect(abandono.cuerpo.controladoPorNPC).toBe(true);
-    // El torneo termina aunque b no vuelva (sus partidos se juegan sin pausas).
-    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, a)).campeon !== null, 400);
+    // El torneo termina aunque b no vuelva. Tras el abandono, a es el único humano activo: sin plazos, juega
+    // su partido y abre la siguiente jornada cuando quiere (research R9).
+    await jugarSolo(srv, partidaId, a, async () => (await torneo(srv, partidaId, a)).campeon !== null);
+    expect((await torneo(srv, partidaId, a)).siguienteJornada).toBe('manual');
     parar();
     await ws.cerrar();
   });
@@ -126,7 +131,8 @@ describe('torneo en directo (US4)', () => {
       );
     });
     const desde = ws.recibidos.length;
-    srv.reloj.avanzar(300_001);
+    const prep = await ws.esperar('preparacion.inicio');
+    await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie });
     const inicio = await ws.esperar('partido.inicio', { desde });
     const fin = await ws.esperar('partido.fin', { desde });
     const soyLocal = inicio.local.id === yo;

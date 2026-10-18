@@ -2,11 +2,12 @@
  * Composición del servidor: une base de datos, autenticación, actores, pasarela y rutas.
  * La usan `main.ts` y las pruebas de integración (con `RelojFalso` y una base de datos de pruebas).
  */
-import { MsgDraftElegir, MsgPartidoDecision, MsgPartidoReproduccion, MsgPartidoSeguir, MsgPartidoVelocidad } from '@fbd/protocol';
+import { MsgDraftElegir, MsgPartidaPausar, MsgPartidoDecision, MsgPartidoFinalizar, MsgPartidoReproduccion, MsgPartidoSeguir } from '@fbd/protocol';
+import { procesarPausar } from './actores/pausa';
 import type { FastifyInstance } from 'fastify';
 import { procesarEleccion } from './actores/draft';
-import { procesarReproduccion, procesarVelocidad } from './actores/partido2d';
-import { procesarDecisionPartido, procesarSeguir } from './actores/partidoRapido';
+import { procesarReproduccion } from './actores/partido2d';
+import { procesarDecisionPartido, procesarFinalizar, procesarSeguir } from './actores/partidoRapido';
 import { GestorPartidas } from './actores/gestor';
 import { crearAuth, type Auth } from './auth/auth';
 import { construirApp } from './http/app';
@@ -23,6 +24,7 @@ import { Catalogo } from './persistencia/repos/catalogo';
 import { RepoDraft } from './persistencia/repos/draft';
 import { RepoEquipo } from './persistencia/repos/equipo';
 import { RepoPartidos } from './persistencia/repos/partidos';
+import { RepoVisionados } from './persistencia/repos/visionados';
 import { RepoTorneo } from './persistencia/repos/torneo';
 import { ServicioAvisos } from './avisos/servicio';
 import { registrarRutasTorneo } from './http/torneo';
@@ -98,6 +100,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     repoEquipo: new RepoEquipo(config.db),
     repoPartidos: new RepoPartidos(config.db),
     repoTorneo: new RepoTorneo(config.db),
+    repoVisionados: new RepoVisionados(config.db),
     catalogo,
     reloj: config.reloj,
     temporizadores,
@@ -132,6 +135,23 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
       return c.ejecutar((cmd) => procesarSeguir(c, cmd, ctx.participanteId, msg.partidoId));
     },
   });
+  // Salir desde la barra en una partida de un humano: se pausa hasta volver (research R10).
+  pasarela.registrarManejador('partida.pausar', {
+    esquema: MsgPartidaPausar,
+    conAck: true,
+    manejar: async (ctx) => {
+      const c = await gestor.obtenerOError(ctx.partidaId);
+      return c.ejecutar((cmd) => procesarPausar(c, cmd, ctx.participanteId));
+    },
+  });
+  pasarela.registrarManejador('partido.finalizar', {
+    esquema: MsgPartidoFinalizar,
+    conAck: true,
+    manejar: async (ctx, msg) => {
+      const c = await gestor.obtenerOError(ctx.partidaId);
+      return c.ejecutar((cmd) => procesarFinalizar(c, cmd, ctx.participanteId, msg.partidoId));
+    },
+  });
   pasarela.registrarManejador('partido.decision', {
     esquema: MsgPartidoDecision,
     conAck: true,
@@ -140,21 +160,13 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
       return c.ejecutar(() => procesarDecisionPartido(c, ctx.participanteId, msg.partidoId, { tipo: msg.tipo, datos: msg.datos }));
     },
   });
-  // 2D: velocidad elegida y reloj de reproducción (sin requestId: se repiten y no cambian el partido).
-  pasarela.registrarManejador('partido.velocidad', {
-    esquema: MsgPartidoVelocidad,
-    conAck: false,
-    manejar: async (ctx, msg) => {
-      const c = await gestor.obtenerOError(ctx.partidaId);
-      return c.ejecutar((cmd) => procesarVelocidad(c, cmd, ctx.participanteId, msg.partidoId, msg.velocidad));
-    },
-  });
+  // 2D en directo: reloj de reproducción del cliente (sin requestId: se repite y no cambia el partido).
   pasarela.registrarManejador('partido.reproduccion', {
     esquema: MsgPartidoReproduccion,
     conAck: false,
     manejar: async (ctx, msg) => {
       const c = await gestor.obtenerOError(ctx.partidaId);
-      return c.ejecutar((cmd) => procesarReproduccion(c, cmd, ctx.participanteId, msg.partidoId, msg.tick));
+      return c.ejecutar((cmd) => procesarReproduccion(c, cmd, ctx.participanteId, msg.partidoId, msg.tick, msg.velocidad));
     },
   });
 

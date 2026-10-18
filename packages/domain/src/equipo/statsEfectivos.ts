@@ -1,19 +1,21 @@
 /**
- * Stats efectivos de un jugador en una casilla (FR-025a, FR-027, FR-028).
+ * Stats efectivos de un jugador en una casilla o zona del campo (spec 001: FR-025a, FR-028; spec 002:
+ * FR-031 a FR-033, research R12, data-model §3).
  *
- * - Casilla de su posición (o la central de una defensa de 3/5 para un DCI/DCD): sin penalización.
- * - Jugador de campo en la portería, o portero fuera de ella: −`penalizacionPorteria` (60 %).
- * - Resto de casillas fuera de posición: −`penalizacionFueraPosicion` (25 %), salvo Todocampista.
+ * - En una de sus posiciones (o la central de una defensa de 3/5 para un DCI/DCD): sin penalización.
+ * - Jugador de campo en la portería, o portero fuera de ella: −`penalizacionPosicion.porteria` (60 %).
+ * - Todocampista: sin penalización fuera de la portería.
+ * - Misma demarcación, posición que no tiene: −`mismaDemarcacion` (10 %).
+ * - Otra demarcación: la tabla de cruces de FR-032. Con varias posiciones, se aplica la menor.
  */
-import { CLAVES_STATS, type Jugador } from '../catalogo/tipos';
-import type { ParametrosEquilibrado } from '../parametros/index';
-import type { Casilla } from './formaciones';
+import { CLAVES_STATS, POSICIONES_POR_DEMARCACION, type Demarcacion, type Jugador, type Posicion } from '../catalogo/tipos';
+import type { ParametrosEquilibrado, RolPenalizacion } from '../parametros/index';
 
 export interface StatsEfectivos {
   stats: Record<string, number>;
   media: number;
   fueraDePosicion: boolean;
-  /** Fracción aplicada: 0, 0,25 o 0,60 con los parámetros v1. */
+  /** Fracción aplicada: 0; 0,10; 0,20; 0,30; 0,40 o 0,60 con los parámetros 2.0.0. */
   penalizacion: number;
 }
 
@@ -22,26 +24,66 @@ export interface ContextoStats {
   bonus?: number;
 }
 
-export function penalizacionPorCasilla(
+/** Cualquier destino con las posiciones que admite: una casilla de formación o una zona del campo. */
+export interface DestinoPosicion {
+  posicionesAdmitidas: readonly Posicion[];
+}
+
+const DEMARCACION_DE: Readonly<Record<Posicion, Demarcacion>> = Object.fromEntries(
+  (Object.entries(POSICIONES_POR_DEMARCACION) as [Demarcacion, readonly Posicion[]][]).flatMap(([d, ps]) => ps.map((x) => [x, d])),
+) as Record<Posicion, Demarcacion>;
+
+/** Rol de origen de una posición del jugador (paso 4 de data-model §3). */
+function rolOrigen(posicion: Posicion): RolPenalizacion | 'POR' {
+  if (posicion === 'MCO') return 'MED_MCO';
+  if (posicion === 'MD') return 'MED_MD';
+  const d = DEMARCACION_DE[posicion];
+  return d;
+}
+
+/** Clase del destino (paso 5): DEF, MED_MCO (casilla o zona MCO), MED o DEL. */
+function claseDestino(destino: DestinoPosicion): RolPenalizacion | 'POR' {
+  if (destino.posicionesAdmitidas.includes('MCO')) return 'MED_MCO';
+  return DEMARCACION_DE[destino.posicionesAdmitidas[0]!];
+}
+
+const demarcacionDeRol = (r: RolPenalizacion | 'POR'): Demarcacion => (r === 'MED_MCO' || r === 'MED_MD' ? 'MED' : r);
+
+export function penalizacionPorPosicion(
   jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'specials'>,
-  casilla: Pick<Casilla, 'posicionesAdmitidas'>,
+  destino: DestinoPosicion,
   p: ParametrosEquilibrado,
 ): number {
-  const casillaPortero = casilla.posicionesAdmitidas.includes('POR');
-  const esPortero = jugador.demarcacion === 'POR';
-  if (casillaPortero !== esPortero) return p.penalizacionPorteria;
-  const natural = casilla.posicionesAdmitidas.some((pos) => jugador.posicion.includes(pos));
-  if (natural || jugador.specials.includes('Todocampista')) return 0;
-  return p.penalizacionFueraPosicion;
+  const tabla = p.penalizacionPosicion;
+  if (destino.posicionesAdmitidas.some((pos) => jugador.posicion.includes(pos))) return 0;
+  const destinoPortero = destino.posicionesAdmitidas.includes('POR');
+  if (destinoPortero !== (jugador.demarcacion === 'POR')) return tabla.porteria;
+  if (jugador.specials.includes('Todocampista')) return 0;
+  const clase = claseDestino(destino);
+  let menor = Number.POSITIVE_INFINITY;
+  for (const posicion of jugador.posicion) {
+    const rol = rolOrigen(posicion);
+    let valor: number;
+    if (demarcacionDeRol(rol) === demarcacionDeRol(clase)) valor = tabla.mismaDemarcacion;
+    else {
+      const cruce = tabla.cruces.find((c) => c.origen === rol && c.destino === clase)
+        // MED (sin MCO ni MD) hacia la casilla MCO no existe: dentro de la demarcación ya se resolvió arriba.
+        ?? tabla.cruces.find((c) => c.origen === rol && demarcacionDeRol(c.destino) === demarcacionDeRol(clase));
+      if (!cruce) throw new Error(`Sin penalización para ${rol} → ${clase}`);
+      valor = cruce.valor;
+    }
+    menor = Math.min(menor, valor);
+  }
+  return Number.isFinite(menor) ? menor : tabla.porteria;
 }
 
 export function statsEfectivos(
   jugador: Jugador,
-  casilla: Pick<Casilla, 'posicionesAdmitidas'>,
+  destino: DestinoPosicion,
   p: ParametrosEquilibrado,
   contexto: ContextoStats = {},
 ): StatsEfectivos {
-  const penalizacion = penalizacionPorCasilla(jugador, casilla, p);
+  const penalizacion = penalizacionPorPosicion(jugador, destino, p);
   const base = jugador.stats as unknown as Record<string, number>;
   const bonus = contexto.bonus ?? 0;
   const stats: Record<string, number> = {};

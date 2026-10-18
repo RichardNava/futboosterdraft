@@ -3,8 +3,8 @@
  * formación, táctica, lanzadores y recolocación. Se validan al pedirlas y se aplican al empezar el
  * siguiente tramo (o en la interrupción indicada por `aplicadaEnTick` al reproducir un partido).
  */
-import { autoAlineacion, esFormacionId, FORMACIONES, validarTactica } from '@fbd/domain';
-import { maxSustituciones, type EquipoEstado, type EstadoMotor } from '../estado/estado';
+import { autoAlineacion, esFormacionId, FORMACIONES, validarColocacion, validarTactica, type FormacionId } from '@fbd/domain';
+import { colocar, maxSustituciones, type EquipoEstado, type EstadoMotor } from '../estado/estado';
 import type { DecisionPartido, DecisionRegistrada } from '../tipos';
 import { emitir, type Contexto } from '../acciones/contexto';
 import { sustituir } from '../acciones/plantel';
@@ -30,6 +30,11 @@ function validarAsignacion(equipo: EquipoEstado, formacion: string, asignacion: 
   return { ok: true };
 }
 
+function validarPuntos(formacion: FormacionId, asignacion: { casillaId: string; jugadorId: number }[], colocacion: { jugadorId: number; x: number; y: number }[]): ResultadoDecision {
+  const motivos = validarColocacion(formacion, asignacion, colocacion);
+  return motivos.length ? error('DECISION_INVALIDA', `Colocación no válida: ${motivos.join(', ')}`) : { ok: true };
+}
+
 /** Comprueba que una decisión se puede aplicar en el estado actual (contando las pendientes). */
 export function validarDecision(estado: EstadoMotor, d: DecisionPartido): ResultadoDecision {
   if (estado.fase === 'finalizado' || estado.fase === 'penaltis') return error('PARTIDO_TERMINADO', 'El partido ya no admite cambios');
@@ -49,11 +54,17 @@ export function validarDecision(estado: EstadoMotor, d: DecisionPartido): Result
       }
       return { ok: true };
     }
-    case 'formacion':
+    case 'formacion': {
       if (!esFormacionId(d.datos.formacion)) return error('FORMACION_INVALIDA', 'Formación desconocida');
-      return d.datos.asignacion ? validarAsignacion(equipo, d.datos.formacion, d.datos.asignacion) : { ok: true };
-    case 'recolocacion':
-      return validarAsignacion(equipo, equipo.formacion, d.datos.asignacion);
+      const r = d.datos.asignacion ? validarAsignacion(equipo, d.datos.formacion, d.datos.asignacion) : { ok: true as const };
+      if (!r.ok || !d.datos.colocacion) return r;
+      if (!d.datos.asignacion) return error('DECISION_INVALIDA', 'La colocación necesita la asignación de casillas');
+      return validarPuntos(d.datos.formacion, d.datos.asignacion, d.datos.colocacion);
+    }
+    case 'recolocacion': {
+      const r = validarAsignacion(equipo, equipo.formacion, d.datos.asignacion);
+      return r.ok && d.datos.colocacion ? validarPuntos(equipo.formacion, d.datos.asignacion, d.datos.colocacion) : r;
+    }
     case 'tactica': {
       const errores = validarTactica(d.datos.tactica);
       return errores.length ? error(errores[0]!.codigo, errores[0]!.mensaje) : { ok: true };
@@ -112,7 +123,12 @@ function aplicarUna(ctx: Contexto, equipo: EquipoEstado, d: DecisionRegistrada):
       equipo.lanzadores = { ...d.datos.lanzadores, tanda: [...d.datos.lanzadores.tanda] };
       return;
     case 'recolocacion':
-      for (const a of d.datos.asignacion) equipo.jugadores.find((j) => j.id === a.jugadorId)!.casillaId = a.casillaId;
+      for (const a of d.datos.asignacion) {
+        const j = equipo.jugadores.find((x) => x.id === a.jugadorId)!;
+        j.casillaId = a.casillaId;
+      }
+      // Con `colocacion`, cada uno a su punto; sin ella, a su casilla (research R13).
+      colocar(equipo, d.datos.colocacion, ctx.estado.parametros);
       return;
     case 'formacion': {
       equipo.formacion = d.datos.formacion;
@@ -125,7 +141,9 @@ function aplicarUna(ctx: Contexto, equipo: EquipoEstado, d: DecisionRegistrada):
           ctx.estado.parametros,
           { formaciones: [d.datos.formacion] },
         ).titulares;
+      // La nueva formación restablece las anclas a sus casillas, salvo que traiga colocación (research R13).
       for (const j of enCampo) j.casillaId = asignacion.find((a) => a.jugadorId === j.id)?.casillaId ?? null;
+      colocar(equipo, d.datos.colocacion, ctx.estado.parametros);
       emitir(ctx, 'interrupcion', equipo.lado, [], { motivo: 'cambio_formacion', formacion: d.datos.formacion });
       return;
     }

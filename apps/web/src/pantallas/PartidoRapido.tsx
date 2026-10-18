@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { api } from '../api/cliente';
+import { BotonAvanzar } from '../componentes/BotonAvanzar';
+import { AvisoDorsales } from '../componentes/AvisoDorsales';
+import { BotonFinalizar } from '../componentes/BotonFinalizar';
 import { Estadisticas } from '../componentes/Estadisticas';
 import { estadoJugadores, PanelCambios, type AlineacionPartido } from '../componentes/PanelCambios';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
@@ -14,6 +17,10 @@ export interface Inicio {
   alineaciones: { local: AlineacionPartido; visitante: AlineacionPartido };
   dorsales: Record<string, number>;
   equipaciones: { local: { principal: string; secundario: string }; visitante: { principal: string; secundario: string } };
+  /** Orden de los jugadores en los fotogramas v2. */
+  ordenJugadores?: number[];
+  /** Dorsales dados al empezar a convocados que no tenían (FR-038). */
+  dorsalesAsignados?: { jugadorId: number; dorsal: number }[];
 }
 
 export type Marcador = { local: number; visitante: number; penaltis?: { local: number; visitante: number } };
@@ -31,12 +38,13 @@ export const ETIQUETA_FASE: Record<string, string> = {
 /** Partido en simulación rápida (T097; FR-044 a FR-047). */
 export function PartidoRapido() {
   const { partidaId, partidoId } = useParams();
+  const navegar = useNavigate();
   const [inicio, setInicio] = useState<Inicio | null>(null);
   const [eventos, setEventos] = useState<EventoVista[]>([]);
   const [marcador, setMarcador] = useState<Marcador>({ local: 0, visitante: 0 });
   const [estadisticas, setEstadisticas] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [fase, setFase] = useState('primera_parte');
-  const [pausa, setPausa] = useState<{ motivo: string; venceEn: string; listos: string[] } | null>(null);
+  const [pausa, setPausa] = useState<{ motivo: string; venceEn: string } | null>(null);
   const [miId, setMiId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,7 +63,7 @@ export function PartidoRapido() {
         setPausa(null);
         break;
       case 'partido.pausa_decision':
-        setPausa({ motivo: m.motivo as string, venceEn: m.venceEn as string, listos: m.listos as string[] });
+        setPausa({ motivo: m.motivo as string, venceEn: m.venceEn as string });
         break;
       case 'partido.fin':
         setEventos(m.eventos as EventoVista[]);
@@ -126,13 +134,16 @@ export function PartidoRapido() {
     return conexion.enviar({ t: 'partido.decision', partidoId: inicio.partidoId, tipo, datos });
   };
 
+  // `conexion.enviar` pone un `requestId` nuevo en cada envío: el servidor descarta los repetidos (FR-016).
   const seguir = async () => {
     if (!conexion) return;
     const ack = await conexion.enviar({ t: 'partido.seguir', partidoId: inicio.partidoId });
     if (!ack.ok) setError(ack.error?.mensaje ?? 'No se pudo continuar');
   };
-
-  const yaListo = miId !== null && pausa?.listos.includes(miId);
+  const finalizar = () => {
+    if (!conexion) throw new Error('Sin conexión');
+    return conexion.enviar({ t: 'partido.finalizar', partidoId: inicio.partidoId });
+  };
   const chapa = (lado: 'local' | 'visitante') => (
     <span className="chapa" style={{ background: inicio.equipaciones[lado].principal, color: inicio.equipaciones[lado].secundario }} aria-hidden="true" />
   );
@@ -159,6 +170,8 @@ export function PartidoRapido() {
         </div>
       </header>
 
+      <AvisoDorsales inicio={inicio} miId={miId} />
+
       <section aria-label="Resumen de eventos">
         <h2>{fase === 'finalizado' ? 'Resumen del partido' : 'Lo más destacado'}</h2>
         <ResumenEventos eventos={eventos} nombre={(id) => nombres.get(id) ?? String(id)} nombresEquipo={nombresEquipo} />
@@ -174,12 +187,8 @@ export function PartidoRapido() {
             aviso="Los cambios se aplicarán al reanudarse el partido."
           />
           <div className="acciones">
-            <button type="button" disabled={yaListo} onClick={() => void seguir()}>
-              Seguir
-            </button>
-            <span className="nota">
-              {yaListo ? 'Esperando al rival…' : 'Pulsa «Seguir» cuando termines tus cambios.'} El partido se reanuda en {restante ?? '–'} s.
-            </span>
+            <BotonAvanzar situacion="pausa" onAvanzar={seguir} />
+            <span className="nota">Pulsa «Seguir» cuando termines tus cambios. Si no, el partido se reanuda en {restante ?? '–'} s.</span>
           </div>
         </>
       )}
@@ -188,6 +197,7 @@ export function PartidoRapido() {
           {error}
         </p>
       )}
+      {fase !== 'finalizado' && miLado && <BotonFinalizar finalizar={finalizar} />}
 
       {estadisticas && (
         <section aria-label="Estadísticas">
@@ -197,10 +207,8 @@ export function PartidoRapido() {
       )}
 
       {fase === 'finalizado' && (
-        <p>
-          <Link className="boton" to={`/partidas/${partidaId}/torneo`}>
-            Ver el torneo
-          </Link>{' '}
+        <p className="acciones">
+          <BotonAvanzar situacion="fin_partido" onAvanzar={() => navegar(`/partidas/${partidaId}/torneo`)} />
           <Link className="boton secundario" to={`/partidas/${partidaId}/alineacion`}>
             Volver a mi equipo
           </Link>

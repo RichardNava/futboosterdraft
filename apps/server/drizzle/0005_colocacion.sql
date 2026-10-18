@@ -1,0 +1,1 @@
+ALTER TABLE "alineaciones" ADD COLUMN "colocacion" jsonb;

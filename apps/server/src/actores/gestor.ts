@@ -19,11 +19,11 @@ import { errores } from '../http/errores';
 import { usuarios } from '../persistencia/esquema/index';
 import type { FilaPartida } from '../persistencia/repos/partidas';
 import { reprogramarTurnos } from './draft';
-import { partidos2DDe, reevaluar2D } from './partido2d';
 import { enPartido } from './partidoRapido';
 import { engancharTorneo, reprogramarTorneo, type DependenciasTorneo } from './torneo';
 import { nombresNPC } from './nombres';
 import { ControladorPartida } from './partida';
+import { reanudarAlConectar } from './pausa';
 import { abandonarPartidaInvitado, alCambiarConexion, programarBusqueda, resumenSala } from './sala';
 import type { ServiciosPartida } from './servicios';
 import { plantillasVisibles, resumenPartida, vistaEstado } from './vistas';
@@ -102,7 +102,6 @@ export class GestorPartidas {
       modo: entrada.modo,
       numParticipantes: entrada.numParticipantes,
       tipoSimulacion: entrada.tipoSimulacion,
-      ritmo: entrada.ritmo,
       plazoJornadaHoras: entrada.plazoJornadaHoras ?? base.plazoJornadaHoras,
       npc: entrada.npc ?? [],
       tiempos: { ...base.tiempos, ...entrada.tiempos },
@@ -160,15 +159,16 @@ export class GestorPartidas {
     alCambiarConexion(c, participanteId, conectado, () => {
       if (c.partida.estado === 'abandonada') this.quitar(c.id);
     });
+    // Al volver, lo que se pausó al salir desde la barra sigue con el tiempo que quedaba (research R10). Va en
+    // la cola del actor antes que la instantánea `estado` de la conexión, que ya lo ve reanudado.
+    if (conectado) {
+      void c
+        .ejecutar((ctx) => reanudarAlConectar(c, ctx, participanteId))
+        .catch((err: unknown) => this.servicios.logger.error({ err, partidaId }, 'Error al reanudar la partida'));
+    }
     // Los demás ven en la sala quién está conectado.
     if (c.partida.estado === 'buscando') {
       void c.ejecutar((ctx) => ctx.emitirATodos({ t: 'sala.actualizada', ...resumenSala(c) }));
-    }
-    // En 2D, una desconexión (o la vuelta) cambia a quién hay que esperar y la velocidad efectiva.
-    for (const p of partidos2DDe(c, participanteId)) {
-      void c
-        .ejecutar((ctx) => reevaluar2D(c, ctx, p))
-        .catch((err: unknown) => this.servicios.logger.error({ err, partidaId }, 'Error al reevaluar el partido 2D'));
     }
   }
 

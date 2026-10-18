@@ -2,7 +2,7 @@
  * Rutas del catálogo (T031): ficha de jugador, formaciones y specials.
  */
 import { FORMACIONES_IDS, FORMACIONES, TODOS_LOS_SPECIALS, SPECIALS_GENERICOS, SPECIALS_POR, SPECIALS_DEF, SPECIALS_MED, type Special } from '@fbd/domain';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import type { BaseDatos } from '../persistencia/db';
 import { jugadores } from '../persistencia/esquema/index';
@@ -38,6 +38,11 @@ export function filaAJugador(f: typeof jugadores.$inferSelect) {
 }
 
 export function registrarRutasCatalogo(app: FastifyInstance, db: BaseDatos): void {
+  // Catálogo completo (público, como cada ficha); lo usa la página de pruebas de las cartas (SC-002).
+  app.get('/api/catalogo/jugadores', async () =>
+    (await db.select().from(jugadores).orderBy(asc(jugadores.id))).map(filaAJugador),
+  );
+
   app.get<{ Params: { id: string } }>('/api/catalogo/jugadores/:id', async (req) => {
     const id = Number(req.params.id);
     if (!Number.isInteger(id)) throw errores.validacion('ID_INVALIDO', 'El id del jugador debe ser un entero');

@@ -9,7 +9,7 @@ import { AlineacionEntrada, DorsalesEntrada, EquipacionesEntrada } from '@fbd/pr
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import {
   alineacionVigente,
-  cambiarDorsales,
+  cambiarDorsal,
   cambiarEquipaciones,
   confirmarAlineacion,
   exigirEquipoEditable,
@@ -72,10 +72,9 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
   });
 
   app.put<{ Params: { id: string } }>('/api/partidas/:id/dorsales', { preHandler: requiereSesion }, async (req) => {
-    const { dorsales } = DorsalesEntrada.parse(req.body);
+    const { jugadorId, dorsal } = DorsalesEntrada.parse(req.body);
     const { c, participanteId } = await contexto(req);
-    const cambios = Object.fromEntries(Object.entries(dorsales).map(([id, n]) => [Number(id), n]));
-    return c.ejecutar(async () => ({ dorsales: await cambiarDorsales(c, participanteId, cambios) }));
+    return c.ejecutar(() => cambiarDorsal(c, participanteId, jugadorId, dorsal));
   });
 
   app.put<{ Params: { id: string } }>('/api/partidas/:id/equipaciones', { preHandler: requiereSesion }, async (req) => {

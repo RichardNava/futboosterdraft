@@ -2,15 +2,19 @@
  * Prueba de carga de la beta (T139; SC-017): 100 partidas simultáneas, unos 800 participantes
  * conectados por WebSocket, con drafts y jornadas de torneo a la vez.
  *
- * Cada usuario virtual (VU) de k6 es una partida: registra a sus humanos, crea una liga de 8 en
- * directo, abre un WebSocket por humano y juega el draft y el torneo completos respondiendo al
- * instante (eligen la primera carta y pulsan «Seguir» en cada descanso). Las últimas `PARTIDAS_NPC`
- * partidas son de un invitado contra 7 NPC, para medir las jornadas con partidos NPC.
+ * Cada usuario virtual (VU) de k6 es una partida: registra a sus humanos, crea una liga de 8, abre un
+ * WebSocket por humano y juega el draft y el torneo completos respondiendo al instante: eligen la
+ * primera carta, abren su partido de cada jornada («Comenzar partido» o «Ver partido», spec 002) y
+ * pulsan «Seguir» en cada descanso. Los torneos son siempre asíncronos (spec 002, FR-030): un partido
+ * entre humanos se resuelve al abrirlo el primero. Las últimas `PARTIDAS_NPC` partidas son de un
+ * invitado contra 7 NPC, que pide «Siguiente jornada» al cerrarse cada una.
  *
  * Comprueba (umbrales al final del informe de k6):
  * - `entrega_sobre_ms` p95 < 1 s: desde que un humano elige hasta que recibe el sobre siguiente
  *   (todos eligen al instante, así que mide la resolución del turno y la difusión).
  * - SC-009 sigue cumpliéndose: `descanso_ms` (inicio → descanso) y `final_ms` («Seguir» → final), p95 < 3 s.
+ * - `apertura_ms` p95 < 3 s: respuesta de `POST /api/partidos/:id/abrir` (incluye resolver un partido
+ *   entre humanos de una vez con el motor de la spec 002).
  * - `jornada_npc_ms` p95 < 10 s: desde que empiezan los partidos de una jornada hasta que se cierra.
  * - Ningún bloqueo: las 100 partidas terminan (`partidas_terminadas`) y no hay errores.
  *
@@ -33,12 +37,13 @@ const PARTIDAS_NPC = Number(__ENV.PARTIDAS_NPC || Math.max(1, Math.round(PARTIDA
 const HUMANOS = 8;
 /** Tiempo máximo para terminar una partida: si se pasa, cuenta como bloqueo. */
 const LIMITE_PARTIDA_MS = Number(__ENV.LIMITE_PARTIDA_S || 1200) * 1000;
-/** Tiempos cortos de preparación y descanso para que el torneo dure minutos, no horas. */
-const TIEMPOS = { turnoDraftS: 45, preparacionS: 5, preparacionInicialS: 5, descansoS: 5 };
+/** Descansos cortos para que el torneo dure minutos, no horas (ya no hay tiempo de preparación, spec 002). */
+const TIEMPOS = { turnoDraftS: 45, descansoS: 5 };
 
 const entregaSobre = new Trend('entrega_sobre_ms', true);
 const descanso = new Trend('descanso_ms', true);
 const final = new Trend('final_ms', true);
+const apertura = new Trend('apertura_ms', true);
 const jornadaNPC = new Trend('jornada_npc_ms', true);
 const terminadas = new Counter('partidas_terminadas');
 const bloqueadas = new Counter('partidas_bloqueadas');
@@ -58,6 +63,7 @@ export const options = {
     entrega_sobre_ms: ['p(95)<1000'],
     descanso_ms: ['p(95)<3000'],
     final_ms: ['p(95)<3000'],
+    apertura_ms: ['p(95)<3000'],
     jornada_npc_ms: ['p(95)<10000'],
     partidas_terminadas: [`count>=${PARTIDAS}`],
     partidas_bloqueadas: ['count==0'],
@@ -101,6 +107,8 @@ function jugar(partidaId, u, opciones) {
     const seguidos = new Map();
     let jornadaAbierta = null;
     let jornadasCerradas = 0;
+    const abiertos = new Set();
+    let pedidaSiguiente = 0;
     let terminado = false;
     const enviar = (m) => ws.send(JSON.stringify(m));
     const cerrar = (ok) => {
@@ -130,6 +138,18 @@ function jugar(partidaId, u, opciones) {
         case 'draft.terminado':
           eligioEn = null;
           break;
+        case 'preparacion.inicio':
+          // «Comenzar partido» (rival NPC) o «Ver partido» (rival humano): ya no hay temporizador de preparación.
+          if (!abiertos.has(m.partidoId)) {
+            abiertos.add(m.partidoId);
+            const r = post(u, `/api/partidos/${m.partidoId}/abrir`);
+            apertura.add(r.timings.duration);
+            if (r.status !== 200) {
+              erroresWs.add(1, { codigo: `abrir_${r.status}` });
+              console.warn(`abrir ${m.partidoId} en ${partidaId}: ${r.status} ${r.body}`);
+            }
+          }
+          break;
         case 'partido.inicio':
           inicios.set(m.partidoId, ahora);
           // Todos los partidos de una jornada empiezan a la vez: el propio marca el inicio.
@@ -152,7 +172,16 @@ function jugar(partidaId, u, opciones) {
             if (opciones.medirJornadas && jornadaAbierta !== null) jornadaNPC.add(ahora - jornadaAbierta);
             jornadaAbierta = null;
           }
-          if (m.campeon) cerrar(true);
+          if (m.campeon) {
+            cerrar(true);
+            break;
+          }
+          // Con un solo humano la siguiente jornada se abre a mano (spec 002, research R9).
+          const actual = (m.jornadas || []).find((j) => j.numero === m.jornadaActual);
+          if (m.siguienteJornada === 'manual' && actual?.estado === 'cerrada' && pedidaSiguiente < cerradas) {
+            pedidaSiguiente = cerradas;
+            post(u, `/api/partidas/${partidaId}/siguiente-jornada`);
+          }
           break;
         }
         case 'ack':
@@ -181,7 +210,6 @@ export default async function () {
     modo: 'liga',
     numParticipantes: 8,
     tipoSimulacion: 'rapida',
-    ritmo: 'directo',
     ...(conNPC ? {} : { plazasHumanas: HUMANOS }),
     tiempos: TIEMPOS,
   });

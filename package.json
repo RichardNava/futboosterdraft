@@ -14,7 +14,7 @@
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
     "test:integration": "pnpm --filter @fbd/server test:integration",
-    "test:equivalence": "vitest run --project engine equivalencia",
+    "test:equivalence": "vitest run --project engine --project ai equivalencia",
     "e2e": "pnpm --filter @fbd/web e2e",
     "balance": "pnpm --filter @fbd/balance balance",
     "seed": "pnpm --filter @fbd/server seed",

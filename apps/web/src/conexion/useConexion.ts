@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { usePartidaActiva } from '../estado/partidaActiva';
+import { useSesion } from '../estado/sesion';
+import { mantenerConexionInvitado } from './activa';
 import { ConexionPartida, type MensajeServidor } from './ws';
 
 export interface EstadoServidor {
@@ -20,16 +23,34 @@ export function useConexion(partidaId: string | undefined, alMensaje?: (m: Mensa
   useEffect(() => {
     if (!partidaId) return;
     const c = new ConexionPartida(partidaId);
+    const activa = usePartidaActiva.getState();
     const quitarMensajes = c.alRecibir((m) => {
-      if (m.t === 'estado') setEstado({ fase: m.fase as EstadoServidor['fase'], vista: m.vista });
+      if (m.t === 'estado') {
+        setEstado({ fase: m.fase as EstadoServidor['fase'], vista: m.vista });
+        // La barra de navegación necesita saber en qué partida y fase está, y con quién (research R10, R11).
+        const vista = m.vista as { partida?: { miParticipanteId?: string | null; tipoSimulacion?: string; participantes?: [] } };
+        activa.actualizar({
+          partidaId,
+          fase: m.fase as string,
+          miParticipanteId: vista.partida?.miParticipanteId ?? null,
+          tipoSimulacion: vista.partida?.tipoSimulacion ?? null,
+          participantes: vista.partida?.participantes ?? [],
+          conexion: c,
+        });
+      }
+      if (m.t === 'sala.actualizada' && Array.isArray(m.participantes)) activa.actualizar({ participantes: m.participantes as [] });
+      if (m.t === 'draft.turno' && m.animacion === true) activa.actualizar({ aperturaPendiente: { partidaId, ronda: m.ronda as number } });
       oyente.current?.(m);
     });
     const quitarConexion = c.alCambiarConexion(setConectada);
     c.conectar();
     setConexion(c);
+    // Un invitado mantiene abierta la conexión de su partida mientras navega por otras secciones.
+    if (useSesion.getState().usuario?.tipo === 'invitado') mantenerConexionInvitado(partidaId);
     return () => {
       quitarMensajes();
       quitarConexion();
+      usePartidaActiva.getState().olvidarConexion(c);
       c.cerrar();
     };
   }, [partidaId]);

@@ -2,7 +2,8 @@
  * Alineación: formación, titulares por casilla, suplentes, táctica y lanzadores
  * (FR-026, FR-028, FR-029a, FR-030; data-model §4.1).
  */
-import type { Jugador } from '../catalogo/tipos';
+import type { Jugador, Posicion } from '../catalogo/tipos';
+import { calcularColocacion, validarColocacion, type PuntoColocacion, type Reparto } from './colocacion';
 import type { ParametrosEquilibrado } from '../parametros/index';
 import { esFormacionId, FORMACIONES, type FormacionId } from './formaciones';
 import type { Lanzadores } from './lanzadores';
@@ -23,6 +24,8 @@ export interface Alineacion {
   suplentes: number[];
   tactica: Tactica;
   lanzadores: Lanzadores;
+  /** Colocación libre de los titulares (FR-034); si falta un titular, el punto de su casilla. */
+  colocacion?: PuntoColocacion[];
 }
 
 export type CodigoErrorAlineacion = 'ALINEACION_INVALIDA' | 'TACTICA_INCOMPATIBLE' | 'JUGADOR_NO_DISPONIBLE';
@@ -84,6 +87,9 @@ export function validarAlineacion(
     motivos.push(`La tanda de penaltis debe tener ${tandaEsperada} titulares distintos`);
   }
 
+  // Colocación libre (FR-034a): portero en su zona, nadie más en ella, dentro del campo.
+  if (a.colocacion) motivos.push(...validarColocacion(a.formacion, a.titulares, a.colocacion));
+
   if (motivos.length) errores.push({ codigo: 'ALINEACION_INVALIDA', mensaje: motivos[0]!, motivos });
 
   const deBaja = [...titularesIds, ...a.suplentes].filter((id) => bajasActivas.has(id));
@@ -106,22 +112,48 @@ export function validarAlineacion(
   return errores;
 }
 
-export interface CasillaPrevisualizada extends StatsEfectivos {
+export interface TitularPrevisualizado extends StatsEfectivos {
   casillaId: string;
   etiqueta: string;
   jugadorId: number;
+  posicionEfectiva: Posicion;
+  zonaId: string;
+  x: number;
+  y: number;
 }
 
-/** Stats efectivos de cada titular en su casilla, para la pantalla de alineación (FR-028). */
-export function previsualizar(
-  a: Alineacion,
-  buscar: (id: number) => Jugador,
-  p: ParametrosEquilibrado,
-): CasillaPrevisualizada[] {
+/** Previsualización de una alineación (contracts/engine-api.md): la usan la interfaz, el servidor y el motor. */
+export interface Previsualizacion {
+  titulares: TitularPrevisualizado[];
+  personalizada: boolean;
+  reparto: Reparto;
+  ofensividad: number;
+  amplitud: number;
+  avisos: string[];
+}
+
+/**
+ * Stats efectivos de cada titular con la posición de la zona en la que está colocado (FR-028, FR-034), y el
+ * perfil de la colocación (`personalizada`, reparto, ofensividad, amplitud y avisos).
+ */
+export function previsualizar(a: Alineacion, buscar: (id: number) => Jugador, p: ParametrosEquilibrado): Previsualizacion {
   const casillas = FORMACIONES[a.formacion].casillas;
-  return a.titulares.flatMap((t) => {
-    const c = casillas.find((x) => x.id === t.casillaId);
-    if (!c) return [];
-    return [{ casillaId: c.id, etiqueta: c.etiqueta, jugadorId: t.jugadorId, ...statsEfectivos(buscar(t.jugadorId), c, p) }];
+  const colocacion = calcularColocacion(a.formacion, a.titulares, a.colocacion, p, (id) => buscar(id).posicion);
+  const titulares = colocacion.titulares.map((t) => {
+    const casilla = casillas.find((x) => x.id === t.casillaId)!;
+    // En la portería, la casilla; en el resto, las posiciones que admite la zona en la que está.
+    const destino = casilla.id === 'POR' ? casilla : t.zona;
+    return {
+      casillaId: casilla.id,
+      etiqueta: casilla.etiqueta,
+      jugadorId: t.jugadorId,
+      posicionEfectiva: t.posicionEfectiva,
+      zonaId: t.zona.id,
+      x: t.x,
+      y: t.y,
+      ...statsEfectivos(buscar(t.jugadorId), destino, p),
+    };
   });
+  const { personalizada, reparto, ofensividad, amplitud, avisos } = colocacion;
+  return { titulares, personalizada, reparto, ofensividad, amplitud, avisos };
 }

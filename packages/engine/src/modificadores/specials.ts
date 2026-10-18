@@ -21,6 +21,33 @@ export function vaPerdiendo(estado: EstadoMotor, equipo: EquipoEstado): boolean 
   return estado.marcador[equipo.lado] < estado.marcador[rival(equipo.lado)];
 }
 
+/** Bonificación de equipo por demarcación (la misma para todos los de una demarcación, FR-038). */
+export function bonusPorDemarcacion(estado: EstadoMotor, equipo: EquipoEstado): Record<'POR' | 'DEF' | 'MED' | 'DEL', number> {
+  const s = estado.parametros.specials;
+  let capitania = false;
+  let fortaleza = false;
+  let jerarquia = false;
+  let libero = false;
+  let boxToBox = false;
+  for (const j of equipo.jugadores) {
+    if (!j.enCampo) continue;
+    const sp = j.jugador.specials;
+    if (sp.length === 0) continue;
+    capitania ||= sp.includes('Capitania');
+    fortaleza ||= sp.includes('FortalezaMental');
+    jerarquia ||= sp.includes('Jerarquia');
+    libero ||= sp.includes('Libero');
+    boxToBox ||= sp.includes('BoxToBox');
+  }
+  const comun = (capitania ? s.capitania : 0) + (fortaleza && vaPerdiendo(estado, equipo) ? s.fortalezaMental : 0);
+  return {
+    POR: comun,
+    DEF: comun + (jerarquia ? s.jerarquia : 0) + (boxToBox ? s.boxToBox : 0),
+    MED: comun + (libero ? s.libero : 0),
+    DEL: comun + (boxToBox ? s.boxToBox : 0),
+  };
+}
+
 /** Bonificación de equipo a todos los stats de un jugador (sin acumulación entre jugadores, FR-038). */
 export function bonusEquipo(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido): number {
   if (!j.enCampo) return 0;

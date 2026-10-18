@@ -1,14 +1,17 @@
+/**
+ * Partido 2D en directo contra un NPC con el búfer de anticipación (research R6, FR-025a; T072).
+ */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { programarJornada } from '../../src/actores/preparacion';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
 import { ClienteWs } from '../helpers/clienteWs';
-import { crearRegistrado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
+import { crearInvitado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
 const TURNO = 46_000;
+const ANTICIPACION = 60;
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-describe('partido 2D (US6)', () => {
+describe('partido 2D en directo (US3, research R6)', () => {
   let bd: BdPruebas;
   let srv: ServidorPruebas;
 
@@ -25,135 +28,163 @@ describe('partido 2D (US6)', () => {
     await bd?.detener();
   });
 
-  /** Liga de 4 en 2D con dos humanos que se enfrentan en la primera jornada; devuelve el partido ya empezado. */
-  async function partidoEntreHumanos() {
-    const humanos: UsuarioPrueba[] = [await crearRegistrado(srv.url), await crearRegistrado(srv.url)];
-    const r = await peticion(srv.url, '/api/partidas', {
-      cookie: humanos[0]!.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: '2d', ritmo: 'directo', plazasHumanas: 2 },
-    });
+  /** Liga 2D de 4 con un humano: completa el draft, pulsa «Comenzar partido» y espera el primer tramo. */
+  async function partidoEnDirecto() {
+    const u: UsuarioPrueba = await crearInvitado(srv.url);
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: '2d' } });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     const partidaId: string = r.cuerpo.id;
-    await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: humanos[1]!.cookie });
-    const [a, b] = await Promise.all(humanos.map((h) => ClienteWs.conectar(srv.urlWs, partidaId, h.cookie)));
-    const c = await srv.gestor.obtenerOError(partidaId);
-    c.programarPrimeraJornada = async (ctx) => {
-      const [h1, h2] = c.participantes.filter((p) => p.tipo === 'humano').map((p) => p.id);
-      const [n1, n2] = c.participantes.filter((p) => p.tipo === 'npc').map((p) => p.id);
-      await programarJornada(c, ctx, 1, [{ local: h1!, visitante: h2! }, { local: n1!, visitante: n2! }], { inicial: true });
-    };
-    await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: humanos[0]!.cookie });
-    for (let i = 0; i < 30 && ![a, b].every((cl) => cl!.recibidos.some((m) => m.t === 'preparacion.inicio')); i++) {
+    const ws = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
+    await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: u.cookie });
+    for (let i = 0; i < 30 && !ws.recibidos.some((m) => m.t === 'preparacion.inicio'); i++) {
       srv.reloj.avanzar(TURNO);
       await espera(60);
     }
-    const desde = a!.recibidos.length;
-    srv.reloj.avanzar(300_001);
-    const inicio = await a!.esperar('partido.inicio', { desde });
-    const tramo = await a!.esperar('partido.tramo', { desde });
-    await b!.esperar('partido.tramo');
-    return { partidaId, humanos, a: a!, b: b!, inicio, tramo };
+    const prep = await ws.esperar('preparacion.inicio');
+    const desde = ws.recibidos.length;
+    const abierto = await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie });
+    expect(abierto.cuerpo.modo).toBe('directo');
+    const inicio = await ws.esperar('partido.inicio', { desde });
+    await ws.esperar('partido.tramo', { desde });
+    await espera(100);
+    return { partidaId, u, ws, inicio, desde };
   }
 
-  const reproducir = (ws: ClienteWs, partidoId: string, tick: number) => ws.enviar({ t: 'partido.reproduccion', partidoId, tick }, false);
-  const tramos = (ws: ClienteWs) => ws.recibidos.filter((m) => m.t === 'partido.tramo');
+  const tramosDe = (ws: ClienteWs, desde = 0) => ws.recibidos.slice(desde).filter((m) => m.t === 'partido.tramo');
+  const informar = (ws: ClienteWs, partidoId: string, tick: number, velocidad = 2) =>
+    ws.enviar({ t: 'partido.reproduccion', partidoId, tick, velocidad }, false);
 
-  it('el tramo llega con fotogramas y la velocidad efectiva es la menor de los dos humanos', async () => {
-    const { a, b, inicio, tramo } = await partidoEntreHumanos();
+  /** Espera a que los tramos recibidos lleguen al menos hasta `tick` (o a que se detenga en una parada). */
+  async function hastaTick(ws: ClienteWs, tick: number, desde = 0) {
+    for (let i = 0; i < 100; i++) {
+      const t = tramosDe(ws, desde);
+      const ultimo = t.at(-1);
+      const enJuego = ['primera_parte', 'segunda_parte', 'prorroga'].includes(ultimo?.fase);
+      if (ultimo && (ultimo.hastaTick >= tick || !enJuego)) return t;
+      await espera(30);
+    }
+    return tramosDe(ws, desde);
+  }
+
+  /** Reproduce como un cliente: informa del último tick recibido hasta llegar a `objetivo` o a una parada. */
+  async function reproducirHasta(ws: ClienteWs, partidoId: string, objetivo: number, desde = 0, velocidad = 2) {
+    for (let i = 0; i < 1000; i++) {
+      const ultimo = tramosDe(ws, desde).at(-1)!;
+      const tick = Math.min(objetivo, ultimo.hastaTick);
+      if (ultimo.fase !== 'primera_parte' && ultimo.fase !== 'segunda_parte' && ultimo.fase !== 'prorroga') return tick;
+      informar(ws, partidoId, tick, velocidad);
+      if (tick >= objetivo) return tick;
+      await hastaTick(ws, tick + ANTICIPACION, desde);
+    }
+    throw new Error('no se llegó al tick');
+  }
+
+  it('mantiene simulados 60 ticks por delante del último tick informado, y nunca más', async () => {
+    const { ws, inicio, desde } = await partidoEnDirecto();
     expect(inicio.modalidad).toBe('2d');
-    expect(tramo.fotogramas.length).toBeGreaterThan(0);
-    expect(Object.keys(tramo.fotogramas[0].j)).toHaveLength(22);
+    expect(inicio.ordenJugadores).toHaveLength(inicio.alineaciones.local.titulares.length + inicio.alineaciones.local.suplentes.length + inicio.alineaciones.visitante.titulares.length + inicio.alineaciones.visitante.suplentes.length);
 
-    let desde = a.recibidos.length;
-    let desdeB = b.recibidos.length;
-    a.enviar({ t: 'partido.velocidad', partidoId: inicio.partidoId, velocidad: 32 }, false);
-    b.enviar({ t: 'partido.velocidad', partidoId: inicio.partidoId, velocidad: 32 }, false);
-    expect((await a.esperar('partido.velocidad', { desde })).velocidadEfectiva).toBe(32);
-    expect((await b.esperar('partido.velocidad', { desde: desdeB })).velocidadEfectiva).toBe(32);
-    desde = a.recibidos.length;
-    desdeB = b.recibidos.length;
-    b.enviar({ t: 'partido.velocidad', partidoId: inicio.partidoId, velocidad: 4 }, false);
-    expect((await a.esperar('partido.velocidad', { desde })).velocidadEfectiva).toBe(4);
-    expect((await b.esperar('partido.velocidad', { desde: desdeB })).velocidadEfectiva).toBe(4);
-    await a.cerrar();
-    await b.cerrar();
+    // Sin informes, solo los primeros 60 ticks (acabando la acción que los alcanza).
+    let tramos = tramosDe(ws, desde);
+    expect(tramos.at(-1)!.hastaTick).toBeGreaterThanOrEqual(ANTICIPACION);
+    expect(tramos.slice(0, -1).every((t) => t.hastaTick < ANTICIPACION)).toBe(true);
+    await espera(300);
+    expect(tramosDe(ws, desde)).toHaveLength(tramos.length);
+
+    // Cada informe (de un tick ya recibido) abre el búfer hasta 60 ticks por delante.
+    for (let i = 0; i < 3; i++) {
+      const antes = tramosDe(ws, desde).length;
+      const tick = tramosDe(ws, desde).at(-1)!.hastaTick - 10;
+      informar(ws, inicio.partidoId, tick);
+      tramos = await hastaTick(ws, tick + ANTICIPACION, desde);
+      const nuevos = tramos.slice(antes);
+      expect(tramos.at(-1)!.hastaTick).toBeGreaterThanOrEqual(tick + ANTICIPACION);
+      expect(nuevos.slice(0, -1).every((t) => t.hastaTick < tick + ANTICIPACION)).toBe(true);
+    }
+
+    // En orden y sin huecos de ticks, con acciones, fotogramas v2 y `provisional: false`.
+    for (let i = 0; i < tramos.length; i++) {
+      const t = tramos[i]!;
+      if (i > 0) expect(t.desdeTick).toBe(tramos[i - 1]!.hastaTick);
+      expect(t.provisional).toBe(false);
+      expect(Array.isArray(t.acciones)).toBe(true);
+      expect(t.fotogramas.length).toBeGreaterThan(0);
+      expect(t.fotogramas[0]).toHaveLength(4 + 2 * inicio.ordenJugadores.length);
+    }
+    await ws.cerrar();
   });
 
-  it('no simula el siguiente tramo hasta que los dos han llegado a la interrupción', async () => {
-    const { a, b, inicio, tramo } = await partidoEntreHumanos();
-    reproducir(a, inicio.partidoId, tramo.hastaTick);
-    await espera(400);
-    expect(tramos(a)).toHaveLength(1);
-    const desde = a.recibidos.length;
-    reproducir(b, inicio.partidoId, tramo.hastaTick);
-    const siguiente = await a.esperar('partido.tramo', { desde });
-    expect(siguiente.desdeTick).toBe(tramo.hastaTick);
-    await a.cerrar();
-    await b.cerrar();
+  it('nunca adelanta el descanso: espera a «Seguir» y después sigue con el búfer', async () => {
+    const { ws, inicio, desde } = await partidoEnDirecto();
+    await reproducirHasta(ws, inicio.partidoId, 100_000, desde, 8);
+    const pausa = await ws.esperar('partido.pausa_decision', { desde, timeoutMs: 15_000 });
+    expect(pausa.motivo).toBe('descanso');
+    await espera(200);
+    const tramos = tramosDe(ws, desde);
+    expect(tramos.at(-1)!.fase).toBe('descanso');
+    expect(tramos.every((t) => t.fase === 'primera_parte' || t.fase === 'descanso')).toBe(true);
+
+    const despues = ws.recibidos.length;
+    const ack = await ws.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
+    expect(ack.ok).toBe(true);
+    // El cliente sigue informando desde el descanso; el servidor llena el búfer de la segunda parte.
+    informar(ws, inicio.partidoId, tramos.at(-1)!.hastaTick, 8);
+    const siguiente = await ws.esperar('partido.tramo', { desde: despues });
+    expect(siguiente.desdeTick).toBe(tramos.at(-1)!.hastaTick);
+    await reproducirHasta(ws, inicio.partidoId, 100_000, despues, 8);
+    await ws.esperar('partido.fin', { desde: despues, timeoutMs: 15_000 });
+    await ws.cerrar();
   });
 
-  it('una sustitución pedida con el balón en juego se aplica en la siguiente interrupción y la ven los dos', async () => {
-    const { a, b, inicio, tramo } = await partidoEntreHumanos();
-    const estado = await a.esperar('estado');
+  it('una sustitución pedida con el balón en juego se aplica en la primera interrupción aún no simulada', async () => {
+    const { ws, inicio, desde } = await partidoEnDirecto();
+    const estado = await ws.esperar('estado');
     const yo = inicio.local.id === estado.vista.partida.miParticipanteId ? 'local' : 'visitante';
     const mia = inicio.alineaciones[yo];
     const sale = mia.titulares.find((t: any) => t.casillaId !== 'POR').jugador.id;
     const entra = mia.suplentes[0].id;
-    // A mitad de la reproducción del primer tramo, con el balón en juego.
-    reproducir(a, inicio.partidoId, Math.floor(tramo.hastaTick / 2));
-    const ack = await a.enviarYEsperarAck({ t: 'partido.decision', partidoId: inicio.partidoId, tipo: 'sustitucion', datos: { sale, entra } });
+    const simuladoAntes = tramosDe(ws, desde).at(-1)!.hastaTick;
+    const ack = await ws.enviarYEsperarAck({ t: 'partido.decision', partidoId: inicio.partidoId, tipo: 'sustitucion', datos: { sale, entra } });
     expect(ack.ok, JSON.stringify(ack)).toBe(true);
-    const desdeA = a.recibidos.length;
-    const desdeB = b.recibidos.length;
-    reproducir(a, inicio.partidoId, tramo.hastaTick);
-    reproducir(b, inicio.partidoId, tramo.hastaTick);
-    const aplicadaA = await a.esperar('partido.decision_aplicada', { desde: desdeA });
-    const aplicadaB = await b.esperar('partido.decision_aplicada', { desde: desdeB });
-    expect(aplicadaA.datos).toEqual({ sale, entra });
-    expect(aplicadaB.datos).toEqual({ sale, entra });
-    expect(aplicadaA.aplicadaEnTick).toBe(tramo.hastaTick);
-    await a.cerrar();
-    await b.cerrar();
+
+    // Como a x8: el cliente avanza deprisa y el servidor va simulando.
+    let aplicada: any;
+    for (let tick = 60; tick < 2000 && !aplicada; tick += 60) {
+      informar(ws, inicio.partidoId, tick, 8);
+      await hastaTick(ws, tick + ANTICIPACION, desde);
+      aplicada = ws.recibidos.slice(desde).find((m) => m.t === 'partido.decision_aplicada' && m.participanteId === inicio[yo].id);
+    }
+    expect(aplicada?.datos).toEqual({ sale, entra });
+    expect(aplicada.aplicadaEnTick).toBeGreaterThanOrEqual(simuladoAntes);
+    expect(aplicada.minuto).toMatch(/^\d+(\+\d+)?'$/);
+    await ws.cerrar();
   });
 
-  it('tras una reconexión, el estado trae los tramos ya simulados', async () => {
-    const { partidaId, humanos, a, b, inicio, tramo } = await partidoEntreHumanos();
-    reproducir(a, inicio.partidoId, tramo.hastaTick);
-    reproducir(b, inicio.partidoId, tramo.hastaTick);
-    await a.esperar('partido.tramo', { desde: a.recibidos.indexOf(tramo) + 1 });
-    await a.cerrar();
-    const otra = await ClienteWs.conectar(srv.urlWs, partidaId, humanos[0]!.cookie);
+  it('partido.velocidad ya no existe y partido.reproduccion solo admite x2, x4 y x8', async () => {
+    const { ws, inicio } = await partidoEnDirecto();
+    let desde = ws.recibidos.length;
+    ws.enviar({ t: 'partido.velocidad', partidoId: inicio.partidoId, velocidad: 4 }, false);
+    expect((await ws.esperar('error', { desde })).codigo).toBe('TIPO_DESCONOCIDO');
+    desde = ws.recibidos.length;
+    ws.enviar({ t: 'partido.reproduccion', partidoId: inicio.partidoId, tick: 10, velocidad: 16 }, false);
+    expect((await ws.esperar('error', { desde })).codigo).toBe('MENSAJE_INVALIDO');
+    await ws.cerrar();
+  });
+
+  it('al reconectar, el estado trae los tramos simulados y el último tick informado', async () => {
+    const { partidaId, u, ws, inicio, desde } = await partidoEnDirecto();
+    await reproducirHasta(ws, inicio.partidoId, 200, desde);
+    const tramos = await hastaTick(ws, 260, desde);
+    await ws.cerrar();
+    await espera(100);
+    const otra = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
     const estado = await otra.esperar('estado');
     const dosD = estado.vista.partido.dosD;
-    expect(dosD.tramos.length).toBeGreaterThanOrEqual(2);
-    expect(dosD.tramos[0].desdeTick).toBe(0);
-    expect(dosD.tramos.at(-1).fotogramas.length).toBeGreaterThan(0);
-    expect(dosD.tramos[0].fotogramas).toBeUndefined();
-    expect(dosD.objetivoTick).toBe(dosD.tramos.at(-1).hastaTick);
+    expect(dosD.ultimoTickInformado).toBe(200);
+    expect(dosD.tramos.map((t: any) => t.hastaTick)).toEqual(tramos.map((t) => t.hastaTick));
+    // Los tramos que el cliente aún no ha visto conservan sus fotogramas para seguir reproduciendo.
+    expect(dosD.tramos.filter((t: any) => t.hastaTick >= 200).every((t: any) => t.fotogramas?.length > 0)).toBe(true);
+    expect(dosD.tramos.filter((t: any) => t.hastaTick < 200).every((t: any) => t.fotogramas === undefined)).toBe(true);
     await otra.cerrar();
-    await b.cerrar();
-  });
-
-  it('si un humano lleva 10 s desconectado, el partido sigue al ritmo del otro (SC-011)', async () => {
-    const { a, b, inicio, tramo } = await partidoEntreHumanos();
-    await b.cerrar();
-    await espera(100);
-    reproducir(a, inicio.partidoId, tramo.hastaTick);
-    await espera(300);
-    expect(tramos(a)).toHaveLength(1);
-    const desde = a.recibidos.length;
-    srv.reloj.avanzar(10_001);
-    const siguiente = await a.esperar('partido.tramo', { desde });
-    expect(siguiente.desdeTick).toBe(tramo.hastaTick);
-    // Y sigue avanzando solo con la reproducción de A hasta el final.
-    let ultimo = siguiente;
-    for (let i = 0; i < 400 && ultimo.fase !== 'finalizado'; i++) {
-      const n = a.recibidos.length;
-      reproducir(a, inicio.partidoId, ultimo.hastaTick);
-      ultimo = await a.esperar('partido.tramo', { desde: n });
-    }
-    expect(ultimo.fase).toBe('finalizado');
-    await a.esperar('partido.fin', { desde });
-    await a.cerrar();
   });
 });

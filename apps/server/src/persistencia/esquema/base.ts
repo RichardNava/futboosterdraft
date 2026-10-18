@@ -125,7 +125,6 @@ export const partidas = pgTable(
     /** Plazas reservadas a personas, incluido el anfitrión; el resto son NPC. */
     plazasHumanas: integer('plazas_humanas').notNull(),
     tipoSimulacion: text('tipo_simulacion').notNull(),
-    ritmo: text('ritmo').notNull(),
     plazoJornadaHoras: integer('plazo_jornada_horas').notNull().default(24),
     npcConfig: jsonb('npc_config').notNull().default(sql`'[]'::jsonb`),
     tiempos: jsonb('tiempos').notNull(),
@@ -146,7 +145,6 @@ export const partidas = pgTable(
         or (${t.modo} = 'mixto' and ${t.numParticipantes} = 8)`,
     ),
     check('partidas_tipo_simulacion_ck', sql`${t.tipoSimulacion} in ('rapida','2d')`),
-    check('partidas_ritmo_ck', sql`${t.ritmo} in ('directo','asincrono')`),
     check(
       'partidas_estado_ck',
       sql`${t.estado} in ('buscando','en_draft','en_torneo','terminada','cancelada','abandonada')`,

@@ -70,3 +70,21 @@ describe('torneo (FR-051 a FR-054)', () => {
     expect(cerrarJornadaSiCompleta(t, j.numero).cerrada).toBe(false);
   });
 });
+
+describe('clasificación sin los partidos pendientes de ver (FR-030, research R8, T032)', () => {
+  it('excluirPartidos calcula la clasificación sin esos partidos', () => {
+    let t = abrirJornada(crearTorneo('liga', ids(4), [ids(4)], semillaDesdeTexto('excluir')), 1);
+    const j = t.jornadas[0]!;
+    j.cruces.forEach((c, indice) => {
+      t = registrarResultado(t, { jornada: 1, indice, local: c.local, visitante: c.visitante, golesLocal: 2, golesVisitante: 0, partidoId: `p${indice}`, eventos: [] }).torneo;
+    });
+    const completa = clasificacionActual(t);
+    expect(completa.reduce((s, f) => s + f.pj, 0)).toBe(2 * j.cruces.length);
+    const sinPrimero = clasificacionActual(t, { excluirPartidos: ['p0'] });
+    expect(sinPrimero.reduce((s, f) => s + f.pj, 0)).toBe(2 * (j.cruces.length - 1));
+    const ganadorExcluido = sinPrimero.find((f) => f.participanteId === j.cruces[0]!.local)!;
+    expect(ganadorExcluido.pts).toBe(0);
+    // Sin nada que excluir, igual que la completa.
+    expect(clasificacionActual(t, { excluirPartidos: [] })).toEqual(completa);
+  });
+});

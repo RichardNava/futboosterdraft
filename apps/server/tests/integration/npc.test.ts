@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
 import { ClienteWs } from '../helpers/clienteWs';
-import { avanzarHasta, seguirSiempre, torneo } from '../helpers/torneo';
+import { avanzarHasta, jugarSolo, seguirSiempre, torneo } from '../helpers/torneo';
 import { crearInvitado, crearRegistrado, peticion } from '../helpers/usuarios';
 
 describe('relleno con NPC por niveles (US5)', () => {
@@ -28,7 +28,7 @@ describe('relleno con NPC por niveles (US5)', () => {
       const u = await crearInvitado(srv.url);
       const r = await peticion(srv.url, '/api/partidas', {
         cookie: u.cookie,
-        cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida', ritmo: 'directo' },
+        cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida' },
       });
       expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
       const iniciada = await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: u.cookie });
@@ -43,7 +43,7 @@ describe('relleno con NPC por niveles (US5)', () => {
     const otro = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 6, tipoSimulacion: 'rapida', ritmo: 'directo' },
+      cuerpo: { modo: 'liga', numParticipantes: 6, tipoSimulacion: 'rapida' },
     });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     const partidaId = r.cuerpo.id as string;
@@ -65,14 +65,16 @@ describe('relleno con NPC por niveles (US5)', () => {
       const u = await crearInvitado(srv.url);
       const r = await peticion(srv.url, '/api/partidas', {
         cookie: u.cookie,
-        cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida', ritmo: 'directo', npc: [{ nivel: 'PRO' }] },
+        cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida', npc: [{ nivel: 'PRO' }] },
       });
       expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
       const partidaId = r.cuerpo.id as string;
       const ws = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
       const parar = seguirSiempre(ws);
       await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: u.cookie });
-      await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).campeon !== null, 1500);
+      // El draft avanza con el reloj; el torneo, al ritmo del único humano (spec 002, research R9).
+      await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).jornadas?.length > 0, 300);
+      await jugarSolo(srv, partidaId, u, async () => (await torneo(srv, partidaId, u)).campeon !== null);
 
       // Cada NPC eligió sus 24 cartas al abrirse cada turno (origen 'npc'), nunca por vencimiento del plazo.
       const filas = await bd.db.execute<{ tipo: string; nivel: string | null; origen: string; n: number }>(sql`

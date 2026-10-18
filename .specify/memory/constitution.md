@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.1 → 1.0.2 (PATCH: se actualiza el estado de la sección "Decisiones pendientes";
-  ningún principio se añade, elimina ni redefine)
+- Version change: 1.0.2 → 1.0.3 (PATCH: se añade a "Decisiones resueltas" la referencia a
+  `specs/002-mejoras-mvp/` para el ritmo de los torneos; ningún principio se añade, elimina ni redefine)
 - Principios modificados: ninguno
-- Secciones modificadas: "Decisiones pendientes" se divide en "Decisiones resueltas" (con referencia al
-  documento donde se concretan) y "Decisiones aún pendientes"
+- Secciones modificadas: "Decisiones resueltas" (torneos: los torneos son siempre asíncronos según la
+  spec 002, FR-030)
 - Secciones añadidas / eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
 - TODOs pendientes: ninguno
@@ -218,7 +218,9 @@ Resueltas para el MVP en `specs/001-draft-manager-mvp/`:
 - **Posiciones, formaciones y tácticas**: elegibilidad posicional, formaciones, tácticas,
   dorsales y equipaciones → `spec.md` (FR-025 a FR-031b, Assumptions).
 - **Torneos**: formato de torneos, clasificaciones, ritmo en directo o asíncrono, sanciones y
-  lesiones → `spec.md` (FR-041 a FR-043, FR-051 a FR-056c).
+  lesiones → `spec.md` (FR-041 a FR-043, FR-051 a FR-056c). El ritmo lo actualiza
+  `specs/002-mejoras-mvp/spec.md` (FR-030): los torneos son siempre asíncronos y, con un solo humano,
+  sin plazos.
 - **Sobres**: composición de los sobres, distribución de niveles y tamaño de la colección Core →
   `spec.md` (FR-011, FR-014, Assumptions).
 - **Tecnología**: pila tecnológica, persistencia y protocolo cliente-servidor → `plan.md` y
@@ -250,4 +252,4 @@ implementarse:
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.0.2 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-15
+**Version**: 1.0.3 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-17

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api, ErrorApi } from '../api/cliente';
+import { soltarConexionInvitado } from '../conexion/activa';
 
 export interface Usuario {
   id: string;
@@ -44,6 +45,7 @@ export const useSesion = create<EstadoSesion>((set, get) => ({
   },
   async cerrarSesion() {
     await api('/api/auth/logout', { metodo: 'POST' });
+    soltarConexionInvitado();
     set({ usuario: null });
   },
 }));

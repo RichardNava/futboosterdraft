@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   configPorDefecto,
   debeAbandonarsePorDesconexion,
+  humanosActivos,
   rellenarConNPC,
+  soloUnHumano,
   sortearAsientos,
   transicion,
   validarConfigPartida,
@@ -27,14 +29,24 @@ describe('Partida', () => {
   it('valores por defecto: plazo 24 h, tiempos y colecciones Core (FR-015)', () => {
     const c = configPorDefecto();
     expect(c.plazoJornadaHoras).toBe(24);
-    expect(c.tiempos).toEqual({ busquedaS: 180, turnoDraftS: 45, preparacionS: 180, preparacionInicialS: 300, descansoS: 120 });
+    expect(c.tiempos).toEqual({ busquedaS: 180, turnoDraftS: 45, descansoS: 120 });
+    expect(c).not.toHaveProperty('ritmo');
     expect(c.colecciones).toEqual(['Core']);
   });
 
-  it('invitado: solo ritmo directo y sin plazas humanas libres (FR-000)', () => {
-    expect(codigos(conf({ ritmo: 'asincrono' }), 'invitado')).toContain('INVITADO_NO_PERMITIDO');
-    expect(codigos(conf({ ritmo: 'directo', plazasHumanas: 2 }), 'invitado')).toContain('INVITADO_NO_PERMITIDO');
-    expect(codigos(conf({ ritmo: 'directo', plazasHumanas: 1 }), 'invitado')).toEqual([]);
+  it('invitado: sin plazas humanas libres (FR-000)', () => {
+    expect(codigos(conf({ plazasHumanas: 2 }), 'invitado')).toContain('INVITADO_NO_PERMITIDO');
+    expect(codigos(conf({ plazasHumanas: 1 }), 'invitado')).toEqual([]);
+  });
+
+  it('ritmo deducido: sin plazos con un solo humano activo, contando los abandonos (research R9, T008)', () => {
+    const h = (controladoPorNPC = false) => ({ tipo: 'humano' as const, controladoPorNPC });
+    const npc = { tipo: 'npc' as const, controladoPorNPC: false };
+    expect(humanosActivos([h(), h(), npc])).toBe(2);
+    expect(soloUnHumano([h(), npc, npc])).toBe(true);
+    expect(soloUnHumano([h(), h(), npc])).toBe(false);
+    // Un humano que abandona pasa a estar controlado por un NPC y deja de contar.
+    expect(soloUnHumano([h(), h(true), npc])).toBe(true);
   });
 
   it('PRO solo lo puede añadir el anfitrión y no supera las plazas', () => {

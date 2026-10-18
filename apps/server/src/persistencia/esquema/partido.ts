@@ -6,7 +6,7 @@
  * reconstruye exactamente el partido (FR-040), por ejemplo tras un reinicio del servidor.
  */
 import { sql } from 'drizzle-orm';
-import { boolean, check, index, integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, check, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { participantes, partidas } from './base';
 
 export const partidos = pgTable(
@@ -34,15 +34,44 @@ export const partidos = pgTable(
     estadisticas: jsonb('estadisticas'),
     marcador: jsonb('marcador'),
     estado: text('estado').notNull().default('programado'),
-    resueltoAutomaticamente: boolean('resuelto_automaticamente').notNull().default(false),
+    /**
+     * Cómo se resolvió (data-model §7.1): `directo` = humano contra NPC jugado en vivo; `apertura` = partido
+     * entre humanos resuelto al abrirlo uno de ellos; `plazo` = al vencer el plazo; `npc` = NPC contra NPC.
+     */
+    resolucion: text('resolucion').notNull().default('directo'),
+    /** Quién abrió primero un partido entre humanos (research R8). */
+    abiertoPorId: uuid('abierto_por_id').references(() => participantes.id),
     iniciadoEn: timestamp('iniciado_en', { withTimezone: true }),
     finalizadoEn: timestamp('finalizado_en', { withTimezone: true }),
   },
   (t) => [
     index('partidos_partida_idx').on(t.partidaId),
+    check('partidos_resolucion_ck', sql`${t.resolucion} in ('directo','apertura','plazo','npc')`),
     check(
       'partidos_estado_ck',
       sql`${t.estado} in ('programado','primera_parte','descanso','segunda_parte','pre_prorroga','prorroga','penaltis','finalizado')`,
     ),
+  ],
+);
+
+/**
+ * Visionado de un partido entre humanos por cada uno de sus participantes (data-model §7.2): mientras está
+ * `pendiente`, a ese participante no se le revela el resultado (FR-030, research R8).
+ */
+export const visionados = pgTable(
+  'visionados',
+  {
+    partidoId: uuid('partido_id')
+      .notNull()
+      .references(() => partidos.id, { onDelete: 'cascade' }),
+    participanteId: uuid('participante_id')
+      .notNull()
+      .references(() => participantes.id, { onDelete: 'cascade' }),
+    estado: text('estado').notNull(),
+    actualizadoEn: timestamp('actualizado_en', { withTimezone: true }).notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.partidoId, t.participanteId] }),
+    check('visionados_estado_ck', sql`${t.estado} in ('pendiente','visto','revelado')`),
   ],
 );

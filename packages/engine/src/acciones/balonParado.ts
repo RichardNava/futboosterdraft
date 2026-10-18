@@ -3,6 +3,8 @@
  */
 import { lanzadorEfectivo } from '@fbd/domain';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
+import { aAbsoluta, CENTRO_Y, centroCelda } from '../espacio/geometria';
+import { reponer } from './animaciones';
 import { emitir, interrumpir, type Contexto } from './contexto';
 import { comprobarLesion } from './lesiones';
 import { expulsar } from './plantel';
@@ -35,7 +37,7 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
   const lesionado = comprobarLesion(ctx, atacante, victima, 1.5);
   if (e.fase === 'finalizado') return;
 
-  interrumpir(ctx, 'falta', 25, atacante.lado);
+  interrumpir(ctx, 'falta', 16, atacante.lado);
   const lanzadorBalon = lesionado ? atacante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR') : victima;
   if (zona === 5 && ctx.rng.probabilidad(Math.round(d.probabilidadPenaltiPorFaltaEnArea * 1000))) {
     penalti(ctx, atacante);
@@ -46,6 +48,8 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
     return;
   }
   e.balon = { posesion: atacante.lado, zona, carril: e.balon.carril, portadorId: lanzadorBalon?.id ?? 0, transicion: false };
+  // Se saca desde donde se cometió la falta.
+  if (lanzadorBalon) reponer(ctx, 'falta', { ...e.espacio.balon }, lanzadorBalon.id);
 }
 
 export function amarilla(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido): void {
@@ -69,6 +73,7 @@ export function penalti(ctx: Contexto, atacante: EquipoEstado): void {
   if (!lanzador) return;
   emitir(ctx, 'penalti', atacante.lado, [{ rol: 'autor', jugadorId: lanzador.id }], {}, true);
   ctx.estado.balon = { posesion: atacante.lado, zona: 5, carril: 1, portadorId: lanzador.id, transicion: false };
+  reponer(ctx, 'penalti', aAbsoluta(atacante.lado, { x: 8900, y: CENTRO_Y }), lanzador.id);
   tirar(ctx, atacante, lanzador, 'penalti');
 }
 
@@ -81,6 +86,7 @@ export function faltaDirecta(ctx: Contexto, atacante: EquipoEstado, defensor: Eq
     const lanzador = atacante.jugadores.find((j) => j.id === id);
     if (lanzador) {
       e.balon = { posesion: atacante.lado, zona: 4, carril: 1, portadorId: lanzador.id, transicion: false };
+      reponer(ctx, 'falta_area', { ...e.espacio.balon }, lanzador.id);
       tirar(ctx, atacante, lanzador, 'falta');
       return;
     }
@@ -95,7 +101,8 @@ export function fueraDeJuego(ctx: Contexto, atacante: EquipoEstado, jugador: Jug
   e.estadisticas[atacante.lado].fuerasDeJuego++;
   e.estadisticas[defensor.lado].fuerasDeJuegoProvocados++;
   emitir(ctx, 'fuera_de_juego', atacante.lado, [{ rol: 'autor', jugadorId: jugador.id }]);
-  interrumpir(ctx, 'fuera_de_juego', 20, defensor.lado);
+  interrumpir(ctx, 'fuera_de_juego', 14, defensor.lado);
   const sacador = defensor.jugadores.find((j) => j.enCampo && j.jugador.demarcacion === 'DEF') ?? defensor.jugadores.find((j) => j.enCampo);
   e.balon = { posesion: defensor.lado, zona: 1, carril: 1, portadorId: sacador?.id ?? 0, transicion: false };
+  if (sacador) reponer(ctx, 'fuera_de_juego', aAbsoluta(defensor.lado, centroCelda(1, 1)), sacador.id);
 }

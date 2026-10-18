@@ -7,9 +7,9 @@ test('partido rápido: descanso, cambios y resumen final', async ({ page }) => {
   await page.goto(`/partidas/${partidaId}/alineacion`);
   await expect(page.getByRole('status').filter({ hasText: 'próximo partido contra' })).toBeVisible();
 
-  // Vence la preparación (5 min): empieza el partido y la pantalla cambia sola.
+  // «Comenzar partido»: empieza al instante y la pantalla cambia sola (spec 002, FR-011).
   const antes = Date.now();
-  await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 300_001 } });
+  await page.getByRole('button', { name: 'Comenzar partido' }).click();
   await expect(page.locator('.resultado .fase')).toHaveText('Descanso');
   expect(Date.now() - antes).toBeLessThan(10_000);
   await expect(page.locator('.resumen-eventos .evento-minuto').first()).toHaveText(/^\d+('|\+\d+')$/);

@@ -1,20 +1,24 @@
 import {
   autoAlineacion,
+  calcularColocacion,
   FORMACIONES,
   FORMACIONES_IDS,
-  PARAMETROS_V1,
+  PARAMETROS_V2,
   proponerLanzadores,
   type Alineacion as AlineacionDominio,
   type Equipaciones,
   type FormacionId,
   type Jugador,
   type Lanzadores,
+  type Posicion,
   type Tactica,
 } from '@fbd/domain';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { CampoAlineacion, type CasillaVista } from '../componentes/CampoAlineacion';
+import { CampoTacticas } from '../componentes/CampoTacticas';
+import { EditorDorsales } from '../componentes/EditorDorsales';
 import { AvisoPartido } from '../componentes/AvisoPartido';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { DistintivoBaja, type BajaVista } from '../componentes/DistintivoBaja';
@@ -25,7 +29,7 @@ interface DatosEquipo {
   alineacion: AlineacionDominio;
   confirmada: boolean;
   version: number | null;
-  previsualizacion: (CasillaVista & { jugadorId: number })[];
+  previsualizacion: { titulares: (CasillaVista & { jugadorId: number })[] };
   plantilla: CartaResumen[];
   bajas: number[];
   bajasDetalle: BajaVista[];
@@ -48,10 +52,11 @@ export function Alineacion() {
   const [tactica, setTactica] = useState<Tactica | null>(null);
   const [lanzadores, setLanzadores] = useState<Lanzadores | null>(null);
   const [prev, setPrev] = useState<Map<string, CasillaVista>>(new Map());
+  /** Colocación libre (FR-034): solo los titulares que se han movido de su casilla. */
+  const [puntos, setPuntos] = useState<Record<number, { x: number; y: number }>>({});
   const [seleccionado, setSeleccionado] = useState<number | null>(null);
   const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'error'; texto: string; motivos?: string[] } | null>(null);
   const [ficha, setFicha] = useState<number | null>(null);
-  const [dorsalesEdit, setDorsalesEdit] = useState<Record<number, number>>({});
   const [equipaciones, setEquipaciones] = useState<Equipaciones | null>(null);
 
   const aplicarDatos = useCallback((d: DatosEquipo) => {
@@ -61,8 +66,8 @@ export function Alineacion() {
     setSuplentes(d.alineacion.suplentes);
     setTactica(d.alineacion.tactica);
     setLanzadores(d.alineacion.lanzadores);
-    setPrev(new Map(d.previsualizacion.map((p) => [p.casillaId, p])));
-    setDorsalesEdit(d.dorsales ?? {});
+    setPrev(new Map(d.previsualizacion.titulares.map((p) => [p.casillaId, p])));
+    setPuntos(Object.fromEntries((d.alineacion.colocacion ?? []).map((c) => [c.jugadorId, { x: c.x, y: c.y }])));
     setEquipaciones(d.equipaciones);
   }, []);
 
@@ -82,14 +87,17 @@ export function Alineacion() {
 
   const alineacionActual = useCallback((): AlineacionDominio | null => {
     if (!tactica || !lanzadores) return null;
-    return {
-      formacion,
-      titulares: casillas.flatMap((c) => (titulares[c.id] !== undefined ? [{ casillaId: c.id, jugadorId: titulares[c.id]! }] : [])),
-      suplentes,
-      tactica,
-      lanzadores,
-    };
-  }, [formacion, casillas, titulares, suplentes, tactica, lanzadores]);
+    const lista = casillas.flatMap((c) => (titulares[c.id] !== undefined ? [{ casillaId: c.id, jugadorId: titulares[c.id]! }] : []));
+    const colocacion = lista.flatMap((t) => (puntos[t.jugadorId] ? [{ jugadorId: t.jugadorId, ...puntos[t.jugadorId]! }] : []));
+    return { formacion, titulares: lista, suplentes, tactica, lanzadores, ...(colocacion.length ? { colocacion } : {}) };
+  }, [formacion, casillas, titulares, suplentes, tactica, lanzadores, puntos]);
+
+  // Colocación calculada al instante en el cliente con el mismo dominio que el servidor (SC-016).
+  const resultadoColocacion = useMemo(() => {
+    const a = alineacionActual();
+    if (!a) return null;
+    return calcularColocacion(a.formacion, a.titulares, a.colocacion, PARAMETROS_V2, (id) => (porId.get(id)?.posicion ?? []) as Posicion[]);
+  }, [alineacionActual, porId]);
 
   // Los lanzadores deben ser titulares: si alguno deja de serlo, se vuelven a proponer (FR-029a).
   useEffect(() => {
@@ -109,8 +117,8 @@ export function Alineacion() {
     if (!a || !datos) return;
     window.clearTimeout(temporizador.current);
     temporizador.current = window.setTimeout(() => {
-      api<{ previsualizacion: (CasillaVista & { jugadorId: number })[] }>(`/api/partidas/${partidaId}/alineacion/previsualizar`, { cuerpo: a })
-        .then((r) => setPrev(new Map(r.previsualizacion.map((p) => [p.casillaId, p]))))
+      api<{ previsualizacion: { titulares: (CasillaVista & { jugadorId: number })[] } }>(`/api/partidas/${partidaId}/alineacion/previsualizar`, { cuerpo: a })
+        .then((r) => setPrev(new Map(r.previsualizacion.titulares.map((p) => [p.casillaId, p]))))
         .catch(() => undefined);
     }, 250);
     return () => window.clearTimeout(temporizador.current);
@@ -159,8 +167,10 @@ export function Alineacion() {
 
   const cambiarFormacion = (f: FormacionId) => {
     if (!datos || !tactica) return;
-    const a = autoAlineacion(datos.plantilla as unknown as Jugador[], bajas, PARAMETROS_V1, { formaciones: [f], tactica });
+    const a = autoAlineacion(datos.plantilla as unknown as Jugador[], bajas, PARAMETROS_V2, { formaciones: [f], tactica });
     setFormacion(f);
+    // La formación de partida nueva restablece la colocación a sus casillas.
+    setPuntos({});
     setTitulares(Object.fromEntries(a.titulares.map((t) => [t.casillaId, t.jugadorId])));
     setSuplentes(a.suplentes);
     setLanzadores(a.lanzadores);
@@ -180,14 +190,10 @@ export function Alineacion() {
     }
   };
 
-  const guardarDorsales = async () => {
-    try {
-      const r = await api<{ dorsales: Record<number, number> }>(`/api/partidas/${partidaId}/dorsales`, { metodo: 'PUT', cuerpo: { dorsales: dorsalesEdit } });
-      setDatos((d) => (d ? { ...d, dorsales: r.dorsales } : d));
-      setMensaje({ tipo: 'ok', texto: 'Dorsales guardados.' });
-    } catch (e) {
-      setMensaje({ tipo: 'error', texto: e instanceof Error ? e.message : 'No se pudieron guardar los dorsales' });
-    }
+  const asignarDorsal = async (jugadorId: number, dorsal: number) => {
+    const r = await api<{ dorsales: Record<number, number> }>(`/api/partidas/${partidaId}/dorsales`, { metodo: 'PUT', cuerpo: { jugadorId, dorsal } });
+    setDatos((d) => (d ? { ...d, dorsales: r.dorsales } : d));
+    setMensaje({ tipo: 'ok', texto: 'Dorsal cambiado.' });
   };
 
   const guardarEquipaciones = async () => {
@@ -313,6 +319,51 @@ export function Alineacion() {
         <PanelTactica tactica={tactica} onCambiar={setTactica} />
       </section>
 
+      {resultadoColocacion && (
+        <section aria-label="Colocación" className="colocacion">
+          <h2>Colocación</h2>
+          <p className="nota">Arrastra a cualquier titular a otra zona del campo, o selecciónalo con Intro y muévelo con las flechas.</p>
+          <div className="colocacion-rejilla">
+            <CampoTacticas
+              colocacion={resultadoColocacion}
+              jugadores={porId}
+              dorsales={datos.dorsales}
+              colores={colores}
+              onMover={(jugadorId, x, y) => setPuntos((p) => ({ ...p, [jugadorId]: { x, y } }))}
+            />
+            <div className="colocacion-resumen" aria-live="polite">
+              <p>
+                <strong>
+                  {resultadoColocacion.personalizada
+                    ? `Formación personalizada (${formacion} → ${resultadoColocacion.reparto.defensa}-${resultadoColocacion.reparto.medio}-${resultadoColocacion.reparto.ataque})`
+                    : `Formación ${NOMBRE_FORMACION[formacion]}`}
+                </strong>
+              </p>
+              <p>
+                Defensa {resultadoColocacion.reparto.defensa} · Medio {resultadoColocacion.reparto.medio} · Ataque {resultadoColocacion.reparto.ataque}
+              </p>
+              <p>
+                Ofensividad {resultadoColocacion.ofensividad > 0 ? '+' : ''}
+                {resultadoColocacion.ofensividad} · Amplitud {resultadoColocacion.amplitud > 0 ? '+' : ''}
+                {resultadoColocacion.amplitud}
+              </p>
+              {resultadoColocacion.avisos.length > 0 && (
+                <ul className="avisos-colocacion" role="status">
+                  {resultadoColocacion.avisos.map((a) => (
+                    <li key={a}>{a}</li>
+                  ))}
+                </ul>
+              )}
+              {Object.keys(puntos).length > 0 && (
+                <button type="button" className="secundario" onClick={() => setPuntos({})}>
+                  Volver a la formación
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section aria-label="Lanzadores" className="lanzadores">
         <h2>Lanzadores</h2>
         {(
@@ -381,25 +432,7 @@ export function Alineacion() {
 
       <details className="seccion-plegable">
         <summary>Dorsales</summary>
-        {!datos.dorsales && <p className="nota">Los dorsales se asignan al confirmar tu primer once; después puedes cambiarlos.</p>}
-        <div className="rejilla-dorsales">
-          {datos.plantilla.map((j) => (
-            <label key={j.id}>
-              <input
-                type="number"
-                min={1}
-                max={99}
-                value={dorsalesEdit[j.id] ?? ''}
-                disabled={!datos.dorsales}
-                onChange={(e) => setDorsalesEdit({ ...dorsalesEdit, [j.id]: Number(e.target.value) })}
-              />{' '}
-              {j.nombre} {j.apellidos.split(' ')[0]}
-            </label>
-          ))}
-        </div>
-        <button type="button" className="secundario" disabled={!datos.dorsales} onClick={() => void guardarDorsales()}>
-          Guardar dorsales
-        </button>
+        <EditorDorsales plantilla={datos.plantilla} dorsales={datos.dorsales} asignar={asignarDorsal} />
       </details>
 
       {equipaciones && (

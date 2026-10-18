@@ -4,7 +4,7 @@ import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
 import { crearInvitado, crearRegistrado, peticion } from '../helpers/usuarios';
 
-const base = { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ritmo: 'directo' };
+const base = { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' };
 
 describe('contrato HTTP de partidas', () => {
   let bd: BdPruebas;
@@ -36,11 +36,18 @@ describe('contrato HTTP de partidas', () => {
     expect(r.cuerpo.error.codigo).toBe('NUM_PARTICIPANTES_INVALIDO');
   });
 
-  it('un invitado no puede crear una partida asíncrona ni con plazas humanas (403 INVITADO_NO_PERMITIDO)', async () => {
+  it('el ritmo ya no se elige: un cuerpo con `ritmo` o con tiempos de preparación es un 400 (research R9)', async () => {
+    const u = await crearRegistrado(srv.url);
+    const conRitmo = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { ...base, ritmo: 'directo' } });
+    expect(conRitmo.estado).toBe(400);
+    const conPreparacion = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { ...base, tiempos: { preparacionS: 60 } } });
+    expect(conPreparacion.estado).toBe(400);
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: base });
+    expect(ResumenPartida.parse(r.cuerpo).conPlazos).toBe(false);
+  });
+
+  it('un invitado no puede crear una partida con plazas humanas (403 INVITADO_NO_PERMITIDO)', async () => {
     const g = await crearInvitado(srv.url);
-    const asincrona = await peticion(srv.url, '/api/partidas', { cookie: g.cookie, cuerpo: { ...base, ritmo: 'asincrono' } });
-    expect(asincrona.estado).toBe(403);
-    expect(asincrona.cuerpo.error.codigo).toBe('INVITADO_NO_PERMITIDO');
     const conHumanos = await peticion(srv.url, '/api/partidas', { cookie: g.cookie, cuerpo: { ...base, plazasHumanas: 2 } });
     expect(conHumanos.estado).toBe(403);
   });

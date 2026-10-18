@@ -4,4 +4,5 @@ export * from './perfiles';
 export * from './draft';
 export * from './alineacion';
 export * from './partido';
+export * from './resolverResto';
 export { equipoDesdeAlineacion, simularCandidata, type Rendimiento } from './pro/simulacionPrueba';

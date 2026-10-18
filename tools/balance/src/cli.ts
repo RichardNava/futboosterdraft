@@ -3,9 +3,10 @@
  * Herramienta de equilibrado (research R8): ejecuta series de partidos con semillas fijas y comprueba
  * los criterios estadísticos de la especificación. Termina con código 1 si alguno no se cumple.
  *
- *   pnpm balance --n 1000          comprobaciones de partido (SC-004 a SC-007, SC-015)
+ *   pnpm balance --n 1000          comprobaciones de partido (001: SC-004, SC-006, SC-007, SC-015; 002: SC-007, SC-008, SC-011)
  *   pnpm balance --torneos 100 --pro-vs-amateur   comprobación de NPC (SC-010, fase US5)
  */
+import { comprobacionesColocacion } from './checks/colocacion';
 import { comprobacionesPartido, type Comprobacion } from './checks/partido';
 
 export interface OpcionesBalance {
@@ -45,12 +46,12 @@ export function leerOpciones(args: readonly string[]): OpcionesBalance {
 }
 
 export function informe(comprobaciones: Comprobacion[]): string {
-  return comprobaciones.map((c) => `${c.ok ? '✔' : '✘'} ${c.id.padEnd(8)} ${c.descripcion}\n            ${c.detalle}`).join('\n');
+  return comprobaciones.map((c) => `${c.ok ? '✔' : '✘'} ${c.id.padEnd(12)} ${c.descripcion}\n            ${c.detalle}`).join('\n');
 }
 
 export async function ejecutar(opciones: OpcionesBalance): Promise<Comprobacion[]> {
   const resultados: Comprobacion[] = [];
-  if (!opciones.proVsAmateur) resultados.push(...comprobacionesPartido(opciones.n, opciones.seed));
+  if (!opciones.proVsAmateur) resultados.push(...comprobacionesPartido(opciones.n, opciones.seed), ...comprobacionesColocacion(opciones.n, opciones.seed));
   if (opciones.torneos > 0 || opciones.proVsAmateur) {
     const { comprobacionesNPC } = await import('./checks/npc');
     resultados.push(...comprobacionesNPC(opciones.torneos || 100, opciones.seed));

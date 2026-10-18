@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router';
-import { api, ErrorApi } from '../api/cliente';
+import { Link, useNavigate, useParams } from 'react-router';
+import { api, ErrorApi, revelarResultado, siguienteJornada } from '../api/cliente';
 import { AvisoPartido } from '../componentes/AvisoPartido';
 import { BandejaAvisos } from '../componentes/BandejaAvisos';
+import { BotonAvanzar } from '../componentes/BotonAvanzar';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
 import { etiquetaNPC } from '../textos/niveles';
 
@@ -14,9 +15,9 @@ interface PartidoVista {
   local: Ref;
   visitante: Ref;
   marcador: Marcador;
+  /** `pendiente_de_ver`: partido propio entre humanos que aún no has visto (spec 002, FR-030). */
   estado: string;
   resueltoAutomaticamente: boolean;
-  listos: string[];
 }
 
 interface JornadaVista {
@@ -52,14 +53,26 @@ interface VistaTorneo {
   clasificacion: FilaClasificacion[];
   cuadro: { rondas: { tipo: string; cruces: { local: Ref; visitante: Ref; ganador: Ref }[] }[] } | null;
   campeon: Ref;
+  pendientesDeVer: string[];
+  siguienteJornada: 'manual' | 'automatica';
+  goleadores?: FilaGoleador[];
+  asistentes?: FilaGoleador[];
+}
+
+interface FilaGoleador {
+  posicion: number;
+  jugador: { id: number; nombre: string; apellidos: string; dorsal?: number };
+  equipo: { id: string; nombre: string };
+  total: number;
+  partidosJugados: number;
 }
 
 interface ResumenPartida {
-  ritmo: 'directo' | 'asincrono';
+  conPlazos: boolean;
   miParticipanteId: string | null;
 }
 
-type Pestana = 'clasificacion' | 'cuadro' | 'calendario';
+type Pestana = 'clasificacion' | 'cuadro' | 'goleadores' | 'asistentes' | 'calendario';
 
 const ETIQUETA_RONDA: Record<string, string> = {
   liga: 'Jornada',
@@ -79,6 +92,7 @@ function textoMarcador(m: Marcador): string {
 /** Pantalla del torneo (T116): clasificación, cuadro, calendario, jornada actual y campeón. */
 export function Torneo() {
   const { partidaId } = useParams();
+  const navegar = useNavigate();
   const [vista, setVista] = useState<VistaTorneo | null>(null);
   const [partida, setPartida] = useState<ResumenPartida | null>(null);
   const [pestana, setPestana] = useState<Pestana | null>(null);
@@ -105,7 +119,7 @@ export function Torneo() {
   });
 
   const actual = vista?.jornadas.find((j) => j.numero === vista.jornadaActual) ?? null;
-  const restante = useCuentaAtras(partida?.ritmo === 'asincrono' ? actual?.venceEn : null, conexion);
+  const restante = useCuentaAtras(partida?.conPlazos ? actual?.venceEn : null, conexion);
 
   if (error) return <p className="error pantalla">{error}</p>;
   if (!vista || !partida) return <p className="cargando">Cargando torneo…</p>;
@@ -113,19 +127,23 @@ export function Torneo() {
   const pestanas: { id: Pestana; texto: string }[] = [
     ...(vista.modo !== 'playoff' ? [{ id: 'clasificacion' as const, texto: 'Clasificación' }] : []),
     ...(vista.cuadro ? [{ id: 'cuadro' as const, texto: 'Cuadro' }] : []),
+    { id: 'goleadores', texto: 'Máximos goleadores' },
+    { id: 'asistentes', texto: 'Máximos asistentes' },
     { id: 'calendario', texto: 'Calendario' },
   ];
   const activa = pestana ?? (vista.fase === 'eliminatoria' && vista.cuadro ? 'cuadro' : pestanas[0]!.id);
   const yo = partida.miParticipanteId;
   const miPartido = actual?.partidos.find((p) => p.local?.id === yo || p.visitante?.id === yo);
+  // Partidos propios entre humanos ya jugados que aún no ha visto (de cualquier jornada; spec 002, FR-030).
+  const pendientes = vista.jornadas.flatMap((j) => j.partidos).filter((p) => p.partidoId !== null && vista.pendientesDeVer.includes(p.partidoId));
 
-  const marcarListo = async (partidoId: string) => {
+  const mostrarResultado = async (partidoId: string) => {
     setError(null);
     try {
-      await api(`/api/partidos/${partidoId}/listo`, { metodo: 'POST', idempotente: true });
+      await revelarResultado(partidoId);
       cargar();
     } catch (e) {
-      setError(e instanceof ErrorApi ? e.message : 'No se pudo marcar como listo');
+      setError(e instanceof ErrorApi ? e.message : 'No se pudo mostrar el resultado');
     }
   };
 
@@ -146,16 +164,48 @@ export function Torneo() {
       {partidaId && <AvisoPartido partidaId={partidaId} />}
 
       {vista.campeon && (
-        <p className="campeon" role="status">
-          🏆 Campeón: <strong>{vista.campeon.nombre}</strong>
-          {vista.campeon.id === yo && ' — ¡enhorabuena!'}
-        </p>
+        <div className="campeon" role="status">
+          <p>
+            🏆 Campeón: <strong>{vista.campeon.nombre}</strong>
+            {vista.campeon.id === yo && ' — ¡enhorabuena!'}
+          </p>
+          <BotonAvanzar situacion="fin_torneo" onAvanzar={() => navegar('/')} />
+        </div>
+      )}
+
+      {!vista.campeon && !actual?.estado.startsWith('abierta') && vista.siguienteJornada === 'manual' && vista.jornadaActual !== null && (
+        <div className="aviso" role="status">
+          <p>Jornada terminada.</p>
+          <BotonAvanzar
+            situacion="fin_jornada"
+            onAvanzar={async () => {
+              await siguienteJornada(partidaId!);
+              cargar();
+            }}
+          />
+        </div>
+      )}
+
+      {pendientes.length > 0 && (
+        <section aria-label="Partidos pendientes de ver" className="jornada-actual">
+          <h2>Pendientes de ver</h2>
+          <ul className="lista-partidos">
+            {pendientes.map((p) => (
+              <li key={p.partidoId}>
+                <span>
+                  <strong>{p.local?.nombre}</strong> – <strong>{p.visitante?.nombre}</strong>
+                </span>
+                <PendienteDeVer partidaId={partidaId!} partidoId={p.partidoId!} onMostrar={(id) => void mostrarResultado(id)} />
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {actual && (
         <section aria-label="Jornada actual" className="jornada-actual">
           <h2>{tituloJornada(actual)}</h2>
-          {partida.ritmo === 'asincrono' && actual.venceEn && (
+          {partida.conPlazos && actual.venceEn && (
             <p className="nota">
               Plazo: hasta el {new Date(actual.venceEn).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}
               {restante !== null && ` (quedan ${Math.floor(restante / 3600)} h ${Math.floor((restante % 3600) / 60)} min)`}. Al vencer, los partidos pendientes se
@@ -167,15 +217,6 @@ export function Torneo() {
               <span>
                 Tu partido: <strong>{miPartido.local?.nombre}</strong> – <strong>{miPartido.visitante?.nombre}</strong>
               </span>
-              {partida.ritmo === 'asincrono' && miPartido.estado === 'programado' && miPartido.partidoId && (
-                <>
-                  <button type="button" disabled={yo !== null && miPartido.listos.includes(yo)} onClick={() => void marcarListo(miPartido.partidoId!)}>
-                    Estoy listo
-                  </button>
-                  {yo !== null && miPartido.listos.includes(yo) && <span className="nota">Esperando a que tu rival esté listo…</span>}
-                  {miPartido.listos.some((id) => id !== yo) && <span className="etiqueta">Tu rival está listo</span>}
-                </>
-              )}
               {miPartido.estado !== 'programado' && miPartido.estado !== 'finalizado' && miPartido.partidoId && (
                 <Link className="boton" to={`/partidas/${partidaId}/partido/${miPartido.partidoId}`}>
                   Ir al partido
@@ -184,6 +225,12 @@ export function Torneo() {
             </div>
           )}
           {!miPartido && actual.descansa?.id === yo && <p className="nota">Descansas en esta jornada.</p>}
+          {vista.siguienteJornada === 'automatica' && miPartido && miPartido.estado !== 'programado' && actual.partidos.some((p) => p.estado === 'programado') && (
+            <p className="nota">
+              Esperando a que se jueguen los demás partidos
+              {actual.venceEn && ` (vence el ${new Date(actual.venceEn).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })})`}.
+            </p>
+          )}
         </section>
       )}
 
@@ -203,7 +250,22 @@ export function Torneo() {
       </div>
 
       {activa === 'clasificacion' && <Clasificacion filas={vista.clasificacion} yo={yo} />}
+      {activa === 'clasificacion' && vista.pendientesDeVer.length > 0 && (
+        <p className="nota">
+          No incluye {vista.pendientesDeVer.length === 1 ? '1 partido pendiente de ver' : `${vista.pendientesDeVer.length} partidos pendientes de ver`}.
+        </p>
+      )}
       {activa === 'cuadro' && vista.cuadro && <Cuadro cuadro={vista.cuadro} yo={yo} />}
+      {(activa === 'goleadores' || activa === 'asistentes') && (
+        <TablaGoleadores
+          key={activa}
+          cual={activa}
+          filas={(activa === 'goleadores' ? vista.goleadores : vista.asistentes) ?? []}
+          partidaId={partidaId!}
+          yo={yo}
+          pendientes={vista.pendientesDeVer.length}
+        />
+      )}
       {activa === 'calendario' && <Calendario jornadas={vista.jornadas} partidaId={partidaId!} yo={yo} />}
 
       {error && (
@@ -212,6 +274,58 @@ export function Torneo() {
         </p>
       )}
     </main>
+  );
+}
+
+/**
+ * Máximos goleadores o asistentes (FR-039 a FR-042): Pos, Jugador (dorsal y nombre), Equipo, Goles o
+ * Asistencias y PJ; 10 filas y «Ver todos».
+ */
+function TablaGoleadores({ cual, filas, partidaId, yo, pendientes }: { cual: 'goleadores' | 'asistentes'; filas: FilaGoleador[]; partidaId: string; yo: string | null; pendientes: number }) {
+  const [todas, setTodas] = useState<FilaGoleador[] | null>(null);
+  const verTodos = () =>
+    api<{ filas: FilaGoleador[] }>(`/api/partidas/${partidaId}/torneo/${cual}?todos=true`)
+      .then((r) => setTodas(r.filas))
+      .catch(() => undefined);
+  const mostradas = todas ?? filas;
+  const columna = cual === 'goleadores' ? 'Goles' : 'Asistencias';
+  if (filas.length === 0) return <p className="nota">{cual === 'goleadores' ? 'Todavía no ha marcado nadie.' : 'Todavía no hay asistencias.'}</p>;
+  return (
+    <>
+      <table className="clasificacion goleadores">
+        <caption className="nota">{cual === 'goleadores' ? 'Máximos goleadores' : 'Máximos asistentes'}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Pos</th>
+            <th scope="col">Jugador</th>
+            <th scope="col">Equipo</th>
+            <th scope="col">{columna}</th>
+            <th scope="col" title="Partidos jugados">PJ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {mostradas.map((f) => (
+            <tr key={`${f.equipo.id}-${f.jugador.id}`} className={f.equipo.id === yo ? 'propia' : ''}>
+              <td>{f.posicion}</td>
+              <th scope="row">
+                {f.jugador.dorsal !== undefined && <span className="dorsal-tabla">{f.jugador.dorsal}</span>} {f.jugador.nombre} {f.jugador.apellidos}
+              </th>
+              <td>{f.equipo.nombre}</td>
+              <td>
+                <strong>{f.total}</strong>
+              </td>
+              <td>{f.partidosJugados}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {!todas && filas.length >= 10 && (
+        <button type="button" className="secundario" onClick={() => void verTodos()}>
+          Ver todos
+        </button>
+      )}
+      {pendientes > 0 && <p className="nota">No incluye {pendientes === 1 ? '1 partido pendiente de ver' : `${pendientes} partidos pendientes de ver`}.</p>}
+    </>
   );
 }
 
@@ -296,6 +410,8 @@ function Calendario({ jornadas, partidaId, yo }: { jornadas: JornadaVista[]; par
                 <span className="resultado-partido">
                   {p.estado === 'finalizado' && p.partidoId ? (
                     <Link to={`/partidas/${partidaId}/partido/${p.partidoId}`}>{textoMarcador(p.marcador)}</Link>
+                  ) : p.estado === 'pendiente_de_ver' && p.partidoId ? (
+                    <Link to={`/partidas/${partidaId}/reproduccion/${p.partidoId}`}>Pendiente de ver</Link>
                   ) : (
                     textoMarcador(null)
                   )}
@@ -309,5 +425,21 @@ function Calendario({ jornadas, partidaId, yo }: { jornadas: JornadaVista[]; par
         </section>
       ))}
     </div>
+  );
+}
+
+/** Partido propio entre humanos ya jugado que aún no has visto: verlo o mostrar el resultado sin verlo. */
+function PendienteDeVer({ partidaId, partidoId, onMostrar }: { partidaId: string; partidoId: string; onMostrar: (partidoId: string) => void }) {
+  const navegar = useNavigate();
+  return (
+    <>
+      <span className="etiqueta">Pendiente de ver</span>
+      <button type="button" onClick={() => navegar(`/partidas/${partidaId}/reproduccion/${partidoId}`)}>
+        Ver partido
+      </button>
+      <button type="button" className="secundario" onClick={() => onMostrar(partidoId)}>
+        Mostrar resultado
+      </button>
+    </>
   );
 }

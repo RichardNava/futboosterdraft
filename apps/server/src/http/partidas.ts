@@ -4,6 +4,7 @@
 import { AnadirNPC, CrearPartida } from '@fbd/protocol';
 import type { FastifyInstance } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
+import { misPartidas } from '../actores/misPartidas';
 import { anadirNPC, iniciar, unirse } from '../actores/sala';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
@@ -33,6 +34,9 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
     }
     return resultado;
   });
+
+  // «Mis partidas» (FR-017): en curso y terminadas, con la acción pendiente de cada una.
+  app.get('/api/mis-partidas', { preHandler: requiereSesion }, async (req) => misPartidas(gestor, req.usuario!.id));
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id', { preHandler: requiereSesion }, async (req) => {
     const c = await gestor.obtenerOError(req.params.id);

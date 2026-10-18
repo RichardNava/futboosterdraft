@@ -29,6 +29,13 @@ export interface ResultadoTorneo {
   golesLocal: number;
   golesVisitante: number;
   penaltis?: { local: number; visitante: number };
+  /** Partido del que sale el resultado (spec 002): permite excluirlo de la vista de quien no lo ha visto. */
+  partidoId?: string;
+}
+
+/** Partidos que no cuentan en una vista: los "pendientes de ver" del participante que la pide (research R8). */
+export interface OpcionesVista {
+  excluirPartidos?: readonly string[];
 }
 
 export interface EstadoTorneo {
@@ -42,6 +49,54 @@ export interface EstadoTorneo {
   cuadro: Cuadro | null;
   campeon: string | null;
   bajas: EstadoBajas;
+  /** Goles, asistencias y partidos jugados por jugador y partido (research R15; data-model §6.4). */
+  aportaciones?: Aportacion[];
+}
+
+/** Lo que aporta un jugador en un partido (para las tablas de goleadores y asistentes). */
+export interface Aportacion {
+  partidoId: string;
+  participanteId: string;
+  jugadorId: number;
+  goles: number;
+  asistencias: number;
+  jugo: boolean;
+}
+
+/**
+ * Aportaciones de un partido: los eventos `gol` dan un gol al autor y una asistencia al asistente (sin los
+ * goles en propia, `datos.enPropia`); juegan los titulares iniciales y los que entran en una sustitución.
+ * Los lanzamientos de la tanda (`tanda_lanzamiento`) no cuentan.
+ */
+export function aportacionesDePartido(
+  partidoId: string,
+  equipos: { local: string; visitante: string },
+  eventos: readonly EventoConsecuencia[],
+  titulares?: { local: readonly number[]; visitante: readonly number[] },
+): Aportacion[] {
+  const porJugador = new Map<string, Aportacion>();
+  const de = (lado: 'local' | 'visitante', jugadorId: number) => {
+    const clave = `${lado}:${jugadorId}`;
+    let a = porJugador.get(clave);
+    if (!a) {
+      a = { partidoId, participanteId: equipos[lado], jugadorId, goles: 0, asistencias: 0, jugo: false };
+      porJugador.set(clave, a);
+    }
+    return a;
+  };
+  for (const lado of ['local', 'visitante'] as const) for (const id of titulares?.[lado] ?? []) de(lado, id).jugo = true;
+  for (const e of eventos) {
+    if (e.tipo === 'sustitucion') {
+      const entra = e.jugadores.find((j) => j.rol === 'entra');
+      if (entra) de(e.equipo, entra.jugadorId).jugo = true;
+    } else if (e.tipo === 'gol' && e.datos.enPropia !== true) {
+      for (const j of e.jugadores) {
+        if (j.rol === 'autor') de(e.equipo, j.jugadorId).goles++;
+        else if (j.rol === 'asistente') de(e.equipo, j.jugadorId).asistencias++;
+      }
+    }
+  }
+  return [...porJugador.values()];
 }
 
 function jornadaDeRonda(cuadro: Cuadro, ronda: number, numero: number): JornadaTorneo {
@@ -56,7 +111,7 @@ function jornadaDeRonda(cuadro: Cuadro, ronda: number, numero: number): JornadaT
 }
 
 export function crearTorneo(modo: Modo, participantes: string[], mesas: string[][], semilla: Semilla): EstadoTorneo {
-  const base = { modo, participantes, mesas, semilla, resultados: [], campeon: null, bajas: estadoBajasVacio() };
+  const base = { modo, participantes, mesas, semilla, resultados: [], campeon: null, bajas: estadoBajasVacio(), aportaciones: [] };
   if (modo === 'playoff') {
     const cuadro = cuadroPlayoff(participantes, mesas, derivarSemilla(semilla, 'cuadro'));
     return { ...base, fase: 'eliminatoria', cuadro, jornadas: [jornadaDeRonda(cuadro, 0, 1)] };
@@ -84,15 +139,23 @@ export function esEliminatoria(j: JornadaTorneo): boolean {
   return j.tipo !== 'liga';
 }
 
-export function clasificacionActual(t: EstadoTorneo): FilaClasificacion[] {
-  const liga = t.resultados.filter((r) => t.jornadas.find((j) => j.numero === r.jornada)?.tipo === 'liga');
+export function clasificacionActual(t: EstadoTorneo, opciones: OpcionesVista = {}): FilaClasificacion[] {
+  const excluidos = new Set(opciones.excluirPartidos ?? []);
+  const liga = t.resultados.filter(
+    (r) => t.jornadas.find((j) => j.numero === r.jornada)?.tipo === 'liga' && !(r.partidoId && excluidos.has(r.partidoId)),
+  );
   return clasificacion(t.participantes, liga, derivarSemilla(t.semilla, 'desempate'));
 }
 
 /** Registra el resultado de un partido y aplica sus consecuencias (bajas y amarillas). */
 export function registrarResultado(
   t: EstadoTorneo,
-  r: ResultadoTorneo & { partidoId: string; eventos: readonly EventoConsecuencia[] },
+  r: ResultadoTorneo & {
+    partidoId: string;
+    eventos: readonly EventoConsecuencia[];
+    /** Titulares iniciales de cada equipo (para saber quién jugó). */
+    titulares?: { local: readonly number[]; visitante: readonly number[] };
+  },
 ): { torneo: EstadoTorneo; bajasNuevas: Baja[] } {
   const jornada = t.jornadas.find((j) => j.numero === r.jornada);
   if (!jornada) throw new Error(`No existe la jornada ${r.jornada}`);
@@ -101,7 +164,8 @@ export function registrarResultado(
     { partidoId: r.partidoId, local: r.local, visitante: r.visitante, eventos: r.eventos },
     jornada.tipo === 'liga' ? 'liga' : 'eliminatoria',
   );
-  const { partidoId: _p, eventos: _e, ...resultado } = r;
+  const { eventos: _e, titulares, ...resultado } = r;
+  const aportaciones = [...(t.aportaciones ?? []), ...aportacionesDePartido(r.partidoId, { local: r.local, visitante: r.visitante }, r.eventos, titulares)];
   let cuadro = t.cuadro;
   if (jornada.tipo !== 'liga' && cuadro && jornada.rondaCuadro !== undefined) {
     const ganador =
@@ -114,7 +178,7 @@ export function registrarResultado(
           : r.visitante;
     cuadro = avanzarCuadro(cuadro, jornada.rondaCuadro, r.indice, ganador);
   }
-  return { torneo: { ...t, resultados: [...t.resultados, resultado], bajas, cuadro }, bajasNuevas };
+  return { torneo: { ...t, resultados: [...t.resultados, resultado], bajas, cuadro, aportaciones }, bajasNuevas };
 }
 
 /**

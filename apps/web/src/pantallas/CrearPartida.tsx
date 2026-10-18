@@ -16,7 +16,6 @@ export function CrearPartida() {
   const [modo, setModo] = useState<Modo>('liga');
   const [numParticipantes, setNumParticipantes] = useState(4);
   const [tipoSimulacion, setTipoSimulacion] = useState<'rapida' | '2d'>('rapida');
-  const [ritmo, setRitmo] = useState<'directo' | 'asincrono'>('directo');
   const [plazo, setPlazo] = useState(24);
   const [npc, setNpc] = useState<NivelNPC[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -41,8 +40,7 @@ export function CrearPartida() {
           modo,
           numParticipantes,
           tipoSimulacion,
-          ritmo: esInvitado ? 'directo' : ritmo,
-          ...(ritmo === 'asincrono' && !esInvitado ? { plazoJornadaHoras: plazo } : {}),
+          ...(!esInvitado ? { plazoJornadaHoras: plazo } : {}),
           npc: npc.slice(0, maxNpc).map((nivel) => ({ nivel })),
           ...(esInvitado ? { plazasHumanas: 1 } : {}),
         },
@@ -95,23 +93,15 @@ export function CrearPartida() {
 
         <fieldset>
           <legend>Ritmo del torneo</legend>
-          <label className="opcion">
-            <input type="radio" checked={ritmo === 'directo' || esInvitado} onChange={() => setRitmo('directo')} />
-            En directo (todas las jornadas seguidas)
-          </label>
-          <label className="opcion">
-            <input
-              type="radio"
-              disabled={esInvitado}
-              checked={ritmo === 'asincrono' && !esInvitado}
-              onChange={() => setRitmo('asincrono')}
-            />
-            Asíncrono (una jornada cada plazo)
-          </label>
-          {esInvitado && <p className="nota">Regístrate para jugar torneos asíncronos o con otras personas.</p>}
-          {ritmo === 'asincrono' && !esInvitado && (
+          <p className="nota">
+            Solo el draft se juega a la vez. Si eres la única persona, cada jornada empieza cuando tú quieras; con más
+            personas, cada uno juega sus partidos cuando quiere dentro del plazo de la jornada.
+          </p>
+          {esInvitado ? (
+            <p className="nota">Regístrate para jugar torneos con otras personas.</p>
+          ) : (
             <label>
-              Plazo por jornada (horas)
+              Plazo por jornada con varias personas (horas)
               <input type="number" min={1} max={336} value={plazo} onChange={(e) => setPlazo(Number(e.target.value))} />
             </label>
           )}

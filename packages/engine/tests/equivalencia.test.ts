@@ -46,7 +46,27 @@ function jugar2D(e: EntradaPartido, opciones: { fotogramas?: boolean; decisiones
     eventos.push(...r.eventos);
     estado = r.estado;
   }
-  return { eventos, marcador: r!.marcador, decisiones: estado.decisiones, fase: estado.fase };
+  return { eventos, marcador: r!.marcador, decisiones: estado.decisiones, fase: estado.fase, estado };
+}
+
+/**
+ * 2D en directo con el búfer de anticipación (research R6): trozos acotados en ticks con
+ * `avanzar('ticks', { hastaTick })`, de tamaños variados, decidiendo entre trozo y trozo como en `jugar2D`.
+ */
+function jugarPorTicks(e: EntradaPartido, opciones: { decisiones?: boolean } = {}) {
+  let estado = crearPartido(e);
+  const eventos: EventoPartido[] = [];
+  const acciones: unknown[] = [];
+  const hechas = new Set<string>();
+  let r: ResultadoTramo | null = null;
+  for (let i = 0; i < 20000 && estado.fase !== 'finalizado'; i++) {
+    if (opciones.decisiones && estado.puntoDecision) decidir(estado, hechas);
+    r = avanzar(estado, 'ticks', { hastaTick: estado.tick + 1 + ((i * 37) % 90) });
+    eventos.push(...r.eventos);
+    acciones.push(...r.acciones);
+    estado = r.estado;
+  }
+  return { eventos, acciones, marcador: r!.marcador, decisiones: estado.decisiones, fase: estado.fase, estado };
 }
 
 /** Partido en rápida: de parte en parte, reproduciendo las decisiones con su `aplicadaEnTick`. */
@@ -91,6 +111,32 @@ describe('equivalencia entre modalidades (SC-008)', () => {
     }
     // La prueba solo vale si de verdad se aplicaron decisiones.
     expect(conDecisiones).toBeGreaterThan(SEMILLAS * 0.9);
+  });
+
+  it("cortes por ticks inocuos: encadenar 'ticks' da lo mismo que 'interrupcion' (invariante 6b)", () => {
+    for (let i = 0; i < 40; i++) {
+      const e = entrada(`eq-ticks-${i}`);
+      const porTicks = jugarPorTicks(e, { decisiones: true });
+      const d2 = jugar2D(e, { decisiones: true });
+      expect(porTicks.fase).toBe('finalizado');
+      expect(porTicks.eventos).toEqual(d2.eventos);
+      expect(porTicks.marcador).toEqual(d2.marcador);
+      expect(porTicks.decisiones.map((d) => [d.tipo, d.aplicadaEnTick])).toEqual(d2.decisiones.map((d) => [d.tipo, d.aplicadaEnTick]));
+      expect(porTicks.estado.espacio).toEqual(d2.estado.espacio);
+    }
+  });
+
+  it("'ticks' para en cuanto termina la acción que alcanza hastaTick, o antes si hay una interrupción", () => {
+    let estado = crearPartido(entrada('ticks-limite'));
+    for (let i = 0; i < 200 && estado.fase !== 'finalizado'; i++) {
+      const hasta = estado.tick + 30;
+      const r = avanzar(estado, 'ticks', { hastaTick: hasta });
+      // Una acción es indivisible: se pasa como mucho lo que dura la última jugada. La más larga es un córner:
+      // la parada (90), la espera a que los rematadores se coloquen (`esperaColocacionMaxima`), el centro y
+      // el remate.
+      expect(r.hastaTick - hasta).toBeLessThanOrEqual(90 + estado.parametros.espacio.esperaColocacionMaxima + 200);
+      estado = r.estado;
+    }
   });
 
   it('pedir fotogramas no altera el resultado', () => {

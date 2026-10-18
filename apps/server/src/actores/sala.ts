@@ -24,6 +24,8 @@ export function resumenSala(c: ControladorPartida) {
       nivelNPC: (p.nivelNPC as NivelNPC | null) ?? null,
       conectado: p.tipo === 'npc' || c.servicios.difusor.estaConectado(c.id, p.id),
       esAnfitrion: p.usuarioId === c.partida.anfitrionId,
+      /** Humano cuya plaza ocupa un NPC (abandonó): ya no cuenta como humano activo (research R11). */
+      controladoPorNPC: p.controladoPorNPC === true,
     })),
     plazasLibres: c.partida.numParticipantes - c.participantes.length,
     venceBusquedaEn:

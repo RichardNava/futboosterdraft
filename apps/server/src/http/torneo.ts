@@ -3,7 +3,7 @@
  */
 import type { FastifyInstance } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
-import { abandonar, marcarListo, vistaTorneo, type DependenciasTorneo } from '../actores/torneo';
+import { abandonar, siguienteJornada, tablaCompleta, vistaTorneo, type DependenciasTorneo } from '../actores/torneo';
 import { abandonarPartidaInvitado } from '../actores/sala';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
@@ -14,24 +14,34 @@ export function registrarRutasTorneo(app: FastifyInstance, auth: Auth, gestor: G
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id/torneo', { preHandler: requiereSesion }, async (req) => {
     const c = await gestor.obtenerOError(req.params.id);
-    if (!c.participanteDeUsuario(req.usuario!.id)) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
-    return c.ejecutar(() => vistaTorneo(c));
-  });
-
-  app.post<{ Params: { id: string } }>('/api/partidos/:id/listo', { preHandler: requiereSesion }, async (req) => {
-    if (!/^[0-9a-f-]{36}$/i.test(req.params.id)) throw errores.noEncontrado('PARTIDO_NO_ENCONTRADO', 'No existe ese partido');
-    const fila = await gestor.servicios.repoPartidos.obtener(req.params.id);
-    if (!fila) throw errores.noEncontrado('PARTIDO_NO_ENCONTRADO', 'No existe ese partido');
-    const c = await gestor.obtenerOError(fila.partidaId);
     const participante = c.participanteDeUsuario(req.usuario!.id);
     if (!participante) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
-    if (c.partida.ritmo !== 'asincrono') throw errores.conflicto('RITMO_DIRECTO', 'En directo los partidos empiezan al acabar la preparación');
-    const r = await c.ejecutar((ctx) => marcarListo(c, ctx, deps, participante.id, fila.id));
+    // Vista filtrada: sin el resultado de los partidos propios que aún no ha visto (research R8).
+    return c.ejecutar(() => vistaTorneo(c, participante.id));
+  });
+
+  // Máximos goleadores y asistentes completos (FR-041): `?todos=true`; sin el parámetro, las 10 primeras filas.
+  for (const cual of ['goleadores', 'asistentes'] as const) {
+    app.get<{ Params: { id: string }; Querystring: { todos?: string } }>(`/api/partidas/:id/torneo/${cual}`, { preHandler: requiereSesion }, async (req) => {
+      const c = await gestor.obtenerOError(req.params.id);
+      const participante = c.participanteDeUsuario(req.usuario!.id);
+      if (!participante) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+      const filas = await c.ejecutar(() => tablaCompleta(c, participante.id, cual));
+      return { filas: req.query.todos === 'true' ? filas : filas.slice(0, 10) };
+    });
+  }
+
+  // «Siguiente jornada» con un solo humano (FR-011, FR-030; research R9).
+  app.post<{ Params: { id: string } }>('/api/partidas/:id/siguiente-jornada', { preHandler: requiereSesion }, async (req) => {
+    const c = await gestor.obtenerOError(req.params.id);
+    if (!c.participanteDeUsuario(req.usuario!.id)) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+    const r = await c.ejecutar((ctx) => siguienteJornada(c, ctx, deps));
     if ('error' in r) {
-      if (r.error === 'PARTIDO_INICIADO') throw errores.conflicto(r.error, 'El partido ya ha empezado');
-      throw errores.noEncontrado(r.error!, 'Ese partido no es de la jornada actual');
+      if (r.error === 'HAY_VARIOS_HUMANOS') throw errores.prohibido(r.error, 'Con varias personas, la siguiente jornada se abre al cerrarse la actual');
+      if (r.error === 'TORNEO_TERMINADO') throw errores.conflicto(r.error, 'El torneo ya ha terminado');
+      throw errores.conflicto(r.error, 'La jornada actual aún no ha terminado');
     }
-    return r;
+    return c.ejecutar(async () => ({ ok: true, jornadaActual: (await vistaTorneo(c)).jornadaActual }));
   });
 
   app.post<{ Params: { id: string } }>('/api/partidas/:id/abandonar', { preHandler: requiereSesion }, async (req) => {
