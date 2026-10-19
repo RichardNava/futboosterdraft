@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
+import { firmaPatron } from '@fbd/domain';
 import type { Inicio, Marcador } from '../pantallas/PartidoRapido';
 import { posicionesEn, type Fotograma } from './interpolacion';
 import { ANCHO, dibujar, LARGO, type JugadorDibujo, type Lanzamiento } from './renderizador';
@@ -166,7 +167,7 @@ export function Lienzo2D({ inicio, reloj, datos, superposicion, alAvanzar, etiqu
   }, [reloj, datos, superposicion, jugadores, orden, porteros, inicio, sinRotulos]);
 
   return (
-    <div className="campo-2d">
+    <div className="campo-2d" data-patron-local={firmaPatron(inicio.equipaciones.local)} data-patron-visitante={firmaPatron(inicio.equipaciones.visitante)}>
       <canvas ref={lienzo} role="img" aria-label={etiqueta} />
     </div>
   );

@@ -1,5 +1,9 @@
 /*
- * Cartas de jugador (US1; FR-001 a FR-005, research R16).
+ * Cartas de jugador (002/US1; FR-001 a FR-005, research R16; spec 003, US7: FR-008 a FR-010, research R20).
+ *
+ * Diseño propio (sin elementos de EA SPORTS FC): escudo con las esquinas superiores achaflanadas, franja diagonal
+ * del color del nivel y textura de grano. Barlow Condensed (OFL) para la media, el nombre y los stats. En la carta
+ * completa, los stats y los specials se leen a ≥ 16 px en portátil y ≥ 14 px a 360 px (FR-009).
  *
  * La carta completa tiene proporción de carta (≈ 5:7) y se lee igual de 160 a 280 px de ancho: los tamaños
  * salen del ancho de la propia carta (container queries, unidades cqi) con `clamp()`. Si el contenido no cabe
@@ -16,6 +20,7 @@
   --carta-fondo: linear-gradient(160deg, #f1f4f7 0%, #d6dce3 55%, #c3cbd4 100%);
   --carta-franja: #4a5562;
   --carta-franja-texto: #ffffff;
+  --carta-letra: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
   position: relative;
   container-type: inline-size;
 }
@@ -42,15 +47,32 @@
 
 .carta.completa {
   aspect-ratio: 5 / 7;
-  max-width: 280px;
+  max-width: 300px;
   width: 100%;
-  border-radius: clamp(8px, 5cqi, 14px);
   border: clamp(3px, 2.4cqi, 6px) solid var(--carta-marco);
-  background: var(--carta-fondo);
+  /* Escudo: esquinas superiores achaflanadas y base ligeramente redondeada. */
+  border-radius: 0 0 clamp(10px, 6cqi, 18px) clamp(10px, 6cqi, 18px);
+  clip-path: polygon(9% 0, 91% 0, 100% 6.5%, 100% 100%, 0 100%, 0 6.5%);
+  /* Grano (dos tramas finas) sobre el degradado del nivel. */
+  background:
+    repeating-linear-gradient(45deg, rgb(0 0 0 / 3%) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-45deg, rgb(255 255 255 / 6%) 0 1px, transparent 1px 4px),
+    var(--carta-fondo);
   color: var(--carta-texto);
   box-shadow: 0 2px 6px rgb(0 0 0 / 18%);
   /* Sin overflow: hidden, para que la proporción ceda y la carta crezca si el contenido no cabe. */
   isolation: isolate;
+}
+
+/* Franja diagonal del color del nivel, detrás del contenido. */
+.carta.completa::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, transparent 58%, var(--carta-franja) 58% 63%, transparent 63% 66%, var(--carta-franja) 66% 67.5%, transparent 67.5%);
+  opacity: 0.28;
+  pointer-events: none;
 }
 
 .carta.completa.seleccionada {
@@ -140,9 +162,10 @@
 }
 
 .carta-media {
-  font-size: clamp(1.6rem, 17cqi, 3rem);
-  font-weight: 900;
-  line-height: 1.3;
+  font-family: var(--carta-letra);
+  font-size: clamp(1.8rem, 19cqi, 3.4rem);
+  font-weight: 800;
+  line-height: 1.1;
 }
 
 .carta-demarcacion {
@@ -166,14 +189,25 @@
   overflow-wrap: anywhere;
 }
 
+/* Hallazgo H1: el nombre reserva siempre dos líneas de apellidos, para que todas las cartas midan lo mismo. */
+.carta.completa .carta-apellidos {
+  min-height: 2.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .carta-nombre-pila {
   font-size: clamp(0.65rem, 6cqi, 0.9rem);
   color: var(--carta-texto-suave);
 }
 
 .carta-apellidos {
-  font-size: clamp(0.85rem, 8.5cqi, 1.3rem);
+  font-family: var(--carta-letra);
+  font-size: clamp(1rem, 9.5cqi, 1.5rem);
   font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
 /* Franja de posiciones, justo debajo del nombre. */
@@ -185,6 +219,12 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Una línea de posiciones reservada (H1): como mucho tres, siempre caben. */
+.carta.completa .carta-posiciones {
+  flex-wrap: nowrap;
+  min-height: calc(clamp(0.68rem, 6.2cqi, 0.92rem) * 1.5);
 }
 
 .carta-posicion {
@@ -207,6 +247,7 @@
 
 .carta-stats {
   display: grid;
+  font-family: var(--carta-letra);
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(2px, 1.5cqi, 4px) clamp(4px, 3cqi, 8px);
   margin: 0;
@@ -221,41 +262,53 @@
   line-height: 1.25;
 }
 
-.carta-stat dt {
-  font-size: clamp(0.55rem, 4.8cqi, 0.75rem);
-  font-weight: 700;
+/* FR-009: abreviatura a ≥ 1rem y valor en negrita a 1,25 veces la abreviatura. */
+.carta.completa .carta-stat dt {
+  font-size: 1rem;
+  font-weight: 600;
   color: var(--carta-texto-suave);
 }
 
-.carta-stat dd {
+.carta.completa .carta-stat dd {
   margin: 0;
-  font-size: clamp(0.7rem, 6cqi, 0.95rem);
+  font-size: 1.25rem;
   font-weight: 800;
 }
 
+/*
+ * Specials en una columna, cada uno en una sola línea (hallazgo H2), con sitio reservado para los cuatro de un
+ * GOAT (H1): todas las cartas completas miden lo mismo, tengan los specials que tengan.
+ */
 .carta-specials {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: clamp(2px, 1.5cqi, 4px);
+  --alto-special: calc(1.5em + 2px);
+  --hueco-special: 3px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: var(--alto-special);
+  align-content: start;
+  gap: var(--hueco-special);
+  font-family: var(--carta-letra);
+  font-size: 1rem;
+}
+
+.carta.completa .carta-specials {
+  height: calc(4 * var(--alto-special) + 3 * var(--hueco-special));
 }
 
 .carta-special {
-  padding: 0.15em 0.5em;
-  border-radius: 999px;
+  /* Relleno lateral pequeño: «Recuperador tras pérdida» cabe en una línea a 14 px en una carta de 160 px (H2). */
+  padding: 0.15em 0.2em;
+  border-radius: 8px;
   border: 1px solid var(--carta-marco);
-  background: rgb(255 255 255 / 70%);
+  background: rgb(255 255 255 / 75%);
   color: var(--carta-texto);
-  font-size: clamp(0.55rem, 4.6cqi, 0.74rem);
-  font-weight: 700;
-  line-height: 1.3;
+  font-family: inherit;
+  font-size: 1em;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-align: center;
   cursor: help;
-}
-
-/* Con 4 specials, más pequeños para que quepan en dos líneas. */
-.carta-specials[data-cantidad='4'] .carta-special {
-  font-size: clamp(0.52rem, 4.2cqi, 0.7rem);
-  padding: 0.12em 0.4em;
 }
 
 .carta-special:focus-visible {
@@ -298,6 +351,25 @@
   background: rgb(255 255 255 / 85%);
   color: var(--carta-texto);
   border: 1px solid var(--carta-marco);
+}
+
+/* Cartas completas estrechas: dos columnas de stats para que los números quepan a su tamaño. */
+@container (max-width: 230px) {
+  .carta-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* En móvil (360 px), ≥ 14 px (FR-009). */
+@media (max-width: 480px) {
+  .carta.completa .carta-stat dt,
+  .carta.completa .carta-specials {
+    font-size: 0.875rem;
+  }
+
+  .carta.completa .carta-stat dd {
+    font-size: 1.1rem;
+  }
 }
 
 /* ---------- Carta compacta (listas largas) ---------- */
@@ -362,7 +434,7 @@
 
 .rejilla-cartas {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
   gap: 12px;
   justify-items: center;
 }

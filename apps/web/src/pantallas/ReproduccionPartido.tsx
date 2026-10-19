@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { coloresDe } from '../componentes/colores';
 import { Link, useParams } from 'react-router';
-import { ErrorApi, marcarVisto, obtenerReproduccion } from '../api/cliente';
+import { api, ErrorApi, marcarVisto, obtenerReproduccion } from '../api/cliente';
 import { jugadoresDe, Lienzo2D, type Superposicion } from '../campo2d/Lienzo2D';
 import { RelojReproduccion, VELOCIDADES, type EstadoReloj, type Velocidad } from '../campo2d/relojReproduccion';
 import { datosVacios, incorporarTramo, type TramoRecibido } from '../campo2d/tramos';
+import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Estadisticas } from '../componentes/Estadisticas';
+import { ResultadoPartido } from '../componentes/ResultadoPartido';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
 import { ETIQUETA_FASE, type Inicio, type Marcador } from './PartidoRapido';
 
@@ -34,6 +37,19 @@ function hastaLaPausa(tramos: TramoReproduccion[], desde: number): number {
   return tramos.length - 1;
 }
 
+/** Aviso de un partido jugado con un motor que ya no puede volver a simularlo (research R2). */
+export const AVISO_VERSION_ANTERIOR = 'Este partido se jugó con una versión anterior del motor';
+
+interface ResumenGuardado {
+  alineaciones?: Inicio['alineaciones'] | null;
+  dorsales?: Inicio['dorsales'];
+  local: { nombre: string };
+  visitante: { nombre: string };
+  marcador: Marcador;
+  eventos: EventoVista[];
+  estadisticas: unknown;
+}
+
 const movimientoReducido = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
 /**
@@ -46,6 +62,8 @@ export function ReproduccionPartido() {
   const { partidaId, partidoId } = useParams();
   const [datos, setDatos] = useState<Reproduccion | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Partido 2.x: no se puede reproducir, solo se muestra su resumen guardado.
+  const [resumen, setResumen] = useState<ResumenGuardado | null>(null);
   // Rápida: último tramo que se ve (se amplía con «Continuar»).
   const [hasta, setHasta] = useState(0);
   const [alFinal, setAlFinal] = useState(false);
@@ -67,7 +85,17 @@ export function ReproduccionPartido() {
         setDatos(r);
         setHasta(hastaLaPausa(r.tramos, 0));
       })
-      .catch((e: unknown) => vigente && setError(e instanceof ErrorApi ? e.message : 'No se pudo cargar el partido'));
+      .catch((e: unknown) => {
+        if (!vigente) return;
+        if (e instanceof ErrorApi && e.codigo === 'VERSION_NO_REPRODUCIBLE') {
+          api<ResumenGuardado>(`/api/partidos/${partidoId}`)
+            .then((r) => vigente && setResumen(r))
+            .catch(() => vigente && setError(AVISO_VERSION_ANTERIOR));
+          void marcarVisto(partidoId!).catch(() => undefined);
+          return;
+        }
+        setError(e instanceof ErrorApi ? e.message : 'No se pudo cargar el partido');
+      });
     return () => {
       vigente = false;
     };
@@ -118,6 +146,36 @@ export function ReproduccionPartido() {
   );
 
   if (error) return <p className="error pantalla">{error}</p>;
+  if (resumen) {
+    const nombres = { local: resumen.local.nombre, visitante: resumen.visitante.nombre };
+    const porId = resumen.alineaciones ? jugadoresDe({ alineaciones: resumen.alineaciones, dorsales: resumen.dorsales ?? {} } as Inicio) : new Map();
+    const nombreJugador = (id: number) => porId.get(id)?.nombre ?? String(id);
+    return (
+      <main className="pantalla partido reproduccion">
+        <h1>
+          {resumen.local.nombre} {resumen.marcador.local} – {resumen.marcador.visitante} {resumen.visitante.nombre}
+        </h1>
+        <p className="aviso" role="status">
+          {AVISO_VERSION_ANTERIOR}: solo está disponible su resumen.
+        </p>
+        <section aria-label="Eventos del partido">
+          <h2>Resumen del partido</h2>
+          <ResumenEventos eventos={resumen.eventos} nombre={nombreJugador} nombresEquipo={nombres} />
+        </section>
+        {resumen.estadisticas !== null && resumen.estadisticas !== undefined && (
+          <section aria-label="Estadísticas">
+            <h2>Estadísticas</h2>
+            <Estadisticas datos={resumen.estadisticas as never} nombres={nombres} />
+          </section>
+        )}
+        <p>
+          <Link className="boton" to={`/partidas/${partidaId}/torneo`}>
+            Siguiente
+          </Link>
+        </p>
+      </main>
+    );
+  }
   if (!datos) return <p className="cargando">Cargando partido…</p>;
 
   const { inicio } = datos;
@@ -143,6 +201,21 @@ export function ReproduccionPartido() {
     setVelocidad(v);
   };
   const puedeContinuar = es2d ? llegoAlLimite : hasta < ultimoTramo;
+
+  // Al terminar (o al finalizar), la misma pantalla de resultado que en directo (spec 003, FR-026).
+  if (terminado) {
+    return (
+      <ResultadoPartido
+        partidaId={partidaId!}
+        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
+        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        marcador={datos.fin.marcador}
+        eventos={datos.fin.eventos}
+        estadisticas={datos.fin.estadisticas}
+        nombre={nombre}
+      />
+    );
+  }
 
   return (
     <main className="pantalla partido reproduccion">
@@ -177,39 +250,15 @@ export function ReproduccionPartido() {
         </>
       )}
 
-      {!terminado && (
-        <div className="acciones">
-          {puedeContinuar && (
-            <button type="button" onClick={continuar}>
-              Continuar
-            </button>
-          )}
-          <button type="button" className="secundario" onClick={finalizar}>
-            Finalizar partido
-          </button>
-        </div>
-      )}
-
       <section aria-label="Eventos del partido">
-        <h2>{terminado ? 'Resumen del partido' : 'Lo que ha pasado'}</h2>
-        <ResumenEventos eventos={terminado ? datos.fin.eventos : eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
+        <h2>Lo que ha pasado</h2>
+        <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
       </section>
 
-      {terminado && (
-        <>
-          {datos.fin.estadisticas !== null && datos.fin.estadisticas !== undefined && (
-            <section aria-label="Estadísticas">
-              <h2>Estadísticas</h2>
-              <Estadisticas datos={datos.fin.estadisticas as never} nombres={nombresEquipo} />
-            </section>
-          )}
-          <p>
-            <Link className="boton" to={`/partidas/${partidaId}/torneo`}>
-              Siguiente
-            </Link>
-          </p>
-        </>
-      )}
+      <BarraPrincipal
+        principal={puedeContinuar ? { etiqueta: 'Continuar', onClick: continuar } : { etiqueta: 'Finalizar partido', onClick: finalizar }}
+        secundarios={puedeContinuar ? [{ etiqueta: 'Finalizar partido', onClick: finalizar }] : []}
+      />
     </main>
   );
 }

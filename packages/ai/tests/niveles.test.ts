@@ -1,15 +1,17 @@
-import { FORMACIONES_IDS, NIVELES_NPC, PARAMETROS_V2, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { derivarSemilla, FORMACIONES_IDS, NIVELES_NPC, PARAMETROS_V3, Rng, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
 import { crearPartido, avanzar } from '@fbd/engine';
 import { describe, expect, it } from 'vitest';
-import { decidirAlineacion, LIMITE_PRO_MS } from '../src/alineacion';
-import { elegirCarta } from '../src/draft';
+import { decidirAlineacion, decidirAlineacionDetallada, LIMITE_PRO_MS } from '../src/alineacion';
+import { elegirCarta, elegirCartaDetallada } from '../src/draft';
 import { valorCarta } from '../src/evaluador';
 import { decidirEnPartido } from '../src/partido';
-import { PERFILES, TODAS_LAS_FORMACIONES } from '../src/perfiles';
+import { PERFILES, TODAS_LAS_FORMACIONES, type NivelIA } from '../src/perfiles';
 import { equipoDesdeAlineacion } from '../src/pro/simulacionPrueba';
 import { jugador, plantilla } from './ayudas';
 
-const p = PARAMETROS_V2;
+const p = PARAMETROS_V3;
 
 describe('niveles de los NPC (T120)', () => {
   const sobre = [jugador('MC', 84), jugador('POR', 79), jugador('DC', 82), jugador('LI', 80), jugador('DCD', 81), jugador('MCO', 83), jugador('ED', 80), jugador('MD', 78)];
@@ -90,5 +92,54 @@ describe('niveles de los NPC (T120)', () => {
     for (const id of entran) expect(estado.equipos.local.jugadores.find((j) => j.id === id)!.enCampo).toBe(false);
     // El amateur no hace cambios por cansancio.
     expect(decidirEnPartido('amateur', estado, 'local', semillaDesdeTexto('d')).filter((d) => d.tipo === 'sustitucion')).toHaveLength(0);
+  });
+});
+
+describe('errores por nivel (spec 003, T088)', () => {
+  const CORE = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../data/core.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
+
+  /** Draft simplificado de un NPC: 3 sobres de 8 cartas Core, elige las 8 de cada uno. */
+  function draft(nivel: NivelIA, i: number) {
+    const raiz = semillaDesdeTexto(`draft:${nivel}:${i}`);
+    const rng = new Rng(derivarSemilla(raiz, 'sobres'));
+    const parcial: Jugador[] = [];
+    let errores = 0;
+    let dudosas = 0;
+    for (let ronda = 1; ronda <= 3; ronda++) {
+      const sobre = rng.barajar(CORE).slice(0, 8);
+      for (let turno = 1; turno <= 8; turno++) {
+        const r = elegirCartaDetallada(nivel, sobre, parcial, ronda, turno, derivarSemilla(raiz, `${ronda}:${turno}`), { participantes: 8, semillaDraft: raiz, parametros: p, dudosaHecha: dudosas > 0 });
+        if (r.error === 'draft') errores++;
+        if (r.error === 'dudosa') dudosas++;
+        const k = sobre.findIndex((c) => c.id === r.id);
+        parcial.push(sobre.splice(k, 1)[0]!);
+      }
+    }
+    errores += decidirAlineacionDetallada(nivel, parcial, new Set(), null, derivarSemilla(raiz, 'alineacion'), { parametros: p, limiteMs: 0 }).errores.length;
+    return { errores, dudosas };
+  }
+
+  const DRAFTS = 200;
+  const resumen = Object.fromEntries(
+    (['amateur', 'intermedio', 'avanzado', 'PRO', 'automatico'] as const).map((nivel) => {
+      const r = Array.from({ length: DRAFTS }, (_, i) => draft(nivel, i));
+      return [nivel, { media: r.reduce((s, x) => s + x.errores, 0) / DRAFTS, dudosas: r.map((x) => x.dudosas) }];
+    }),
+  ) as Record<NivelIA, { media: number; dudosas: number[] }>;
+
+  it('la media de errores aplicados baja estrictamente de amateur a PRO', () => {
+    const medias = NIVELES_NPC.map((n) => resumen[n].media);
+    for (let i = 1; i < medias.length; i++) expect(medias[i]!).toBeLessThan(medias[i - 1]!);
+  });
+
+  it('el PRO tiene como mucho una decisión dudosa por draft, y la tiene en la mayoría', () => {
+    expect(Math.max(...resumen.PRO.dudosas)).toBeLessThanOrEqual(1);
+    expect(resumen.PRO.dudosas.filter((d) => d === 1).length / DRAFTS).toBeGreaterThan(0.5);
+    for (const n of ['amateur', 'intermedio', 'avanzado'] as const) expect(Math.max(...resumen[n].dudosas)).toBe(0);
+  });
+
+  it('el perfil automatico no comete errores', () => {
+    expect(resumen.automatico.media).toBe(0);
+    expect(Math.max(...resumen.automatico.dudosas)).toBe(0);
   });
 });

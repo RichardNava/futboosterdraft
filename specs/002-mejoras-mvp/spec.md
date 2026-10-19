@@ -154,6 +154,8 @@ En todas las pantallas hay una barra de navegación que lleva al menú principal
 
 ### User Story 7 - Colocación libre de los jugadores en la pantalla de tácticas (Priority: P2)
 
+*[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): la colocación se hace en el campo de la alineación (003/FR-001).]*
+
 En la pantalla de tácticas, el participante puede arrastrar a cualquier jugador de campo a cualquier zona del campo para ajustar la distribución de su equipo. La posición en la que juega cada jugador, y por tanto su penalización, depende de la zona en la que se coloca. Por ejemplo, retrasar un poco a un delantero centro lo convierte en segundo delantero, y así un SD natural deja de estar penalizado. La formación elegida es solo el punto de partida: si el participante la modifica, el equipo se comporta según la colocación real y su ofensividad se calcula a partir de ella.
 
 **Why this priority**: Da flexibilidad táctica y complementa las nuevas penalizaciones (US4), pero el juego es plenamente jugable con las formaciones fijas.
@@ -291,8 +293,8 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 #### Apertura de sobre
 
 - **FR-006**: Al empezar cada uno de los tres sobres del draft, el sobre propio de cada participante DEBE abrirse con una animación que incluya efecto de apertura, sonido y reparto de las cartas sobre la mesa antes de revelarlas. Los sobres recibidos de otros participantes NO DEBEN tener esta animación. En esta fase basta con una versión básica de efectos 2D; los efectos elaborados (3D, partículas, música) quedan para la fase de diseño visual.
-- **FR-007**: La animación DEBE durar como máximo 6 segundos y DEBE poder saltarse con un solo toque o clic, mostrando las cartas reveladas de inmediato.
-- **FR-008**: La animación NO DEBE reducir el tiempo de elección: el primer turno de cada sobre DEBE incluir un margen igual a la duración máxima de la animación.
+- **FR-007**: La animación DEBE durar como máximo 6 segundos y DEBE poder saltarse con un solo toque o clic, mostrando las cartas reveladas de inmediato. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): como máximo 8 segundos (003/FR-013).]*
+- **FR-008**: La animación NO DEBE reducir el tiempo de elección: el primer turno de cada sobre DEBE incluir un margen igual a la duración máxima de la animación. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): el margen pasa a 8 segundos (`draft.margenAnimacionS`, 003/FR-013).]*
 - **FR-009**: Las cartas de nivel Legendario y GOAT DEBEN tener un efecto de revelación propio que las distinga.
 - **FR-010**: El participante DEBE poder silenciar los sonidos del juego, y la aplicación DEBE recordar esa preferencia. Si el dispositivo indica preferencia de movimiento reducido, la animación DEBE sustituirse por una transición simple.
 
@@ -380,13 +382,13 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
     | Velocidad máxima de un jugador | 9 m/s |
 
     A x4 y x8 todo va dos y cuatro veces más rápido.
-- **FR-025a**: Decisiones durante la 2D en directo: un cambio pedido con el balón en juego DEBE aplicarse en la primera interrupción que ocurra después de, como mucho, **1 minuto de juego** desde que se pide, a cualquier velocidad. La interfaz indica el minuto en que se aplicará en cuanto el servidor lo confirma.
+- **FR-025a**: Decisiones durante la 2D en directo: un cambio pedido con el balón en juego DEBE aplicarse en la primera interrupción que ocurra después de, como mucho, **1 minuto de juego** desde que se pide, a cualquier velocidad. La interfaz indica el minuto en que se aplicará en cuanto el servidor lo confirma. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): los cambios se piden desde la pantalla con campo de «Gestionar equipo», que pausa la reproducción (003/FR-031).]*
 - **FR-025b**: Presentación de la 2D:
   - la reproducción DEBE ir a 60 fps en un portátil medio, y nunca por debajo de 30 fps;
   - en móviles de 360 px de ancho la 2D NO DEBE romperse (campo, marcador y controles visibles), aunque no es un objetivo de diseño completo;
   - con preferencia de movimiento reducido, se quitan los rótulos animados, pero la reproducción se mantiene;
   - si las equipaciones de los dos equipos se confunden, se aplica la regla de choque de colores de 001/FR-031b.
-- **FR-026**: Finalización anticipada: en un partido 2D o en simulación rápida, el participante DEBE poder pulsar «Finalizar partido» en cualquier momento. Entonces:
+- **FR-026**: Finalización anticipada: en un partido 2D o en simulación rápida, el participante DEBE poder pulsar «Finalizar partido» en cualquier momento. Entonces: *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): al finalizar se pasa a una pantalla de resultado sin campo (003/FR-024).]*
   - El sistema DEBE simular el tiempo restante en menos de 3 s (SC-010) con el mismo motor, las mismas decisiones registradas y la misma semilla, de modo que el resultado y los eventos coincidan con los de ver el partido hasta el final **sin tomar más decisiones después de pulsar el botón**.
   - Las decisiones pendientes DEBEN aplicarse en la siguiente interrupción, y las ventanas de decisión restantes se cierran sin cambios para ese participante.
   - Las decisiones de los NPC DEBEN tomarse como de costumbre.
@@ -429,7 +431,7 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 
   "MED (MCO)" y "MED (MD)" se refieren al jugador de origen según sus posiciones. "MED (MCO)" como destino se refiere a la casilla MCO. Si a un jugador le corresponden varias filas por tener varias posiciones, se aplica la penalización más baja.
 - **FR-033**: Los specials que anulan o modifican la penalización por posición (como Todocampista) DEBEN mantener su efecto sobre la nueva tabla. La pantalla de alineación DEBE mostrar, para cada titular fuera de posición, el porcentaje de penalización aplicado junto a sus stats y su media efectivos (001/FR-028).
-- **FR-034**: Colocación libre: en la pantalla de tácticas, el participante DEBE poder arrastrar a cualquier titular de campo a cualquier zona del campo.
+- **FR-034**: Colocación libre: en la pantalla de tácticas, el participante DEBE poder arrastrar a cualquier titular de campo a cualquier zona del campo. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): la colocación libre se hace en el campo de la pantalla «Formación», no en uno aparte (003/FR-001).]*
   - El campo se divide en zonas, cada una asociada a un código de posición de 001/FR-018. Incluye la zona del central del medio de 001/FR-025a.
   - La posición efectiva del jugador, y por tanto su penalización, DEBE ser la de la zona en la que queda.
   - La pantalla DEBE actualizar al instante la posición efectiva, la penalización y los stats efectivos.
@@ -440,7 +442,7 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 
 #### Dorsales
 
-- **FR-035**: Al asignar los dorsales por primera vez (001/FR-031a), los números aleatorios DEBEN estar entre el 1 y el 24. Así, los 24 jugadores de la plantilla reciben exactamente los números del 1 al 24, sin repetir, manteniendo los dorsales fijos por casilla de los titulares.
+- **FR-035**: *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): la primera asignación es al terminar el draft (003/FR-001b).]* Al asignar los dorsales por primera vez (001/FR-031a), los números aleatorios DEBEN estar entre el 1 y el 24. Así, los 24 jugadores de la plantilla reciben exactamente los números del 1 al 24, sin repetir, manteniendo los dorsales fijos por casilla de los titulares.
 - **FR-036**: Al editar los dorsales, el participante DEBE poder asignar cualquier número entre el 1 y el 99.
 - **FR-037**: Dos jugadores de una misma plantilla NO DEBEN tener nunca el mismo dorsal. Al asignar a un jugador un dorsal que ya tiene un compañero, el compañero DEBE quedarse sin dorsal y aparecer señalado como "sin dorsal" hasta que se le asigne uno nuevo.
 - **FR-038**: Si al empezar un partido un jugador convocado (titular o suplente) no tiene dorsal, el sistema DEBE asignarle automáticamente el número libre más bajo del 1 al 24 (o, si están todos ocupados, el más bajo a partir del 25) y avisar al participante. Los jugadores no convocados PUEDEN seguir sin dorsal.
@@ -503,7 +505,7 @@ Al cerrar esta spec DEBEN actualizarse en la 001:
 - **SC-014**: El 100 % de las plantillas recién formadas tienen los dorsales del 1 al 24, cada uno una sola vez, y en ningún momento hay dos jugadores de una misma plantilla con el mismo dorsal.
 - **SC-015**: En el 100 % de los torneos comprobados, los goles y asistencias de cada jugador en las tablas coinciden con la suma de los resúmenes de sus partidos, y las tablas están actualizadas al mostrarse el resultado de cada partido.
 - **SC-016**: Al arrastrar un jugador a otra zona en la pantalla de tácticas, su posición efectiva y su penalización se actualizan en menos de 1 segundo.
-- **SC-017**: La animación de apertura aparece exactamente 3 veces por draft y participante, dura 6 segundos o menos, se puede saltar con un clic y no reduce el tiempo disponible para elegir.
+- **SC-017**: La animación de apertura aparece exactamente 3 veces por draft y participante, dura 6 segundos o menos, se puede saltar con un clic y no reduce el tiempo disponible para elegir. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): 8 segundos o menos (003/FR-013).]*
 - **SC-018**: En series de 1.000 partidos contra el mismo rival, una colocación personalizada con un delantero más y un defensa menos que la formación de partida marca y recibe más goles de media que esa formación.
 - **SC-019**: En un torneo de prueba con 2 o más humanos, ningún humano tiene que esperar a que otro esté conectado para jugar o ver un partido. En el 100 % de los partidos entre humanos, ambos ven el mismo resultado y los mismos eventos. El 100 % de los torneos terminan en un máximo de (número de jornadas × plazo de jornada).
 

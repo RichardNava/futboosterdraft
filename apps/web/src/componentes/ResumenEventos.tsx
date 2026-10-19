@@ -9,6 +9,23 @@ export interface EventoVista {
 
 const GRAVEDAD: Record<string, string> = { leve: 'leve', media: 'media', grave: 'grave', larga: 'de larga duración' };
 
+/** Cómo se marcó un gol (`datos.tipo`, spec 003 T035): jugada, de cabeza, de falta, de penalti o en propia puerta. */
+const TIPO_GOL: Record<string, string> = {
+  normal: 'jugada',
+  lejano: 'jugada',
+  manoAMano: 'jugada',
+  cabeza: 'de cabeza',
+  falta: 'de falta',
+  penalti: 'de penalti',
+  propia: 'en propia puerta',
+};
+
+/** «jugada», «de cabeza»…, con la distancia del remate si se conoce: «de falta (23 m)». */
+export function tipoDeGol(datos: Record<string, unknown>): string {
+  const tipo = TIPO_GOL[String(datos.tipo)] ?? 'jugada';
+  return typeof datos.distancia === 'number' ? `${tipo} (${datos.distancia} m)` : tipo;
+}
+
 export function describirEvento(e: EventoVista, nombre: (id: number) => string): string {
   const de = (rol: string) => {
     const j = e.jugadores.find((x) => x.rol === rol);
@@ -16,9 +33,9 @@ export function describirEvento(e: EventoVista, nombre: (id: number) => string):
   };
   switch (e.tipo) {
     case 'gol': {
+      if (e.datos.tipo === 'propia') return `⚽ Gol en propia puerta de ${de('autor')} (p. p.) · ${tipoDeGol(e.datos)}`;
       const asistente = de('asistente');
-      const tipo = e.datos.tipo === 'penalti' ? ' de penalti' : e.datos.tipo === 'falta' ? ' de falta directa' : e.datos.tipo === 'cabeza' ? ' de cabeza' : '';
-      return `⚽ Gol${tipo} de ${de('autor')}${asistente ? ` (asistencia de ${asistente})` : ''}`;
+      return `⚽ Gol de ${de('autor')} · ${tipoDeGol(e.datos)}${asistente ? ` (asistencia de ${asistente})` : ''}`;
     }
     case 'amarilla':
       return `🟨 Amarilla para ${de('autor')}`;

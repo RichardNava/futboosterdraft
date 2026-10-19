@@ -75,6 +75,41 @@ describe('Partida', () => {
     }
   });
 
+  it('la dificultad por defecto es «Normal» y una desconocida no es válida (003/FR-038a)', () => {
+    expect(configPorDefecto().dificultad).toBe('normal');
+    expect(codigos(conf({ dificultad: 'imposible' as never }))).toContain('CONFIG_INVALIDA');
+  });
+
+  it('«Normal» reparte el relleno igual que antes de la dificultad (001/FR-059)', () => {
+    const semilla = semillaDesdeTexto('relleno-normal');
+    expect(rellenarConNPC(7, semilla, 'normal')).toEqual(rellenarConNPC(7, semilla));
+  });
+
+  it.each([
+    ['facil', ['amateur', 'intermedio']],
+    ['dificil', ['intermedio', 'avanzado']],
+  ] as const)('«%s» reparte el relleno a partes iguales entre %j, nunca PRO (003/FR-038a)', (dificultad, permitidos) => {
+    for (let cantidad = 1; cantidad <= 15; cantidad++) {
+      for (let s = 0; s < 20; s++) {
+        const niveles = rellenarConNPC(cantidad, semillaDesdeTexto(`relleno-${dificultad}-${cantidad}-${s}`), dificultad);
+        expect(niveles).toHaveLength(cantidad);
+        expect(niveles.every((n) => (permitidos as readonly string[]).includes(n))).toBe(true);
+        const [a, b] = permitidos.map((p) => niveles.filter((n) => n === p).length);
+        expect(Math.abs(a! - b!)).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it('con un número impar de NPC, el nivel sobrante se sortea con la semilla (003/FR-038a)', () => {
+    const sobrantes = new Set<string>();
+    for (let s = 0; s < 50; s++) {
+      const niveles = rellenarConNPC(3, semillaDesdeTexto(`impar-${s}`), 'dificil');
+      sobrantes.add(niveles.filter((n) => n === 'avanzado').length === 2 ? 'avanzado' : 'intermedio');
+      expect(rellenarConNPC(3, semillaDesdeTexto(`impar-${s}`), 'dificil')).toEqual(niveles);
+    }
+    expect(sobrantes).toEqual(new Set(['avanzado', 'intermedio']));
+  });
+
   it('los asientos se sortean con la semilla: misma semilla, mismo orden (FR-005)', () => {
     const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
     const semilla = semillaDesdeTexto('asientos');

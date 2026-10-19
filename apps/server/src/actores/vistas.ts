@@ -9,6 +9,7 @@ import { vistaDraft } from './draft';
 import { detalleBajas } from './equipo';
 import type { ControladorPartida } from './partida';
 import { vistaPartido } from './partidoRapido';
+import { modalidadPreferida } from './preparacion';
 import { resumenSala } from './sala';
 
 export function resumenPartida(c: ControladorPartida, usuarioId: string | undefined) {
@@ -18,9 +19,9 @@ export function resumenPartida(c: ControladorPartida, usuarioId: string | undefi
     anfitrionId: p.anfitrionId,
     modo: p.modo,
     numParticipantes: p.numParticipantes,
-    tipoSimulacion: p.tipoSimulacion,
     conPlazos: !soloUnHumano(c.participantes),
     plazoJornadaHoras: p.plazoJornadaHoras,
+    dificultad: p.dificultad,
     estado: p.estado,
     participantes: resumenSala(c).participantes,
     miParticipanteId: (usuarioId && c.participanteDeUsuario(usuarioId)?.id) ?? null,
@@ -70,6 +71,7 @@ async function vistaPreparacion(c: ControladorPartida, participanteId: string) {
     venceEn,
     partidoId: cruce.partidoId,
     rival: { id: rivalId, nombre: rival ? c.nombreDe(rival) : rivalId, bajas: [...(c.bajasActivas?.(rivalId) ?? [])], humano: rival?.tipo === 'humano' && !rival.controladoPorNPC },
+    modalidadPreferida: await modalidadPreferida(c, participanteId),
   };
 }
 

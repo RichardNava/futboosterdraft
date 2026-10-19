@@ -43,6 +43,14 @@ export const MsgTorneoActualizado = z.object({
   /** Máximos goleadores y asistentes (10 primeras filas; FR-039 a FR-042). */
   goleadores: z.array(z.lazy(() => FilaGoleadores)),
   asistentes: z.array(z.lazy(() => FilaGoleadores)),
+  /** Spec 003, US10 (data-model §8.2): fase en la que quedó eliminado quien recibe la vista. */
+  miEliminacion: z
+    .object({ fase: z.enum(['liga', 'octavos', 'cuartos', 'semifinal', 'final']), etiqueta: z.string() })
+    .nullable()
+    .optional(),
+  /** Eliminado, sin humanos en competición y con el torneo sin terminar (FR-041a). */
+  puedeSimularResto: z.boolean().optional(),
+  pantallas: z.object({ derrotaVista: z.boolean(), campeonVisto: z.boolean() }).optional(),
 });
 
 /** Fila de las tablas de goleadores y asistentes. */

@@ -21,7 +21,8 @@ import { DURACION_PARTE, DURACION_PARTE_PRORROGA, rival, type EstadoMotor } from
 import { colocarSaqueInicial } from '../espacio/colocacion';
 import { ordenJugadores } from '../espacio/paso';
 import { jugarTanda } from '../penaltis/tanda';
-import type { AccionVisible, Estadisticas, EventoPartido, Fase, Fotograma, Marcador, ModoAvance } from '../tipos';
+import { guardarMetricas, metricasDesde } from '../metricas';
+import type { AccionVisible, Estadisticas, EventoPartido, Fase, Fotograma, Marcador, MetricasJugador, ModoAvance } from '../tipos';
 import { aplicarPendientes } from './decisiones';
 
 export interface ResultadoTramo {
@@ -35,6 +36,8 @@ export interface ResultadoTramo {
   fotogramas?: Fotograma[];
   /** Orden de los jugadores en los fotogramas. */
   ordenJugadores?: number[];
+  /** Métricas por jugador acumuladas desde el saque inicial, solo si se piden (spec 003, research R11). */
+  metricas?: Record<number, MetricasJugador>;
   marcador: Marcador;
   estadisticas: Estadisticas;
   fase: Fase;
@@ -46,6 +49,14 @@ export interface OpcionesAvance {
   hastaTick?: number;
   /** Solo para pruebas: se llama con el estado al final de cada tick (contracts/engine-api.md). */
   observador?: (estado: EstadoMotor) => void;
+  /** Métricas por jugador para `balance` (invariante 10: no cambian el partido). */
+  metricas?: boolean;
+}
+
+/** Hay una decisión pendiente que ya no puede esperar a la siguiente interrupción natural. */
+function cambioQueNoEspera(e: EstadoMotor): boolean {
+  const limite = e.parametros.reproduccion.esperaMaximaCambioS;
+  return e.decisionesPendientes.some((d) => (d.aplicadaEnTick === undefined ? e.tick - d.solicitadaEnTick >= limite : d.aplicadaEnTick <= e.tick));
 }
 
 /** Límite de pasos por tramo (salvaguarda frente a bucles; un partido tiene unos pocos miles). */
@@ -54,6 +65,8 @@ const MAX_PASOS = 50_000;
 function iniciarParte(ctx: Contexto, parte: number): void {
   const e = ctx.estado;
   e.reloj = { parte, segundosEnParte: 0, paradas: 0, descuento: null };
+  // Un córner pendiente de la parte anterior ya no se saca.
+  e.cornerPendiente = null;
   // Saca el local en la primera parte y el visitante en la segunda; en la prórroga, al revés.
   const saca = parte === 1 || parte === 4 ? e.sacoPrimeraParte : rival(e.sacoPrimeraParte);
   emitir(ctx, 'inicio_tramo', saca, [], { parte });
@@ -133,6 +146,8 @@ function estadisticasSalida(e: EstadoMotor): Estadisticas {
     }
     return {
       ...s,
+      golesPorTipo: { ...s.golesPorTipo },
+      golesPorZona: { ...s.golesPorZona },
       secuencias,
       posesion,
       posesionCampoRival: Math.round((s.posesionCampoRival / total) * 100),
@@ -158,6 +173,7 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
     interrupcion: false,
     ...(opciones.fotogramas ? { fotogramas, orden } : {}),
     ...(opciones.observador ? { observador: opciones.observador } : {}),
+    ...(opciones.metricas ? { metricas: metricasDesde(entrada) } : {}),
   };
   const desdeTick = estado.tick;
   const primerEvento = estado.eventos.length;
@@ -179,6 +195,11 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
         ctx.interrupcion = false;
         paso(ctx);
         if (fase() !== 'finalizado') comprobarFinParte(ctx);
+        // Una decisión no espera más de `esperaMaximaCambioS` con el balón en juego: se para el juego para el cambio
+        // (002/FR-025a). Al reproducir, la misma parada sale de su `aplicadaEnTick`.
+        if (!ctx.interrupcion && fase() !== 'finalizado' && cambioQueNoEspera(estado)) {
+          interrumpir(ctx, 'cambio', 0, estado.decisionesPendientes[0]!.participanteId === estado.equipos.local.participanteId ? 'local' : 'visitante');
+        }
         if (ctx.interrupcion) {
           // Las decisiones programadas para esta interrupción (al reproducir un partido) se aplican aquí.
           if (estado.decisionesPendientes.some((d) => d.aplicadaEnTick !== undefined && d.aplicadaEnTick <= estado.tick)) {
@@ -209,6 +230,7 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
   estado.puntoDecision = puntoDecision;
   estado.rng = rng.estado();
   anotarFotograma(ctx);
+  if (ctx.metricas) guardarMetricas(estado, ctx.metricas);
   return {
     estado,
     desdeTick,
@@ -216,6 +238,7 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
     eventos: estado.eventos.slice(primerEvento),
     acciones: estado.acciones.slice(primeraAccion),
     ...(opciones.fotogramas ? { fotogramas, ordenJugadores: orden } : {}),
+    ...(ctx.metricas ? { metricas: structuredClone(ctx.metricas) } : {}),
     marcador: { ...estado.marcador, ...(estado.marcador.penaltis ? { penaltis: { ...estado.marcador.penaltis } } : {}) },
     estadisticas: estadisticasSalida(estado),
     fase: estado.fase,

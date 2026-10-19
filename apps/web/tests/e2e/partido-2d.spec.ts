@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { partidaTrasDraft } from './ayudas';
+import { partidaTrasDraft, sustituirEnGestion } from './ayudas';
 
 /**
  * Escenario F del quickstart (Historia 3): partido 2D en directo contra un NPC con el búfer de
@@ -9,8 +9,9 @@ import { partidaTrasDraft } from './ayudas';
  */
 test('partido 2D en directo: velocidades, pausas anunciadas, cambio y estadísticas', async ({ page }) => {
   test.setTimeout(400_000);
-  const partidaId = await partidaTrasDraft(page, { tipoSimulacion: '2d' });
-  await page.goto(`/partidas/${partidaId}/alineacion`);
+  const partidaId = await partidaTrasDraft(page);
+  await page.goto(`/partidas/${partidaId}/torneo`);
+  await page.getByLabel('Simulación 2D').check();
   await page.getByRole('button', { name: 'Comenzar partido' }).click();
   await expect(page.locator('.campo-2d canvas')).toBeVisible();
   await expect(page.getByRole('button', { name: 'x2' })).toHaveAttribute('aria-pressed', 'true');
@@ -33,11 +34,12 @@ test('partido 2D en directo: velocidades, pausas anunciadas, cambio y estadísti
     mirar();
   });
 
-  // Un cambio con el balón en juego: el servidor confirma el minuto en que se aplica.
-  await page.getByLabel('Sale').selectOption({ index: 1 });
-  await page.getByLabel('Entra').selectOption({ index: 1 });
-  await page.getByRole('button', { name: 'Hacer el cambio' }).click();
-  await expect(page.getByText(/Se aplicará en el minuto \d+|Tu cambio se aplicó en el minuto \d+/)).toBeVisible({ timeout: 60_000 });
+  // Un cambio con el balón en juego desde «Gestionar equipo» (spec 003, US5): se aplica en la siguiente interrupción.
+  await page.getByRole('button', { name: 'Gestionar equipo' }).click();
+  await sustituirEnGestion(page);
+  await expect(page.getByText('Sustituciones restantes: 4')).toBeVisible();
+  await page.getByRole('button', { name: 'Confirmar cambios' }).click();
+  await expect(page.getByText(/Los cambios se aplicarán en la próxima interrupción|Se aplicará en el minuto \d+|Tu cambio se aplicó en el minuto \d+/)).toBeVisible({ timeout: 60_000 });
 
   // Descanso: la reproducción se detiene hasta «Seguir».
   const seguir = page.getByRole('button', { name: 'Seguir' });
@@ -52,11 +54,12 @@ test('partido 2D en directo: velocidades, pausas anunciadas, cambio y estadísti
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
   await page.setViewportSize({ width: 1280, height: 800 });
 
-  // Final: resumen y estadísticas con pases, precisión de pase, centros y tiros.
-  await expect(page.getByRole('heading', { name: 'Resumen del partido' })).toBeVisible({ timeout: 180_000 });
+  // Final: la pantalla de resultado (sin campo) con estadísticas de pases, precisión de pase, centros y tiros.
+  await expect(page.getByTestId('resultado-partido')).toBeVisible({ timeout: 180_000 });
+  await expect(page.locator('.campo-2d canvas')).toHaveCount(0);
   const tabla = page.getByRole('table');
   for (const fila of ['Pases intentados', 'Pases completados', 'Precisión de pase', 'Centros', 'Tiros']) await expect(tabla).toContainText(fila);
-  const marcador = (await page.locator('.marcador-2d span').first().textContent()) ?? '';
+  const marcador = (await page.getByTestId('resultado-marcador').textContent()) ?? '';
   const goles = [...marcador.matchAll(/(\d+) – (\d+)/g)].flatMap((m) => [Number(m[1]), Number(m[2])]).reduce((a, b) => a + b, 0);
   if (goles > 0) expect(await page.evaluate(() => (window as unknown as { golVisto: boolean }).golVisto)).toBe(true);
 });

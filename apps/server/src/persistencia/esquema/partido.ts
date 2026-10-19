@@ -39,6 +39,8 @@ export const partidos = pgTable(
      * entre humanos resuelto al abrirlo uno de ellos; `plazo` = al vencer el plazo; `npc` = NPC contra NPC.
      */
     resolucion: text('resolucion').notNull().default('directo'),
+    /** Modalidad de cada humano, fijada en su primer `abrir` (spec 003, FR-035): `{ [participanteId]: 'rapida' | '2d' }`. */
+    modalidades: jsonb('modalidades').notNull().default(sql`'{}'::jsonb`),
     /** Quién abrió primero un partido entre humanos (research R8). */
     abiertoPorId: uuid('abierto_por_id').references(() => participantes.id),
     iniciadoEn: timestamp('iniciado_en', { withTimezone: true }),

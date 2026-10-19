@@ -8,6 +8,7 @@ Cambios sobre [001/contracts/http-api.md](../../001-draft-manager-mvp/contracts/
 
 - `tipoSimulacion` **se elimina** del cuerpo (FR-034). Si un cliente antiguo lo envía, se ignora (Zod sin `strict`).
 - La respuesta y `GET /api/partidas/:id` dejan de incluir `tipoSimulacion`.
+- ✚ `dificultad?: 'facil' | 'normal' | 'dificil'` (por defecto `'normal'`; FR-038a). Un valor desconocido devuelve 400 (esquema estricto). `GET /api/partidas/:id` incluye `dificultad`.
 
 ### `PUT /api/partidas/:id/nombre-equipo` (✚)
 

@@ -65,6 +65,22 @@ partidos jugados con los parámetros 1.x** (research R12): se rechazan con `Vers
    `resolverResto` y las decisiones automáticas de los dos lados (research R9).
 4. Las migraciones `0004_mejoras` y `0005_colocacion` se aplican solas al arrancar.
 
+### Desplegar la versión con los parámetros 3.0.0 (spec 003)
+
+El motor de la spec 003 (zonas híbridas, tiro por distancia y ángulo, métricas por jugador) **no vuelve a simular
+partidos jugados con los parámetros 2.x** (research R2): se rechazan con `VersionNoSoportada`.
+
+1. Antes de desplegar, **termina los partidos 2.x en juego** con la versión anterior (o deja que terminen):
+   `partidas_activas` en `/metrics` no debe tener partidos en curso.
+2. Los partidos terminados con 2.x siguen visibles por su resumen y su pantalla de resultado; la reproducción 2D
+   avisa de que se jugó con una versión anterior del motor.
+3. Las migraciones se aplican solas al arrancar:
+   - `0006_modo_simulacion`: el tipo de simulación pasa de la partida a cada participante y partido
+     (`participantes.ultima_modalidad`, `partidos.modalidades`, tabla `perfiles_usuario`);
+   - `0007_pantallas_torneo`: `participantes.derrota_vista_en` y `campeon_visto_en`;
+   - `0008_identidad`: nombre y equipaciones por defecto en `perfiles_usuario`, equipaciones convertidas a v2 (lisas) y
+     nombre de equipo único por partida sin distinguir mayúsculas (los duplicados existentes reciben « 2», « 3»…).
+
 ### Rendimiento del motor
 
 `pnpm --filter @fbd/engine bench` mide el coste por partido (con y sin fotogramas). Úsalo para dimensionar

@@ -17,7 +17,8 @@ interface EstadoPartidaActiva {
   /** Fase de la última instantánea: sala, draft, torneo… */
   fase: string | null;
   miParticipanteId: string | null;
-  tipoSimulacion: string | null;
+  /** Modalidad del partido que se está viendo (spec 003, FR-033): la 2D usa el modo compacto del `Marco`. */
+  modalidadPartido: 'rapida' | '2d' | null;
   participantes: ParticipanteActivo[];
   conexion: ConexionPartida | null;
   /**
@@ -34,7 +35,7 @@ export const usePartidaActiva = create<EstadoPartidaActiva>((set, get) => ({
   partidaId: null,
   fase: null,
   miParticipanteId: null,
-  tipoSimulacion: null,
+  modalidadPartido: null,
   participantes: [],
   conexion: null,
   aperturaPendiente: null,

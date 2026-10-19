@@ -2,6 +2,7 @@
  * Gestor de partidas: crea, carga y rehidrata los controladores, y conecta la autenticación y la
  * pasarela WebSocket con la lógica de cada partida.
  */
+import { identidadInicial } from './identidad';
 import { randomBytes } from 'node:crypto';
 import {
   configPorDefecto,
@@ -101,9 +102,9 @@ export class GestorPartidas {
       ...base,
       modo: entrada.modo,
       numParticipantes: entrada.numParticipantes,
-      tipoSimulacion: entrada.tipoSimulacion,
       plazoJornadaHoras: entrada.plazoJornadaHoras ?? base.plazoJornadaHoras,
       npc: entrada.npc ?? [],
+      dificultad: entrada.dificultad ?? base.dificultad,
       tiempos: { ...base.tiempos, ...entrada.tiempos },
       // Un invitado solo juega contra la IA: una única plaza humana (FR-000).
       plazasHumanas: usuario.tipo === 'invitado' ? (entrada.plazasHumanas ?? 1) : entrada.plazasHumanas,
@@ -119,14 +120,16 @@ export class GestorPartidas {
     const semilla = randomBytes(16).toString('hex');
     const partidaId = await db.transaction(async (tx) => {
       const partida = await repoPartidas.crear({ anfitrionId: usuario.id, config, semilla, ahora: this.servicios.reloj.ahora() }, tx);
-      await repoPartidas.anadirHumano(partida.id, usuario.id, usuario.apodo, tx);
+      // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
+      const identidad = await identidadInicial(this.servicios, usuario, []);
+      await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones);
       const niveles: NivelNPC[] = config.npc.map((n) => n.nivel);
       // En una partida de invitado, el resto de plazas se rellenan con NPC desde el principio.
       const libres = config.numParticipantes - 1 - niveles.length;
       if (plazasHumanasEfectivas(config) === 1 && libres > 0) {
-        niveles.push(...rellenarConNPC(libres, derivarSemilla(semilla, 'relleno-inicial')));
+        niveles.push(...rellenarConNPC(libres, derivarSemilla(semilla, 'relleno-inicial'), config.dificultad));
       }
-      const nombres = nombresNPC(niveles.length, derivarSemilla(semilla, 'nombres-iniciales'), new Set([usuario.apodo]));
+      const nombres = nombresNPC(niveles.length, derivarSemilla(semilla, 'nombres-iniciales'), new Set([identidad.nombre]));
       for (const [i, nivel] of niveles.entries()) await repoPartidas.anadirNPC(partida.id, nivel, nombres[i]!, tx);
       return partida.id;
     });

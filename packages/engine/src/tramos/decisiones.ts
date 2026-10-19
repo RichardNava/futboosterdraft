@@ -3,7 +3,7 @@
  * formación, táctica, lanzadores y recolocación. Se validan al pedirlas y se aplican al empezar el
  * siguiente tramo (o en la interrupción indicada por `aplicadaEnTick` al reproducir un partido).
  */
-import { autoAlineacion, esFormacionId, FORMACIONES, validarColocacion, validarTactica, type FormacionId } from '@fbd/domain';
+import { autoAlineacion, esFormacionId, FORMACIONES, Rng, validarColocacion, validarTactica, type FormacionId } from '@fbd/domain';
 import { colocar, maxSustituciones, type EquipoEstado, type EstadoMotor } from '../estado/estado';
 import type { DecisionPartido, DecisionRegistrada } from '../tipos';
 import { emitir, type Contexto } from '../acciones/contexto';
@@ -91,6 +91,31 @@ export function encolarDecision(estado: EstadoMotor, d: DecisionPartido | Decisi
     aplicadaEnTick: (d as DecisionRegistrada).aplicadaEnTick,
   };
   estado.decisionesPendientes.push(registrada);
+  return { ok: true };
+}
+
+export type ResultadoLote = { ok: true } | { ok: false; indice: number; codigo: string; mensaje: string };
+
+/**
+ * Lote atómico de decisiones (spec 003, research R17; FR-030): se validan en orden sobre una copia del estado,
+ * aplicando cada una antes de validar la siguiente (una formación puede depender de la sustitución anterior). Si
+ * alguna falla, no se encola ninguna y se devuelve su índice. Si todas valen, se encolan en el mismo orden en el
+ * estado real: al aplicarse en el siguiente punto de decisión, el resultado es el mismo que en la copia.
+ */
+export function encolarLote(estado: EstadoMotor, decisiones: readonly DecisionPartido[]): ResultadoLote {
+  const { eventos: _eventos, acciones: _acciones, ...resto } = estado;
+  const copia: EstadoMotor = { ...structuredClone(resto), eventos: [], acciones: [] };
+  // La copia aplica todas las pendientes que ya había: el lote se valida contra cómo quedará el equipo.
+  copia.decisionesPendientes = copia.decisionesPendientes.map((d) => ({ ...d, aplicadaEnTick: undefined }));
+  const ctx: Contexto = { estado: copia, rng: new Rng(copia.rng), interrupcion: false };
+  aplicarPendientes(ctx);
+  for (const [indice, d] of decisiones.entries()) {
+    const r = validarDecision(copia, d);
+    if (!r.ok) return { ok: false, indice, codigo: r.codigo, mensaje: r.mensaje };
+    copia.decisionesPendientes.push({ ...d, solicitadaEnTick: copia.tick });
+    aplicarPendientes(ctx);
+  }
+  for (const d of decisiones) estado.decisionesPendientes.push({ ...d, solicitadaEnTick: estado.tick });
   return { ok: true };
 }
 

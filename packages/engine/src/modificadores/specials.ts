@@ -7,6 +7,33 @@
  * - Bonificaciones de duelo: Intimidante −1 al rival del duelo; Infranqueable +2 a tackling y marcaje
  *   frente a regate ≥ 95; el resto, ajustes de probabilidad en su acción concreta.
  * - Repeticiones de tirada (reroll): Filigranas, Muro defensivo, Guante en el pie y Santo.
+ *
+ * Inventario de la acción que mide cada special con efecto en el partido (spec 003, research R10; SC-007 en
+ * `tools/balance/src/checks/partido.ts`). Los marcados con «elección» también cambian qué acción se elige:
+ *
+ * | Special | Acción medida | Dónde |
+ * |---|---|---|
+ * | LanzadorFaltas | goles de falta directa (+30 %); elección: más tiro directo (×1,3) | tiro.ts, balonParado.ts |
+ * | LanzadorPenalties | goles de penalti | tiro.ts |
+ * | Cabeceador | goles de cabeza del jugador | tiro.ts |
+ * | Rematador | goles tras centro | tiro.ts |
+ * | Matador | goles en mano a mano; elección: en una jugada de mano a mano siempre tira | tiro.ts, juego.ts |
+ * | Llegador | goles del centrocampista; elección: entra entre los rematadores de los centros | tiro.ts, juego.ts |
+ * | Desbordante | regates ganados por banda; elección: regate por banda ×1,3 | juego.ts, opciones.ts |
+ * | Filigranas | regates ganados (reroll) | juego.ts |
+ * | GuanteEnElPie | centros completados (reroll) | juego.ts, tiro.ts |
+ * | PrimerToque, Elegante, JugadorEntreLineas | pases completados | juego.ts |
+ * | Potente | duelos de regate y conducción ganados | juego.ts |
+ * | Presionador | pérdidas provocadas al rival | juego.ts |
+ * | RecuperadorTrasPerdida | recuperaciones tras pérdida | juego.ts |
+ * | MuroDefensivo | tiros a puerta en contra desde la frontal (reroll del defensor) | juego.ts |
+ * | Volador | centros rivales despejados | tiro.ts |
+ * | Intimidante, Aura, Infranqueable | duelos ganados | specials.ts |
+ * | Parapenalties, Ordenabarreras, OneToOne, Santo | paradas del portero | tiro.ts |
+ * | Robusto | lesiones (001/SC-015) | lesiones.ts |
+ * | Incansable, Motivador | cansancio | cansancio.ts |
+ * | Capitania, FortalezaMental, Jerarquia, Libero, BoxToBox | bonificación de equipo (stats) | specials.ts |
+ * | Carismatico | balones recibidos | receptor.ts |
  */
 import type { Special } from '@fbd/domain';
 import { minutoDeJuego, rival, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } from '../estado/estado';

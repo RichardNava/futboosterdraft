@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
-import { AvisoPartido } from '../componentes/AvisoPartido';
+import { TarjetaPreparacion, usePreparacionPartido } from '../componentes/AvisoPartido';
+import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { DistintivoBaja, type BajaVista } from '../componentes/DistintivoBaja';
 import { FichaJugador } from '../componentes/FichaJugador';
@@ -26,6 +27,7 @@ export function Plantillas() {
   const [seleccion, setSeleccion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [ficha, setFicha] = useState<number | null>(null);
+  const preparacion = usePreparacionPartido(partidaId ?? '');
 
   useEffect(() => {
     Promise.all([
@@ -57,7 +59,7 @@ export function Plantillas() {
           </Link>
         </span>
       </header>
-      {partidaId && <AvisoPartido partidaId={partidaId} />}
+      {preparacion && <TarjetaPreparacion preparacion={preparacion} />}
       <div className="pestanas" role="tablist">
         {plantillas.map((p) => (
           <button
@@ -97,6 +99,8 @@ export function Plantillas() {
         </div>
       )}
       {ficha !== null && <FichaJugador jugadorId={ficha} onCerrar={() => setFicha(null)} />}
+      {/* Al final de la pantalla, para que `position: sticky` la mantenga a la vista (FR-006). */}
+      {preparacion && <BarraPrincipal principal={preparacion.accion} />}
     </main>
   );
 }

@@ -126,7 +126,8 @@ function ContenidoCompleto({ jugador }: { jugador: CartaResumen }) {
             ))}
           </dl>
         )}
-        {jugador.specials.length > 0 && <Specials specials={jugador.specials} />}
+        {/* Siempre, aunque esté vacío: reserva el sitio de los specials y todas las cartas miden lo mismo (H1). */}
+        <Specials specials={jugador.specials} />
       </div>
     </>
   );

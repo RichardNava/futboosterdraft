@@ -28,7 +28,7 @@ describe('relleno con NPC por niveles (US5)', () => {
       const u = await crearInvitado(srv.url);
       const r = await peticion(srv.url, '/api/partidas', {
         cookie: u.cookie,
-        cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida' },
+        cuerpo: { modo: 'liga', numParticipantes: 8 },
       });
       expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
       const iniciada = await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: u.cookie });
@@ -43,7 +43,7 @@ describe('relleno con NPC por niveles (US5)', () => {
     const otro = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 6, tipoSimulacion: 'rapida' },
+      cuerpo: { modo: 'liga', numParticipantes: 6 },
     });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     const partidaId = r.cuerpo.id as string;
@@ -65,7 +65,7 @@ describe('relleno con NPC por niveles (US5)', () => {
       const u = await crearInvitado(srv.url);
       const r = await peticion(srv.url, '/api/partidas', {
         cookie: u.cookie,
-        cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida', npc: [{ nivel: 'PRO' }] },
+        cuerpo: { modo: 'liga', numParticipantes: 8, npc: [{ nivel: 'PRO' }] },
       });
       expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
       const partidaId = r.cuerpo.id as string;

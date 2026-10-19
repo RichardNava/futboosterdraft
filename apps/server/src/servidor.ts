@@ -2,12 +2,12 @@
  * Composición del servidor: une base de datos, autenticación, actores, pasarela y rutas.
  * La usan `main.ts` y las pruebas de integración (con `RelojFalso` y una base de datos de pruebas).
  */
-import { MsgDraftElegir, MsgPartidaPausar, MsgPartidoDecision, MsgPartidoFinalizar, MsgPartidoReproduccion, MsgPartidoSeguir } from '@fbd/protocol';
+import { MsgDraftElegir, MsgPartidaPausar, MsgPartidoDecision, MsgPartidoDecisiones, MsgPartidoFinalizar, MsgPartidoReproduccion, MsgPartidoSeguir } from '@fbd/protocol';
 import { procesarPausar } from './actores/pausa';
 import type { FastifyInstance } from 'fastify';
 import { procesarEleccion } from './actores/draft';
 import { procesarReproduccion } from './actores/partido2d';
-import { procesarDecisionPartido, procesarFinalizar, procesarSeguir } from './actores/partidoRapido';
+import { procesarDecisionesLote, procesarDecisionPartido, procesarFinalizar, procesarSeguir } from './actores/partidoRapido';
 import { GestorPartidas } from './actores/gestor';
 import { crearAuth, type Auth } from './auth/auth';
 import { construirApp } from './http/app';
@@ -25,9 +25,11 @@ import { RepoDraft } from './persistencia/repos/draft';
 import { RepoEquipo } from './persistencia/repos/equipo';
 import { RepoPartidos } from './persistencia/repos/partidos';
 import { RepoVisionados } from './persistencia/repos/visionados';
+import { RepoPerfiles } from './persistencia/repos/perfiles';
 import { RepoTorneo } from './persistencia/repos/torneo';
 import { ServicioAvisos } from './avisos/servicio';
 import { registrarRutasTorneo } from './http/torneo';
+import { registrarRutasPerfil } from './http/perfil';
 import { RepoPartidas } from './persistencia/repos/partidas';
 import { RelojFalso, type Reloj } from './programador/reloj';
 import { Temporizadores } from './programador/temporizadores';
@@ -101,6 +103,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     repoPartidos: new RepoPartidos(config.db),
     repoTorneo: new RepoTorneo(config.db),
     repoVisionados: new RepoVisionados(config.db),
+    repoPerfiles: new RepoPerfiles(config.db),
     catalogo,
     reloj: config.reloj,
     temporizadores,
@@ -160,6 +163,14 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
       return c.ejecutar(() => procesarDecisionPartido(c, ctx.participanteId, msg.partidoId, { tipo: msg.tipo, datos: msg.datos }));
     },
   });
+  pasarela.registrarManejador('partido.decisiones', {
+    esquema: MsgPartidoDecisiones,
+    conAck: true,
+    manejar: async (ctx, msg) => {
+      const c = await gestor.obtenerOError(ctx.partidaId);
+      return c.ejecutar(() => procesarDecisionesLote(c, ctx.participanteId, msg.partidoId, msg.decisiones));
+    },
+  });
   // 2D en directo: reloj de reproducción del cliente (sin requestId: se repite y no cambia el partido).
   pasarela.registrarManejador('partido.reproduccion', {
     esquema: MsgPartidoReproduccion,
@@ -186,6 +197,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   registrarRutasAlineacion(app, auth, gestor);
   registrarRutasPartidos(app, auth, gestor);
   registrarRutasTorneo(app, auth, gestor, { avisos });
+  registrarRutasPerfil(app, auth, gestor.servicios);
 
   // Reloj simulado en desarrollo (quickstart, escenario E): permite adelantar plazos.
   if (config.reloj instanceof RelojFalso) {

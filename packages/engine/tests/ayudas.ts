@@ -4,7 +4,7 @@ import {
   CASILLA_CENTRAL,
   CLAVES_STATS,
   FORMACIONES,
-  PARAMETROS_V2,
+  PARAMETROS_V3,
   proponerLanzadores,
   Rng,
   semillaDesdeTexto,
@@ -16,7 +16,8 @@ import {
   type Special,
   type Tactica,
 } from '@fbd/domain';
-import { crearPartido, type EntradaPartido, type EquipoPartido, type EstadoMotor } from '../src/index';
+import type { Contexto } from '../src/acciones/contexto';
+import { crearPartido, type EntradaPartido, type EquipoPartido, type EstadoMotor, type JugadorEnPartido } from '../src/index';
 
 const DEM: Record<Posicion, Demarcacion> = {
   POR: 'POR', LI: 'DEF', LD: 'DEF', DCI: 'DEF', DCD: 'DEF', CI: 'DEF', CD: 'DEF',
@@ -69,8 +70,8 @@ export function equipo(
 
 export function entrada(semilla: string, cambios: Partial<EntradaPartido> = {}): EntradaPartido {
   return {
-    version: PARAMETROS_V2.version,
-    parametros: PARAMETROS_V2,
+    version: PARAMETROS_V3.version,
+    parametros: PARAMETROS_V3,
     semilla: semillaDesdeTexto(semilla),
     eliminatoria: false,
     local: equipo('local'),
@@ -82,3 +83,33 @@ export function entrada(semilla: string, cambios: Partial<EntradaPartido> = {}):
 export const partido = (semilla: string, cambios: Partial<EntradaPartido> = {}): EstadoMotor => crearPartido(entrada(semilla, cambios));
 
 export const rngDePrueba = (texto: string) => new Rng(semillaDesdeTexto(texto));
+
+/** Contexto de simulación sobre un estado construido a mano (pruebas de las acciones, spec 003). */
+export function contextoDe(estado: EstadoMotor, semilla = 'ctx'): Contexto {
+  return { estado, rng: rngDePrueba(semilla), interrupcion: false };
+}
+
+/** Sitúa a un jugador en un punto en coordenadas de su equipo (x = 0 en su portería). */
+export function situar(estado: EstadoMotor, id: number, punto: { x: number; y: number }): void {
+  const lado = estado.equipos.local.jugadores.some((j) => j.id === id) ? 'local' : 'visitante';
+  const abs = lado === 'local' ? punto : { x: 10000 - punto.x, y: 6400 - punto.y };
+  estado.espacio.jugadores[id] = { x: abs.x, y: abs.y, vx: 0, vy: 0, papel: 0 };
+}
+
+/** Deja en el campo solo a los jugadores indicados (los demás no son candidatos para nada). */
+export function soloEnCampo(estado: EstadoMotor, ids: readonly number[]): void {
+  const quedan = new Set(ids);
+  for (const id of Object.keys(estado.espacio.jugadores)) if (!quedan.has(Number(id))) delete estado.espacio.jugadores[Number(id)];
+}
+
+/** Titular de la casilla indicada. */
+export function titularEn(estado: EstadoMotor, lado: 'local' | 'visitante', casillaId: string): JugadorEnPartido {
+  return estado.equipos[lado].jugadores.find((j) => j.casillaId === casillaId)!;
+}
+
+/** El balón, pegado al portador, con la posesión de su equipo en la zona y el carril de su posición. */
+export function darBalon(estado: EstadoMotor, lado: 'local' | 'visitante', portador: JugadorEnPartido, zona: number, carril = 1): void {
+  const p = estado.espacio.jugadores[portador.id]!;
+  estado.espacio.balon = { x: p.x, y: p.y, z: 0 };
+  estado.balon = { posesion: lado, zona, carril, portadorId: portador.id, transicion: false };
+}

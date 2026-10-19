@@ -28,12 +28,11 @@ export function useConexion(partidaId: string | undefined, alMensaje?: (m: Mensa
       if (m.t === 'estado') {
         setEstado({ fase: m.fase as EstadoServidor['fase'], vista: m.vista });
         // La barra de navegación necesita saber en qué partida y fase está, y con quién (research R10, R11).
-        const vista = m.vista as { partida?: { miParticipanteId?: string | null; tipoSimulacion?: string; participantes?: [] } };
+        const vista = m.vista as { partida?: { miParticipanteId?: string | null; participantes?: [] } };
         activa.actualizar({
           partidaId,
           fase: m.fase as string,
           miParticipanteId: vista.partida?.miParticipanteId ?? null,
-          tipoSimulacion: vista.partida?.tipoSimulacion ?? null,
           participantes: vista.partida?.participantes ?? [],
           conexion: c,
         });

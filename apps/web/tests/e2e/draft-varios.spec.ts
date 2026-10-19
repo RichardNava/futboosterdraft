@@ -19,7 +19,7 @@ test('«Esperando a: B» y el turno se resuelve al elegir B (escenario D, pasos 
   const b = await (await browser.newContext()).newPage();
   await registrar(a);
   const apodoB = await registrar(b);
-  const r = await a.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 } });
+  const r = await a.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2 } });
   const { id } = (await r.json()) as { id: string };
   expect((await b.request.post(`/api/partidas/${id}/unirse`)).ok()).toBe(true);
   await a.request.post(`/api/partidas/${id}/iniciar`);

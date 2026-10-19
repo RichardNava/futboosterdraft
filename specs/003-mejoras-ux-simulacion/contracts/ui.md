@@ -4,19 +4,19 @@ Define el comportamiento observable de la interfaz que las pruebas e2e y las pru
 
 ## Barra principal (`BarraPrincipal`, FR-006, FR-007; research R16)
 
-- Cada pantalla del flujo tiene **como máximo un** botón principal, y siempre está dentro de la `BarraPrincipal`, fija al pie del área de contenido.
+- Cada pantalla del flujo tiene **como máximo un** botón principal (salvo el descanso contra un NPC, FR-006a), y siempre está dentro de la `BarraPrincipal`, fija al pie del área de contenido.
 - **Botones principales**:
 
   | Pantalla | Etiqueta |
   |---|---|
   | Fin del draft | «Preparar equipo» |
   | Preparación | «Comenzar partido» o «Ver partido» |
-  | «Formación» | «Confirmar alineación» |
+  | «Formación» | «Confirmar alineación»: guarda y lleva al torneo (FR-003b) |
   | Partido rápido en juego | «Finalizar partido» |
   | Sala | «Empezar» (anfitrión) o «Listo» |
   | Partido 2D en juego, contra un NPC | «Finalizar partido» (secundario: «Gestionar equipo») |
   | Partido 2D en juego, entre humanos | «Finalizar partido» |
-  | Descanso o antes de la prórroga, contra un NPC | «Gestionar equipo» (secundarios: «Seguir» y, en la 2D, «Finalizar partido») |
+  | Descanso o antes de la prórroga, contra un NPC | «Gestionar equipo» y «Seguir», los dos principales, con «Seguir» a la derecha (FR-006a; secundario en la 2D: «Finalizar partido») |
   | Descanso o antes de la prórroga, entre humanos | «Seguir» (en la 2D, secundario: «Finalizar partido») |
   | `GestionEquipo` | «Confirmar cambios» (secundario: «Volver sin cambios») |
   | Resultado | «Siguiente» |
@@ -62,7 +62,7 @@ Define el comportamiento observable de la interfaz que las pruebas e2e y las pru
 
 ## Selector de modo (`SelectorModo`, FR-032 a FR-035; research R19)
 
-- En la tarjeta de preparación, encima del botón principal, hay dos opciones exclusivas: «Simulación rápida» y «Simulación 2D». Viene preseleccionada con `modalidadPreferida`.
+- Solo en la tarjeta de preparación (pantalla del torneo), nunca en «Formación» (FR-032); encima del botón principal hay dos opciones exclusivas: «Simulación rápida» y «Simulación 2D». Viene preseleccionada con `modalidadPreferida`.
 - Una vez empezado el partido, el selector no aparece.
 - «Crear partida» no tiene ninguna opción de tipo de simulación.
 

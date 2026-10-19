@@ -6,9 +6,12 @@
  *
  * Nunca pide más cambios de los que quedan (FR-042) y deja de reserva los que marca su perfil para
  * posibles lesiones. Las lesiones y expulsiones las resuelve el motor.
+ *
+ * Spec 003 (FR-037): con la probabilidad de su nivel, un error de partido (`errorPartido`): un cambio tardío,
+ * no reaccionar al marcador o un cambio de táctica contraproducente.
  */
 import { resolverResto } from './resolverResto';
-import { derivarSemilla, Rng, tacticaPorDefecto, validarTactica, type NivelNPC, type Semilla, type Tactica } from '@fbd/domain';
+import { derivarSemilla, parametrosActuales, Rng, tacticaPorDefecto, validarTactica, type ParametrosEquilibrado, type Semilla, type Tactica } from '@fbd/domain';
 import {
   aplicarDecision,
   avanzar,
@@ -21,11 +24,18 @@ import {
   type ResultadoTramo,
 } from '@fbd/engine';
 import { TACTICA_DEFENSIVA, TACTICA_OFENSIVA } from './alineacion';
-import { PERFILES } from './perfiles';
+import { errorPartido } from './errores';
+import { erroresDe, PERFILES, type NivelIA } from './perfiles';
 
 const iguales = (a: Tactica, b: Tactica) => JSON.stringify(a) === JSON.stringify(b);
 
-export function decidirEnPartido(nivel: NivelNPC, estado: EstadoMotor, lado: Lado, semilla: Semilla): DecisionPartido[] {
+export function decidirEnPartido(
+  nivel: NivelIA,
+  estado: EstadoMotor,
+  lado: Lado,
+  semilla: Semilla,
+  p: ParametrosEquilibrado = parametrosActuales(),
+): DecisionPartido[] {
   if (estado.fase === 'finalizado' || estado.fase === 'penaltis') return [];
   const perfil = PERFILES[nivel].partido;
   const rng = new Rng(semilla);
@@ -64,11 +74,17 @@ export function decidirEnPartido(nivel: NivelNPC, estado: EstadoMotor, lado: Lad
   if (objetivo && !iguales(objetivo, equipo.tactica) && validarTactica(objetivo).length === 0 && rng.probabilidad(Math.round(perfil.reaccionTactica * 1000))) {
     decisiones.push({ participanteId, tipo: 'tactica', datos: { tactica: objetivo } });
   }
+
+  const rngError = new Rng(derivarSemilla(semilla, 'error'));
+  if (rngError.probabilidad(erroresDe(nivel, p).probabilidad.partido)) {
+    const error = errorPartido(decisiones, estado, lado, { ofensiva: TACTICA_OFENSIVA, defensiva: TACTICA_DEFENSIVA }, rngError);
+    if (error) return error.decisiones;
+  }
   return decisiones;
 }
 
 /** Niveles de los lados que controla un NPC (un lado sin nivel lo controla un humano o nadie). */
-export type NivelesPartido = Partial<Record<Lado, NivelNPC>>;
+export type NivelesPartido = Partial<Record<Lado, NivelIA>>;
 
 /**
  * Encola las decisiones de los NPC en el punto de decisión actual (descanso o antes de la prórroga).

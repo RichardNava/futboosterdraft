@@ -5,6 +5,7 @@
  * resultado es reproducible.
  */
 import type { EstadisticasEquipo } from '@fbd/engine';
+import type { GrupoComprobaciones } from '../cli';
 import { clonar, conPaseDeMedios, conStatsDesplazados, equipoSintetico, type OpcionesEquipo } from '../equipos';
 import { mayorSignificativo, media, serie } from '../series';
 
@@ -16,8 +17,8 @@ export interface Comprobacion {
 }
 
 const pct = (x: number, n: number) => `${((100 * x) / n).toFixed(1)} %`;
-/** Campos numéricos de las estadísticas (todos menos el histograma de secuencias). */
-type Campo = Exclude<keyof EstadisticasEquipo, 'secuencias'>;
+/** Campos numéricos de las estadísticas (todos menos el histograma de secuencias y los repartos de goles). */
+type Campo = Exclude<keyof EstadisticasEquipo, 'secuencias' | 'golesPorTipo' | 'golesPorZona'>;
 const col = (r: { estadisticasA: EstadisticasEquipo[] }, campo: Campo) => r.estadisticasA.map((e) => e[campo]);
 
 export function comprobarSC004(n: number, semilla: number): Comprobacion {
@@ -180,6 +181,18 @@ export function comprobarSC008Pase(n: number, semilla: number): Comprobacion {
     ok: aumento >= 0.1,
     detalle: `${b.toFixed(1)} frente a ${a.toFixed(1)} pases completados por partido (+${(aumento * 100).toFixed(1)} %)`,
   };
+}
+
+/** Grupos del registro de `cli.ts` (T001): se pueden filtrar con `--solo` sin ejecutar los demás. */
+export function gruposPartido(): GrupoComprobaciones[] {
+  return [
+    { ids: ['SC-004'], serie: 'sintetica', ejecutar: (o) => [comprobarSC004(o.n, o.seed)] },
+    { ids: ['SC-006a', 'SC-006b', 'SC-006c', 'SC-006d', 'SC-006e'], serie: 'sintetica', ejecutar: (o) => comprobarSC006(o.n, o.seed) },
+    { ids: ['SC-007'], serie: 'sintetica', ejecutar: (o) => [comprobarSC007(o.n, o.seed)] },
+    { ids: ['SC-015'], serie: 'sintetica', ejecutar: (o) => [comprobarSC015(o.n, o.seed)] },
+    { ids: ['002/SC-007a', '002/SC-007b'], serie: 'sintetica', ejecutar: (o) => comprobarSC007Partido2D(o.n, o.seed) },
+    { ids: ['002/SC-008'], serie: 'sintetica', ejecutar: (o) => [comprobarSC008Pase(o.n, o.seed)] },
+  ];
 }
 
 export function comprobacionesPartido(n: number, semilla: number): Comprobacion[] {

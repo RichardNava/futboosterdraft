@@ -60,11 +60,17 @@ describe('contrato HTTP de partidos (spec 002)', () => {
     expect(r.cuerpo.error.codigo).toBe('PARTIDO_NO_ENCONTRADO');
   });
 
-  it('abrir contra un humano: { modo: "reproduccion" }, y es idempotente', async () => {
-    const r = await peticion(srv.url, `/api/partidos/${entreHumanos}/abrir`, { metodo: 'POST', cookie: a.cookie });
+  it('abrir: una modalidad inválida es un 422 (spec 003, T045)', async () => {
+    const r = await peticion(srv.url, `/api/partidos/${entreHumanos}/abrir`, { metodo: 'POST', cookie: a.cookie, cuerpo: { modalidad: '3d' } });
+    expect(r.estado).toBe(422);
+  });
+
+  it('abrir contra un humano: { modo: "reproduccion", modalidad }, idempotente y sin cambiar la modalidad (FR-035)', async () => {
+    const r = await peticion(srv.url, `/api/partidos/${entreHumanos}/abrir`, { metodo: 'POST', cookie: a.cookie, cuerpo: { modalidad: '2d' } });
     expect(r.estado).toBe(200);
-    expect(r.cuerpo).toEqual({ modo: 'reproduccion' });
-    expect((await peticion(srv.url, `/api/partidos/${entreHumanos}/abrir`, { metodo: 'POST', cookie: a.cookie })).cuerpo).toEqual({ modo: 'reproduccion' });
+    expect(r.cuerpo).toEqual({ modo: 'reproduccion', modalidad: '2d' });
+    const otra = await peticion(srv.url, `/api/partidos/${entreHumanos}/abrir`, { metodo: 'POST', cookie: a.cookie, cuerpo: { modalidad: 'rapida' } });
+    expect(otra.cuerpo).toEqual({ modo: 'reproduccion', modalidad: '2d' });
   });
 
   it('GET /api/partidos/:id con el visionado pendiente: { estado: "pendiente_de_ver" } sin marcador ni eventos', async () => {
@@ -83,6 +89,9 @@ describe('contrato HTTP de partidos (spec 002)', () => {
       expect(r.cuerpo.estado).toBe('finalizado');
       expect(r.cuerpo.marcador).toBeDefined();
     }
+    // GET devuelve la modalidad de quien pregunta: A lo abrió en 2D y B aún no lo ha abierto.
+    expect((await peticion(srv.url, `/api/partidos/${entreHumanos}`, { cookie: a.cookie })).cuerpo.modalidad).toBe('2d');
+    expect((await peticion(srv.url, `/api/partidos/${entreHumanos}`, { cookie: b.cookie })).cuerpo.modalidad).toBeNull();
   });
 
   it('visto y revelar: 404 si el usuario no juega ese partido', async () => {
@@ -90,10 +99,13 @@ describe('contrato HTTP de partidos (spec 002)', () => {
     expect((await peticion(srv.url, `/api/partidos/${entreHumanos}/visto`, { metodo: 'POST', cookie: otro.cookie })).estado).toBe(404);
   });
 
-  it('abrir contra un NPC: { modo: "directo" }', async () => {
+  it('abrir contra un NPC con { modalidad: "2d" }: { modo: "directo", modalidad: "2d" }; una segunda apertura no la cambia', async () => {
     if (!contraNpc) return;
-    const r = await peticion(srv.url, `/api/partidos/${contraNpc}/abrir`, { metodo: 'POST', cookie: b.cookie });
+    const r = await peticion(srv.url, `/api/partidos/${contraNpc}/abrir`, { metodo: 'POST', cookie: b.cookie, cuerpo: { modalidad: '2d' } });
     expect(r.estado).toBe(200);
-    expect(r.cuerpo).toEqual({ modo: 'directo' });
+    expect(r.cuerpo).toEqual({ modo: 'directo', modalidad: '2d' });
+    const otra = await peticion(srv.url, `/api/partidos/${contraNpc}/abrir`, { metodo: 'POST', cookie: b.cookie, cuerpo: { modalidad: 'rapida' } });
+    expect(otra.cuerpo).toEqual({ modo: 'directo', modalidad: '2d' });
+    expect((await peticion(srv.url, `/api/partidos/${contraNpc}`, { cookie: b.cookie })).cuerpo.modalidad).toBe('2d');
   });
 });

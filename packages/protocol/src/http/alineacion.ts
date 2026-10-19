@@ -31,8 +31,12 @@ export type AlineacionEntrada = z.infer<typeof AlineacionEntrada>;
 export const DorsalesEntrada = z.object({ jugadorId: z.number().int(), dorsal: z.number() });
 
 const Color = z.string();
+/** Equipación v2 (spec 003, FR-045): diseño y 1–3 colores. Las reglas finas las valida el dominio (422). */
+export const EquipacionV2 = z.object({ diseno: z.string(), colores: z.array(Color) });
+/** Equipación v1, aceptada durante el periodo de compatibilidad y convertida con `desdeV1`. */
+const EquipacionV1 = z.object({ principal: Color, secundario: Color });
 export const EquipacionesEntrada = z.object({
-  primera: z.object({ principal: Color, secundario: Color }),
-  segunda: z.object({ principal: Color, secundario: Color }),
+  primera: z.union([EquipacionV2, EquipacionV1]),
+  segunda: z.union([EquipacionV2, EquipacionV1]),
 });
 export type EquipacionesEntrada = z.infer<typeof EquipacionesEntrada>;

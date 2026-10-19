@@ -102,6 +102,53 @@ export interface EstadisticasEquipo {
   lesiones: number;
   /** Cansancio medio de los jugadores en el campo al final (0 = frescos). */
   cansancioMedio: number;
+  /** Pases intentados de menos de 20 m y de más de 35 m (spec 003, data-model §7.2). */
+  pasesCortos: number;
+  pasesLargos: number;
+  /** Pases de más de 35 m desde el último tercio rival (x ≥ 6.667) hacia el campo propio (x < 5.000). */
+  pasesLargosAtras: number;
+  /** Tiros por zona del remate (research R6). */
+  tirosArea: number;
+  tirosFrontal: number;
+  tirosLejos: number;
+  /** Goles por tipo (sin la tanda): jugada = normal + lejano + mano a mano; propia = autogoles del rival. */
+  golesPorTipo: Record<GrupoGol, number>;
+  golesPorZona: Record<ZonaRemate, number>;
+}
+
+/** Tipo de un tiro o de un gol (`datos.tipo`). `propia` solo aparece en los goles en propia puerta (FR-020). */
+export type TipoTiro = 'normal' | 'cabeza' | 'lejano' | 'manoAMano' | 'falta' | 'penalti' | 'propia';
+
+/** Agrupación de los goles para las estadísticas y la interfaz (research R11). */
+export type GrupoGol = 'jugada' | 'cabeza' | 'falta' | 'penalti' | 'propia';
+
+/** Zona del remate: en el área, en la frontal (≤ 25 m) o más lejos (research R6). */
+export type ZonaRemate = 'area' | 'frontal' | 'lejos';
+
+/** Contadores por jugador para la herramienta de equilibrado (data-model §7.4): no se guardan. */
+export interface MetricasJugador {
+  regates: number;
+  /** Regates ganados (SC-007, Filigranas). */
+  regatesGanados: number;
+  conducciones: number;
+  tirosArea: number;
+  tirosFrontal: number;
+  tirosLejos: number;
+  pases: number;
+  pasesRompeLineas: number;
+  intercepciones: number;
+  entradasGanadas: number;
+  recuperaciones: number;
+  /** Duelos (regate, conducción o entrada) ganados, como atacante o como defensor (SC-006). */
+  duelosGanados: number;
+  /** Conducciones de 15 m o más (SC-006). */
+  conduccionesLargas: number;
+  /** Goles de falta directa (SC-007, Lanzador de faltas). */
+  golesFalta: number;
+  /** Goles de cabeza (SC-007, Cabeceador). */
+  golesCabeza: number;
+  /** Goles marcados (sin los de propia puerta). */
+  goles: number;
 }
 
 export interface Estadisticas {

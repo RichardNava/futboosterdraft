@@ -21,7 +21,7 @@ test('en solitario: sin modal, la partida se pausa al salir y sigue al volver (e
   await page.goto('/');
   await page.getByRole('button', { name: 'Jugar como invitado' }).click();
   await expect(page.getByRole('heading', { name: 'Nueva partida' })).toBeVisible();
-  const r = await page.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
+  const r = await page.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4 } });
   const { id } = (await r.json()) as { id: string };
   await page.request.post(`/api/partidas/${id}/iniciar`);
   await page.goto(`/partidas/${id}/draft`);
@@ -50,7 +50,7 @@ test('draft con otro humano: «¿Abandonar la partida?» al salir; cancelar se q
   const b = await (await browser.newContext()).newPage();
   await registrar(a);
   await registrar(b);
-  const r = await a.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 } });
+  const r = await a.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2 } });
   const { id } = (await r.json()) as { id: string };
   expect((await b.request.post(`/api/partidas/${id}/unirse`)).ok()).toBe(true);
   await a.request.post(`/api/partidas/${id}/iniciar`);

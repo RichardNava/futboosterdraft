@@ -4,13 +4,28 @@
 import { Rng, type Semilla } from '../rng/xoshiro';
 
 export type Modo = 'liga' | 'playoff' | 'mixto';
-export type TipoSimulacion = 'rapida' | '2d';
+/** Modo de simulación de un partido: lo elige cada participante al abrirlo (spec 003, FR-032 a FR-035). */
+export type ModoSimulacion = 'rapida' | '2d';
 export type NivelNPC = 'amateur' | 'intermedio' | 'avanzado' | 'PRO';
 export type EstadoPartida = 'buscando' | 'en_draft' | 'en_torneo' | 'terminada' | 'cancelada' | 'abandonada';
 export type TipoUsuario = 'registrado' | 'invitado';
 
 export const NIVELES_NPC: readonly NivelNPC[] = ['amateur', 'intermedio', 'avanzado', 'PRO'];
 export const NIVELES_RELLENO: readonly NivelNPC[] = ['amateur', 'intermedio', 'avanzado'];
+
+/** Dificultad de la partida: decide los niveles del relleno automático de NPC (spec 003, FR-038a). */
+export type Dificultad = 'facil' | 'normal' | 'dificil';
+export const DIFICULTADES: readonly Dificultad[] = ['facil', 'normal', 'dificil'];
+
+/**
+ * Niveles del relleno por dificultad. «Normal» los sortea uno a uno (001/FR-059); «Fácil» y «Difícil» los reparten a
+ * partes iguales. Nunca PRO.
+ */
+export const NIVELES_RELLENO_POR_DIFICULTAD: Readonly<Record<Dificultad, readonly NivelNPC[]>> = {
+  facil: ['amateur', 'intermedio'],
+  normal: NIVELES_RELLENO,
+  dificil: ['intermedio', 'avanzado'],
+};
 
 export interface TiemposPartida {
   busquedaS: number;
@@ -22,7 +37,6 @@ export interface TiemposPartida {
 export interface ConfigPartida {
   modo: Modo;
   numParticipantes: number;
-  tipoSimulacion: TipoSimulacion;
   /** Plazo de cada jornada; solo se aplica con 2 o más humanos activos (FR-030, research R9). */
   plazoJornadaHoras: number;
   /** NPC añadidos explícitamente por el anfitrión (PRO solo por esta vía, FR-059). */
@@ -32,6 +46,8 @@ export interface ConfigPartida {
    * los NPC añadidos. Las plazas humanas que sigan libres al empezar se rellenan con NPC (FR-003).
    */
   plazasHumanas?: number;
+  /** Niveles del relleno automático de NPC (spec 003, FR-038a). */
+  dificultad: Dificultad;
   tiempos: TiemposPartida;
   colecciones: string[];
 }
@@ -46,9 +62,9 @@ export function configPorDefecto(): ConfigPartida {
   return {
     modo: 'liga',
     numParticipantes: 4,
-    tipoSimulacion: 'rapida',
     plazoJornadaHoras: 24,
     npc: [],
+    dificultad: 'normal',
     tiempos: { ...TIEMPOS_POR_DEFECTO },
     colecciones: ['Core'],
   };
@@ -88,6 +104,9 @@ export function validarConfigPartida(c: ConfigPartida, anfitrion: TipoUsuario): 
   if (c.npc.some((n) => !NIVELES_NPC.includes(n.nivel))) {
     errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'Nivel de NPC desconocido' });
   }
+  if (!DIFICULTADES.includes(c.dificultad)) {
+    errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'Dificultad desconocida' });
+  }
   if (!Number.isInteger(c.plazoJornadaHoras) || c.plazoJornadaHoras < 1) {
     errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'El plazo de jornada debe ser de al menos 1 hora' });
   }
@@ -124,10 +143,17 @@ export function transicion(estado: EstadoPartida, evento: EventoPartida): Estado
   return siguiente;
 }
 
-/** Niveles aleatorios para rellenar plazas: amateur, intermedio o avanzado, nunca PRO (FR-059). */
-export function rellenarConNPC(cantidad: number, semilla: Semilla): NivelNPC[] {
+/**
+ * Niveles para rellenar plazas según la dificultad, nunca PRO (001/FR-059, 003/FR-038a). «Normal» sortea cada
+ * nivel; «Fácil» y «Difícil» reparten sus dos niveles a partes iguales, con el sobrante y el orden sorteados.
+ */
+export function rellenarConNPC(cantidad: number, semilla: Semilla, dificultad: Dificultad = 'normal'): NivelNPC[] {
   const rng = new Rng(semilla);
-  return Array.from({ length: cantidad }, () => rng.elegir(NIVELES_RELLENO));
+  const niveles = NIVELES_RELLENO_POR_DIFICULTAD[dificultad];
+  if (dificultad === 'normal') return Array.from({ length: cantidad }, () => rng.elegir(niveles));
+  const inicio = rng.entero(0, niveles.length - 1);
+  const reparto = Array.from({ length: cantidad }, (_, i) => niveles[(inicio + i) % niveles.length]!);
+  return rng.barajar(reparto);
 }
 
 /** Asientos sorteados con la semilla de la partida (FR-005). */

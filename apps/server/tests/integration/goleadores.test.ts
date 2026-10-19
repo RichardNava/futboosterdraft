@@ -51,7 +51,7 @@ describe('goleadores y asistentes (US9)', () => {
 
   it('tras cada jornada, las tablas coinciden con la suma de los resúmenes; ordenadas; ?todos=true da la tabla completa', async () => {
     const u = await crearInvitado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     const partidaId: string = r.cuerpo.id;
     const ws = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
     const parar = seguirSiempre(ws);

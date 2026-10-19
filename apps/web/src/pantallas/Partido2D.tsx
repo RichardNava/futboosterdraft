@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { coloresDe } from '../componentes/colores';
+import { useParams } from 'react-router';
 import { jugadoresDe, Lienzo2D, type Superposicion } from '../campo2d/Lienzo2D';
 import { RelojReproduccion, VELOCIDADES, type EstadoReloj, type Velocidad } from '../campo2d/relojReproduccion';
 import { datosVacios, incorporarTramo, type TramoRecibido } from '../campo2d/tramos';
-import { BotonAvanzar } from '../componentes/BotonAvanzar';
 import { AvisoDorsales } from '../componentes/AvisoDorsales';
-import { BotonFinalizar } from '../componentes/BotonFinalizar';
-import { Estadisticas } from '../componentes/Estadisticas';
-import { estadoJugadores, PanelCambios } from '../componentes/PanelCambios';
+import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
+import { estadoEquipoEnPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
+import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
+import { ResultadoPartido } from '../componentes/ResultadoPartido';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
 import { useConexion } from '../conexion/useConexion';
 import { ETIQUETA_FASE, type Inicio, type Marcador } from './PartidoRapido';
@@ -35,14 +36,16 @@ const AVISO: Partial<Record<EstadoReloj, string>> = {
 const movimientoReducido = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
 /**
- * Partido 2D en directo contra un NPC (FR-021 a FR-025b; research R6): el campo con los jugadores, las
+ * Partido 2D en directo contra un NPC (002/FR-021 a FR-025b; research R6): el campo con los jugadores, las
  * velocidades x2, x4 y x8 (solo del cliente; se recuerda la última), las pausas anunciadas («¡GOL!»,
- * descanso y antes de la prórroga con «Seguir», «Cargando…»), los cambios en cualquier momento («Se
- * aplicará en el minuto N») y el feed de eventos hasta el minuto que se está viendo.
+ * descanso y antes de la prórroga, «Cargando…») y el feed de eventos hasta el minuto que se está viendo.
+ *
+ * Spec 003: «Gestionar equipo» (contra un NPC) detiene la reproducción y abre la gestión sobre el campo (US5); los
+ * cambios confirmados con el balón en juego se aplican en la siguiente interrupción. «Finalizar partido» lleva a la
+ * pantalla de resultado, sin campo (US6).
  */
 export function Partido2D() {
   const { partidaId, partidoId } = useParams();
-  const navegar = useNavigate();
   const [inicio, setInicio] = useState<Inicio | null>(null);
   const [tramos, setTramos] = useState<Tramo[]>([]);
   const [tick, setTick] = useState(0);
@@ -54,6 +57,9 @@ export function Partido2D() {
   const [miId, setMiId] = useState<string | null>(null);
   // Tras «Finalizar partido» se ven los eventos según llegan y el resumen en cuanto llega el final.
   const [finalizando, setFinalizando] = useState(false);
+  const [gestion, setGestion] = useState(false);
+  const [aplicadas, setAplicadas] = useState<DecisionAplicada[]>([]);
+  const [avisoGestion, setAvisoGestion] = useState<string | null>(null);
   const datos = useRef(datosVacios());
   const enviarReproduccion = useRef<(tick: number, velocidad: Velocidad) => void>(() => undefined);
   const [reloj] = useState(() => new RelojReproduccion({ informar: (t, v) => enviarReproduccion.current(t, v) }));
@@ -79,6 +85,7 @@ export function Partido2D() {
         break;
       case 'partido.decision_aplicada':
         if (m.participanteId === miId) {
+          setAplicadas((a) => [...a, { aplicadaEnTick: m.aplicadaEnTick as number, tipo: m.tipo as string, datos: m.datos as Record<string, unknown> }]);
           setPendientes((n) => Math.max(0, n - 1));
           setAplicacion({ tick: m.aplicadaEnTick as number, minuto: (m.minuto as string | undefined) ?? '' });
         } else {
@@ -146,8 +153,6 @@ export function Partido2D() {
     const j = jugadores.get(id);
     return j ? `${j.dorsal ? `${j.dorsal}. ` : ''}${j.nombre}` : String(id);
   };
-  // Los cambios se validan contra lo ya simulado en el servidor, no contra lo que se está viendo.
-  const todosLosEventos = tramos.flatMap((t) => t.eventos);
   const enPausa = estadoReloj === 'descanso' || estadoReloj === 'pre_prorroga';
 
   const elegirVelocidad = (v: Velocidad) => {
@@ -162,32 +167,84 @@ export function Partido2D() {
     void conexion?.enviar({ t: 'partido.seguir', partidoId: inicio.partidoId }).catch(() => undefined);
   };
 
-  const enviarDecision = async (tipo: 'sustitucion' | 'formacion' | 'tactica', datosDecision: Record<string, unknown>) => {
-    if (!conexion) throw new Error('Sin conexión');
-    const ack = await conexion.enviar({ t: 'partido.decision', partidoId: inicio.partidoId, tipo, datos: datosDecision });
-    if (ack.ok) {
-      setPendientes((n) => n + 1);
-      setAplicacion(null);
-    }
-    return ack;
-  };
-
   const finalizar = async () => {
     if (!conexion) throw new Error('Sin conexión');
     setFinalizando(true);
     const ack = await conexion.enviar({ t: 'partido.finalizar', partidoId: inicio.partidoId });
-    if (!ack.ok) setFinalizando(false);
-    return ack;
+    if (!ack.ok) {
+      setFinalizando(false);
+      throw new Error(ack.error?.mensaje ?? 'No se pudo finalizar el partido');
+    }
   };
 
+  // Gestión del equipo (US5): detiene la reproducción en el tick actual; al cerrar, sigue desde ahí.
+  const abrirGestion = () => {
+    reloj.detener();
+    setGestion(true);
+  };
+  const cerrarGestion = (aplicado: boolean) => {
+    setGestion(false);
+    reloj.seguirTrasGestion();
+    if (aplicado) {
+      setPendientes((n) => n + 1);
+      setAplicacion(null);
+      setAvisoGestion(enPausa ? 'Los cambios se aplicarán al reanudarse el partido.' : 'Los cambios se aplicarán en la próxima interrupción.');
+    }
+  };
+  const enviarLote = (decisiones: DecisionGestion[]) => {
+    if (!conexion) throw new Error('Sin conexión');
+    return conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
+  };
+
+  if (alFinal) {
+    return (
+      <ResultadoPartido
+        partidaId={partidaId!}
+        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
+        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        marcador={fin.marcador}
+        eventos={fin.eventos}
+        estadisticas={fin.estadisticas}
+        nombre={nombre}
+      />
+    );
+  }
+
+  const gestionDisponible = inicio.gestionDisponible === true && miLado !== null;
+  if (gestion && miLado) {
+    // Solo lo ya visto: eventos y decisiones hasta el tick de la reproducción (research R17).
+    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], eventosVistos, miLado, tick, aplicadas, fase === 'pre_prorroga' || fase === 'prorroga');
+    const jugadoresPropios = new Map([...inicio.alineaciones[miLado].titulares.map((t) => t.jugador), ...inicio.alineaciones[miLado].suplentes].map((j) => [j.id, j]));
+    return (
+      <GestionEquipo
+        estado={estadoEquipo}
+        jugadores={jugadoresPropios}
+        dorsales={inicio.dorsales as Record<number, number>}
+        colores={coloresDe(inicio.equipaciones[miLado])}
+        enviar={enviarLote}
+        onCerrar={cerrarGestion}
+      />
+    );
+  }
+
   const avisoCambios =
-    pendientes > 0
-      ? 'Cambio confirmado: se aplicará en la próxima interrupción del juego.'
+    avisoGestion && pendientes > 0
+      ? avisoGestion
       : aplicacion && aplicacion.minuto
         ? tick < aplicacion.tick
           ? `Se aplicará en el minuto ${aplicacion.minuto}.`
           : `Tu cambio se aplicó en el minuto ${aplicacion.minuto}.`
-        : 'Los cambios se aplican en la siguiente interrupción del juego.';
+        : null;
+
+  // Botones (contracts/ui.md): en juego, «Finalizar partido» y «Gestionar equipo» de secundario; en el descanso y
+  // antes de la prórroga, «Seguir» y, contra un NPC, «Gestionar equipo» con la misma importancia a su izquierda
+  // (FR-006a); «Finalizar partido» de secundario.
+  const accionGestion: AccionBarra = { etiqueta: 'Gestionar equipo', onClick: abrirGestion };
+  const accionSeguir: AccionBarra = { etiqueta: 'Seguir', onClick: seguir };
+  const accionFinalizar: AccionBarra = { etiqueta: 'Finalizar partido', onClick: finalizar, motivoDesactivado: finalizando ? 'Simulando el resto del partido…' : null };
+  const principal = enPausa ? accionSeguir : accionFinalizar;
+  const principalIzquierda = enPausa && gestionDisponible ? accionGestion : null;
+  const secundarios = enPausa ? [accionFinalizar] : gestionDisponible ? [accionGestion] : [];
 
   return (
     <main className="pantalla partido partido-2d">
@@ -214,7 +271,7 @@ export function Partido2D() {
       <AvisoDorsales inicio={inicio} miId={miId} />
       {penaltis && (
         <p className="nota" aria-live="polite">
-          Penaltis: {(alFinal ? marcador.penaltis : penaltis)?.local} – {(alFinal ? marcador.penaltis : penaltis)?.visitante}
+          Penaltis: {penaltis.local} – {penaltis.visitante}
         </p>
       )}
 
@@ -224,51 +281,25 @@ export function Partido2D() {
             x{v}
           </button>
         ))}
-        {enPausa && !alFinal && (
-          <button type="button" onClick={seguir}>
-            Seguir
-          </button>
-        )}
       </div>
-      {!alFinal && <BotonFinalizar finalizar={finalizar} desactivado={finalizando} />}
 
-      {miLado && !alFinal && (
-        <PanelCambios
-          alineacion={inicio.alineaciones[miLado]}
-          enCampo={estadoJugadores(inicio.alineaciones[miLado], todosLosEventos, miLado).enCampo}
-          noDisponibles={estadoJugadores(inicio.alineaciones[miLado], todosLosEventos, miLado).fuera}
-          enviar={enviarDecision}
-          aviso={avisoCambios}
-        />
+      {avisoCambios && (
+        <p className="nota" role="status">
+          {avisoCambios}
+        </p>
       )}
-
-      {avisoRival && !alFinal && (
+      {avisoRival && (
         <p className="nota" role="status">
           {avisoRival}
         </p>
       )}
 
       <section aria-label="Eventos del partido">
-        <h2>{alFinal ? 'Resumen del partido' : 'Lo que ha pasado'}</h2>
-        <ResumenEventos eventos={alFinal ? fin.eventos : eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
+        <h2>Lo que ha pasado</h2>
+        <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
       </section>
 
-      {alFinal && (
-        <>
-          {fin.estadisticas !== undefined && fin.estadisticas !== null && (
-            <section aria-label="Estadísticas">
-              <h2>Estadísticas</h2>
-              <Estadisticas datos={fin.estadisticas as never} nombres={nombresEquipo} />
-            </section>
-          )}
-          <p className="acciones">
-            <BotonAvanzar situacion="fin_partido" onAvanzar={() => navegar(`/partidas/${partidaId}/torneo`)} />
-            <Link className="boton secundario" to={`/partidas/${partidaId}/alineacion`}>
-              Volver a mi equipo
-            </Link>
-          </p>
-        </>
-      )}
+      <BarraPrincipal principal={principal} principalIzquierda={principalIzquierda} secundarios={secundarios} />
     </main>
   );
 }

@@ -142,7 +142,8 @@ function jugar(partidaId, u, opciones) {
           // «Comenzar partido» (rival NPC) o «Ver partido» (rival humano): ya no hay temporizador de preparación.
           if (!abiertos.has(m.partidoId)) {
             abiertos.add(m.partidoId);
-            const r = post(u, `/api/partidos/${m.partidoId}/abrir`);
+            // Spec 003 (FR-032): la modalidad se elige al abrir cada partido.
+            const r = post(u, `/api/partidos/${m.partidoId}/abrir`, { modalidad: 'rapida' });
             apertura.add(r.timings.duration);
             if (r.status !== 200) {
               erroresWs.add(1, { codigo: `abrir_${r.status}` });
@@ -162,6 +163,15 @@ function jugar(partidaId, u, opciones) {
         case 'partido.pausa_decision':
           if (!seguidos.has(m.partidoId) || m.motivo === 'pre_prorroga') {
             seguidos.set(m.partidoId, ahora);
+            // Spec 003 (FR-027): un lote de decisiones en el descanso (un cambio de táctica) antes de seguir.
+            if (m.motivo === 'descanso') {
+              enviar({
+                t: 'partido.decisiones',
+                requestId: uuid(),
+                partidoId: m.partidoId,
+                decisiones: [{ tipo: 'tactica', datos: { tactica: { sistemaDefensivo: 'zona', alturaBloque: 'medio', lineaAdelantada: false, estiloConBalon: 'combinativo', juegoVertical: false } } }],
+              });
+            }
             enviar({ t: 'partido.seguir', requestId: uuid(), partidoId: m.partidoId });
           }
           break;
@@ -209,7 +219,6 @@ export default async function () {
   const creada = post(anfitrion, '/api/partidas', {
     modo: 'liga',
     numParticipantes: 8,
-    tipoSimulacion: 'rapida',
     ...(conNPC ? {} : { plazasHumanas: HUMANOS }),
     tiempos: TIEMPOS,
   });

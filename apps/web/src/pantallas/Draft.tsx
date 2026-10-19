@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { usePartidaActiva } from '../estado/partidaActiva';
+import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { BotonAvanzar } from '../componentes/BotonAvanzar';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { FichaJugador } from '../componentes/FichaJugador';
@@ -121,12 +122,11 @@ export function Draft() {
       <main className="pantalla draft">
         <h1>Draft terminado</h1>
         <p>Ya tienes tu plantilla de 24 jugadores.</p>
-        <div className="acciones">
-          <BotonAvanzar situacion="fin_draft" onAvanzar={() => navegar(`/partidas/${partidaId}/alineacion`)} />
-          <button type="button" className="secundario" onClick={() => navegar(`/partidas/${partidaId}/plantillas`)}>
-            Ver las plantillas
-          </button>
-        </div>
+        <BotonAvanzar
+          situacion="fin_draft"
+          onAvanzar={() => navegar(`/partidas/${partidaId}/alineacion`)}
+          secundarios={[{ etiqueta: 'Ver las plantillas', onClick: () => navegar(`/partidas/${partidaId}/plantillas`) }]}
+        />
       </main>
     );
   }
@@ -166,7 +166,18 @@ export function Draft() {
         </p>
       )}
 
-      <section aria-label="Sobre actual">
+      {/* La mesa: los asientos con el nombre de cada equipo y quién ha elegido ya (spec 003, FR-044). */}
+      <ol className="mesa-draft" aria-label="Mesa">
+        {participantes.map((p) => (
+          <li key={p.id} className={eligieron.includes(p.id) ? 'eligio' : ''}>
+            {p.nombre}
+            {eligieron.includes(p.id) && <span className="solo-lectores"> (ya ha elegido)</span>}
+          </li>
+        ))}
+      </ol>
+
+      {/* Mientras dura la apertura, las cartas no se ven por detrás (hallazgo H10); el sitio se conserva. */}
+      <section aria-label="Sobre actual" style={apertura ? { visibility: 'hidden' } : undefined} aria-hidden={apertura ? true : undefined}>
         <div className="rejilla-cartas">
           {turno.sobre.cartas.map((j) => (
             <CartaJugador
@@ -178,20 +189,11 @@ export function Draft() {
             />
           ))}
         </div>
-        <div className="acciones">
-          {confirmada === null ? (
-            <button type="button" disabled={elegida === null} onClick={() => void confirmar()}>
-              Confirmar elección
-            </button>
-          ) : (
-            <p role="status">Elección confirmada. {textoEspera}</p>
-          )}
-          {error && (
-            <p className="error" role="alert">
-              {error}
-            </p>
-          )}
-        </div>
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
       </section>
 
       <section aria-label="Mis elecciones" className="mis-elecciones">
@@ -210,6 +212,10 @@ export function Draft() {
         </div>
       </section>
       {ficha !== null && <FichaJugador jugadorId={ficha} onCerrar={() => setFicha(null)} />}
+      <BarraPrincipal
+        principal={confirmada === null ? { etiqueta: 'Confirmar elección', onClick: confirmar, motivoDesactivado: elegida === null ? 'Elige una carta del sobre' : null } : null}
+        estado={confirmada !== null ? <span role="status">Elección confirmada. {textoEspera}</span> : undefined}
+      />
     </main>
   );
 }

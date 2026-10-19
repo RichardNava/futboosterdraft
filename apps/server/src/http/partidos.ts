@@ -15,6 +15,7 @@ import { abrirPartido, emitirTorneo } from '../actores/torneo';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
 import { resueltoAutomaticamente, type FilaPartido } from '../persistencia/repos/partidos';
+import { ConsultaReproduccion, CuerpoAbrir } from '@fbd/protocol';
 import { errores } from './errores';
 
 export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor: GestorPartidas): void {
@@ -49,12 +50,15 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
         visitante: { id: fila.visitanteId, nombre: nombre(fila.visitanteId) },
       };
     }
-    return resumen(c, fila);
+    return resumen(c, fila, participanteId);
   });
 
-  app.post<{ Params: { id: string } }>('/api/partidos/:id/abrir', { preHandler: requiereSesion }, async (req) => {
+  app.post<{ Params: { id: string }; Body: unknown }>('/api/partidos/:id/abrir', { preHandler: requiereSesion }, async (req) => {
+    // Sin cuerpo (clientes antiguos), la rápida; con cuerpo, una modalidad válida (spec 003, FR-032).
+    const cuerpo = req.body === undefined || req.body === null ? { modalidad: 'rapida' as const } : CuerpoAbrir.safeParse(req.body).data;
+    if (!cuerpo) throw errores.regla('MODALIDAD_INVALIDA', 'La modalidad debe ser «rapida» o «2d»');
     const { fila, c, participanteId } = await partidoDelUsuario(req, true);
-    const r = await c.ejecutar((ctx) => abrirPartido(c, ctx, participanteId, fila.id));
+    const r = await c.ejecutar((ctx) => abrirPartido(c, ctx, participanteId, fila.id, cuerpo.modalidad));
     if ('error' in r) {
       if (r.error === 'JORNADA_NO_ABIERTA') throw errores.conflicto(r.error, 'Ese partido no es de la jornada abierta');
       throw errores.noEncontrado(r.error, 'No juegas ese partido');
@@ -62,9 +66,12 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
     return r;
   });
 
-  app.get<{ Params: { id: string } }>('/api/partidos/:id/reproduccion', { preHandler: requiereSesion }, async (req) => {
-    const { fila, c } = await partidoDelUsuario(req, true);
-    return reproduccion(c, fila);
+  app.get<{ Params: { id: string }; Querystring: { modalidad?: string } }>('/api/partidos/:id/reproduccion', { preHandler: requiereSesion }, async (req) => {
+    const consulta = ConsultaReproduccion.safeParse(req.query ?? {});
+    if (!consulta.success) throw errores.regla('MODALIDAD_INVALIDA', 'La modalidad debe ser «rapida» o «2d»');
+    const { fila, c, participanteId } = await partidoDelUsuario(req, true);
+    const modalidad = consulta.data.modalidad ?? ((fila.modalidades as Record<string, 'rapida' | '2d'> | null) ?? {})[participanteId] ?? 'rapida';
+    return reproduccion(c, fila, modalidad, participanteId);
   });
 
   for (const [ruta, estado] of [
@@ -81,7 +88,7 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
   }
 }
 
-async function resumen(c: ControladorPartida, fila: FilaPartido) {
+async function resumen(c: ControladorPartida, fila: FilaPartido, participanteId: string) {
   const empezado = fila.estado !== 'programado';
   const nombre = (pid: string) => (c.participante(pid) ? c.nombreDe(c.participante(pid)!) : pid);
   const enCurso = c.partidosEnCurso.get(fila.id);
@@ -102,6 +109,8 @@ async function resumen(c: ControladorPartida, fila: FilaPartido) {
     estadisticas: fila.estadisticas,
     resueltoAutomaticamente: resueltoAutomaticamente(fila),
     resolucion: fila.resolucion,
-    ...(empezado ? { alineaciones, dorsales, equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId), modalidad: c.partida.tipoSimulacion } : {}),
+    ...(empezado ? { alineaciones, dorsales, equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId) } : {}),
+    // La modalidad de quien pregunta (spec 003, FR-033); `null` si aún no lo ha abierto.
+    modalidad: ((fila.modalidades as Record<string, 'rapida' | '2d'> | null) ?? {})[participanteId] ?? null,
   };
 }

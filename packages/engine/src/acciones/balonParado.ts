@@ -1,9 +1,11 @@
 /**
  * Faltas, tarjetas, penaltis, faltas directas y fueras de juego (T086).
  */
-import { lanzadorEfectivo } from '@fbd/domain';
+import { lanzadorEfectivo, type ParametrosEquilibrado } from '@fbd/domain';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
-import { aAbsoluta, CENTRO_Y, centroCelda } from '../espacio/geometria';
+import { decimasDeMetros, distanciaPorteria, enAreaRival } from '../espacio/campo';
+import { aAbsoluta, aEquipo, CENTRO_Y, centroCelda, type Punto } from '../espacio/geometria';
+import { tiene } from '../modificadores/specials';
 import { reponer } from './animaciones';
 import { emitir, interrumpir, type Contexto } from './contexto';
 import { comprobarLesion } from './lesiones';
@@ -39,7 +41,8 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
 
   interrumpir(ctx, 'falta', 16, atacante.lado);
   const lanzadorBalon = lesionado ? atacante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR') : victima;
-  if (zona === 5 && ctx.rng.probabilidad(Math.round(d.probabilidadPenaltiPorFaltaEnArea * 1000))) {
+  // Penalti si el punto de la falta está dentro del área real (research R7), no por una probabilidad fija.
+  if (enAreaRival(aEquipo(atacante.lado, e.espacio.balon))) {
     penalti(ctx, atacante);
     return;
   }
@@ -77,19 +80,36 @@ export function penalti(ctx: Contexto, atacante: EquipoEstado): void {
   tirar(ctx, atacante, lanzador, 'penalti');
 }
 
+/** Ancho de la zona central de las faltas: el del área (|y − centro| ≤ 18,1 m). */
+const MEDIO_ANCHO_CENTRAL = 1810;
+
+/**
+ * Probabilidad (milésimas) de tirar directo una falta desde `punto` (coordenadas del atacante; research R7):
+ * `tiro.faltaDirectaTiro.probabilidad` entre `distanciaMinM` y `distanciaMaxM` con ángulo central; menos desde
+ * un lateral y mucho menos fuera de esas distancias. Lanzador de faltas la multiplica por 1,3.
+ */
+export function probabilidadTiroDirecto(p: ParametrosEquilibrado, punto: Punto, lanzadorFaltas: boolean): number {
+  const t = p.tiro.faltaDirectaTiro;
+  const d = distanciaPorteria(punto);
+  const enDistancia = d >= decimasDeMetros(t.distanciaMinM) && d <= decimasDeMetros(t.distanciaMaxM);
+  const central = Math.abs(punto.y - CENTRO_Y) <= MEDIO_ANCHO_CENTRAL;
+  let x = t.probabilidad * (enDistancia ? (central ? 1 : 0.35) : 0.3);
+  if (lanzadorFaltas) x *= 1.3;
+  return Math.round(1000 * Math.min(0.95, x));
+}
+
 /** Falta directa cerca del área: tiro del lanzador de faltas o balón colgado. */
 export function faltaDirecta(ctx: Contexto, atacante: EquipoEstado, defensor: EquipoEstado): void {
   const e = ctx.estado;
-  if (ctx.rng.probabilidad(Math.round(e.parametros.acciones.probabilidadFaltaDirectaTiro * 1000))) {
-    const enCampo = atacante.jugadores.filter((j) => j.enCampo).map((j) => j.jugador);
-    const id = lanzadorEfectivo(atacante.lanzadores.faltas, enCampo, 'faltas');
-    const lanzador = atacante.jugadores.find((j) => j.id === id);
-    if (lanzador) {
-      e.balon = { posesion: atacante.lado, zona: 4, carril: 1, portadorId: lanzador.id, transicion: false };
-      reponer(ctx, 'falta_area', { ...e.espacio.balon }, lanzador.id);
-      tirar(ctx, atacante, lanzador, 'falta');
-      return;
-    }
+  const enCampo = atacante.jugadores.filter((j) => j.enCampo).map((j) => j.jugador);
+  const id = lanzadorEfectivo(atacante.lanzadores.faltas, enCampo, 'faltas');
+  const lanzador = atacante.jugadores.find((j) => j.id === id);
+  const punto = aEquipo(atacante.lado, e.espacio.balon);
+  if (lanzador && ctx.rng.probabilidad(probabilidadTiroDirecto(e.parametros, punto, tiene(lanzador, 'LanzadorFaltas')))) {
+    e.balon = { posesion: atacante.lado, zona: 4, carril: 1, portadorId: lanzador.id, transicion: false };
+    reponer(ctx, 'falta_area', { ...e.espacio.balon }, lanzador.id);
+    tirar(ctx, atacante, lanzador, 'falta');
+    return;
   }
   rematarBalonParado(ctx, atacante, defensor, 'faltas', e.parametros.acciones.duelaAereo - 0.2);
 }

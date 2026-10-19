@@ -7,13 +7,17 @@
  */
 import type { EquipoEstado, EstadoMotor } from '../estado/estado';
 
-export type TipoAccion = 'pase_corto' | 'pase_largo' | 'conduccion' | 'regate' | 'pase_espacio' | 'centro' | 'tiro_lejano' | 'remate';
+/** Acciones con balón. `tiro` sustituye a `remate` y `tiro_lejano`: su peso sale de la distancia real (spec 003, R6). */
+export type TipoAccion = 'pase_corto' | 'pase_largo' | 'conduccion' | 'regate' | 'pase_espacio' | 'centro' | 'tiro';
 
 /** Perfil calculado con la colocación (FR-034b): el de la formación si nadie se ha movido de su zona. */
 export const ofensividad = (e: EquipoEstado) => e.perfil.ofensividad;
 export const amplitud = (e: EquipoEstado) => e.perfil.amplitud;
 
-/** Pesos de cada acción según la zona del balón, la táctica y la formación del equipo atacante. */
+/**
+ * Pesos de cada acción según la zona del balón, la táctica y la formación del equipo atacante. El tiro no está
+ * aquí: lo añade `pesosConEspacio` con la distancia y el ángulo reales del tirador (spec 003, research R6).
+ */
 export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: number): [TipoAccion, number][] {
   const enBanda = carril !== 1;
   const base: Record<number, [TipoAccion, number][]> = {
@@ -21,15 +25,16 @@ export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: numb
       ['pase_corto', 70],
       ['pase_largo', 30],
     ],
+    // En el campo propio y en el centro se conduce más cuando hay espacio (spec 003, research R5).
     1: [
       ['pase_corto', 55],
       ['pase_largo', 20],
-      ['conduccion', 25],
+      ['conduccion', 32],
     ],
     2: [
       ['pase_corto', 45],
       ['pase_espacio', 10],
-      ['conduccion', 25],
+      ['conduccion', 32],
       ['regate', 10],
       ['pase_largo', 10],
     ],
@@ -38,19 +43,16 @@ export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: numb
       ['pase_espacio', 18],
       ['conduccion', 20],
       ['regate', 14],
-      ['tiro_lejano', 1],
-      ['centro', enBanda ? 8 : 0],
+      ['centro', enBanda ? 14 : 0],
     ],
     4: [
       ['pase_corto', 26],
       ['regate', 20],
-      ['centro', enBanda ? 13 : 2],
-      ['tiro_lejano', 3],
+      ['centro', enBanda ? 24 : 3],
       ['pase_espacio', 16],
     ],
-    // Dentro del área no siempre hay remate: a veces hay que pasar o regatear.
+    // Dentro del área no siempre hay remate: a veces hay que pasar o regatear (el tiro lo añade `pesosConEspacio`).
     5: [
-      ['remate', 40],
       ['pase_corto', 33],
       ['regate', 27],
     ],
@@ -63,8 +65,8 @@ export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: numb
     if (t.estiloConBalon === 'contraataque') f *= { pase_largo: 1.6, pase_espacio: 1.5, pase_corto: 0.8 }[accion as string] ?? 1;
     if (t.juegoVertical) f *= { centro: 1.6, pase_largo: 1.3, pase_espacio: 1.3 }[accion as string] ?? 1;
     if (t.alturaBloque === 'catenaccio') f *= { pase_largo: 1.3, pase_espacio: 1.2, regate: 0.8 }[accion as string] ?? 1;
-    // Las formaciones ofensivas buscan más el último pase y el tiro.
-    if (accion === 'pase_espacio' || accion === 'tiro_lejano' || accion === 'regate') f *= 1 + 0.08 * o;
+    // Las formaciones ofensivas buscan más el último pase (el tiro, en `pesosConEspacio`).
+    if (accion === 'pase_espacio' || accion === 'regate') f *= 1 + 0.08 * o;
     return [accion, Math.max(0, Math.round(peso * f))];
   });
 }

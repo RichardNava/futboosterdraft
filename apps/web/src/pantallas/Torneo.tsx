@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { api, ErrorApi, revelarResultado, siguienteJornada } from '../api/cliente';
-import { AvisoPartido } from '../componentes/AvisoPartido';
+import { api, ErrorApi, revelarResultado, siguienteJornada, simularResto } from '../api/cliente';
+import { TarjetaPreparacion, usePreparacionPartido } from '../componentes/AvisoPartido';
+import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { BandejaAvisos } from '../componentes/BandejaAvisos';
 import { BotonAvanzar } from '../componentes/BotonAvanzar';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
 import { etiquetaNPC } from '../textos/niveles';
+import { PantallaCampeon } from './PantallaCampeon';
+import { PantallaDerrota } from './PantallaDerrota';
 
 type Ref = { id: string; nombre: string; nivelNPC?: string | null } | null;
 type Marcador = { local: number; visitante: number; penaltis?: { local: number; visitante: number } } | null;
@@ -57,6 +60,10 @@ interface VistaTorneo {
   siguienteJornada: 'manual' | 'automatica';
   goleadores?: FilaGoleador[];
   asistentes?: FilaGoleador[];
+  /** Spec 003, US10 (data-model §8.2). */
+  miEliminacion?: { fase: string; etiqueta: string } | null;
+  puedeSimularResto?: boolean;
+  pantallas?: { derrotaVista: boolean; campeonVisto: boolean };
 }
 
 interface FilaGoleador {
@@ -98,6 +105,10 @@ export function Torneo() {
   const [pestana, setPestana] = useState<Pestana | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [avisosNuevos, setAvisosNuevos] = useState(0);
+  const preparacion = usePreparacionPartido(partidaId ?? '');
+  // Pantallas de final de torneo (spec 003, FR-039 a FR-041b): qué se ha cerrado o pedido en esta visita.
+  const [derrotaCerrada, setDerrotaCerrada] = useState(false);
+  const [verCampeon, setVerCampeon] = useState(false);
 
   const cargar = useCallback(() => {
     Promise.all([api<VistaTorneo>(`/api/partidas/${partidaId}/torneo`), api<ResumenPartida>(`/api/partidas/${partidaId}`)])
@@ -133,9 +144,40 @@ export function Torneo() {
   ];
   const activa = pestana ?? (vista.fase === 'eliminatoria' && vista.cuadro ? 'cuadro' : pestanas[0]!.id);
   const yo = partida.miParticipanteId;
+
+  // Derrota: mientras no se haya visto o mientras se pueda simular el resto; campeón: hasta verlo. Si aplican las
+  // dos (se perdió la final), primero la derrota y, con «Ver campeón», la del campeón.
+  const pantallas = vista.pantallas ?? { derrotaVista: true, campeonVisto: true };
+  const mostrarDerrota = !!vista.miEliminacion && !derrotaCerrada && !verCampeon && (!pantallas.derrotaVista || !!vista.puedeSimularResto);
+  if (mostrarDerrota && vista.miEliminacion) {
+    const refs = [...vista.jornadas.flatMap((j) => j.partidos.flatMap((p) => [p.local, p.visitante])), ...vista.clasificacion.map((f) => ({ id: f.participanteId, nombre: f.nombre }))];
+    const miEquipo = refs.find((r) => r?.id === yo)?.nombre ?? 'Tu equipo';
+    return (
+      <PantallaDerrota
+        partidaId={partidaId!}
+        equipo={miEquipo}
+        fase={vista.miEliminacion.etiqueta}
+        puedeSimularResto={!!vista.puedeSimularResto}
+        torneoTerminado={!!vista.campeon}
+        onSimularResto={async () => {
+          await simularResto(partidaId!);
+          setVerCampeon(true);
+          cargar();
+        }}
+        onVerTorneo={() => setDerrotaCerrada(true)}
+        onVerCampeon={() => setVerCampeon(true)}
+        onVolverAlMenu={() => navegar('/')}
+      />
+    );
+  }
+  if (vista.campeon && (verCampeon || !pantallas.campeonVisto)) {
+    return <PantallaCampeon partidaId={partidaId!} campeon={vista.campeon.nombre} onVolverAlMenu={() => navegar('/')} />;
+  }
   const miPartido = actual?.partidos.find((p) => p.local?.id === yo || p.visitante?.id === yo);
   // Partidos propios entre humanos ya jugados que aún no ha visto (de cualquier jornada; spec 002, FR-030).
   const pendientes = vista.jornadas.flatMap((j) => j.partidos).filter((p) => p.partidoId !== null && vista.pendientesDeVer.includes(p.partidoId));
+
+  const finJornada = !vista.campeon && !actual?.estado.startsWith('abierta') && vista.siguienteJornada === 'manual' && vista.jornadaActual !== null;
 
   const mostrarResultado = async (partidoId: string) => {
     setError(null);
@@ -161,7 +203,7 @@ export function Torneo() {
           <BandejaAvisos actualizar={avisosNuevos} />
         </nav>
       </header>
-      {partidaId && <AvisoPartido partidaId={partidaId} />}
+      {preparacion && <TarjetaPreparacion preparacion={preparacion} />}
 
       {vista.campeon && (
         <div className="campeon" role="status">
@@ -169,20 +211,12 @@ export function Torneo() {
             🏆 Campeón: <strong>{vista.campeon.nombre}</strong>
             {vista.campeon.id === yo && ' — ¡enhorabuena!'}
           </p>
-          <BotonAvanzar situacion="fin_torneo" onAvanzar={() => navegar('/')} />
         </div>
       )}
 
-      {!vista.campeon && !actual?.estado.startsWith('abierta') && vista.siguienteJornada === 'manual' && vista.jornadaActual !== null && (
+      {finJornada && (
         <div className="aviso" role="status">
           <p>Jornada terminada.</p>
-          <BotonAvanzar
-            situacion="fin_jornada"
-            onAvanzar={async () => {
-              await siguienteJornada(partidaId!);
-              cargar();
-            }}
-          />
         </div>
       )}
 
@@ -272,6 +306,22 @@ export function Torneo() {
         <p className="error" role="alert">
           {error}
         </p>
+      )}
+      {/* La barra, hija directa de la pantalla para que `position: sticky` la mantenga a la vista (FR-006). */}
+      {vista.campeon ? (
+        <BotonAvanzar situacion="fin_torneo" onAvanzar={() => navegar('/')} />
+      ) : preparacion ? (
+        <BarraPrincipal principal={preparacion.accion} />
+      ) : (
+        finJornada && (
+          <BotonAvanzar
+            situacion="fin_jornada"
+            onAvanzar={async () => {
+              await siguienteJornada(partidaId!);
+              cargar();
+            }}
+          />
+        )
       )}
     </main>
   );

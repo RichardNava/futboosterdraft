@@ -25,7 +25,7 @@ describe('torneo de un humano y abandonos (spec 001/US4; spec 002/US11)', () => 
   async function crear(u: UsuarioPrueba, cuerpo: Record<string, unknown>) {
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: u.cookie,
-      cuerpo: { tipoSimulacion: 'rapida', ...cuerpo },
+      cuerpo: { ...cuerpo },
     });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     const ws = await ClienteWs.conectar(srv.urlWs, r.cuerpo.id, u.cookie);
@@ -99,7 +99,7 @@ describe('torneo de un humano y abandonos (spec 001/US4; spec 002/US11)', () => 
     const b = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: a.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 },
+      cuerpo: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2 },
     });
     const partidaId = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: b.cookie });

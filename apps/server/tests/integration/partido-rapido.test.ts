@@ -37,7 +37,7 @@ describe('partido rápido (US3)', () => {
     const [anfitrion, ...otros] = humanos;
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion!.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ...(anfitrion!.tipo === 'invitado' ? {} : { plazasHumanas: humanos.length }) },
+      cuerpo: { modo: 'liga', numParticipantes: 4, ...(anfitrion!.tipo === 'invitado' ? {} : { plazasHumanas: humanos.length }) },
     });
     const partidaId: string = r.cuerpo.id;
     for (const o of otros) await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: o.cookie });

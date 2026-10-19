@@ -4,7 +4,7 @@ import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
 import { crearInvitado, crearRegistrado, peticion } from '../helpers/usuarios';
 
-const base = { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' };
+const base = { modo: 'liga', numParticipantes: 4 };
 
 describe('contrato HTTP de partidas', () => {
   let bd: BdPruebas;
@@ -27,6 +27,49 @@ describe('contrato HTTP de partidas', () => {
     expect(resumen.estado).toBe('buscando');
     expect(resumen.participantes.map((p) => p.nivelNPC)).toEqual([null, 'PRO']);
     expect(resumen.miParticipanteId).toBe(resumen.participantes[0]!.id);
+  });
+
+  it('el tipo de simulación ya no se elige al crear la partida: sin él funciona y, si se envía, se ignora (spec 003, T046)', async () => {
+    const u = await crearRegistrado(srv.url);
+    const sin = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: base });
+    expect(sin.estado).toBe(201);
+    expect(sin.cuerpo).not.toHaveProperty('tipoSimulacion');
+    const con = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { ...base, tipoSimulacion: '2d' } });
+    expect(con.estado).toBe(201);
+    expect(con.cuerpo).not.toHaveProperty('tipoSimulacion');
+    const leida = await peticion(srv.url, `/api/partidas/${con.cuerpo.id}`, { cookie: u.cookie });
+    expect(leida.estado).toBe(200);
+    expect(leida.cuerpo).not.toHaveProperty('tipoSimulacion');
+  });
+
+  it('la dificultad es «normal» por defecto, se devuelve en el resumen y una desconocida es un 400 (spec 003, FR-038a)', async () => {
+    const u = await crearRegistrado(srv.url);
+    const sin = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: base });
+    expect(ResumenPartida.parse(sin.cuerpo).dificultad).toBe('normal');
+    const dificil = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { ...base, dificultad: 'dificil' } });
+    expect(dificil.estado).toBe(201);
+    const leida = await peticion(srv.url, `/api/partidas/${dificil.cuerpo.id}`, { cookie: u.cookie });
+    expect(ResumenPartida.parse(leida.cuerpo).dificultad).toBe('dificil');
+    const mala = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { ...base, dificultad: 'imposible' } });
+    expect(mala.estado).toBe(400);
+  });
+
+  it.each([
+    ['facil', ['amateur', 'intermedio']],
+    ['dificil', ['intermedio', 'avanzado']],
+  ] as const)('con dificultad «%s», el relleno usa solo %j a partes iguales y conserva el PRO añadido a mano (FR-038a)', async (dificultad, permitidos) => {
+    const g = await crearInvitado(srv.url);
+    const r = await peticion(srv.url, '/api/partidas', {
+      cookie: g.cookie,
+      cuerpo: { modo: 'liga', numParticipantes: 8, dificultad, npc: [{ nivel: 'PRO' }] },
+    });
+    expect(r.estado).toBe(201);
+    const niveles = ResumenPartida.parse(r.cuerpo).participantes.map((p) => p.nivelNPC);
+    expect(niveles.filter((n) => n === 'PRO')).toHaveLength(1);
+    const relleno = niveles.filter((n) => n !== null && n !== 'PRO');
+    expect(relleno).toHaveLength(6);
+    expect(relleno.every((n) => (permitidos as readonly string[]).includes(n!))).toBe(true);
+    expect(relleno.filter((n) => n === permitidos[0])).toHaveLength(3);
   });
 
   it('422 NUM_PARTICIPANTES_INVALIDO', async () => {
@@ -94,6 +137,17 @@ describe('contrato HTTP de partidas', () => {
     expect(iniciada.cuerpo.estado).toBe('en_draft');
     // El relleno automático nunca asigna PRO (FR-059): el único PRO es el que añadió el anfitrión.
     expect(iniciada.cuerpo.participantes.filter((x: any) => x.nivelNPC === 'PRO')).toHaveLength(1);
+  });
+
+  it('al iniciar, el relleno de las plazas libres sigue la dificultad de la partida (spec 003, FR-038a)', async () => {
+    const anfitrion = await crearRegistrado(srv.url);
+    const cuerpo = { modo: 'liga', numParticipantes: 8, plazasHumanas: 2, dificultad: 'facil' };
+    const p = (await peticion(srv.url, '/api/partidas', { cookie: anfitrion.cookie, cuerpo })).cuerpo;
+    const iniciada = await peticion(srv.url, `/api/partidas/${p.id}/iniciar`, { metodo: 'POST', cookie: anfitrion.cookie });
+    const relleno = iniciada.cuerpo.participantes.map((x: any) => x.nivelNPC).filter((n: string | null) => n !== null);
+    expect(relleno).toHaveLength(7);
+    expect(relleno.every((n: string) => n === 'amateur' || n === 'intermedio')).toBe(true);
+    expect(Math.abs(relleno.filter((n: string) => n === 'amateur').length * 2 - 7)).toBe(1);
   });
 
   it('al vencer la búsqueda se rellenan las plazas y empieza el draft (FR-003)', async () => {

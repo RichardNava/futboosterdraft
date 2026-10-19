@@ -3,7 +3,24 @@
  * quién juega en casa, y agregación de resultados y estadísticas por equipo.
  */
 import { parametrosActuales, semillaDesdeTexto } from '@fbd/domain';
-import { avanzar, crearPartido, type EquipoPartido, type EstadisticasEquipo } from '@fbd/engine';
+import { avanzar, crearPartido, type EquipoPartido, type EstadisticasEquipo, type MetricasJugador } from '@fbd/engine';
+
+/** Un gol de la serie, para los repartos por tipo, distancia y zona (spec 003, T031). */
+export interface GolSerie {
+  /** Equipo que marca (A o B de la serie). */
+  equipo: 'A' | 'B';
+  tipo: string;
+  distancia: number;
+  zonaRemate: string;
+  /** Jugador que marca (en propia puerta, el defensor). */
+  autorId: number;
+}
+
+export interface OpcionesSerie {
+  eliminatoria?: boolean;
+  /** Métricas por jugador del equipo A en cada partido (spec 003, research R11). */
+  metricas?: boolean;
+}
 
 export interface ResultadoSerie {
   n: number;
@@ -17,10 +34,32 @@ export interface ResultadoSerie {
   lesionesA: number;
   lesionesB: number;
   ms: number;
+  /** Resultado de cada partido en orden local-visitante («2-1»). */
+  resultados: string[];
+  goles: GolSerie[];
+  /** Métricas de los jugadores del equipo A en cada partido (solo con `metricas`). */
+  metricasA: Record<number, MetricasJugador>[];
 }
 
-export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: number, etiqueta: string, eliminatoria = false): ResultadoSerie {
-  const r: ResultadoSerie = { n, victoriasA: 0, victoriasB: 0, empates: 0, golesA: [], golesB: [], estadisticasA: [], estadisticasB: [], lesionesA: 0, lesionesB: 0, ms: 0 };
+export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: number, etiqueta: string, opciones: boolean | OpcionesSerie = false): ResultadoSerie {
+  const { eliminatoria = false, metricas = false } = typeof opciones === 'boolean' ? { eliminatoria: opciones } : opciones;
+  const idsA = new Set([...a.titulares.map((t) => t.jugador.id), ...a.suplentes.map((j) => j.id)]);
+  const r: ResultadoSerie = {
+    n,
+    victoriasA: 0,
+    victoriasB: 0,
+    empates: 0,
+    golesA: [],
+    golesB: [],
+    estadisticasA: [],
+    estadisticasB: [],
+    lesionesA: 0,
+    lesionesB: 0,
+    ms: 0,
+    resultados: [],
+    goles: [],
+    metricasA: [],
+  };
   const inicio = Date.now();
   const parametros = parametrosActuales();
   for (let i = 0; i < n; i++) {
@@ -35,7 +74,21 @@ export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: nu
         visitante: aEnCasa ? b : a,
       }),
       'final',
+      { metricas },
     );
+    r.resultados.push(`${final.marcador.local}-${final.marcador.visitante}`);
+    for (const ev of final.eventos) {
+      if (ev.tipo !== 'gol') continue;
+      const deA = (ev.equipo === 'local') === aEnCasa;
+      r.goles.push({
+        equipo: deA ? 'A' : 'B',
+        tipo: String(ev.datos.tipo),
+        distancia: Number(ev.datos.distancia ?? 0),
+        zonaRemate: String(ev.datos.zonaRemate ?? ''),
+        autorId: ev.jugadores.find((j) => j.rol === 'autor')?.jugadorId ?? 0,
+      });
+    }
+    if (metricas && final.metricas) r.metricasA.push(Object.fromEntries(Object.entries(final.metricas).filter(([id]) => idsA.has(Number(id)))));
     const ga = aEnCasa ? final.marcador.local : final.marcador.visitante;
     const gb = aEnCasa ? final.marcador.visitante : final.marcador.local;
     r.golesA.push(ga);

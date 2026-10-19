@@ -48,14 +48,14 @@ describe('dorsales (US8)', () => {
 
   it('al empezar el partido, el convocado sin dorsal recibe el libre más bajo y llega en partido.inicio', async () => {
     const u = await crearInvitado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     const partidaId: string = r.cuerpo.id;
     const ws = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
+    // Conectado antes de empezar: sin conexión registrada, la mesa del draft se pausa (research R10).
+    await ws.esperar('estado');
     await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: u.cookie });
-    for (let i = 0; i < 30 && !ws.recibidos.some((m) => m.t === 'preparacion.inicio'); i++) {
-      srv.reloj.avanzar(TURNO);
-      await espera(60);
-    }
+    // Hasta el final del draft, sin suponer cuánto tarda cada turno en resolverse.
+    await avanzarHasta(srv, TURNO, async () => ws.recibidos.some((m) => m.t === 'preparacion.inicio'), 400);
     const prep = await ws.esperar('preparacion.inicio');
     const { titular, libre } = await dejarSinDorsal(u, partidaId);
 
@@ -79,7 +79,7 @@ describe('dorsales (US8)', () => {
     const b = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: a.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazoJornadaHoras: 24, plazasHumanas: 2 },
+      cuerpo: { modo: 'liga', numParticipantes: 4, plazoJornadaHoras: 24, plazasHumanas: 2 },
     });
     const partidaId: string = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: b.cookie });

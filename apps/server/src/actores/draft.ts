@@ -8,7 +8,7 @@
  * - Al vencer el plazo, elige automáticamente por quien falte y se lo comunica (`draft.eleccion_auto`).
  * - Al terminar todas las mesas, guarda las plantillas y pasa la partida a `en_torneo`.
  */
-import { elegirCarta } from '@fbd/ai';
+import { elegirCartaDetallada } from '@fbd/ai';
 import {
   crearMesa,
   derivarSemilla,
@@ -27,6 +27,7 @@ import {
   type NivelNPC,
 } from '@fbd/domain';
 import type { ContextoComando } from './actor';
+import { alineacionAutomatica, dorsalesIniciales } from './equipo';
 import type { ControladorPartida } from './partida';
 
 /** Crea las mesas (1, o 2 de 8 en el playoff de 16) a partir de los participantes ya sentados. */
@@ -73,7 +74,11 @@ export async function iniciarDraft(c: ControladorPartida, ctx: ContextoComando, 
 export async function abrirTurno(c: ControladorPartida, ctx: ContextoComando, indice: number): Promise<void> {
   const m = c.mesas.find((x) => x.indice === indice);
   if (!m || m.mesa.estado !== 'en_turno') return;
-  const ahora = c.servicios.reloj.ahora();
+  // Los NPC eligen al abrirse el turno: nunca después de su vencimiento. Entre que se calcula el vencimiento y este
+  // punto hay esperas a la base de datos; si mientras tanto el reloj ha avanzado más que la duración del turno (bajo
+  // mucha carga o con el reloj simulado), elegir con la hora actual lanzaría TURNO_CERRADO y el draft se quedaría
+  // parado. Si el turno ya ha vencido, su temporizador lo resuelve enseguida.
+  const ahora = Math.min(c.servicios.reloj.ahora(), m.mesa.venceEn);
 
   // Los NPC eligen al instante (con el mismo límite de tiempo que los humanos, FR-057).
   const antes = m.mesa.elecciones.length;
@@ -114,13 +119,28 @@ export function programarTurno(c: ControladorPartida, indice: number): void {
   });
 }
 
+/**
+ * NPC PRO que ya tomaron su decisión dudosa (spec 003, FR-037b), por mesa y participante. Vive en memoria: tras
+ * un reinicio, en el peor caso, un PRO podría tomar una segunda (no afecta a la validez del draft).
+ */
+const dudosasHechas = new WeakMap<ControladorPartida, Set<string>>();
+
 /** Carta que elige un NPC según su nivel (T128): mira su sobre, su plantilla parcial y cuántos quedan en la mesa. */
 function eleccionNPC(c: ControladorPartida, mesa: Mesa, semillaMesa: string, pid: string, nivel: NivelNPC): number {
   const { catalogo } = c.servicios;
   const sobre = sobreDe(mesa, pid).restantes.map((id) => catalogo.jugador(id));
   const parcial = vistaParticipante(mesa, pid).misElecciones.map((id) => catalogo.jugador(id));
   const semilla = derivarSemilla(semillaMesa, `npc:${pid}:${mesa.ronda}:${mesa.turno}`);
-  return elegirCarta(nivel, sobre, parcial, mesa.ronda, mesa.turno, semilla, { participantes: mesa.participantes.length });
+  let hechas = dudosasHechas.get(c);
+  if (!hechas) dudosasHechas.set(c, (hechas = new Set()));
+  const clave = `${semillaMesa}:${pid}`;
+  const r = elegirCartaDetallada(nivel, sobre, parcial, mesa.ronda, mesa.turno, semilla, {
+    participantes: mesa.participantes.length,
+    semillaDraft: derivarSemilla(semillaMesa, `npc:${pid}:draft`),
+    dudosaHecha: hechas.has(clave),
+  });
+  if (r.error === 'dudosa') hechas.add(clave);
+  return r.id;
 }
 
 export type ResultadoEleccion = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
@@ -162,7 +182,7 @@ export async function abandonarDraft(c: ControladorPartida, ctx: ContextoComando
   if (!m || m.mesa.estado !== 'en_turno') return;
   const yaEligio = m.mesa.elecciones.some((e) => e.participanteId === participanteId && e.ronda === m.mesa.ronda && e.turno === m.mesa.turno);
   if (!yaEligio) {
-    const ahora = c.servicios.reloj.ahora();
+    const ahora = Math.min(c.servicios.reloj.ahora(), m.mesa.venceEn);
     const antes = m.mesa.elecciones.length;
     m.mesa = elegir(m.mesa, participanteId, eleccionNPC(c, m.mesa, m.semilla, participanteId, 'intermedio'), ahora, 'npc');
     await c.servicios.repoDraft.guardarElecciones(m.id, m.mesa.elecciones.slice(antes), ahora);
@@ -220,11 +240,20 @@ async function terminarDraft(c: ControladorPartida, ctx: ContextoComando): Promi
   for (const m of c.mesas) Object.assign(todas, plantillas(m.mesa));
   await db.transaction(async (tx) => {
     await repoDraft.guardarPlantillas(todas, tx);
-    // Cada equipo recibe colores aleatorios para su primera y segunda equipación (FR-031b).
+    // Cada equipo sin equipaciones (las del perfil se conservan, spec 003) recibe unas aleatorias (FR-031b).
     for (const p of c.participantes) {
+      if (p.equipaciones) continue;
       const e = equipacionesAleatorias(derivarSemilla(c.partida.semilla, `equipaciones:${p.id}`), parametrosActuales());
       await c.servicios.repoEquipo.guardarEquipaciones(p.id, e, tx);
       p.equipaciones = e;
+    }
+    // Dorsales de los 24 jugadores de cada equipo, por su posición en la alineación automática, antes de «Preparar
+    // equipo» (spec 003, FR-001b).
+    for (const p of c.participantes) {
+      const plantilla = (todas[p.id] ?? []).map((id) => catalogo.jugador(id));
+      if (plantilla.length === 0) continue;
+      const automatica = alineacionAutomatica(c, p.id, plantilla, new Set());
+      await c.servicios.repoEquipo.guardarDorsales(p.id, dorsalesIniciales(c, p.id, plantilla, automatica), tx);
     }
     await repoPartidas.actualizarEstado(c.id, 'en_torneo', tx);
   });

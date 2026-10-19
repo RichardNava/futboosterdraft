@@ -7,6 +7,7 @@
  *
  * Las coordenadas del motor son 0–1000 (largo) × 0–640 (ancho); se escalan al tamaño del lienzo.
  */
+import { colorDorsal, patronDiseno, principal, type Equipacion } from '@fbd/domain';
 import type { Posiciones } from './interpolacion';
 
 export const LARGO = 1000;
@@ -21,7 +22,8 @@ export interface JugadorDibujo {
 export interface Escena {
   posiciones: Posiciones;
   jugadores: ReadonlyMap<number, JugadorDibujo>;
-  equipaciones: Record<'local' | 'visitante', { principal: string; secundario: string }>;
+  /** Equipaciones v2 del partido (spec 003, FR-045, FR-046). */
+  equipaciones: Record<'local' | 'visitante', Equipacion>;
   marcador: { local: number; visitante: number };
   nombres: { local: string; visitante: string };
   minuto: string;
@@ -101,11 +103,24 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
   const chapa = (id: number, x: number, y: number, vx: number, vy: number) => {
     const j = escena.jugadores.get(id);
     if (!j) return;
-    const colores = escena.equipaciones[j.lado];
+    const equipacion = escena.equipaciones[j.lado];
+    const colores = { principal: principal(equipacion), secundario: colorDorsal(equipacion) };
+    // Círculo con el patrón del diseño recortado dentro (el mismo de la vista previa, `patronDiseno`).
+    ctx.save();
     ctx.beginPath();
     ctx.arc(x * e, y * e, radio, 0, Math.PI * 2);
-    ctx.fillStyle = colores.principal;
-    ctx.fill();
+    ctx.clip();
+    const [x0, y0, lado] = [x * e - radio, y * e - radio, radio * 2];
+    for (const r of patronDiseno(equipacion)) {
+      ctx.beginPath();
+      r.puntos.forEach(([px, py], i) => (i === 0 ? ctx.moveTo(x0 + px * lado, y0 + py * lado) : ctx.lineTo(x0 + px * lado, y0 + py * lado)));
+      ctx.closePath();
+      ctx.fillStyle = r.color;
+      ctx.fill();
+    }
+    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(x * e, y * e, radio, 0, Math.PI * 2);
     ctx.lineWidth = Math.max(1.5, 3 * e);
     ctx.strokeStyle = colores.secundario;
     ctx.stroke();
@@ -125,6 +140,10 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
     }
     if (j.dorsal !== null) {
       ctx.font = `800 ${tamDorsal}px system-ui, sans-serif`;
+      // Contorno con el principal: el dorsal se lee también sobre las rayas o franjas del segundo color (T129).
+      ctx.lineWidth = Math.max(2, tamDorsal * 0.18);
+      ctx.strokeStyle = colores.principal;
+      ctx.strokeText(String(j.dorsal), x * e, y * e + 1);
       ctx.fillStyle = colores.secundario;
       ctx.fillText(String(j.dorsal), x * e, y * e + 1);
     }

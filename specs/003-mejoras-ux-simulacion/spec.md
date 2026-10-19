@@ -38,7 +38,7 @@
 - Q: ¿Hasta cuándo se puede cambiar el nombre del equipo? → A: Hasta que se abre el primer partido del torneo (FR-042).
 - Q: ¿Cómo se comprueba la media de goles por torneo? → A: La media de las series y la de la serie de torneos Core están entre 2,6 y 3,4, y al menos el 90 % de los torneos individuales también (SC-001).
 - Q: ¿Cómo comprueba una persona no técnica los SC estadísticos (Principio IX)? → A: La herramienta de equilibrado genera un informe HTML legible con cada SC, su objetivo y su resultado, y la constitución lo aclara en su próxima enmienda.
-- Q: En la 2D contra un NPC, ¿qué botón es el principal? → A: Depende del estado: en juego, «Finalizar partido»; en el descanso y antes de la prórroga, «Gestionar equipo» (FR-006).
+- Q: En la 2D contra un NPC, ¿qué botón es el principal? → A: Depende del estado: en juego, «Finalizar partido»; en el descanso y antes de la prórroga, «Gestionar equipo». *(Sustituido el 2026-10-20: en el descanso, «Gestionar equipo» y «Seguir» con la misma importancia, FR-006a.)*
 - Q: ¿Qué opciones tiene el único humano eliminado? → A: «Simular resto del torneo» como principal y «Volver al menú» como secundario (US10, escenario 3).
 - Q: ¿Qué ve quien pierde la final? → A: El mensaje de derrota en «Final», con «Ver campeón», y después la pantalla del campeón.
 - Q: ¿Dónde se recuerda el último modo de simulación? → A: En el participante y, para los registrados, también en su cuenta, de modo que una partida nueva arranca con el último que usó. Si no hay ninguno, el modo por defecto es «Simulación rápida» (FR-032).
@@ -52,6 +52,16 @@
 - Q: ¿Cómo se concilia el Principio IX con los SC estadísticos? → A: La constitución se enmienda ya (v1.0.4): los criterios estadísticos se comprueban leyendo el informe legible de la herramienta de equilibrado.
 - Q: En SC-001, ¿1-2 y 2-1 son el mismo resultado? → A: No. Se cuentan con orden (local-visitante), para detectar sesgos como el 1-2 del 20 % de la línea base.
 - Q: ¿Se puede gestionar el equipo durante la tanda de penaltis? → A: No. En la tanda no hay cambios posibles (FR-031).
+
+### Session 2026-10-20 (validación con personas, checklists/validacion.md)
+
+- Q: ¿Qué pasa al pulsar «Confirmar alineación»? → A: Se guarda la alineación y se vuelve a la pantalla del torneo, donde está la preparación del partido (FR-003b). «Formación» ya no ofrece empezar el partido.
+- Q: ¿Dónde se elige el modo de simulación? → A: Solo en la tarjeta de preparación del partido; el selector no aparece en «Formación» (FR-032).
+- Q: ¿Quién marca los goles, además del delantero centro? → A: Los extremos y mediapuntas llegan al área según la jugada, y el regate sirve para escapar del defensor y acercarse a ella; en 3-4-3, 4-2-3-1 y 4-3-3 marcan entre el 25 % y el 50 % de los goles del equipo (SC-023).
+- Q: ¿Cuándo se asignan los dorsales? → A: Automáticamente al terminar el draft, antes de «Preparar equipo», según la posición de cada jugador en la alineación automática; ya no al confirmar el primer once (FR-001b).
+- Q: En el descanso contra un NPC, ¿«Gestionar equipo» es el único botón principal? → A: No: «Gestionar equipo» y «Seguir» tienen la misma importancia, con «Seguir» a la derecha (FR-006a, FR-027).
+- Q: Dificultad de los NPC → A: se suman 100 milésimas a la probabilidad de error de cada familia, y la partida tendrá un nivel de dificultad (Fácil, Normal por defecto, Difícil) que reparte los niveles de los NPC de relleno (validacion.md, H13 y H14). Se especifica en FR-038a.
+- Q: ¿Cómo reparte cada nivel de dificultad los NPC de relleno? → A: «Fácil», amateur e intermedio a partes iguales; «Normal», amateur, intermedio o avanzado al azar (como hasta ahora); «Difícil», intermedio y avanzado a partes iguales. Nunca PRO, que solo se elige al añadir NPC a mano (FR-038a).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -94,6 +104,8 @@ En la pantalla «Formación», el participante ve un solo campo con sus titulare
 5. **Given** cualquier ficha de jugador en el campo o en el banquillo, **When** el participante pasa el cursor por encima, **Then** en menos de medio segundo ve la carta completa del jugador sin que tape la ficha señalada, y al retirar el cursor la carta desaparece.
 6. **Given** un dispositivo táctil, **When** el participante mantiene pulsada una ficha, **Then** ve la carta completa, y al soltar sin moverse la carta desaparece.
 7. **Given** una colocación que deja la alineación inválida (por ejemplo, ningún portero en la portería), **When** el participante intenta confirmar la alineación, **Then** se le indica el problema y no se confirma.
+8. **Given** una alineación válida en «Formación», **When** el participante pulsa «Confirmar alineación», **Then** se guarda y vuelve a la pantalla del torneo, donde elige el modo y empieza el partido; en «Formación» no hay selector de modo ni botón para empezar el partido (FR-003b, FR-032).
+9. **Given** un draft recién terminado, **When** el participante pulsa «Preparar equipo», **Then** los 24 jugadores ya tienen dorsal, asignado según su posición en la alineación automática, y confirmar el once no los cambia (FR-001b).
 
 ---
 
@@ -141,7 +153,7 @@ Al llegar el descanso de un partido contra un NPC, en 2D o en simulación rápid
 
 **Acceptance Scenarios**:
 
-1. **Given** un partido que llega al descanso, **When** el participante lo ve, **Then** aparece un botón destacado para gestionar el equipo.
+1. **Given** un partido contra un NPC que llega al descanso, **When** el participante lo ve, **Then** aparecen «Gestionar equipo» y «Seguir» con la misma importancia, «Seguir» a la derecha (FR-006a).
 2. **Given** la pantalla de gestión del descanso, **When** se abre, **Then** muestra el campo con los jugadores que están jugando, su colocación actual, el banquillo, las sustituciones que quedan y, en cada ficha, las tarjetas o lesiones del jugador.
 3. **Given** esa pantalla, **When** el participante arrastra un suplente sobre un titular, **Then** queda registrada la sustitución y el contador de sustituciones restantes baja en uno.
 4. **Given** un participante que ya ha hecho las 5 sustituciones permitidas (001/FR-042), **When** intenta otra, **Then** la pantalla no la permite y explica por qué.
@@ -290,15 +302,18 @@ Todos los participantes, incluidos los invitados, ponen nombre a su equipo. Adem
 #### Interfaz «Formación» (US2)
 
 - **FR-001**: La pantalla «Formación» DEBE tener un único campo, en el que el participante elige titulares y ajusta la colocación libre de 002/FR-034. El campo de «colocación» separado DEBE eliminarse.
+- **FR-001b**: Los dorsales DEBEN asignarse automáticamente al terminar el draft, antes de «Preparar equipo», según la posición de cada jugador en la alineación automática (los dorsales fijos por casilla de 001/FR-031a para los titulares y del 1 al 24 sin repetir para el resto, 002/FR-035). Confirmar el once NO DEBE reasignarlos; el participante los sigue pudiendo editar (002/FR-036, FR-037).
 - **FR-002**: En ese campo, el participante DEBE poder: arrastrar un titular a cualquier zona del campo (002/FR-034); arrastrar un suplente sobre un titular para intercambiarlos; y arrastrar un titular sobre otro para intercambiar sus sitios. Al soltar, la posición efectiva, la penalización y los stats efectivos DEBEN actualizarse al momento (002/SC-016).
 - **FR-002a**: Al elegir otra formación, todos los titulares DEBEN pasar a las casillas de la nueva formación. Si había jugadores recolocados a mano, el sistema DEBE avisar antes de que se perderá la colocación personalizada y permitir cancelar el cambio. Si no hay recolocaciones, el cambio se aplica sin aviso. Lo mismo vale en la pantalla de gestión del descanso (FR-028).
 - **FR-003**: La colocación DEBE seguir validándose como en 002/FR-034a: 11 titulares y un único portero en la zona de portería, también en el servidor.
+- **FR-003b**: El botón principal de «Formación» DEBE ser «Confirmar alineación». Al pulsarlo con una alineación válida, DEBE guardarse y llevar a la pantalla del torneo, donde está la preparación del partido (modo y «Comenzar partido» o «Ver partido»). «Formación» NO DEBE ofrecer empezar el partido.
 - **FR-004**: Al pasar el cursor sobre la ficha de un jugador, en el campo o en el banquillo, DEBE mostrarse su carta completa (el mismo diseño de FR-008) en menos de medio segundo, sin tapar la ficha señalada y dentro de la pantalla. Al retirar el cursor, la carta DEBE ocultarse. En dispositivos táctiles, DEBE mostrarse al mantener pulsada la ficha. No DEBE mostrarse durante un arrastre.
 - **FR-005**: La vista ampliada de FR-004 DEBE estar disponible también en la pantalla de gestión del descanso (FR-028).
 
 #### Botones principales (US4)
 
-- **FR-006**: Cada pantalla del flujo de juego DEBE tener como máximo un botón principal, que es el que hace avanzar en el flujo. El botón principal PUEDE cambiar según el estado de la pantalla (por ejemplo, en la 2D contra un NPC es «Finalizar partido» con el balón en juego y «Gestionar equipo» en el descanso), pero en cada momento hay como máximo uno. Como mínimo, son botones principales: «Siguiente», «Empezar partido», «Finalizar partido», «Preparar equipo», «Confirmar alineación», el botón de gestión del descanso (FR-027), los de las pantallas de derrota y de campeón (FR-041) y «Guardar» en «Mi perfil».
+- **FR-006**: Cada pantalla del flujo de juego DEBE tener como máximo un botón principal, que es el que hace avanzar en el flujo. El botón principal PUEDE cambiar según el estado de la pantalla (por ejemplo, en la 2D contra un NPC es «Finalizar partido» con el balón en juego y «Gestionar equipo» en el descanso), pero en cada momento hay como máximo uno, salvo la excepción de FR-006a. Como mínimo, son botones principales: «Siguiente», «Empezar partido», «Finalizar partido», «Preparar equipo», «Confirmar alineación», el botón de gestión del descanso (FR-027), los de las pantallas de derrota y de campeón (FR-041) y «Guardar» en «Mi perfil».
+- **FR-006a**: En el descanso y en la pausa antes de la prórroga de un partido contra un NPC, «Gestionar equipo» y «Seguir» DEBEN tener la misma importancia (el mismo estilo de botón principal), con «Seguir» a la derecha. Es la única pantalla con dos botones principales.
 - **FR-007**: El botón principal DEBE:
   - verse sin desplazar la pantalla en cualquier tamaño de ventana a partir de 360 × 640 píxeles, y seguir visible mientras el participante se desplaza por el contenido;
   - ser el control más destacado de la pantalla por tamaño, color y contraste, con un estilo común a todas las pantallas para que se reconozca al instante;
@@ -346,7 +361,7 @@ Los requisitos de este bloque afectan al motor compartido y, por tanto, a las do
 
 #### Gestión del equipo en el descanso (US5)
 
-- **FR-027**: Al llegar el descanso, y en la pausa antes de la prórroga, en los partidos contra un NPC, la pantalla del partido DEBE mostrar un botón principal para gestionar el equipo, en las dos modalidades. En los partidos entre humanos, que se resuelven con decisiones automáticas (002/FR-030), el botón NO DEBE mostrarse y la pausa solo ofrece seguir.
+- **FR-027**: Al llegar el descanso, y en la pausa antes de la prórroga, en los partidos contra un NPC, la pantalla del partido DEBE mostrar un botón para gestionar el equipo y otro para seguir, los dos como botones principales (FR-006a), en las dos modalidades. En los partidos entre humanos, que se resuelven con decisiones automáticas (002/FR-030), el botón NO DEBE mostrarse y la pausa solo ofrece seguir.
 - **FR-028**: Ese botón DEBE abrir una pantalla con el mismo campo y los mismos gestos de la pantalla «Formación» (FR-001 y FR-002), que muestre el estado del equipo en ese momento: los jugadores que están en el campo y su colocación, el banquillo, las sustituciones que quedan (001/FR-042) y las tarjetas y lesiones de cada jugador. Desde ella el participante DEBE poder hacer sustituciones, recolocar jugadores y cambiar la formación, la táctica y los lanzadores (001/FR-045).
 - **FR-029**: Esa pantalla DEBE impedir los cambios no permitidos: superar el número de sustituciones, meter a un jugador ya sustituido o expulsado, o dejar una alineación inválida. Los cambios DEBEN validarse también en el servidor.
 - **FR-030**: Los cambios confirmados DEBEN aplicarse al resto del partido igual que los cambios del descanso de 001/FR-045, y DEBEN producir exactamente el mismo partido que los mismos cambios hechos con los selectores actuales.
@@ -354,7 +369,7 @@ Los requisitos de este bloque afectan al motor compartido y, por tanto, a las do
 
 #### Modo de simulación por partido (US3)
 
-- **FR-032**: El participante DEBE elegir el modo de simulación («Simulación rápida» o «Simulación 2D») en la pantalla de preparación de cada partido. El selector DEBE aparecer preseleccionado con el último modo que usó ese participante en la partida; en una partida nueva, con el último que usó el usuario registrado en cualquier partida (se guarda en su cuenta); y, si no hay ninguno (primera vez o invitado), con «Simulación rápida».
+- **FR-032**: El participante DEBE elegir el modo de simulación («Simulación rápida» o «Simulación 2D») en la tarjeta de preparación de cada partido, en la pantalla del torneo; el selector NO DEBE aparecer en «Formación». El selector DEBE aparecer preseleccionado con el último modo que usó ese participante en la partida; en una partida nueva, con el último que usó el usuario registrado en cualquier partida (se guarda en su cuenta); y, si no hay ninguno (primera vez o invitado), con «Simulación rápida».
 - **FR-033**: La elección DEBE afectar solo a la presentación de ese partido y solo para ese participante. En un partido entre humanos, cada uno PUEDE ver el partido en un modo distinto, con el mismo resultado y los mismos eventos (Principio V).
 - **FR-034**: El tipo de simulación DEBE dejar de elegirse al crear la partida, y la opción DEBE eliminarse de la configuración de la partida.
 - **FR-035**: Una vez empezado un partido, su modo NO DEBE poder cambiarse, salvo para ir al resultado con «Finalizar partido».
@@ -366,6 +381,7 @@ Los requisitos de este bloque afectan al motor compartido y, por tanto, a las do
 - **FR-037a**: Errores por nivel: cada nivel DEBE cometer errores de decisión creíbles, que un jugador reconocería como errores propios de alguien que juega peor, no como decisiones absurdas. Por ejemplo: elegir en el draft una carta de más media que no encaja en la plantilla, dejar en el banquillo a un jugador mejor, colocar a un jugador fuera de su posición, o elegir una táctica poco adecuada al rival. La frecuencia y la gravedad de los errores DEBEN bajar con el nivel.
 - **FR-037b**: El nivel PRO DEBE apenas cometer errores, pero NO DEBE tomar siempre la mejor opción: también DEBE tomar de vez en cuando decisiones dudosas, para que un humano tenga opciones reales de ganarle. Esto sustituye a 001/FR-060.
 - **FR-038**: Los niveles DEBEN seguir siendo ordenados: contra el mismo participante, cada nivel DEBE ganar más partidos que el inferior (001/SC-010). Este orden es una consecuencia medida de la calidad de las decisiones, no un resultado impuesto.
+- **FR-038a**: Al crear la partida, el anfitrión DEBE elegir un nivel de dificultad: «Fácil», «Normal» (preseleccionado y valor por defecto si no se indica) o «Difícil». La dificultad solo decide los niveles de los NPC que rellenan plazas automáticamente (al crear una partida de invitado o al empezar el draft): «Fácil», amateur e intermedio a partes iguales; «Normal», amateur, intermedio o avanzado al azar (001/FR-059); «Difícil», intermedio y avanzado a partes iguales. «A partes iguales» significa que el número de NPC de cada nivel difiere como mucho en uno y que el nivel sobrante y el orden se sortean con la semilla de la partida. El relleno NUNCA DEBE usar el nivel PRO, y los NPC añadidos a mano por el anfitrión conservan el nivel elegido, incluido PRO. La dificultad se muestra en la sala y no se puede cambiar una vez creada la partida. Las partidas creadas antes de este requisito tienen dificultad «Normal».
 
 #### Feedback de derrota y de campeón (US10)
 
@@ -396,6 +412,8 @@ Los requisitos de este bloque afectan al motor compartido y, por tanto, a las do
 - **002/FR-007** y **002/FR-008**: la duración máxima de la apertura de sobre pasa de 6 a 8 segundos (FR-013), y 002/SC-017 se actualiza en consecuencia.
 - **002/FR-026**: al finalizar un partido 2D, se pasa a una pantalla de resultado sin campo (FR-024).
 - **002/FR-034** y **002/US7**: la colocación libre se hace en el campo de la alineación, no en un campo aparte (FR-001).
+- **001/FR-001** y **001/FR-059**: al crear la partida se elige una dificultad que decide los niveles del relleno automático de NPC (FR-038a); con «Normal» el relleno es el de 001/FR-059.
+- **001/FR-031a** y **002/FR-035**: los dorsales iniciales se asignan al terminar el draft, según la alineación automática, y no al definir el primer once (FR-001b).
 
 ### Key Entities *(include if feature involves data)*
 
@@ -450,6 +468,7 @@ Salvo que se diga otra cosa, las series de partidos se juegan entre equipos equi
 - **SC-020a**: En un playoff de 16 contra NPC en el que el participante cae en octavos, desde que pulsa el botón de simular el resto del torneo hasta que ve la pantalla del campeón pasan menos de 5 segundos, con un solo clic, y el 100 % de los partidos pendientes aparecen después con su resultado en el cuadro y en las tablas de goleadores y asistentes.
 - **SC-021**: El 100 % de los participantes, incluidos los invitados y los NPC, tienen un nombre de equipo que aparece en todas las pantallas de FR-044, y en ninguna partida hay dos equipos con el mismo nombre.
 - **SC-022**: En el 100 % de las combinaciones de diseño y colores de equipación probadas, la vista previa coincide con lo que se ve en la preparación y en el partido, y los dos equipos de un partido se distinguen.
+- **SC-023**: En series de partidos con 3-4-3, 4-2-3-1 y 4-3-3, los extremos y mediapuntas (ED, EI y MCO) marcan entre el 25 % y el 50 % de los goles de su equipo. Llegan al área según la jugada (con el balón en el último tercio o cuando un compañero progresa conduciendo o regateando) y un regate ganado en campo rival puede llevarlos hacia dentro (hallazgo H11 de la validación).
 
 ## Assumptions
 

@@ -42,8 +42,8 @@ const ENLACES = [
 export function Marco() {
   const { usuario } = useSesion();
   const ubicacion = useLocation();
-  const tipoSimulacion = usePartidaActiva((s) => s.tipoSimulacion);
-  const compacta = /^\/partidas\/[^/]+\/partido\//.test(ubicacion.pathname) && tipoSimulacion === '2d';
+  const modalidadPartido = usePartidaActiva((s) => s.modalidadPartido);
+  const compacta = /^\/partidas\/[^/]+\/partido\//.test(ubicacion.pathname) && modalidadPartido === '2d';
   const [modal, setModal] = useState(false);
   const [sonido, setSonido] = useSonido();
   useEffect(prepararDesbloqueo, []);
@@ -108,7 +108,10 @@ export function Marco() {
           <span aria-hidden="true">{sonido ? '🔊' : '🔇'}</span>
         </button>
       </nav>
-      <Outlet />
+      {/* Contenedor único bajo la barra de navegación: la barra del botón principal es `sticky` dentro de él (FR-007). */}
+      <div className={compacta ? 'contenido compacto' : 'contenido'}>
+        <Outlet />
+      </div>
       {modal && (
         <div className="modal-fondo">
           <div className="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-abandono">

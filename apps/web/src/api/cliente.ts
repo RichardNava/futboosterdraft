@@ -54,8 +54,9 @@ export async function api<T>(ruta: string, opciones: OpcionesPeticion = {}): Pro
 // ---------- Partidos (spec 002, contracts/http-api.md) ----------
 
 /** «Comenzar partido» o «Ver partido»: en directo contra un NPC, o la reproducción de un partido entre humanos. */
-export function abrirPartido(partidoId: string): Promise<{ modo: 'directo' | 'reproduccion' }> {
-  return api(`/api/partidos/${partidoId}/abrir`, { metodo: 'POST', idempotente: true });
+/** Abre el partido con la modalidad elegida (spec 003, FR-032 a FR-035); si ya estaba abierto, devuelve la suya. */
+export function abrirPartido(partidoId: string, modalidad: 'rapida' | '2d' = 'rapida'): Promise<{ modo: 'directo' | 'reproduccion'; modalidad: 'rapida' | '2d' }> {
+  return api(`/api/partidos/${partidoId}/abrir`, { metodo: 'POST', idempotente: true, cuerpo: { modalidad } });
 }
 
 /** Partido entre humanos ya resuelto, entero: el mismo para los dos participantes. */
@@ -76,4 +77,14 @@ export function revelarResultado(partidoId: string): Promise<{ ok: true }> {
 /** «Siguiente jornada» con un solo humano (research R9). */
 export function siguienteJornada(partidaId: string): Promise<{ ok: true; jornadaActual: number | null }> {
   return api(`/api/partidas/${partidaId}/siguiente-jornada`, { metodo: 'POST', idempotente: true });
+}
+
+/** «Simular resto del torneo» (spec 003, FR-041a): juega lo que queda y devuelve el campeón. */
+export function simularResto(partidaId: string): Promise<{ ok: true; campeon: { id: string; nombre: string } }> {
+  return api(`/api/partidas/${partidaId}/simular-resto`, { metodo: 'POST', idempotente: true });
+}
+
+/** Pantalla de derrota o de campeón ya vista (spec 003, FR-041). */
+export function marcarPantallaVista(partidaId: string, pantalla: 'derrota' | 'campeon'): Promise<{ ok: true }> {
+  return api(`/api/partidas/${partidaId}/pantalla-vista`, { metodo: 'POST', cuerpo: { pantalla } });
 }

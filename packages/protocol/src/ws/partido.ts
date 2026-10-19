@@ -5,7 +5,8 @@ import { z } from 'zod';
 import { RequestId } from './base';
 import { AccionVisibleSchema, FotogramaSchema } from './partido2d';
 
-const Equipacion = z.object({ principal: z.string(), secundario: z.string() });
+/** Equipación v2 (spec 003, FR-045). */
+const Equipacion = z.object({ diseno: z.string(), colores: z.array(z.string()) });
 
 export const EventoPartidoSchema = z.object({
   tick: z.number(),
@@ -26,6 +27,8 @@ export const MsgPreparacionInicio = z.object({
   rival: z.object({ id: z.string(), nombre: z.string(), bajas: z.array(z.number()), humano: z.boolean() }),
   /** Plazo de la jornada; solo con varios humanos (research R9). */
   venceEn: z.string().datetime().optional(),
+  /** Modalidad preseleccionada: la última que usó el participante (o su perfil), `rapida` si no hay (FR-032). */
+  modalidadPreferida: z.enum(['rapida', '2d']),
 });
 
 export const MsgPartidoInicio = z.object({
@@ -39,6 +42,11 @@ export const MsgPartidoInicio = z.object({
   equipaciones: z.object({ local: Equipacion, visitante: Equipacion }),
   /** false al ver un partido entre humanos ya resuelto: no hay panel de cambios (FR-030). */
   decisiones: z.boolean(),
+  /**
+   * Se puede gestionar el equipo durante el partido (spec 003, FR-027, FR-031): solo contra un NPC. Los partidos
+   * entre humanos se juegan con decisiones automáticas.
+   */
+  gestionDisponible: z.boolean(),
   /** Orden de los jugadores en los fotogramas v2 (los del local y después los del visitante). */
   ordenJugadores: z.array(z.number().int()),
   /** Dorsales que se han dado al empezar a convocados que no tenían (FR-038). */
@@ -112,3 +120,18 @@ export const MsgPartidoDecision = z.object({
   datos: z.record(z.unknown()),
 });
 export type MsgPartidoDecision = z.infer<typeof MsgPartidoDecision>;
+
+/**
+ * Lote de decisiones de la gestión del equipo (spec 003, research R17): todo o nada, en orden e idempotente por
+ * `requestId`. Si falla, el `ack` lleva `error.indice` con la posición de la decisión que no valía.
+ */
+export const MsgPartidoDecisiones = z.object({
+  t: z.literal('partido.decisiones'),
+  requestId: RequestId,
+  partidoId: z.string(),
+  decisiones: z
+    .array(z.object({ tipo: z.enum(['sustitucion', 'formacion', 'tactica', 'lanzadores', 'recolocacion']), datos: z.record(z.unknown()) }))
+    .min(1)
+    .max(20),
+});
+export type MsgPartidoDecisiones = z.infer<typeof MsgPartidoDecisiones>;

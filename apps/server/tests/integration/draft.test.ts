@@ -1,3 +1,4 @@
+import { parametrosActuales } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
@@ -6,6 +7,9 @@ import { ClienteWs } from '../helpers/clienteWs';
 import { crearInvitado, crearRegistrado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
 const TURNO_MS = 45_000;
+
+/** Margen del primer turno de cada sobre por la animación de apertura: 8 s en la spec 003 (FR-013, T082). */
+const MARGEN_MS = parametrosActuales().draft.margenAnimacionS * 1000;
 
 describe('draft (US1)', () => {
   let bd: BdPruebas;
@@ -28,7 +32,7 @@ describe('draft (US1)', () => {
     const invitado = await crearInvitado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: invitado.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ...cuerpo },
+      cuerpo: { modo: 'liga', numParticipantes: 4, ...cuerpo },
     });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     return { invitado, partida: r.cuerpo };
@@ -88,7 +92,7 @@ describe('draft (US1)', () => {
     const ws = inicio.ws;
     let turno = inicio.turno;
     const turnos = [turno];
-    expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(TURNO_MS + 6_000);
+    expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(TURNO_MS + MARGEN_MS);
     for (let i = 0; i < 23; i++) {
       const desde = ws.recibidos.length;
       await ws.enviarYEsperarAck({ t: 'draft.elegir', ronda: turno.ronda, turno: turno.turno, jugadorId: turno.sobre.cartas[0].id });
@@ -96,7 +100,7 @@ describe('draft (US1)', () => {
       turnos.push(turno);
       // Al reconectar en el primer turno de la segunda ronda: la instantánea no pide la animación.
       if (turno.ronda === 2 && turno.turno === 1) {
-        expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(TURNO_MS + 6_000);
+        expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(TURNO_MS + MARGEN_MS);
         const otra = await ClienteWs.conectar(srv.urlWs, partida.id, invitado.cookie);
         const estado = await otra.esperar('estado');
         expect(estado.vista.draft.turno).toBe(1);
@@ -119,9 +123,10 @@ describe('draft (US1)', () => {
     const { invitado, partida } = await partidaInvitado();
     const { ws, turno } = await iniciarConCliente(invitado, partida.id);
     const desde = ws.recibidos.length;
-    // El primer turno de la ronda suma el margen de la animación de apertura (FR-008).
+    // El primer turno de la ronda suma el margen de la animación de apertura: 8 s (spec 003, FR-013).
     const plazo = Date.parse(turno.venceEn) - srv.reloj.ahora();
-    expect(plazo).toBe(TURNO_MS + 6_000);
+    expect(plazo).toBe(TURNO_MS + MARGEN_MS);
+    expect(MARGEN_MS).toBe(8000);
     srv.reloj.avanzar(plazo - 1000);
     await new Promise((r) => setTimeout(r, 100));
     expect(ws.recibidos.slice(desde).some((m) => m.t === 'draft.turno')).toBe(false);
@@ -197,13 +202,13 @@ describe('draft (US1)', () => {
     const anfitrion = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida' },
+      cuerpo: { modo: 'liga', numParticipantes: 8 },
     });
     await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: anfitrion.cookie });
     const inicio = srv.reloj.ahora();
     const c = await srv.gestor.obtenerOError(r.cuerpo.id);
     for (let i = 0; i < 30; i++) {
-      // Hasta el plazo del turno abierto (45 s, o 51 s en el primero de cada ronda).
+      // Hasta el plazo del turno abierto (45 s, o 53 s en el primero de cada ronda).
       srv.reloj.avanzar(Math.max(1, (c.mesas[0]?.mesa.venceEn ?? srv.reloj.ahora()) - srv.reloj.ahora() + 1));
       await new Promise((res) => setTimeout(res, 150));
       const estado = (await peticion(srv.url, `/api/partidas/${r.cuerpo.id}`, { cookie: anfitrion.cookie })).cuerpo.estado;
@@ -220,7 +225,7 @@ describe('draft (US1)', () => {
     const anfitrion = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion.cookie,
-      cuerpo: { modo: 'playoff', numParticipantes: 16, tipoSimulacion: 'rapida' },
+      cuerpo: { modo: 'playoff', numParticipantes: 16 },
     });
     await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: anfitrion.cookie });
     const mesas = await bd.db.execute(sql`select indice, array_length(participantes, 1) as n from mesas order by indice`);

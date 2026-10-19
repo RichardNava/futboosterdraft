@@ -51,6 +51,7 @@ Convenciones:
 | Campo | Cambio | Detalle |
 |---|---|---|
 | `tipoSimulacion` / `tipo_simulacion` (✖) | eliminado | FR-034. La migración copia el valor a `participantes.ultima_modalidad` antes de borrar la columna (§9). |
+| `dificultad` / `dificultad` (✚) | `'facil' \| 'normal' \| 'dificil'`, `NOT NULL DEFAULT 'normal'` | FR-038a (H14). `rellenarConNPC(cantidad, semilla, dificultad)` usa `NIVELES_RELLENO_POR_DIFICULTAD`: fácil → amateur e intermedio a partes iguales; normal → amateur, intermedio o avanzado al azar; difícil → intermedio y avanzado a partes iguales. Migración `0009_dificultad.sql`. |
 
 `TipoSimulacion` se renombra a **`ModoSimulacion`** (`'rapida' | '2d'`) en `packages/domain/src/partida/partida.ts`, porque ahora es una propiedad del participante y del partido.
 
@@ -140,12 +141,12 @@ interface PerfilErrores {
 interface PerfilNPC { /* …campos actuales… */ errores: PerfilErrores }  // ✎
 ```
 
-| Nivel | probabilidad (por familia, inicial) | costeMaximo | dudosaPorDraft |
+| Nivel | probabilidad (por familia, calibrada; ver checklists/calibracion-npc.md) | costeMaximo | dudosaPorDraft |
 |---|---|---|---|
-| amateur | 350 | 6 | no |
-| intermedio | 200 | 4 | no |
-| avanzado | 80 | 2 | no |
-| PRO | 25 | 1,5 | sí |
+| amateur | 800 | 12 | no |
+| intermedio | 600 | 10 | no |
+| avanzado | 350 | 5 | no |
+| PRO | 125 | 1,5 | sí |
 | `automatico` (✚, solo para humanos ausentes) | 0 | 0 | no |
 
 **Guardarraíl** (`esErrorAdmisible`): el error se descarta, y se mantiene la decisión correcta, si se da alguno de estos casos:
@@ -262,6 +263,8 @@ Cada una va dentro de una transacción. Los pasos:
 5. `ALTER TABLE partidos ADD COLUMN modalidades jsonb NOT NULL DEFAULT '{}'::jsonb`.
 6. Convierte las equipaciones v1 a v2 (§4, `desdeV1`): `UPDATE participantes SET equipaciones = jsonb_build_object('primera', jsonb_build_object('diseno','lisa','colores', jsonb_build_array(equipaciones->'primera'->>'principal', equipaciones->'primera'->>'secundario')), 'segunda', …) WHERE equipaciones ? 'primera' AND NOT (equipaciones->'primera' ? 'diseno')`.
 7. Elimina los nombres de equipo duplicados de una misma partida (sin distinguir mayúsculas) añadiendo ` 2`, ` 3`… a los repetidos, por orden de `id`. Después: `CREATE UNIQUE INDEX participantes_nombre_equipo_uq ON participantes (partida_id, lower(nombre_equipo))`.
+
+La validación con personas añade `0009_dificultad.sql` (H14, FR-038a): `ALTER TABLE partidas ADD COLUMN dificultad text NOT NULL DEFAULT 'normal' CHECK (dificultad IN ('facil','normal','dificil'))`.
 
 Los equipos sin nombre no existen, porque la columna ya es `NOT NULL`. Los partidos con `version_parametros` 2.x se tratan como no reproducibles (research R2), sin migración de datos.
 

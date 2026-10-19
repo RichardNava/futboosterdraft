@@ -1,4 +1,4 @@
-import { PARAMETROS_V2 } from '@fbd/domain';
+import { PARAMETROS_V3 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { expulsar } from '../src/acciones/plantel';
 import type { Contexto } from '../src/acciones/contexto';
@@ -23,7 +23,7 @@ describe('reglas del motor', () => {
     const e = enDescanso();
     const eq = local(e);
     const titulares = eq.jugadores.filter((j) => j.enCampo && j.casillaId !== 'POR');
-    const banquillo = eq.jugadores.filter((j) => !j.enCampo);
+    const banquillo = eq.jugadores.filter((j) => !j.enCampo && !j.retirado);
     for (let i = 0; i < 5; i++) {
       const r = aplicarDecision(e, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[i]!.id, entra: banquillo[i]!.id } });
       expect(r.ok).toBe(true);
@@ -131,7 +131,7 @@ describe('reglas del motor', () => {
     const e = crearPartido(entrada('capitania', { local: equipo('local', { specials: ['Capitania'] }) }));
     const eq = local(e);
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V2.specials.capitania);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.specials.capitania);
   });
 
   it('Fortaleza mental solo actúa yendo por detrás', () => {
@@ -140,7 +140,7 @@ describe('reglas del motor', () => {
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
     expect(bonusEquipo(e, eq, j)).toBe(0);
     e.marcador = { local: 0, visitante: 1 };
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V2.specials.fortalezaMental);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.specials.fortalezaMental);
   });
 
   it('Santo: desde el minuto 80, en la prórroga y en eliminatoria yendo ganando o empatado; en liga antes del 80, no', () => {

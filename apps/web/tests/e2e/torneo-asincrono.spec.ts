@@ -39,7 +39,7 @@ test('dos humanos ven el mismo partido cada uno cuando quiere, sin revelarse el 
   await registrar(b);
 
   // 1. Liga de 4 con 2 humanos, plazo de 24 h y simulación 2D.
-  const r = await a.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, tipoSimulacion: '2d', plazasHumanas: 2, plazoJornadaHoras: 24 } });
+  const r = await a.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2, plazoJornadaHoras: 24 } });
   expect(r.status()).toBe(201);
   const { id: partidaId } = (await r.json()) as { id: string };
   expect((await b.request.post(`/api/partidas/${partidaId}/unirse`)).ok()).toBe(true);
@@ -67,6 +67,8 @@ test('dos humanos ven el mismo partido cada uno cuando quiere, sin revelarse el 
 
   // 2. A pulsa «Ver partido»: se resuelve sin B y A lo ve con velocidades y «Finalizar partido», sin cambios.
   await a.goto(`/partidas/${partidaId}/torneo`);
+  // El modo se elige en cada partido (spec 003, FR-032): A lo ve en 2D.
+  await a.getByLabel('Simulación 2D').check();
   await a.getByRole('button', { name: 'Ver partido' }).first().click();
   await expect(a).toHaveURL(new RegExp(`/reproduccion/${partidoId}$`));
   await expect(a.getByRole('group', { name: 'Velocidad de reproducción' })).toBeVisible();
