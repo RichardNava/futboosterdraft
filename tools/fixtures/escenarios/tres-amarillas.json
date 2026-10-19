@@ -1,7 +1,7 @@
 {
   "nombre": "tres-amarillas",
   "descripcion": "El mismo jugador ve una amarilla en cada uno de los tres partidos: en liga, la tercera acumulada supone 1 partido de sanción.",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "local": {
     "participanteId": "local",
     "jugadores": [
@@ -50,11 +50,11 @@
   },
   "eliminatoria": false,
   "semillas": [
-    "37691da1815dd9c2bf324b916462c96d",
-    "5ab670a7f45ccac42c3f3645344adc35",
-    "be370b4ffdf23230270e5ea3d964d47b"
+    "9058aedc9d9105fa1874200d40017d9d",
+    "e28505f1a91fd1fbb270ca276a1e74a6",
+    "c9f1a3e5051da548a568a7008c940d0a"
   ],
   "esperado": {
-    "jugadorId": 136
+    "jugadorId": 144
   }
 }
