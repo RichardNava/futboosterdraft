@@ -96,6 +96,35 @@ export function hayHumanosEnCompeticion(c: ControladorPartida): boolean {
   return !!c.torneo && humanosEnCompeticion(c.torneo, humanosActivos(c)).length > 0;
 }
 
+type ResumenPartido = Awaited<ReturnType<ControladorPartida['servicios']['repoPartidos']['resumenesDePartida']>>[number];
+
+/**
+ * Eliminación de un participante tal como la ve él (FR-039): no se revela hasta que ha visto el partido que
+ * lo eliminó.
+ */
+function eliminacionVista(t: EstadoTorneo, participanteId: string, partidos: readonly ResumenPartido[], pendientes: ReadonlySet<string>) {
+  const eliminacion = eliminacionDe(t, participanteId);
+  if (!eliminacion) return null;
+  const partido = partidos.find((x) => x.jornadaNumero === eliminacion.jornada && (x.localId === participanteId || x.visitanteId === participanteId));
+  return partido && pendientes.has(partido.id) ? null : eliminacion;
+}
+
+/**
+ * ¿Queda algún humano activo que, desde su vista, sigue en competición? Quien aún no ha visto el partido que
+ * lo eliminó cuenta como en competición: «Simular resto del torneo» no le adelanta el final (FR-039, FR-041b).
+ */
+async function hayHumanosEnCompeticionVisibles(c: ControladorPartida, opciones: { partidos?: readonly ResumenPartido[]; excepto?: string } = {}): Promise<boolean> {
+  const t = c.torneo;
+  if (!t || t.campeon) return false;
+  if (hayHumanosEnCompeticion(c)) return true;
+  const lista = opciones.partidos ?? (await c.servicios.repoPartidos.resumenesDePartida(c.id));
+  for (const h of humanosActivos(c)) {
+    if (h === opciones.excepto) continue;
+    if (!eliminacionVista(t, h, lista, new Set(await pendientesDe(c, h)))) return true;
+  }
+  return false;
+}
+
 /** Partidas en las que `simularResto` está en curso: no se emiten las actualizaciones intermedias. */
 const silenciosas = new WeakSet<ControladorPartida>();
 
@@ -292,7 +321,7 @@ export async function simularResto(c: ControladorPartida, ctx: ContextoComando, 
   if (!t) return { error: 'TORNEO_TERMINADO' };
   if (!eliminacionDe(t, participanteId)) return { error: 'NO_ELIMINADO' };
   if (t.campeon || c.partida.estado !== 'en_torneo') return { error: 'TORNEO_TERMINADO' };
-  if (hayHumanosEnCompeticion(c)) return { error: 'HAY_HUMANOS_EN_COMPETICION' };
+  if (await hayHumanosEnCompeticionVisibles(c, { excepto: participanteId })) return { error: 'HAY_HUMANOS_EN_COMPETICION' };
   silenciosas.add(c);
   try {
     for (let guarda = 0; guarda < 200 && !c.torneo!.campeon; guarda++) {
@@ -418,15 +447,12 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
     partidos.filter((x) => oculto.has(x.id)).map((x) => [x.localId, x.visitanteId].sort().join()),
   );
   // Eliminación propia (spec 003, FR-039): no se revela hasta que ha visto el partido que lo eliminó.
-  const eliminacion = participanteId ? eliminacionDe(t, participanteId) : null;
-  const partidoEliminacion = eliminacion
-    ? partidos.find((x) => x.jornadaNumero === eliminacion.jornada && (x.localId === participanteId || x.visitanteId === participanteId))
-    : undefined;
-  const miEliminacion =
-    eliminacion && !(partidoEliminacion && oculto.has(partidoEliminacion.id)) ? { fase: eliminacion.fase, etiqueta: ETIQUETA_FASE[eliminacion.fase] } : null;
+  const eliminacion = participanteId ? eliminacionVista(t, participanteId, partidos, oculto) : null;
+  const miEliminacion = eliminacion ? { fase: eliminacion.fase, etiqueta: ETIQUETA_FASE[eliminacion.fase] } : null;
   return {
     miEliminacion,
-    puedeSimularResto: miEliminacion !== null && !t.campeon && c.partida.estado === 'en_torneo' && !hayHumanosEnCompeticion(c),
+    puedeSimularResto:
+      miEliminacion !== null && !t.campeon && c.partida.estado === 'en_torneo' && !(await hayHumanosEnCompeticionVisibles(c, { partidos, excepto: participanteId })),
     pantallas,
     modo: t.modo,
     fase: t.fase,
