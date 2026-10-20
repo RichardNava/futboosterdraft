@@ -1,11 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.3 → 1.0.4 (PATCH: aclaración del Principio IX sobre cómo comprueba una persona no
-  técnica los criterios estadísticos; ningún principio se añade, elimina ni redefine)
-- Principios modificados: IX (aclaración: los criterios estadísticos se comprueban leyendo el informe
-  legible que genera la herramienta de equilibrado del proyecto)
-- Secciones modificadas: ninguna más
-- Secciones añadidas / eliminadas: ninguna
+- Version change: 1.0.4 → 1.1.0 (MINOR: se añade la sección "Flujo de trabajo de desarrollo" con una
+  regla nueva sobre las operaciones de git que pueden ejecutar los agentes; ningún principio se
+  elimina ni se redefine)
+- Principios modificados: ninguno
+- Secciones añadidas: "Flujo de trabajo de desarrollo" (los agentes de IA NO ejecutan `git commit`
+  ni `git push`; solo los sugieren con el comando listo para copiar)
+- Secciones eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
 - TODOs pendientes: añadir a "Decisiones resueltas" la referencia a `specs/003-mejoras-ux-simulacion/`
   al cerrar esa spec (tasks.md T126)
@@ -239,6 +240,29 @@ implementarse:
   efecto en la composición de los sobres. Siempre dentro de los límites del Principio VII.
 - Modos de juego adicionales a liga, playoff y mixto.
 
+## Flujo de trabajo de desarrollo
+
+### Operaciones de git reservadas a personas
+
+- Un agente de IA (Claude u otro asistente automatizado) NO DEBE ejecutar `git commit` ni
+  `git push`, en ninguna de sus variantes (incluidos `--amend`, `--force` y los que se lanzan desde
+  scripts, hooks o comandos de Spec Kit). Confirmar y publicar cambios es tarea humana.
+- Cuando el agente considere oportuno confirmar o publicar cambios, DEBE sugerirlo al final de su
+  respuesta acompañado del comando exacto, listo para que la persona lo copie y lo ejecute si lo
+  considera oportuno. Por ejemplo:
+
+  ```
+  git add <ficheros>
+  git commit -m "<mensaje>"
+  git push
+  ```
+
+- El agente PUEDE usar las operaciones de git que no crean commits ni modifican el remoto
+  (`git status`, `git diff`, `git log`, etc.) para informar su trabajo.
+
+**Razón:** el historial del repositorio y lo que se publica en el remoto son responsabilidad de una
+persona, que revisa los cambios antes de confirmarlos.
+
 ## Governance
 
 - Esta constitución establece los principios que DEBEN respetarse durante el diseño, la
@@ -256,4 +280,4 @@ implementarse:
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.0.4 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-19
+**Version**: 1.1.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-20
