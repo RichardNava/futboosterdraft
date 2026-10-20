@@ -1,8 +1,9 @@
 /**
  * Repositorio de partidas y participantes.
  */
-import { plazasHumanasEfectivas, type ConfigPartida, type EstadoPartida, type NivelNPC } from '@fbd/domain';
-import { and, asc, desc, eq, inArray } from 'drizzle-orm';
+import { plazasHumanasEfectivas, type ConfigPartida, type Equipaciones, type EstadoPartida, type ModoSimulacion, type NivelNPC } from '@fbd/domain';
+import { errores } from '../../http/errores';
+import { and, asc, desc, eq, inArray, isNull } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
 import { participantes, partidas, usuarios } from '../esquema/index';
 
@@ -26,9 +27,9 @@ export class RepoPartidas {
         modo: config.modo,
         numParticipantes: config.numParticipantes,
         plazasHumanas: plazasHumanasEfectivas(config),
-        tipoSimulacion: config.tipoSimulacion,
         plazoJornadaHoras: config.plazoJornadaHoras,
         npcConfig: config.npc,
+        dificultad: config.dificultad,
         tiempos: config.tiempos,
         colecciones: config.colecciones,
         semilla: datos.semilla,
@@ -38,6 +39,18 @@ export class RepoPartidas {
       })
       .returning();
     return fila!;
+  }
+
+  /** Última modalidad con la que el participante abrió un partido (spec 003, FR-032). */
+  async fijarUltimaModalidad(participanteId: string, modalidad: ModoSimulacion, ejecutor: Ejecutor = this.db): Promise<void> {
+    await ejecutor.update(participantes).set({ ultimaModalidad: modalidad }).where(eq(participantes.id, participanteId));
+  }
+
+  /** Marca vista la pantalla de derrota o la del campeón (spec 003, FR-041); solo escribe la primera vez. */
+  async marcarPantallaVista(participanteId: string, pantalla: 'derrota' | 'campeon', ahora: number, ejecutor: Ejecutor = this.db): Promise<void> {
+    const columna = pantalla === 'derrota' ? participantes.derrotaVistaEn : participantes.campeonVistoEn;
+    const valor = pantalla === 'derrota' ? { derrotaVistaEn: new Date(ahora) } : { campeonVistoEn: new Date(ahora) };
+    await ejecutor.update(participantes).set(valor).where(and(eq(participantes.id, participanteId), isNull(columna)));
   }
 
   async obtener(id: string, ejecutor: Ejecutor = this.db): Promise<FilaPartida | undefined> {
@@ -66,12 +79,27 @@ export class RepoPartidas {
     usuarioId: string,
     nombreEquipo: string,
     ejecutor: Ejecutor = this.db,
+    equipaciones: Equipaciones | null = null,
   ): Promise<FilaParticipante> {
     const [fila] = await ejecutor
       .insert(participantes)
-      .values({ partidaId, tipo: 'humano', usuarioId, nombreEquipo })
+      .values({ partidaId, tipo: 'humano', usuarioId, nombreEquipo, equipaciones })
       .returning();
     return fila!;
+  }
+
+  /** Cambia el nombre del equipo (spec 003, FR-042); la violación del índice único es `NOMBRE_REPETIDO`. */
+  async cambiarNombreEquipo(participanteId: string, nombreEquipo: string, ejecutor: Ejecutor = this.db): Promise<void> {
+    try {
+      await ejecutor.update(participantes).set({ nombreEquipo }).where(eq(participantes.id, participanteId));
+    } catch (e) {
+      const causa = (e as { cause?: { code?: string; constraint?: string }; code?: string; constraint?: string });
+      const pg = causa.cause ?? causa;
+      if (pg.code === '23505' && pg.constraint === 'participantes_nombre_equipo_uq') {
+        throw errores.conflicto('NOMBRE_REPETIDO', 'Ese nombre ya lo usa otro equipo');
+      }
+      throw e;
+    }
   }
 
   async anadirNPC(

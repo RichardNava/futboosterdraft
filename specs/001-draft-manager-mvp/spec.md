@@ -66,6 +66,8 @@ Con su plantilla de 24 jugadores, el participante elige una de las diez formacio
 
 ### User Story 3 - Jugar un partido en simulación rápida (Priority: P1)
 
+*[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): el modo (rápida o 2D) se elige al abrir cada partido, no al crear la partida (003/FR-032).]*
+
 Dos equipos se enfrentan. En simulación rápida, el participante ve al instante el resultado al descanso y un resumen de las acciones relevantes de la primera parte (goles, tarjetas, ocasiones, lesiones). Puede hacer sustituciones y cambios tácticos y, cuando ambos rivales pulsan "Seguir", ve el resultado final con el resumen ampliado de la segunda parte, y de la prórroga y los penaltis si los hay.
 
 **Why this priority**: Cierra el ciclo central del juego (Principio X). Es la modalidad más barata de visualizar y permite validar el motor de simulación.
@@ -83,6 +85,8 @@ Dos equipos se enfrentan. En simulación rápida, el participante ve al instante
 ---
 
 ### User Story 4 - Competir en un torneo: liga, playoff o mixto (Priority: P2)
+
+*[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): en el escenario 4, el PRO toma alguna decisión dudosa (003/FR-037b); los niveles bajos cometen errores creíbles (003/FR-037).]*
 
 El anfitrión crea una partida eligiendo modo de juego (liga, playoff o mixto), número de participantes, tipo de simulación y, opcionalmente, la cantidad y nivel de NPC. Tras el draft, los participantes juegan todas las jornadas del torneo y consultan clasificación, calendario y cuadro eliminatorio hasta conocer al campeón.
 
@@ -169,7 +173,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 #### Sala, partida y participantes
 
 - **FR-000**: El sistema DEBE permitir jugar como invitado, sin cuenta, solo en partidas en directo en las que el invitado sea el único humano y el resto de participantes sean NPC. Para unirse a una partida con otros humanos, crearla o jugar un torneo asíncrono DEBE ser necesaria una cuenta registrada. Una partida de invitado pasa a "abandonada" si el invitado cierra la sesión o pasa 10 minutos seguidos sin ninguna conexión; antes de ese plazo puede reconectar y continuar donde lo dejó.
-- **FR-001**: El sistema DEBE permitir a un usuario (registrado, o invitado según FR-000) crear una partida como anfitrión, eligiendo modo de juego (liga, playoff o mixto), número de participantes, tipo de simulación (rápida o 2D), ritmo del torneo (en directo o asíncrono) y la configuración de NPC. *[Actualizado por la spec 002: desaparece el ritmo «en directo» entre humanos; los torneos son siempre asíncronos y con un solo humano no hay plazos (002/FR-030).]*
+- **FR-001**: El sistema DEBE permitir a un usuario (registrado, o invitado según FR-000) crear una partida como anfitrión, eligiendo modo de juego (liga, playoff o mixto), número de participantes, tipo de simulación (rápida o 2D), ritmo del torneo (en directo o asíncrono) y la configuración de NPC. *[Actualizado por la spec 002: desaparece el ritmo «en directo» entre humanos; los torneos son siempre asíncronos y con un solo humano no hay plazos (002/FR-030).]* *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): el anfitrión ya no elige el tipo de simulación; se elige en cada partido (003/FR-032, 003/FR-034).]*
 - **FR-002**: El sistema DEBE permitir a otros usuarios unirse a una partida abierta hasta completar las plazas.
 - **FR-003**: El sistema DEBE rellenar las plazas libres con NPC cuando venza el tiempo de búsqueda (por defecto, 3 minutos) o cuando el anfitrión lo solicite.
 - **FR-004**: El tipo de simulación elegido al crear la partida DEBE aplicarse a todos los partidos de ese torneo.
@@ -230,14 +234,14 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   - Si el designado no está en el campo (sustituido, expulsado o lesionado), lanza el siguiente mejor candidato según el mismo criterio. En una tanda de penaltis, los jugadores que no estaban en el campo al final del partido NO DEBEN lanzar.
 - **FR-030**: El sistema DEBE rechazar configuraciones tácticas incompatibles y alineaciones inválidas, tanto desde la interfaz como en la validación del servidor.
 - **FR-031**: Si un participante no confirma alineación a tiempo, el sistema DEBE usar su última alineación válida o, si no existe, generar una alineación automática que minimice las posiciones incorrectas.
-- **FR-031a**: Al definir por primera vez el once (en el tiempo de preparación tras el draft, o al generarse la alineación automática), el sistema DEBE asignar automáticamente un dorsal a cada uno de los 24 jugadores de la plantilla: *[Actualizado por la spec 002: los dorsales iniciales van del 1 al 24 (002/FR-035); reasignar un dorsal deja sin dorsal a quien lo llevaba (002/FR-037) y al empezar un partido los convocados sin dorsal reciben el libre más bajo (002/FR-038).]*
+- **FR-031a**: Al definir por primera vez el once (en el tiempo de preparación tras el draft, o al generarse la alineación automática), el sistema DEBE asignar automáticamente un dorsal a cada uno de los 24 jugadores de la plantilla: *[Actualizado por la spec 002: los dorsales iniciales van del 1 al 24 (002/FR-035); reasignar un dorsal deja sin dorsal a quien lo llevaba (002/FR-037) y al empezar un partido los convocados sin dorsal reciben el libre más bajo (002/FR-038).]* *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): los dorsales iniciales se asignan al terminar el draft, según la alineación automática (003/FR-001b).]*
   - **Titulares**, según la casilla que ocupan: POR → 1, LD y CD (carrilero derecho) → 2, LI y CI (carrilero izquierdo) → 3, central derecho (DCD) → 4, central izquierdo (DCI) → 5, MD → 6, MC/MII/MID → 8, MCO → 10, EI → 7, DC → 9 y ED → 11.
   - Si dos casillas comparten dorsal fijo (p. ej. dos MC, o MII y MID), lo recibe la primera en el orden de la formación (de atrás adelante y de derecha a izquierda) y las demás reciben uno aleatorio.
   - **Resto de jugadores**, y titulares en casillas sin dorsal fijo (el central del medio de una defensa de 3 o 5, el SD): un dorsal aleatorio libre.
   - Los dorsales DEBEN ser únicos dentro de la plantilla y estar entre 1 y 99.
   - Quedan fijos para todo el torneo: cambiar después la alineación NO los reasigna.
   - El participante DEBE poder editarlos en cualquier momento fuera de un partido, respetando la unicidad.
-- **FR-031b**: Al terminar el draft, el sistema DEBE asignar a cada participante colores aleatorios para su **primera** y su **segunda equipación** (cada una con un color principal y uno secundario), que el participante DEBE poder editar. En cada partido, el local usa la primera equipación. El visitante usa la primera salvo que se confunda con la del local, en cuyo caso usa la segunda.
+- **FR-031b**: Al terminar el draft, el sistema DEBE asignar a cada participante colores aleatorios para su **primera** y su **segunda equipación** (cada una con un color principal y uno secundario), que el participante DEBE poder editar. En cada partido, el local usa la primera equipación. El visitante usa la primera salvo que se confunda con la del local, en cuyo caso usa la segunda. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): cada equipación tiene un diseño (lisa, rayas, franjas, banda o mitades) y de 1 a 3 colores; el parecido se mide con todos sus colores (003/FR-045 a FR-047).]*
 
 #### Motor de simulación
 
@@ -274,7 +278,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 #### Simulación rápida
 
 - **FR-044**: En simulación rápida, al empezar el partido el sistema DEBE mostrar inmediatamente el marcador al descanso y el resumen de eventos relevantes de la primera parte (goles con autor y asistente, tarjetas, ocasiones claras, lesiones), cada uno con su minuto.
-- **FR-045**: En el descanso (y antes de la prórroga), el participante DEBE poder hacer sustituciones y cambios de formación y táctica, que se aplicarán al resto del partido.
+- **FR-045**: En el descanso (y antes de la prórroga), el participante DEBE poder hacer sustituciones y cambios de formación y táctica, que se aplicarán al resto del partido. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): los cambios del descanso se hacen desde la pantalla con campo (003/FR-028).]*
 - **FR-046**: En un partido entre dos humanos, la segunda parte (o la prórroga) NO DEBE empezar hasta que ambos pulsen "Seguir" o venza el tiempo de descanso (por defecto, 2 minutos). En un partido contra un NPC, empieza cuando el humano pulse "Seguir". *[Actualizado por la spec 002: no hay partidos síncronos entre humanos ni «Seguir» de ambos; en el descanso espera solo el único humano del partido (002/FR-012, FR-030).]*
 - **FR-047**: Al terminar, el sistema DEBE mostrar el resumen completo del partido, incluidas prórroga y tanda de penaltis si las hubo, y estadísticas básicas (posesión, tiros, tiros a puerta, córners, faltas, tarjetas).
 
@@ -282,7 +286,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 
 - **FR-048**: En simulación 2D, el sistema DEBE mostrar el campo, los jugadores como círculos con los colores de la equipación que use su equipo en ese partido, su dorsal y su nombre, el balón, el marcador y el minuto.
 - **FR-049**: El usuario DEBE poder elegir entre las velocidades x2, x4, x8, x16 y x32 en cualquier momento, sin que cambie el desarrollo del partido. En un partido entre dos humanos, la reproducción DEBE avanzar a la menor de las velocidades elegidas por ambos. *[Actualizado por la spec 002: velocidades x2, x4 y x8, con partidos de 4, 2 y 1 minuto; desaparece la velocidad mínima común (002/FR-025).]*
-- **FR-050**: El participante DEBE poder solicitar sustituciones y cambios tácticos en cualquier momento; el sistema DEBE aplicarlos en la siguiente interrupción del juego y notificar a ambos participantes cuándo se hacen efectivos.
+- **FR-050**: El participante DEBE poder solicitar sustituciones y cambios tácticos en cualquier momento; el sistema DEBE aplicarlos en la siguiente interrupción del juego y notificar a ambos participantes cuándo se hacen efectivos. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): en la 2D, los cambios con el balón en juego se piden desde «Gestionar equipo», que pausa la reproducción; los selectores desaparecen (003/FR-031).]*
 
 #### Torneos
 
@@ -308,7 +312,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **FR-057**: Los NPC DEBEN draftear, preparar alineación y táctica, hacer cambios y jugar sin intervención humana, respetando los mismos límites de tiempo y reglas que los humanos.
 - **FR-058**: Existirán cuatro niveles de NPC —amateur, intermedio, avanzado y PRO— con calidad de decisión creciente en draft, alineación, táctica y cambios.
 - **FR-059**: El relleno automático de plazas DEBE asignar al azar los niveles amateur, intermedio o avanzado; el nivel PRO solo DEBE estar disponible cuando el anfitrión lo selecciona explícitamente.
-- **FR-060**: El NPC PRO DEBE elegir siempre la opción que el sistema evalúa como mejor en el draft (considerando las necesidades de su plantilla, no solo la media), en la alineación y en la táctica.
+- **FR-060**: El NPC PRO DEBE elegir siempre la opción que el sistema evalúa como mejor en el draft (considerando las necesidades de su plantilla, no solo la media), en la alineación y en la táctica. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): el PRO apenas comete errores, pero toma una decisión dudosa por draft (003/FR-037b).]*
 
 #### Integridad
 
@@ -350,7 +354,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   - Catenaccio produce menos posesión en campo rival y menos goles en contra que Bloque medio.
   - Línea adelantada provoca más fueras de juego.
   - Contraataque produce menos posesión y Juego combinativo, más.
-- **SC-007**: La media de goles por partido en series de 1.000 partidos entre equipos equilibrados se sitúa entre 2,0 y 3,5, y menos del 2 % de los partidos terminan con 8 o más goles en total.
+- **SC-007**: La media de goles por partido en series de 1.000 partidos entre equipos equilibrados se sitúa entre 2,0 y 3,5, y menos del 2 % de los partidos terminan con 8 o más goles en total. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): la media se estrecha a 2,6–3,4 goles como media de torneo o de serie (003/SC-001).]*
 - **SC-008**: Con las mismas condiciones, decisiones y semilla, la simulación rápida y la 2D producen el mismo resultado y los mismos eventos en el 100 % de los casos comprobados.
 - **SC-009**: En simulación rápida, el resultado del descanso aparece en menos de 3 segundos desde el inicio del partido y el resultado final en menos de 3 segundos tras pulsar "Seguir".
 - **SC-010**: En un torneo completo, un NPC PRO termina por delante de un NPC amateur en al menos el 80 % de los torneos con la misma configuración, y un NPC avanzado por delante de uno amateur en al menos el 65 %.

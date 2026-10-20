@@ -1,3 +1,4 @@
+import { parametrosActuales } from '@fbd/domain';
 import { GenericContainer, type StartedTestContainer } from 'testcontainers';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
@@ -54,7 +55,7 @@ describe('torneo asíncrono (spec 001/US4 y spec 002/US11; FR-030)', () => {
     const b = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: a.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazoJornadaHoras: 24, plazasHumanas: 2 },
+      cuerpo: { modo: 'liga', numParticipantes: 4, plazoJornadaHoras: 24, plazasHumanas: 2 },
     });
     const partidaId: string = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: b.cookie });
@@ -62,9 +63,9 @@ describe('torneo asíncrono (spec 001/US4 y spec 002/US11; FR-030)', () => {
     await wa.esperar('estado');
     await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: a.cookie });
     // El draft de una partida asíncrona se juega en directo, con turnos de 45 s (FR-056c); el primero de cada
-    // ronda, con los 6 s de margen de la animación de apertura (FR-008).
+    // ronda, con el margen de la animación de apertura (8 s en la spec 003, FR-013).
     const turno = await wa.esperar('draft.turno');
-    expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(45_000 + 6_000);
+    expect(Date.parse(turno.venceEn) - srv.reloj.ahora()).toBe(45_000 + parametrosActuales().draft.margenAnimacionS * 1000);
     await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, a)).jornadaActual === 1);
     return { a, b, partidaId, wa };
   }
@@ -172,7 +173,7 @@ describe('torneo asíncrono (spec 001/US4 y spec 002/US11; FR-030)', () => {
 
   it('con un solo humano no hay plazos y los NPC contra NPC se resuelven al abrir la jornada', async () => {
     const u = await crearRegistrado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     const partidaId: string = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: u.cookie });
     await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).jornadaActual === 1);
@@ -219,7 +220,15 @@ describe('torneo asíncrono (spec 001/US4 y spec 002/US11; FR-030)', () => {
     await avanzarHasta(srv, 1000, async () => (await torneo(srv, partidaId, a)).jornadaActual === 2);
     const t = await torneo(srv, partidaId, a);
     expect(t.jornadas[0].estado).toBe('cerrada');
-    expect(t.jornadas[0].partidos.some((p: any) => p.resueltoAutomaticamente && p.resolucion === 'plazo')).toBe(true);
+    // Si a juega contra b, el único partido resuelto por plazo es el suyo y su vista lo oculta (pendiente de
+    // ver): la resolución se comprueba en la base de datos.
+    const { partidos } = await import('../../src/persistencia/esquema/index');
+    const { inArray } = await import('drizzle-orm');
+    const ids = t.jornadas[0].partidos.map((p: any) => p.partidoId).filter(Boolean);
+    const filas = await bd.db.select({ resolucion: partidos.resolucion }).from(partidos).where(inArray(partidos.id, ids));
+    expect(filas.some((f) => f.resolucion === 'plazo')).toBe(true);
+    // Lo que sí ve: los partidos que no tiene pendientes muestran su resolución.
+    for (const p of t.jornadas[0].partidos) if (p.estado !== 'pendiente_de_ver') expect(p.resolucion).not.toBeNull();
     expect(t.jornadas[1].estado).toBe('abierta');
     await wa.cerrar();
   });

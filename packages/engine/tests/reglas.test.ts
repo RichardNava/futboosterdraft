@@ -1,4 +1,4 @@
-import { PARAMETROS_V2 } from '@fbd/domain';
+import { PARAMETROS_V3 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { expulsar } from '../src/acciones/plantel';
 import type { Contexto } from '../src/acciones/contexto';
@@ -23,12 +23,14 @@ describe('reglas del motor', () => {
     const e = enDescanso();
     const eq = local(e);
     const titulares = eq.jugadores.filter((j) => j.enCampo && j.casillaId !== 'POR');
-    const banquillo = eq.jugadores.filter((j) => !j.enCampo);
-    for (let i = 0; i < 5; i++) {
+    const banquillo = eq.jugadores.filter((j) => !j.enCampo && !j.retirado);
+    // Si en la primera parte ya hubo un cambio (por una lesión), quedan menos.
+    const quedan = 5 - eq.sustitucionesUsadas;
+    for (let i = 0; i < quedan; i++) {
       const r = aplicarDecision(e, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[i]!.id, entra: banquillo[i]!.id } });
       expect(r.ok).toBe(true);
     }
-    const sexta = aplicarDecision(e, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[5]!.id, entra: banquillo[5]!.id } });
+    const sexta = aplicarDecision(e, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[quedan]!.id, entra: banquillo[quedan]!.id } });
     expect(sexta).toMatchObject({ ok: false, codigo: 'SUSTITUCIONES_AGOTADAS' });
 
     const tras = avanzar(e, 'interrupcion').estado;
@@ -37,9 +39,11 @@ describe('reglas del motor', () => {
     const vuelve = aplicarDecision(tras, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: banquillo[0]!.id, entra: titulares[0]!.id } });
     expect(vuelve.ok).toBe(false);
 
-    // En la prórroga hay una sustitución más.
+    // En la prórroga hay una sustitución más (sale uno que siga en el campo: en el tramo jugado puede haber bajas).
     tras.fase = 'pre_prorroga';
-    const enProrroga = aplicarDecision(tras, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[6]!.id, entra: banquillo[5]!.id } });
+    const sale = local(tras).jugadores.find((j) => j.enCampo && j.casillaId !== 'POR')!;
+    const entra = local(tras).jugadores.find((j) => !j.enCampo && !j.retirado)!;
+    const enProrroga = aplicarDecision(tras, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: sale.id, entra: entra.id } });
     expect(enProrroga.ok).toBe(true);
   });
 
@@ -131,7 +135,7 @@ describe('reglas del motor', () => {
     const e = crearPartido(entrada('capitania', { local: equipo('local', { specials: ['Capitania'] }) }));
     const eq = local(e);
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V2.specials.capitania);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.specials.capitania);
   });
 
   it('Fortaleza mental solo actúa yendo por detrás', () => {
@@ -140,7 +144,7 @@ describe('reglas del motor', () => {
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
     expect(bonusEquipo(e, eq, j)).toBe(0);
     e.marcador = { local: 0, visitante: 1 };
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V2.specials.fortalezaMental);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.specials.fortalezaMental);
   });
 
   it('Santo: desde el minuto 80, en la prórroga y en eliminatoria yendo ganando o empatado; en liga antes del 80, no', () => {

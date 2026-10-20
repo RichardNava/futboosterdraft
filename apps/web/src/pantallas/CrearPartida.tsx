@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { useSesion } from '../estado/sesion';
-import { ETIQUETA_NIVEL_NPC, type NivelNPC } from '../textos/niveles';
+import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, type Dificultad, type NivelNPC } from '../textos/niveles';
 
 type Modo = 'liga' | 'playoff' | 'mixto';
 
@@ -15,9 +15,9 @@ export function CrearPartida() {
   const esInvitado = usuario?.tipo === 'invitado';
   const [modo, setModo] = useState<Modo>('liga');
   const [numParticipantes, setNumParticipantes] = useState(4);
-  const [tipoSimulacion, setTipoSimulacion] = useState<'rapida' | '2d'>('rapida');
   const [plazo, setPlazo] = useState(24);
   const [npc, setNpc] = useState<NivelNPC[]>([]);
+  const [dificultad, setDificultad] = useState<Dificultad>('normal');
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -39,9 +39,9 @@ export function CrearPartida() {
         cuerpo: {
           modo,
           numParticipantes,
-          tipoSimulacion,
           ...(!esInvitado ? { plazoJornadaHoras: plazo } : {}),
           npc: npc.slice(0, maxNpc).map((nivel) => ({ nivel })),
+          dificultad,
           ...(esInvitado ? { plazasHumanas: 1 } : {}),
         },
       });
@@ -80,18 +80,6 @@ export function CrearPartida() {
         </label>
 
         <fieldset>
-          <legend>Simulación de los partidos</legend>
-          <label className="opcion">
-            <input type="radio" checked={tipoSimulacion === 'rapida'} onChange={() => setTipoSimulacion('rapida')} />
-            Rápida (resumen al descanso y al final)
-          </label>
-          <label className="opcion">
-            <input type="radio" checked={tipoSimulacion === '2d'} onChange={() => setTipoSimulacion('2d')} />
-            2D en tiempo real
-          </label>
-        </fieldset>
-
-        <fieldset>
           <legend>Ritmo del torneo</legend>
           <p className="nota">
             Solo el draft se juega a la vez. Si eres la única persona, cada jornada empieza cuando tú quieras; con más
@@ -115,6 +103,16 @@ export function CrearPartida() {
             <p className="nota">Las plazas que no ocupen personas al empezar se rellenarán con NPC al azar.</p>
           )}
           <p className="nota">El relleno automático nunca usa el nivel PRO: solo tú, como anfitrión, puedes elegirlo.</p>
+          <fieldset>
+            <legend>Dificultad</legend>
+            <p className="nota">Decide el nivel de los NPC que rellenan plazas; los que añadas tú conservan su nivel.</p>
+            {(Object.keys(ETIQUETA_DIFICULTAD) as Dificultad[]).map((d) => (
+              <label key={d} className="opcion">
+                <input type="radio" name="dificultad" checked={dificultad === d} onChange={() => setDificultad(d)} />
+                {ETIQUETA_DIFICULTAD[d]} <span className="nota">({DESCRIPCION_DIFICULTAD[d]})</span>
+              </label>
+            ))}
+          </fieldset>
           <ul className="lista-npc">
             {npc.map((nivel, i) => (
               <li key={i}>

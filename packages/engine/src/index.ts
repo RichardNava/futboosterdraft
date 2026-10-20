@@ -11,7 +11,7 @@ export type { EstadoMotor, JugadorEnPartido, EquipoEstado } from './estado/estad
 export { maxSustituciones, minutoDeJuego, minutoMostrable } from './estado/estado';
 export { avanzar, type ResultadoTramo } from './tramos/avanzar';
 export { ordenJugadores } from './espacio/paso';
-export { validarDecision, type ResultadoDecision } from './tramos/decisiones';
+export { encolarLote, validarDecision, type ResultadoDecision, type ResultadoLote } from './tramos/decisiones';
 export * from './tipos';
 
 // La utilidad de stats efectivos forma parte del contrato del motor; vive en el dominio porque también

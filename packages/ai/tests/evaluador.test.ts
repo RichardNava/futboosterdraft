@@ -1,10 +1,10 @@
-import { PARAMETROS_V2, type Jugador } from '@fbd/domain';
+import { PARAMETROS_V3, type Jugador } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { cobertura, escasezPorteros, sinergia, valorCarta } from '../src/evaluador';
 import { PERFILES, TODAS_LAS_FORMACIONES } from '../src/perfiles';
 import { jugador } from './ayudas';
 
-const p = PARAMETROS_V2;
+const p = PARAMETROS_V3;
 const pesos = PERFILES.PRO.pesos;
 
 describe('evaluador de los NPC (T119)', () => {

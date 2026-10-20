@@ -1,9 +1,10 @@
 /**
  * Rutas de partidas (T051; contracts/http-api.md).
  */
-import { AnadirNPC, CrearPartida } from '@fbd/protocol';
+import { AnadirNPC, CrearPartida, CuerpoNombreEquipo } from '@fbd/protocol';
 import type { FastifyInstance } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
+import { cambiarNombreEquipo } from '../actores/identidad';
 import { misPartidas } from '../actores/misPartidas';
 import { anadirNPC, iniciar, unirse } from '../actores/sala';
 import type { Auth } from '../auth/auth';
@@ -61,6 +62,16 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
     const c = await gestor.obtenerOError(req.params.id);
     await c.ejecutar((ctx) => iniciar(c, ctx, req.usuario!.id));
     return gestor.resumen(c, req.usuario!.id);
+  });
+
+  // Nombre del equipo en la partida (spec 003, FR-042, FR-043): editable hasta que se abre el primer partido.
+  app.put<{ Params: { id: string } }>('/api/partidas/:id/nombre-equipo', { preHandler: requiereSesion }, async (req) => {
+    const cuerpo = CuerpoNombreEquipo.safeParse(req.body);
+    if (!cuerpo.success) throw errores.validacion('CUERPO_INVALIDO', 'Falta el nombre');
+    const c = await gestor.obtenerOError(req.params.id);
+    const participante = c.participanteDeUsuario(req.usuario!.id);
+    if (!participante) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+    return c.ejecutar((ctx) => cambiarNombreEquipo(c, ctx, participante.id, cuerpo.data.nombre));
   });
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id/plantillas', { preHandler: requiereSesion }, async (req) => {

@@ -1,9 +1,11 @@
+import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
 import { useSesion } from '../estado/sesion';
-import { ETIQUETA_NIVEL_NPC, etiquetaNPC, type NivelNPC } from '../textos/niveles';
+import { CampoNombreEquipo } from '../componentes/CampoNombreEquipo';
+import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, etiquetaNPC, type Dificultad, type NivelNPC } from '../textos/niveles';
 
 interface ParticipanteSala {
   id: string;
@@ -12,6 +14,7 @@ interface ParticipanteSala {
   nivelNPC: string | null;
   conectado: boolean;
   esAnfitrion: boolean;
+  nombreAjustado?: boolean;
 }
 
 interface Sala {
@@ -32,10 +35,16 @@ export function Sala() {
   const [copiado, setCopiado] = useState(false);
   /** null = aún no se sabe; false = el usuario no participa y puede unirse. */
   const [participa, setParticipa] = useState<boolean | null>(null);
+  const [yo, setYo] = useState<string | null>(null);
+  const [dificultad, setDificultad] = useState<Dificultad | null>(null);
 
   useEffect(() => {
-    api<{ miParticipanteId: string | null }>(`/api/partidas/${partidaId}`)
-      .then((p) => setParticipa(p.miParticipanteId !== null))
+    api<{ miParticipanteId: string | null; dificultad?: Dificultad }>(`/api/partidas/${partidaId}`)
+      .then((p) => {
+        setParticipa(p.miParticipanteId !== null);
+        setYo(p.miParticipanteId);
+        setDificultad(p.dificultad ?? null);
+      })
       .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se pudo cargar la partida'));
   }, [partidaId]);
 
@@ -72,7 +81,8 @@ export function Sala() {
   const unirse = async () => {
     setError(null);
     try {
-      await api(`/api/partidas/${partidaId}/unirse`, { metodo: 'POST', idempotente: true });
+      const r = await api<{ miParticipanteId: string | null }>(`/api/partidas/${partidaId}/unirse`, { metodo: 'POST', idempotente: true });
+      setYo(r.miParticipanteId);
       setParticipa(true);
     } catch (e) {
       setError(e instanceof ErrorApi ? e.message : 'No se pudo unir a la partida');
@@ -104,6 +114,11 @@ export function Sala() {
   return (
     <main className="pantalla">
       <h1>Sala</h1>
+      {dificultad && (
+        <p className="nota" data-testid="dificultad">
+          Dificultad: <strong>{ETIQUETA_DIFICULTAD[dificultad]}</strong> · {DESCRIPCION_DIFICULTAD[dificultad]}
+        </p>
+      )}
       {restante !== null && (
         <p>
           El draft empezará en <strong>{Math.floor(restante / 60)}:{String(restante % 60).padStart(2, '0')}</strong>
@@ -126,6 +141,19 @@ export function Sala() {
         ))}
       </ul>
 
+      {(() => {
+        const mio = sala.participantes.find((p) => p.id === yo);
+        if (!mio) return null;
+        return (
+          <CampoNombreEquipo
+            partidaId={partidaId!}
+            actual={mio.nombre}
+            otros={sala.participantes.filter((p) => p.id !== yo).map((p) => p.nombre)}
+            ajustado={mio.nombreAjustado}
+          />
+        );
+      })()}
+
       {esAnfitrion && (
         <div className="acciones">
           {sala.plazasLibres > 0 && (
@@ -142,9 +170,6 @@ export function Sala() {
               </button>
             </>
           )}
-          <button type="button" onClick={() => void accion('iniciar')}>
-            Iniciar draft
-          </button>
         </div>
       )}
       {usuario?.tipo === 'registrado' && (
@@ -159,6 +184,10 @@ export function Sala() {
           {error}
         </p>
       )}
+      <BarraPrincipal
+        principal={esAnfitrion ? { etiqueta: 'Empezar', onClick: () => accion('iniciar') } : null}
+        estado={esAnfitrion ? 'Empieza el draft cuando quieras; las plazas libres se rellenan con NPC.' : 'Esperando a que el anfitrión empiece el draft…'}
+      />
     </main>
   );
 }

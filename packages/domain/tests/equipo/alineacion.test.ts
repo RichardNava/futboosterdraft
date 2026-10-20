@@ -3,7 +3,7 @@ import { previsualizar, validarAlineacion, type Alineacion } from '../../src/equ
 import { autoAlineacion } from '../../src/equipo/autoAlineacion';
 import { FORMACIONES } from '../../src/equipo/formaciones';
 import { tacticaPorDefecto } from '../../src/equipo/tactica';
-import { PARAMETROS_V2 } from '../../src/parametros/index';
+import { PARAMETROS_V3 } from '../../src/parametros/index';
 import { jugador, plantillaEquilibrada } from './ayudas';
 
 const plantilla = plantillaEquilibrada();
@@ -11,7 +11,7 @@ const porId = new Map(plantilla.map((j) => [j.id, j]));
 const buscar = (id: number) => porId.get(id)!;
 
 function alineacionValida(): Alineacion {
-  return autoAlineacion(plantilla, new Set(), PARAMETROS_V2);
+  return autoAlineacion(plantilla, new Set(), PARAMETROS_V3);
 }
 const codigos = (a: Alineacion, bajas = new Set<number>()) =>
   validarAlineacion(a, plantilla.map((j) => j.id), bajas).map((e) => e.codigo);
@@ -70,7 +70,7 @@ describe('validarAlineacion (FR-026, FR-030)', () => {
 
   it('con menos de 11 disponibles se juega con los que haya', () => {
     const bajas = new Set(plantilla.slice(9).map((j) => j.id));
-    const corta = autoAlineacion(plantilla, bajas, PARAMETROS_V2);
+    const corta = autoAlineacion(plantilla, bajas, PARAMETROS_V3);
     expect(corta.titulares).toHaveLength(9);
     expect(corta.suplentes).toEqual([]);
     expect(validarAlineacion(corta, plantilla.map((j) => j.id), bajas).map((e) => e.codigo)).toEqual([]);
@@ -88,7 +88,7 @@ describe('validarAlineacion (FR-026, FR-030)', () => {
         t === portero ? { ...t, jugadorId: campo.jugadorId } : t === campo ? { ...t, jugadorId: portero.jugadorId } : t,
       ),
     };
-    const vista = previsualizar(cambiado, buscar, PARAMETROS_V2).titulares;
+    const vista = previsualizar(cambiado, buscar, PARAMETROS_V3).titulares;
     expect(vista).toHaveLength(11);
     expect(vista.find((c) => c.casillaId === 'POR')).toMatchObject({ fueraDePosicion: true, penalizacion: 0.6 });
     expect(vista.every((c) => FORMACIONES[a.formacion].casillas.some((x) => x.id === c.casillaId))).toBe(true);
@@ -151,7 +151,7 @@ describe('autoAlineacion con la penalización graduada (US4, T025)', () => {
       jugador('DEL', ['SD'], 80),
       delanteroSobrante,
     ];
-    const a = autoAlineacion(plantillaSinLd, new Set(), PARAMETROS_V2, { formaciones: ['4-4-2'] });
+    const a = autoAlineacion(plantillaSinLd, new Set(), PARAMETROS_V3, { formaciones: ['4-4-2'] });
     const enLd = plantillaSinLd.find((j) => j.id === a.titulares.find((t) => t.casillaId === 'LD')!.jugadorId)!;
     expect(enLd.demarcacion).toBe('DEF');
   });

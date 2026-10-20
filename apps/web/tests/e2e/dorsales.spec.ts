@@ -11,9 +11,9 @@ interface Carta {
 
 test('dorsales del 1 al 24, reasignación con aviso y asignación automática al empezar el partido', async ({ page }) => {
   const partidaId = await partidaTrasDraft(page);
+  // Los dorsales ya están asignados al terminar el draft, sin confirmar el once (spec 003, FR-001b).
   await page.goto(`/partidas/${partidaId}/alineacion`);
-  await page.getByRole('button', { name: 'Confirmar alineación' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Alineación confirmada' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Formación' })).toBeVisible();
 
   // 1. Del 1 al 24, sin repetir.
   const datos = (await (await page.request.get(`/api/partidas/${partidaId}/alineacion`)).json()) as { dorsales: Record<string, number>; plantilla: Carta[] };
@@ -41,7 +41,8 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
   await expect(fila(otro).locator('.dorsal-actual')).toHaveText('2');
   await expect(fila(dos)).toContainText('Sin dorsal');
 
-  // 4. Convocado (el del 2 es titular) y al empezar: el libre más bajo (el 14) y un aviso.
+  // 4. Convocado (el del 2 es titular) y al empezar (desde la preparación del torneo): el libre más bajo (el 14) y un aviso.
+  await page.goto(`/partidas/${partidaId}/torneo`);
   await page.getByRole('button', { name: 'Comenzar partido' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Dorsales nuevos' })).toContainText(`${dos.apellidos.split(' ')[0]} lleva el 14`);
 });

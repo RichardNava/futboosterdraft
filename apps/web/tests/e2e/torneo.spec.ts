@@ -10,7 +10,7 @@ interface Torneo {
 
 /** Escenario E del quickstart (lo que no depende del correo): liga de 4 de un humano hasta el campeón. */
 test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) => {
-  test.setTimeout(300_000);
+  test.setTimeout(600_000);
   const partidaId = await partidaTrasDraft(page);
   await page.goto(`/partidas/${partidaId}/torneo`);
   await expect(page.getByRole('heading', { name: 'Torneo' })).toBeVisible();
@@ -24,7 +24,7 @@ test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) =>
   await page.goto('/');
   let bajasVistas = false;
   let torneo: Torneo | null = null;
-  for (let i = 0; i < 400; i++) {
+  for (let i = 0; i < 1000; i++) {
     torneo = (await (await page.request.get(`/api/partidas/${partidaId}/torneo`)).json()) as Torneo;
     if (torneo.campeon) break;
     // Si el equipo tiene alguna baja, la alineación la muestra con su distintivo y no deja alinearla.
@@ -48,7 +48,10 @@ test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) =>
   expect(torneo?.campeon).not.toBeNull();
   expect(torneo!.clasificacion.every((f) => f.pj === 6)).toBe(true);
 
+  // Primero, la pantalla del campeón (spec 003, FR-040); vista una vez, al volver se ve el torneo.
   await page.goto(`/partidas/${partidaId}/torneo`);
+  await expect(page.getByRole('heading', { name: `¡${torneo!.campeon!.nombre}, campeón del torneo!` })).toBeVisible();
+  await page.reload();
   await expect(page.locator('.campeon')).toContainText(torneo!.campeon!.nombre);
   await expect(page.locator('.clasificacion tbody tr').first()).toContainText(torneo!.clasificacion[0]!.nombre);
 

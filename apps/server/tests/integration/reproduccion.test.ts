@@ -26,7 +26,7 @@ describe('reproducción de un partido entre humanos (US11)', () => {
     bd = await iniciarBdPruebas();
     srv = await iniciarServidorPruebas(bd);
     b = await crearRegistrado(srv.url);
-    const r = await partidaTrasDraft(srv, { cuerpo: { tipoSimulacion: '2d', plazasHumanas: 2, plazoJornadaHoras: 24 }, otros: [b] });
+    const r = await partidaTrasDraft(srv, { cuerpo: { plazasHumanas: 2, plazoJornadaHoras: 24 }, otros: [b] });
     a = r.anfitrion;
     const partidaId = r.partida.id;
     const c = await srv.gestor.obtenerOError(partidaId);
@@ -36,7 +36,7 @@ describe('reproducción de un partido entre humanos (US11)', () => {
       partidoId = j?.partidos.find((p: any) => [p.local.id, p.visitante.id].sort().join() === ids)?.partidoId;
       return partidoId !== undefined;
     }, 10);
-    await peticion(srv.url, `/api/partidos/${partidoId}/abrir`, { metodo: 'POST', cookie: a.cookie });
+    await peticion(srv.url, `/api/partidos/${partidoId}/abrir`, { metodo: 'POST', cookie: a.cookie, cuerpo: { modalidad: '2d' } });
   });
   afterAll(async () => {
     await srv?.cerrar();
@@ -44,10 +44,18 @@ describe('reproducción de un partido entre humanos (US11)', () => {
   });
 
   it('A y B reciben exactamente los mismos eventos, tramos y resultado', async () => {
-    const ra = await peticion(srv.url, `/api/partidos/${partidoId}/reproduccion`, { cookie: a.cookie });
-    const rb = await peticion(srv.url, `/api/partidos/${partidoId}/reproduccion`, { cookie: b.cookie });
+    const ra = await peticion(srv.url, `/api/partidos/${partidoId}/reproduccion?modalidad=2d`, { cookie: a.cookie });
+    const rb = await peticion(srv.url, `/api/partidos/${partidoId}/reproduccion?modalidad=2d`, { cookie: b.cookie });
     expect(ra.estado).toBe(200);
-    expect(rb.cuerpo).toEqual(ra.cuerpo);
+    // Mismos tramos, eventos y resultado; de las alineaciones, cada uno ve ampliada (colocación y lanzadores) solo la
+    // suya (spec 003, T127).
+    expect(rb.cuerpo.tramos).toEqual(ra.cuerpo.tramos);
+    expect(rb.cuerpo.fin).toEqual(ra.cuerpo.fin);
+    const sinAlineaciones = ({ alineaciones: _a, ...resto }: any) => resto;
+    expect(sinAlineaciones(rb.cuerpo.inicio)).toEqual(sinAlineaciones(ra.cuerpo.inicio));
+    for (const lado of ['local', 'visitante'] as const) {
+      expect('lanzadores' in ra.cuerpo.inicio.alineaciones[lado]).not.toBe('lanzadores' in rb.cuerpo.inicio.alineaciones[lado]);
+    }
     expect(ra.cuerpo.inicio.decisiones).toBe(false);
     expect(ra.cuerpo.tramos.length).toBeGreaterThan(1);
     const eventos = ra.cuerpo.tramos.flatMap((t: any) => t.eventos);
@@ -71,9 +79,25 @@ describe('reproducción de un partido entre humanos (US11)', () => {
 
   it('un partido de parámetros 1.x responde 409 VERSION_NO_REPRODUCIBLE', async () => {
     await bd.db.update(partidos).set({ versionParametros: '1.0.0' }).where(eq(partidos.id, partidoId));
+    cacheReproducciones.vaciar();
     const r = await peticion(srv.url, `/api/partidos/${partidoId}/reproduccion`, { cookie: b.cookie });
     expect(r.estado).toBe(409);
     expect(r.cuerpo.error.codigo).toBe('VERSION_NO_REPRODUCIBLE');
+    await bd.db.update(partidos).set({ versionParametros: '3.0.0' }).where(eq(partidos.id, partidoId));
+  });
+
+  it('un partido de parámetros 2.0.0 responde 409 VERSION_NO_REPRODUCIBLE, pero su resumen sigue disponible (003/T006)', async () => {
+    const antes = await peticion(srv.url, `/api/partidos/${partidoId}`, { cookie: a.cookie });
     await bd.db.update(partidos).set({ versionParametros: '2.0.0' }).where(eq(partidos.id, partidoId));
+    cacheReproducciones.vaciar();
+    const r = await peticion(srv.url, `/api/partidos/${partidoId}/reproduccion`, { cookie: a.cookie });
+    expect(r.estado).toBe(409);
+    expect(r.cuerpo.error.codigo).toBe('VERSION_NO_REPRODUCIBLE');
+    const resumen = await peticion(srv.url, `/api/partidos/${partidoId}`, { cookie: a.cookie });
+    expect(resumen.estado).toBe(200);
+    expect(resumen.cuerpo.marcador).toEqual(antes.cuerpo.marcador);
+    expect(resumen.cuerpo.eventos).toEqual(antes.cuerpo.eventos);
+    expect(resumen.cuerpo.estadisticas).toEqual(antes.cuerpo.estadisticas);
+    await bd.db.update(partidos).set({ versionParametros: '3.0.0' }).where(eq(partidos.id, partidoId));
   });
 });

@@ -1,10 +1,10 @@
 Efectos de sonido de Fútboosterdraft
 ====================================
 
-Los cuatro efectos de esta carpeta son obra original del proyecto, sintetizados por programa (ruido
-filtrado y osciladores; sin muestras de terceros):
+Los tres efectos de esta carpeta son obra original del proyecto, sintetizados por programa (ruido
+filtrado y osciladores; sin muestras de terceros). La apertura del sobre se sintetiza en el navegador
+(apps/web/src/sonido/sonido.ts) y no tiene fichero:
 
-- rasgado.wav     — rasgado del sobre (0,35 s)
 - reparto.wav     — reparto de una carta (0,08 s)
 - volteo.wav      — volteo de una carta (0,12 s)
 - revelacion.wav  — revelación de una carta Legendaria o GOAT (0,6 s)

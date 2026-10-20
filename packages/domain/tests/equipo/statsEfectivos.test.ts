@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { POSICIONES, POSICIONES_POR_DEMARCACION, type Demarcacion, type Posicion } from '../../src/catalogo/tipos';
 import { casilla, CASILLA_CENTRAL } from '../../src/equipo/formaciones';
 import { penalizacionPorPosicion, statsEfectivos } from '../../src/equipo/statsEfectivos';
-import { PARAMETROS_V2 } from '../../src/parametros/index';
+import { PARAMETROS_V3 } from '../../src/parametros/index';
 import { jugador } from './ayudas';
 
-const p = PARAMETROS_V2;
+const p = PARAMETROS_V3;
 
 const DEMARCACION: Record<Posicion, Demarcacion> = Object.fromEntries(
   (Object.entries(POSICIONES_POR_DEMARCACION) as [Demarcacion, readonly Posicion[]][]).flatMap(([d, ps]) => ps.map((x) => [x, d])),

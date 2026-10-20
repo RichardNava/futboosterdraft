@@ -37,7 +37,7 @@ describe('partido rápido (US3)', () => {
     const [anfitrion, ...otros] = humanos;
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: anfitrion!.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ...(anfitrion!.tipo === 'invitado' ? {} : { plazasHumanas: humanos.length }) },
+      cuerpo: { modo: 'liga', numParticipantes: 4, ...(anfitrion!.tipo === 'invitado' ? {} : { plazasHumanas: humanos.length }) },
     });
     const partidaId: string = r.cuerpo.id;
     for (const o of otros) await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: o.cookie });
@@ -51,7 +51,9 @@ describe('partido rápido (US3)', () => {
       };
     }
     await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: anfitrion!.cookie });
-    for (let i = 0; i < 30; i++) {
+    // Un avance del reloj solo vence el turno si el servidor ya lo ha programado: en una máquina lenta hacen falta
+    // más vueltas que turnos tiene el draft, así que se sigue hasta ver la preparación (o ~20 s).
+    for (let i = 0; i < 300; i++) {
       if (clientes.every((cl) => cl.recibidos.some((m) => m.t === 'preparacion.inicio'))) break;
       srv.reloj.avanzar(TURNO);
       await espera(60);
@@ -176,11 +178,14 @@ describe('partido rápido (US3)', () => {
       const desde = ws.recibidos.length;
       await comenzar(ws, invitado);
       const inicio = await ws.esperar('partido.inicio', { desde });
-      await ws.esperar('partido.pausa_decision', { desde });
+      const descanso = await ws.esperar('partido.pausa_decision', { desde });
+      const tras = ws.recibidos.indexOf(descanso) + 1;
       await ws.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
-      await espera(300);
-      const pausas = ws.recibidos.slice(desde).filter((m) => m.t === 'partido.pausa_decision' && m.motivo === 'pre_prorroga');
-      if (pausas.length) {
+      // Tras la segunda parte llega la pausa antes de la prórroga (empate) o el final, sin plazo fijo.
+      const siguiente = await Promise.race(
+        ['partido.pausa_decision', 'partido.fin'].map((tipo) => ws.esperar(tipo, { desde: tras, timeoutMs: 20_000 }).catch(() => null)),
+      );
+      if (siguiente?.t === 'partido.pausa_decision' && siguiente.motivo === 'pre_prorroga') {
         await ws.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
         const fin = await ws.esperar('partido.fin', { desde });
         if (fin.marcador.penaltis) {

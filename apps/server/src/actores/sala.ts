@@ -12,6 +12,7 @@ import {
 import { errores } from '../http/errores';
 import type { ContextoComando } from './actor';
 import { iniciarDraft } from './draft';
+import { identidadInicial, marcarNombreAjustado, nombresAjustados, nombresUsados } from './identidad';
 import { nombresNPC } from './nombres';
 import type { ControladorPartida } from './partida';
 
@@ -26,6 +27,8 @@ export function resumenSala(c: ControladorPartida) {
       esAnfitrion: p.usuarioId === c.partida.anfitrionId,
       /** Humano cuya plaza ocupa un NPC (abandonó): ya no cuenta como humano activo (research R11). */
       controladoPorNPC: p.controladoPorNPC === true,
+      /** El nombre de su perfil lo usaba otro equipo y se le ha dado otro (spec 003, FR-043). */
+      nombreAjustado: nombresAjustados.get(c)?.has(p.id) ?? false,
     })),
     plazasLibres: c.partida.numParticipantes - c.participantes.length,
     venceBusquedaEn:
@@ -62,8 +65,11 @@ export async function unirse(c: ControladorPartida, ctx: ContextoComando, usuari
   }
   const apodo = c.apodos.get(usuarioId) ?? (await c.servicios.repoPartidas.apodos([usuarioId])).get(usuarioId) ?? 'Jugador';
   c.apodos.set(usuarioId, apodo);
-  const fila = await c.servicios.repoPartidas.anadirHumano(c.id, usuarioId, apodo);
+  // Solo se unen usuarios registrados (`POST /unirse` lo exige): pueden traer su perfil.
+  const identidad = await identidadInicial(c.servicios, { id: usuarioId, apodo, tipo: 'registrado' }, nombresUsados(c));
+  const fila = await c.servicios.repoPartidas.anadirHumano(c.id, usuarioId, identidad.nombre, undefined, identidad.equipaciones);
   c.participantes.push(fila);
+  if (identidad.ajustado) marcarNombreAjustado(c, fila.id);
   emitirSala(c, ctx);
   return fila.id;
 }
@@ -82,11 +88,11 @@ export async function anadirNPC(c: ControladorPartida, ctx: ContextoComando, usu
   return fila.id;
 }
 
-/** Rellena las plazas libres con NPC aleatorios (amateur, intermedio o avanzado). */
+/** Rellena las plazas libres con NPC de los niveles que marca la dificultad de la partida (003/FR-038a). */
 async function rellenarPlazas(c: ControladorPartida): Promise<void> {
   const libres = c.partida.numParticipantes - c.participantes.length;
   if (libres <= 0) return;
-  const niveles = rellenarConNPC(libres, derivarSemilla(c.partida.semilla, `relleno:${c.participantes.length}`));
+  const niveles = rellenarConNPC(libres, derivarSemilla(c.partida.semilla, `relleno:${c.participantes.length}`), c.partida.dificultad);
   const usados = new Set(c.participantes.map((p) => p.nombreEquipo));
   const nombres = nombresNPC(libres, derivarSemilla(c.partida.semilla, `nombres:${c.participantes.length}`), usados);
   for (const [i, nivel] of niveles.entries()) {

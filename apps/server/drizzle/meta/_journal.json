@@ -43,6 +43,34 @@
       "when": 1792190790998,
       "tag": "0005_colocacion",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792300000000,
+      "tag": "0006_modo_simulacion",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792400000000,
+      "tag": "0007_pantallas_torneo",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792500000000,
+      "tag": "0008_identidad",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792600000000,
+      "tag": "0009_dificultad",
+      "breakpoints": true
     }
   ]
 }

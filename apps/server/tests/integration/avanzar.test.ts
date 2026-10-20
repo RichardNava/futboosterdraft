@@ -29,7 +29,7 @@ describe('avanzar sin esperas (US2)', () => {
 
   it('draft de 1 humano y 7 NPC: tras elegir, el siguiente sobre llega en menos de 1 s (SC-003, SC-004)', async () => {
     const u = await crearInvitado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 8, tipoSimulacion: 'rapida' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 8 } });
     const ws = await ClienteWs.conectar(srv.urlWs, r.cuerpo.id, u.cookie);
     await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: u.cookie });
     const turnos = () => ws.recibidos.filter((m) => m.t === 'draft.turno');
@@ -54,7 +54,7 @@ describe('avanzar sin esperas (US2)', () => {
   it('con dos humanos: «Esperando a…» lista solo a los humanos que faltan, y el turno se resuelve al elegir el último (FR-013)', async () => {
     const a = await crearRegistrado(srv.url);
     const b = await crearRegistrado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: a.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: a.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2 } });
     const partidaId: string = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: b.cookie });
     const [wa, wb] = await Promise.all([ClienteWs.conectar(srv.urlWs, partidaId, a.cookie), ClienteWs.conectar(srv.urlWs, partidaId, b.cookie)]);

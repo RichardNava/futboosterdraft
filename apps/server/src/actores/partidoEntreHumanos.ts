@@ -11,7 +11,7 @@
  * - Mientras un humano no lo ha visto, su visionado está `pendiente` y no se le revela el resultado.
  */
 import { resolverResto } from '@fbd/ai';
-import { parametrosActuales, parametrosPorVersion, versionMayor } from '@fbd/domain';
+import { parametrosActuales, parametrosPorVersion, VERSION_MAYOR_SOPORTADA, versionMayor, type ModoSimulacion } from '@fbd/domain';
 import { aplicarDecision, avanzar, crearPartido, minutoMostrable, ordenJugadores, type DecisionRegistrada, type EntradaPartido, type EstadoMotor } from '@fbd/engine';
 import { errores } from '../http/errores';
 import type { FilaPartido } from '../persistencia/repos/partidos';
@@ -173,13 +173,14 @@ function rehacer(fila: FilaPartido, conFotogramas: boolean): Tramos {
  * `GET /api/partidos/:id/reproduccion`: el partido entero para uno de sus participantes. Es idéntico para
  * los dos (contracts/http-api.md).
  */
-export async function reproduccion(c: ControladorPartida, fila: FilaPartido) {
+export async function reproduccion(c: ControladorPartida, fila: FilaPartido, modalidad: ModoSimulacion = 'rapida', participanteId?: string) {
   if (fila.estado !== 'finalizado' || !fila.entrada) throw errores.conflicto('PARTIDO_NO_TERMINADO', 'El partido aún no se ha jugado');
-  if (versionMayor(fila.versionParametros) < 2) {
+  if (versionMayor(fila.versionParametros) < VERSION_MAYOR_SOPORTADA) {
     throw errores.conflicto('VERSION_NO_REPRODUCIBLE', 'Este partido se jugó con una versión anterior del motor: solo está disponible su resumen');
   }
-  const conFotogramas = c.partida.tipoSimulacion === '2d';
-  const clave = `${fila.id}:${conFotogramas ? '2d' : 'rapida'}`;
+  // La modalidad solo decide si van los fotogramas: el partido es el mismo (SC-018).
+  const conFotogramas = modalidad === '2d';
+  const clave = `${fila.id}:${modalidad}`;
   let tramos = cacheReproducciones.obtener(clave);
   if (!tramos) {
     tramos = rehacer(fila, conFotogramas);
@@ -195,13 +196,14 @@ export async function reproduccion(c: ControladorPartida, fila: FilaPartido) {
     inicio: {
       t: 'partido.inicio' as const,
       partidoId: fila.id,
-      modalidad: c.partida.tipoSimulacion as 'rapida' | '2d',
+      modalidad,
       local: { id: fila.localId, nombre: nombre(fila.localId) },
       visitante: { id: fila.visitanteId, nombre: nombre(fila.visitanteId) },
-      alineaciones: resumenAlineaciones(c, guardada),
+      alineaciones: resumenAlineaciones(c, guardada, participanteId ? [participanteId] : []),
       dorsales,
       equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId),
       decisiones: false,
+      gestionDisponible: false,
       ordenJugadores: ordenJugadores(crearPartido({ ...guardada, parametros: parametrosPorVersion(fila.versionParametros) })),
     },
     tramos,

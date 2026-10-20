@@ -18,6 +18,22 @@ export const ETIQUETA_NIVEL_NPC: Readonly<Record<NivelNPC, string>> = {
   PRO: 'PRO',
 };
 
+/** Dificultad de la partida (spec 003, FR-038a). */
+export type Dificultad = 'facil' | 'normal' | 'dificil';
+
+export const ETIQUETA_DIFICULTAD: Readonly<Record<Dificultad, string>> = {
+  facil: 'Fácil',
+  normal: 'Normal',
+  dificil: 'Difícil',
+};
+
+/** Niveles de los NPC de relleno con cada dificultad, tal como se explican en la interfaz. */
+export const DESCRIPCION_DIFICULTAD: Readonly<Record<Dificultad, string>> = {
+  facil: 'NPC amateur e intermedios a partes iguales',
+  normal: 'NPC amateur, intermedios o avanzados al azar',
+  dificil: 'NPC intermedios y avanzados a partes iguales',
+};
+
 /** Texto del distintivo de un NPC ("NPC · Avanzado"); vacío si lo controla una persona. */
 export function etiquetaNPC(nivel: string | null | undefined): string {
   return nivel ? `NPC · ${ETIQUETA_NIVEL_NPC[nivel as NivelNPC] ?? nivel}` : '';

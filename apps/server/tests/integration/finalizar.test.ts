@@ -28,9 +28,9 @@ describe('finalizar partido (US5)', () => {
   });
 
   /** Liga de 4 con un humano: completa el draft y pulsa «Comenzar partido». */
-  async function empezar(tipoSimulacion: '2d' | 'rapida') {
+  async function empezar(modalidad: '2d' | 'rapida') {
     const u: UsuarioPrueba = await crearInvitado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     const partidaId: string = r.cuerpo.id;
     const ws = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
@@ -41,7 +41,7 @@ describe('finalizar partido (US5)', () => {
     }
     const prep = await ws.esperar('preparacion.inicio');
     const desde = ws.recibidos.length;
-    await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie });
+    await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie, cuerpo: { modalidad } });
     const inicio = await ws.esperar('partido.inicio', { desde });
     await ws.esperar('partido.tramo', { desde });
     return { partidaId, u, ws, inicio, desde };
@@ -146,7 +146,7 @@ describe('finalizar partido (US5)', () => {
   it('solo quien juega el partido puede finalizarlo', async () => {
     const { ws, inicio } = await empezar('2d');
     const otro = await crearInvitado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: otro.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: '2d' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: otro.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     const ajeno = await ClienteWs.conectar(srv.urlWs, r.cuerpo.id, otro.cookie);
     const desde = ajeno.recibidos.length;
     const antes = ws.recibidos.length;

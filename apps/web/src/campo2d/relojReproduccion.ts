@@ -139,8 +139,30 @@ export class RelojReproduccion {
     return 'reproduciendo';
   }
 
+  /** Gestión del equipo abierta (spec 003, FR-031): el reloj no avanza ni informa al servidor. */
+  private detenido = false;
+
+  get enGestion(): boolean {
+    return this.detenido;
+  }
+
+  /** Se abre la gestión del equipo: la reproducción se detiene en el tick actual. */
+  detener(): void {
+    this.detenido = true;
+  }
+
+  /** Se cierra la gestión: la reproducción sigue en el mismo tick, sin recuperar el tiempo detenido. */
+  seguirTrasGestion(): void {
+    this.detenido = false;
+    this.ultimoPaso = null;
+  }
+
   /** Avanza según el tiempo real transcurrido; se llama en cada fotograma de animación. */
   paso(ahoraMs: number): number {
+    if (this.detenido) {
+      this.ultimoPaso = ahoraMs;
+      return this.tick;
+    }
     const dt = this.ultimoPaso === null ? 0 : Math.min(PASO_MAXIMO_S, Math.max(0, (ahoraMs - this.ultimoPaso) / 1000));
     this.ultimoPaso = ahoraMs;
     if (this.pausa?.hasta != null && ahoraMs >= this.pausa.hasta) this.pausa = null;

@@ -55,6 +55,11 @@ export function Inicio() {
           <button type="button" className="secundario" onClick={() => void cerrarSesion()}>
             Cerrar sesión
           </button>
+          {usuario.tipo === 'registrado' && (
+            <button type="button" className="secundario" onClick={() => navegar('/perfil')}>
+              Mi perfil
+            </button>
+          )}
           {usuario.tipo === 'registrado' && <BandejaAvisos />}
         </div>
         {modo === 'registro' && usuario.tipo === 'invitado' && <FormularioCuenta modo="registro" onEnviar={enviarFormulario} enviando={enviando} />}

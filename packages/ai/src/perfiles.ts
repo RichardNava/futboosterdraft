@@ -1,9 +1,27 @@
 /**
  * Perfiles de nivel de los NPC (T124; research R9): cuánto ruido meten en la evaluación y hasta dónde
  * miran. El ruido sale siempre del PRNG con semilla, así que cada decisión es reproducible.
+ *
+ * Spec 003 (FR-037 a FR-037b; research R12): cada nivel comete además errores creíbles con la probabilidad y el
+ * coste máximo de `parametros.npc.errores` (ver `errores.ts`). El perfil `automatico` (decisiones de los humanos
+ * ausentes) usa los valores del avanzado sin errores; no es un nivel de NPC del dominio.
  */
-import { FORMACIONES_IDS, type FormacionId, type NivelNPC } from '@fbd/domain';
+import {
+  FORMACIONES_IDS,
+  parametrosActuales,
+  type FamiliaErrorNPC,
+  type FormacionId,
+  type NivelDecisiones,
+  type ParametrosEquilibrado,
+  type ParametrosErroresNPC,
+} from '@fbd/domain';
 import type { PesosEvaluacion } from './evaluador';
+
+/** Niveles que entiende la IA: los cuatro de los NPC y `automatico`. */
+export type NivelIA = NivelDecisiones;
+export type FamiliaError = FamiliaErrorNPC;
+export type PerfilErrores = ParametrosErroresNPC;
+export const FAMILIAS_ERROR: readonly FamiliaError[] = ['draft', 'alineacion', 'colocacion', 'formacion', 'tactica', 'lanzadores', 'partido'];
 
 export interface PerfilNPC {
   /** Amplitud del ruido sumado al valor de cada opción del draft, en puntos de media (±). */
@@ -31,7 +49,17 @@ export interface PerfilNPC {
 
 export const FORMACIONES_BASICAS: readonly FormacionId[] = ['4-4-2', '4-3-3', '4-2-3-1'];
 
-export const PERFILES: Readonly<Record<NivelNPC, PerfilNPC>> = {
+const AVANZADO: PerfilNPC = {
+  ruido: 1.5,
+  pesos: { media: 1, cobertura: 6, porteros: 8, sinergia: 2 },
+  alcanceFormaciones: 'objetivo',
+  anticipacion: false,
+  simulaciones: 0,
+  despisteFormacion: 0,
+  partido: { umbralCansancio: 0.28, protegeAmonestados: true, reaccionTactica: 0.8, reservaCambios: 1 },
+};
+
+export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
   amateur: {
     ruido: 8,
     pesos: { media: 1, cobertura: 0, porteros: 0, sinergia: 0 },
@@ -50,15 +78,7 @@ export const PERFILES: Readonly<Record<NivelNPC, PerfilNPC>> = {
     despisteFormacion: 200,
     partido: { umbralCansancio: 0.35, protegeAmonestados: false, reaccionTactica: 0.4, reservaCambios: 0 },
   },
-  avanzado: {
-    ruido: 1.5,
-    pesos: { media: 1, cobertura: 6, porteros: 8, sinergia: 2 },
-    alcanceFormaciones: 'objetivo',
-    anticipacion: false,
-    simulaciones: 0,
-    despisteFormacion: 0,
-    partido: { umbralCansancio: 0.28, protegeAmonestados: true, reaccionTactica: 0.8, reservaCambios: 1 },
-  },
+  avanzado: AVANZADO,
   PRO: {
     ruido: 0,
     pesos: { media: 1, cobertura: 7, porteros: 10, sinergia: 3 },
@@ -68,6 +88,12 @@ export const PERFILES: Readonly<Record<NivelNPC, PerfilNPC>> = {
     despisteFormacion: 0,
     partido: { umbralCansancio: 0.22, protegeAmonestados: true, reaccionTactica: 1, reservaCambios: 1 },
   },
+  automatico: AVANZADO,
 };
+
+/** Errores del nivel (de los parámetros, para poder calibrarlos sin tocar el código). */
+export function erroresDe(nivel: NivelIA, p: ParametrosEquilibrado = parametrosActuales()): PerfilErrores {
+  return p.npc.errores[nivel];
+}
 
 export const TODAS_LAS_FORMACIONES: readonly FormacionId[] = FORMACIONES_IDS;

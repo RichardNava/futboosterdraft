@@ -6,18 +6,22 @@
  */
 import { rival, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } from '../estado/estado';
 import { dist2, dividir, escalar, isqrt, limitar } from '../espacio/aritmetica';
-import { aAbsoluta, aEquipo, puntoEnCelda, type Punto } from '../espacio/geometria';
+import { ULTIMO_TERCIO } from '../espacio/campo';
+import { papelLlegada } from '../espacio/objetivos';
+import { aAbsoluta, aEquipo, CENTRO_Y, centroCelda, LARGO, puntoEnCelda, zonaCarrilDe, type Punto } from '../espacio/geometria';
+import { anotar } from '../metricas';
 import { velocidadMaxima } from '../espacio/movimiento';
 import { atributo, type Atributo } from '../modificadores/atributos';
 import { desplazamientoAtaque, probabilidadAvance, probabilidadBanda, type TipoAccion } from '../modificadores/formacionTactica';
 import { ajusteDuelo, bonusInfranqueable, tiene } from '../modificadores/specials';
 import { balonCon, conducir, controlar, recuperarSuelto, reponer, ticksDeCarrera, ticksDeVuelo, volar } from './animaciones';
 import { falta, fueraDeJuego } from './balonParado';
-import { elegirPonderado, esPortero, interrumpir, jugadorPorId, pasarTiempo, receptor, rivalCercano, type Contexto } from './contexto';
+import { cercanoACelda, elegirPonderado, esPortero, interrumpir, jugadorPorId, pasarTiempo, rivalCercano, type Contexto } from './contexto';
 import { probabilidad, resolver } from './duelo';
 import { comprobarLesion } from './lesiones';
-import { pesosConEspacio } from './opciones';
-import { saqueDePuerta, tirar } from './tiro';
+import { CERCA_REMATE, entorno, motivosPaseLargo, pesosConEspacio, PUNTO_REMATE } from './opciones';
+import { interceptorDePase, receptorDePase, type TipoPase } from './receptor';
+import { corner, despejeEnPropia, saqueDePuerta, tirar } from './tiro';
 
 /** Atributo del atacante y del defensor en cada acción. */
 const ENFRENTAMIENTO: Record<TipoAccion, [Atributo, Atributo]> = {
@@ -27,17 +31,16 @@ const ENFRENTAMIENTO: Record<TipoAccion, [Atributo, Atributo]> = {
   regate: ['regate', 'quite'],
   pase_espacio: ['vision', 'anticipacion'],
   centro: ['centro', 'anticipacion'],
-  tiro_lejano: ['remate', 'anticipacion'],
-  remate: ['remate', 'anticipacion'],
+  tiro: ['remate', 'anticipacion'],
 };
 
-const esPase = (a: TipoAccion) => a === 'pase_corto' || a === 'pase_largo' || a === 'pase_espacio';
+const esPase = (a: TipoAccion): a is TipoPase => a === 'pase_corto' || a === 'pase_largo' || a === 'pase_espacio';
 
 function portadorActual(ctx: Contexto, atacante: EquipoEstado): JugadorEnPartido | undefined {
   const b = ctx.estado.balon;
   const actual = jugadorPorId(atacante, b.portadorId);
   if (actual?.enCampo) return actual;
-  const nuevo = receptor(ctx, atacante, b.zona, b.carril, -1);
+  const nuevo = cercanoACelda(ctx, atacante, b.zona, b.carril, -1);
   if (nuevo) b.portadorId = nuevo.id;
   return nuevo;
 }
@@ -82,7 +85,9 @@ function registrarPase(ctx: Contexto, atacante: EquipoEstado, de: JugadorEnParti
 function perder(ctx: Contexto, atacante: EquipoEstado, perdedor: JugadorEnPartido, recuperador: JugadorEnPartido | undefined): void {
   const e = ctx.estado;
   const defensor = e.equipos[rival(atacante.lado)];
-  const zonaRecuperacion = 5 - e.balon.zona;
+  // La zona y el carril salen de la posición real del balón (vista del que recupera).
+  const real = zonaCarrilDe(defensor.lado, e.espacio.balon);
+  const zonaRecuperacion = real.zona;
   const s = e.parametros.specials;
 
   // Recuperador tras pérdida: presiona de inmediato para volver a robarla.
@@ -100,12 +105,14 @@ function perder(ctx: Contexto, atacante: EquipoEstado, perdedor: JugadorEnPartid
 
   e.estadisticas[defensor.lado].recuperaciones++;
   if (zonaRecuperacion >= 3) e.estadisticas[defensor.lado].recuperacionesCampoRival++;
-  const nuevo = recuperador ?? receptor(ctx, defensor, zonaRecuperacion, 2 - e.balon.carril, -1);
+  const nuevo = recuperador ?? cercanoACelda(ctx, defensor, zonaRecuperacion, 2 - e.balon.carril, -1);
+  // La recuperación se atribuye a quien gana el duelo (research R9).
+  anotar(ctx.metricas, nuevo?.id, 'recuperaciones');
   // Un equipo que juega al contraataque busca la espalda rival nada más recuperar.
   const transicion =
     defensor.tactica.estiloConBalon === 'contraataque' &&
     ctx.rng.probabilidad(Math.round((0.35 + e.parametros.tacticas.contraataque.peligroTransicion) * 1000));
-  e.balon = { posesion: defensor.lado, zona: zonaRecuperacion, carril: 2 - e.balon.carril, portadorId: nuevo?.id ?? 0, transicion };
+  e.balon = { posesion: defensor.lado, zona: zonaRecuperacion, carril: real.carril, portadorId: nuevo?.id ?? 0, transicion };
   actualizarPosesion(ctx);
   if (nuevo && !balonCon(e, nuevo.id)) recuperarSuelto(ctx, nuevo.id);
   else pasarTiempo(ctx, 2);
@@ -120,7 +127,7 @@ function balonFuera(ctx: Contexto, atacante: EquipoEstado, zona: number): void {
     return;
   }
   interrumpir(ctx, 'fuera_de_banda', 10, defensor.lado);
-  const sacador = receptor(ctx, defensor, 5 - zona, 2 - e.balon.carril, -1);
+  const sacador = cercanoACelda(ctx, defensor, 5 - zona, 2 - e.balon.carril, -1);
   e.balon = { posesion: defensor.lado, zona: 5 - zona, carril: e.balon.carril === 1 ? 0 : 2 - e.balon.carril, portadorId: sacador?.id ?? 0, transicion: false };
   actualizarPosesion(ctx);
   // Saque de banda desde la línea más cercana al punto por donde salió.
@@ -209,10 +216,132 @@ function controlPorRitmo(e: EstadoMotor, equipo: EquipoEstado): number {
   return Math.max(0, Math.round(a.controlPaseTicks - (a.controlPorStat * (pase - a.statPaseReferencia)) / 10));
 }
 
+
+/** Hasta dónde llega solo el jugador en un mano a mano (x a unos 11 m; y dentro del ancho del área pequeña ampliado). */
+const MANO_A_MANO = { x: 8950, y0: 2500, y1: 3900 };
+
+/** Pase planeado antes del duelo: receptor, punto de recepción (absoluto) y celda en la que queda el balón. */
+interface PlanPase {
+  receptor: JugadorEnPartido;
+  punto: Punto;
+  zona: number;
+  carril: number;
+}
+
+/**
+ * Receptor y punto de recepción de un pase (spec 003, research R3 y R4). El pase corto y el pase al espacio
+ * van hacia la celda de destino (avance de zona, como en la 002); el pase largo, a un compañero que cumple su
+ * motivo táctico, y el balón queda en la celda real del punto de recepción.
+ */
+function planearPase(ctx: Contexto, accion: TipoPase, atacante: EquipoEstado, defensor: EquipoEstado, portador: JugadorEnPartido, zona: number, carril: number): PlanPase | null {
+  const e = ctx.estado;
+  const p = e.parametros;
+  const lado = atacante.lado;
+  if (accion === 'pase_largo') {
+    // Con un cambio de orientación posible, el balón va al carril contrario; si no, a quien cumple algún motivo.
+    const motivos = motivosPaseLargo(e, atacante, portador);
+    const cambio = motivos.find((m) => m.motivo === 'cambio_orientacion');
+    const candidatos = cambio ? cambio.receptores : [...new Set(motivos.flatMap((m) => m.receptores))];
+    const r = receptorDePase(ctx, atacante, portador, 'pase_largo', candidatos.length > 0 ? { candidatos } : {});
+    const q = r ? e.espacio.jugadores[r.id] : undefined;
+    if (!r || !q) return null;
+    // Por delante del receptor, para que lo reciba en carrera.
+    const delante = aEquipo(lado, q);
+    const punto = aAbsoluta(lado, { x: Math.min(9500, delante.x + 476), y: Math.min(6250, Math.max(150, delante.y)) });
+    return { receptor: r, punto, ...zonaCarrilDe(lado, punto) };
+  }
+  let destino: number;
+  let nuevoCarril = carril;
+  if (accion === 'pase_corto') {
+    const avanza = ctx.rng.probabilidad(Math.round(probabilidadAvance(e, atacante, defensor, zona) * 1000));
+    const nuevaZona = Math.min(5, zona + (avanza ? 1 : 0));
+    // Llegar al área con un pase corto exige superar una línea más.
+    destino = nuevaZona === 5 && !ctx.rng.probabilidad(Math.round(p.acciones.llegadaArea * 1000)) ? 4 : nuevaZona;
+    nuevoCarril = avanza ? (ctx.rng.probabilidad(Math.round(probabilidadBanda(atacante) * 1000)) ? (ctx.rng.probabilidad(500) ? 0 : 2) : 1) : carril;
+  } else {
+    destino = Math.min(5, zona + (zona >= 3 ? 2 : 1));
+  }
+  const objetivo = aAbsoluta(lado, centroCelda(destino, nuevoCarril));
+  const r = receptorDePase(ctx, atacante, portador, accion, { objetivo });
+  const q = r ? e.espacio.jugadores[r.id] : undefined;
+  if (!r || !q) return null;
+  // Un pase corto o al espacio no pasa de 35 m (SC-004): si la celda queda más lejos, el punto se acerca al pasador.
+  let punto = puntoCelda(lado, destino, nuevoCarril, q);
+  const desde = e.espacio.jugadores[portador.id] ?? e.espacio.balon;
+  const [lx, ly] = limitar(punto.x - desde.x, punto.y - desde.y, p.pases.distanciaLargo);
+  punto = { x: desde.x + lx, y: desde.y + ly };
+  return { receptor: r, punto, zona: destino, carril: nuevoCarril };
+}
+
+/** Longitud real del pase (data-model §7.2): corto (< 20 m), largo (> 35 m) y largo hacia atrás desde el último tercio. */
+function clasificarPase(e: EstadoMotor, atacante: EquipoEstado, desde: Punto, hasta: Punto): void {
+  const s = e.estadisticas[atacante.lado];
+  const pp = e.parametros.pases;
+  const d2 = dist2(desde.x, desde.y, hasta.x, hasta.y);
+  if (d2 < pp.distanciaCorto * pp.distanciaCorto) s.pasesCortos++;
+  else if (d2 > pp.distanciaLargo * pp.distanciaLargo) {
+    s.pasesLargos++;
+    if (aEquipo(atacante.lado, desde).x >= ULTIMO_TERCIO && aEquipo(atacante.lado, hasta).x < LARGO / 2) s.pasesLargosAtras++;
+  }
+}
+
+/** Un pase completado que deja atrás a dos o más rivales de campo (métrica de visión, SC-006). */
+function rompeLineas(e: EstadoMotor, atacante: EquipoEstado, desde: Punto, hasta: Punto): boolean {
+  const a = aEquipo(atacante.lado, desde).x;
+  const b = aEquipo(atacante.lado, hasta).x;
+  if (b <= a) return false;
+  let superados = 0;
+  for (const j of e.equipos[rival(atacante.lado)].jugadores) {
+    const q = j.enCampo && !esPortero(j) ? e.espacio.jugadores[j.id] : undefined;
+    if (!q) continue;
+    const x = aEquipo(atacante.lado, q).x;
+    if (x > a && x < b) superados++;
+  }
+  return superados >= 2;
+}
+
+/**
+ * Distancia de una conducción (research R5): de `distanciaMin` a `distanciaMax` según la velocidad y el físico; la
+ * conducción no supera el espacio libre medido (el regate sí: deja atrás al rival).
+ */
+function distanciaConduccion(e: EstadoMotor, atacante: EquipoEstado, portador: JugadorEnPartido, accion: 'conduccion' | 'regate', espacio: number): number {
+  const c = e.parametros.decision.conduccion;
+  const s = e.parametros.espacio;
+  const v = (atributo(e, atacante, portador, 'velocidad') + atributo(e, atacante, portador, 'fisico')) / 2;
+  const t = Math.min(1, Math.max(0, (v - s.statVelocidadMin) / (s.statVelocidadMax - s.statVelocidadMin)));
+  const d = Math.round(c.distanciaMin + (c.distanciaMax - c.distanciaMin) * t);
+  return accion === 'regate' ? d : Math.max(2 * s.radioSeparacion, Math.min(d, espacio - 2 * s.radioSeparacion));
+}
+
+/**
+ * Mano a mano: el jugador se va solo hacia la portería y tira desde cerca (a unos 11 m), no desde donde dejó
+ * atrás al último defensor (spec 003: el tiro sale de la posición real).
+ */
+function manoAMano(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnPartido, asistente?: JugadorEnPartido): void {
+  const e = ctx.estado;
+  const q = e.espacio.jugadores[tirador.id];
+  if (q) {
+    const yo = aEquipo(atacante.lado, q);
+    if (yo.x < MANO_A_MANO.x) {
+      const y = Math.min(MANO_A_MANO.y1, Math.max(MANO_A_MANO.y0, yo.y));
+      conducir(ctx, 'conduccion', tirador.id, aAbsoluta(atacante.lado, { x: MANO_A_MANO.x, y }), { exito: true });
+    }
+  }
+  tirar(ctx, atacante, tirador, 'manoAMano', asistente ? { asistente } : {});
+}
+
 /** Un paso de juego: una acción de quien lleva el balón. */
 export function paso(ctx: Contexto): void {
   const e = ctx.estado;
   const p = e.parametros;
+  // Un córner que salió del tiro anterior se saca ahora, como jugada propia.
+  if (e.cornerPendiente) {
+    const lado = e.cornerPendiente;
+    e.cornerPendiente = null;
+    e.balon = { ...e.balon, posesion: lado };
+    corner(ctx, e.equipos[lado]);
+    return;
+  }
   actualizarPosesion(ctx);
   const atacante = e.equipos[e.balon.posesion];
   const defensor = e.equipos[rival(atacante.lado)];
@@ -224,28 +353,41 @@ export function paso(ctx: Contexto): void {
   // Si el balón no está con quien debe llevarlo, primero va a por él.
   if (!balonCon(e, portador.id)) recuperarSuelto(ctx, portador.id);
   const { zona, carril } = e.balon;
+  const en = entorno(e, atacante, portador);
 
   let accion: TipoAccion;
   if (e.balon.transicion && zona <= 3) {
     accion = 'pase_espacio';
   } else {
-    accion = elegirPonderado(ctx.rng, pesosConEspacio(e, atacante, portador, zona, carril));
+    accion = elegirPonderado(ctx.rng, pesosConEspacio(e, atacante, portador, zona, carril, en));
   }
   const transicion = e.balon.transicion;
-  e.balon.transicion = false;
 
-  if (accion === 'remate') {
+  if (accion === 'tiro') {
+    e.balon.transicion = false;
+    // El tipo (normal en el área, lejano fuera) sale de la posición real del tirador (research R6).
     tirar(ctx, atacante, portador, 'normal');
     return;
   }
-  if (accion === 'tiro_lejano') {
-    tirar(ctx, atacante, portador, 'lejano');
-    return;
+
+  const posPortador = { ...(e.espacio.jugadores[portador.id] ?? e.espacio.balon) };
+  // Pases: receptor y punto de recepción antes del duelo (research R3); sin receptor, se conduce.
+  let plan: PlanPase | null = null;
+  if (esPase(accion)) {
+    plan = planearPase(ctx, accion, atacante, defensor, portador, zona, carril);
+    if (!plan) accion = 'conduccion';
   }
+  e.balon.transicion = false;
 
   const [atA, atD] = ENFRENTAMIENTO[accion];
-  // El atacante busca el punto débil: el más flojo de los dos rivales más cercanos en esa acción.
-  const rivalDuelo = rivalCercano(ctx, defensor, zona >= 5, (j) => atributo(e, defensor, j, atD));
+  // El rival del duelo: en los pases y centros, el mejor situado en la línea del balón (anticipación); en el
+  // resto, el más cercano según su radio de intervención (research R9).
+  const puntoRemate = aAbsoluta(atacante.lado, PUNTO_REMATE);
+  const rivalDuelo = plan
+    ? interceptorDePase(ctx, defensor, posPortador, plan.punto)
+    : accion === 'centro'
+      ? interceptorDePase(ctx, defensor, posPortador, puntoRemate)
+      : rivalCercano(ctx, defensor, zona >= 5);
   const aj = ajusteDuelo(e, portador, rivalDuelo);
   const infranqueable = rivalDuelo ? bonusInfranqueable(e, portador, rivalDuelo) : 0;
   const valorDefensor = rivalDuelo ? atributo(e, defensor, rivalDuelo, atD) + infranqueable : 40;
@@ -258,18 +400,17 @@ export function paso(ctx: Contexto): void {
     centro: p.acciones.centro,
   }[accion];
   const stats = e.estadisticas[atacante.lado];
-  const posPortador = { ...(e.espacio.jugadores[portador.id] ?? e.espacio.balon) };
+  const espacio = en?.espacio ?? 0;
 
   // Pase al espacio: la defensa con línea adelantada provoca más fueras de juego.
-  if (accion === 'pase_espacio') {
+  if (accion === 'pase_espacio' && plan) {
     const fdj = p.acciones.probabilidadFueraDeJuegoBase + (defensor.tactica.lineaAdelantada ? p.tacticas.lineaAdelantada.fuerasDeJuegoProvocados : 0);
     if (ctx.rng.probabilidad(Math.round(fdj * 1000))) {
-      const desmarcado = receptor(ctx, atacante, Math.min(5, zona + 2), carril, portador.id) ?? portador;
-      if (desmarcado !== portador) {
-        stats.pases++;
-        pasar(ctx, 'pase_espacio', atacante, portador, desmarcado, puntoCelda(atacante.lado, Math.min(5, zona + 2), carril, e.espacio.jugadores[desmarcado.id] ?? posPortador), false);
-      }
-      fueraDeJuego(ctx, atacante, desmarcado);
+      stats.pases++;
+      anotar(ctx.metricas, portador.id, 'pases');
+      clasificarPase(e, atacante, posPortador, plan.punto);
+      pasar(ctx, 'pase_espacio', atacante, portador, plan.receptor, plan.punto, false);
+      fueraDeJuego(ctx, atacante, plan.receptor);
       return;
     }
   }
@@ -289,14 +430,24 @@ export function paso(ctx: Contexto): void {
     rerollAtacante: (accion === 'regate' && tiene(portador, 'Filigranas')) || (accion === 'centro' && tiene(portador, 'GuanteEnElPie')),
     rerollDefensor: zona >= 4 && rivalDuelo !== undefined && tiene(rivalDuelo, 'MuroDefensivo') && accion !== 'regate',
   });
-  if (esPase(accion)) stats.pases++;
+  if (plan) {
+    stats.pases++;
+    anotar(ctx.metricas, portador.id, 'pases');
+    clasificarPase(e, atacante, posPortador, plan.punto);
+  }
   if (accion === 'centro') stats.centros++;
-  if (accion === 'conduccion' || accion === 'regate') stats.conducciones++;
+  if (accion === 'conduccion' || accion === 'regate') {
+    stats.conducciones++;
+    anotar(ctx.metricas, portador.id, accion === 'regate' ? 'regates' : 'conducciones');
+    if (accion === 'conduccion' && espacio >= p.decision.conduccion.espacioMax) anotar(ctx.metricas, portador.id, 'conduccionesLargas');
+  }
 
   if (!ok) {
     // Regates y conducciones frenados con falta; pases que salen del campo; el resto, pérdida.
     const frenado = rivalDuelo ? alLadoDe(e, portador.id, rivalDuelo.id) : posPortador;
-    if ((accion === 'regate' || accion === 'conduccion') && rivalDuelo && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaPorEntrada * 1000 * 1.6))) {
+    // Cerca del área se frena más con falta (spec 003: más faltas directas y penaltis, research R7).
+    const cercaArea = (en?.yo.x ?? 0) >= ULTIMO_TERCIO ? p.disciplina.factorFaltaUltimoTercio : 1;
+    if ((accion === 'regate' || accion === 'conduccion') && rivalDuelo && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaPorEntrada * 1000 * 1.6 * cercaArea))) {
       conducir(ctx, accion, portador.id, { x: frenado.x, y: frenado.y }, { exito: false, maximo: 20 });
       falta(ctx, atacante, portador, defensor, rivalDuelo);
       return;
@@ -308,17 +459,25 @@ export function paso(ctx: Contexto): void {
       balonFuera(ctx, atacante, accion === 'centro' ? 5 : zona + 1);
       return;
     }
-    if (esPase(accion) || accion === 'centro') {
+    if (plan || accion === 'centro') {
       controlar(ctx, portador.id, p.espacio.controlMinimoTicks);
       const aerea = accion === 'centro' || accion === 'pase_largo';
-      if (rivalDuelo) volar(ctx, accion, portador.id, { jugadorId: rivalDuelo.id }, { exito: false, aerea });
-      else {
+      if (rivalDuelo) {
+        volar(ctx, accion, portador.id, { jugadorId: rivalDuelo.id }, { exito: false, aerea });
+        anotar(ctx.metricas, rivalDuelo.id, 'intercepciones');
+        // El despeje de un centro dentro del área puede acabar en la propia portería (FR-020).
+        if (accion === 'centro' && despejeEnPropia(ctx, atacante, defensor, rivalDuelo)) return;
+      } else {
         // Sin un rival cerca, el pase sale mal y el balón queda suelto por delante.
         const delante = aEquipo(atacante.lado, e.espacio.balon);
         volar(ctx, accion, portador.id, { punto: aAbsoluta(atacante.lado, { x: Math.min(9500, delante.x + 1500), y: delante.y }) }, { exito: false, aerea });
       }
     } else {
-      conducir(ctx, accion, portador.id, { x: frenado.x, y: frenado.y }, { exito: false, maximo: 20 });
+      conducir(ctx, accion as 'conduccion' | 'regate', portador.id, { x: frenado.x, y: frenado.y }, { exito: false, maximo: 20 });
+      if (rivalDuelo) {
+        anotar(ctx.metricas, rivalDuelo.id, 'entradasGanadas');
+        anotar(ctx.metricas, rivalDuelo.id, 'duelosGanados');
+      }
     }
     if (accion === 'regate' || accion === 'conduccion') comprobarLesion(ctx, atacante, portador);
     if (e.fase === 'finalizado') return;
@@ -326,7 +485,9 @@ export function paso(ctx: Contexto): void {
     return;
   }
 
-  if (esPase(accion)) stats.pasesCompletados++;
+  if (plan) stats.pasesCompletados++;
+  if ((accion === 'regate' || accion === 'conduccion') && rivalDuelo) anotar(ctx.metricas, portador.id, 'duelosGanados');
+  if (accion === 'regate') anotar(ctx.metricas, portador.id, 'regatesGanados');
   // Un duelo ganado con regate o conducción también puede acabar en falta del defensor.
   if ((accion === 'regate' || accion === 'conduccion') && rivalDuelo && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaPorEntrada * 1000 * 0.5))) {
     const frenado = alLadoDe(e, portador.id, rivalDuelo.id);
@@ -335,81 +496,91 @@ export function paso(ctx: Contexto): void {
     return;
   }
 
+  if (plan) {
+    const tipo = accion as TipoPase;
+    pasar(ctx, tipo, atacante, portador, plan.receptor, plan.punto, true);
+    registrarPase(ctx, atacante, portador, plan.receptor, posPortador.y);
+    if (rompeLineas(e, atacante, posPortador, plan.punto)) anotar(ctx.metricas, portador.id, 'pasesRompeLineas');
+    // El balón queda en la celda del punto de recepción (el corto y el pase al espacio van a la celda de destino).
+    e.balon = { ...e.balon, zona: plan.zona, carril: plan.carril, portadorId: plan.receptor.id };
+    // Un pase al espacio que llega al área puede dejar al receptor solo ante el portero; Matador siempre tira.
+    if (tipo === 'pase_espacio' && plan.zona === 5) {
+      if (ctx.rng.probabilidad(Math.round(p.acciones.probabilidadManoAMano * 1000))) manoAMano(ctx, atacante, plan.receptor, portador);
+      else if (tiene(plan.receptor, 'Matador')) tirar(ctx, atacante, plan.receptor, 'normal', { asistente: portador });
+    }
+    return;
+  }
+
   switch (accion) {
-    case 'pase_corto': {
-      const avanza = ctx.rng.probabilidad(Math.round(probabilidadAvance(e, atacante, defensor, zona) * 1000));
-      const nuevaZona = Math.min(5, zona + (avanza ? 1 : 0));
-      // Llegar al área con un pase corto exige superar una línea más.
-      const destino = nuevaZona === 5 && !ctx.rng.probabilidad(Math.round(p.acciones.llegadaArea * 1000)) ? 4 : nuevaZona;
-      const nuevoCarril = avanza ? (ctx.rng.probabilidad(Math.round(probabilidadBanda(atacante) * 1000)) ? (ctx.rng.probabilidad(500) ? 0 : 2) : 1) : carril;
-      const r = receptor(ctx, atacante, destino, nuevoCarril, portador.id);
-      if (r) {
-        pasar(ctx, 'pase_corto', atacante, portador, r, puntoCelda(atacante.lado, destino, nuevoCarril, e.espacio.jugadores[r.id]!), true);
-        registrarPase(ctx, atacante, portador, r, posPortador.y);
-      }
-      e.balon = { ...e.balon, zona: destino, carril: nuevoCarril, portadorId: r?.id ?? portador.id };
-      return;
-    }
-    case 'pase_largo': {
-      const destino = Math.min(4, zona + 2);
-      const nuevoCarril = ctx.rng.entero(0, 2);
-      const r = receptor(ctx, atacante, destino, nuevoCarril, portador.id);
-      if (r) {
-        pasar(ctx, 'pase_largo', atacante, portador, r, puntoCelda(atacante.lado, destino, nuevoCarril, e.espacio.jugadores[r.id]!), true);
-        registrarPase(ctx, atacante, portador, r, posPortador.y);
-      }
-      e.balon = { ...e.balon, zona: destino, carril: nuevoCarril, portadorId: r?.id ?? portador.id };
-      return;
-    }
     case 'conduccion':
     case 'regate': {
       const destino = Math.min(5, zona + 1);
-      // Hacia la zona siguiente, por su carril, como mucho `conduccionMaxima`.
+      // Hacia la zona siguiente hasta la distancia de conducción (research R5): por su carril o, tras un regate ganado
+      // en campo rival desde una banda, en diagonal hacia el carril central, camino del área (H11).
       const actual = aEquipo(atacante.lado, e.espacio.balon);
-      const meta = puntoEnCelda(destino, carril, { x: actual.x + dividir(10000, 6), y: actual.y });
-      const [mx, my] = limitar(meta.x - actual.x, meta.y - actual.y, p.espacio.conduccionMaxima);
+      const haciaDentro =
+        accion === 'regate' && zona >= 3 && carril !== 1 && ctx.rng.probabilidad(Math.round(p.acciones.regateHaciaDentro * 1000));
+      const meta = haciaDentro
+        ? puntoEnCelda(destino, 1, { x: actual.x + dividir(10000, 6), y: CENTRO_Y })
+        : puntoEnCelda(destino, carril, { x: actual.x + dividir(10000, 6), y: actual.y });
+      const [mx, my] = limitar(meta.x - actual.x, meta.y - actual.y, distanciaConduccion(e, atacante, portador, accion, espacio));
       const objetivo = aAbsoluta(atacante.lado, { x: actual.x + mx, y: actual.y + my });
       conducir(ctx, accion, portador.id, objetivo, { exito: true });
-      e.balon = { ...e.balon, zona: destino };
-      // Un regate ganado en la frontal puede dejar al jugador solo ante el portero.
-      if (accion === 'regate' && zona >= 4 && ctx.rng.probabilidad(Math.round(p.acciones.probabilidadManoAMano * 1000))) {
-        tirar(ctx, atacante, portador, 'manoAMano');
-      }
-      return;
-    }
-    case 'pase_espacio': {
-      const destino = Math.min(5, zona + (zona >= 3 ? 2 : 1));
-      const r = receptor(ctx, atacante, destino, carril, portador.id) ?? portador;
-      if (r !== portador) {
-        pasar(ctx, 'pase_espacio', atacante, portador, r, puntoCelda(atacante.lado, destino, carril, e.espacio.jugadores[r.id]!), true);
-        registrarPase(ctx, atacante, portador, r, posPortador.y);
-      }
-      e.balon = { ...e.balon, zona: destino, portadorId: r.id };
-      if (destino === 5 && ctx.rng.probabilidad(Math.round(p.acciones.probabilidadManoAMano * 1000))) {
-        tirar(ctx, atacante, r, 'manoAMano', { asistente: portador });
+      e.balon = { ...e.balon, ...zonaCarrilDe(atacante.lado, e.espacio.balon) };
+      // Un regate ganado en la frontal puede dejar al jugador solo ante el portero; Matador siempre tira.
+      if (accion === 'regate' && zona >= 4) {
+        if (ctx.rng.probabilidad(Math.round(p.acciones.probabilidadManoAMano * 1000))) manoAMano(ctx, atacante, portador);
+        else if (tiene(portador, 'Matador')) tirar(ctx, atacante, portador, 'normal');
       }
       return;
     }
     case 'centro': {
-      // Rematan los que llegan al área: los cuatro más cercanos al punto de remate, y de ellos los mejores por arriba.
-      const puntoRemate = aAbsoluta(atacante.lado, { x: 9200, y: 3200 });
-      const cerca = atacante.jugadores
-        .filter((j) => j.enCampo && j !== portador && !esPortero(j) && e.espacio.jugadores[j.id])
-        .sort((a, b) => {
-          const pa = e.espacio.jugadores[a.id]!;
-          const pb = e.espacio.jugadores[b.id]!;
-          return dist2(pa.x, pa.y, puntoRemate.x, puntoRemate.y) - dist2(pb.x, pb.y, puntoRemate.x, puntoRemate.y) || a.id - b.id;
-        })
-        .slice(0, 4);
-      const candidatos = cerca.sort((a, b) => atributo(e, atacante, b, 'aereo') - atributo(e, atacante, a, 'aereo') || a.id - b.id);
-      const rematador = candidatos[ctx.rng.probabilidad(600) ? 0 : 1] ?? candidatos[0];
+      // Rematan los que llegan al área: los cuatro más cercanos al punto de remate, y de ellos los mejores por
+      // arriba. Los centrocampistas con Llegador se suman a ellos (research R10).
+      const distancia = (j: JugadorEnPartido) => {
+        const q = e.espacio.jugadores[j.id]!;
+        return dist2(q.x, q.y, puntoRemate.x, puntoRemate.y);
+      };
+      const llegador = (j: JugadorEnPartido) => tiene(j, 'Llegador') && j.jugador.demarcacion === 'MED';
+      const alcance = (j: JugadorEnPartido) => (llegador(j) ? 2 * CERCA_REMATE : CERCA_REMATE);
+      const disponibles = atacante.jugadores.filter((j) => j.enCampo && j !== portador && !esPortero(j) && e.espacio.jugadores[j.id] && distancia(j) <= alcance(j) * alcance(j));
+      const cerca = [...disponibles].sort((a, b) => distancia(a) - distancia(b) || a.id - b.id).slice(0, 4);
+      for (const j of disponibles) if (tiene(j, 'Llegador') && j.jugador.demarcacion === 'MED' && !cerca.includes(j)) cerca.push(j);
+      // Llegada desde segunda línea (H11): el extremo o el mediapunta que ataca el área suma en el remate.
+      const llegaDeSegunda = (j: JugadorEnPartido) => papelLlegada(atacante, j) !== null;
+      const porArriba = (j: JugadorEnPartido) =>
+        atributo(e, atacante, j, 'aereo') +
+        (tiene(j, 'Llegador') && j.jugador.demarcacion === 'MED' ? 15 : 0) +
+        (tiene(j, 'Rematador') ? 8 : 0) +
+        (tiene(j, 'Cabeceador') ? 6 : 0) +
+        (llegaDeSegunda(j) ? 8 : 0);
+      // Centro raso o atrás (H11): lo remata con el pie uno de los que llegan, por cercanía al punto de remate y
+      // con más peso para el que llega de segunda línea.
+      const raso = ctx.rng.probabilidad(Math.round(p.acciones.centroRaso * 1000));
+      const candidatos = cerca.sort((a, b) => porArriba(b) - porArriba(a) || a.id - b.id);
+      const rematador = raso
+        ? elegirPonderado(
+            ctx.rng,
+            candidatos.map((j) => {
+              const d = dividir(isqrt(distancia(j)), 10);
+              const peso = dividir(1_000_000_000, (60 + d) * (60 + d));
+              return [j, Math.max(1, llegaDeSegunda(j) ? dividir(peso * Math.round(1000 * p.acciones.bonusLlegada), 1000) : peso)] as [JugadorEnPartido, number];
+            }),
+          )
+        : (candidatos[ctx.rng.probabilidad(600) ? 0 : 1] ?? candidatos[0]);
       if (!rematador) return;
       // El rematador ataca el espacio entre el punto de penalti y el área pequeña.
       e.espacio.destinos[rematador.id] = aAbsoluta(atacante.lado, { x: 9200, y: 3200 + (carril === 0 ? -400 : carril === 2 ? 400 : 0) });
       controlar(ctx, portador.id, p.espacio.controlMinimoTicks);
-      volar(ctx, 'centro', portador.id, { jugadorId: rematador.id }, { exito: true, aerea: true });
+      volar(ctx, 'centro', portador.id, { jugadorId: rematador.id }, { exito: true, aerea: !raso });
       e.balon = { ...e.balon, zona: 5, carril: 1, portadorId: rematador.id };
-      const cabeza = ctx.rng.probabilidad(600);
+      // Agarrón en el duelo aéreo: falta (penalti si es dentro del área, research R7).
+      const marcador = rivalCercano(ctx, defensor);
+      if (marcador && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaDueloAereoArea * 1000))) {
+        falta(ctx, atacante, rematador, defensor, marcador);
+        return;
+      }
+      const cabeza = !raso && ctx.rng.probabilidad(600);
       tirar(ctx, atacante, rematador, cabeza ? 'cabeza' : 'normal', { asistente: portador, trasCentro: true });
       return;
     }

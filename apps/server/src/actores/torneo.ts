@@ -25,13 +25,17 @@ import {
   cerrarJornadaSiCompleta,
   clasificacionActual,
   crearTorneo,
+  eliminacionDe,
   esEliminatoria,
+  ETIQUETA_FASE,
+  humanosEnCompeticion,
   jornadaActual,
   registrarResultado,
   soloUnHumano,
   transicion,
   type Baja,
   type EstadoTorneo,
+  type ModoSimulacion,
 } from '@fbd/domain';
 import type { EventoPartido } from '@fbd/engine';
 import type { ServicioAvisos, TipoAviso } from '../avisos/servicio';
@@ -82,6 +86,48 @@ export async function iniciarTorneo(c: ControladorPartida, ctx: ContextoComando,
   await abrirSiguienteJornada(c, ctx, deps);
 }
 
+/** Humanos activos (sin sustituir por un NPC). */
+function humanosActivos(c: ControladorPartida): string[] {
+  return c.participantes.filter((p) => p.tipo === 'humano' && !p.controladoPorNPC).map((p) => p.id);
+}
+
+/** ¿Queda algún humano activo sin eliminar? (spec 003, FR-041b; data-model §8.3). */
+export function hayHumanosEnCompeticion(c: ControladorPartida): boolean {
+  return !!c.torneo && humanosEnCompeticion(c.torneo, humanosActivos(c)).length > 0;
+}
+
+type ResumenPartido = Awaited<ReturnType<ControladorPartida['servicios']['repoPartidos']['resumenesDePartida']>>[number];
+
+/**
+ * Eliminación de un participante tal como la ve él (FR-039): no se revela hasta que ha visto el partido que
+ * lo eliminó.
+ */
+function eliminacionVista(t: EstadoTorneo, participanteId: string, partidos: readonly ResumenPartido[], pendientes: ReadonlySet<string>) {
+  const eliminacion = eliminacionDe(t, participanteId);
+  if (!eliminacion) return null;
+  const partido = partidos.find((x) => x.jornadaNumero === eliminacion.jornada && (x.localId === participanteId || x.visitanteId === participanteId));
+  return partido && pendientes.has(partido.id) ? null : eliminacion;
+}
+
+/**
+ * ¿Queda algún humano activo que, desde su vista, sigue en competición? Quien aún no ha visto el partido que
+ * lo eliminó cuenta como en competición: «Simular resto del torneo» no le adelanta el final (FR-039, FR-041b).
+ */
+async function hayHumanosEnCompeticionVisibles(c: ControladorPartida, opciones: { partidos?: readonly ResumenPartido[]; excepto?: string } = {}): Promise<boolean> {
+  const t = c.torneo;
+  if (!t || t.campeon) return false;
+  if (hayHumanosEnCompeticion(c)) return true;
+  const lista = opciones.partidos ?? (await c.servicios.repoPartidos.resumenesDePartida(c.id));
+  for (const h of humanosActivos(c)) {
+    if (h === opciones.excepto) continue;
+    if (!eliminacionVista(t, h, lista, new Set(await pendientesDe(c, h)))) return true;
+  }
+  return false;
+}
+
+/** Partidas en las que `simularResto` está en curso: no se emiten las actualizaciones intermedias. */
+const silenciosas = new WeakSet<ControladorPartida>();
+
 async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
   const t = c.torneo!;
   const j = jornadaActual(t);
@@ -89,14 +135,14 @@ async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando
   c.torneo = abrirJornada(t, j.numero);
   const { reloj, repoTorneo } = c.servicios;
   const ahora = reloj.ahora();
-  // Con un solo humano no hay plazos (research R9).
-  const conPlazo = !soloUnHumano(c.participantes);
+  // Con un solo humano no hay plazos (research R9); tampoco si no queda ningún humano en competición (spec 003).
+  const conPlazo = !soloUnHumano(c.participantes) && hayHumanosEnCompeticion(c);
   const venceEn = conPlazo ? ahora + c.partida.plazoJornadaHoras * 3600_000 : null;
   const jornadaId = await repoTorneo.guardarJornada(c.id, { ...j, estado: 'abierta' }, { abreEn: ahora, venceEn });
   await repoTorneo.guardar(c.id, c.torneo);
   await crearPartidosJornada(c, j.numero, j.cruces, { eliminatoria: esEliminatoria(j), jornadaId }, venceEn);
   await emitirTorneo(c, ctx);
-  emitirPreparacion(c, ctx, venceEn);
+  if (!silenciosas.has(c)) await emitirPreparacion(c, ctx, venceEn);
   // Los partidos sin humanos se resuelven ya; los demás esperan a que su humano los abra.
   await resolverPartidosSinHumanos(c, ctx);
   if (venceEn === null) return;
@@ -146,28 +192,46 @@ async function vencerJornada(c: ControladorPartida, ctx: ContextoComando, numero
   }
 }
 
-export type ResultadoAbrir = { modo: 'directo' | 'reproduccion' } | { error: 'PARTIDO_NO_ENCONTRADO' | 'JORNADA_NO_ABIERTA' };
+export type ResultadoAbrir = { modo: 'directo' | 'reproduccion'; modalidad: ModoSimulacion } | { error: 'PARTIDO_NO_ENCONTRADO' | 'JORNADA_NO_ABIERTA' };
 
 /**
  * «Comenzar partido» o «Ver partido» (`POST /api/partidos/:id/abrir`, research R8 y R9). Contra un NPC,
  * empieza el partido en directo; contra un humano, lo resuelve si aún no lo está. Es idempotente.
  */
-export async function abrirPartido(c: ControladorPartida, ctx: ContextoComando, participanteId: string, partidoId: string): Promise<ResultadoAbrir> {
-  const fila = await c.servicios.repoPartidos.obtener(partidoId);
+export async function abrirPartido(
+  c: ControladorPartida,
+  ctx: ContextoComando,
+  participanteId: string,
+  partidoId: string,
+  pedida: ModoSimulacion = 'rapida',
+): Promise<ResultadoAbrir> {
+  const { repoPartidos, repoPartidas, repoPerfiles, reloj } = c.servicios;
+  const fila = await repoPartidos.obtener(partidoId);
   if (!fila || fila.partidaId !== c.id || (fila.localId !== participanteId && fila.visitanteId !== participanteId)) {
     return { error: 'PARTIDO_NO_ENCONTRADO' };
   }
   const rival = fila.localId === participanteId ? fila.visitanteId : fila.localId;
   const contraHumano = esHumano(c, rival) && esHumano(c, participanteId);
-  if (fila.estado === 'finalizado') return { modo: 'reproduccion' };
-  if (fila.estado !== 'programado') return { modo: 'directo' };
-  if (!c.jornada?.cruces.some((x) => x.partidoId === partidoId)) return { error: 'JORNADA_NO_ABIERTA' };
+  if (fila.estado === 'programado' && !c.jornada?.cruces.some((x) => x.partidoId === partidoId)) return { error: 'JORNADA_NO_ABIERTA' };
+  // La modalidad se fija en el primer `abrir` y ya no cambia (FR-035); se recuerda en el participante y, si es un
+  // usuario registrado, en su perfil (FR-032).
+  const modalidad = await repoPartidos.fijarModalidad(fila.id, participanteId, pedida);
+  fila.modalidades = { ...((fila.modalidades as Record<string, ModoSimulacion> | null) ?? {}), [participanteId]: modalidad };
+  await repoPartidas.fijarUltimaModalidad(participanteId, modalidad);
+  const participante = c.participante(participanteId);
+  if (participante) participante.ultimaModalidad = modalidad;
+  if (participante?.usuarioId) await repoPerfiles.fijarUltimaModalidad(participante.usuarioId, modalidad, reloj.ahora());
+  const enCurso = c.partidosEnCurso.get(fila.id);
+  if (enCurso) enCurso.fila.modalidades = fila.modalidades;
+
+  if (fila.estado === 'finalizado') return { modo: 'reproduccion', modalidad };
+  if (fila.estado !== 'programado') return { modo: 'directo', modalidad };
   if (contraHumano) {
     await resolverPartidoEntreHumanos(c, ctx, fila.id, { resolucion: 'apertura', abiertoPorId: participanteId });
-    return { modo: 'reproduccion' };
+    return { modo: 'reproduccion', modalidad };
   }
   await iniciarPartido(c, ctx, fila);
-  return { modo: 'directo' };
+  return { modo: 'directo', modalidad };
 }
 
 export type ResultadoSiguienteJornada = { ok: true } | { error: 'JORNADA_ABIERTA' | 'TORNEO_TERMINADO' | 'HAY_VARIOS_HUMANOS' };
@@ -236,9 +300,53 @@ async function despuesDePartido(c: ControladorPartida, ctx: ContextoComando, dep
     await terminarTorneo(c, ctx, deps);
     return;
   }
-  // Con un solo humano, la siguiente jornada se abre cuando él lo pide (research R9).
-  if (soloUnHumano(c.participantes)) return;
+  // Con un solo humano, la siguiente jornada se abre cuando él lo pide (research R9). Sin humanos en competición,
+  // el resto del torneo se juega con «Simular resto del torneo» (spec 003, FR-041a).
+  if (soloUnHumano(c.participantes) || !hayHumanosEnCompeticion(c)) return;
   await abrirSiguienteJornada(c, ctx, deps);
+}
+
+export type ResultadoSimularResto =
+  | { ok: true; campeon: { id: string; nombre: string } }
+  | { error: 'NO_ELIMINADO' | 'HAY_HUMANOS_EN_COMPETICION' | 'TORNEO_TERMINADO' };
+
+/**
+ * «Simular resto del torneo» (spec 003, FR-041a y FR-041b; research R22): quien lo pide está eliminado y no
+ * queda ningún humano en competición. En un solo comando del actor se abren y resuelven las jornadas que
+ * faltan, sin emitir las actualizaciones intermedias; al final se emite una vez (el torneo termina con
+ * `terminarTorneo` desde `despuesDePartido`). La idempotencia por `Idempotency-Key` la da la ruta.
+ */
+export async function simularResto(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo, participanteId: string): Promise<ResultadoSimularResto> {
+  const t = c.torneo;
+  if (!t) return { error: 'TORNEO_TERMINADO' };
+  if (!eliminacionDe(t, participanteId)) return { error: 'NO_ELIMINADO' };
+  if (t.campeon || c.partida.estado !== 'en_torneo') return { error: 'TORNEO_TERMINADO' };
+  if (await hayHumanosEnCompeticionVisibles(c, { excepto: participanteId })) return { error: 'HAY_HUMANOS_EN_COMPETICION' };
+  silenciosas.add(c);
+  try {
+    for (let guarda = 0; guarda < 200 && !c.torneo!.campeon; guarda++) {
+      const j = jornadaActual(c.torneo!);
+      if (!j) break;
+      if (j.estado === 'abierta') await resolverPartidosSinHumanos(c, ctx);
+      else await abrirSiguienteJornada(c, ctx, deps);
+    }
+  } finally {
+    silenciosas.delete(c);
+  }
+  await emitirTorneo(c, ctx);
+  const campeon = c.torneo!.campeon;
+  if (!campeon) return { error: 'TORNEO_TERMINADO' };
+  return { ok: true, campeon: { id: campeon, nombre: nombre(c, campeon) } };
+}
+
+/** Marca vista la pantalla de derrota o la del campeón (spec 003, FR-041). Idempotente. */
+export async function marcarPantallaVista(c: ControladorPartida, participanteId: string, pantalla: 'derrota' | 'campeon'): Promise<void> {
+  const p = c.participante(participanteId);
+  if (!p) return;
+  const ahora = c.servicios.reloj.ahora();
+  await c.servicios.repoPartidas.marcarPantallaVista(participanteId, pantalla, ahora);
+  if (pantalla === 'derrota') p.derrotaVistaEn ??= new Date(ahora);
+  else p.campeonVistoEn ??= new Date(ahora);
 }
 
 async function terminarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
@@ -308,8 +416,25 @@ async function pendientesDe(c: ControladorPartida, participanteId: string | unde
 export async function vistaTorneo(c: ControladorPartida, participanteId?: string) {
   const t = c.torneo;
   const siguiente = soloUnHumano(c.participantes) ? ('manual' as const) : ('automatica' as const);
+  const yo = participanteId ? c.participante(participanteId) : undefined;
+  const pantallas = { derrotaVista: !!yo?.derrotaVistaEn, campeonVisto: !!yo?.campeonVistoEn };
   if (!t) {
-    return { modo: c.partida.modo, fase: null, jornadas: [], clasificacion: [], cuadro: null, campeon: null, jornadaActual: null, pendientesDeVer: [], siguienteJornada: siguiente, goleadores: [], asistentes: [] };
+    return {
+      modo: c.partida.modo,
+      fase: null,
+      jornadas: [],
+      clasificacion: [],
+      cuadro: null,
+      campeon: null,
+      jornadaActual: null,
+      pendientesDeVer: [],
+      siguienteJornada: siguiente,
+      goleadores: [],
+      asistentes: [],
+      miEliminacion: null,
+      puedeSimularResto: false,
+      pantallas,
+    };
   }
   const filasJornadas = await c.servicios.repoTorneo.jornadas(c.id);
   const partidos = await c.servicios.repoPartidos.resumenesDePartida(c.id);
@@ -321,7 +446,14 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
   const crucesOcultos = new Set(
     partidos.filter((x) => oculto.has(x.id)).map((x) => [x.localId, x.visitanteId].sort().join()),
   );
+  // Eliminación propia (spec 003, FR-039): no se revela hasta que ha visto el partido que lo eliminó.
+  const eliminacion = participanteId ? eliminacionVista(t, participanteId, partidos, oculto) : null;
+  const miEliminacion = eliminacion ? { fase: eliminacion.fase, etiqueta: ETIQUETA_FASE[eliminacion.fase] } : null;
   return {
+    miEliminacion,
+    puedeSimularResto:
+      miEliminacion !== null && !t.campeon && c.partida.estado === 'en_torneo' && !(await hayHumanosEnCompeticionVisibles(c, { partidos, excepto: participanteId })),
+    pantallas,
     modo: t.modo,
     fase: t.fase,
     jornadaActual: jornadaActual(t)?.numero ?? null,
@@ -417,6 +549,7 @@ function finalOculta(t: EstadoTorneo, crucesOcultos: ReadonlySet<string>): boole
 
 /** `torneo.actualizado` a cada humano con su propia vista (research R8). */
 export async function emitirTorneo(c: ControladorPartida, ctx: ContextoComando, soloA?: string): Promise<void> {
+  if (silenciosas.has(c)) return;
   for (const p of c.humanos()) {
     if (soloA && p.id !== soloA) continue;
     ctx.emitirA(p.id, { t: 'torneo.actualizado', ...(await vistaTorneo(c, p.id)) });

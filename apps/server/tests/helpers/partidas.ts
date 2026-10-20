@@ -24,7 +24,7 @@ export async function partidaTrasDraft(
   const anfitrion = opciones.invitado ? await crearInvitado(srv.url) : await crearRegistrado(srv.url);
   const r = await peticion(srv.url, '/api/partidas', {
     cookie: anfitrion.cookie,
-    cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', ...opciones.cuerpo },
+    cuerpo: { modo: 'liga', numParticipantes: 4, ...opciones.cuerpo },
   });
   if (r.estado !== 201) throw new Error(`No se pudo crear la partida: ${JSON.stringify(r.cuerpo)}`);
   for (const otro of opciones.otros ?? []) {

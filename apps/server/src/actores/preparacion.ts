@@ -5,7 +5,7 @@
  * partida tiene varios humanos, el plazo de la jornada. Su partido empieza cuando lo abre con «Comenzar
  * partido» o «Ver partido» (`POST /api/partidos/:id/abrir`), o se resuelve solo al vencer el plazo.
  */
-import { derivarSemilla, parametrosActuales, type Emparejamiento } from '@fbd/domain';
+import { derivarSemilla, parametrosActuales, type Emparejamiento, type ModoSimulacion } from '@fbd/domain';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
 import { iniciarPartido, sinHumanos } from './partidoRapido';
@@ -54,7 +54,7 @@ export async function programarJornada(
   opciones: OpcionesJornada = {},
 ): Promise<void> {
   await crearPartidosJornada(c, numero, emparejamientos, opciones, null);
-  emitirPreparacion(c, ctx, null);
+  await emitirPreparacion(c, ctx, null);
   await resolverPartidosSinHumanos(c, ctx);
 }
 
@@ -67,7 +67,19 @@ export async function resolverPartidosSinHumanos(c: ControladorPartida, ctx: Con
   }
 }
 
-export function emitirPreparacion(c: ControladorPartida, ctx: ContextoComando, venceEn: number | null): void {
+/**
+ * Modalidad preseleccionada en la preparación (spec 003, FR-032): la última con la que el participante abrió un
+ * partido de esta partida; si no hay, la última de su perfil (usuarios registrados); si tampoco, la rápida.
+ */
+export async function modalidadPreferida(c: ControladorPartida, participanteId: string): Promise<ModoSimulacion> {
+  const p = c.participante(participanteId);
+  const propia = p?.ultimaModalidad as ModoSimulacion | null | undefined;
+  if (propia) return propia;
+  if (p?.usuarioId) return (await c.servicios.repoPerfiles.obtenerUltimaModalidad(p.usuarioId)) ?? 'rapida';
+  return 'rapida';
+}
+
+export async function emitirPreparacion(c: ControladorPartida, ctx: ContextoComando, venceEn: number | null): Promise<void> {
   for (const cruce of c.jornada?.cruces ?? []) {
     for (const [pid, rival] of [
       [cruce.local, cruce.visitante],
@@ -88,6 +100,7 @@ export function emitirPreparacion(c: ControladorPartida, ctx: ContextoComando, v
         },
         // Solo hay plazo con varios humanos (contracts/realtime-protocol.md).
         ...(venceEn !== null ? { venceEn: new Date(venceEn).toISOString() } : {}),
+        modalidadPreferida: await modalidadPreferida(c, pid),
       });
     }
   }

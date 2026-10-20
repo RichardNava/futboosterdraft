@@ -56,7 +56,7 @@ export async function alineacionVigente(c: ControladorPartida, participanteId: s
 }
 
 /** Alineación automática (FR-031), guardada en caché mientras no cambien las bajas del participante. */
-function alineacionAutomatica(c: ControladorPartida, participanteId: string, plantilla: Jugador[], bajas: Set<number>): Alineacion {
+export function alineacionAutomatica(c: ControladorPartida, participanteId: string, plantilla: Jugador[], bajas: Set<number>): Alineacion {
   const clave = [...bajas].sort((a, b) => a - b).join(',');
   const guardada = c.autoAlineaciones.get(participanteId);
   if (guardada && guardada.bajas === clave) return guardada.alineacion;
@@ -108,20 +108,29 @@ export async function confirmarAlineacion(c: ControladorPartida, participanteId:
 
   return db.transaction(async (tx) => {
     const version = await repoEquipo.guardarAlineacion(participanteId, a, reloj.ahora(), tx);
-    // Los dorsales se asignan al definir por primera vez el once y quedan fijos (FR-031a).
+    // Los dorsales se asignan al terminar el draft (spec 003, FR-001b) y confirmar el once no los cambia. Solo una
+    // partida anterior a ese cambio puede llegar aquí sin dorsales: se le asignan como antes.
     let dorsales = await repoEquipo.dorsales(participanteId, tx);
     if (!dorsales) {
-      dorsales = asignarDorsalesIniciales(
-        plantilla.map((j) => j.id),
-        a.titulares,
-        a.formacion,
-        derivarSemilla(c.partida.semilla, `dorsales:${participanteId}`),
-        posicionesColocadas(a.formacion, a.titulares, a.colocacion, parametrosActuales()),
-      );
+      dorsales = dorsalesIniciales(c, participanteId, plantilla, a);
       await repoEquipo.guardarDorsales(participanteId, dorsales, tx);
     }
     return { version, dorsales };
   });
+}
+
+/**
+ * Dorsales iniciales de un participante (spec 003, FR-001b): por la posición de cada jugador en la alineación dada,
+ * con los dorsales fijos por casilla para los titulares y del 1 al 24 sin repetir para el resto (002/FR-035).
+ */
+export function dorsalesIniciales(c: ControladorPartida, participanteId: string, plantilla: readonly Jugador[], a: Alineacion): Dorsales {
+  return asignarDorsalesIniciales(
+    plantilla.map((j) => j.id),
+    a.titulares,
+    a.formacion,
+    derivarSemilla(c.partida.semilla, `dorsales:${participanteId}`),
+    posicionesColocadas(a.formacion, a.titulares, a.colocacion, parametrosActuales()),
+  );
 }
 
 /** Reasigna un dorsal (FR-037): si otro jugador lo llevaba, se queda sin dorsal. */
@@ -154,7 +163,7 @@ export async function cambiarDorsal(c: ControladorPartida, participanteId: strin
 
 export async function cambiarEquipaciones(c: ControladorPartida, participanteId: string, e: Equipaciones) {
   exigirEquipoEditable(c);
-  const problemas = validarEquipaciones(e);
+  const problemas = validarEquipaciones(e, parametrosActuales());
   if (problemas.length) throw errores.regla(problemas[0]!.codigo, problemas[0]!.mensaje);
   await c.servicios.repoEquipo.guardarEquipaciones(participanteId, e);
   const p = c.participante(participanteId);

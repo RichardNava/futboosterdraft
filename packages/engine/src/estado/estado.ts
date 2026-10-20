@@ -16,6 +16,7 @@ import {
   type Posicion,
   type Tactica,
   versionMayor,
+  VERSION_MAYOR_SOPORTADA,
   VersionNoSoportada,
 } from '@fbd/domain';
 import type {
@@ -185,6 +186,11 @@ export interface EstadoMotor {
    * pleno juego no lo es: las decisiones pendientes esperan a la siguiente interrupción (research R6).
    */
   puntoDecision: boolean;
+  /**
+   * Córner que ha salido de un tiro (rechace o parada) y se saca al principio del paso siguiente: así cada córner es
+   * una interrupción propia y una cadena de córners no cabe en una sola jugada.
+   */
+  cornerPendiente?: Lado | null;
 }
 
 export const DURACION_PARTE = 45 * 60;
@@ -218,6 +224,14 @@ function estadisticasVacias(): EstadisticasEquipo {
     contraataques: 0,
     lesiones: 0,
     cansancioMedio: 0,
+    pasesCortos: 0,
+    pasesLargos: 0,
+    pasesLargosAtras: 0,
+    tirosArea: 0,
+    tirosFrontal: 0,
+    tirosLejos: 0,
+    golesPorTipo: { jugada: 0, cabeza: 0, falta: 0, penalti: 0, propia: 0 },
+    golesPorZona: { area: 0, frontal: 0, lejos: 0 },
   };
 }
 
@@ -286,8 +300,8 @@ export function anclaDeCasilla(formacion: FormacionId, casillaId: string | null)
 }
 
 export function crearPartido(entrada: EntradaPartido): EstadoMotor {
-  // El motor de la spec 002 no puede volver a simular partidos de los parámetros 1.x (research R12).
-  if (versionMayor(entrada.parametros.version) < 2 || versionMayor(entrada.version) < 2) {
+  // El motor de la spec 003 no puede volver a simular partidos de los parámetros 1.x ni 2.x (research R2).
+  if (versionMayor(entrada.parametros.version) < VERSION_MAYOR_SOPORTADA || versionMayor(entrada.version) < VERSION_MAYOR_SOPORTADA) {
     throw new VersionNoSoportada(entrada.parametros.version);
   }
   const local = crearEquipo('local', entrada.local, entrada.parametros);

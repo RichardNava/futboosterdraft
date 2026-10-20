@@ -10,7 +10,7 @@ test('en solitario, del draft al campeón sin esperar a ningún temporizador (es
   await page.goto('/');
   await page.getByRole('button', { name: 'Jugar como invitado' }).click();
   await expect(page.getByRole('heading', { name: 'Nueva partida' })).toBeVisible();
-  const r = await page.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
+  const r = await page.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4 } });
   expect(r.status()).toBe(201);
   const { id } = (await r.json()) as { id: string };
   await page.request.post(`/api/partidas/${id}/iniciar`);
@@ -27,13 +27,16 @@ test('en solitario, del draft al campeón sin esperar a ningún temporizador (es
   await expect(page.getByRole('heading', { name: 'Draft terminado' })).toBeVisible();
   expect(Date.now() - inicioDraft).toBeLessThan(5 * 60_000); // SC-004
 
-  // «Preparar equipo» → alineación; «Comenzar partido» empieza al instante.
+  // «Preparar equipo» → «Formación»; «Confirmar alineación» lleva al torneo (spec 003, FR-003b), donde «Comenzar
+  // partido» empieza al instante.
   await page.getByRole('button', { name: 'Preparar equipo' }).click();
-  await expect(page.getByRole('heading', { name: 'Alineación' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Formación' })).toBeVisible();
+  await page.getByRole('button', { name: 'Confirmar alineación' }).click();
+  await expect(page.getByRole('heading', { name: 'Torneo' })).toBeVisible();
 
   for (let jornada = 1; jornada <= 6; jornada++) {
     await page.getByRole('button', { name: 'Comenzar partido' }).click();
-    await expect(page).toHaveURL(/\/partido\//, { timeout: 1000 });
+    await expect(page).toHaveURL(/\/partido\//, { timeout: 3000 });
     // Descanso: «Seguir» reanuda al instante.
     await page.getByRole('button', { name: 'Seguir' }).click();
     await expect(page.getByRole('heading', { name: 'Resumen del partido' })).toBeVisible({ timeout: 3000 });
@@ -42,12 +45,13 @@ test('en solitario, del draft al campeón sin esperar a ningún temporizador (es
     await expect(page.getByRole('heading', { name: 'Torneo' })).toBeVisible({ timeout: 1000 });
     if (jornada < 6) {
       await page.getByRole('button', { name: 'Siguiente jornada' }).click();
-      await expect(page.getByRole('button', { name: 'Comenzar partido' })).toBeVisible({ timeout: 1000 });
+      // La petición resuelve en el momento los partidos entre NPC de la jornada.
+      await expect(page.getByRole('button', { name: 'Comenzar partido' })).toBeVisible({ timeout: 3000 });
     }
   }
 
-  // Al final del torneo, «Volver al menú».
-  await expect(page.getByText(/Campeón:/)).toBeVisible();
+  // Al final del torneo, la pantalla del campeón (spec 003, US10) con «Volver al menú».
+  await expect(page.getByRole('heading', { name: /campeón del torneo!$/ })).toBeVisible();
   await page.getByRole('button', { name: 'Volver al menú' }).click();
   await expect(page).toHaveURL(/\/$/);
 });

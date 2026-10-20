@@ -7,6 +7,10 @@
  * - PRO: las 3 mejores formaciones × 2 tácticas, probadas con 20 partidos simulados cada una contra la
  *   alineación probable del rival (su plantilla es visible tras el draft, FR-054a), con un límite de
  *   tiempo; elige la de más puntos (y, con empate, más diferencia de goles).
+ *
+ * Spec 003 (FR-037): sobre la alineación elegida, cada nivel puede cometer errores de formación, alineación,
+ * colocación, táctica y lanzadores, en ese orden, con la probabilidad de su nivel y el guardarraíl de
+ * `esErrorAdmisible` respecto de la decisión correcta.
  */
 import {
   autoAlineacion,
@@ -16,13 +20,13 @@ import {
   tacticaPorDefecto,
   type Alineacion,
   type Jugador,
-  type NivelNPC,
   type ParametrosEquilibrado,
   type Semilla,
   type Tactica,
 } from '@fbd/domain';
+import { errorAlineacion, errorColocacion, errorFormacion, errorLanzadores, errorTactica, esErrorAdmisible, type ContextoErrores } from './errores';
 import { fuerzaAlineacion, fuerzaPlantilla } from './evaluador';
-import { FORMACIONES_BASICAS, PERFILES, TODAS_LAS_FORMACIONES } from './perfiles';
+import { erroresDe, FORMACIONES_BASICAS, PERFILES, TODAS_LAS_FORMACIONES, type FamiliaError, type NivelIA } from './perfiles';
 import { equipoDesdeAlineacion, simularCandidata } from './pro/simulacionPrueba';
 
 export interface OpcionesAlineacion {
@@ -60,12 +64,73 @@ export function tacticaSegunRival(fuerzaPropia: number, fuerzaRival: number | nu
 }
 
 export function decidirAlineacion(
-  nivel: NivelNPC,
+  nivel: NivelIA,
   plantilla: readonly Jugador[],
   bajas: ReadonlySet<number>,
   rivalPlantilla: readonly Jugador[] | null,
   semilla: Semilla,
   opciones: OpcionesAlineacion = {},
+): Alineacion {
+  return decidirAlineacionDetallada(nivel, plantilla, bajas, rivalPlantilla, semilla, opciones).alineacion;
+}
+
+/** Como `decidirAlineacion`, pero dice además qué errores se aplicaron (para la revisión de SC-010b). */
+export function decidirAlineacionDetallada(
+  nivel: NivelIA,
+  plantilla: readonly Jugador[],
+  bajas: ReadonlySet<number>,
+  rivalPlantilla: readonly Jugador[] | null,
+  semilla: Semilla,
+  opciones: OpcionesAlineacion = {},
+): { alineacion: Alineacion; errores: FamiliaError[] } {
+  const p = opciones.parametros ?? parametrosActuales();
+  const correcta = alineacionCorrecta(nivel, plantilla, bajas, rivalPlantilla, semilla, opciones);
+  return conErrores(nivel, correcta, plantilla, bajas, rivalPlantilla, semilla, p);
+}
+
+/**
+ * Errores de la preparación, en el orden de T094 y con un PRNG propio. Cada uno se comprueba contra la
+ * decisión correcta, así que el coste acumulado nunca supera `costeMaximo`.
+ */
+function conErrores(
+  nivel: NivelIA,
+  correcta: Alineacion,
+  plantilla: readonly Jugador[],
+  bajas: ReadonlySet<number>,
+  rival: readonly Jugador[] | null,
+  semilla: Semilla,
+  p: ParametrosEquilibrado,
+): { alineacion: Alineacion; errores: FamiliaError[] } {
+  const perfil = erroresDe(nivel, p);
+  const rng = new Rng(derivarSemilla(semilla, 'errores'));
+  const ctx: ContextoErrores = { plantilla, bajas, p, costeMaximo: perfil.costeMaximo };
+  const pasos: [FamiliaError, (a: Alineacion) => Alineacion | null][] = [
+    ['formacion', (a) => errorFormacion(a, ctx, rng)],
+    ['alineacion', (a) => errorAlineacion(a, ctx, rng)],
+    ['colocacion', (a) => errorColocacion(a, ctx, rng)],
+    ['tactica', (a) => errorTactica(a, ctx, rival, rng)],
+    ['lanzadores', (a) => errorLanzadores(a, ctx, rng)],
+  ];
+  let actual = correcta;
+  const errores: FamiliaError[] = [];
+  for (const [familia, error] of pasos) {
+    if (!rng.probabilidad(perfil.probabilidad[familia])) continue;
+    const otra = error(actual);
+    if (otra && esErrorAdmisible(correcta, otra, ctx)) {
+      actual = otra;
+      errores.push(familia);
+    }
+  }
+  return { alineacion: actual, errores };
+}
+
+function alineacionCorrecta(
+  nivel: NivelIA,
+  plantilla: readonly Jugador[],
+  bajas: ReadonlySet<number>,
+  rivalPlantilla: readonly Jugador[] | null,
+  semilla: Semilla,
+  opciones: OpcionesAlineacion,
 ): Alineacion {
   const perfil = PERFILES[nivel];
   const p = opciones.parametros ?? parametrosActuales();

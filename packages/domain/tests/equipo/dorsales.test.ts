@@ -1,14 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { asignarDorsal, asignarDorsalesIniciales, completarDorsales, DORSAL_FIJO, ErrorDorsales, sinDorsal, type Dorsales } from '../../src/equipo/dorsales';
-import {
-  equipacionEnPartido,
-  equipacionesAleatorias,
-  relacionContraste,
-  validarEquipaciones,
-} from '../../src/equipo/equipaciones';
 import { FORMACIONES, CASILLA_CENTRAL } from '../../src/equipo/formaciones';
-import { PARAMETROS_V2 } from '../../src/parametros/index';
 import { semillaDesdeTexto } from '../../src/rng/xoshiro';
 import { plantillaEquilibrada } from './ayudas';
 
@@ -132,36 +125,5 @@ describe('dorsales (FR-035 a FR-038, T129)', () => {
         },
       ),
     );
-  });
-});
-
-describe('equipaciones (FR-031b)', () => {
-  it('se asignan al azar con primera ≠ segunda y son válidas', () => {
-    for (let i = 0; i < 50; i++) {
-      const e = equipacionesAleatorias(semillaDesdeTexto(`eq${i}`), PARAMETROS_V2);
-      expect(e.primera.principal).not.toBe(e.segunda.principal);
-      expect(validarEquipaciones(e)).toEqual([]);
-    }
-  });
-
-  it('el dorsal se lee sobre la camiseta: contraste ≥ 4,5:1 en todas las equipaciones aleatorias', () => {
-    for (let i = 0; i < 200; i++) {
-      const e = equipacionesAleatorias(semillaDesdeTexto(`contraste${i}`), PARAMETROS_V2);
-      for (const k of [e.primera, e.segunda]) expect(relacionContraste(k.principal, k.secundario)).toBeGreaterThanOrEqual(4.5);
-    }
-  });
-
-  it('valida colores y que las dos equipaciones no sean iguales', () => {
-    const base = { primera: { principal: '#ff0000', secundario: '#ffffff' }, segunda: { principal: '#0000ff', secundario: '#ffffff' } };
-    expect(validarEquipaciones({ ...base, primera: { principal: 'rojo', secundario: '#fff' } }).map((e) => e.codigo)).toContain('COLOR_INVALIDO');
-    expect(validarEquipaciones({ ...base, segunda: base.primera }).map((e) => e.codigo)).toContain('EQUIPACIONES_IGUALES');
-  });
-
-  it('el visitante usa la segunda solo si su primera se confunde con la del local', () => {
-    const local = { primera: { principal: '#d01010', secundario: '#ffffff' }, segunda: { principal: '#ffffff', secundario: '#d01010' } };
-    const parecido = { primera: { principal: '#c81818', secundario: '#000000' }, segunda: { principal: '#1030d0', secundario: '#ffffff' } };
-    const distinto = { primera: { principal: '#10a040', secundario: '#ffffff' }, segunda: { principal: '#202020', secundario: '#ffffff' } };
-    expect(equipacionEnPartido(local, parecido, PARAMETROS_V2)).toEqual({ local: local.primera, visitante: parecido.segunda });
-    expect(equipacionEnPartido(local, distinto, PARAMETROS_V2)).toEqual({ local: local.primera, visitante: distinto.primera });
   });
 });

@@ -3,10 +3,11 @@
  */
 import type { FastifyInstance } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
-import { abandonar, siguienteJornada, tablaCompleta, vistaTorneo, type DependenciasTorneo } from '../actores/torneo';
+import { abandonar, marcarPantallaVista, siguienteJornada, simularResto, tablaCompleta, vistaTorneo, type DependenciasTorneo } from '../actores/torneo';
 import { abandonarPartidaInvitado } from '../actores/sala';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
+import { CuerpoPantallaVista } from '@fbd/protocol';
 import { errores } from './errores';
 
 export function registrarRutasTorneo(app: FastifyInstance, auth: Auth, gestor: GestorPartidas, deps: DependenciasTorneo): void {
@@ -42,6 +43,35 @@ export function registrarRutasTorneo(app: FastifyInstance, auth: Auth, gestor: G
       throw errores.conflicto(r.error, 'La jornada actual aún no ha terminado');
     }
     return c.ejecutar(async () => ({ ok: true, jornadaActual: (await vistaTorneo(c)).jornadaActual }));
+  });
+
+  // «Simular resto del torneo» (spec 003, FR-041a y FR-041b), con `Idempotency-Key` obligatoria.
+  app.post<{ Params: { id: string } }>('/api/partidas/:id/simular-resto', { preHandler: requiereSesion }, async (req) => {
+    if (!req.headers['idempotency-key']) throw errores.validacion('FALTA_IDEMPOTENCY_KEY', 'Falta la cabecera Idempotency-Key');
+    const c = await gestor.obtenerOError(req.params.id);
+    const participante = c.participanteDeUsuario(req.usuario!.id);
+    if (!participante) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+    const r = await c.ejecutar((ctx) => simularResto(c, ctx, deps, participante.id));
+    if ('error' in r) {
+      const mensajes = {
+        NO_ELIMINADO: 'Solo se puede simular el resto del torneo tras quedar eliminado',
+        HAY_HUMANOS_EN_COMPETICION: 'Aún queda alguien en competición',
+        TORNEO_TERMINADO: 'El torneo ya ha terminado',
+      } as const;
+      throw errores.conflicto(r.error, mensajes[r.error]);
+    }
+    return r;
+  });
+
+  // Pantalla de derrota o de campeón ya vista (spec 003, FR-041). Idempotente.
+  app.post<{ Params: { id: string }; Body: unknown }>('/api/partidas/:id/pantalla-vista', { preHandler: requiereSesion }, async (req) => {
+    const cuerpo = CuerpoPantallaVista.safeParse(req.body);
+    if (!cuerpo.success) throw errores.validacion('CUERPO_INVALIDO', 'Pantalla desconocida');
+    const c = await gestor.obtenerOError(req.params.id);
+    const participante = c.participanteDeUsuario(req.usuario!.id);
+    if (!participante) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+    await c.ejecutar(() => marcarPantallaVista(c, participante.id, cuerpo.data.pantalla));
+    return { ok: true };
   });
 
   app.post<{ Params: { id: string } }>('/api/partidas/:id/abandonar', { preHandler: requiereSesion }, async (req) => {

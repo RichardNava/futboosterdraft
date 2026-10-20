@@ -1,7 +1,8 @@
 /**
  * Repositorio de partidos.
  */
-import { asc, eq } from 'drizzle-orm';
+import type { ModoSimulacion } from '@fbd/domain';
+import { and, asc, eq, sql } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
 import { partidos } from '../esquema/index';
 
@@ -34,6 +35,19 @@ export class RepoPartidos {
   ): Promise<FilaPartido> {
     const [fila] = await ejecutor.insert(partidos).values({ ...datos, jornadaId: datos.jornadaId ?? null }).returning();
     return fila!;
+  }
+
+  /**
+   * Fija la modalidad de un participante en un partido solo si aún no la tiene (FR-035: no cambia después).
+   * Devuelve la modalidad que queda.
+   */
+  async fijarModalidad(partidoId: string, participanteId: string, modalidad: ModoSimulacion): Promise<ModoSimulacion> {
+    await this.db
+      .update(partidos)
+      .set({ modalidades: sql`${partidos.modalidades} || jsonb_build_object(${participanteId}::text, ${modalidad}::text)` })
+      .where(and(eq(partidos.id, partidoId), sql`not (${partidos.modalidades} ? ${participanteId}::text)`));
+    const [fila] = await this.db.select({ m: partidos.modalidades }).from(partidos).where(eq(partidos.id, partidoId)).limit(1);
+    return ((fila?.m as Record<string, ModoSimulacion> | undefined) ?? {})[participanteId] ?? modalidad;
   }
 
   async obtener(id: string): Promise<FilaPartido | undefined> {

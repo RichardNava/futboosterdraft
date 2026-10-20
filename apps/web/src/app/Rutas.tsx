@@ -10,6 +10,7 @@ import { Partido } from '../pantallas/Partido';
 import { Plantillas } from '../pantallas/Plantillas';
 import { ReproduccionPartido } from '../pantallas/ReproduccionPartido';
 import { Sala } from '../pantallas/Sala';
+import { Perfil } from '../pantallas/Perfil';
 import { Torneo } from '../pantallas/Torneo';
 import { Marco } from './Marco';
 
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
       { path: '/', element: <Inicio /> },
       { path: '/cuenta', element: conSesion(<Inicio />) },
       { path: '/mis-partidas', element: conSesion(<MisPartidas />) },
+      { path: '/perfil', element: conSesion(<Perfil />) },
       { path: '/partidas/nueva', element: conSesion(<CrearPartida />) },
       { path: '/partidas/:partidaId/sala', element: conSesion(<Sala />) },
       { path: '/partidas/:partidaId/draft', element: conSesion(<Draft />) },

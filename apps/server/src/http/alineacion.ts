@@ -4,7 +4,7 @@
  * La alineación del rival no se expone por ninguna ruta (FR-054a): todas operan sobre el
  * participante del usuario de la sesión.
  */
-import { parametrosActuales, previsualizar, validarAlineacion, type Equipaciones } from '@fbd/domain';
+import { desdeV1, parametrosActuales, previsualizar, validarAlineacion } from '@fbd/domain';
 import { AlineacionEntrada, DorsalesEntrada, EquipacionesEntrada } from '@fbd/protocol';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import {
@@ -19,6 +19,7 @@ import {
 import type { GestorPartidas } from '../actores/gestor';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
+import { torneoIniciado } from '../actores/identidad';
 import { errores } from './errores';
 
 export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gestor: GestorPartidas): void {
@@ -34,8 +35,10 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
   async function vista(c: Awaited<ReturnType<typeof contexto>>['c'], participanteId: string) {
     const datos = await alineacionVigente(c, participanteId);
     const dorsales = await c.servicios.repoEquipo.dorsales(participanteId);
-    const equipaciones = (c.participante(participanteId)?.equipaciones as Equipaciones | null) ?? null;
-    return vistaEquipo(c, datos, dorsales, equipaciones);
+    const equipaciones = desdeV1(c.participante(participanteId)?.equipaciones ?? null);
+    // Nombre del equipo, editable hasta que se abre el primer partido (spec 003, FR-042).
+    const p = c.participante(participanteId);
+    return { ...vistaEquipo(c, datos, dorsales, equipaciones), nombreEquipo: p ? c.nombreDe(p) : '', nombreEditable: !(await torneoIniciado(c)) };
   }
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id/alineacion', { preHandler: requiereSesion }, async (req) => {
@@ -78,7 +81,8 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
   });
 
   app.put<{ Params: { id: string } }>('/api/partidas/:id/equipaciones', { preHandler: requiereSesion }, async (req) => {
-    const e = EquipacionesEntrada.parse(req.body);
+    // v2, o v1 convertida con `desdeV1` durante el periodo de compatibilidad (spec 003, FR-045).
+    const e = desdeV1(EquipacionesEntrada.parse(req.body))!;
     const { c, participanteId } = await contexto(req);
     return c.ejecutar(async () => ({ equipaciones: await cambiarEquipaciones(c, participanteId, e) }));
   });

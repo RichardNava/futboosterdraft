@@ -5,6 +5,7 @@
  * claves que espera la librería; el `apodo` del modelo de datos es el campo `name`, y el `tipo`
  * ('registrado' | 'invitado') se deriva de `isAnonymous`.
  */
+import type { Dificultad } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
@@ -124,9 +125,10 @@ export const partidas = pgTable(
     numParticipantes: integer('num_participantes').notNull(),
     /** Plazas reservadas a personas, incluido el anfitrión; el resto son NPC. */
     plazasHumanas: integer('plazas_humanas').notNull(),
-    tipoSimulacion: text('tipo_simulacion').notNull(),
     plazoJornadaHoras: integer('plazo_jornada_horas').notNull().default(24),
     npcConfig: jsonb('npc_config').notNull().default(sql`'[]'::jsonb`),
+    /** Niveles del relleno automático de NPC (spec 003, FR-038a). */
+    dificultad: text('dificultad').$type<Dificultad>().notNull().default('normal'),
     tiempos: jsonb('tiempos').notNull(),
     colecciones: text('colecciones').array().notNull().default(sql`ARRAY['Core']::text[]`),
     estado: text('estado').notNull().default('buscando'),
@@ -144,11 +146,11 @@ export const partidas = pgTable(
         or (${t.modo} = 'playoff' and ${t.numParticipantes} in (4, 8, 16))
         or (${t.modo} = 'mixto' and ${t.numParticipantes} = 8)`,
     ),
-    check('partidas_tipo_simulacion_ck', sql`${t.tipoSimulacion} in ('rapida','2d')`),
     check(
       'partidas_estado_ck',
       sql`${t.estado} in ('buscando','en_draft','en_torneo','terminada','cancelada','abandonada')`,
     ),
+    check('partidas_dificultad_ck', sql`${t.dificultad} in ('facil','normal','dificil')`),
   ],
 );
 
@@ -166,13 +168,20 @@ export const participantes = pgTable(
     mesaIndice: integer('mesa_indice'),
     asiento: integer('asiento'),
     controladoPorNPC: boolean('controlado_por_npc').notNull().default(false),
-    /** { primera, segunda }, cada una { principal, secundario } (FR-031b). */
+    /** { primera, segunda }, cada una { diseno, colores } (v2, spec 003; la 0008 convierte las v1). */
     equipaciones: jsonb('equipaciones'),
+    /** Última modalidad usada al abrir un partido: preselecciona el selector (spec 003, FR-032). */
+    ultimaModalidad: text('ultima_modalidad'),
+    /** Pantallas de final de torneo ya vistas (spec 003, FR-041). */
+    derrotaVistaEn: timestamp('derrota_vista_en', { withTimezone: true }),
+    campeonVistoEn: timestamp('campeon_visto_en', { withTimezone: true }),
     unidoEn: timestamp('unido_en', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index('participantes_partida_idx').on(t.partidaId),
     uniqueIndex('participantes_partida_usuario_uq').on(t.partidaId, t.usuarioId),
+    // Nombre único por partida sin distinguir mayúsculas (spec 003, FR-043; migración 0008).
+    uniqueIndex('participantes_nombre_equipo_uq').on(t.partidaId, sql`lower(${t.nombreEquipo})`),
     check('participantes_tipo_ck', sql`${t.tipo} in ('humano','npc')`),
     check(
       'participantes_humano_ck',
@@ -182,7 +191,27 @@ export const participantes = pgTable(
       'participantes_nivel_ck',
       sql`${t.nivelNPC} is null or ${t.nivelNPC} in ('amateur','intermedio','avanzado','PRO')`,
     ),
+    check('participantes_modalidad_ck', sql`${t.ultimaModalidad} is null or ${t.ultimaModalidad} in ('rapida','2d')`),
   ],
+);
+
+/**
+ * Perfil de un usuario registrado (spec 003, data-model §5): última modalidad usada (migración 0006) y, desde la
+ * 0008, el nombre de equipo y las equipaciones por defecto. Es independiente de las tablas de Better Auth.
+ */
+export const perfilesUsuario = pgTable(
+  'perfiles_usuario',
+  {
+    usuarioId: text('usuario_id')
+      .primaryKey()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    ultimaModalidad: text('ultima_modalidad'),
+    /** Nombre de equipo y equipaciones (v2) por defecto para las partidas nuevas (spec 003, FR-042a, FR-045). */
+    nombreEquipo: text('nombre_equipo'),
+    equipaciones: jsonb('equipaciones'),
+    actualizadoEn: timestamp('actualizado_en', { withTimezone: true }).notNull(),
+  },
+  (t) => [check('perfiles_usuario_modalidad_ck', sql`${t.ultimaModalidad} is null or ${t.ultimaModalidad} in ('rapida','2d')`)],
 );
 
 /** Peticiones ya procesadas por partida, para descartar duplicados (FR-062). */

@@ -26,7 +26,7 @@ describe('contrato HTTP de alineación (US2)', () => {
 
   it('no se puede preparar el equipo durante el draft (409 DRAFT_EN_CURSO)', async () => {
     const g = await crearInvitado(srv.url);
-    const p = (await peticion(srv.url, '/api/partidas', { cookie: g.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } })).cuerpo;
+    const p = (await peticion(srv.url, '/api/partidas', { cookie: g.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } })).cuerpo;
     await peticion(srv.url, `/api/partidas/${p.id}/iniciar`, { metodo: 'POST', cookie: g.cookie });
     const r = await peticion(srv.url, `/api/partidas/${p.id}/alineacion`, { cookie: g.cookie });
     expect(r.estado).toBe(409);
@@ -42,21 +42,26 @@ describe('contrato HTTP de alineación (US2)', () => {
     expect(r.cuerpo.previsualizacion.personalizada).toBe(false);
     expect(r.cuerpo.plantilla).toHaveLength(24);
     expect(r.cuerpo.alineacion.lanzadores.tanda).toHaveLength(5);
-    expect(r.cuerpo.dorsales).toBeNull();
-    expect(r.cuerpo.equipaciones.primera.principal).toMatch(/^#[0-9a-f]{6}$/i);
+    // Los dorsales se asignan al terminar el draft, por la alineación automática (spec 003, FR-001b).
+    const dorsales = r.cuerpo.dorsales as Record<string, number>;
+    expect(Object.values(dorsales).sort((a, b) => a - b)).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
+    expect(dorsales[r.cuerpo.alineacion.titulares.find((t: any) => t.casillaId === 'POR').jugadorId]).toBe(1);
+    expect(r.cuerpo.equipaciones.primera.colores[0]).toMatch(/^#[0-9a-f]{6}$/i);
   });
 
-  it('PUT confirma, crea una versión nueva y asigna los dorsales iniciales', async () => {
-    const { alineacion } = (await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo;
-    const r = await peticion(srv.url, `${ruta}/alineacion`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: alineacion });
+  it('PUT confirma y crea una versión nueva, sin reasignar los dorsales del draft (FR-001b)', async () => {
+    const { alineacion, dorsales: delDraft } = (await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo;
+    // Otro once (dos titulares intercambiados): los dorsales siguen siendo los del draft.
+    const [a, b] = alineacion.titulares.filter((t: any) => t.casillaId !== 'POR');
+    const cambiada = {
+      ...alineacion,
+      titulares: alineacion.titulares.map((t: any) => (t === a ? { ...t, jugadorId: b.jugadorId } : t === b ? { ...t, jugadorId: a.jugadorId } : t)),
+    };
+    const r = await peticion(srv.url, `${ruta}/alineacion`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: cambiada });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
     expect(r.cuerpo.confirmada).toBe(true);
     expect(r.cuerpo.version).toBe(1);
-    const dorsales = Object.values(r.cuerpo.dorsales as Record<string, number>);
-    expect(dorsales).toHaveLength(24);
-    expect(new Set(dorsales).size).toBe(24);
-    const portero = alineacion.titulares.find((t: any) => t.casillaId === 'POR').jugadorId;
-    expect(r.cuerpo.dorsales[portero]).toBe(1);
+    expect(r.cuerpo.dorsales).toEqual(delDraft);
 
     const otra = await peticion(srv.url, `${ruta}/alineacion`, {
       metodo: 'PUT',
@@ -157,20 +162,52 @@ describe('contrato HTTP de alineación (US2)', () => {
     expect(new Set(valores).size).toBe(valores.length);
   });
 
-  it('equipaciones: 422 COLOR_INVALIDO y EQUIPACIONES_IGUALES; un cambio válido se guarda', async () => {
-    const primera = { principal: '#123456', secundario: '#ffffff' };
-    const invalido = await peticion(srv.url, `${ruta}/equipaciones`, {
-      metodo: 'PUT',
-      cookie: anfitrion.cookie,
-      cuerpo: { primera: { principal: 'azul', secundario: '#fff' }, segunda: primera },
-    });
-    expect(invalido.cuerpo.error.codigo).toBe('COLOR_INVALIDO');
-    const iguales = await peticion(srv.url, `${ruta}/equipaciones`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { primera, segunda: primera } });
-    expect(iguales.cuerpo.error.codigo).toBe('EQUIPACIONES_IGUALES');
-    const segunda = { principal: '#ff9900', secundario: '#000000' };
-    const ok = await peticion(srv.url, `${ruta}/equipaciones`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { primera, segunda } });
+  it('equipaciones v2: 422 COLOR_INVALIDO, DISENO_INVALIDO, NUM_COLORES_INVALIDO y EQUIPACIONES_PARECIDAS; v1 se convierte; un cambio válido se guarda', async () => {
+    const put = (cuerpo: unknown) => peticion(srv.url, `${ruta}/equipaciones`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo });
+    const primera = { diseno: 'rayas', colores: ['#d01010', '#ffffff'] };
+    const segunda = { diseno: 'lisa', colores: ['#1030d0', '#f0c000'] };
+    expect((await put({ primera: { diseno: 'lisa', colores: ['azul'] }, segunda })).cuerpo.error.codigo).toBe('COLOR_INVALIDO');
+    expect((await put({ primera: { diseno: 'cuadros', colores: ['#d01010'] }, segunda })).cuerpo.error.codigo).toBe('DISENO_INVALIDO');
+    expect((await put({ primera: { diseno: 'lisa', colores: [] }, segunda })).cuerpo.error.codigo).toBe('NUM_COLORES_INVALIDO');
+    const parecidas = await put({ primera, segunda: { diseno: 'lisa', colores: ['#c81818', '#ffffff'] } });
+    expect(parecidas.estado).toBe(422);
+    expect(parecidas.cuerpo.error.codigo).toBe('EQUIPACIONES_PARECIDAS');
+    const ok = await put({ primera, segunda });
     expect(ok.estado).toBe(200);
     expect((await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo.equipaciones).toEqual({ primera, segunda });
+    // v1, durante la compatibilidad: se guarda como lisas.
+    const v1 = await put({ primera: { principal: '#123456', secundario: '#ffffff' }, segunda: { principal: '#ff9900', secundario: '#000000' } });
+    expect(v1.estado).toBe(200);
+    expect(v1.cuerpo.equipaciones).toEqual({
+      primera: { diseno: 'lisa', colores: ['#123456', '#ffffff'] },
+      segunda: { diseno: 'lisa', colores: ['#ff9900', '#000000'] },
+    });
+  });
+
+  it('nombre de equipo: 422 por formato, 409 NOMBRE_REPETIDO; 200 antes del primer partido y 409 TORNEO_INICIADO después', async () => {
+    // Partida propia: en la compartida, otras pruebas ya han abierto partidos.
+    const { anfitrion, partida } = await partidaTrasDraft(srv, { invitado: true });
+    const ruta = `/api/partidas/${partida.id}`;
+    const put = (nombre: string) => peticion(srv.url, `${ruta}/nombre-equipo`, { metodo: 'PUT', cookie: anfitrion.cookie, cuerpo: { nombre } });
+    expect((await put('  ')).cuerpo.error.codigo).toBe('NOMBRE_VACIO');
+    expect((await put('Ab')).cuerpo.error.codigo).toBe('NOMBRE_CORTO');
+    expect((await put('x'.repeat(25))).estado).toBe(422);
+    expect((await put('x'.repeat(25))).cuerpo.error.codigo).toBe('NOMBRE_LARGO');
+    const torneo = (await peticion(srv.url, `${ruta}/torneo`, { cookie: anfitrion.cookie })).cuerpo;
+    const yo = (await peticion(srv.url, ruta, { cookie: anfitrion.cookie })).cuerpo.miParticipanteId;
+    const otro = torneo.clasificacion.find((f: any) => f.participanteId !== yo).nombre as string;
+    const repetido = await put(otro.toUpperCase());
+    expect(repetido.estado).toBe(409);
+    expect(repetido.cuerpo.error.codigo).toBe('NOMBRE_REPETIDO');
+    const ok = await put('  Los   Halcones ');
+    expect(ok.estado, JSON.stringify(ok.cuerpo)).toBe(200);
+    expect(ok.cuerpo.nombreEquipo).toBe('Los Halcones');
+    // Se abre el primer partido del torneo: ya no se puede cambiar (FR-042).
+    const mio = torneo.jornadas[0].partidos.find((p: any) => p.local?.id === yo || p.visitante?.id === yo);
+    await peticion(srv.url, `/api/partidos/${mio.partidoId}/abrir`, { metodo: 'POST', cookie: anfitrion.cookie });
+    const tarde = await put('Los Leones');
+    expect(tarde.estado).toBe(409);
+    expect(tarde.cuerpo.error.codigo).toBe('TORNEO_INICIADO');
   });
 
   it('nadie ajeno a la partida puede ver ni tocar su alineación (FR-054a)', async () => {

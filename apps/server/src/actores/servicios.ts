@@ -7,6 +7,7 @@ import type { RepoDraft } from '../persistencia/repos/draft';
 import type { RepoEquipo } from '../persistencia/repos/equipo';
 import type { RepoPartidas } from '../persistencia/repos/partidas';
 import type { RepoPartidos } from '../persistencia/repos/partidos';
+import type { RepoPerfiles } from '../persistencia/repos/perfiles';
 import type { RepoTorneo } from '../persistencia/repos/torneo';
 import type { RepoVisionados } from '../persistencia/repos/visionados';
 import type { Logger } from '../observabilidad/logger';
@@ -23,6 +24,7 @@ export interface ServiciosPartida {
   repoPartidos: RepoPartidos;
   repoTorneo: RepoTorneo;
   repoVisionados: RepoVisionados;
+  repoPerfiles: RepoPerfiles;
   catalogo: Catalogo;
   reloj: Reloj;
   temporizadores: Temporizadores;

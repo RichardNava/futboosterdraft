@@ -1,13 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { coloresDe } from '../componentes/colores';
+import type { Equipacion } from '@fbd/domain';
+import { useParams } from 'react-router';
 import { api } from '../api/cliente';
-import { BotonAvanzar } from '../componentes/BotonAvanzar';
 import { AvisoDorsales } from '../componentes/AvisoDorsales';
-import { BotonFinalizar } from '../componentes/BotonFinalizar';
+import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { Estadisticas } from '../componentes/Estadisticas';
-import { estadoJugadores, PanelCambios, type AlineacionPartido } from '../componentes/PanelCambios';
+import { estadoEquipoEnPartido, type AlineacionPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
+import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
+import { ResultadoPartido } from '../componentes/ResultadoPartido';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
+
+export type { AlineacionPartido };
 
 export interface Inicio {
   partidoId: string;
@@ -16,11 +21,14 @@ export interface Inicio {
   visitante: { id: string; nombre: string };
   alineaciones: { local: AlineacionPartido; visitante: AlineacionPartido };
   dorsales: Record<string, number>;
-  equipaciones: { local: { principal: string; secundario: string }; visitante: { principal: string; secundario: string } };
+  /** Equipaciones v2 del partido (spec 003, FR-045). */
+  equipaciones: { local: Equipacion; visitante: Equipacion };
   /** Orden de los jugadores en los fotogramas v2. */
   ordenJugadores?: number[];
   /** Dorsales dados al empezar a convocados que no tenían (FR-038). */
   dorsalesAsignados?: { jugadorId: number; dorsal: number }[];
+  /** Se puede gestionar el equipo: solo contra un NPC (spec 003, FR-027, FR-031). */
+  gestionDisponible?: boolean;
 }
 
 export type Marcador = { local: number; visitante: number; penaltis?: { local: number; visitante: number } };
@@ -35,18 +43,36 @@ export const ETIQUETA_FASE: Record<string, string> = {
   finalizado: 'Final',
 };
 
-/** Partido en simulación rápida (T097; FR-044 a FR-047). */
+/** Nombre de cada jugador del partido, con su dorsal. */
+export function nombresDePartido(inicio: Inicio): Map<number, string> {
+  const mapa = new Map<number, string>();
+  for (const lado of ['local', 'visitante'] as const) {
+    const a = inicio.alineaciones[lado];
+    for (const j of [...a.titulares.map((t) => t.jugador), ...a.suplentes]) {
+      const dorsal = inicio.dorsales[j.id];
+      mapa.set(j.id, `${dorsal ? `${dorsal}. ` : ''}${j.nombre} ${j.apellidos.split(' ')[0]}`);
+    }
+  }
+  return mapa;
+}
+
+/**
+ * Partido en simulación rápida (001/FR-044 a FR-047; spec 003, US5 y US6): resumen por partes. En el descanso y
+ * antes de la prórroga, contra un NPC, «Gestionar equipo» es el botón principal; al terminar, la pantalla de
+ * resultado común con la 2D.
+ */
 export function PartidoRapido() {
   const { partidaId, partidoId } = useParams();
-  const navegar = useNavigate();
   const [inicio, setInicio] = useState<Inicio | null>(null);
   const [eventos, setEventos] = useState<EventoVista[]>([]);
   const [marcador, setMarcador] = useState<Marcador>({ local: 0, visitante: 0 });
-  const [estadisticas, setEstadisticas] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [estadisticas, setEstadisticas] = useState<unknown>(null);
   const [fase, setFase] = useState('primera_parte');
   const [pausa, setPausa] = useState<{ motivo: string; venceEn: string } | null>(null);
   const [miId, setMiId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [gestion, setGestion] = useState(false);
+  const [aplicadas, setAplicadas] = useState<DecisionAplicada[]>([]);
 
   const { conexion, estado, conectada } = useConexion(partidaId, (m) => {
     if (m.partidoId !== undefined && m.partidoId !== partidoId) return;
@@ -65,12 +91,16 @@ export function PartidoRapido() {
       case 'partido.pausa_decision':
         setPausa({ motivo: m.motivo as string, venceEn: m.venceEn as string });
         break;
+      case 'partido.decision_aplicada':
+        if (m.participanteId === miId) setAplicadas((a) => [...a, { aplicadaEnTick: m.aplicadaEnTick as number, tipo: m.tipo as string, datos: m.datos as Record<string, unknown> }]);
+        break;
       case 'partido.fin':
         setEventos(m.eventos as EventoVista[]);
         setMarcador(m.marcador as Marcador);
         setEstadisticas(m.estadisticas);
         setFase('finalizado');
         setPausa(null);
+        setGestion(false);
         break;
     }
   });
@@ -105,34 +135,30 @@ export function PartidoRapido() {
   }, [partidoId]);
 
   const restante = useCuentaAtras(pausa?.venceEn, conexion);
-  const nombres = useMemo(() => {
-    const mapa = new Map<number, string>();
-    if (!inicio) return mapa;
-    for (const lado of ['local', 'visitante'] as const) {
-      const a = inicio.alineaciones[lado];
-      for (const j of [...a.titulares.map((t) => t.jugador), ...a.suplentes]) {
-        const dorsal = inicio.dorsales[j.id];
-        mapa.set(j.id, `${dorsal ? `${dorsal}. ` : ''}${j.nombre} ${j.apellidos.split(' ')[0]}`);
-      }
-    }
-    return mapa;
-  }, [inicio]);
+  const nombres = useMemo(() => (inicio ? nombresDePartido(inicio) : new Map<number, string>()), [inicio]);
 
   if (!inicio) {
     return <p className="cargando">{conectada ? 'Esperando el inicio del partido…' : 'Conectando…'}</p>;
   }
+  const nombre = (id: number) => nombres.get(id) ?? String(id);
+
+  if (fase === 'finalizado') {
+    return (
+      <ResultadoPartido
+        partidaId={partidaId!}
+        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
+        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        marcador={marcador}
+        eventos={eventos}
+        estadisticas={estadisticas}
+        nombre={nombre}
+      />
+    );
+  }
 
   const miLado = miId === inicio.local.id ? 'local' : miId === inicio.visitante.id ? 'visitante' : null;
   const nombresEquipo = { local: inicio.local.nombre, visitante: inicio.visitante.nombre };
-
-  // Quién está en el campo según los eventos (sustituciones, expulsiones, lesiones sin cambio).
-  const jugadoresDe = (lado: 'local' | 'visitante') => estadoJugadores(inicio.alineaciones[lado], eventos, lado);
-
-  const enviarDecision = async (tipo: 'sustitucion' | 'formacion' | 'tactica', datos: Record<string, unknown>) => {
-    if (!conexion) throw new Error('Sin conexión');
-    setError(null);
-    return conexion.enviar({ t: 'partido.decision', partidoId: inicio.partidoId, tipo, datos });
-  };
+  const gestionDisponible = inicio.gestionDisponible === true && miLado !== null;
 
   // `conexion.enviar` pone un `requestId` nuevo en cada envío: el servidor descarta los repetidos (FR-016).
   const seguir = async () => {
@@ -140,13 +166,43 @@ export function PartidoRapido() {
     const ack = await conexion.enviar({ t: 'partido.seguir', partidoId: inicio.partidoId });
     if (!ack.ok) setError(ack.error?.mensaje ?? 'No se pudo continuar');
   };
-  const finalizar = () => {
+  const finalizar = async () => {
     if (!conexion) throw new Error('Sin conexión');
-    return conexion.enviar({ t: 'partido.finalizar', partidoId: inicio.partidoId });
+    const ack = await conexion.enviar({ t: 'partido.finalizar', partidoId: inicio.partidoId });
+    if (!ack.ok) throw new Error(ack.error?.mensaje ?? 'No se pudo finalizar el partido');
+  };
+  const enviarLote = (decisiones: DecisionGestion[]) => {
+    if (!conexion) throw new Error('Sin conexión');
+    return conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
   };
   const chapa = (lado: 'local' | 'visitante') => (
-    <span className="chapa" style={{ background: inicio.equipaciones[lado].principal, color: inicio.equipaciones[lado].secundario }} aria-hidden="true" />
+    <span className="chapa" style={{ background: coloresDe(inicio.equipaciones[lado]).principal, color: coloresDe(inicio.equipaciones[lado]).secundario }} aria-hidden="true" />
   );
+
+  // Botones (contracts/ui.md): en juego, «Finalizar partido»; en una pausa, «Seguir» y, contra un NPC, «Gestionar
+  // equipo» con la misma importancia a su izquierda (FR-006a).
+  const abrirGestion: AccionBarra = { etiqueta: 'Gestionar equipo', onClick: () => setGestion(true) };
+  const accionSeguir: AccionBarra = { etiqueta: 'Seguir', onClick: seguir };
+  const accionFinalizar: AccionBarra = { etiqueta: 'Finalizar partido', onClick: finalizar };
+  const enPausa = pausa !== null && miLado !== null;
+  const principal = enPausa ? accionSeguir : miLado ? accionFinalizar : null;
+  const principalIzquierda = enPausa && gestionDisponible ? abrirGestion : null;
+  const secundarios = enPausa ? [accionFinalizar] : [];
+
+  if (gestion && miLado) {
+    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], eventos, miLado, Number.POSITIVE_INFINITY, aplicadas, fase === 'pre_prorroga' || fase === 'prorroga');
+    const jugadores = new Map([...inicio.alineaciones[miLado].titulares.map((t) => t.jugador), ...inicio.alineaciones[miLado].suplentes].map((j) => [j.id, j]));
+    return (
+      <GestionEquipo
+        estado={estadoEquipo}
+        jugadores={jugadores}
+        dorsales={inicio.dorsales as Record<number, number>}
+        colores={coloresDe(inicio.equipaciones[miLado])}
+        enviar={enviarLote}
+        onCerrar={() => setGestion(false)}
+      />
+    );
+  }
 
   return (
     <main className="pantalla partido">
@@ -173,47 +229,29 @@ export function PartidoRapido() {
       <AvisoDorsales inicio={inicio} miId={miId} />
 
       <section aria-label="Resumen de eventos">
-        <h2>{fase === 'finalizado' ? 'Resumen del partido' : 'Lo más destacado'}</h2>
-        <ResumenEventos eventos={eventos} nombre={(id) => nombres.get(id) ?? String(id)} nombresEquipo={nombresEquipo} />
+        <h2>Lo más destacado</h2>
+        <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} />
       </section>
 
-      {pausa && miLado && (
-        <>
-          <PanelCambios
-            alineacion={inicio.alineaciones[miLado]}
-            enCampo={jugadoresDe(miLado).enCampo}
-            noDisponibles={jugadoresDe(miLado).fuera}
-            enviar={enviarDecision}
-            aviso="Los cambios se aplicarán al reanudarse el partido."
-          />
-          <div className="acciones">
-            <BotonAvanzar situacion="pausa" onAvanzar={seguir} />
-            <span className="nota">Pulsa «Seguir» cuando termines tus cambios. Si no, el partido se reanuda en {restante ?? '–'} s.</span>
-          </div>
-        </>
-      )}
       {error && (
         <p className="error" role="alert">
           {error}
         </p>
       )}
-      {fase !== 'finalizado' && miLado && <BotonFinalizar finalizar={finalizar} />}
 
-      {estadisticas && (
+      {estadisticas !== null && (
         <section aria-label="Estadísticas">
           <h2>Estadísticas</h2>
-          <Estadisticas datos={estadisticas} nombres={nombresEquipo} />
+          <Estadisticas datos={estadisticas as never} nombres={nombresEquipo} />
         </section>
       )}
 
-      {fase === 'finalizado' && (
-        <p className="acciones">
-          <BotonAvanzar situacion="fin_partido" onAvanzar={() => navegar(`/partidas/${partidaId}/torneo`)} />
-          <Link className="boton secundario" to={`/partidas/${partidaId}/alineacion`}>
-            Volver a mi equipo
-          </Link>
-        </p>
-      )}
+      <BarraPrincipal
+        principal={principal}
+        principalIzquierda={principalIzquierda}
+        secundarios={secundarios}
+        estado={enPausa ? `${ETIQUETA_FASE[fase] ?? 'Pausa'}: el partido se reanuda en ${restante ?? '–'} s si no pulsas «Seguir».` : undefined}
+      />
     </main>
   );
 }

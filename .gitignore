@@ -26,3 +26,6 @@ Thumbs.db
 *.tmp
 *.swp
 .idea/
+
+# Salida de la herramienta de equilibrado
+tools/balance/salida/

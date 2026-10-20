@@ -13,12 +13,16 @@ import {
   asignarDorsalesIniciales,
   completarDorsales,
   derivarSemilla,
+  desdeV1,
   equipacionEnPartido,
   equipacionesAleatorias,
   parametrosActuales,
   parametrosPorVersion,
   posicionesColocadas,
+  VERSION_MAYOR_SOPORTADA,
+  versionMayor,
   type Alineacion,
+  type ModoSimulacion,
   type Dorsales,
   type Equipaciones,
   type NivelNPC,
@@ -41,6 +45,7 @@ import type { FilaPartido } from '../persistencia/repos/partidos';
 import type { ContextoComando } from './actor';
 import { alineacionVigente, bajasActivas, plantillaDe } from './equipo';
 import type { ControladorPartida } from './partida';
+import { aplicarLote, type DecisionLote } from './loteDecisiones';
 import { avanzar2D, crearEstado2D, vista2D, type Estado2D } from './partido2d';
 
 export interface PartidoEnCurso {
@@ -144,7 +149,7 @@ export async function equipoParaMotor(
 }
 
 function equipacionesDe(c: ControladorPartida, pid: string): Equipaciones {
-  return (c.participante(pid)?.equipaciones as Equipaciones | null) ?? equipacionesAleatorias(derivarSemilla(c.partida.semilla, `equipaciones:${pid}`), parametrosActuales());
+  return desdeV1(c.participante(pid)?.equipaciones ?? null) ?? equipacionesAleatorias(derivarSemilla(c.partida.semilla, `equipaciones:${pid}`), parametrosActuales());
 }
 
 /** Colores con los que juega cada equipo (el visitante cambia a la segunda si coinciden). */
@@ -156,15 +161,24 @@ export function equipacionesDelPartido(c: ControladorPartida, localId: string, v
 export type EntradaGuardada = Omit<EntradaPartido, 'parametros'>;
 
 /** Alineaciones iniciales de los dos equipos, tal como se anuncian al empezar el partido. */
-export function resumenAlineaciones(c: ControladorPartida, entrada: Pick<EntradaGuardada, 'local' | 'visitante'>) {
-  const resumen = (e: EquipoPartido) => ({
-    formacion: e.formacion,
-    titulares: e.titulares.map((t) => ({ casillaId: t.casillaId, jugador: c.servicios.catalogo.resumen(t.jugador.id) })),
-    colocacion: e.titulares.flatMap((t) => (t.ancla ? [{ jugadorId: t.jugador.id, x: t.ancla.x, y: t.ancla.y }] : [])),
-    suplentes: e.suplentes.map((j) => c.servicios.catalogo.resumen(j.id)),
-    tactica: e.tactica,
-    lanzadores: e.lanzadores,
-  });
+/**
+ * Alineaciones del `partido.inicio` (FR-054a). Solo el equipo de los participantes de `ampliadaPara` (el del
+ * receptor) lleva el ancla de cada titular, la colocación y los lanzadores, para la gestión del equipo (spec 003,
+ * research R17); del rival se muestra lo de siempre. Sin `ampliadaPara` (un resumen ya terminado), las dos van
+ * completas.
+ */
+export function resumenAlineaciones(c: ControladorPartida, entrada: Pick<EntradaGuardada, 'local' | 'visitante'>, ampliadaPara?: readonly string[]) {
+  const resumen = (e: EquipoPartido) => {
+    const ampliada = !ampliadaPara || ampliadaPara.includes(e.participanteId);
+    return {
+      formacion: e.formacion,
+      titulares: e.titulares.map((t) => ({ casillaId: t.casillaId, jugador: c.servicios.catalogo.resumen(t.jugador.id), ...(ampliada && t.ancla ? { ancla: t.ancla } : {}) })),
+      ...(ampliada ? { colocacion: e.titulares.flatMap((t) => (t.ancla ? [{ jugadorId: t.jugador.id, x: t.ancla.x, y: t.ancla.y }] : [])) } : {}),
+      suplentes: e.suplentes.map((j) => c.servicios.catalogo.resumen(j.id)),
+      tactica: e.tactica,
+      ...(ampliada ? { lanzadores: e.lanzadores } : {}),
+    };
+  };
   return { local: resumen(entrada.local), visitante: resumen(entrada.visitante) };
 }
 
@@ -199,13 +213,15 @@ export async function iniciarPartido(
   const inicio = {
     t: 'partido.inicio',
     partidoId: fila.id,
-    modalidad: c.partida.tipoSimulacion as 'rapida' | '2d',
+    modalidad: modalidadDe(c, fila),
     local: { id: fila.localId, nombre: nombre(fila.localId) },
     visitante: { id: fila.visitanteId, nombre: nombre(fila.visitanteId) },
-    alineaciones: resumenAlineaciones(c, entrada),
+    alineaciones: resumenAlineaciones(c, entrada, humanosDe(c, fila)),
     dorsales: { ...local.dorsales, ...visitante.dorsales },
     equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId),
     decisiones: true,
+    // En directo solo se juega contra un NPC: se puede gestionar el equipo (FR-027).
+    gestionDisponible: humanosDe(c, fila).length === 1,
     ordenJugadores: ordenJugadores(motor),
     dorsalesAsignados: [...local.asignados, ...visitante.asignados],
   };
@@ -220,7 +236,7 @@ export async function iniciarPartido(
 
   // Sin humanos, o resuelto al vencer el plazo de la jornada: de una vez y sin pausas (FR-056a).
   const conHumanos = [fila.localId, fila.visitanteId].some((pid) => esHumano(c, pid));
-  if (conHumanos && !opciones.automatico && c.partida.tipoSimulacion === '2d') {
+  if (conHumanos && !opciones.automatico && modalidadDe(c, fila) === '2d') {
     // 2D: con el búfer de anticipación, al ritmo de la reproducción del humano (research R6).
     p.dosD = crearEstado2D();
     await avanzar2D(c, ctx, p);
@@ -357,6 +373,21 @@ export async function terminarPartido(c: ControladorPartida, ctx: ContextoComand
 }
 
 /** Ninguno de los dos lados lo controla un humano (NPC contra NPC, también tras un abandono). */
+/**
+ * Modalidad de un partido en directo (spec 003, FR-033): la que eligió su humano al abrirlo; `rapida` si no hay
+ * humano o aún no la eligió. Solo cambia la presentación, nunca el cálculo.
+ */
+export function modalidadDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId' | 'modalidades'>): ModoSimulacion {
+  const modalidades = (fila.modalidades as Record<string, ModoSimulacion> | null) ?? {};
+  for (const pid of [fila.localId, fila.visitanteId]) if (esHumano(c, pid) && modalidades[pid]) return modalidades[pid];
+  return 'rapida';
+}
+
+/** Humanos del partido (participantes humanos no sustituidos por un NPC). */
+export function humanosDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): string[] {
+  return [fila.localId, fila.visitanteId].filter((pid) => esHumano(c, pid));
+}
+
 export function sinHumanos(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): boolean {
   return [fila.localId, fila.visitanteId].every((pid) => {
     const p = c.participante(pid);
@@ -428,12 +459,32 @@ export function procesarDecisionPartido(
   partidoId: string,
   decision: { tipo: DecisionPartido['tipo']; datos: Record<string, unknown> },
 ): ResultadoComandoPartido {
+  const r = procesarDecisionesLote(c, participanteId, partidoId, [decision]);
+  if (r.ok) return r;
+  const { indice: _indice, ...error } = r.error;
+  return { ok: false, error };
+}
+
+export type ResultadoLotePartido = { ok: true } | { ok: false; error: { codigo: string; mensaje: string; indice?: number } };
+
+/**
+ * Lote de decisiones de la gestión del equipo (spec 003, research R17), con la misma ventana que una decisión
+ * suelta: en la rápida solo con una pausa abierta; en la 2D en cualquier fase menos `finalizado` y `penaltis`
+ * (lo comprueba el motor). En un partido entre humanos, nunca (FR-027, FR-031).
+ */
+export function procesarDecisionesLote(c: ControladorPartida, participanteId: string, partidoId: string, decisiones: readonly DecisionLote[]): ResultadoLotePartido {
+  // Un partido entre humanos no se juega en directo (se resuelve con decisiones automáticas): nunca admite cambios.
+  const cruce = c.jornada?.cruces.find((x) => x.partidoId === partidoId);
+  if (cruce && humanosDe(c, { localId: cruce.local, visitanteId: cruce.visitante }).length > 1) {
+    return fallo('SIN_PAUSA', 'En un partido entre humanos no se hacen cambios: se juega con decisiones automáticas');
+  }
   const p = partidoDe(c, participanteId, partidoId);
   if ('ok' in p) return p;
+  if (humanosDe(c, p.fila).length > 1) return fallo('SIN_PAUSA', 'En un partido entre humanos no se hacen cambios: se juega con decisiones automáticas');
   // En la modalidad rápida solo se decide en el descanso o antes de la prórroga (FR-045).
-  if (!p.pausa && c.partida.tipoSimulacion === 'rapida') return fallo('SIN_PAUSA', 'Solo puedes hacer cambios en el descanso');
-  const r = aplicarDecision(p.motor, { participanteId, tipo: decision.tipo, datos: decision.datos } as DecisionPartido);
-  return r.ok ? { ok: true } : fallo(r.codigo, r.mensaje);
+  if (!p.pausa && modalidadDe(c, p.fila) === 'rapida') return fallo('SIN_PAUSA', 'Solo puedes hacer cambios en el descanso');
+  const r = aplicarLote(p.motor, participanteId, decisiones);
+  return r.ok ? { ok: true } : { ok: false, error: { codigo: r.codigo, mensaje: r.mensaje, indice: r.indice } };
 }
 
 /** ¿Está el participante jugando un partido ahora mismo? */
@@ -464,6 +515,8 @@ export function vistaPartido(c: ControladorPartida, participanteId: string) {
 /** Reconstruye un partido en curso tras un reinicio, reproduciendo sus decisiones (FR-040). */
 export function reconstruirMotor(fila: FilaPartido): EstadoMotor | null {
   if (!fila.entrada) return null;
+  // Un partido de una versión que el motor ya no simula (2.x) solo muestra su resumen guardado (research R2).
+  if (versionMayor(fila.versionParametros) < VERSION_MAYOR_SOPORTADA) return null;
   const guardada = fila.entrada as EntradaGuardada;
   const motor = crearPartido({ ...guardada, parametros: parametrosPorVersion(fila.versionParametros) });
   for (const d of fila.decisiones as DecisionRegistrada[]) aplicarDecision(motor, d);

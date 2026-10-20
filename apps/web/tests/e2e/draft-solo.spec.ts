@@ -33,7 +33,7 @@ test('un invitado completa el draft contra 3 NPC', async ({ page }) => {
   const etiquetasNPC = page.locator('.lista-participantes .etiqueta', { hasText: 'NPC' });
   await expect(etiquetasNPC).toHaveCount(3);
   for (const texto of await etiquetasNPC.allTextContents()) expect(texto).not.toContain('PRO');
-  await page.getByRole('button', { name: 'Iniciar draft' }).click();
+  await page.getByRole('button', { name: 'Empezar' }).click();
 
   // Primer sobre: composición de FR-014 (0 o 1 portero, 2–3 defensas, 3 medios, 2 delanteros…).
   await expect(page.getByRole('heading', { name: /Sobre 1 · Turno 1 de 8/ })).toBeVisible();
@@ -47,8 +47,8 @@ test('un invitado completa el draft contra 3 NPC', async ({ page }) => {
   expect(c.Epico).toBe(2);
   expect(c.altas).toBe(2);
 
-  // Dejar vencer el turno (45 s más los 6 s de margen de la apertura del sobre): se elige la de mayor media.
-  await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 52_000 } });
+  // Dejar vencer el turno (45 s más los 8 s de margen de la apertura del sobre, spec 003): se elige la de mayor media.
+  await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 54_000 } });
   await expect(page.getByRole('status')).toContainText('Se acabó el tiempo');
   await expect(page.getByRole('heading', { name: /Turno 2 de 8/ })).toBeVisible();
   await page.getByRole('button', { name: 'Entendido' }).click();

@@ -13,7 +13,7 @@ import { aAbsoluta, centroCelda, type Punto } from '../espacio/geometria';
 import { fotograma, pasoEspacial } from '../espacio/paso';
 import { acumularCansancio } from '../modificadores/cansancio';
 import { atributo } from '../modificadores/atributos';
-import { tiene } from '../modificadores/specials';
+import type { Metricas } from '../metricas';
 import type { EventoPartido, Fotograma, Lado, RolEvento, TipoEvento } from '../tipos';
 
 export interface Contexto {
@@ -26,6 +26,8 @@ export interface Contexto {
   orden?: readonly number[];
   /** Solo para pruebas: se llama con el estado al final de cada tick. */
   observador?: (estado: EstadoMotor) => void;
+  /** Métricas por jugador, solo si se piden (spec 003, research R11): no cambian el partido. */
+  metricas?: Metricas;
 }
 
 export function emitir(
@@ -106,33 +108,45 @@ export function portero(equipo: EquipoEstado): JugadorEnPartido | undefined {
 }
 
 /**
- * Rival que disputa el duelo: uno de los dos más cercanos al balón (posiciones reales). Si se indica
- * `valor` (lo que vale cada candidato en ese duelo), el atacante busca el punto débil y se enfrenta al más
- * flojo con un 65 %; si no, al más cercano con un 70 %.
+ * Radio de intervención de un defensor, en milésimas (spec 003, research R9): crece
+ * `decision.radioIntervencionPorPunto` por cada punto de la media de los atributos indicados sobre 70, acotado
+ * a ±`decision.radioIntervencionMax`.
  */
-export function rivalCercano(
-  ctx: Contexto,
-  defensor: EquipoEstado,
-  incluirPortero = false,
-  valor?: (j: JugadorEnPartido) => number,
-): JugadorEnPartido | undefined {
-  const b = ctx.estado.espacio.balon;
-  const candidatos = defensor.jugadores
-    .filter((j) => j.enCampo && (incluirPortero || !esPortero(j)) && ctx.estado.espacio.jugadores[j.id])
-    .map((j) => {
-      const p = ctx.estado.espacio.jugadores[j.id]!;
-      return { j, d: dist2(p.x, p.y, b.x, b.y) };
-    })
-    .sort((a, c) => a.d - c.d || a.j.id - c.j.id);
-  if (candidatos.length === 0) return undefined;
-  if (candidatos.length === 1) return candidatos[0]!.j;
-  const primero = candidatos[0]!.j;
-  const segundo = candidatos[1]!.j;
-  if (valor) {
-    const [debil, fuerte] = valor(primero) <= valor(segundo) ? [primero, segundo] : [segundo, primero];
-    return ctx.rng.probabilidad(650) ? debil : fuerte;
+export function radioDe(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido, ...atributos: ('quite' | 'anticipacion')[]): number {
+  const d = estado.parametros.decision;
+  const valor = atributos.reduce((a, n) => a + atributo(estado, equipo, j, n), 0) / atributos.length;
+  const radio = Math.round(1000 * (1 + d.radioIntervencionPorPunto * (valor - 70)));
+  const max = Math.round(1000 * d.radioIntervencionMax);
+  return Math.min(1000 + max, Math.max(1000 - max, radio));
+}
+
+/** Radio de intervención en un duelo (quite y anticipación), en milésimas. */
+export function radioIntervencion(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido): number {
+  return radioDe(estado, equipo, j, 'quite', 'anticipacion');
+}
+
+/**
+ * Rival que disputa el duelo (spec 003, research R9): el más cercano al balón según una distancia efectiva,
+ * la real dividida por su radio de intervención. Un buen defensor llega a más balones; ya no se busca al
+ * más débil de los dos más cercanos.
+ */
+export function rivalCercano(ctx: Contexto, defensor: EquipoEstado, incluirPortero = false): JugadorEnPartido | undefined {
+  const e = ctx.estado;
+  const b = e.espacio.balon;
+  let mejor: JugadorEnPartido | undefined;
+  let mejorEfectiva = Infinity;
+  for (const j of defensor.jugadores) {
+    const p = j.enCampo && (incluirPortero || !esPortero(j)) ? e.espacio.jugadores[j.id] : undefined;
+    if (!p) continue;
+    const radio = radioIntervencion(e, defensor, j);
+    // Distancia al cuadrado entre el radio al cuadrado (en milésimas): enteros seguros hasta 10^15.
+    const efectiva = Math.floor((dist2(p.x, p.y, b.x, b.y) * 1_000_000) / (radio * radio));
+    if (efectiva < mejorEfectiva || (efectiva === mejorEfectiva && mejor !== undefined && j.id < mejor.id)) {
+      mejor = j;
+      mejorEfectiva = efectiva;
+    }
   }
-  return ctx.rng.probabilidad(700) ? primero : segundo;
+  return mejor;
 }
 
 /** Distancia al cuadrado del rival más cercano a un punto (lo libre que está; research R4). */
@@ -148,10 +162,10 @@ export function holgura(estado: EstadoMotor, rivalLado: Lado, p: Punto): number 
 }
 
 /**
- * Compañero que recibe un pase dirigido a una zona y carril (research R4): pesa la cercanía real a la
- * celda y lo libre que está de rivales; Carismático, más buscado.
+ * Compañero que va a por el balón en una zona y carril cuando no hay un pase (el portador ha salido, una
+ * recuperación sin recuperador, un saque de banda): pesa la cercanía real a la celda y lo libre que está.
  */
-export function receptor(ctx: Contexto, equipo: EquipoEstado, zona: number, carril: number, excluir: number): JugadorEnPartido | undefined {
+export function cercanoACelda(ctx: Contexto, equipo: EquipoEstado, zona: number, carril: number, excluir: number): JugadorEnPartido | undefined {
   const e = ctx.estado;
   const objetivo = aAbsoluta(equipo.lado, centroCelda(zona, carril));
   const rivalLado: Lado = equipo.lado === 'local' ? 'visitante' : 'local';
@@ -159,17 +173,10 @@ export function receptor(ctx: Contexto, equipo: EquipoEstado, zona: number, carr
   if (candidatos.length === 0) return undefined;
   const pesos: [JugadorEnPartido, number][] = candidatos.map((j) => {
     const p = e.espacio.jugadores[j.id]!;
-    // Distancia en unidades, con el ancho pesando menos que el largo.
     const d = dividir(Math.abs(p.x - objetivo.x) + dividir(Math.abs(p.y - objetivo.y) * 7, 10), 10);
     const libre = holgura(e, rivalLado, p);
-    // De 0,6 (un rival encima) a 1,4 (nadie a menos de 15 m).
     const factorLibre = libre >= 1430 * 1430 ? 14 : libre <= 300 * 300 ? 6 : 10;
-    // Con el cuadrado de la distancia: el pase va sobre todo al compañero que está cerca de la celda.
-    // El equipo busca más a los que mejor la mueven (SC-008).
-    const pase = atributo(e, equipo, j, 'pase');
-    const factorPase = Math.round(1000 * 2 ** ((e.parametros.acciones.atraccionPasador * (pase - e.parametros.acciones.statPaseReferencia)) / 10));
-    const peso = dividir(dividir(dividir(1_000_000_000, (60 + d) * (60 + d)) * factorLibre, 10) * factorPase, 1000) * (tiene(j, 'Carismatico') ? 3 : 2);
-    return [j, Math.max(1, dividir(peso, 2))];
+    return [j, Math.max(1, dividir(dividir(1_000_000_000, (60 + d) * (60 + d)) * factorLibre, 10))];
   });
   return elegirPonderado(ctx.rng, pesos);
 }

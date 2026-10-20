@@ -55,7 +55,7 @@ describe('auditoría de visibilidad (FR-054a)', () => {
     const humanos = [await crearRegistrado(srv.url), await crearRegistrado(srv.url)];
     const r = await peticion(srv.url, '/api/partidas', {
       cookie: humanos[0]!.cookie,
-      cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 },
+      cuerpo: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2 },
     });
     const partidaId: string = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: humanos[1]!.cookie });
@@ -192,7 +192,7 @@ describe('auditoría de visibilidad (FR-054a)', () => {
 
   it('el WebSocket rechaza a un navegador desde otra web (Origin) y admite la web pública', async () => {
     const u = await crearRegistrado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     const abrir = (origin: string) =>
       new Promise<number | 'abierto'>((resolve) => {
         const ws = new WebSocket(`${srv.urlWs}/ws?partidaId=${r.cuerpo.id}`, { headers: { cookie: u.cookie, origin } });

@@ -30,7 +30,7 @@ describe('navegación (US6)', () => {
 
   async function draftEnSolitario() {
     const u = await crearInvitado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     const partidaId: string = r.cuerpo.id;
     const ws = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
     await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: u.cookie });
@@ -40,7 +40,7 @@ describe('navegación (US6)', () => {
 
   async function draftConDosHumanos() {
     const humanos: UsuarioPrueba[] = [await crearRegistrado(srv.url), await crearRegistrado(srv.url)];
-    const r = await peticion(srv.url, '/api/partidas', { cookie: humanos[0]!.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: 'rapida', plazasHumanas: 2 } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: humanos[0]!.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2 } });
     const partidaId: string = r.cuerpo.id;
     await peticion(srv.url, `/api/partidas/${partidaId}/unirse`, { metodo: 'POST', cookie: humanos[1]!.cookie });
     const [a, b] = await Promise.all(humanos.map((h) => ClienteWs.conectar(srv.urlWs, partidaId, h.cookie)));

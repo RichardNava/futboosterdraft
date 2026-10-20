@@ -174,7 +174,8 @@ export function reponer(ctx: Contexto, motivo: string, punto: Punto, sacadorId: 
     return b.x === destino.x && b.y === destino.y && (!s || dist2(s.x, s.y, destino.x, destino.y) <= LLEGADA * LLEGADA) && (!alArea || colocados());
   };
   const p = e.parametros.espacio;
-  hasta(ctx, listo, minimo, true, minimo + (alArea ? p.esperaColocacionMaxima : p.esperaSaqueMaxima));
+  // En un penalti también se espera a que el lanzador llegue al punto (spec 003: el tiro sale desde allí).
+  hasta(ctx, listo, minimo, true, minimo + (alArea || motivo === 'penalti' ? p.esperaColocacionMaxima : p.esperaSaqueMaxima));
   delete esp.destinos[sacadorId];
   cerrar(ctx, a);
 }

@@ -31,7 +31,7 @@ describe('partido 2D en directo (US3, research R6)', () => {
   /** Liga 2D de 4 con un humano: completa el draft, pulsa «Comenzar partido» y espera el primer tramo. */
   async function partidoEnDirecto() {
     const u: UsuarioPrueba = await crearInvitado(srv.url);
-    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4, tipoSimulacion: '2d' } });
+    const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { modo: 'liga', numParticipantes: 4 } });
     expect(r.estado, JSON.stringify(r.cuerpo)).toBe(201);
     const partidaId: string = r.cuerpo.id;
     const ws = await ClienteWs.conectar(srv.urlWs, partidaId, u.cookie);
@@ -42,7 +42,7 @@ describe('partido 2D en directo (US3, research R6)', () => {
     }
     const prep = await ws.esperar('preparacion.inicio');
     const desde = ws.recibidos.length;
-    const abierto = await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie });
+    const abierto = await peticion(srv.url, `/api/partidos/${prep.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie, cuerpo: { modalidad: '2d' } });
     expect(abierto.cuerpo.modo).toBe('directo');
     const inicio = await ws.esperar('partido.inicio', { desde });
     await ws.esperar('partido.tramo', { desde });
