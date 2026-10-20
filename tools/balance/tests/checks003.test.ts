@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { comprobarSC001, comprobarSC002, comprobarSC003, comprobarSC004, comprobarSC005, comprobarSC006, comprobarSC007, vaciarCaches } from '../src/checks/partido003';
 import type { Comprobacion } from '../src/checks/partido';
 import { htmlInforme } from '../src/informe';
-import { leerOpciones, pedido } from '../src/cli';
+import { evaluarPendientes, leerOpciones, pedido } from '../src/cli';
 
 const N = 20;
 const todas = (semilla: number): Comprobacion[] => [
@@ -69,5 +69,15 @@ describe('opciones del CLI (T001)', () => {
     expect(pedido('003/SC-002', o.solo)).toBe(false);
     expect(leerOpciones([]).serie).toBe('sintetica');
     expect(() => leerOpciones(['--serie', 'otra'])).toThrow();
+  });
+
+  it('--pendientes: sus fallos no bloquean; avisa de los que ya se cumplen y de los ids que no se ejecutan', () => {
+    expect(leerOpciones(['--pendientes', '002/SC-008, 003/SC-009']).pendientes).toEqual(['002/SC-008', '003/SC-009']);
+    expect(leerOpciones([]).pendientes).toEqual([]);
+    const r = (id: string, ok: boolean): Comprobacion => ({ id, ok, descripcion: '', detalle: '' });
+    const e = evaluarPendientes([r('002/SC-008', false), r('002/SC-007a', true), r('SC-004', false)], ['002/SC-008', '002/SC-007a', '002/SC-07']);
+    expect(e.bloqueantes.map((c) => c.id)).toEqual(['SC-004']);
+    expect(e.yaCumplen).toEqual(['002/SC-007a']);
+    expect(e.desconocidos).toEqual(['002/SC-07']);
   });
 });

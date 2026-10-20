@@ -7,6 +7,7 @@
  *   pnpm balance --n 1000 --serie todas       también las de la serie Core (plantillas draftadas por NPC)
  *   pnpm balance --solo 003/SC-001,SC-004     solo esas comprobaciones (por id o prefijo de id)
  *   pnpm balance --torneos 100                comprobaciones de NPC (003/SC-010, SC-010a y SC-010b)
+ *   pnpm balance --pendientes 002/SC-008      se ejecutan e informan, pero su fallo no da código 1 (id exacto)
  *
  * Cada ejecución genera además `tools/balance/salida/informe.html` (Principio IX, T032a).
  */
@@ -23,6 +24,8 @@ export interface OpcionesBalance {
   /** Ids (o prefijos de id) de las comprobaciones que se ejecutan; vacío = todas. */
   solo: string[];
   serie: Serie;
+  /** Ids exactos de comprobaciones pendientes de calibrar: se informan, pero su fallo no da código 1. */
+  pendientes: string[];
 }
 
 /** Un grupo de comprobaciones que se calculan juntas (comparten series de partidos). */
@@ -34,8 +37,14 @@ export interface GrupoComprobaciones {
   ejecutar: (opciones: OpcionesBalance) => Comprobacion[] | Promise<Comprobacion[]>;
 }
 
+const lista = (valor: string | undefined): string[] =>
+  (valor ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
 export function leerOpciones(args: readonly string[]): OpcionesBalance {
-  const opciones: OpcionesBalance = { n: 1000, seed: 1, torneos: 0, proVsAmateur: false, solo: [], serie: 'sintetica' };
+  const opciones: OpcionesBalance = { n: 1000, seed: 1, torneos: 0, proVsAmateur: false, solo: [], serie: 'sintetica', pendientes: [] };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     const valor = args[i + 1];
@@ -56,10 +65,11 @@ export function leerOpciones(args: readonly string[]): OpcionesBalance {
         opciones.proVsAmateur = true;
         break;
       case '--solo':
-        opciones.solo = (valor ?? '')
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean);
+        opciones.solo = lista(valor);
+        i++;
+        break;
+      case '--pendientes':
+        opciones.pendientes = lista(valor);
         i++;
         break;
       case '--serie':
@@ -80,8 +90,25 @@ export function pedido(id: string, solo: readonly string[]): boolean {
   return solo.length === 0 || solo.some((s) => id === s || id.startsWith(s));
 }
 
-export function informe(comprobaciones: Comprobacion[]): string {
-  return comprobaciones.map((c) => `${c.ok ? '✔' : '✘'} ${c.id.padEnd(14)} ${c.descripcion}\n              ${c.detalle}`).join('\n');
+export function informe(comprobaciones: Comprobacion[], pendientes: readonly string[] = []): string {
+  return comprobaciones
+    .map((c) => {
+      const pendiente = !c.ok && pendientes.includes(c.id);
+      return `${c.ok ? '✔' : pendiente ? '…' : '✘'} ${c.id.padEnd(14)} ${c.descripcion}${pendiente ? ' (pendiente de calibrar)' : ''}\n              ${c.detalle}`;
+    })
+    .join('\n');
+}
+
+/**
+ * Con `--pendientes`: los fallos que bloquean (los que no están en la lista), los pendientes que ya se cumplen (hay
+ * que quitarlos de la lista) y los que no se han ejecutado (suele ser una errata en el id, y también bloquea).
+ */
+export function evaluarPendientes(resultados: readonly Comprobacion[], pendientes: readonly string[]) {
+  return {
+    bloqueantes: resultados.filter((r) => !r.ok && !pendientes.includes(r.id)),
+    yaCumplen: resultados.filter((r) => r.ok && pendientes.includes(r.id)).map((r) => r.id),
+    desconocidos: pendientes.filter((id) => !resultados.some((r) => r.id === id)),
+  };
 }
 
 /** Registro de todas las comprobaciones. Las de la spec 003 se añaden en `checks/partido.ts` y `checks/npc.ts`. */
@@ -149,13 +176,17 @@ if (esPrincipal) {
   const opciones = leerOpciones(process.argv.slice(2).filter((a) => a !== '--'));
   const inicio = Date.now();
   ejecutar(opciones).then(async (resultados) => {
-    console.log(informe(resultados));
+    console.log(informe(resultados, opciones.pendientes));
     const fallos = resultados.filter((r) => !r.ok).length;
     const segundos = (Date.now() - inicio) / 1000;
     console.log(`\n${resultados.length - fallos}/${resultados.length} comprobaciones superadas en ${segundos.toFixed(1)} s`);
+    const { bloqueantes, yaCumplen, desconocidos } = evaluarPendientes(resultados, opciones.pendientes);
+    if (opciones.pendientes.length) console.log(`Pendientes de calibrar (no bloquean): ${opciones.pendientes.join(', ')}`);
+    if (yaCumplen.length) console.log(`Ya se cumplen; quítalos de --pendientes: ${yaCumplen.join(', ')}`);
+    if (desconocidos.length) console.log(`--pendientes con ids que no se han ejecutado: ${desconocidos.join(', ')}`);
     const { escribirInforme } = await import('./informe');
     const ruta = escribirInforme(resultados, { fecha: new Date(), seed: opciones.seed, n: opciones.n, serie: opciones.serie, torneos: opciones.torneos, segundos });
     console.log(`Informe: ${ruta}`);
-    if (fallos) process.exitCode = 1;
+    if (bloqueantes.length || desconocidos.length) process.exitCode = 1;
   });
 }
