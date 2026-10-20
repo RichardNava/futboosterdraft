@@ -157,3 +157,17 @@ se descarta. Las pruebas de equivalencia rápida/2D y de «Finalizar partido» v
 - **Regate**: sirve para escapar del defensor y llegar con más facilidad al área. Un regate ganado en campo rival debe
   acercar al jugador al área.
 - **H14** (niveles de dificultad): implementado en paralelo, fuera de esta sesión.
+
+### H11 cerrado: llegada orgánica y regate hacia dentro
+
+Con la decisión del 2026-10-20 se añaden la llegada según la jugada (también en campo rival cuando un compañero progresa
+conduciendo o regateando) y según el jugador (desmarque o posicionamiento), y el regate hacia dentro tras un regate
+ganado en campo rival. Nueva comprobación **003/SC-023** en `pnpm balance`:
+
+| Formación | Extremos y mediapuntas (semilla 1) | (semilla 2) |
+|---|---|---|
+| 3-4-3 | 36,3 % | 35,8 % |
+| 4-2-3-1 | 41,8 % | 39,4 % |
+| 4-3-3 | 39,9 % | 39,9 % |
+
+Todas dentro del 25–50 %. La medición completa queda en 20 de 24 (ver calibracion-motor.md, ronda 13).

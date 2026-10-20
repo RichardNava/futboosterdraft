@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/torneo.ts": {
-    "mtime": 1792401175.0254364,
-    "seen": 1792403661.0607142,
-    "ast_hash": "b476f5d3a6bfda141fddf9b6e52bc2a4",
+    "mtime": 1792453478.010101,
+    "seen": 1792454486.180691,
+    "ast_hash": "0bdf6a58859ceac4085f833c03fcec61",
     "semantic_hash": ""
   },
   "apps/server/src/actores/vistas.ts": {
@@ -1272,9 +1272,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/index.ts": {
-    "mtime": 1792425265.063485,
-    "seen": 1792429775.6432152,
-    "ast_hash": "b33b26e1dcfd6841f99f3db7551a552b",
+    "mtime": 1792449639.235037,
+    "seen": 1792454486.2090998,
+    "ast_hash": "ed2d5ffd629a5ebfcc257b121d43473d",
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/v1.json": {
@@ -1512,9 +1512,9 @@
     "semantic_hash": "e492688ca128ddfb9b6671f0833f65cb"
   },
   "packages/engine/src/acciones/juego.ts": {
-    "mtime": 1792426311.4651186,
-    "seen": 1792429775.649369,
-    "ast_hash": "3a332b1c9673dd5dec5379d9a7275a6f",
+    "mtime": 1792449646.0787828,
+    "seen": 1792454486.2154498,
+    "ast_hash": "d75155b43bb20b040aaad62a721ccfcb",
     "semantic_hash": ""
   },
   "packages/engine/src/acciones/lesiones.ts": {
@@ -1572,9 +1572,9 @@
     "semantic_hash": "124713559d716f8281ebb0c6e1e70eb7"
   },
   "packages/engine/src/espacio/objetivos.ts": {
-    "mtime": 1792425641.101603,
-    "seen": 1792429775.650827,
-    "ast_hash": "e110c0f9498cb3479277cbfeefe8b7e0",
+    "mtime": 1792449639.477512,
+    "seen": 1792454486.217288,
+    "ast_hash": "88fb141ff4f9e9a88b266a75a63a99bf",
     "semantic_hash": ""
   },
   "packages/engine/src/espacio/paso.ts": {
@@ -1710,9 +1710,9 @@
     "semantic_hash": "4e5fd2f1d71d6cc3644d2f0c16a47f42"
   },
   "packages/engine/tests/reglas.test.ts": {
-    "mtime": 1792382742.7607548,
-    "seen": 1792403661.0871248,
-    "ast_hash": "bf9085ccff1315912d5adba927bed596",
+    "mtime": 1792453337.7589028,
+    "seen": 1792454486.2215283,
+    "ast_hash": "d2e65d2e2868491a247142bd6a6b8b95",
     "semantic_hash": ""
   },
   "packages/engine/tests/version.test.ts": {
@@ -1878,34 +1878,34 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/fixtures/escenarios/empate-eliminatoria.json": {
-    "mtime": 1792362216.1752174,
-    "seen": 1792367528.4338596,
-    "ast_hash": "1c5b1451bc6d8a150ad9e1e2cd3c64f1",
-    "semantic_hash": "1c5b1451bc6d8a150ad9e1e2cd3c64f1"
+    "mtime": 1792452574.5482633,
+    "seen": 1792454486.2274325,
+    "ast_hash": "accc056e6ae30e3ac66a939b23660e28",
+    "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-grave.json": {
-    "mtime": 1792362216.1752174,
-    "seen": 1792367528.433861,
-    "ast_hash": "5d221d94f6608f8277293935ea46a7e5",
-    "semantic_hash": "5d221d94f6608f8277293935ea46a7e5"
+    "mtime": 1792452574.5643344,
+    "seen": 1792454486.2274346,
+    "ast_hash": "210f1451219a2dc4c46c9a4a18f9faaf",
+    "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-larga.json": {
-    "mtime": 1792362216.1752174,
-    "seen": 1792367528.4338624,
-    "ast_hash": "a9d8b5537e40248c30e5f48c2df6ca06",
-    "semantic_hash": "a9d8b5537e40248c30e5f48c2df6ca06"
+    "mtime": 1792452574.5795557,
+    "seen": 1792454486.2274365,
+    "ast_hash": "19edb86eeeea180fea54ddf6b681c46d",
+    "semantic_hash": ""
   },
   "tools/fixtures/escenarios/roja.json": {
-    "mtime": 1792362216.1762166,
-    "seen": 1792367528.4338639,
-    "ast_hash": "d51c98dabb06f2be79b621733669c9f2",
-    "semantic_hash": "d51c98dabb06f2be79b621733669c9f2"
+    "mtime": 1792452574.5899696,
+    "seen": 1792454486.227438,
+    "ast_hash": "ce6acc721b18b874cfd423285de7e3bd",
+    "semantic_hash": ""
   },
   "tools/fixtures/escenarios/tres-amarillas.json": {
-    "mtime": 1792362216.1762166,
-    "seen": 1792367528.4338655,
-    "ast_hash": "676f237a2c0d0dde2ef69ca7e218e6a8",
-    "semantic_hash": "676f237a2c0d0dde2ef69ca7e218e6a8"
+    "mtime": 1792452574.605547,
+    "seen": 1792454486.2274396,
+    "ast_hash": "026a5ff89d850a1b19c72b6951b361a1",
+    "semantic_hash": ""
   },
   "tools/fixtures/package.json": {
     "mtime": 1792153826.4558785,
@@ -2346,15 +2346,15 @@
     "semantic_hash": "3d7556554f34358d4c62df0af3bbfa3a"
   },
   "specs/003-mejoras-ux-simulacion/spec.md": {
-    "mtime": 1792429200.2727485,
-    "seen": 1792429775.6725957,
-    "ast_hash": "61904a7826b53ff56838f9384fd569c0",
+    "mtime": 1792450179.0223658,
+    "seen": 1792454486.242591,
+    "ast_hash": "ddd40a1c43066daebd577e81c257712c",
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/tasks.md": {
-    "mtime": 1792430866.8937583,
-    "seen": 1792430905.0097103,
-    "ast_hash": "4e3c9783e9e235b122a40408a8d47e23",
+    "mtime": 1792454449.6632247,
+    "seen": 1792454486.242594,
+    "ast_hash": "bd86ffd725424e2d01c27850677eda64",
     "semantic_hash": ""
   },
   "apps/server/src/actores/identidad.ts": {
@@ -2616,9 +2616,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/v3.json": {
-    "mtime": 1792429870.790878,
-    "seen": 1792430904.9844887,
-    "ast_hash": "38fd5741576a2f2aa29c727921641144",
+    "mtime": 1792451863.6423967,
+    "seen": 1792454486.209374,
+    "ast_hash": "8c31115846f579e0c318e57e11deb083",
     "semantic_hash": ""
   },
   "packages/domain/src/torneo/eliminaciones.ts": {
@@ -2718,9 +2718,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido003.ts": {
-    "mtime": 1792385513.0245316,
-    "seen": 1792403661.0895815,
-    "ast_hash": "e31b4e7ac4c885d8e68e962139914d2e",
+    "mtime": 1792450179.0523674,
+    "seen": 1792454486.2253087,
+    "ast_hash": "c2a20c5a4346511da8c4421e2aeaeb4f",
     "semantic_hash": ""
   },
   "tools/balance/src/core.ts": {
@@ -2778,9 +2778,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md": {
-    "mtime": 1792429880.3999007,
-    "seen": 1792430905.008149,
-    "ast_hash": "9d65dac0ffa4bd429bd810fa7100267b",
+    "mtime": 1792454449.612082,
+    "seen": 1792454486.2395694,
+    "ast_hash": "af9e2b37714e9ea6207470692703936e",
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/linea-base.md": {
@@ -2808,9 +2808,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/validacion.md": {
-    "mtime": 1792429761.2585385,
-    "seen": 1792429775.6709762,
-    "ast_hash": "725dc6072f882db36adf885ef5b5ed70",
+    "mtime": 1792454449.6607409,
+    "seen": 1792454486.2406394,
+    "ast_hash": "1d68e07e9153489761d27bb7264dc211",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/dificultad.spec.ts": {

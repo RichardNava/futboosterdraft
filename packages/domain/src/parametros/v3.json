@@ -192,7 +192,7 @@
     "probabilidadManoAMano": 0.12,
     "centroRaso": 0.35,
     "bonusLlegada": 2.5,
-    "regateHaciaDentro": 0.5,
+    "regateHaciaDentro": 0.3,
     "avanceZonaBaja": 0.45,
     "avanceZonaAlta": 0.35,
     "llegadaArea": 0.5,
@@ -234,7 +234,7 @@
     "margenAnimacionS": 8
   },
   "espacio": {
-    "llegadaAlArea": { "xExtremo": 8800, "xMediapunta": 7900, "factorAncho": 0.6, "xProgresion": 5000, "pendienteStat": 60 },
+    "llegadaAlArea": { "xExtremo": 8800, "xMediapunta": 7900, "factorAncho": 0.6, "xProgresion": 5000, "pendienteStat": 100 },
     "velocidadJugadorMin": 22,
     "velocidadJugadorMax": 36,
     "statVelocidadMin": 50,

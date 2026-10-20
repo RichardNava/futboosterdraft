@@ -50,11 +50,11 @@
   },
   "eliminatoria": false,
   "semillas": [
-    "9058aedc9d9105fa1874200d40017d9d",
-    "e28505f1a91fd1fbb270ca276a1e74a6",
-    "c9f1a3e5051da548a568a7008c940d0a"
+    "08969325e830244c2767138fe2d25745",
+    "b9703cc3fe831ba1891366762a1c5e71",
+    "019b65a1f2b27974c46d58fb247c6ca3"
   ],
   "esperado": {
-    "jugadorId": 144
+    "jugadorId": 35
   }
 }

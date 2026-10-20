@@ -988,6 +988,6 @@ Tras Setup y Foundational:
 - [X] T139 [US2] H5 y H7 (FR-003b, FR-032): en `Alineacion.tsx`, el principal es siempre «Confirmar alineación», que guarda y lleva al torneo; se quitan el selector de modo y «Comenzar partido». Actualizar las e2e que empezaban el partido desde «Formación».
 - [X] T140 [US2] H6 (FR-001b): asignar los dorsales al terminar el draft, según la alineación automática, en `apps/server/src/actores/draft.ts`; confirmar el once no los reasigna. Pruebas de integración.
 - [X] T141 [US5] H9 (FR-006a): en el descanso contra un NPC, «Gestionar equipo» y «Seguir» con el estilo de botón principal, «Seguir» a la derecha (`BarraPrincipal` con dos principales); actualizar `boton-principal.spec.ts`.
-- [ ] T142 [US1] H11: más llegadas al área y goles de ED, EI y MCO; comprobación nueva en `tools/balance` (reparto de goles por demarcación).
+- [X] T142 [US1] H11: más llegadas al área y goles de ED, EI y MCO; comprobación nueva en `tools/balance` (reparto de goles por demarcación).
 - [X] T143 [US9] H13: sumar 100 milésimas a `npc.errores` de cada nivel y volver a medir 003/SC-010.
 - [X] T144 H14 (FR-038a): dificultad de la partida (Fácil, Normal por defecto, Difícil) en `ConfigPartida`, `rellenarConNPC(…, dificultad)`, migración `0009_dificultad.sql`, `CrearPartida` y `ResumenPartida`; selector en «Nueva partida» y dificultad en la sala. Pruebas: dominio `partida.test.ts`, contrato `partidas.test.ts` (3 nuevas), e2e `dificultad.spec.ts`.

@@ -164,3 +164,27 @@ varios jugadores o con más partidos antes de calibrar contra ella.
 
 Siguen pendientes los de la ronda 7: 003/SC-001c, 002/SC-007a (9,8 centros y 2,9 contraataques), 002/SC-008 (+6,4 %) y
 003/SC-009.
+
+## Ronda 12 y 13: llegada orgánica y regate hacia dentro (H11, decisión del 2026-10-20)
+
+Cambios (ver validacion.md, H11):
+
+- La llegada al área empieza también en campo rival (`llegadaAlArea.xProgresion` 5000) cuando un compañero progresa
+  conduciendo o regateando, y cada jugador llega con la intensidad de su desmarque (delanteros) o su posicionamiento
+  (medios): 1 + (stat − 70) / `pendienteStat`.
+- Un regate ganado en campo rival desde una banda lleva, con probabilidad `acciones.regateHaciaDentro`, en diagonal
+  hacia el carril central, camino del área.
+- Comprobación nueva **003/SC-023**: extremos y mediapuntas marcan entre el 25 % y el 50 % de los goles en 3-4-3,
+  4-2-3-1 y 4-3-3.
+
+Ronda 12 (`regateHaciaDentro` 0,5, `pendienteStat` 60): 16 de 23; SC-004 falla con las dos semillas (9,6 % y 9,0 %: la
+llegada según el stat amplía la diferencia entre equipos) y Desbordante pierde efecto (el regate hacia dentro saca al
+jugador de la banda). Se suaviza a `regateHaciaDentro` 0,3 y `pendienteStat` 100.
+
+**Ronda 13 (valores finales, `--serie todas`, n = 500): 20 de 24 superadas.** Pasan 003/SC-006 (regate +28 %),
+003/SC-007, SC-004 (peor 10 %+) y **003/SC-023** (3-4-3: 36,3 % · 4-2-3-1: 41,8 % · 4-3-3: 39,9 %). Con la semilla 2
+pasan SC-004 y SC-023, y fallan otra vez las comprobaciones de un solo jugador (regate +17 %, Matador +13 %, Desbordante
++23 %), que oscilan más de 10 puntos entre semillas.
+
+Siguen pendientes solo los cuatro de antes: 003/SC-001c (3,31 goles; 66,7 % de torneos en rango), 002/SC-007a (centros
+9,8 y contraataques 2,8), 002/SC-008 (+4,6 %) y 003/SC-009 (compuesto).

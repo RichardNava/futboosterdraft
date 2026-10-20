@@ -24,11 +24,13 @@ describe('reglas del motor', () => {
     const eq = local(e);
     const titulares = eq.jugadores.filter((j) => j.enCampo && j.casillaId !== 'POR');
     const banquillo = eq.jugadores.filter((j) => !j.enCampo && !j.retirado);
-    for (let i = 0; i < 5; i++) {
+    // Si en la primera parte ya hubo un cambio (por una lesión), quedan menos.
+    const quedan = 5 - eq.sustitucionesUsadas;
+    for (let i = 0; i < quedan; i++) {
       const r = aplicarDecision(e, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[i]!.id, entra: banquillo[i]!.id } });
       expect(r.ok).toBe(true);
     }
-    const sexta = aplicarDecision(e, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[5]!.id, entra: banquillo[5]!.id } });
+    const sexta = aplicarDecision(e, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[quedan]!.id, entra: banquillo[quedan]!.id } });
     expect(sexta).toMatchObject({ ok: false, codigo: 'SUSTITUCIONES_AGOTADAS' });
 
     const tras = avanzar(e, 'interrupcion').estado;
@@ -37,9 +39,11 @@ describe('reglas del motor', () => {
     const vuelve = aplicarDecision(tras, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: banquillo[0]!.id, entra: titulares[0]!.id } });
     expect(vuelve.ok).toBe(false);
 
-    // En la prórroga hay una sustitución más.
+    // En la prórroga hay una sustitución más (sale uno que siga en el campo: en el tramo jugado puede haber bajas).
     tras.fase = 'pre_prorroga';
-    const enProrroga = aplicarDecision(tras, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: titulares[6]!.id, entra: banquillo[5]!.id } });
+    const sale = local(tras).jugadores.find((j) => j.enCampo && j.casillaId !== 'POR')!;
+    const entra = local(tras).jugadores.find((j) => !j.enCampo && !j.retirado)!;
+    const enProrroga = aplicarDecision(tras, { participanteId: 'local', tipo: 'sustitucion', datos: { sale: sale.id, entra: entra.id } });
     expect(enProrroga.ok).toBe(true);
   });
 
