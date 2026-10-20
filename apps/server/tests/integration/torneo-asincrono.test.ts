@@ -220,7 +220,15 @@ describe('torneo asíncrono (spec 001/US4 y spec 002/US11; FR-030)', () => {
     await avanzarHasta(srv, 1000, async () => (await torneo(srv, partidaId, a)).jornadaActual === 2);
     const t = await torneo(srv, partidaId, a);
     expect(t.jornadas[0].estado).toBe('cerrada');
-    expect(t.jornadas[0].partidos.some((p: any) => p.resueltoAutomaticamente && p.resolucion === 'plazo')).toBe(true);
+    // Si a juega contra b, el único partido resuelto por plazo es el suyo y su vista lo oculta (pendiente de
+    // ver): la resolución se comprueba en la base de datos.
+    const { partidos } = await import('../../src/persistencia/esquema/index');
+    const { inArray } = await import('drizzle-orm');
+    const ids = t.jornadas[0].partidos.map((p: any) => p.partidoId).filter(Boolean);
+    const filas = await bd.db.select({ resolucion: partidos.resolucion }).from(partidos).where(inArray(partidos.id, ids));
+    expect(filas.some((f) => f.resolucion === 'plazo')).toBe(true);
+    // Lo que sí ve: los partidos que no tiene pendientes muestran su resolución.
+    for (const p of t.jornadas[0].partidos) if (p.estado !== 'pendiente_de_ver') expect(p.resolucion).not.toBeNull();
     expect(t.jornadas[1].estado).toBe('abierta');
     await wa.cerrar();
   });

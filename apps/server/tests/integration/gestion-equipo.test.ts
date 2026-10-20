@@ -142,10 +142,15 @@ describe('gestión del equipo durante el partido (US5)', () => {
       await bd.limpiar();
       srv = await iniciarServidorPruebas(bd);
       const { ws, inicio, desde, lado } = await empezar('rapida', { eliminatoria: true });
-      await ws.esperar('partido.pausa_decision', { desde });
+      const descanso = await ws.esperar('partido.pausa_decision', { desde });
+      const tras = ws.recibidos.indexOf(descanso) + 1;
       await ws.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
-      await espera(300);
-      if (ws.recibidos.slice(desde).some((m) => m.t === 'partido.pausa_decision' && m.motivo === 'pre_prorroga')) {
+      // Tras la segunda parte llega la pausa antes de la prórroga (empate) o el final; sin plazo fijo, que en
+      // una máquina lenta no da tiempo a jugarla.
+      const siguiente = await Promise.race(
+        ['partido.pausa_decision', 'partido.fin'].map((tipo) => ws.esperar(tipo, { desde: tras, timeoutMs: 20_000 }).catch(() => null)),
+      );
+      if (siguiente?.t === 'partido.pausa_decision' && siguiente.motivo === 'pre_prorroga') {
         const ack = await ws.enviarYEsperarAck({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones: [{ tipo: 'tactica', datos: { tactica: inicio.alineaciones[lado].tactica } }] });
         expect(ack.ok, JSON.stringify(ack)).toBe(true);
         comprobado = true;
