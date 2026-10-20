@@ -14,6 +14,16 @@
 
 **Versión de referencia**: cuando un criterio compara con "la versión actual", se refiere al commit `4168404` de `main`, el último antes de esta spec.
 
+## Clarifications
+
+### Session 2026-10-20
+
+- Q: ¿Qué color tienen los avisos que no son errores (dorsales repetidos, avisos de partido, confirmaciones)? → A: Las advertencias que requieren atención usan ámbar alerta (#ffd000) con icono y texto; los avisos informativos y las confirmaciones de éxito son neutros (gris y blanco con icono); el color de error queda solo para los errores.
+- Q: ¿Qué botones secundarios llevan contorno y texto lima? → A: Como máximo uno por pantalla, y solo si es la alternativa directa al botón principal (p. ej. "Ver en 2D" frente a "Simular"); el resto de secundarios usan contorno gris y texto blanco.
+- Q: ¿Cómo se presenta la navegación principal en móvil? → A: Barra superior de una línea con el nombre del juego y un botón "Menú" que despliega los enlaces en un panel (a pantalla completa o lateral).
+- Q: ¿Las comprobaciones de contraste, desplazamiento horizontal y foco se automatizan o son manuales? → A: Se automatizan en la integración continua (contraste y accesibilidad básica, ausencia de desplazamiento horizontal a 360/768/1366/1920 px y recorrido del flujo con teclado), sin comparación de capturas; la lista de verificación visual manual cubre el resto.
+- Q: ¿Cómo se ve completo un nombre recortado en pantallas táctiles? → A: Manteniendo pulsado el nombre aparece una etiqueta emergente con el texto completo.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Una identidad visual coherente en todas las pantallas (Priority: P1)
@@ -42,7 +52,7 @@ En cada pantalla, el participante identifica de un vistazo la acción que le hac
 
 **Acceptance Scenarios**:
 
-1. **Given** una pantalla del flujo de juego, **When** el participante la mira, **Then** el único elemento relleno de lima es el botón principal (salvo la excepción de 003/FR-006a) y los secundarios son contorneados o de texto.
+1. **Given** una pantalla del flujo de juego, **When** el participante la mira, **Then** el único elemento relleno de lima es el botón principal (salvo la excepción de 003/FR-006a), como mucho un secundario lleva contorno lima (FR-002) y los demás secundarios son contorneados en gris o de texto.
 2. **Given** un botón principal que aún no se puede usar, **When** se muestra, **Then** aparece apagado (sin lima) y con el motivo visible a su lado (003/FR-007).
 3. **Given** una lista sin elementos (p. ej. "Mis partidas" sin partidas), **When** se abre, **Then** se explica qué falta y se ofrece la acción para empezar.
 4. **Given** un error de conexión o de validación, **When** ocurre, **Then** el mensaje dice qué ha pasado y cómo resolverlo, con un icono y un texto que no dependen solo del color.
@@ -99,7 +109,7 @@ Las pantallas de juego más densas (draft, plantillas, formación, partido rápi
 
 ### Edge Cases
 
-- **Nombres largos**: nombres de equipo, de jugador o de partida muy largos no rompen paneles, marcadores ni tablas; se recortan con puntos suspensivos y se ven completos al señalarlos.
+- **Nombres largos**: nombres de equipo, de jugador o de partida muy largos no rompen paneles, marcadores ni tablas; se recortan con puntos suspensivos. El texto completo aparece en una etiqueta emergente al señalarlo con el ratón, al enfocarlo con el teclado o al mantenerlo pulsado en pantallas táctiles. Mantener pulsado un nombre dentro de una carta o de un elemento que se puede elegir NO DEBE contar como elección ni abrir el menú del navegador.
 - **Equipaciones oscuras**: una equipación negra o muy oscura sigue distinguiéndose sobre el lienzo oscuro (en chapas, marcadores y camisetas) gracias a un contorno.
 - **Fuentes que no cargan**: si la tipografía propia no se descarga, el texto se muestra con una tipografía del sistema de proporciones parecidas, sin texto invisible ni saltos bruscos de maquetación.
 - **Zoom al 200 %**: con la ampliación del navegador al 200 %, el contenido sigue siendo usable sin desplazamiento horizontal en un portátil.
@@ -114,9 +124,9 @@ Las pantallas de juego más densas (draft, plantillas, formación, partido rápi
 #### Fundamentos visuales (US1)
 
 - **FR-001**: La aplicación DEBE usar un único tema oscuro basado en la guía: lienzo casi negro como fondo de página, un panel un escalón más claro para tarjetas, diálogos y paneles, y bordes discretos entre ambos. El tema DEBE aplicarse con independencia de la preferencia de color del dispositivo.
-- **FR-002**: El color lima de la guía DEBE reservarse a: el relleno del botón principal, el contorno y el texto de los botones de acción secundarios destacados, el elemento de navegación activo, las casillas y opciones marcadas, y el indicador de foco. NO DEBE usarse en titulares, texto corriente, fondos grandes ni decoración.
-- **FR-003**: Fuera del lima, NO DEBEN introducirse colores decorativos. Se exceptúan, por ser información del juego y no decoración: los colores de nivel de las cartas (Superclase, Épico, Legendario y GOAT), los colores de las equipaciones, el césped y las líneas del campo 2D, y un único color de error reservado a los mensajes de error, que siempre se acompaña de icono y texto.
-- **FR-004**: Los colores de nivel de las cartas DEBEN recalibrarse para el fondo oscuro y mantener un contraste mínimo de 4,5:1 cuando se usan como texto.
+- **FR-002**: El color lima de la guía DEBE reservarse a: el relleno del botón principal, el contorno y el texto de como máximo un botón secundario por pantalla, y solo cuando es la alternativa directa al principal (p. ej. "Ver en 2D" frente a "Simular"; el resto de secundarios usan contorno gris y texto blanco), el elemento de navegación activo, las casillas y opciones marcadas, y el indicador de foco. NO DEBE usarse en titulares, texto corriente, fondos grandes ni decoración.
+- **FR-003**: Fuera del lima, NO DEBEN introducirse colores decorativos. Se exceptúan, por ser información del juego y no decoración: los colores de nivel de las cartas (Superclase, Épico, Legendario y GOAT), los colores de las equipaciones, el césped y las líneas del campo 2D, un único color de error reservado a los mensajes de error, y el ámbar alerta (#ffd000) reservado a las advertencias que requieren atención del participante (p. ej. dorsales repetidos o avisos de partido que piden una decisión). El color de error y el ámbar siempre se acompañan de icono y texto. Los avisos informativos y las confirmaciones de éxito (FR-027) son neutros: superficie de panel, texto blanco e icono por tipo, sin lima ni ámbar.
+- **FR-004**: Los colores de nivel de las cartas DEBEN recalibrarse para el fondo oscuro y mantener un contraste mínimo de 4,5:1 cuando se usan como texto, y ninguno DEBE confundirse con el lima de acción ni con el ámbar de advertencia (FR-003).
 - **FR-005**: La tipografía DEBE tener dos papeles: una tipografía condensada a escala de cartel para titulares grandes, marcadores y cifras destacadas, y una tipografía sin remates legible para el resto del texto. La escala DEBE seguir la de la guía (cuerpo, subtítulo, título pequeño, título grande y cartel), con interlineado comprimido (0,85–1,0) en los titulares de cartel y de 1,5 en el texto corriente.
 - **FR-006**: Los tamaños de cartel DEBEN adaptarse al ancho de la pantalla, de forma que un titular de cartel nunca provoque desplazamiento horizontal ni se parta en más de tres líneas a 360 px.
 - **FR-007**: Todos los contenedores de interfaz (botones, paneles, diálogos, campos, imágenes y la barra de navegación) DEBEN tener esquinas de 6 px. Las cartas de jugador conservan su forma propia (003/FR-008), integrada visualmente en el panel que las contiene.
@@ -128,7 +138,7 @@ Las pantallas de juego más densas (draft, plantillas, formación, partido rápi
 
 - **FR-011**: DEBE existir un conjunto único de componentes visuales compartido por todas las pantallas, con un aspecto definido para cada uno de sus estados (normal, señalado, pulsado, enfocado, desactivado y, cuando aplique, cargando o con error): botón principal, botón secundario contorneado, botón de texto, campo de texto, selector, casilla y opción, pestañas o selector segmentado, panel, diálogo, aviso emergente, tabla, insignia y barra de navegación.
 - **FR-012**: El botón principal DEBE tener relleno lima con texto negro, y cumplir 003/FR-007 (siempre visible a partir de 360 × 640, el control más destacado, desactivado con motivo). Su alto mínimo de 48 px se mantiene. Desactivado, DEBE perder el lima y mostrarse apagado.
-- **FR-012a**: La barra de navegación principal DEBE adoptar el estilo de la guía: lienzo oscuro, logotipo o nombre del juego a la izquierda, enlaces en blanco, el destino activo marcado con lima, y en móvil un menú compacto que no ocupe más de una línea de alto.
+- **FR-012a**: La barra de navegación principal DEBE adoptar el estilo de la guía: lienzo oscuro, logotipo o nombre del juego a la izquierda, enlaces en blanco, el destino activo marcado con lima, y en móvil una barra superior de una sola línea con el nombre del juego y un botón "Menú" que despliega los enlaces en un panel a pantalla completa o lateral. El panel DEBE poder abrirse y cerrarse con teclado (también con Escape), devolver el foco al botón "Menú" al cerrarse y no tapar de forma permanente el botón principal de 003/FR-007.
 
 #### Inventario de pantallas (US1, US3, US5)
 
@@ -174,6 +184,7 @@ Las pantallas de juego más densas (draft, plantillas, formación, partido rápi
 - **FR-037**: Los valores visuales (colores, tipografías, escala de texto, espaciado, esquinas y sombras) DEBEN definirse en un único lugar y reutilizarse en todas las pantallas, de modo que cambiar un valor de la guía se refleje en toda la aplicación.
 - **FR-038**: El cambio visual NO DEBE alterar el comportamiento: todos los flujos existentes (crear partida, sala, draft, plantillas, formación, partido en las dos modalidades, torneo, campeón, derrota, perfil) DEBEN funcionar igual que en la versión actual.
 - **FR-039**: Las tipografías usadas DEBEN tener una licencia que permita incluirlas en el juego y servirlas desde la propia aplicación.
+- **FR-040**: Las pruebas automáticas de extremo a extremo que se ejecutan en la integración continua DEBEN comprobar en cada pantalla del inventario (FR-013): el contraste y las reglas básicas de accesibilidad (FR-029, FR-030), la ausencia de desplazamiento horizontal de la página a 360, 768, 1366 y 1920 px (FR-031) y que el flujo de SC-007 se completa con teclado. No se exige comparación automática de capturas. Lo que no se puede comprobar automáticamente (jerarquía, uso del lima, textos) se verifica con la lista de verificación visual manual (SC-001).
 
 ### Requisitos de specs anteriores afectados
 
@@ -208,7 +219,7 @@ Las pantallas de juego más densas (draft, plantillas, formación, partido rápi
 - **Sin fotografía**: la guía apoya su ambiente en fotografía a sangre, pero el juego no dispone de fotografías con licencia. El ambiente lo aportan la tipografía de cartel, las cartas, el campo y las equipaciones; no se añaden fotografías ni ilustraciones decorativas.
 - **Tipografía**: la tipografía de la guía (Roobert) es comercial. Se usa una alternativa libre con el mismo carácter: la familia condensada que ya incluye el juego para las cartas (Barlow Condensed) para los titulares de cartel y las cifras, y una sans geométrica libre de proporciones parecidas a las de la guía para el texto corriente. La elección concreta se cierra en el plan.
 - **Adaptación de la guía**: los componentes propios del sitio de origen (aviso de cookies, botón "Sign in", logotipo) no se trasladan; se toman sus reglas (colores, escala, esquinas, superficies) y se aplican a los componentes del juego.
-- **Excepciones de color**: los colores de nivel, las equipaciones, el campo 2D y el color de error son información de juego o de estado y no rompen la regla de "un único acento" de la guía (FR-003).
+- **Excepciones de color**: los colores de nivel, las equipaciones, el campo 2D, el color de error y el ámbar de advertencia son información de juego o de estado y no rompen la regla de "un único acento" de la guía (FR-003).
 - **Cartas y sobres**: el diseño de las cartas de 003 y las animaciones de apertura de sobres se conservan; esta spec solo los integra en el tema oscuro y recalibra sus colores.
 - **Alcance**: no se añaden pantallas, funciones ni reglas nuevas; las reorganizaciones de cada pantalla se limitan a la jerarquía visual, la agrupación de la información y los textos.
 - **Navegadores**: las versiones actuales de los navegadores de escritorio y móvil más usados, como en las specs anteriores.
