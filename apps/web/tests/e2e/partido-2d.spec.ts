@@ -3,7 +3,7 @@ import { partidaTrasDraft, sustituirEnGestion } from './ayudas';
 
 /**
  * Escenario F del quickstart (Historia 3): partido 2D en directo contra un NPC con el búfer de
- * anticipación. Velocidades x2, x4 y x8 (por defecto x2 y recordada al recargar), «¡GOL!», descanso con
+ * anticipación. Velocidades x2, x4 y x8 (por defecto x2 y recordada al recargar), «¡Gol!», descanso con
  * «Seguir», «Se aplicará en el minuto N» tras pedir un cambio, estadísticas finales (FR-024) y a 360 px el
  * campo, el marcador y los controles visibles sin desbordar (FR-025b).
  */
@@ -23,12 +23,12 @@ test('partido 2D en directo: velocidades, pausas anunciadas, cambio y estadísti
   await expect(page.locator('.campo-2d canvas')).toBeVisible();
   await expect(page.getByRole('button', { name: 'x8' })).toHaveAttribute('aria-pressed', 'true');
 
-  // Se apunta si se ve «¡GOL!» en algún momento (el rótulo dura 2 s reales).
+  // Se apunta si se ve «¡Gol!» en algún momento (el rótulo dura 2 s reales).
   await page.evaluate(() => {
     const w = window as unknown as { golVisto: boolean };
     w.golVisto = false;
     const mirar = () => {
-      if (document.querySelector('.marcador-2d')?.textContent?.includes('¡GOL!')) w.golVisto = true;
+      if (document.querySelector('.marcador-2d')?.textContent?.includes('¡Gol!')) w.golVisto = true;
       requestAnimationFrame(mirar);
     };
     mirar();

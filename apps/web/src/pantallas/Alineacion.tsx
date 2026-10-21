@@ -25,6 +25,10 @@ import { EditorLanzadores } from '../componentes/EditorLanzadores';
 import type { CartaResumen } from '../componentes/CartaJugador';
 import { DistintivoBaja, type BajaVista } from '../componentes/DistintivoBaja';
 import { PanelTactica } from '../componentes/PanelTactica';
+import { mostrarAviso } from '../estado/avisos';
+import { PantallaCargando } from '../componentes/Esqueleto';
+import { Aviso } from '../componentes/Aviso';
+import { Dialogo } from '../componentes/Dialogo';
 
 export interface CasillaVista {
   casillaId: string;
@@ -90,7 +94,7 @@ export function Alineacion() {
   const [campo, setCampo] = useState<EstadoCampo | null>(null);
   const [tactica, setTactica] = useState<Tactica | null>(null);
   const [lanzadores, setLanzadores] = useState<Lanzadores | null>(null);
-  const [mensaje, setMensaje] = useState<{ tipo: 'ok' | 'error'; texto: string; motivos?: string[] } | null>(null);
+  const [mensaje, setMensaje] = useState<{ tipo: 'error'; texto: string; motivos?: string[] } | null>(null);
   const [equipaciones, setEquipaciones] = useState<Equipaciones | null>(null);
   const [nombreEquipo, setNombreEquipo] = useState('');
   /** Cambio de formación pendiente de confirmar (FR-002a). */
@@ -163,7 +167,7 @@ export function Alineacion() {
     try {
       const d = await api<DatosEquipo>(`/api/partidas/${partidaId}/alineacion`, { metodo: 'PUT', cuerpo: a });
       aplicarDatos(d);
-      setMensaje({ tipo: 'ok', texto: `Alineación confirmada (versión ${d.version ?? 1}).` });
+      mostrarAviso('exito', 'Alineación confirmada');
       return d;
     } catch (e) {
       const motivos = e instanceof ErrorApi ? (e.detalles.motivos as string[] | undefined) : undefined;
@@ -174,7 +178,7 @@ export function Alineacion() {
   const asignarDorsal = async (jugadorId: number, dorsal: number) => {
     const r = await api<{ dorsales: Record<number, number> }>(`/api/partidas/${partidaId}/dorsales`, { metodo: 'PUT', cuerpo: { jugadorId, dorsal } });
     setDatos((d) => (d ? { ...d, dorsales: r.dorsales } : d));
-    setMensaje({ tipo: 'ok', texto: 'Dorsal cambiado.' });
+    mostrarAviso('exito', 'Dorsal cambiado');
   };
 
   const guardarNombre = async () => {
@@ -182,7 +186,7 @@ export function Alineacion() {
       const r = await api<{ nombreEquipo: string }>(`/api/partidas/${partidaId}/nombre-equipo`, { metodo: 'PUT', cuerpo: { nombre: nombreEquipo } });
       setNombreEquipo(r.nombreEquipo);
       setDatos((d) => (d ? { ...d, nombreEquipo: r.nombreEquipo } : d));
-      setMensaje({ tipo: 'ok', texto: 'Nombre guardado.' });
+      mostrarAviso('exito', 'Nombre guardado');
     } catch (e) {
       setMensaje({ tipo: 'error', texto: e instanceof Error ? e.message : 'No se pudo guardar el nombre' });
     }
@@ -193,21 +197,30 @@ export function Alineacion() {
     try {
       await api(`/api/partidas/${partidaId}/equipaciones`, { metodo: 'PUT', cuerpo: equipaciones });
       setDatos((d) => (d ? { ...d, equipaciones } : d));
-      setMensaje({ tipo: 'ok', texto: 'Equipaciones guardadas.' });
+      mostrarAviso('exito', 'Equipaciones guardadas');
     } catch (e) {
       setMensaje({ tipo: 'error', texto: e instanceof Error ? e.message : 'No se pudieron guardar las equipaciones' });
     }
   };
 
   if (!datos || !tactica || !lanzadores || !campo || !resultadoColocacion) {
-    return <p className="cargando">{mensaje?.texto ?? 'Cargando alineación…'}</p>;
+    if (mensaje?.tipo === 'error')
+      return (
+        <main className="pantalla">
+          <Aviso tipo="error">
+            <p>{mensaje.texto}</p>
+          </Aviso>
+        </main>
+      );
+    return <PantallaCargando forma="campo" texto="Cargando la alineación…" />;
   }
 
   const enCampo = new Set(Object.values(titulares).filter((x): x is number => x !== undefined));
   const reserva = datos.plantilla.filter((j) => !enCampo.has(j.id) && !campo.banquillo.includes(j.id)).map((j) => j.id);
   const porteroEnPorteria = titulares.POR !== undefined ? porId.get(titulares.POR!) : undefined;
   const titularesLista = [...enCampo].map((id) => porId.get(id)!).filter(Boolean);
-  const colores = equipaciones ? coloresDe(equipaciones.primera) : { principal: '#1f7a4d', secundario: '#ffffff' };
+  // Sin equipaciones guardadas, una por defecto.
+  const colores = equipaciones ? coloresDe(equipaciones.primera) : { principal: '#1f7a4d', secundario: '#ffffff' }; // lint-tokens: datos de equipación
   const nombre = (id: number) => {
     const j = porId.get(id);
     return j ? `${datos.dorsales?.[id] ? `#${datos.dorsales[id]} ` : ''}${j.nombre} ${j.apellidos.split(' ')[0]}` : String(id);
@@ -249,9 +262,9 @@ export function Alineacion() {
       </header>
 
       {porteroEnPorteria && porteroEnPorteria.demarcacion !== 'POR' && (
-        <p className="aviso" role="alert">
-          Has puesto a un jugador de campo en la portería: sus stats bajan un 60 %.
-        </p>
+        <Aviso tipo="advertencia" rol="alert">
+          <p>Has puesto a un jugador de campo en la portería: sus stats bajan un 60 %.</p>
+        </Aviso>
       )}
 
       <p className="nota">
@@ -285,7 +298,7 @@ export function Alineacion() {
           {resultadoColocacion.amplitud}
         </p>
         {resultadoColocacion.avisos.length > 0 && (
-          <ul className="avisos-colocacion" role="status">
+          <ul className="avisos-colocacion" role="status" aria-label="Avisos de la colocación">
             {resultadoColocacion.avisos.map((a) => (
               <li key={a}>{a}</li>
             ))}
@@ -298,16 +311,9 @@ export function Alineacion() {
         )}
       </div>
 
-      <section aria-label="Táctica">
-        <h2>Táctica</h2>
-        <PanelTactica tactica={tactica} onCambiar={setTactica} />
-      </section>
-
-      <EditorLanzadores lanzadores={lanzadores} titulares={titularesLista} nombre={nombre} onCambiar={setLanzadores} />
-
       {mensaje && (
-        <div className={mensaje.tipo === 'error' ? 'error' : 'exito'} role={mensaje.tipo === 'error' ? 'alert' : 'status'}>
-          {mensaje.texto}
+        <Aviso tipo="error">
+          <p>{mensaje.texto}</p>
           {mensaje.motivos && mensaje.motivos.length > 1 && (
             <ul>
               {mensaje.motivos.map((m) => (
@@ -315,8 +321,20 @@ export function Alineacion() {
               ))}
             </ul>
           )}
-        </div>
+        </Aviso>
       )}
+
+      <details className="seccion-plegable" open>
+        <summary>Táctica</summary>
+        <section aria-label="Táctica">
+          <PanelTactica tactica={tactica} onCambiar={setTactica} />
+        </section>
+      </details>
+
+      <details className="seccion-plegable" open>
+        <summary>Lanzadores</summary>
+        <EditorLanzadores lanzadores={lanzadores} titulares={titularesLista} nombre={nombre} onCambiar={setLanzadores} conTitulo={false} />
+      </details>
 
       <details className="seccion-plegable">
         <summary>Dorsales</summary>
@@ -352,19 +370,17 @@ export function Alineacion() {
         </details>
       )}
       {formacionPendiente && (
-        <div className="modal-fondo">
-          <div className="modal" role="alertdialog" aria-modal="true" aria-labelledby="titulo-cambio-formacion">
-            <p id="titulo-cambio-formacion">Se perderá la colocación personalizada. ¿Cambiar de formación?</p>
-            <div className="acciones">
-              <button type="button" onClick={() => cambiarFormacion(formacionPendiente, true)}>
-                Cambiar
-              </button>
-              <button type="button" className="secundario" onClick={() => setFormacionPendiente(null)}>
-                Cancelar
-              </button>
-            </div>
+        <Dialogo rol="alertdialog" etiquetadoPor="titulo-cambio-formacion" alEscape={() => setFormacionPendiente(null)}>
+          <p id="titulo-cambio-formacion">Se perderá la colocación personalizada. ¿Cambiar de formación?</p>
+          <div className="acciones">
+            <button type="button" className="secundario" onClick={() => cambiarFormacion(formacionPendiente, true)}>
+              Cambiar
+            </button>
+            <button type="button" className="texto" onClick={() => setFormacionPendiente(null)}>
+              Cancelar
+            </button>
           </div>
-        </div>
+        </Dialogo>
       )}
       <BarraPrincipal
         principal={principal}

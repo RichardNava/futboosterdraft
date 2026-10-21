@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { api } from '../api/cliente';
+import { Icono, type NombreIcono } from './Icono';
 
 interface Aviso {
   id: string;
@@ -13,6 +14,15 @@ interface Aviso {
 }
 
 const CADA_MS = 60_000;
+
+/** Icono por tipo de aviso: los que piden algo (plazo, jornada) como advertencia; el resto, información. */
+const ICONO_AVISO: Record<Aviso['tipo'], NombreIcono> = {
+  jornada_abierta: 'informacion',
+  plazo_proximo: 'advertencia',
+  partido_auto_resuelto: 'informacion',
+  torneo_terminado: 'exito',
+  dorsal_asignado: 'informacion',
+};
 
 /**
  * Bandeja de avisos del modo asíncrono (T117; FR-056b). Se recarga al montarse, cada minuto y cada vez
@@ -45,6 +55,7 @@ export function BandejaAvisos({ actualizar = 0 }: { actualizar?: number }) {
   return (
     <div className="bandeja-avisos">
       <button type="button" className="secundario" aria-expanded={abierta} onClick={() => setAbierta(!abierta)}>
+        <Icono nombre="informacion" />
         Avisos{noLeidos > 0 && <span className="contador" aria-label={`${noLeidos} sin leer`}>{noLeidos}</span>}
       </button>
       {abierta && (
@@ -52,6 +63,7 @@ export function BandejaAvisos({ actualizar = 0 }: { actualizar?: number }) {
           {avisos.length === 0 && <li className="nota">No tienes avisos.</li>}
           {avisos.map((a) => (
             <li key={a.id} className={a.leido ? 'leido' : ''}>
+              <Icono nombre={ICONO_AVISO[a.tipo]} etiqueta={a.leido ? 'Leído' : 'Sin leer'} />
               <Link to={`/partidas/${a.partidaId}/torneo`} onClick={() => void marcarLeido(a)}>
                 {a.texto}
               </Link>

@@ -13,13 +13,14 @@ import { Sala } from '../pantallas/Sala';
 import { Perfil } from '../pantallas/Perfil';
 import { Torneo } from '../pantallas/Torneo';
 import { Marco } from './Marco';
+import { PantallaCargando } from '../componentes/Esqueleto';
 
 /** Pantallas de prueba: solo se incluyen en desarrollo. */
 const PruebasCartas = import.meta.env.DEV ? lazy(() => import('../pantallas/PruebasCartas').then((m) => ({ default: m.PruebasCartas }))) : null;
 
 function ConSesion({ children }: { children: ReactNode }) {
   const { usuario, cargando } = useSesion();
-  if (cargando) return <p className="cargando">Cargando…</p>;
+  if (cargando) return <PantallaCargando forma="filas" />;
   if (!usuario) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
             {
               path: '/_pruebas/cartas',
               element: (
-                <Suspense fallback={<p className="cargando">Cargando…</p>}>
+                <Suspense fallback={<PantallaCargando forma="cartas" />}>
                   <PruebasCartas />
                 </Suspense>
               ),

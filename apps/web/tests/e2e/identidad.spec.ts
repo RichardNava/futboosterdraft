@@ -24,7 +24,7 @@ test('nombre: «Los Halcones» en la sala aparece en el draft, la clasificación
   // Sala: paso «Nombre del equipo», con contador y errores en línea.
   const campo = page.getByRole('textbox', { name: 'Nombre del equipo' });
   await campo.fill('Ab');
-  await expect(page.getByText('Mínimo 3 caracteres')).toBeVisible();
+  await expect(page.getByText('El nombre del equipo debe tener entre 3 y 24 caracteres.')).toBeVisible();
   await campo.fill('Los Halcones');
   await expect(page.getByText(/12\/24 caracteres/)).toBeVisible();
   await page.getByRole('button', { name: 'Guardar nombre' }).click();
@@ -76,7 +76,7 @@ test('equipación: rayas verticales blancas y rojas; la vista previa y la chapa 
   await segunda.getByLabel('Color 1').fill('#1030d0');
   await expect(page.getByText('se parecen demasiado')).toHaveCount(0);
   await page.getByRole('button', { name: 'Guardar equipaciones' }).click();
-  await expect(page.getByText('Equipaciones guardadas.')).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'Equipaciones guardadas' })).toBeVisible();
   const patron = await primera.locator('svg.camiseta').getAttribute('data-patron');
   expect(patron).toMatch(/^rayas:#ffffff@/);
 
@@ -100,7 +100,7 @@ test('perfil: «Mi perfil» guarda los valores por defecto', async ({ page }) =>
   await page.getByLabel('Nombre del equipo').fill('Las Águilas');
   await expect(page.locator('[data-principal]')).toHaveText('Guardar');
   await page.locator('[data-principal]').click();
-  await expect(page.getByText('Perfil guardado.')).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'Perfil guardado' })).toBeVisible();
   await page.reload();
   await expect(page.getByLabel('Nombre del equipo')).toHaveValue('Las Águilas');
 });

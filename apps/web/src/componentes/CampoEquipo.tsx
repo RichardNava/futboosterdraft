@@ -4,6 +4,9 @@ import type { CartaResumen } from './CartaJugador';
 import { CartaJugador } from './CartaJugador';
 import type { DestinoSoltar, EstadoCampo } from './campoEquipoEstado';
 import { VistaCarta } from './VistaCarta';
+import { contornoSobreLienzo } from './colores';
+import { NombreRecortado } from './NombreRecortado';
+import { MediaEquipo, mediaEquipo } from './MediaEquipo';
 
 /** A partir de este desplazamiento (px) un gesto es un arrastre y no un clic. */
 const UMBRAL_ARRASTRE = 5;
@@ -198,11 +201,11 @@ export function CampoEquipo(props: Props) {
           onPointerDown={empezar(jugadorId)}
           onKeyDown={alTeclado(jugadorId)}
         >
-          <span className="chapa" style={{ background: colores.principal, color: colores.secundario }}>
+          <span className={contornoSobreLienzo(colores.principal) ? 'chapa con-contorno' : 'chapa'} style={{ background: colores.principal, color: colores.secundario }}>
             {dorsales?.[jugadorId] ?? ''}
           </span>
           <span className="ficha-equipo-posicion">{posicion}</span>
-          <span className="ficha-equipo-nombre">{j.apellidos.split(' ')[0]}</span>
+          <NombreRecortado texto={j.apellidos.split(' ')[0] ?? j.nombre} className="ficha-equipo-nombre" />
           <span className="ficha-equipo-media">
             {Math.round(ef.media)}
             {penal > 0 && <span className="badge-fuera"> −{penal} %</span>}
@@ -239,9 +242,14 @@ export function CampoEquipo(props: Props) {
 
   return (
     <div className={`campo-equipo modo-${modo}`}>
-      <div ref={campo} className="campo campo-unico" aria-label="Campo del equipo" data-testid="campo-equipo">
-        {colocacion.titulares.map((t) => fichaCampo(t.jugadorId, t.x, t.y, t.posicionEfectiva, t.casillaId))}
-        {enVuelo && arrastre && <span className="marca-destino" style={{ left: `${(enVuelo.y / ANCHO_CAMPO) * 100}%`, bottom: `${(enVuelo.x / LARGO_CAMPO) * 100}%` }} aria-hidden="true" />}
+      <div className="campo-equipo-principal">
+        {/* En Formación, la media del once sobre el campo, en estrellas y en cifra (spec 004, FR-060). */}
+        {modo === 'preparacion' && <MediaEquipo media={mediaEquipo(colocacion, jugadores, parametros)} />}
+        <div ref={campo} className="campo campo-unico" aria-label="Campo del equipo" data-testid="campo-equipo">
+          <LineasCampo />
+          {colocacion.titulares.map((t) => fichaCampo(t.jugadorId, t.x, t.y, t.posicionEfectiva, t.casillaId))}
+          {enVuelo && arrastre && <span className="marca-destino" style={{ left: `${(enVuelo.y / ANCHO_CAMPO) * 100}%`, bottom: `${(enVuelo.x / LARGO_CAMPO) * 100}%` }} aria-hidden="true" />}
+        </div>
       </div>
       <div className="campo-equipo-lateral">
         <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
@@ -263,5 +271,28 @@ export function CampoEquipo(props: Props) {
         </span>
       )}
     </div>
+  );
+}
+
+/**
+ * Líneas de cal del campo en vertical, con la portería propia abajo (spec 004, FR-043): banda, medio campo, círculo
+ * central, áreas, puntos de penalti y medias lunas, a escala reglamentaria sobre 64 × 100. Decorativas.
+ */
+function LineasCampo() {
+  return (
+    <svg className="campo-lineas" viewBox="0 0 64 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <rect x="1" y="1" width="62" height="98" />
+      <path d="M1 50h62" />
+      <circle cx="32" cy="50" r="8.5" />
+      <circle cx="32" cy="50" r="0.6" className="punto" />
+      <rect x="12.5" y="1" width="39" height="15.5" />
+      <rect x="22" y="1" width="20" height="5.2" />
+      <circle cx="32" cy="11.2" r="0.6" className="punto" />
+      <path d="M25.6 16.5a8.5 8.5 0 0 0 12.8 0" />
+      <rect x="12.5" y="83.5" width="39" height="15.5" />
+      <rect x="22" y="93.8" width="20" height="5.2" />
+      <circle cx="32" cy="88.8" r="0.6" className="punto" />
+      <path d="M25.6 83.5a8.5 8.5 0 0 1 12.8 0" />
+    </svg>
   );
 }

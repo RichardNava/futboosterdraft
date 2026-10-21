@@ -9,7 +9,8 @@ const ETIQUETA_DISENO: Record<DisenoCamiseta, string> = {
   mitades: 'Mitades',
 };
 
-const COLOR_NUEVO = ['#ffffff', '#202020', '#f0c000'];
+/** Colores que toma una equipación al añadirle un segundo o tercer color. */
+const COLOR_NUEVO = ['#ffffff', '#202020', '#f0c000']; // lint-tokens: datos de equipación
 
 interface Props {
   equipaciones: Equipaciones;

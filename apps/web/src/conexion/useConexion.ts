@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { cerrarAviso, mostrarAviso } from '../estado/avisos';
 import { usePartidaActiva } from '../estado/partidaActiva';
 import { useSesion } from '../estado/sesion';
 import { mantenerConexionInvitado } from './activa';
@@ -8,6 +9,8 @@ export interface EstadoServidor {
   fase: 'sala' | 'draft' | 'preparacion' | 'partido' | 'torneo';
   vista: any; // eslint-disable-line @typescript-eslint/no-explicit-any -- la forma depende de la fase
 }
+
+const AVISO_CONEXION = 'conexion';
 
 /**
  * Conexión en tiempo real a una partida. Devuelve la conexión, la última instantánea `estado` y si
@@ -42,6 +45,30 @@ export function useConexion(partidaId: string | undefined, alMensaje?: (m: Mensa
       oyente.current?.(m);
     });
     const quitarConexion = c.alCambiarConexion(setConectada);
+    // Aviso de conexión perdida (spec 004, FR-026; contracts/ui.md §8): advertencia mientras se reintenta y error si
+    // ya no se puede reintentar. Solo tras haber conectado una vez.
+    let haConectado = false;
+    const quitarAviso = c.alCambiarConexion((ok) => {
+      if (ok) {
+        haConectado = true;
+        cerrarAviso(AVISO_CONEXION);
+        return;
+      }
+      if (!haConectado) return;
+      if (c.sinReintento) {
+        mostrarAviso('error', 'Sin conexión con el servidor. Recarga la página; si sigue igual, vuelve a iniciar sesión.', {
+          id: AVISO_CONEXION,
+          persistente: true,
+          accion: { etiqueta: 'Recargar', onClick: () => window.location.reload() },
+        });
+      } else {
+        mostrarAviso('advertencia', 'Sin conexión con el servidor. Reintentando…', {
+          id: AVISO_CONEXION,
+          persistente: true,
+          accion: { etiqueta: 'Reintentar ahora', onClick: () => c.reintentarAhora() },
+        });
+      }
+    });
     c.conectar();
     setConexion(c);
     // Un invitado mantiene abierta la conexión de su partida mientras navega por otras secciones.
@@ -49,6 +76,8 @@ export function useConexion(partidaId: string | undefined, alMensaje?: (m: Mensa
     return () => {
       quitarMensajes();
       quitarConexion();
+      quitarAviso();
+      cerrarAviso(AVISO_CONEXION);
       usePartidaActiva.getState().olvidarConexion(c);
       c.cerrar();
     };

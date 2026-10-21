@@ -10,7 +10,7 @@
     "preinstall": "npx only-allow pnpm",
     "dev": "pnpm --parallel --filter @fbd/server --filter @fbd/web dev",
     "build": "pnpm -r build",
-    "lint": "eslint .",
+    "lint": "eslint . && pnpm --filter @fbd/web lint:tokens",
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
     "test:integration": "pnpm --filter @fbd/server test:integration",

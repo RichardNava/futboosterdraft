@@ -1,0 +1,1328 @@
+/*
+ * Componentes comunes (spec 004, FR-011, research R7 y data-model §2; revisión R16: FR-041, FR-042, FR-047):
+ * elementos y clases que comparten todas las pantallas, con sus estados (normal, señalado, pulsado, enfocado y
+ * desactivado). Solo tokens de tokens.css. Los estilos base van en `:where()` (especificidad 0) para que cualquier
+ * clase de una pantalla los ajuste.
+ */
+
+/* ---------- Base del documento ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-lienzo-hondo);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  /* Contexto de apilamiento propio: la atmósfera (z-index: -1) se pinta sobre este fondo. */
+  isolation: isolate;
+  background: var(--color-lienzo);
+  color: var(--color-texto);
+  font-family: var(--letra-texto);
+  font-size: var(--texto-cuerpo);
+  line-height: var(--interlineado-cuerpo);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accion);
+  color: var(--color-accion-texto);
+}
+
+/* ---------- Atmósfera del estadio (FR-041): fija detrás de todo, decorativa ---------- */
+
+.ambiente {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--atmosfera);
+  pointer-events: none;
+}
+
+/* Haz de los focos desde lo alto. */
+.ambiente::before {
+  content: '';
+  position: absolute;
+  inset: -10% -20% 30%;
+  background: var(--haz-foco);
+  opacity: 0.9;
+}
+
+/* Grano de película sobre todo el lienzo. */
+.ambiente::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grano);
+  background-size: 180px;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+}
+
+/* Líneas de cal del campo en perspectiva, al pie de la pantalla. */
+.ambiente-cal {
+  position: absolute;
+  left: 50%;
+  bottom: -32vh;
+  width: max(1400px, 130vw);
+  height: auto;
+  transform: translateX(-50%) perspective(900px) rotateX(64deg);
+  transform-origin: 50% 100%;
+  fill: none;
+  stroke: var(--cal);
+  stroke-width: 3;
+}
+
+/* ---------- Tipografía (FR-005, FR-010) ---------- */
+
+h1,
+h2,
+h3 {
+  margin: 0 0 var(--espacio-4);
+  color: var(--color-texto);
+  text-wrap: balance;
+}
+
+h1 {
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-grande);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  line-height: var(--interlineado-titulo-grande);
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: var(--titulo-pequeno);
+  font-weight: 600;
+  line-height: var(--interlineado-titulo-pequeno);
+  letter-spacing: -0.005em;
+}
+
+h3 {
+  font-size: var(--texto-subtitulo);
+  font-weight: 600;
+  line-height: var(--interlineado-subtitulo);
+}
+
+p,
+li,
+label,
+legend,
+dd {
+  overflow-wrap: break-word;
+}
+
+p {
+  max-width: var(--ancho-lectura);
+  margin: 0 0 var(--espacio-4);
+}
+
+strong {
+  font-weight: 600;
+}
+
+a {
+  color: var(--color-texto);
+  text-decoration: underline;
+  text-decoration-color: var(--color-texto-suave);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: var(--color-texto);
+}
+
+.etiqueta,
+.nota,
+.lema,
+.exito,
+.texto-suave {
+  color: var(--color-texto-suave);
+}
+
+.nota {
+  font-size: var(--texto-pequeno);
+  line-height: var(--interlineado-pequeno);
+}
+
+.exito {
+  font-weight: 500;
+}
+
+/* Cifra o titular de cartel en línea (marcadores, contadores). */
+.cifra-cartel {
+  font-family: var(--letra-cartel);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* Iconos SVG en línea (Icono.tsx): alineados con el texto. */
+.icono {
+  flex: none;
+  vertical-align: -0.125em;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Foco (FR-030) ---------- */
+
+:focus-visible {
+  outline: var(--contorno-foco) solid var(--color-accion);
+  outline-offset: 2px;
+}
+
+/* ---------- Botones (FR-011, FR-012; research R7) ---------- */
+
+:where(button:not(.carta *), a.boton) {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  min-height: var(--espacio-10);
+  padding: var(--espacio-2) var(--espacio-4);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio);
+  background: var(--vidrio-claro);
+  color: var(--color-texto);
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--sombra-boton);
+  transition:
+    background-color var(--duracion-corta) var(--curva-salida),
+    border-color var(--duracion-corta) var(--curva-salida),
+    color var(--duracion-corta) var(--curva-salida),
+    transform var(--duracion-corta) var(--curva-salida);
+}
+
+:where(button:not(.carta *), a.boton):hover {
+  border-color: var(--color-borde-control);
+  background: var(--color-elevado);
+}
+
+:where(button:not(.carta *), a.boton):active {
+  background: var(--color-divisor);
+  transform: translateY(1px);
+}
+
+:where(button:not(.carta *), a.boton):disabled,
+:where(button:not(.carta *), a.boton)[aria-disabled='true'] {
+  border-color: var(--color-apagado);
+  background: transparent;
+  color: var(--color-texto-suave);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+a.boton,
+a.boton:hover {
+  text-decoration: none;
+}
+
+/* Secundario lima: como mucho uno por pantalla, la alternativa directa al principal (FR-002). */
+button.alternativa,
+a.boton.alternativa {
+  border-color: var(--color-accion);
+  background: var(--color-accion-tenue);
+  color: var(--color-accion);
+}
+
+button.alternativa:hover,
+a.boton.alternativa:hover {
+  border-color: var(--color-accion-claro);
+  background: var(--color-accion-tenue);
+  color: var(--color-accion-claro);
+}
+
+button.texto,
+a.boton.texto {
+  border-color: transparent;
+  padding-inline: var(--espacio-2);
+  background: transparent;
+  box-shadow: none;
+}
+
+button.texto:hover,
+a.boton.texto:hover {
+  border-color: transparent;
+  background: var(--vidrio-claro);
+}
+
+button.peligro,
+a.boton.peligro {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+/*
+ * Botón principal: el único relleno lima de la pantalla (FR-002, FR-012; 003/FR-007), con luz propia (FR-047).
+ * El color de fondo es el lima exacto; el degradado y el brillo van como imagen y sombra encima.
+ */
+.boton-principal,
+a.boton.boton-principal {
+  min-height: var(--boton-principal-alto);
+  min-width: 12rem;
+  padding: var(--espacio-3) var(--espacio-8);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radio);
+  background-color: var(--color-accion);
+  background-image: var(--degradado-accion);
+  color: var(--color-accion-texto);
+  font-family: var(--letra-cartel);
+  font-size: 22px;
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  box-shadow: var(--resplandor-accion);
+  transition:
+    box-shadow var(--duracion-media) var(--curva-salida),
+    transform var(--duracion-corta) var(--curva-salida),
+    filter var(--duracion-corta) var(--curva-salida);
+}
+
+/* Destello que cruza el botón al señalarlo. */
+.boton-principal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, var(--color-texto) 50%, transparent 70%);
+  opacity: 0.35;
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.boton-principal:hover:not([aria-disabled='true'], :disabled),
+a.boton.boton-principal:hover {
+  background-color: var(--color-accion);
+  background-image: var(--degradado-accion);
+  box-shadow: var(--resplandor-accion-fuerte);
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.boton-principal:hover:not([aria-disabled='true'], :disabled)::after {
+  transform: translateX(120%);
+  transition: transform var(--duracion-larga) var(--curva-salida);
+}
+
+.boton-principal:active:not([aria-disabled='true'], :disabled) {
+  background-color: var(--color-accion);
+  transform: translateY(1px);
+}
+
+/* Sobre el lima, el contorno lima se separa con un anillo interior del color del lienzo (≥ 3:1). */
+.boton-principal:focus-visible {
+  box-shadow: var(--anillo-foco-interior);
+}
+
+.boton-principal[aria-disabled='true'],
+.boton-principal:disabled {
+  border: 0;
+  background-color: var(--color-apagado);
+  background-image: none;
+  color: var(--color-texto-suave);
+  box-shadow: none;
+  filter: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+/* ---------- Campos (FR-029: borde de control ≥ 3:1) ---------- */
+
+:where(input:not([type='checkbox'], [type='radio'], [type='color'], [type='range']), select, textarea) {
+  min-height: var(--espacio-10);
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio);
+  background: var(--color-lienzo);
+  color: var(--color-texto);
+  font: inherit;
+  transition:
+    border-color var(--duracion-corta) var(--curva-salida),
+    box-shadow var(--duracion-corta) var(--curva-salida);
+}
+
+:where(input, select, textarea):hover:not(:disabled) {
+  border-color: var(--color-texto-suave);
+}
+
+:where(input, select, textarea):disabled {
+  border-color: var(--color-apagado);
+  color: var(--color-texto-suave);
+  cursor: not-allowed;
+}
+
+::placeholder {
+  color: var(--color-texto-suave);
+  opacity: 1;
+}
+
+input[aria-invalid='true'],
+select[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+  border-color: var(--color-error);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-accion);
+}
+
+input[type='color'] {
+  width: var(--espacio-14);
+  height: var(--espacio-10);
+  padding: var(--espacio-1);
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio);
+  background: var(--color-elevado);
+  cursor: pointer;
+}
+
+label {
+  font-weight: 500;
+}
+
+/* Opciones de radio como losetas seleccionables (modo de partido): icono, nombre y detalle. */
+.selector-modo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--espacio-3);
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.selector-modo legend {
+  margin-bottom: var(--espacio-2);
+  padding: 0;
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+.selector-modo label {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--espacio-1) var(--espacio-3);
+  padding: var(--espacio-4);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio-panel);
+  background: var(--vidrio-claro);
+  font-weight: 400;
+  cursor: pointer;
+  transition:
+    border-color var(--duracion-corta) var(--curva-salida),
+    background-color var(--duracion-corta) var(--curva-salida);
+}
+
+.selector-modo label:hover {
+  border-color: var(--color-borde-control);
+}
+
+.selector-modo label:has(input:checked) {
+  border-color: var(--color-accion);
+  background: var(--color-accion-tenue);
+}
+
+/* El radio sigue presente para el teclado y los lectores, en la esquina de la loseta. */
+.selector-modo input {
+  position: absolute;
+  top: var(--espacio-3);
+  right: var(--espacio-3);
+}
+
+.selector-modo-icono {
+  grid-row: span 2;
+  width: 44px;
+  height: 44px;
+  padding: 9px;
+  border-radius: 50%;
+  background: var(--color-elevado);
+  color: var(--color-texto);
+}
+
+.selector-modo label:has(input:checked) .selector-modo-icono {
+  color: var(--color-accion);
+}
+
+.selector-modo-texto {
+  display: grid;
+  gap: 2px;
+  padding-right: var(--espacio-6);
+}
+
+.selector-modo-texto strong {
+  font-family: var(--letra-cartel);
+  font-size: var(--texto-subtitulo);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+/* ---------- Pestañas y selector segmentado (research R7) ---------- */
+
+.pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-1);
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 var(--espacio-5);
+  padding: var(--espacio-1);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel);
+  background: var(--vidrio);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+.pestanas > button,
+.pestanas > [role='tab'] {
+  min-height: var(--espacio-10);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radio);
+  background: transparent;
+  color: var(--color-texto-suave);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.pestanas > button:hover,
+.pestanas > [role='tab']:hover {
+  background: var(--vidrio-claro);
+  color: var(--color-texto);
+}
+
+.pestanas > [aria-selected='true'],
+.pestanas > [aria-pressed='true'] {
+  border-bottom-color: var(--color-accion);
+  background: var(--color-elevado);
+  color: var(--color-texto);
+  font-weight: 600;
+  box-shadow: var(--sombra-boton);
+}
+
+.segmentado {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio);
+  background: var(--color-lienzo);
+}
+
+.segmentado > button {
+  min-height: var(--espacio-8);
+  padding: var(--espacio-1) var(--espacio-3);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radio);
+  background: transparent;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  box-shadow: none;
+}
+
+.segmentado > button[aria-pressed='true'],
+.segmentado > button[aria-checked='true'] {
+  border-bottom-color: var(--color-accion);
+  background: var(--color-elevado);
+  font-weight: 600;
+}
+
+/* ---------- Paneles y diálogos (FR-007, FR-042) ---------- */
+
+.panel,
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: var(--espacio-5);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel);
+  background-color: var(--vidrio);
+  background-image: var(--brillo-superior);
+  box-shadow: var(--sombra-panel);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+/* Panel dentro de panel: un escalón más claro, sin desenfoque ni sombra propios. */
+.panel .panel,
+.panel fieldset,
+fieldset fieldset,
+.modal fieldset {
+  background-color: var(--vidrio-claro);
+  background-image: none;
+  border-color: var(--borde-vidrio);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Panel protagonista: borde con luz lima en la esquina. */
+.panel.destacado {
+  background-color: transparent;
+  background-image: var(--degradado-panel-destacado);
+  border-color: var(--borde-vidrio-fuerte);
+}
+
+fieldset {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+legend {
+  padding: 0 var(--espacio-2);
+  font-weight: 600;
+}
+
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: var(--espacio-4);
+  background: var(--color-velo);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: velo-entra var(--duracion-media) var(--curva-salida);
+}
+
+.modal {
+  position: relative;
+  width: min(480px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  padding: var(--espacio-6);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio-grande);
+  background-color: var(--vidrio-fuerte);
+  background-image: var(--brillo-superior);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-elevada);
+  animation: modal-entra var(--duracion-media) var(--curva-salida);
+}
+
+dialog.modal {
+  margin: auto;
+}
+
+dialog::backdrop {
+  background: var(--color-velo);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.modal-cerrar {
+  position: absolute;
+  top: var(--espacio-2);
+  right: var(--espacio-2);
+}
+
+@keyframes velo-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+  margin: var(--espacio-4) 0;
+}
+
+/* Sección plegable: el único despliegue animado de la pantalla (FR-028). */
+.seccion-plegable {
+  margin-top: var(--espacio-4);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel);
+  background-color: var(--vidrio);
+  background-image: var(--brillo-superior);
+  box-shadow: var(--sombra-panel);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+.seccion-plegable > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: var(--objetivo-tactil);
+  padding: var(--espacio-2) var(--espacio-5);
+  border-radius: var(--radio-panel);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.seccion-plegable > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevrón propio que gira al abrir. */
+.seccion-plegable > summary::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-left: auto;
+  border-right: 2px solid var(--color-texto-suave);
+  border-bottom: 2px solid var(--color-texto-suave);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform var(--duracion-media) var(--curva-salida);
+}
+
+.seccion-plegable[open] > summary::after {
+  transform: rotate(-135deg) translateY(-2px);
+}
+
+.seccion-plegable > summary:hover {
+  background: var(--vidrio-claro);
+}
+
+.seccion-plegable[open] > summary {
+  border-bottom: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel) var(--radio-panel) 0 0;
+}
+
+.seccion-plegable > :not(summary) {
+  margin-inline: var(--espacio-5);
+}
+
+.seccion-plegable > :last-child:not(summary) {
+  margin-bottom: var(--espacio-5);
+}
+
+/* ---------- Tablas (FR-021) ---------- */
+
+.tabla,
+.clasificacion,
+.estadisticas {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla caption,
+.clasificacion caption,
+.estadisticas caption {
+  padding-bottom: var(--espacio-2);
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+  text-align: left;
+}
+
+:is(.tabla, .clasificacion, .estadisticas) :is(th, td) {
+  padding: var(--espacio-2) var(--espacio-3);
+  border-bottom: 1px solid var(--borde-vidrio);
+  text-align: right;
+  white-space: nowrap;
+}
+
+:is(.tabla, .clasificacion, .estadisticas) thead th {
+  border-bottom-color: var(--color-divisor);
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+  font-weight: 500;
+}
+
+:is(.tabla, .clasificacion) th[scope='row'],
+:is(.tabla, .clasificacion) .col-texto {
+  text-align: left;
+  font-weight: 500;
+}
+
+:is(.tabla, .clasificacion, .estadisticas) tbody tr {
+  transition: background-color var(--duracion-corta) var(--curva-salida);
+}
+
+:is(.tabla, .clasificacion, .estadisticas) tbody tr:hover {
+  background: var(--vidrio-claro);
+}
+
+/* Fila del participante: luz lima tenue y barra lima a la izquierda (contracts/ui.md §6). */
+:is(.tabla, .clasificacion) tr:is(.fila-propia, .propia) {
+  background: var(--color-accion-tenue);
+}
+
+:is(.tabla, .clasificacion) tr:is(.fila-propia, .propia) > :first-child {
+  box-shadow: var(--barra-propia);
+}
+
+/* Contenedor de una tabla ancha: se desplaza la tabla, nunca la página (FR-021, FR-031). */
+.tabla-desplazable {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radio);
+}
+
+/* ---------- Avisos (FR-003, FR-026, FR-027; contracts/ui.md §9) ---------- */
+
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-3);
+  max-width: none;
+  margin: 0 0 var(--espacio-4);
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--borde-vidrio);
+  border-left: 3px solid var(--color-borde-control);
+  border-radius: var(--radio-panel);
+  background-color: var(--vidrio-fuerte);
+  background-image: var(--brillo-superior);
+  color: var(--color-texto);
+  box-shadow: var(--sombra-panel);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+.aviso > .icono {
+  margin-top: 0.2em;
+}
+
+.aviso-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.aviso-texto > :last-child {
+  margin-bottom: 0;
+}
+
+.aviso.advertencia {
+  border-left-color: var(--color-advertencia);
+}
+
+.aviso.advertencia > .icono {
+  color: var(--color-advertencia);
+}
+
+.aviso.error {
+  border-left-color: var(--color-error);
+  color: var(--color-texto);
+}
+
+.aviso.error > .icono {
+  color: var(--color-error);
+}
+
+.aviso-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-2);
+}
+
+/* Mensaje de error en línea: texto en el color de error, siempre con icono (FR-003). */
+.error {
+  color: var(--color-error);
+  font-weight: 500;
+}
+
+p.error,
+div.error,
+span.error {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espacio-2);
+}
+
+:is(p, div, span).error::before {
+  content: '';
+  flex: none;
+  width: 1em;
+  height: 1em;
+  align-self: center;
+  background: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M9 9l6 6M15 9l-6 6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+/* Región de avisos emergentes: fija sobre la barra principal, sin taparla (research R12). */
+.region-avisos {
+  position: fixed;
+  right: var(--espacio-4);
+  bottom: calc(var(--barra-principal-alto) + var(--espacio-4));
+  z-index: 30;
+  display: grid;
+  gap: var(--espacio-2);
+  width: min(400px, calc(100vw - 2 * var(--espacio-4)));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.region-avisos > * {
+  pointer-events: auto;
+}
+
+.region-avisos .aviso {
+  margin: 0;
+  box-shadow: var(--sombra-elevada);
+  animation: aviso-entra var(--duracion-media) var(--curva-salida);
+}
+
+.region-avisos .mas-avisos {
+  justify-self: end;
+  padding: var(--espacio-1) var(--espacio-3);
+  border-radius: var(--radio);
+  background: var(--color-panel);
+  font-size: var(--texto-pequeno);
+}
+
+@keyframes aviso-entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ---------- Insignias de estado (FR-023) ---------- */
+
+.insignia,
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  padding: 0 var(--espacio-2);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio-pildora);
+  background: var(--vidrio-claro);
+  font-size: var(--texto-pequeno);
+  font-weight: 500;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.insignia {
+  color: var(--color-texto);
+}
+
+.insignia.suave {
+  color: var(--color-texto-suave);
+}
+
+.insignia.advertencia {
+  border-color: var(--color-advertencia);
+  color: var(--color-advertencia);
+}
+
+/* ---------- Estado vacío y esqueletos (FR-024, FR-025) ---------- */
+
+.estado-vacio {
+  display: grid;
+  justify-items: start;
+  gap: var(--espacio-3);
+  padding: var(--espacio-8) var(--espacio-6);
+  border: 1px dashed var(--borde-vidrio-fuerte);
+  border-radius: var(--radio-panel);
+  background: var(--vidrio-claro);
+}
+
+.estado-vacio p {
+  margin: 0;
+  color: var(--color-texto-suave);
+}
+
+.esqueleto {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.esqueleto-bloque {
+  border-radius: var(--radio-panel);
+  background: linear-gradient(100deg, var(--color-panel) 30%, var(--color-elevado) 50%, var(--color-panel) 70%);
+  background-size: 300% 100%;
+  animation: esqueleto-barrido 1.6s ease-in-out infinite;
+}
+
+.esqueleto-filas .esqueleto-bloque {
+  height: var(--espacio-10);
+}
+
+.esqueleto-cartas {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+}
+
+.esqueleto-cartas .esqueleto-bloque {
+  aspect-ratio: 5 / 7;
+}
+
+.esqueleto-campo .esqueleto-bloque {
+  aspect-ratio: 64 / 100;
+  max-width: 420px;
+}
+
+@keyframes esqueleto-barrido {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* ---------- Nombres recortados (research R9) ---------- */
+
+.nombre-recortado {
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.nombre-recortado.dos-lineas {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.etiqueta-nombre[popover] {
+  position: fixed;
+  inset: auto;
+  max-width: min(320px, calc(100vw - 2 * var(--espacio-4)));
+  margin: 0;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio);
+  background: var(--color-elevado);
+  color: var(--color-texto);
+  font-size: var(--texto-pequeno);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  box-shadow: var(--sombra-elevada);
+  pointer-events: none;
+}
+
+/* ---------- Barra de navegación (FR-012a, FR-044; contracts/ui.md §2) ---------- */
+
+.barra-navegacion {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2) var(--espacio-6);
+  min-height: var(--barra-navegacion-alto);
+  padding: 0 var(--espacio-4);
+  border-bottom: 1px solid var(--borde-vidrio);
+  background-color: var(--vidrio-fuerte);
+  box-shadow: var(--sombra-barra);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+@media (min-width: 720px) {
+  .barra-navegacion {
+    padding-inline: var(--espacio-6);
+  }
+}
+
+/* Marca: escudo y nombre del juego en cartel. */
+.marca {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--espacio-2);
+  color: var(--color-texto);
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+}
+
+.marca .escudo {
+  filter: var(--sombra-escudo);
+  transition: transform var(--duracion-media) var(--curva-rebote);
+}
+
+.marca:hover .escudo {
+  transform: rotate(-6deg) scale(1.06);
+}
+
+.enlaces-navegacion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.enlaces-navegacion a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: var(--espacio-10);
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio);
+  color: var(--color-texto-suave);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color var(--duracion-corta) var(--curva-salida),
+    background-color var(--duracion-corta) var(--curva-salida);
+}
+
+.enlaces-navegacion a:hover {
+  background: var(--vidrio-claro);
+  color: var(--color-texto);
+}
+
+/* Destino activo: texto blanco y barra lima con luz bajo el enlace (FR-002). */
+.enlaces-navegacion a[aria-current='page'] {
+  color: var(--color-texto);
+  font-weight: 600;
+}
+
+.enlaces-navegacion a[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: var(--espacio-3);
+  right: var(--espacio-3);
+  bottom: -11px;
+  height: 2px;
+  border-radius: var(--radio-pildora);
+  background: var(--color-accion);
+  box-shadow: var(--resplandor-accion);
+}
+
+.navegacion-escritorio {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  min-width: 0;
+}
+
+.menu-navegacion {
+  display: none;
+  margin-left: auto;
+}
+
+@media (max-width: 959.98px) {
+  .navegacion-escritorio {
+    display: none;
+  }
+
+  .menu-navegacion {
+    display: block;
+  }
+}
+
+/* Panel del menú móvil: <dialog> modal que entra desde la derecha (research R8). */
+.panel-menu {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(320px, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: var(--espacio-4);
+  border: 0;
+  border-left: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: 0;
+  background: var(--atmosfera);
+  color: var(--color-texto);
+}
+
+@media (max-width: 480px) {
+  .panel-menu {
+    width: 100vw;
+    border-left: 0;
+  }
+}
+
+.panel-menu[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  animation: menu-entra var(--duracion-media) var(--curva-salida);
+}
+
+.panel-menu-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-menu .enlaces-navegacion {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--espacio-1);
+}
+
+.panel-menu .enlaces-navegacion a {
+  min-height: var(--espacio-14);
+  padding-inline: var(--espacio-4);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel);
+  background: var(--vidrio);
+  color: var(--color-texto);
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+}
+
+.panel-menu .enlaces-navegacion a[aria-current='page'] {
+  border-color: var(--color-accion);
+}
+
+.panel-menu .enlaces-navegacion a[aria-current='page']::after {
+  display: none;
+}
+
+@keyframes menu-entra {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+/* Franja compacta del partido 2D: solo iconos, 40 px como máximo (003). */
+.barra-navegacion.compacta {
+  min-height: 0;
+  max-height: var(--espacio-10);
+  padding: 0 var(--espacio-3);
+  gap: var(--espacio-2);
+}
+
+.barra-navegacion.compacta .marca {
+  font-size: var(--texto-subtitulo);
+}
+
+/* En la franja estrecha, la marca se queda en el escudo (el nombre sigue disponible para los lectores). */
+@media (max-width: 479.98px) {
+  .barra-navegacion.compacta .marca > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.barra-navegacion.compacta .enlaces-navegacion a {
+  min-height: var(--espacio-8);
+  padding: var(--espacio-1) var(--espacio-2);
+}
+
+.barra-navegacion.compacta .enlaces-navegacion a[aria-current='page']::after {
+  bottom: -5px;
+}
+
+.barra-navegacion.compacta button {
+  min-height: var(--espacio-8);
+}
+
+/* ---------- Objetivos táctiles (FR-032) ---------- */
+
+@media (pointer: coarse) {
+  :where(button, a.boton, select, summary, [role='button'], [role='tab'], .enlaces-navegacion a, .opcion):not(.carta *),
+  :where(input:not([type='checkbox'], [type='radio'])) {
+    min-height: var(--objetivo-tactil);
+  }
+
+  :where(button, a.boton, [role='button'], [role='tab']):not(.carta *) {
+    min-width: var(--objetivo-tactil);
+  }
+
+  .barra-navegacion.compacta {
+    max-height: none;
+  }
+
+  .pestanas > button,
+  .pestanas > [role='tab'] {
+    min-height: var(--objetivo-tactil);
+  }
+
+  .barra-navegacion.compacta :is(a, button) {
+    min-height: var(--objetivo-tactil);
+  }
+}
+
+/* ---------- Movimiento (FR-028, FR-033, FR-045) ---------- */
+
+/* Movimiento reducido: fuera de las cartas y los sobres (003/FR-015), nada dura más de 100 ms. */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.carta, .carta *, .apertura-sobre, .apertura-sobre *),
+  *:not(.carta, .carta *, .apertura-sobre, .apertura-sobre *)::before,
+  *:not(.carta, .carta *, .apertura-sobre, .apertura-sobre *)::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

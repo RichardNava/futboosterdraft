@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { usePartidaActiva } from '../estado/partidaActiva';
@@ -7,7 +7,14 @@ import { BotonAvanzar } from '../componentes/BotonAvanzar';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { FichaJugador } from '../componentes/FichaJugador';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
+import { Aviso } from '../componentes/Aviso';
+import { Icono } from '../componentes/Icono';
+import { NombreRecortado } from '../componentes/NombreRecortado';
 import { ETIQUETA_DEMARCACION } from '../textos/niveles';
+import { PantallaCargando } from '../componentes/Esqueleto';
+import { CartaMesa } from '../componentes/CartaMesa';
+import { SobreArte } from '../componentes/arte/SobreArte';
+import { useEscalaRejilla } from '../componentes/useEscalaRejilla';
 
 interface Turno {
   ronda: number;
@@ -39,6 +46,8 @@ export function Draft() {
   const [apertura, setApertura] = useState<CartaResumen[] | null>(null);
   /** Turno mostrado ("ronda-turno"): el ack de una elección solo cuenta para el turno en que se envió. */
   const turnoActual = useRef<string | null>(null);
+  /** Hay una elección en camino: el doble clic y el botón no envían dos veces (FR-056). */
+  const enviando = useRef(false);
 
   const { conexion, estado, conectada } = useConexion(partidaId, (m) => {
     if (m.t === 'draft.turno') {
@@ -96,20 +105,30 @@ export function Draft() {
 
   const restante = useCuentaAtras(turno?.venceEn, conexion);
 
-  const confirmar = async () => {
-    if (!conexion || !turno || elegida === null) return;
+  const confirmar = async (jugadorId: number | null = elegida) => {
+    if (!conexion || !turno || jugadorId === null || enviando.current) return;
     setError(null);
     const clave = `${turno.ronda}-${turno.turno}`;
+    enviando.current = true;
     try {
-      const ack = await conexion.enviar({ t: 'draft.elegir', ronda: turno.ronda, turno: turno.turno, jugadorId: elegida });
+      const ack = await conexion.enviar({ t: 'draft.elegir', ronda: turno.ronda, turno: turno.turno, jugadorId });
       // Si el turno ya avanzó (fuimos los últimos en elegir), el ack llega después del sobre nuevo.
       if (turnoActual.current !== clave) return;
-      if (ack.ok) setConfirmada(elegida);
+      if (ack.ok) setConfirmada(jugadorId);
       else setError(ack.error?.mensaje ?? 'No se pudo elegir');
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      enviando.current = false;
     }
   };
+
+  // Doble clic: elige la carta y confirma a la vez, sin pasar por el botón (spec 004, FR-056).
+  const elegirYConfirmar = (jugadorId: number) => {
+    setElegida(jugadorId);
+    void confirmar(jugadorId);
+  };
+
 
   const misPorDemarcacion = useMemo(() => {
     const grupos: Record<string, CartaResumen[]> = { POR: [], DEF: [], MED: [], DEL: [] };
@@ -117,11 +136,31 @@ export function Draft() {
     return grupos;
   }, [turno]);
 
+  // Las cartas del sobre se escalan para caber sin desplazarse (spec 004, FR-046).
+  const zona = useRef<HTMLElement>(null);
+  const rejilla = useRef<HTMLDivElement>(null);
+  useEscalaRejilla(zona, rejilla, { clave: `${turno?.ronda}-${turno?.turno}-${turno?.sobre.cartas.length}-${apertura ? 1 : 0}` });
+
+  // Duración del turno: el mayor tiempo restante visto en él (45 s, o 53 s con la apertura del sobre).
+  const duracion = useRef<{ clave: string; segundos: number }>({ clave: '', segundos: 0 });
+  const claveTurno = turno ? `${turno.ronda}-${turno.turno}` : '';
+  if (restante !== null) {
+    if (duracion.current.clave !== claveTurno) duracion.current = { clave: claveTurno, segundos: restante };
+    else duracion.current.segundos = Math.max(duracion.current.segundos, restante);
+  }
+
   if (terminado) {
     return (
-      <main className="pantalla draft">
-        <h1>Draft terminado</h1>
-        <p>Ya tienes tu plantilla de 24 jugadores.</p>
+      <main className="pantalla draft-fin">
+        <section className="draft-fin-escena" aria-labelledby="titulo-draft-fin">
+          <SobreArte className="draft-fin-sobre" rasgado />
+          <div className="draft-fin-texto">
+            <h1 id="titulo-draft-fin" className="cartel">
+              Draft terminado
+            </h1>
+            <p className="entradilla">Ya tienes tu plantilla de 24 jugadores. Elige el once y la táctica antes del primer partido.</p>
+          </div>
+        </section>
         <BotonAvanzar
           situacion="fin_draft"
           onAvanzar={() => navegar(`/partidas/${partidaId}/alineacion`)}
@@ -130,7 +169,7 @@ export function Draft() {
       </main>
     );
   }
-  if (!turno) return <p className="cargando">{conectada ? 'Esperando el primer sobre…' : 'Conectando…'}</p>;
+  if (!turno) return <PantallaCargando forma="cartas" texto={conectada ? 'Esperando el primer sobre…' : 'Conectando…'} />;
 
   const pendientes = participantes.length - eligieron.length;
   const textoEspera =
@@ -140,80 +179,139 @@ export function Draft() {
         ? `Esperando a ${pendientes} participante${pendientes > 1 ? 's' : ''}…`
         : 'Pasando el sobre…';
 
+  const eleccion = (turno.ronda - 1) * 8 + turno.turno;
+  const urgente = restante !== null && restante <= 10;
+  const progreso = restante !== null && duracion.current.segundos > 0 ? Math.max(0, Math.min(1, restante / duracion.current.segundos)) : 1;
+  const RADIO_RELOJ = 26;
+  const vuelta = 2 * Math.PI * RADIO_RELOJ;
+
   return (
     <main className="pantalla draft">
       {apertura && <AperturaSobre cartas={apertura} onTerminar={() => setApertura(null)} />}
-      <header className="draft-cabecera">
-        <div>
-          <h1>
-            Sobre {turno.ronda} · Turno {turno.turno} de 8
-          </h1>
-          <p className="nota">
-            Las cartas que dejes pasan a tu {turno.direccion === 'izquierda' ? 'izquierda ←' : 'derecha →'}
-          </p>
-        </div>
-        <div className={`reloj ${restante !== null && restante <= 10 ? 'urgente' : ''}`} aria-live="polite">
-          {restante ?? '–'} s
-        </div>
-      </header>
-      {!conectada && <p className="aviso">Sin conexión. Reconectando… Si se acaba el tiempo, se elegirá por ti.</p>}
-      {aviso && (
-        <p className="aviso" role="status">
-          {aviso}{' '}
-          <button type="button" className="secundario" onClick={() => setAviso(null)}>
-            Entendido
-          </button>
-        </p>
-      )}
 
-      {/* La mesa: los asientos con el nombre de cada equipo y quién ha elegido ya (spec 003, FR-044). */}
-      <ol className="mesa-draft" aria-label="Mesa">
-        {participantes.map((p) => (
-          <li key={p.id} className={eligieron.includes(p.id) ? 'eligio' : ''}>
-            {p.nombre}
-            {eligieron.includes(p.id) && <span className="solo-lectores"> (ya ha elegido)</span>}
-          </li>
-        ))}
-      </ol>
+      {/* Las cartas dominan; el contexto va en un carril lateral (arriba y abajo en móvil). Spec 004, FR-018, FR-046. */}
+      <div className="draft-mesa">
+        {/* Mientras dura la apertura, las cartas no se ven por detrás (hallazgo H10); el sitio se conserva. */}
+        <section
+          ref={zona}
+          className="draft-zona"
+          aria-label="Sobre actual"
+          data-desplazable=""
+          style={apertura ? { visibility: 'hidden' } : undefined}
+          aria-hidden={apertura ? true : undefined}
+        >
+          <div ref={rejilla} className="rejilla-cartas" data-cartas={turno.sobre.cartas.length}>
+            {turno.sobre.cartas.map((j) => (
+              <CartaMesa
+                key={j.id}
+                jugador={j}
+                seleccionada={(confirmada ?? elegida) === j.id}
+                onClick={confirmada === null ? () => setElegida(j.id) : undefined}
+                onDobleClick={confirmada === null ? () => elegirYConfirmar(j.id) : undefined}
+                onVerFicha={() => setFicha(j.id)}
+              />
+            ))}
+          </div>
+        </section>
 
-      {/* Mientras dura la apertura, las cartas no se ven por detrás (hallazgo H10); el sitio se conserva. */}
-      <section aria-label="Sobre actual" style={apertura ? { visibility: 'hidden' } : undefined} aria-hidden={apertura ? true : undefined}>
-        <div className="rejilla-cartas">
-          {turno.sobre.cartas.map((j) => (
-            <CartaJugador
-              key={j.id}
-              jugador={j}
-              seleccionada={(confirmada ?? elegida) === j.id}
-              onClick={confirmada === null ? () => setElegida(j.id) : undefined}
-              onVerFicha={() => setFicha(j.id)}
-            />
-          ))}
-        </div>
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
-      </section>
+        <aside className="draft-contexto" aria-label="Contexto del draft">
+          <header className="draft-cabecera">
+            <h1>
+              <span className="draft-sobre">Sobre {turno.ronda}</span> <span className="draft-turno">· Turno {turno.turno} de 8</span>
+            </h1>
+            <p className="eleccion-cartel">Elección {eleccion} de 24</p>
+          </header>
 
-      <section aria-label="Mis elecciones" className="mis-elecciones">
-        <h2>Mi plantilla ({turno.misElecciones.length}/24)</h2>
-        <div className="columnas-demarcacion">
-          {DEMARCACIONES.map((d) => (
-            <div key={d}>
-              <h3>
-                {ETIQUETA_DEMARCACION[d]} ({misPorDemarcacion[d]!.length})
-              </h3>
-              {misPorDemarcacion[d]!.map((j) => (
-                <CartaJugador key={j.id} jugador={j} compacta onVerFicha={() => setFicha(j.id)} />
-              ))}
+          <div className="draft-reloj-fila">
+            <div className={`reloj ${urgente ? 'urgente' : ''}`} aria-live="polite">
+              <svg className="reloj-anillo" viewBox="0 0 64 64" aria-hidden="true">
+                <circle cx="32" cy="32" r={RADIO_RELOJ} className="reloj-pista" />
+                <circle cx="32" cy="32" r={RADIO_RELOJ} className="reloj-avance" strokeDasharray={vuelta} strokeDashoffset={vuelta * (1 - progreso)} />
+              </svg>
+              <span className="reloj-cifra">
+                {urgente && <Icono nombre="advertencia" etiqueta="Quedan pocos segundos" />}
+                {restante ?? '–'}
+                <span className="reloj-unidad"> s</span>
+              </span>
             </div>
-          ))}
-        </div>
-      </section>
+            <p className="draft-paso">
+              <span className={`draft-flecha ${turno.direccion}`} aria-hidden="true">
+                <Icono nombre="flecha" tamano={22} />
+              </span>
+              <span>
+                Las cartas que dejes pasan a tu <strong>{turno.direccion === 'izquierda' ? 'izquierda' : 'derecha'}</strong>
+              </span>
+            </p>
+          </div>
+
+          {aviso && (
+            <Aviso
+              tipo="informacion"
+              acciones={
+                <button type="button" className="secundario" onClick={() => setAviso(null)}>
+                  Entendido
+                </button>
+              }
+            >
+              <p>{aviso}</p>
+            </Aviso>
+          )}
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+          {!conectada && <p className="nota">Sin conexión. Si se acaba el tiempo, se elegirá por ti.</p>}
+
+          {/* La mesa: los asientos con el nombre de cada equipo y quién ha elegido ya (spec 003, FR-044). */}
+          <section className="draft-bloque" aria-labelledby="titulo-mesa">
+            <h2 id="titulo-mesa">Mesa</h2>
+            <ol className="mesa-draft">
+              {participantes.map((p) => (
+                <li key={p.id} className={eligieron.includes(p.id) ? 'eligio' : ''}>
+                  <span className="mesa-estado" aria-hidden="true">
+                    {eligieron.includes(p.id) ? <Icono nombre="exito" /> : <span className="mesa-pensando" />}
+                  </span>
+                  <NombreRecortado texto={p.nombre} />
+                  {eligieron.includes(p.id) && <span className="solo-lectores"> (ya ha elegido)</span>}
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section aria-label="Mis elecciones" className="draft-bloque mis-elecciones">
+            <h2>Mi plantilla ({turno.misElecciones.length}/24)</h2>
+            <ul className="plantilla-acumulada">
+              {DEMARCACIONES.map((d) => (
+                <li key={d} style={{ '--relleno': Math.min(1, misPorDemarcacion[d]!.length / 8) } as CSSProperties}>
+                  <span>{ETIQUETA_DEMARCACION[d]}</span>
+                  <span className="cifra">{misPorDemarcacion[d]!.length}</span>
+                </li>
+              ))}
+            </ul>
+            {turno.misElecciones.length > 0 && (
+              <details className="seccion-plegable">
+                <summary>Ver mis jugadores</summary>
+                <div className="columnas-demarcacion">
+                  {DEMARCACIONES.map((d) => (
+                    <div key={d}>
+                      <h3>
+                        {ETIQUETA_DEMARCACION[d]} ({misPorDemarcacion[d]!.length})
+                      </h3>
+                      {misPorDemarcacion[d]!.map((j) => (
+                        <CartaJugador key={j.id} jugador={j} compacta onVerFicha={() => setFicha(j.id)} />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </details>
+            )}
+          </section>
+        </aside>
+      </div>
       {ficha !== null && <FichaJugador jugadorId={ficha} onCerrar={() => setFicha(null)} />}
       <BarraPrincipal
-        principal={confirmada === null ? { etiqueta: 'Confirmar elección', onClick: confirmar, motivoDesactivado: elegida === null ? 'Elige una carta del sobre' : null } : null}
+        principal={confirmada === null ? { etiqueta: 'Confirmar elección', onClick: () => confirmar(), motivoDesactivado: elegida === null ? 'Elige una carta del sobre' : null } : null}
         estado={confirmada !== null ? <span role="status">Elección confirmada. {textoEspera}</span> : undefined}
       />
     </main>

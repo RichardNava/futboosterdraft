@@ -40,3 +40,45 @@ export async function sustituirEnGestion(page: Page, casilla = 'DC'): Promise<vo
   const gestion = page.getByTestId('gestion-equipo');
   await arrastrarSobre(page, gestion.getByTestId('banquillo').locator('.ficha-lista').first(), gestion.locator(`.ficha-equipo[data-casilla="${casilla}"]`));
 }
+
+// Escenario J (spec 003, US10), compartido con las pruebas de diseño de la spec 004.
+
+export interface VistaTorneo {
+  campeon: { id: string; nombre: string } | null;
+  jornadaActual: number | null;
+  miEliminacion: { fase: string; etiqueta: string } | null;
+  jornadas: { estado: string; partidos: { partidoId: string | null; estado: string; local: { id: string; nombre: string } | null; visitante: { id: string; nombre: string } | null }[] }[];
+}
+
+/** Vista del torneo desde la API. */
+export const vistaTorneo = async (page: Page, id: string) => (await (await page.request.get(`/api/partidas/${id}/torneo`)).json()) as VistaTorneo;
+
+/** Alineación saboteada (un delantero en la portería y el portero en su sitio) para perder casi seguro. */
+export async function sabotear(page: Page, id: string) {
+  const { alineacion, plantilla } = (await (await page.request.get(`/api/partidas/${id}/alineacion`)).json()) as {
+    alineacion: { titulares: { casillaId: string; jugadorId: number }[] } & Record<string, unknown>;
+    plantilla: { id: number; demarcacion: string }[];
+  };
+  const dem = (jid: number) => plantilla.find((j) => j.id === jid)?.demarcacion;
+  const portero = alineacion.titulares.find((t) => t.casillaId === 'POR')!;
+  const delantero = alineacion.titulares.find((t) => dem(t.jugadorId) === 'DEL') ?? alineacion.titulares.find((t) => t.casillaId !== 'POR')!;
+  const titulares = alineacion.titulares.map((t) => (t === portero ? { ...t, jugadorId: delantero.jugadorId } : t === delantero ? { ...t, jugadorId: portero.jugadorId } : t));
+  await page.request.put(`/api/partidas/${id}/alineacion`, { data: { ...alineacion, titulares, colocacion: undefined } });
+}
+
+/** Juega como el único humano, saboteado, hasta quedar eliminado (o, si no hay derrota posible, hasta el campeón). */
+export async function jugarHastaCaer(page: Page, id: string): Promise<VistaTorneo> {
+  for (let i = 0; i < 400; i++) {
+    const t = await vistaTorneo(page, id);
+    if (t.miEliminacion || t.campeon) return t;
+    const abierta = t.jornadas.find((j) => j.estado === 'abierta');
+    const mio = abierta?.partidos.find((p) => p.estado === 'programado');
+    if (mio) {
+      await sabotear(page, id);
+      await page.request.post(`/api/partidos/${mio.partidoId}/abrir`);
+    } else if (!abierta) await page.request.post(`/api/partidas/${id}/siguiente-jornada`);
+    await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 130_000 } });
+    await page.waitForTimeout(150);
+  }
+  throw new Error('No se llegó al final');
+}

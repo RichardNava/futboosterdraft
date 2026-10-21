@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { reproducir } from '../sonido/sonido';
 import { CartaJugador, type CartaResumen } from './CartaJugador';
 import { iniciarParticulas, type SistemaParticulas } from './particulas';
+import { Escudo } from './arte/Escudo';
+import { SobreArte } from './arte/SobreArte';
+import { useEscalaRejilla } from './useEscalaRejilla';
 
 /** Duraciones de la secuencia (spec 003, research R21); en el peor caso, ≤ 8 s (FR-011). */
 export const DURACION_SOBRE_MS = 1400;
@@ -68,6 +71,9 @@ export function AperturaSobre({ cartas, onTerminar }: Props) {
   const lienzo = useRef<HTMLCanvasElement>(null);
   const sobre = useRef<HTMLDivElement>(null);
   const cartasDom = useRef<(HTMLDivElement | null)[]>([]);
+  const mesa = useRef<HTMLDivElement>(null);
+  const rejilla = useRef<HTMLDivElement>(null);
+  useEscalaRejilla(mesa, rejilla, { maxima: 1.15, clave: fase === 'sobre' });
   const terminar = useRef(onTerminar);
   terminar.current = onTerminar;
   const hecho = useRef(false);
@@ -151,9 +157,13 @@ export function AperturaSobre({ cartas, onTerminar }: Props) {
       >
         Saltar
       </button>
-      {fase === 'sobre' && <div ref={sobre} className="sobre-cerrado" aria-hidden="true" />}
-      {fase !== 'sobre' && (
-        <div className="apertura-cartas" aria-hidden="true">
+      {fase === 'sobre' && (
+        <div ref={sobre} className="sobre-cerrado" aria-hidden="true">
+          <SobreArte />
+        </div>
+      )}
+      <div ref={mesa} className="apertura-mesa" hidden={fase === 'sobre'}>
+        <div ref={rejilla} className="apertura-cartas" aria-hidden="true">
           {cartas.map((c, i) => (
             <div
               key={c.id}
@@ -162,14 +172,16 @@ export function AperturaSobre({ cartas, onTerminar }: Props) {
               }}
               className={`apertura-carta ${especial(c) ? 'especial' : ''} ${reducido ? 'girada' : estados[i]}`}
             >
-              <div className="apertura-carta-dorso" />
+              <div className="apertura-carta-dorso">
+                <Escudo tamano={72} />
+              </div>
               <div className="apertura-carta-frente">
                 <CartaJugador jugador={c} />
               </div>
             </div>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }

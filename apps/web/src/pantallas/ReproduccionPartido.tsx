@@ -6,10 +6,16 @@ import { jugadoresDe, Lienzo2D, type Superposicion } from '../campo2d/Lienzo2D';
 import { RelojReproduccion, VELOCIDADES, type EstadoReloj, type Velocidad } from '../campo2d/relojReproduccion';
 import { datosVacios, incorporarTramo, type TramoRecibido } from '../campo2d/tramos';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
+import { Aviso } from '../componentes/Aviso';
 import { Estadisticas } from '../componentes/Estadisticas';
+import { Chapa, GoleadoresFranja, Marcador as MarcadorPartido } from '../componentes/Marcador';
+import { NombreRecortado } from '../componentes/NombreRecortado';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
+import { goleadoresDe } from '../componentes/goleadores';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
 import { ETIQUETA_FASE, type Inicio, type Marcador } from './PartidoRapido';
+import { PantallaCargando } from '../componentes/Esqueleto';
+import { PantallaError } from '../componentes/Aviso';
 
 interface TramoReproduccion extends TramoRecibido {
   minuto: string;
@@ -25,7 +31,7 @@ interface Reproduccion {
 
 const PAUSAS = new Set(['descanso', 'pre_prorroga']);
 const AVISO: Partial<Record<EstadoReloj, string>> = {
-  gol: '¡GOL!',
+  gol: '¡Gol!',
   descanso: 'Descanso',
   pre_prorroga: 'Final del tiempo reglamentario: habrá prórroga',
   fin: 'Final del partido',
@@ -145,38 +151,43 @@ export function ReproduccionPartido() {
     [reloj],
   );
 
-  if (error) return <p className="error pantalla">{error}</p>;
+  if (error) return <PantallaError mensaje={error} />;
   if (resumen) {
     const nombres = { local: resumen.local.nombre, visitante: resumen.visitante.nombre };
     const porId = resumen.alineaciones ? jugadoresDe({ alineaciones: resumen.alineaciones, dorsales: resumen.dorsales ?? {} } as Inicio) : new Map();
     const nombreJugador = (id: number) => porId.get(id)?.nombre ?? String(id);
     return (
       <main className="pantalla partido reproduccion">
-        <h1>
+        <h1 className="solo-lectores">
           {resumen.local.nombre} {resumen.marcador.local} – {resumen.marcador.visitante} {resumen.visitante.nombre}
         </h1>
-        <p className="aviso" role="status">
-          {AVISO_VERSION_ANTERIOR}: solo está disponible su resumen.
-        </p>
-        <section aria-label="Eventos del partido">
-          <h2>Resumen del partido</h2>
-          <ResumenEventos eventos={resumen.eventos} nombre={nombreJugador} nombresEquipo={nombres} />
-        </section>
-        {resumen.estadisticas !== null && resumen.estadisticas !== undefined && (
-          <section aria-label="Estadísticas">
-            <h2>Estadísticas</h2>
-            <Estadisticas datos={resumen.estadisticas as never} nombres={nombres} />
+        <MarcadorPartido local={{ nombre: resumen.local.nombre }} visitante={{ nombre: resumen.visitante.nombre }} marcador={resumen.marcador} fase="Final" goleadores={goleadoresDe(resumen.eventos, nombreJugador)} />
+        <Aviso tipo="informacion">
+          <p>{AVISO_VERSION_ANTERIOR}: solo está disponible su resumen.</p>
+        </Aviso>
+        <div className="resultado-cuerpo">
+          <section aria-label="Eventos del partido">
+            <h2>Resumen del partido</h2>
+            <ResumenEventos eventos={resumen.eventos} nombre={nombreJugador} nombresEquipo={nombres} />
           </section>
-        )}
-        <p>
-          <Link className="boton" to={`/partidas/${partidaId}/torneo`}>
-            Siguiente
-          </Link>
-        </p>
+          {resumen.estadisticas !== null && resumen.estadisticas !== undefined && (
+            <section aria-label="Estadísticas">
+              <h2>Estadísticas</h2>
+              <Estadisticas datos={resumen.estadisticas as never} nombres={nombres} />
+            </section>
+          )}
+        </div>
+        <div className="barra-principal">
+          <div className="barra-principal-botones">
+            <Link className="boton boton-principal" data-principal="" to={`/partidas/${partidaId}/torneo`}>
+              Siguiente
+            </Link>
+          </div>
+        </div>
       </main>
     );
   }
-  if (!datos) return <p className="cargando">Cargando partido…</p>;
+  if (!datos) return <PantallaCargando forma="campo" texto="Cargando el partido…" />;
 
   const { inicio } = datos;
   const nombresEquipo = { local: inicio.local.nombre, visitante: inicio.visitante.nombre };
@@ -217,43 +228,73 @@ export function ReproduccionPartido() {
     );
   }
 
+  const nota = <p className="nota">{ETIQUETA_FASE[fase] ?? fase}. Partido ya jugado: lo ves a tu ritmo, sin cambios.</p>;
+  const seccionEventos = (
+    <section aria-label="Eventos del partido">
+      <h2>Lo que ha pasado</h2>
+      <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
+    </section>
+  );
+
   return (
-    <main className="pantalla partido reproduccion">
+    <main className={es2d ? 'pantalla partido reproduccion partido-2d' : 'pantalla partido reproduccion'}>
       <h1 className={es2d ? 'solo-lectores' : ''}>
         {inicio.local.nombre} {marcador.local} – {marcador.visitante} {inicio.visitante.nombre}
       </h1>
-      <p className="nota">{ETIQUETA_FASE[fase] ?? fase}. Partido ya jugado: lo ves a tu ritmo, sin cambios.</p>
-      {es2d && (
+      {es2d ? (
         <>
-          <Lienzo2D
-            inicio={inicio}
-            reloj={reloj}
-            datos={reproduccion}
-            superposicion={superposicion}
-            alAvanzar={alAvanzar}
-            sinRotulos={sinRotulos}
-            etiqueta={`${inicio.local.nombre} ${marcador.local}, ${inicio.visitante.nombre} ${marcador.visitante}. Minuto ${minuto}.`}
-          />
-          <p className="marcador-2d" aria-live="polite">
-            <span>
-              {inicio.local.nombre} {marcador.local} – {marcador.visitante} {inicio.visitante.nombre}
-            </span>
-            <span className="nota">{minuto}</span>
-          </p>
-          <div className="velocidades" role="group" aria-label="Velocidad de reproducción">
-            {VELOCIDADES.map((v) => (
-              <button key={v} type="button" className={v === velocidad ? '' : 'secundario'} aria-pressed={v === velocidad} onClick={() => elegirVelocidad(v)}>
-                x{v}
-              </button>
-            ))}
+          <div className="franja-2d">
+            <p className="marcador-2d" aria-live="polite">
+              <span className="equipos-2d">
+                <Chapa color={coloresDe(inicio.equipaciones.local).principal} />
+                <NombreRecortado texto={inicio.local.nombre} />
+                <span className="goles-2d">
+                  {marcador.local} – {marcador.visitante}
+                </span>
+                <NombreRecortado texto={inicio.visitante.nombre} />
+                <Chapa color={coloresDe(inicio.equipaciones.visitante).principal} />
+              </span>
+              <span className="nota">{minuto}</span>
+            </p>
+            <div className="velocidades segmentado" role="group" aria-label="Velocidad de reproducción">
+              {VELOCIDADES.map((v) => (
+                <button key={v} type="button" aria-pressed={v === velocidad} onClick={() => elegirVelocidad(v)}>
+                  x{v}
+                </button>
+              ))}
+            </div>
+            {/* Goleadores con su minuto, solo los goles ya vistos (ronda 4, FR-053). */}
+            <GoleadoresFranja
+              local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
+              visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+              goleadores={goleadoresDe(eventosVistos, nombre)}
+            />
+          </div>
+          {/* Campo y carril lateral a la medida de la ventana (FR-049). */}
+          <div className="partido-2d-mesa">
+            <div className="partido-2d-zona">
+              <Lienzo2D
+                inicio={inicio}
+                reloj={reloj}
+                datos={reproduccion}
+                superposicion={superposicion}
+                alAvanzar={alAvanzar}
+                sinRotulos={sinRotulos}
+                etiqueta={`${inicio.local.nombre} ${marcador.local}, ${inicio.visitante.nombre} ${marcador.visitante}. Minuto ${minuto}.`}
+              />
+            </div>
+            <div className="partido-2d-lateral">
+              {nota}
+              {seccionEventos}
+            </div>
           </div>
         </>
+      ) : (
+        <>
+          {nota}
+          {seccionEventos}
+        </>
       )}
-
-      <section aria-label="Eventos del partido">
-        <h2>Lo que ha pasado</h2>
-        <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
-      </section>
 
       <BarraPrincipal
         principal={puedeContinuar ? { etiqueta: 'Continuar', onClick: continuar } : { etiqueta: 'Finalizar partido', onClick: finalizar }}

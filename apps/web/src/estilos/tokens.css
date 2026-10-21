@@ -1,0 +1,204 @@
+/*
+ * Guía de estilos adaptada (spec 004, FR-037; research R4, R5, R10 y R16). Fuente única de los valores visuales:
+ * ningún otro fichero de estilos ni componente usa colores, radios, sombras ni familias literales
+ * (lo vigila `pnpm --filter @fbd/web lint:tokens`). Los contrastes los comprueba tests/unit/tokens.test.ts.
+ *
+ * Dirección «Noche de partido» (revisión 2026-10-21, FR-041 a FR-047): un estadio de noche —verde profundo,
+ * focos desde lo alto, cal y grano— con superficies de vidrio oscuro y el lima como luz de la acción.
+ * Tema oscuro fijo: no hay variante clara ni se sigue la preferencia del dispositivo (FR-001).
+ */
+:root {
+  color-scheme: dark;
+
+  /* Superficies */
+  --color-lienzo: #0a1913;
+  --color-lienzo-hondo: #050d0a;
+  --color-panel: #10241b;
+  --color-elevado: #173226;
+  --color-borde: #1d3a2d;
+  --color-divisor: #27473a;
+  --color-borde-marco: #557a69;
+  --color-borde-control: #6f9483;
+  /* Velo bajo los diálogos y la apertura de sobres. */
+  --color-velo: rgb(2 8 5 / 78%);
+
+  /* Vidrio (FR-042): paneles translúcidos sobre la atmósfera, con desenfoque. */
+  --vidrio: rgb(16 36 27 / 72%);
+  --vidrio-fuerte: rgb(12 28 21 / 90%);
+  --vidrio-claro: rgb(255 255 255 / 4%);
+  --borde-vidrio: rgb(255 255 255 / 9%);
+  --borde-vidrio-fuerte: rgb(255 255 255 / 16%);
+  --desenfoque: blur(16px) saturate(140%);
+  --brillo-superior: linear-gradient(180deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 0%) 40%);
+
+  /* Texto */
+  --color-texto: #eef5f0;
+  --color-texto-suave: #a3bdb0;
+
+  /* Acción: el lima solo en los usos de FR-002 y FR-047 */
+  --color-accion: #b7ff2c;
+  --color-accion-claro: #d4ff7a;
+  --color-accion-texto: #000000;
+  --color-accion-tenue: rgb(183 255 44 / 12%);
+  --color-apagado: #26402f;
+
+  /* Luz: focos del estadio y oro del éxito (solo en resplandores e ilustraciones) */
+  --color-foco: #fff1c9;
+  --color-oro: #f3c552;
+  --color-oro-hondo: #a8740f;
+
+  /* Estado: siempre con icono y texto (FR-003) */
+  --color-advertencia: #ffd000;
+  --color-error: #ff7a6b;
+
+  /* Niveles de las cartas fuera de la carta (FR-004): ≥ 4,5:1 como texto */
+  --nivel-superclase: #b9c8d8;
+  --nivel-epico: #c7a2ff;
+  --nivel-legendario: #f3c552;
+  --nivel-goat: #ff8cc1;
+
+  /* Campo de Plantillas y Formación (objeto de juego, FR-003, FR-043): césped segado, cal y viñeta. */
+  --cesped: #2a7a3d;
+  --cesped-franja: #24703a;
+  --linea-campo: rgb(255 255 255 / 62%);
+  /* Textura del césped (FR-050): grano fino y briznas alargadas en el sentido del corte, sobre las franjas. */
+  --cesped-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0.12 0 0 0 0 0 1.4 0 0 0 -0.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --cesped-briznas: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.12 0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.78 0 0 0 0 0.95 0 0 0 0 0.7 0.7 0 0 0 -0.36'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+  --cesped-textura:
+    radial-gradient(ellipse 90% 70% at 50% 50%, transparent 40%, rgb(0 0 0 / 45%) 100%),
+    var(--cesped-grano) 0 0 / 160px 160px,
+    var(--cesped-briznas) 0 0 / 200px 200px,
+    repeating-linear-gradient(0deg, var(--cesped) 0 8.33%, var(--cesped-franja) 8.33% 16.66%);
+  /* Fondo de las fichas sobre el césped: el texto blanco encima cumple 4,5:1. */
+  --color-ficha-campo: rgb(4 14 9 / 78%);
+
+  /* Atmósfera del estadio (FR-041): focos, bruma verde y líneas de cal. */
+  --atmosfera:
+    radial-gradient(ellipse 55% 45% at 12% -8%, rgb(255 241 201 / 16%), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 88% -8%, rgb(255 241 201 / 13%), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 110%, rgb(46 140 82 / 30%), transparent 70%),
+    linear-gradient(180deg, #0d2219 0%, #0a1913 45%, #06110c 100%);
+  --haz-foco: conic-gradient(from 180deg at 50% 0%, transparent 160deg, rgb(255 241 201 / 9%) 175deg, rgb(255 241 201 / 14%) 180deg, rgb(255 241 201 / 9%) 185deg, transparent 200deg);
+  --cal: rgb(238 245 240 / 7%);
+  /* Grano de película: ruido SVG muy fino sobre todo el lienzo. */
+  --grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  /* Trama de puntos de la grada, para cabeceras y piezas protagonistas. */
+  --trama: radial-gradient(rgb(255 255 255 / 7%) 1px, transparent 1.4px);
+
+  /* Tipografía (research R2, R3 y R16; las alternativas ajustadas están en fuentes.css) */
+  --letra-texto: 'Barlow', 'Barlow Fallback', sans-serif;
+  --letra-cartel: 'Barlow Condensed', 'Barlow Condensed Fallback', sans-serif;
+  /* Cartel de retransmisión: oblicuo. */
+  --inclinacion-cartel: italic;
+
+  /* Escala (research R5) */
+  --texto-pequeno: 14px;
+  --interlineado-pequeno: 1.5;
+  --texto-cuerpo: 16px;
+  --interlineado-cuerpo: 1.5;
+  --texto-subtitulo: 20px;
+  --interlineado-subtitulo: 1.4;
+  --titulo-pequeno: 24px;
+  --interlineado-titulo-pequeno: 1.2;
+  --titulo-grande: clamp(34px, 5vw, 56px);
+  --interlineado-titulo-grande: 0.95;
+  --cartel: clamp(60px, 11.5vw, 156px);
+  --interlineado-cartel: 0.82;
+  --cartel-marcador: clamp(56px, 10vw, 112px);
+  --interlineado-cartel-marcador: 0.9;
+
+  /* Espaciado: múltiplos de 4 px (FR-009) */
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-5: 20px;
+  --espacio-6: 24px;
+  --espacio-8: 32px;
+  --espacio-10: 40px;
+  --espacio-12: 48px;
+  --espacio-14: 56px;
+  --espacio-16: 64px;
+  /* Entre secciones: 48 px en pantallas anchas, la mitad por debajo de 720 px. */
+  --separacion-seccion: var(--espacio-12);
+
+  /* Forma (FR-007, FR-042): controles, paneles y piezas protagonistas */
+  --radio: 6px;
+  --radio-panel: 12px;
+  --radio-grande: 20px;
+  --radio-pildora: 999px;
+
+  /* Sombras y luz (FR-042, FR-047) */
+  --sombra-barra: 0 1px 0 rgb(255 255 255 / 5%), 0 10px 30px -10px rgb(0 0 0 / 70%);
+  --sombra-panel: inset 0 1px 0 rgb(255 255 255 / 7%), 0 24px 48px -24px rgb(0 0 0 / 75%);
+  --sombra-elevada: inset 0 1px 0 rgb(255 255 255 / 10%), 0 30px 60px -20px rgb(0 0 0 / 85%), 0 0 0 1px rgb(255 255 255 / 4%);
+  --sombra-boton: inset 0 1px 0 rgb(255 255 255 / 8%), 0 4px 14px -6px rgb(0 0 0 / 60%);
+  --resplandor-accion: inset 0 1px 0 rgb(255 255 255 / 55%), 0 0 0 1px rgb(183 255 44 / 50%), 0 10px 32px -8px rgb(183 255 44 / 55%);
+  --resplandor-accion-fuerte: inset 0 1px 0 rgb(255 255 255 / 60%), 0 0 0 1px rgb(183 255 44 / 70%), 0 14px 44px -6px rgb(183 255 44 / 75%);
+  --resplandor-elegida: 0 0 0 3px #b7ff2c, 0 0 36px 4px rgb(183 255 44 / 45%), 0 24px 40px -16px rgb(0 0 0 / 80%);
+  --sombra-carta: 0 18px 30px -14px rgb(0 0 0 / 85%), 0 2px 6px rgb(0 0 0 / 40%);
+  --sombra-carta-alzada: 0 30px 50px -18px rgb(0 0 0 / 90%), 0 0 0 1px rgb(255 255 255 / 10%);
+  --resplandor-oro: 0 0 80px 10px rgb(243 197 82 / 35%);
+  /* Anillo interior del foco sobre el botón lima, para que el contorno lima se distinga (FR-030). */
+  --anillo-foco-interior: inset 0 0 0 2px var(--color-lienzo);
+  --contorno-foco: 2px;
+  /* Barra lima a la izquierda de la fila propia en las tablas. */
+  --barra-propia: inset 3px 0 0 #b7ff2c;
+  --sombra-pieza: drop-shadow(0 30px 40px rgb(0 0 0 / 70%));
+  --sombra-carta-escena: drop-shadow(0 24px 30px rgb(0 0 0 / 65%));
+  --halo-foco: radial-gradient(circle, rgb(255 241 201 / 14%), transparent 60%);
+  --mascara-fundido-arriba: linear-gradient(180deg, transparent 0%, #000 30%);
+  --sombra-trofeo: drop-shadow(0 0 40px rgb(243 197 82 / 45%)) drop-shadow(0 30px 30px rgb(0 0 0 / 60%));
+  --color-oro-tenue: rgb(243 197 82 / 16%);
+  /* Destellos dorados alrededor del trofeo. */
+  --destellos:
+    radial-gradient(circle at 18% 30%, #fff1c9 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 80% 22%, #f3c552 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 70%, #fff1c9 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 25% 75%, #f3c552 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 10%, #fff1c9 0 1.2px, transparent 2px),
+    radial-gradient(circle at 92% 52%, #fff1c9 0 1.2px, transparent 2px),
+    radial-gradient(circle at 8% 55%, #f3c552 0 1.5px, transparent 2.5px);
+  --mascara-centro: radial-gradient(circle, #000 10%, transparent 62%);
+  --sombra-escudo: drop-shadow(0 4px 10px rgb(183 255 44 / 25%));
+  --sombra-texto-cartel: 0 4px 30px rgb(0 0 0 / 55%);
+
+  /* Degradados de las piezas protagonistas */
+  --degradado-accion: linear-gradient(180deg, #c9ff5c 0%, #b7ff2c 55%, #a6ef1c 100%);
+  --degradado-oro: linear-gradient(180deg, #ffe39a 0%, #f3c552 45%, #b9861a 100%);
+  --degradado-panel-destacado: linear-gradient(135deg, rgb(183 255 44 / 10%), rgb(183 255 44 / 0%) 45%), linear-gradient(180deg, rgb(23 50 38 / 92%), rgb(12 28 21 / 92%));
+
+  /* Medidas */
+  --boton-principal-alto: 48px;
+  --barra-principal-alto: 72px;
+  --barra-navegacion-alto: 60px;
+  /* Proporción del sobre: la de las cartas completas tal como se ven (no su `aspect-ratio` mínimo de 5 : 7). */
+  --proporcion-sobre: 200 / 360;
+  --objetivo-tactil: 44px;
+  --ancho-lectura: 72ch;
+  --ancho-pantalla: 1240px;
+
+  /* Movimiento (research R10): solo opacity, transform y filtros */
+  --duracion-corta: 150ms;
+  --duracion-media: 250ms;
+  --duracion-larga: 600ms;
+  --duracion-cartel: 900ms;
+  --curva-salida: cubic-bezier(0.2, 0, 0, 1);
+  --curva-rebote: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (max-width: 719.98px) {
+  :root {
+    --separacion-seccion: var(--espacio-6);
+  }
+}
+
+/* Movimiento reducido: fundidos de 100 ms como mucho (FR-033). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duracion-corta: 0ms;
+    --duracion-media: 100ms;
+    --duracion-larga: 100ms;
+    --duracion-cartel: 0ms;
+  }
+}

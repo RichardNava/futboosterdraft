@@ -22,7 +22,7 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
   const fila = (j: Carta) => page.locator('.rejilla-dorsales li').filter({ hasText: `${j.nombre} ${j.apellidos.split(' ')[0]}` });
   const editar = async (j: Carta, n: number) => {
     await page.getByLabel(`Nuevo dorsal de ${j.nombre} ${j.apellidos}`).fill(String(n));
-    await fila(j).getByRole('button', { name: 'Cambiar' }).click();
+    await fila(j).getByRole('button', { name: /^Aceptar el dorsal/ }).click();
   };
   await page.getByText('Dorsales', { exact: true }).click();
 

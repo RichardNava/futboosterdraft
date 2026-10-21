@@ -5,8 +5,11 @@ import { CampoEquipo } from './CampoEquipo';
 import { cambiarFormacion, colocacionDe, mover, RADIO_FICHA, soltar, titularesDe, type DestinoSoltar, type EstadoCampo } from './campoEquipoEstado';
 import type { CartaResumen } from './CartaJugador';
 import { EditorLanzadores } from './EditorLanzadores';
+import { Icono } from './Icono';
 import type { EstadoEquipo } from './estadoEquipoEnPartido';
 import { PanelTactica } from './PanelTactica';
+import { Dialogo } from './Dialogo';
+import { mostrarAviso } from '../estado/avisos';
 
 const P = parametrosActuales();
 
@@ -123,7 +126,10 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
   const confirmar = async () => {
     if (!hayCambios) return onCerrar(false);
     const ack = await enviar(decisiones);
-    if (ack.ok) return onCerrar(true);
+    if (ack.ok) {
+      mostrarAviso('exito', 'Cambios confirmados');
+      return onCerrar(true);
+    }
     const fallida = ack.error?.indice !== undefined ? decisiones[ack.error.indice] : undefined;
     setMensaje(`${ack.error?.mensaje ?? 'No se pudieron aplicar los cambios'}${fallida ? ` (${ETIQUETA_DECISION[fallida.tipo]})` : ''}`);
   };
@@ -135,8 +141,21 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
     return j ? `${dorsales?.[id] ? `#${dorsales[id]} ` : ''}${j.nombre} ${j.apellidos.split(' ')[0]}` : String(id);
   };
   const distintivos = new Map<number, React.ReactNode>();
-  for (const [id, n] of estado.amarillas) distintivos.set(id, <span className="distintivo amarilla" title={`${n} amarilla${n > 1 ? 's' : ''}`}>🟨{n > 1 ? `×${n}` : ''}</span>);
-  for (const id of estado.lesionados) distintivos.set(id, <span className="distintivo lesion" title="Lesionado">🩹</span>);
+  for (const [id, n] of estado.amarillas)
+    distintivos.set(
+      id,
+      <span className="distintivo amarilla">
+        <Icono nombre="amarilla" etiqueta={`${n} amarilla${n > 1 ? 's' : ''}`} />
+        {n > 1 ? `×${n}` : ''}
+      </span>,
+    );
+  for (const id of estado.lesionados)
+    distintivos.set(
+      id,
+      <span className="distintivo lesion">
+        <Icono nombre="lesion" etiqueta="Lesionado" />
+      </span>,
+    );
 
   return (
     <div className="gestion-equipo" role="dialog" aria-modal="true" aria-labelledby="titulo-gestion" data-testid="gestion-equipo">
@@ -181,34 +200,30 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
       {borrador.lanzadores && <EditorLanzadores lanzadores={borrador.lanzadores} titulares={titulares} nombre={nombre} onCambiar={(lanzadores) => setBorrador({ ...borrador, lanzadores })} />}
 
       {formacionPendiente && (
-        <div className="modal-fondo">
-          <div className="modal" role="alertdialog" aria-modal="true" aria-labelledby="titulo-formacion-gestion">
-            <p id="titulo-formacion-gestion">Se perderá la colocación personalizada. ¿Cambiar de formación?</p>
-            <div className="acciones">
-              <button type="button" onClick={() => elegirFormacion(formacionPendiente, true)}>
-                Cambiar
-              </button>
-              <button type="button" className="secundario" onClick={() => setFormacionPendiente(null)}>
-                Cancelar
-              </button>
-            </div>
+        <Dialogo rol="alertdialog" etiquetadoPor="titulo-formacion-gestion" alEscape={() => setFormacionPendiente(null)}>
+          <p id="titulo-formacion-gestion">Se perderá la colocación personalizada. ¿Cambiar de formación?</p>
+          <div className="acciones">
+            <button type="button" className="secundario" onClick={() => elegirFormacion(formacionPendiente, true)}>
+              Cambiar
+            </button>
+            <button type="button" className="texto" onClick={() => setFormacionPendiente(null)}>
+              Cancelar
+            </button>
           </div>
-        </div>
+        </Dialogo>
       )}
       {confirmarSalida && (
-        <div className="modal-fondo">
-          <div className="modal" role="alertdialog" aria-modal="true" aria-labelledby="titulo-descartar">
-            <p id="titulo-descartar">¿Descartar los cambios?</p>
-            <div className="acciones">
-              <button type="button" onClick={() => onCerrar(false)}>
-                Descartar
-              </button>
-              <button type="button" className="secundario" onClick={() => setConfirmarSalida(false)}>
-                Seguir editando
-              </button>
-            </div>
+        <Dialogo rol="alertdialog" etiquetadoPor="titulo-descartar" alEscape={() => setConfirmarSalida(false)}>
+          <p id="titulo-descartar">¿Descartar los cambios?</p>
+          <div className="acciones">
+            <button type="button" className="peligro" onClick={() => onCerrar(false)}>
+              Descartar
+            </button>
+            <button type="button" className="secundario" onClick={() => setConfirmarSalida(false)}>
+              Seguir editando
+            </button>
           </div>
-        </div>
+        </Dialogo>
       )}
       <BarraPrincipal
         principal={{ etiqueta: 'Confirmar cambios', onClick: confirmar, motivoDesactivado: validarTactica(borrador.tactica).length > 0 ? 'La táctica no es válida' : null }}

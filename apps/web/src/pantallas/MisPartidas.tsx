@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
+import { EstadoVacio } from '../componentes/EstadoVacio';
+import { Insignia } from '../componentes/Insignia';
+import { NombreRecortado } from '../componentes/NombreRecortado';
+import { PantallaCargando } from '../componentes/Esqueleto';
+import { PantallaError } from '../componentes/Aviso';
 
-interface PartidaResumen {
+export interface PartidaResumen {
   id: string;
   modo: string;
   fase: string;
@@ -30,24 +35,39 @@ const FASE: Record<string, string> = {
 };
 const MODO: Record<string, string> = { liga: 'Liga', playoff: 'Playoff' };
 
+/** Pantalla en la que sigue una partida: la de su acción pendiente o la de su fase (sala, draft o torneo). */
+export function destinoPartida(p: PartidaResumen): string {
+  const accion = p.accionPendiente ? ACCION[p.accionPendiente] : null;
+  return `/partidas/${p.id}/${accion?.ruta ?? RUTA_FASE[p.fase] ?? 'torneo'}`;
+}
+
 function Fila({ p }: { p: PartidaResumen }) {
   const accion = p.accionPendiente ? ACCION[p.accionPendiente] : null;
-  const destino = `/partidas/${p.id}/${accion?.ruta ?? RUTA_FASE[p.fase] ?? 'torneo'}`;
+  const destino = destinoPartida(p);
   return (
     <li>
-      <span>
-        <strong>{p.nombreEquipo}</strong> · {MODO[p.modo] ?? p.modo} · {FASE[p.fase] ?? p.fase}
-        {p.jornadaActual !== undefined && ` · jornada ${p.jornadaActual}`}
-        {p.rival && ` · contra ${p.rival}`}
+      <span className="partida-resumen">
+        <NombreRecortado texto={p.nombreEquipo} como="strong" className="nombre-equipo" />
+        <Insignia texto={MODO[p.modo] ?? p.modo} suave />
+        <Insignia texto={FASE[p.fase] ?? p.fase} />
+        {p.jornadaActual !== undefined && <Insignia texto={`Jornada ${p.jornadaActual}`} suave />}
+        {p.rival && (
+          <span className="nota">
+            contra <NombreRecortado texto={p.rival} />
+          </span>
+        )}
       </span>
-      <Link className={accion ? 'boton' : 'boton secundario'} to={destino}>
+      <Link className="boton secundario" to={destino}>
         {accion?.texto ?? 'Abrir'}
       </Link>
     </li>
   );
 }
 
-/** «Mis partidas» (FR-017): las partidas en curso y terminadas, con un acceso a la acción pendiente. */
+/**
+ * «Mis partidas» (FR-017; spec 004, FR-023 a FR-025): las partidas en curso y terminadas, con un acceso a la acción
+ * pendiente. Sin partidas, el estado vacío lleva a «Nueva partida».
+ */
 export function MisPartidas() {
   const [datos, setDatos] = useState<{ enCurso: PartidaResumen[]; terminadas: PartidaResumen[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,20 +75,31 @@ export function MisPartidas() {
   useEffect(() => {
     api<{ enCurso: PartidaResumen[]; terminadas: PartidaResumen[] }>('/api/mis-partidas')
       .then(setDatos)
-      .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se pudieron cargar tus partidas'));
+      .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se han podido cargar tus partidas. Comprueba la conexión y vuelve a intentarlo.'));
   }, []);
 
-  if (error) return <p className="error pantalla">{error}</p>;
-  if (!datos) return <p className="cargando">Cargando…</p>;
+  if (error) return <PantallaError mensaje={error} />;
+  if (!datos) return <PantallaCargando forma="filas" texto="Cargando tus partidas…" />;
+  const nueva = (
+    <Link className="boton boton-principal" data-principal="" to="/partidas/nueva">
+      Nueva partida
+    </Link>
+  );
+  if (datos.enCurso.length === 0 && datos.terminadas.length === 0) {
+    return (
+      <main className="pantalla">
+        <h1>Mis partidas</h1>
+        <EstadoVacio mensaje="Todavía no tienes partidas. Crea una para abrir tus primeros sobres." accion={nueva} />
+      </main>
+    );
+  }
   return (
     <main className="pantalla">
       <h1>Mis partidas</h1>
       <section aria-labelledby="en-curso">
         <h2 id="en-curso">En curso</h2>
         {datos.enCurso.length === 0 ? (
-          <p className="nota">
-            No tienes partidas en curso. <Link to="/partidas/nueva">Crea una nueva</Link>.
-          </p>
+          <EstadoVacio mensaje="No tienes partidas en curso." accion={nueva} />
         ) : (
           <ul className="lista-partidas">
             {datos.enCurso.map((p) => (
@@ -80,7 +111,7 @@ export function MisPartidas() {
       <section aria-labelledby="terminadas">
         <h2 id="terminadas">Terminadas</h2>
         {datos.terminadas.length === 0 ? (
-          <p className="nota">Todavía no has terminado ninguna partida.</p>
+          <EstadoVacio mensaje="No has terminado ninguna partida." />
         ) : (
           <ul className="lista-partidas">
             {datos.terminadas.map((p) => (

@@ -9,6 +9,14 @@ import { useConexion, useCuentaAtras } from '../conexion/useConexion';
 import { etiquetaNPC } from '../textos/niveles';
 import { PantallaCampeon } from './PantallaCampeon';
 import { PantallaDerrota } from './PantallaDerrota';
+import { PantallaCargando } from '../componentes/Esqueleto';
+import { PantallaError } from '../componentes/Aviso';
+import { Aviso } from '../componentes/Aviso';
+import { EstadoVacio } from '../componentes/EstadoVacio';
+import { Icono } from '../componentes/Icono';
+import { Insignia } from '../componentes/Insignia';
+import { NombreRecortado } from '../componentes/NombreRecortado';
+import { alTeclaPestanas } from '../componentes/pestanas';
 
 type Ref = { id: string; nombre: string; nivelNPC?: string | null } | null;
 type Marcador = { local: number; visitante: number; penaltis?: { local: number; visitante: number } } | null;
@@ -132,8 +140,8 @@ export function Torneo() {
   const actual = vista?.jornadas.find((j) => j.numero === vista.jornadaActual) ?? null;
   const restante = useCuentaAtras(partida?.conPlazos ? actual?.venceEn : null, conexion);
 
-  if (error) return <p className="error pantalla">{error}</p>;
-  if (!vista || !partida) return <p className="cargando">Cargando torneo…</p>;
+  if (error) return <PantallaError mensaje={error} />;
+  if (!vista || !partida) return <PantallaCargando forma="filas" texto="Cargando el torneo…" />;
 
   const pestanas: { id: Pestana; texto: string }[] = [
     ...(vista.modo !== 'playoff' ? [{ id: 'clasificacion' as const, texto: 'Clasificación' }] : []),
@@ -194,7 +202,7 @@ export function Torneo() {
       <header className="cabecera-fila">
         <h1>Torneo</h1>
         <nav className="acciones">
-          <Link className="boton" to={`/partidas/${partidaId}/alineacion`}>
+          <Link className="boton secundario" to={`/partidas/${partidaId}/alineacion`}>
             Mi alineación
           </Link>
           <Link className="boton secundario" to={`/partidas/${partidaId}/plantillas`}>
@@ -207,23 +215,26 @@ export function Torneo() {
 
       {vista.campeon && (
         <div className="campeon" role="status">
+          <Icono nombre="trofeo" etiqueta="Trofeo" tamano={28} />
           <p>
-            🏆 Campeón: <strong>{vista.campeon.nombre}</strong>
+            Campeón: <strong>{vista.campeon.nombre}</strong>
             {vista.campeon.id === yo && ' — ¡enhorabuena!'}
           </p>
         </div>
       )}
 
       {finJornada && (
-        <div className="aviso" role="status">
+        <Aviso tipo="informacion">
           <p>Jornada terminada.</p>
-        </div>
+        </Aviso>
       )}
 
-      {pendientes.length > 0 && (
+      {pendientes.length > 0 ? (
         <section aria-label="Partidos pendientes de ver" className="jornada-actual">
-          <h2>Pendientes de ver</h2>
-          <ul className="lista-partidos">
+          <h2>
+            Pendientes de ver <Insignia texto={pendientes.length === 1 ? '1 partido sin ver' : `${pendientes.length} partidos sin ver`} />
+          </h2>
+          <ul className="lista-partidos pendientes-de-ver">
             {pendientes.map((p) => (
               <li key={p.partidoId}>
                 <span>
@@ -234,11 +245,29 @@ export function Torneo() {
             ))}
           </ul>
         </section>
+      ) : (
+        partida.conPlazos &&
+        actual?.partidos.some((p) => p.estado === 'finalizado') && (
+          <section aria-label="Partidos pendientes de ver" className="jornada-actual">
+            <EstadoVacio
+              mensaje="Has visto todos los partidos de esta jornada."
+              accion={
+                vista.modo !== 'playoff' && (
+                  <button type="button" className="secundario" onClick={() => setPestana('clasificacion')}>
+                    Ver clasificación
+                  </button>
+                )
+              }
+            />
+          </section>
+        )
       )}
 
       {actual && (
         <section aria-label="Jornada actual" className="jornada-actual">
-          <h2>{tituloJornada(actual)}</h2>
+          <h2>
+            {tituloJornada(actual)} <Insignia texto={actual.estado === 'cerrada' ? 'Jugada' : actual.estado === 'abierta' ? 'En juego' : 'Pendiente'} suave />
+          </h2>
           {partida.conPlazos && actual.venceEn && (
             <p className="nota">
               Plazo: hasta el {new Date(actual.venceEn).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}
@@ -252,7 +281,7 @@ export function Torneo() {
                 Tu partido: <strong>{miPartido.local?.nombre}</strong> – <strong>{miPartido.visitante?.nombre}</strong>
               </span>
               {miPartido.estado !== 'programado' && miPartido.estado !== 'finalizado' && miPartido.partidoId && (
-                <Link className="boton" to={`/partidas/${partidaId}/partido/${miPartido.partidoId}`}>
+                <Link className="boton secundario" to={`/partidas/${partidaId}/partido/${miPartido.partidoId}`}>
                   Ir al partido
                 </Link>
               )}
@@ -268,16 +297,9 @@ export function Torneo() {
         </section>
       )}
 
-      <div className="pestanas" role="tablist">
+      <div className="pestanas" role="tablist" aria-label="Datos del torneo" onKeyDown={alTeclaPestanas}>
         {pestanas.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            role="tab"
-            aria-selected={activa === p.id}
-            className={activa === p.id ? '' : 'secundario'}
-            onClick={() => setPestana(p.id)}
-          >
+          <button key={p.id} type="button" role="tab" aria-selected={activa === p.id} tabIndex={activa === p.id ? 0 : -1} onClick={() => setPestana(p.id)}>
             {p.texto}
           </button>
         ))}
@@ -342,25 +364,28 @@ function TablaGoleadores({ cual, filas, partidaId, yo, pendientes }: { cual: 'go
   if (filas.length === 0) return <p className="nota">{cual === 'goleadores' ? 'Todavía no ha marcado nadie.' : 'Todavía no hay asistencias.'}</p>;
   return (
     <>
-      <table className="clasificacion goleadores">
+      <div className="tabla-desplazable" tabIndex={0} aria-label={`${cual === 'goleadores' ? 'Máximos goleadores' : 'Máximos asistentes'} (se desplaza en horizontal)`}>
+      <table className="tabla clasificacion goleadores">
         <caption className="nota">{cual === 'goleadores' ? 'Máximos goleadores' : 'Máximos asistentes'}</caption>
         <thead>
           <tr>
             <th scope="col">Pos</th>
-            <th scope="col">Jugador</th>
-            <th scope="col">Equipo</th>
+            <th scope="col" className="col-texto">Jugador</th>
+            <th scope="col" className="col-texto">Equipo</th>
             <th scope="col">{columna}</th>
             <th scope="col" title="Partidos jugados">PJ</th>
           </tr>
         </thead>
         <tbody>
           {mostradas.map((f) => (
-            <tr key={`${f.equipo.id}-${f.jugador.id}`} className={f.equipo.id === yo ? 'propia' : ''}>
+            <tr key={`${f.equipo.id}-${f.jugador.id}`} className={f.equipo.id === yo ? 'propia fila-propia' : undefined}>
               <td>{f.posicion}</td>
               <th scope="row">
                 {f.jugador.dorsal !== undefined && <span className="dorsal-tabla">{f.jugador.dorsal}</span>} {f.jugador.nombre} {f.jugador.apellidos}
               </th>
-              <td>{f.equipo.nombre}</td>
+              <td className="col-texto">
+                <NombreRecortado texto={f.equipo.nombre} />
+              </td>
               <td>
                 <strong>{f.total}</strong>
               </td>
@@ -369,6 +394,7 @@ function TablaGoleadores({ cual, filas, partidaId, yo, pendientes }: { cual: 'go
           ))}
         </tbody>
       </table>
+      </div>
       {!todas && filas.length >= 10 && (
         <button type="button" className="secundario" onClick={() => void verTodos()}>
           Ver todos
@@ -381,12 +407,13 @@ function TablaGoleadores({ cual, filas, partidaId, yo, pendientes }: { cual: 'go
 
 function Clasificacion({ filas, yo }: { filas: FilaClasificacion[]; yo: string | null }) {
   return (
-    <table className="clasificacion">
+    <div className="tabla-desplazable" tabIndex={0} aria-label="Clasificación de la liga (se desplaza en horizontal)">
+    <table className="tabla clasificacion">
       <caption className="nota">Clasificación de la liga</caption>
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Equipo</th>
+          <th scope="col" className="col-texto">Equipo</th>
           <th scope="col" title="Partidos jugados">PJ</th>
           <th scope="col" title="Ganados">G</th>
           <th scope="col" title="Empatados">E</th>
@@ -399,11 +426,13 @@ function Clasificacion({ filas, yo }: { filas: FilaClasificacion[]; yo: string |
       </thead>
       <tbody>
         {filas.map((f) => (
-          <tr key={f.participanteId} className={f.participanteId === yo ? 'propia' : ''}>
+          <tr key={f.participanteId} className={f.participanteId === yo ? 'propia fila-propia' : undefined}>
             <td>{f.posicion}</td>
             <th scope="row">
-              {f.nombre}
-              {f.nivelNPC && <span className="etiqueta nivel-npc">{etiquetaNPC(f.nivelNPC)}</span>}
+              <span className="celda-equipo">
+                <NombreRecortado texto={f.nombre} />
+                {f.nivelNPC && <span className="etiqueta nivel-npc">{etiquetaNPC(f.nivelNPC)}</span>}
+              </span>
             </th>
             <td>{f.pj}</td>
             <td>{f.g}</td>
@@ -419,17 +448,19 @@ function Clasificacion({ filas, yo }: { filas: FilaClasificacion[]; yo: string |
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
 function Cuadro({ cuadro, yo }: { cuadro: NonNullable<VistaTorneo['cuadro']>; yo: string | null }) {
   const equipo = (r: Ref, ganador: Ref) => (
-    <span className={[r && ganador?.id === r.id ? 'ganador' : '', r?.id === yo ? 'propio' : ''].filter(Boolean).join(' ')}>{r?.nombre ?? 'Por decidir'}
+    <span className={[r && ganador?.id === r.id ? 'ganador' : '', r?.id === yo ? 'propio' : ''].filter(Boolean).join(' ')}>
+      <NombreRecortado texto={r?.nombre ?? 'Por decidir'} />
       {r?.nivelNPC && <span className="etiqueta nivel-npc">{etiquetaNPC(r.nivelNPC)}</span>}
     </span>
   );
   return (
-    <div className="cuadro" aria-label="Cuadro de eliminatorias">
+    <div className="cuadro" role="region" tabIndex={0} aria-label="Cuadro de eliminatorias">
       {cuadro.rondas.map((ronda) => (
         <section key={ronda.tipo} className="ronda">
           <h3>{ETIQUETA_RONDA[ronda.tipo] ?? ronda.tipo}</h3>
@@ -451,12 +482,12 @@ function Calendario({ jornadas, partidaId, yo }: { jornadas: JornadaVista[]; par
       {jornadas.map((j) => (
         <section key={j.numero} aria-label={tituloJornada(j)}>
           <h3>
-            {tituloJornada(j)} <span className="etiqueta">{j.estado === 'cerrada' ? 'Jugada' : j.estado === 'abierta' ? 'En juego' : 'Pendiente'}</span>
+            {tituloJornada(j)} <Insignia texto={j.estado === 'cerrada' ? 'Jugada' : j.estado === 'abierta' ? 'En juego' : 'Pendiente'} suave />
           </h3>
           <ul className="lista-partidos">
             {j.partidos.map((p, i) => (
               <li key={p.partidoId ?? i} className={p.local?.id === yo || p.visitante?.id === yo ? 'propio' : ''}>
-                <span>{p.local?.nombre ?? 'Por decidir'}</span>
+                <NombreRecortado texto={p.local?.nombre ?? 'Por decidir'} />
                 <span className="resultado-partido">
                   {p.estado === 'finalizado' && p.partidoId ? (
                     <Link to={`/partidas/${partidaId}/partido/${p.partidoId}`}>{textoMarcador(p.marcador)}</Link>
@@ -466,7 +497,7 @@ function Calendario({ jornadas, partidaId, yo }: { jornadas: JornadaVista[]; par
                     textoMarcador(null)
                   )}
                 </span>
-                <span>{p.visitante?.nombre ?? 'Por decidir'}</span>
+                <NombreRecortado texto={p.visitante?.nombre ?? 'Por decidir'} className="derecha" />
                 {p.resueltoAutomaticamente && <span className="etiqueta" title="Simulado al vencer el plazo">Auto</span>}
               </li>
             ))}
@@ -483,8 +514,8 @@ function PendienteDeVer({ partidaId, partidoId, onMostrar }: { partidaId: string
   const navegar = useNavigate();
   return (
     <>
-      <span className="etiqueta">Pendiente de ver</span>
-      <button type="button" onClick={() => navegar(`/partidas/${partidaId}/reproduccion/${partidoId}`)}>
+      <Insignia texto="Pendiente de ver" suave />
+      <button type="button" className="secundario" onClick={() => navegar(`/partidas/${partidaId}/reproduccion/${partidoId}`)}>
         Ver partido
       </button>
       <button type="button" className="secundario" onClick={() => onMostrar(partidoId)}>
