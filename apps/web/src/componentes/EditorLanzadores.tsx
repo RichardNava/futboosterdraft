@@ -7,10 +7,12 @@ interface Props {
   titulares: CartaResumen[];
   nombre: (id: number) => string;
   onCambiar: (l: Lanzadores) => void;
+  /** Sin título propio cuando va dentro de una sección plegable con su resumen. */
+  conTitulo?: boolean;
 }
 
 /** Lanzadores de penaltis, faltas y córners y orden de la tanda (FR-029a), en «Formación» y en la gestión del equipo. */
-export function EditorLanzadores({ lanzadores, titulares, nombre, onCambiar }: Props) {
+export function EditorLanzadores({ lanzadores, titulares, nombre, onCambiar, conTitulo = true }: Props) {
   const opciones = titulares.map((j) => (
     <option key={j.id} value={j.id}>
       {nombre(j.id)}
@@ -18,7 +20,7 @@ export function EditorLanzadores({ lanzadores, titulares, nombre, onCambiar }: P
   ));
   return (
     <section aria-label="Lanzadores" className="lanzadores">
-      <h2>Lanzadores</h2>
+      {conTitulo && <h2>Lanzadores</h2>}
       {(
         [
           ['penaltis', 'Penaltis'],

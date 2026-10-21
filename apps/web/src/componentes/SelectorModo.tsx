@@ -1,3 +1,5 @@
+import { Icono } from './Icono';
+
 export type Modalidad = 'rapida' | '2d';
 
 const OPCIONES: { valor: Modalidad; etiqueta: string; detalle: string }[] = [
@@ -16,9 +18,10 @@ export function SelectorModo({ valor, onCambiar, nombre = 'modalidad' }: { valor
       {OPCIONES.map((o) => (
         <label key={o.valor} className={valor === o.valor ? 'elegida' : ''}>
           <input type="radio" name={nombre} value={o.valor} checked={valor === o.valor} onChange={() => onCambiar(o.valor)} />
-          <span>
-            <strong>{o.etiqueta}</strong>
-            <span className="nota"> {o.detalle}</span>
+          <Icono nombre={o.valor === 'rapida' ? 'rayo' : 'campo'} tamano={26} className="selector-modo-icono" />
+          <span className="selector-modo-texto">
+            <strong>{o.etiqueta}</strong>{' '}
+            <span className="nota">{o.detalle}</span>
           </span>
         </label>
       ))}

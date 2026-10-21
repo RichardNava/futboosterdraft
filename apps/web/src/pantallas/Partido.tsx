@@ -4,6 +4,7 @@ import { api } from '../api/cliente';
 import { usePartidaActiva } from '../estado/partidaActiva';
 import { Partido2D } from './Partido2D';
 import { PartidoRapido } from './PartidoRapido';
+import { PantallaCargando } from '../componentes/Esqueleto';
 
 /**
  * Pantalla de partido (T138; spec 003, FR-033): elige entre `PartidoRapido` y `Partido2D` según la modalidad con
@@ -33,7 +34,7 @@ export function Partido() {
     };
   }, [partidoId, actualizar]);
 
-  if (modalidad === null) return <p className="cargando">Cargando partido…</p>;
+  if (modalidad === null) return <PantallaCargando forma="campo" texto="Cargando el partido…" />;
   if (modalidad === 'reproduccion') return <Navigate to={`/partidas/${partidaId}/reproduccion/${partidoId}`} replace />;
   return modalidad === '2d' ? <Partido2D /> : <PartidoRapido />;
 }

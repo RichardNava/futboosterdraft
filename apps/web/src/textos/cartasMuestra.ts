@@ -1,0 +1,52 @@
+import type { CartaResumen } from '../componentes/CartaJugador';
+
+/**
+ * Cartas de la colección Core que se muestran en la portada (spec 004, FR-045): una por nivel, de la más común a
+ * la más rara, para enseñar de un vistazo qué hay dentro de un sobre. Son datos del catálogo, no de una partida.
+ */
+export const CARTAS_MUESTRA: CartaResumen[] = [
+  {
+    id: 244,
+    nombre: 'Otto',
+    apellidos: 'Urirvia Delirmos',
+    demarcacion: 'DEL',
+    posicion: ['ED', 'EI'],
+    media: 79.83,
+    nivel: 'Superclase',
+    specials: [],
+    stats: { velocidad: 80, regate: 90, finalizacion: 80, desmarque: 79, creatividad: 78, agresividad: 72 },
+  },
+  {
+    id: 178,
+    nombre: 'Ugo',
+    apellidos: 'Maramos Bararda',
+    demarcacion: 'MED',
+    posicion: ['MCO', 'SD'],
+    media: 84.83,
+    nivel: 'Epico',
+    specials: ['JugadorEntreLineas'],
+    stats: { velocidad: 78, tecnica: 91, pase: 84, posicionamiento: 78, vision: 93, disparo: 85 },
+  },
+  {
+    id: 231,
+    nombre: 'Callum',
+    apellidos: 'Palango Quinego',
+    demarcacion: 'MED',
+    posicion: ['MII', 'MC'],
+    media: 94,
+    nivel: 'GOAT',
+    specials: ['Presionador', 'JugadorEntreLineas', 'Llegador', 'RecuperadorTrasPerdida'],
+    stats: { velocidad: 90, tecnica: 98, pase: 99, posicionamiento: 94, vision: 90, disparo: 93 },
+  },
+  {
+    id: 282,
+    nombre: 'Joel',
+    apellidos: 'Baromar Barilral',
+    demarcacion: 'DEL',
+    posicion: ['EI'],
+    media: 89.33,
+    nivel: 'Legendario',
+    specials: ['Elegante', 'GuanteEnElPie'],
+    stats: { velocidad: 95, regate: 94, finalizacion: 86, desmarque: 91, creatividad: 82, agresividad: 88 },
+  },
+];

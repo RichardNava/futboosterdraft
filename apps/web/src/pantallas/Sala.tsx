@@ -5,7 +5,14 @@ import { api, ErrorApi } from '../api/cliente';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
 import { useSesion } from '../estado/sesion';
 import { CampoNombreEquipo } from '../componentes/CampoNombreEquipo';
+import { EstadoVacio } from '../componentes/EstadoVacio';
+import { Insignia } from '../componentes/Insignia';
+import { NombreRecortado } from '../componentes/NombreRecortado';
+import { mostrarAviso } from '../estado/avisos';
 import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, etiquetaNPC, type Dificultad, type NivelNPC } from '../textos/niveles';
+import { PantallaCargando } from '../componentes/Esqueleto';
+import { Aviso } from '../componentes/Aviso';
+import { SobreArte } from '../componentes/arte/SobreArte';
 
 interface ParticipanteSala {
   id: string;
@@ -32,7 +39,6 @@ export function Sala() {
   const [anfitrionId, setAnfitrionId] = useState<string | null>(null);
   const [nivel, setNivel] = useState('intermedio');
   const [error, setError] = useState<string | null>(null);
-  const [copiado, setCopiado] = useState(false);
   /** null = aún no se sabe; false = el usuario no participa y puede unirse. */
   const [participa, setParticipa] = useState<boolean | null>(null);
   const [yo, setYo] = useState<string | null>(null);
@@ -62,6 +68,8 @@ export function Sala() {
   }, [estado, navegar, partidaId]);
 
   const restante = useCuentaAtras(sala?.venceBusquedaEn, conexion);
+  // Sin más humanos en la sala (spec 004, contracts/ui.md §7).
+  const soloYo = sala !== null && sala.participantes.filter((p) => p.tipo === 'humano').length <= 1;
   const esAnfitrion = usuario?.id === anfitrionId;
 
   const accion = async (ruta: string, cuerpo?: unknown) => {
@@ -74,8 +82,12 @@ export function Sala() {
   };
 
   const copiarEnlace = async () => {
-    await navigator.clipboard.writeText(`${location.origin}/partidas/${partidaId}/sala`);
-    setCopiado(true);
+    try {
+      await navigator.clipboard.writeText(`${location.origin}/partidas/${partidaId}/sala`);
+      mostrarAviso('exito', 'Enlace copiado');
+    } catch {
+      mostrarAviso('error', 'No se ha podido copiar el enlace. Cópialo desde la barra de direcciones.');
+    }
   };
 
   const unirse = async () => {
@@ -84,8 +96,9 @@ export function Sala() {
       const r = await api<{ miParticipanteId: string | null }>(`/api/partidas/${partidaId}/unirse`, { metodo: 'POST', idempotente: true });
       setYo(r.miParticipanteId);
       setParticipa(true);
+      mostrarAviso('exito', 'Te has unido a la partida');
     } catch (e) {
-      setError(e instanceof ErrorApi ? e.message : 'No se pudo unir a la partida');
+      setError(e instanceof ErrorApi ? e.message : 'No te has podido unir a la partida. Vuelve a intentarlo.');
     }
   };
 
@@ -96,68 +109,96 @@ export function Sala() {
         {usuario?.tipo === 'invitado' ? (
           <p>Necesitas una cuenta registrada para jugar con otras personas.</p>
         ) : (
-          <button type="button" onClick={() => void unirse()}>
-            Unirse
-          </button>
+          <BarraPrincipal principal={{ etiqueta: 'Unirme', onClick: unirse }} />
         )}
         {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
+          <Aviso tipo="error">
+            <p>{error}</p>
+          </Aviso>
         )}
       </main>
     );
   }
 
-  if (!sala) return <p className="cargando">{error ?? (conectada ? 'Cargando sala…' : 'Conectando…')}</p>;
+  if (!sala) {
+    if (error)
+      return (
+        <main className="pantalla">
+          <Aviso tipo="error">
+            <p>{error}</p>
+          </Aviso>
+        </main>
+      );
+    return <PantallaCargando forma="filas" texto={conectada ? 'Cargando la sala…' : 'Conectando…'} />;
+  }
 
   return (
-    <main className="pantalla">
-      <h1>Sala</h1>
-      {dificultad && (
-        <p className="nota" data-testid="dificultad">
-          Dificultad: <strong>{ETIQUETA_DIFICULTAD[dificultad]}</strong> · {DESCRIPCION_DIFICULTAD[dificultad]}
-        </p>
-      )}
-      {restante !== null && (
-        <p>
-          El draft empezará en <strong>{Math.floor(restante / 60)}:{String(restante % 60).padStart(2, '0')}</strong>
-          {sala.plazasLibres > 0 && ` · ${sala.plazasLibres} plazas libres se rellenarán con NPC`}
-        </p>
-      )}
-      <ul className="lista-participantes">
-        {sala.participantes.map((p) => (
-          <li key={p.id}>
-            <span className={`punto ${p.conectado ? 'conectado' : ''}`} aria-label={p.conectado ? 'Conectado' : 'Desconectado'} />
-            <strong>{p.nombre}</strong>
-            {p.esAnfitrion && <span className="etiqueta">Anfitrión</span>}
-            {p.tipo === 'npc' && <span className={`etiqueta nivel-npc ${p.nivelNPC ?? ''}`}>{etiquetaNPC(p.nivelNPC)}</span>}
-          </li>
-        ))}
-        {Array.from({ length: sala.plazasLibres }, (_, i) => (
-          <li key={`libre-${i}`} className="libre">
-            Plaza libre
-          </li>
-        ))}
-      </ul>
+    <main className="pantalla sala">
+      <header className="cabecera-pantalla sala-cabecera">
+        <div>
+          <h1>Sala</h1>
+          {dificultad && (
+            <p className="nota" data-testid="dificultad">
+              Dificultad: <strong>{ETIQUETA_DIFICULTAD[dificultad]}</strong>. {DESCRIPCION_DIFICULTAD[dificultad]}
+            </p>
+          )}
+        </div>
+        {restante !== null && (
+          <p className="sala-cuenta" aria-live="off">
+            <span className="sala-cuenta-etiqueta">El draft empezará en</span>
+            <strong className="cifra-cartel">
+              {Math.floor(restante / 60)}:{String(restante % 60).padStart(2, '0')}
+            </strong>
+            {sala.plazasLibres > 0 && <span className="nota">{sala.plazasLibres} plazas libres se rellenarán con NPC</span>}
+          </p>
+        )}
+      </header>
 
-      {(() => {
-        const mio = sala.participantes.find((p) => p.id === yo);
-        if (!mio) return null;
-        return (
-          <CampoNombreEquipo
-            partidaId={partidaId!}
-            actual={mio.nombre}
-            otros={sala.participantes.filter((p) => p.id !== yo).map((p) => p.nombre)}
-            ajustado={mio.nombreAjustado}
-          />
-        );
-      })()}
-
-      {esAnfitrion && (
-        <div className="acciones">
-          {sala.plazasLibres > 0 && (
-            <>
+      <div className="sala-rejilla">
+        <section className="sala-mesa" aria-labelledby="titulo-mesa-sala">
+          <h2 id="titulo-mesa-sala">Mesa del draft</h2>
+          {soloYo && (
+            <EstadoVacio
+              mensaje="Solo estás tú. Puedes empezar contra la IA o esperar a que alguien se una con el enlace."
+              accion={
+                usuario?.tipo === 'registrado' && (
+                  <button type="button" className="secundario" onClick={() => void copiarEnlace()}>
+                    Copiar enlace
+                  </button>
+                )
+              }
+            />
+          )}
+          <ul className="lista-participantes" aria-label="Participantes">
+            {sala.participantes.map((p, i) => (
+              <li key={p.id} className={p.id === yo ? 'propio' : undefined}>
+                <span className="asiento" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <span className="iniciales" aria-hidden="true">
+                  {iniciales(p.nombre)}
+                </span>
+                <span className="participante-datos">
+                  <NombreRecortado texto={p.nombre} como="strong" />
+                  <span className="participante-insignias">
+                    <span className={`punto ${p.conectado ? 'conectado' : ''}`} role="img" aria-label={p.conectado ? 'Conectado' : 'Desconectado'} />
+                    {p.esAnfitrion && <Insignia texto="Anfitrión" suave />}
+                    {p.tipo === 'npc' && <span className={`etiqueta nivel-npc ${p.nivelNPC ?? ''}`}>{etiquetaNPC(p.nivelNPC)}</span>}
+                  </span>
+                </span>
+              </li>
+            ))}
+            {Array.from({ length: sala.plazasLibres }, (_, i) => (
+              <li key={`libre-${i}`} className="libre">
+                <span className="asiento" aria-hidden="true">
+                  {sala.participantes.length + i + 1}
+                </span>
+                Plaza libre
+              </li>
+            ))}
+          </ul>
+          {esAnfitrion && sala.plazasLibres > 0 && (
+            <div className="acciones">
               <select aria-label="Nivel del NPC" value={nivel} onChange={(e) => setNivel(e.target.value)}>
                 {(Object.keys(ETIQUETA_NIVEL_NPC) as NivelNPC[]).map((n) => (
                   <option key={n} value={n}>
@@ -168,21 +209,38 @@ export function Sala() {
               <button type="button" className="secundario" onClick={() => void accion('npc', { nivel })}>
                 Añadir NPC
               </button>
-            </>
+            </div>
           )}
+          {usuario?.tipo === 'registrado' && !soloYo && (
+            <p>
+              <button type="button" className="secundario" onClick={() => void copiarEnlace()}>
+                Copiar enlace
+              </button>
+            </p>
+          )}
+        </section>
+
+        <div className="sala-lateral panel">
+          {(() => {
+            const mio = sala.participantes.find((p) => p.id === yo);
+            if (!mio) return null;
+            return (
+              <CampoNombreEquipo
+                partidaId={partidaId!}
+                actual={mio.nombre}
+                otros={sala.participantes.filter((p) => p.id !== yo).map((p) => p.nombre)}
+                ajustado={mio.nombreAjustado}
+              />
+            );
+          })()}
+          <SobreArte className="sala-sobre" />
+          <p className="nota">Cada participante abre un sobre de 8 cartas por ronda, se queda una y pasa el resto. Tres rondas: 24 jugadores.</p>
         </div>
-      )}
-      {usuario?.tipo === 'registrado' && (
-        <p>
-          <button type="button" className="secundario" onClick={() => void copiarEnlace()}>
-            {copiado ? 'Enlace copiado' : 'Copiar enlace para invitar'}
-          </button>
-        </p>
-      )}
+      </div>
       {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
+        <Aviso tipo="error">
+          <p>{error}</p>
+        </Aviso>
       )}
       <BarraPrincipal
         principal={esAnfitrion ? { etiqueta: 'Empezar', onClick: () => accion('iniciar') } : null}
@@ -190,4 +248,10 @@ export function Sala() {
       />
     </main>
   );
+}
+
+/** Iniciales de un nombre de equipo para su distintivo («Sporting Faro» → «SF»). */
+function iniciales(nombre: string): string {
+  const palabras = nombre.split(/\s+/).filter((p) => p.length > 0 && !/^(de|del|la|el|los|las)$/i.test(p));
+  return (palabras.length > 1 ? palabras[0]![0]! + palabras[1]![0]! : (palabras[0] ?? '?').slice(0, 2)).toLocaleUpperCase('es');
 }

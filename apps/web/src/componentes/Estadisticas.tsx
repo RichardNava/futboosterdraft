@@ -1,3 +1,4 @@
+import { NombreRecortado } from './NombreRecortado';
 type EstadisticasEquipo = Record<string, number>;
 
 const FILAS: [string, string, string?][] = [
@@ -18,12 +19,19 @@ const FILAS: [string, string, string?][] = [
 /** Estadísticas del partido (001/FR-047; con pases, precisión de pase y centros, FR-024). */
 export function Estadisticas({ datos, nombres }: { datos: { local: EstadisticasEquipo; visitante: EstadisticasEquipo }; nombres: { local: string; visitante: string } }) {
   return (
+    <div className="tabla-desplazable" tabIndex={0} aria-label="Estadísticas del partido (se desplaza en horizontal)">
     <table className="estadisticas">
       <thead>
         <tr>
-          <th scope="col">{nombres.local}</th>
-          <th scope="col" />
-          <th scope="col">{nombres.visitante}</th>
+          <th scope="col">
+            <NombreRecortado texto={nombres.local} />
+          </th>
+          <th scope="col">
+            <span className="solo-lectores">Estadística</span>
+          </th>
+          <th scope="col">
+            <NombreRecortado texto={nombres.visitante} />
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -42,5 +50,6 @@ export function Estadisticas({ datos, nombres }: { datos: { local: EstadisticasE
         ))}
       </tbody>
     </table>
+    </div>
   );
 }

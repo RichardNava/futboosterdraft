@@ -1,46 +1,7 @@
-import { expect, test, type Page } from '@playwright/test';
-import { partidaTrasDraft } from './ayudas';
+import { expect, test } from '@playwright/test';
+import { jugarHastaCaer, partidaTrasDraft, vistaTorneo as vista, type VistaTorneo as Vista } from './ayudas';
 
 /** Escenario J del quickstart (spec 003, US10; FR-039 a FR-041b): derrota, campeón y «Simular resto del torneo». */
-
-interface Vista {
-  campeon: { id: string; nombre: string } | null;
-  jornadaActual: number | null;
-  miEliminacion: { fase: string; etiqueta: string } | null;
-  jornadas: { estado: string; partidos: { partidoId: string | null; estado: string; local: { id: string; nombre: string } | null; visitante: { id: string; nombre: string } | null }[] }[];
-}
-
-const vista = async (page: Page, id: string) => (await (await page.request.get(`/api/partidas/${id}/torneo`)).json()) as Vista;
-
-/** Alineación saboteada (un delantero en la portería y el portero en su sitio) para perder casi seguro. */
-async function sabotear(page: Page, id: string) {
-  const { alineacion, plantilla } = (await (await page.request.get(`/api/partidas/${id}/alineacion`)).json()) as {
-    alineacion: { titulares: { casillaId: string; jugadorId: number }[] } & Record<string, unknown>;
-    plantilla: { id: number; demarcacion: string }[];
-  };
-  const dem = (jid: number) => plantilla.find((j) => j.id === jid)?.demarcacion;
-  const portero = alineacion.titulares.find((t) => t.casillaId === 'POR')!;
-  const delantero = alineacion.titulares.find((t) => dem(t.jugadorId) === 'DEL') ?? alineacion.titulares.find((t) => t.casillaId !== 'POR')!;
-  const titulares = alineacion.titulares.map((t) => (t === portero ? { ...t, jugadorId: delantero.jugadorId } : t === delantero ? { ...t, jugadorId: portero.jugadorId } : t));
-  await page.request.put(`/api/partidas/${id}/alineacion`, { data: { ...alineacion, titulares, colocacion: undefined } });
-}
-
-/** Juega como el único humano, saboteado, hasta quedar eliminado (o, si no hay derrota posible, hasta el campeón). */
-async function jugarHastaCaer(page: Page, id: string): Promise<Vista> {
-  for (let i = 0; i < 400; i++) {
-    const t = await vista(page, id);
-    if (t.miEliminacion || t.campeon) return t;
-    const abierta = t.jornadas.find((j) => j.estado === 'abierta');
-    const mio = abierta?.partidos.find((p) => p.estado === 'programado');
-    if (mio) {
-      await sabotear(page, id);
-      await page.request.post(`/api/partidos/${mio.partidoId}/abrir`);
-    } else if (!abierta) await page.request.post(`/api/partidas/${id}/siguiente-jornada`);
-    await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 130_000 } });
-    await page.waitForTimeout(150);
-  }
-  throw new Error('No se llegó al final');
-}
 
 const miEquipo = (t: Vista, id: string | null) =>
   t.jornadas.flatMap((j) => j.partidos.flatMap((p) => [p.local, p.visitante])).find((r) => r?.id === id)?.nombre ?? '';

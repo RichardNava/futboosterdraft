@@ -8,10 +8,14 @@ import { AvisoDorsales } from '../componentes/AvisoDorsales';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { estadoEquipoEnPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
 import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
+import { Chapa, GoleadoresFranja } from '../componentes/Marcador';
+import { goleadoresDe } from '../componentes/goleadores';
+import { NombreRecortado } from '../componentes/NombreRecortado';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
 import { useConexion } from '../conexion/useConexion';
 import { ETIQUETA_FASE, type Inicio, type Marcador } from './PartidoRapido';
+import { PantallaCargando } from '../componentes/Esqueleto';
 
 interface Tramo extends TramoRecibido {
   eventos: (TramoRecibido['eventos'][number] & EventoVista)[];
@@ -26,7 +30,7 @@ function sumarMinutos(minuto: string, n: number): string {
 }
 
 const AVISO: Partial<Record<EstadoReloj, string>> = {
-  gol: '¡GOL!',
+  gol: '¡Gol!',
   descanso: 'Descanso',
   pre_prorroga: 'Final del tiempo reglamentario: habrá prórroga',
   cargando: 'Cargando…',
@@ -37,7 +41,7 @@ const movimientoReducido = () => typeof window !== 'undefined' && window.matchMe
 
 /**
  * Partido 2D en directo contra un NPC (002/FR-021 a FR-025b; research R6): el campo con los jugadores, las
- * velocidades x2, x4 y x8 (solo del cliente; se recuerda la última), las pausas anunciadas («¡GOL!»,
+ * velocidades x2, x4 y x8 (solo del cliente; se recuerda la última), las pausas anunciadas («¡Gol!»,
  * descanso y antes de la prórroga, «Cargando…») y el feed de eventos hasta el minuto que se está viendo.
  *
  * Spec 003: «Gestionar equipo» (contra un NPC) detiene la reproducción y abre la gestión sobre el campo (US5); los
@@ -145,7 +149,7 @@ export function Partido2D() {
 
   const jugadores = useMemo(() => (inicio ? jugadoresDe(inicio) : new Map()), [inicio]);
 
-  if (!inicio) return <p className="cargando">{conectada ? 'Esperando el inicio del partido…' : 'Conectando…'}</p>;
+  if (!inicio) return <PantallaCargando forma="campo" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} />;
 
   const miLado = miId === inicio.local.id ? 'local' : miId === inicio.visitante.id ? 'visitante' : null;
   const nombresEquipo = { local: inicio.local.nombre, visitante: inicio.visitante.nombre };
@@ -251,53 +255,74 @@ export function Partido2D() {
       <h1 className="solo-lectores">
         {inicio.local.nombre} contra {inicio.visitante.nombre}
       </h1>
-      <Lienzo2D
-        inicio={inicio}
-        reloj={reloj}
-        datos={datos}
-        superposicion={superposicion}
-        alAvanzar={alAvanzar}
-        sinRotulos={sinRotulos}
-        etiqueta={`${inicio.local.nombre} ${marcador.local}, ${inicio.visitante.nombre} ${marcador.visitante}. Minuto ${minuto}. ${ETIQUETA_FASE[fase] ?? fase}.`}
-      />
-      <p className="marcador-2d" aria-live="polite">
-        <span>
-          {inicio.local.nombre} {marcador.local} – {marcador.visitante} {inicio.visitante.nombre}
-        </span>
-        <span className="nota">
-          {minuto} · {aviso ?? ETIQUETA_FASE[fase] ?? fase}
-        </span>
-      </p>
-      <AvisoDorsales inicio={inicio} miId={miId} />
-      {penaltis && (
-        <p className="nota" aria-live="polite">
-          Penaltis: {penaltis.local} – {penaltis.visitante}
+      {/* Franja de 48 px fuera del campo: marcador, reloj y velocidades (spec 004, FR-020). */}
+      <div className="franja-2d">
+        <p className="marcador-2d" aria-live="polite">
+          <span className="equipos-2d">
+            <Chapa color={coloresDe(inicio.equipaciones.local).principal} />
+            <NombreRecortado texto={inicio.local.nombre} />
+            <span className="goles-2d">
+              {marcador.local} – {marcador.visitante}
+            </span>
+            <NombreRecortado texto={inicio.visitante.nombre} />
+            <Chapa color={coloresDe(inicio.equipaciones.visitante).principal} />
+          </span>
+          <span className="nota">
+            {minuto} · {aviso ?? ETIQUETA_FASE[fase] ?? fase}
+          </span>
         </p>
-      )}
-
-      <div className="velocidades" role="group" aria-label="Velocidad de reproducción">
-        {VELOCIDADES.map((v) => (
-          <button key={v} type="button" className={v === velocidad ? '' : 'secundario'} aria-pressed={v === velocidad} onClick={() => elegirVelocidad(v)}>
-            x{v}
-          </button>
-        ))}
+        <div className="velocidades segmentado" role="group" aria-label="Velocidad de reproducción">
+          {VELOCIDADES.map((v) => (
+            <button key={v} type="button" aria-pressed={v === velocidad} onClick={() => elegirVelocidad(v)}>
+              x{v}
+            </button>
+          ))}
+        </div>
+        {/* Goleadores con su minuto, solo los goles ya vistos (ronda 4, FR-053). */}
+        <GoleadoresFranja
+          local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
+          visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+          goleadores={goleadoresDe(eventosVistos, nombre)}
+        />
       </div>
+      {/* Campo y carril lateral a la medida de la ventana: sin desplazarse ni ampliar (FR-049). */}
+      <div className="partido-2d-mesa">
+        <div className="partido-2d-zona">
+          <Lienzo2D
+            inicio={inicio}
+            reloj={reloj}
+            datos={datos}
+            superposicion={superposicion}
+            alAvanzar={alAvanzar}
+            sinRotulos={sinRotulos}
+            etiqueta={`${inicio.local.nombre} ${marcador.local}, ${inicio.visitante.nombre} ${marcador.visitante}. Minuto ${minuto}. ${ETIQUETA_FASE[fase] ?? fase}.`}
+          />
+        </div>
+        <div className="partido-2d-lateral">
+          <AvisoDorsales inicio={inicio} miId={miId} />
+          {penaltis && (
+            <p className="nota" aria-live="polite">
+              Penaltis: {penaltis.local}-{penaltis.visitante}
+            </p>
+          )}
 
-      {avisoCambios && (
-        <p className="nota" role="status">
-          {avisoCambios}
-        </p>
-      )}
-      {avisoRival && (
-        <p className="nota" role="status">
-          {avisoRival}
-        </p>
-      )}
+          {avisoCambios && (
+            <p className="nota" role="status">
+              {avisoCambios}
+            </p>
+          )}
+          {avisoRival && (
+            <p className="nota" role="status">
+              {avisoRival}
+            </p>
+          )}
 
-      <section aria-label="Eventos del partido">
-        <h2>Lo que ha pasado</h2>
-        <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
-      </section>
+          <section aria-label="Eventos del partido">
+            <h2>Lo que ha pasado</h2>
+            <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
+          </section>
+        </div>
+      </div>
 
       <BarraPrincipal principal={principal} principalIzquierda={principalIzquierda} secundarios={secundarios} />
     </main>

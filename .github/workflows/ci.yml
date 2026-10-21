@@ -35,3 +35,43 @@ jobs:
       # calibracion-motor.md, ronda 13). Se informan pero no bloquean; cualquier otra que falle sí. Cuando una se cumpla,
       # el paso lo avisa y hay que quitarla de la lista. 003/SC-009 es compuesto y falla mientras fallen las otras dos.
       - run: pnpm balance --n 500 --pendientes 002/SC-007a,002/SC-008,003/SC-009
+
+  # Pruebas de diseño de la spec 004 (FR-040): contraste y reglas WCAG 2.1 AA con axe, desplazamiento horizontal,
+  # lima reservado y foco visible en cada pantalla del inventario, y el flujo completo con teclado.
+  e2e-diseno:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fbd
+          POSTGRES_PASSWORD: fbd
+          POSTGRES_DB: futboosterdraft
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fbd -d futboosterdraft"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://fbd:fbd@localhost:5432/futboosterdraft
+      AUTH_SECRET: secreto-e2e-suficientemente-largo-para-pruebas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:migrate
+      - run: pnpm seed --file data/core.json
+      - run: pnpm --filter @fbd/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @fbd/web e2e tests/e2e/diseno
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-diseno-resultados
+          path: apps/web/test-results/
+          retention-days: 7

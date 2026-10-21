@@ -1,0 +1,75 @@
+/*
+ * Tipografías (spec 004, research R2 y R3). Barlow y Barlow Condensed (SIL OFL 1.1, ver public/fuentes/LICENCIA),
+ * subconjunto latino servido desde la propia aplicación. `font-display: swap`: el texto se ve desde el primer
+ * pintado con la alternativa, y las alternativas tienen las métricas ajustadas para que el cambio apenas mueva
+ * la maquetación (SC-009).
+ */
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fuentes/barlow-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fuentes/barlow-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fuentes/barlow-600.woff2') format('woff2');
+}
+
+/* Media, nombre y stats de las cartas (003/R20), cartel, marcadores y cifras. */
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fuentes/barlow-condensed-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fuentes/barlow-condensed-800.woff2') format('woff2');
+}
+
+/*
+ * Alternativas con métricas ajustadas. Valores de origen (leídos de los ficheros con fontTools):
+ * - Barlow 400: unitsPerEm 1000, ascender 1000, descender -200, lineGap 0, ancho medio ponderado
+ *   de las minúsculas latinas 435,88 (0,4359 em).
+ * - Barlow Condensed 800: unitsPerEm 1000, ascender 1000, descender -200, lineGap 0, ancho medio 378,44 (0,3784 em).
+ * - Arial: unitsPerEm 2048, ancho medio 915,53 (0,4470 em). Arial Narrow: ancho medio 750,85 (0,3666 em).
+ * size-adjust = ancho medio de Barlow / ancho medio de la alternativa; los *-override = métrica de Barlow / size-adjust.
+ * Si el sistema no tiene Arial Narrow, la condensada cae en Arial con el mismo ajuste: el texto se ve algo más ancho
+ * hasta que llega el woff2, sin texto invisible.
+ */
+@font-face {
+  font-family: 'Barlow Fallback';
+  src: local('Arial'), local('ArialMT');
+  size-adjust: 97.5%;
+  ascent-override: 102.56%;
+  descent-override: 20.51%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed Fallback';
+  src: local('Arial Narrow'), local('ArialNarrow'), local('Arial');
+  size-adjust: 103.22%;
+  ascent-override: 96.88%;
+  descent-override: 19.38%;
+  line-gap-override: 0%;
+}

@@ -6,7 +6,11 @@ import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { DistintivoBaja, type BajaVista } from '../componentes/DistintivoBaja';
 import { FichaJugador } from '../componentes/FichaJugador';
+import { NombreRecortado } from '../componentes/NombreRecortado';
 import { ETIQUETA_DEMARCACION, etiquetaNPC } from '../textos/niveles';
+import { PantallaCargando } from '../componentes/Esqueleto';
+import { PantallaError } from '../componentes/Aviso';
+import { alTeclaPestanas } from '../componentes/pestanas';
 
 interface PlantillaParticipante {
   participanteId: string;
@@ -42,8 +46,8 @@ export function Plantillas() {
       .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se pudieron cargar las plantillas'));
   }, [partidaId]);
 
-  if (error) return <p className="error pantalla">{error}</p>;
-  if (!plantillas) return <p className="cargando">Cargando plantillas…</p>;
+  if (error) return <PantallaError mensaje={error} />;
+  if (!plantillas) return <PantallaCargando forma="campo" texto="Cargando las plantillas…" />;
   const actual = plantillas.find((p) => p.participanteId === seleccion);
 
   return (
@@ -51,7 +55,7 @@ export function Plantillas() {
       <header className="cabecera-fila">
         <h1>Plantillas</h1>
         <span className="acciones">
-          <Link className="boton" to={`/partidas/${partidaId}/alineacion`}>
+          <Link className="boton secundario" to={`/partidas/${partidaId}/alineacion`}>
             Preparar alineación
           </Link>
           <Link className="boton secundario" to={`/partidas/${partidaId}/torneo`}>
@@ -60,17 +64,17 @@ export function Plantillas() {
         </span>
       </header>
       {preparacion && <TarjetaPreparacion preparacion={preparacion} />}
-      <div className="pestanas" role="tablist">
+      <div className="pestanas" role="tablist" aria-label="Plantillas de los equipos" onKeyDown={alTeclaPestanas}>
         {plantillas.map((p) => (
           <button
             key={p.participanteId}
             type="button"
             role="tab"
             aria-selected={p.participanteId === seleccion}
-            className={p.participanteId === seleccion ? '' : 'secundario'}
+            tabIndex={p.participanteId === seleccion ? 0 : -1}
             onClick={() => setSeleccion(p.participanteId)}
           >
-            {p.nombre}
+            <NombreRecortado texto={p.nombre} />
             {p.participanteId === miId ? ' (tú)' : p.nivelNPC ? ` · ${etiquetaNPC(p.nivelNPC)}` : ''}
           </button>
         ))}

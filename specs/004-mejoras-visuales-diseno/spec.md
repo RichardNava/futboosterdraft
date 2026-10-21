@@ -24,6 +24,45 @@
 - Q: ¿Las comprobaciones de contraste, desplazamiento horizontal y foco se automatizan o son manuales? → A: Se automatizan en la integración continua (contraste y accesibilidad básica, ausencia de desplazamiento horizontal a 360/768/1366/1920 px y recorrido del flujo con teclado), sin comparación de capturas; la lista de verificación visual manual cubre el resto.
 - Q: ¿Cómo se ve completo un nombre recortado en pantallas táctiles? → A: Manteniendo pulsado el nombre aparece una etiqueta emergente con el texto completo.
 
+### Session 2026-10-21 — Revisión de la primera ronda (no aprobada)
+
+La primera implementación no se aprueba: "apenas se han cambiado algunos colores; la página sigue pareciendo un MVP amateur". Se pide un resultado **profesional, moderno e impactante, digno de producción**, con **imágenes, logotipo, fondos, texturas y efectos**, y un draft en el que **no haya que desplazarse para elegir carta**.
+
+- Q: ¿Se mantienen las superficies planas, sin degradados ni sombras (FR-008)? → A: No. Se sustituye por FR-041 a FR-043: atmósfera de estadio nocturno con fondos, texturas, luz, profundidad y vidrio.
+- Q: ¿Se mantiene "sin fotografía ni ilustraciones decorativas" (Assumptions)? → A: No. Se añaden imágenes propias (SVG y CSS, sin licencias de terceros): logotipo, escudo, sobre, trofeo, campo y estadio (FR-044).
+- Q: ¿Se mantiene "sin animaciones de entrada ni efectos de señalado en las tarjetas" (FR-028)? → A: Se relaja: efectos de luz, brillo y relieve en los objetos de juego (cartas, sobres, campo, marcadores) y una entrada orquestada por pantalla clave (FR-045). Sigue rigiendo el movimiento reducido (FR-033).
+- Q: ¿Qué se mantiene de la primera ronda? → A: Lo medible y de comportamiento: lima solo para la acción (FR-002, FR-012), contrastes, foco, objetivos táctiles, sin desplazamiento horizontal, textos (FR-035), tipografías OFL y fuente única de valores (FR-037).
+
+### Session 2026-10-21 — Ronda 3 (pequeñas mejoras)
+
+La segunda ronda se aprueba. Antes de pasar a la spec 005 se piden tres mejoras pequeñas:
+
+- Q: ¿Cómo se ve la simulación 2D? → A: El campo y el marcador deben verse enteros sin desplazarse ni ampliar (FR-049).
+- Q: ¿Qué añade el marcador del resultado? → A: En pequeño, quiénes han marcado y en qué minuto (FR-048).
+- Q: ¿Cómo se ven los campos de fútbol? → A: Con textura de césped, no con un color plano (FR-050).
+
+### Session 2026-10-21 — Ronda 4 (últimos ajustes)
+
+La tercera ronda se aprueba. Últimos ajustes visuales y una corrección del draft:
+
+- Q: ¿Qué se ve al entrar en la portada sin sesión? → A: El titular, la llamada a la acción y los tres pasos del juego, sin desplazarse y con menos aire bajo la barra de navegación (FR-051).
+- Q: ¿Cómo se reparte la pantalla de resultado? → A: «Resumen del partido» a la izquierda y «Estadísticas» a la derecha (FR-052).
+- Q: ¿Qué añade la franja del 2D? → A: Los goleadores con su minuto, como el marcador del resultado (FR-053; amplía FR-048).
+- Q: ¿Cómo se ven los goles en «Lo que ha pasado»? → A: Resaltados sobre el resto de eventos (FR-054).
+- Q: ¿Qué tapa la barra en la pantalla del campeón? → A: El nombre del campeón; pasa a la parte superior (FR-055).
+- Q: ¿Cómo se elige una carta en el draft? → A: Pulsando en cualquier parte de la carta que no sea un special (también la zona vacía del pie), y con doble clic se elige y confirma a la vez (FR-056).
+
+### Session 2026-10-21 — Ronda 5 (correcciones)
+
+- Q: ¿Cómo se ordenan los campos de «Dorsales»? → A: Todos alineados en vertical y en horizontal, sin depender de la longitud del nombre; el botón «Cambiar» se sustituye por dos botones pequeños con iconos (aceptar y descartar) bajo cada campo (FR-057).
+- Q: ¿Qué falla en las tablas de máximos goleadores y asistentes? → A: Las filas quedaban a la derecha de los encabezados en lugar de debajo; la lista de goleadores del marcador compartía la clase de la tabla (FR-058).
+- Q: ¿Qué forma tiene el sobre? → A: La de las cartas tal como se ven, no casi cuadrado, en todos los lugares donde aparece (FR-059).
+
+### Session 2026-10-21 — Ronda 6 (último ajuste y media del once)
+
+- Q: ¿Las dos columnas del resultado valen solo para el final? → A: No, también en los descansos y pausas del partido rápido (amplía FR-052).
+- Q: ¿Cómo se ve la media del equipo en Formación? → A: Sobre el campo, diez estrellas que se rellenan de forma gradual con la media y, a la derecha y más grande, la cifra en un marco de estrella; en tiempo real, con los titulares alineados y sus penalizaciones (FR-060).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Una identidad visual coherente en todas las pantallas (Priority: P1)
@@ -186,6 +225,31 @@ Las pantallas de juego más densas (draft, plantillas, formación, partido rápi
 - **FR-039**: Las tipografías usadas DEBEN tener una licencia que permita incluirlas en el juego y servirlas desde la propia aplicación.
 - **FR-040**: Las pruebas automáticas de extremo a extremo que se ejecutan en la integración continua DEBEN comprobar en cada pantalla del inventario (FR-013): el contraste y las reglas básicas de accesibilidad (FR-029, FR-030), la ausencia de desplazamiento horizontal de la página a 360, 768, 1366 y 1920 px (FR-031) y que el flujo de SC-007 se completa con teclado. No se exige comparación automática de capturas. Lo que no se puede comprobar automáticamente (jerarquía, uso del lima, textos) se verifica con la lista de verificación visual manual (SC-001).
 
+#### Revisión 2026-10-21: identidad, atmósfera y draft sin desplazamiento
+
+Estos requisitos **sustituyen** a FR-008, a la frase de FR-002 "NO DEBE usarse en … fondos grandes ni decoración" en lo que se refiere a la luz ambiental, a la limitación de FR-028 y a la suposición "Sin fotografía". Lo demás sigue vigente.
+
+- **FR-041 (atmósfera)**: el lienzo DEBE dejar de ser un color plano y representar un estadio de noche: base verde noche profunda, luz de focos desde lo alto, líneas de cal del campo y una textura de grano fina. La atmósfera es decorativa (`aria-hidden`), fija detrás del contenido y no reduce los contrastes de FR-029.
+- **FR-042 (superficies con profundidad)**: paneles, diálogos y barras DEBEN tener profundidad: superficie translúcida con desenfoque del fondo, borde con brillo superior y sombra de elevación. Las esquinas pasan a una escala (6 px en controles, 12 px en paneles, 20 px en las piezas protagonistas), definida en los tokens.
+- **FR-043 (efectos de juego)**: las cartas DEBEN tener acabados por nivel de aspecto premium (plata, violeta, oro y holográfico oscuro), con brillo que sigue al puntero y relieve al señalar una carta elegible; los marcadores DEBEN parecer un marcador de retransmisión; el campo, césped segado con viñeta y líneas de cal.
+- **FR-044 (imágenes propias)**: el juego DEBE tener logotipo (escudo + nombre) en la barra y como icono de la pestaña, y DEBE usar ilustraciones propias en SVG: sobre de cartas, trofeo, estadio y campo. Ninguna depende de licencias de terceros.
+- **FR-045 (momentos)**: la portada DEBE abrir con una composición de impacto (sobre abierto con cartas reales en abanico bajo los focos); el draft, la apertura de sobres, el resultado y las pantallas finales DEBEN tener cada uno un único momento animado orquestado. Con movimiento reducido, todos se sustituyen por fundidos.
+- **FR-046 (draft sin desplazamiento)**: a 1366 × 768 y mayores, las 8 cartas del sobre, el reloj, la dirección de paso, la mesa, la plantilla acumulada y el botón «Confirmar elección» DEBEN verse a la vez sin desplazamiento vertical; las cartas se escalan para ocupar el alto disponible. En móvil, las cartas se recorren con un carrusel horizontal (deslizar), sin desplazar la página para elegir.
+- **FR-047 (lima como luz de acción)**: el lima sigue siendo el único relleno de acción, y además PUEDE emitir luz (resplandor) alrededor del botón principal y de la carta elegida. No se usa como color de fondo decorativo.
+- **FR-048 (goleadores en el marcador)**: el marcador de cartel (resultado, partido rápido y resumen de una reproducción) DEBE mostrar en letra pequeña, bajo el nombre de cada equipo, sus goleadores con el minuto de cada gol («Pérez 12', 67' (pen.)»); los goles en propia puerta cuentan para el equipo que los recibe a favor y llevan «(p. p.)»; la tanda de penaltis no cuenta.
+- **FR-049 (2D sin desplazamiento)**: desde 720 px de ancho, en el partido 2D en directo y en su reproducción, la franja del marcador, el campo entero y la barra principal DEBEN verse a la vez sin desplazar la página ni ampliar; el campo toma el mayor tamaño que cabe conservando su proporción y los eventos van en un carril lateral con su propio desplazamiento. En móvil, la franja y el campo se ven al entrar y los eventos van debajo.
+- **FR-050 (textura del césped)**: los campos de fútbol (el del partido 2D y el de Plantillas y Formación) DEBEN tener textura de césped (grano, briznas y franjas de corte con luz y viñeta), sin restar contraste a las líneas, las chapas ni las fichas.
+- **FR-051 (portada sin desplazamiento)**: desde 900 px de ancho y 720 px de alto, la portada sin sesión DEBE mostrar a la vez el titular, la entradilla, las acciones y los tres pasos del juego («Abre sobres», «Elige por turnos», «Gana el torneo») sin desplazar la página; el titular y la escena se escalan con el alto de la ventana y el hueco bajo la barra de navegación no pasa de 24 px.
+- **FR-052 (resultado en dos columnas)**: desde 1024 px de ancho, la pantalla de resultado DEBE colocar «Resumen del partido» a la izquierda y «Estadísticas» a la derecha, bajo el marcador; en pantallas más estrechas van una debajo de otra. Lo mismo en los descansos y pausas del partido rápido («Lo más destacado» y «Estadísticas») y en el resumen de un partido de una versión anterior (ronda 6).
+- **FR-053 (goleadores en la franja del 2D)**: la franja del marcador del partido 2D, en directo y en su reproducción, DEBE mostrar en letra pequeña los goleadores de cada equipo con el minuto, con las mismas reglas que FR-048 y solo con los goles ya vistos; sin romper FR-049.
+- **FR-054 (goles resaltados)**: en la lista de eventos («Lo que ha pasado» del 2D y el resumen del resultado), los goles DEBEN destacar sobre el resto (fondo y borde con la luz del oro y el texto en negrita), sin usar el lima.
+- **FR-055 (campeón visible)**: en la pantalla del campeón, el mensaje con el nombre del campeón DEBE ir en la parte superior, sin que lo tape la barra del botón «Volver al menú», a 1366 × 768 y a 390 × 844.
+- **FR-056 (elegir carta en el draft)**: la carta del sobre DEBE elegirse al pulsar en cualquier punto de ella salvo los botones de los specials y el de la ficha (también el hueco del pie sin specials); el doble clic en una carta la elige y confirma la elección sin pasar por «Confirmar elección». Una sola elección por turno: un segundo envío mientras el primero está en curso se ignora.
+- **FR-057 (dorsales alineados)**: en «Dorsales», cada jugador DEBE ocupar una celda con columnas fijas (dorsal actual, nombre recortado con puntos suspensivos y campo), de modo que los campos queden alineados en vertical y en horizontal. Bajo cada campo, dos botones pequeños con iconos, «Aceptar» y «Descartar», que solo se ven con un número escrito y ocupan su sitio siempre (la celda no cambia de alto); Intro acepta y Escape descarta. Se mantiene el aviso cuando el número lo lleva otro jugador.
+- **FR-058 (tablas de goleadores y asistentes)**: las tablas de máximos goleadores y asistentes DEBEN mostrar sus filas debajo de los encabezados, como el resto de tablas. La lista de goleadores del marcador (FR-048, FR-053) usa su propia clase, `.lista-goleadores`.
+- **FR-059 (sobre con forma de carta)**: el sobre ilustrado DEBE tener la proporción de las cartas completas tal como se ven (≈ 5 : 9, `--proporcion-sobre`) en todos los lugares donde aparece (portada, nueva partida, sala, apertura y fin del draft); donde convive con cartas (portada y apertura), también su mismo ancho.
+- **FR-060 (media del once)**: en Formación, sobre el campo, DEBE mostrarse la media del equipo con diez estrellas que se rellenan de forma gradual (una por cada 10 puntos: 70 → 7 llenas; 88 → 8 llenas y la novena al 80 %) y, a su derecha y más grande, la cifra redondeada dentro de un marco de estrella. Es la media efectiva de los titulares colocados, con la penalización por jugar fuera de su posición (la misma que muestra cada ficha), y se recalcula al cambiar el once. Para el lector de pantalla, «Media del equipo: N de 100».
+
 ### Requisitos de specs anteriores afectados
 
 - **003/FR-007**: el color del botón principal pasa del naranja actual al lima de la guía (FR-012). El resto de FR-007 se mantiene.
@@ -216,7 +280,7 @@ Las pantallas de juego más densas (draft, plantillas, formación, partido rápi
 ## Assumptions
 
 - **Solo tema oscuro**: la guía define un único tema oscuro y su identidad depende de él; se elimina el modo claro en lugar de mantener dos temas.
-- **Sin fotografía**: la guía apoya su ambiente en fotografía a sangre, pero el juego no dispone de fotografías con licencia. El ambiente lo aportan la tipografía de cartel, las cartas, el campo y las equipaciones; no se añaden fotografías ni ilustraciones decorativas.
+- **Imágenes propias** (revisión 2026-10-21, sustituye a "Sin fotografía"): el juego no dispone de fotografías con licencia, así que el ambiente de la guía se recrea con ilustraciones vectoriales y texturas propias (estadio, focos, campo, sobre, trofeo, escudo) en SVG y CSS (FR-044).
 - **Tipografía**: la tipografía de la guía (Roobert) es comercial. Se usa una alternativa libre con el mismo carácter: la familia condensada que ya incluye el juego para las cartas (Barlow Condensed) para los titulares de cartel y las cifras, y una sans geométrica libre de proporciones parecidas a las de la guía para el texto corriente. La elección concreta se cierra en el plan.
 - **Adaptación de la guía**: los componentes propios del sitio de origen (aviso de cookies, botón "Sign in", logotipo) no se trasladan; se toman sus reglas (colores, escala, esquinas, superficies) y se aplican a los componentes del juego.
 - **Excepciones de color**: los colores de nivel, las equipaciones, el campo 2D, el color de error y el ámbar de advertencia son información de juego o de estado y no rompen la regla de "un único acento" de la guía (FR-003).

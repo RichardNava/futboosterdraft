@@ -291,3 +291,50 @@ La lista de verificación visual de SC-001 va en `checklists/visual.md`, con una
   - el mismo nombre para una acción en todo el flujo: botón → aviso ("Confirmar alineación" → "Alineación confirmada").
 - La tabla de etiquetas de botones de 003/contracts/ui.md se mantiene. [contracts/ui.md](./contracts/ui.md) solo añade las confirmaciones y los vacíos.
 - No se centralizan los textos en un catálogo i18n: el juego solo está en español y 003 no lo hizo.
+
+## R16. Revisión 2026-10-21: dirección «Noche de partido» (FR-041 a FR-047)
+
+La primera ronda aplicó la guía al pie de la letra (casi negro plano + lima) y el resultado se leyó como plantilla genérica. La revisión mantiene lo que la guía aporta de identidad (acento lima de acción, cartel condensado) y cambia el soporte: **un estadio de noche**.
+
+**Paleta base**
+
+| Nombre | Valor | Papel |
+|---|---|---|
+| Noche | `#0a1913` | Lienzo: verde noche profundo, no negro neutro |
+| Grada | `#10241b` | Panel (translúcido, con desenfoque) |
+| Banquillo | `#173226` | Elevado: campos, filas, pestañas |
+| Cal | `#eef5f0` | Texto y líneas del campo |
+| Lima | `#b7ff2c` | Acción, foco, elegido (y su resplandor) |
+| Foco | `#fff1c9` | Luz de los focos (solo en resplandores) |
+| Oro | `#f3c552` | Trofeo, campeón, nivel Legendario |
+
+**Tipografía**: Barlow Condensed 800 en oblicuo (cartel de retransmisión) para titulares, marcadores y cifras; Barlow para el texto. Los números grandes en contorno (`-webkit-text-stroke`) sirven de fondo informativo (elección actual, jornada), nunca de adorno sin dato.
+
+**Composición**
+
+```
+Portada (≥ 1024 px)                       Draft (1366 × 768)
++------------------------------------+    +---------------------------------+------------+
+| [escudo] Fútboosterdraft   enlaces |    | [carta][carta][carta][carta]    | Sobre 1    |
+|                                    |    |                                 | ◔ 43 s     |
+| Fútbooster       ✦ focos ✦         |    | [carta][carta][carta][carta]    | ← pasa     |
+| draft            [c][c][c] abanico |    |                                 | mesa       |
+| entradilla         [ sobre ]       |    |                                 | plantilla  |
+| [Empezar] [invitado]               |    +---------------------------------+------------+
+| 1 Abre · 2 Elige · 3 Compite       |    | estado                         [Confirmar]   |
++---- líneas de cal en perspectiva --+    +----------------------------------------------+
+```
+
+Alineación a la izquierda en texto; las piezas de juego (cartas, campo, marcador) se centran en su zona.
+
+**Principios**
+
+1. Lo memorable es el **objeto de juego bajo los focos**: cartas y sobres con acabado de foil y luz. Todo lo demás (paneles, tablas, formularios) es sobrio: vidrio oscuro, un borde con brillo y nada más.
+2. La luz es información: el lima brilla donde está la acción; el oro solo en el éxito (campeón, Legendario); el ámbar solo en la advertencia.
+3. Un único momento animado por pantalla clave (portada, apertura, resultado, final); el resto se mueve solo como respuesta a la persona.
+
+**Revisión contra el encargo**: el plan inicial (lienzo negro neutro + paneles grises) era justo lo rechazado; se cambia a verde noche con focos y cal, que pertenece al tema (fútbol nocturno) y no a cualquier producto oscuro. La numeración 1-2-3 de la portada se permite porque es una secuencia real del juego (abrir → elegir → competir).
+
+**Draft sin desplazamiento (FR-046)**: la rejilla de 4 × 2 cartas de 220 px de ancho base se escala con `zoom` según el hueco disponible (`ResizeObserver` en `Draft.tsx`): `zoom = min(1,2; alto / (2 × alto de carta + hueco); ancho / (4 × 220 + 3 huecos))`. Las cartas conservan sus proporciones y tamaños relativos (003/FR-009 se mide en `/_pruebas/cartas`, a escala 1). Por debajo de 720 px, carrusel horizontal con `scroll-snap`.
+
+**Imágenes (FR-044)**: componentes SVG en `componentes/arte/` (`Escudo`, `SobreArte`, `Trofeo`, `Estadio`) y `public/favicon.svg`. Texturas (grano, césped, cal) como tokens en `tokens.css`.

@@ -17,6 +17,9 @@ export class ConexionPartida {
   private readonly oyentes = new Set<Oyente>();
   private readonly acksPendientes = new Map<string, (a: Ack) => void>();
   private temporizadorPing: number | undefined;
+  private temporizadorReintento: number | undefined;
+  /** El servidor rechazó la conexión (sin sesión o sin permiso): ya no se reintenta sola. */
+  sinReintento = false;
   /** Diferencia servidor − cliente en ms. */
   desfaseMs = 0;
   conectada = false;
@@ -26,6 +29,8 @@ export class ConexionPartida {
 
   conectar(): void {
     this.cerradaAMano = false;
+    this.sinReintento = false;
+    window.clearTimeout(this.temporizadorReintento);
     const protocolo = location.protocol === 'https:' ? 'wss' : 'ws';
     const socket = new WebSocket(`${protocolo}://${location.host}/ws?partidaId=${encodeURIComponent(this.partidaId)}`);
     this.socket = socket;
@@ -48,17 +53,26 @@ export class ConexionPartida {
     };
     socket.onclose = (evento) => {
       window.clearInterval(this.temporizadorPing);
-      this.cambiarConexion(false);
       // 4401/4403: sin sesión o sin permiso → no tiene sentido reintentar.
-      if (this.cerradaAMano || evento.code === 4401 || evento.code === 4403) return;
+      this.sinReintento = evento.code === 4401 || evento.code === 4403;
+      this.cambiarConexion(false);
+      if (this.cerradaAMano || this.sinReintento) return;
       const espera = Math.min(30_000, 500 * 2 ** this.intentos++);
-      window.setTimeout(() => this.conectar(), espera);
+      this.temporizadorReintento = window.setTimeout(() => this.conectar(), espera);
     };
   }
 
   cerrar(): void {
     this.cerradaAMano = true;
+    window.clearTimeout(this.temporizadorReintento);
     this.socket?.close();
+  }
+
+  /** «Reintentar ahora» (spec 004, contracts/ui.md §8): conecta ya, sin esperar al siguiente reintento. */
+  reintentarAhora(): void {
+    if (this.conectada || this.cerradaAMano) return;
+    this.intentos = 0;
+    this.conectar();
   }
 
   /** Hora actual del servidor estimada (ms). */

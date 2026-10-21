@@ -8,9 +8,12 @@ import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal'
 import { Estadisticas } from '../componentes/Estadisticas';
 import { estadoEquipoEnPartido, type AlineacionPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
 import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
+import { Marcador as MarcadorPartido } from '../componentes/Marcador';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
+import { goleadoresDe } from '../componentes/goleadores';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
+import { PantallaCargando } from '../componentes/Esqueleto';
 
 export type { AlineacionPartido };
 
@@ -138,7 +141,7 @@ export function PartidoRapido() {
   const nombres = useMemo(() => (inicio ? nombresDePartido(inicio) : new Map<number, string>()), [inicio]);
 
   if (!inicio) {
-    return <p className="cargando">{conectada ? 'Esperando el inicio del partido…' : 'Conectando…'}</p>;
+    return <PantallaCargando forma="filas" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} />;
   }
   const nombre = (id: number) => nombres.get(id) ?? String(id);
 
@@ -175,9 +178,6 @@ export function PartidoRapido() {
     if (!conexion) throw new Error('Sin conexión');
     return conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
   };
-  const chapa = (lado: 'local' | 'visitante') => (
-    <span className="chapa" style={{ background: coloresDe(inicio.equipaciones[lado]).principal, color: coloresDe(inicio.equipaciones[lado]).secundario }} aria-hidden="true" />
-  );
 
   // Botones (contracts/ui.md): en juego, «Finalizar partido»; en una pausa, «Seguir» y, contra un NPC, «Gestionar
   // equipo» con la misma importancia a su izquierda (FR-006a).
@@ -206,32 +206,15 @@ export function PartidoRapido() {
 
   return (
     <main className="pantalla partido">
-      <header className="marcador" aria-live="polite">
-        <div className="equipo-marcador">
-          {chapa('local')} <strong>{inicio.local.nombre}</strong>
-        </div>
-        <div className="resultado">
-          <span className="goles">
-            {marcador.local} – {marcador.visitante}
-          </span>
-          {marcador.penaltis && (
-            <span className="penaltis">
-              ({marcador.penaltis.local} – {marcador.penaltis.visitante} en penaltis)
-            </span>
-          )}
-          <span className="fase">{ETIQUETA_FASE[fase] ?? fase}</span>
-        </div>
-        <div className="equipo-marcador derecha">
-          <strong>{inicio.visitante.nombre}</strong> {chapa('visitante')}
-        </div>
-      </header>
+      <MarcadorPartido
+        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
+        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        marcador={marcador}
+        fase={ETIQUETA_FASE[fase] ?? fase}
+        goleadores={goleadoresDe(eventos, nombre)}
+      />
 
       <AvisoDorsales inicio={inicio} miId={miId} />
-
-      <section aria-label="Resumen de eventos">
-        <h2>Lo más destacado</h2>
-        <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} />
-      </section>
 
       {error && (
         <p className="error" role="alert">
@@ -239,12 +222,20 @@ export function PartidoRapido() {
         </p>
       )}
 
-      {estadisticas !== null && (
-        <section aria-label="Estadísticas">
-          <h2>Estadísticas</h2>
-          <Estadisticas datos={estadisticas as never} nombres={nombresEquipo} />
+      {/* Como en el resultado: lo destacado a la izquierda y las estadísticas a la derecha (FR-052), también en el descanso. */}
+      <div className="resultado-cuerpo">
+        <section aria-label="Resumen de eventos">
+          <h2>Lo más destacado</h2>
+          <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} />
         </section>
-      )}
+
+        {estadisticas !== null && (
+          <section aria-label="Estadísticas">
+            <h2>Estadísticas</h2>
+            <Estadisticas datos={estadisticas as never} nombres={nombresEquipo} />
+          </section>
+        )}
+      </div>
 
       <BarraPrincipal
         principal={principal}

@@ -3,7 +3,7 @@
  *
  * - Avance lineal: `ticksPorSegundoX2 × velocidad / 2` ticks de juego por segundo real (23,5, 47 y 94 a x2,
  *   x4 y x8), así que todos los minutos de juego duran lo mismo y el partido dura 4, 2 o 1 minuto.
- * - Pausas anunciadas, que no avanzan el reloj de juego: «¡GOL!» (`pausaGolMs` reales a cualquier
+ * - Pausas anunciadas, que no avanzan el reloj de juego: «¡Gol!» (`pausaGolMs` reales a cualquier
  *   velocidad), el descanso y antes de la prórroga (hasta `continuar()`), y «Cargando…» si se vacía el
  *   búfer. Tras «Cargando…» sigue a la misma velocidad, sin acelerar para recuperar.
  * - Tanda de penaltis: cada lanzamiento ocupa 60 ticks en el motor y dura `tandaLanzamientoMsX2 × 2 /

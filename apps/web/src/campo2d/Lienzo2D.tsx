@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import { firmaPatron } from '@fbd/domain';
 import type { Inicio, Marcador } from '../pantallas/PartidoRapido';
 import { posicionesEn, type Fotograma } from './interpolacion';
-import { ANCHO, dibujar, LARGO, type JugadorDibujo, type Lanzamiento } from './renderizador';
+import { ANCHO, dibujar, LARGO, leerColoresInterfaz, type JugadorDibujo, type Lanzamiento } from './renderizador';
 import type { RelojReproduccion } from './relojReproduccion';
 import { TICKS_LANZAMIENTO } from './relojReproduccion';
 
@@ -118,6 +118,8 @@ export function Lienzo2D({ inicio, reloj, datos, superposicion, alAvanzar, etiqu
   useEffect(() => {
     let id = 0;
     let ultimaActualizacion = 0;
+    // Colores de la interfaz, de los tokens, una vez al montar el lienzo (spec 004, research R6).
+    const interfaz = leerColoresInterfaz();
     const cuadro = (ahora: number) => {
       const canvas = lienzo.current;
       const t = reloj.paso(ahora);
@@ -148,6 +150,8 @@ export function Lienzo2D({ inicio, reloj, datos, superposicion, alAvanzar, etiqu
           aviso: s.aviso,
           accion: accion ? (ETIQUETA_ACCION[accion.tipo] ?? null) : null,
           tanda,
+          interfaz,
+          marcadorEnCampo: false,
         });
       }
       if (ahora - ultimaActualizacion > 250) {

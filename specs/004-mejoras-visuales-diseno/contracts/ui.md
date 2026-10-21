@@ -59,6 +59,8 @@ Se suma a [003/contracts/ui.md](../../003-mejoras-ux-simulacion/contracts/ui.md)
   - recortados con `NombreRecortado`.
 - **Lugares**: partido rápido, partido 2D (franja), resultado y reproducción.
 - **Penaltis**: debajo, en `--texto-subtitulo`: "4-3 en los penaltis".
+- **Goleadores** (ronda 3, FR-048): bajo el nombre de cada equipo, lista `.lista-goleadores` (ronda 5, FR-058: no `.goleadores`, que es la tabla del torneo) en `--texto-pequeno` con el apellido en gris y los minutos en blanco ("Pérez 12', 67' (pen.)", "Ramos (p. p.) 40'"); `aria-label` "Goles de {equipo}". La calcula `goleadoresDe` (`apps/web/src/componentes/goleadores.ts`). En la franja del 2D (ronda 4, FR-053), fila `.goleadores-2d` bajo los equipos con la chapa de cada uno, solo con los goles ya vistos.
+- **Goles en los eventos** (ronda 4, FR-054): `.evento.evento-gol` con fondo `--color-oro-tenue`, borde izquierdo `--color-oro` y texto en negrita.
 
 ## 5. Pantallas finales (FR-017)
 
@@ -120,3 +122,49 @@ Nota sobre la fila propia de las tablas: el borde lima marca "lo tuyo" y cuenta 
 - Nombres de equipo, de jugador y de partida en paneles, marcadores, tablas y cartas.
 - **Ratón**: etiqueta con el texto completo al señalar. **Teclado**: al enfocar. **Táctil**: al mantener pulsado 500 ms.
 - Mantener pulsado dentro de una carta o fila elegible no la elige ni abre el menú contextual del navegador. Lo comprueba la prueba e2e con `page.touchscreen` y emulación táctil.
+
+## 11. Textos renombrados durante la implementación (FR-035, FR-036)
+
+Cambios de texto visibles respecto a `4168404`. Las pruebas e2e afectadas se han actualizado y se indican en la
+última columna. El comportamiento no cambia (FR-038).
+
+| Lugar | Antes | Ahora | Prueba actualizada |
+|---|---|---|---|
+| Barra de navegación | «Cuenta» (a `/cuenta`) | «Mi perfil» (a `/perfil`; un invitado, a `/cuenta`) | — |
+| Barra de navegación sin sesión | «Iniciar sesión» (a `/`) | «Iniciar sesión» (a `/?acceso=entrar`, que abre el formulario de acceso) | — |
+| Inicio sin sesión | «Draftea tu plantilla sobre a sobre y compite.»; botones «Jugar como invitado», «Iniciar sesión», «Registrarse» | Entradilla del contrato §3; principal «Empezar a jugar» (abre el registro), secundario «Jugar como invitado», de texto «Iniciar sesión» | — |
+| Inicio con sesión | «Crear partida» | «Continuar partida» o «Nueva partida» (§3) | — |
+| Mi perfil | «Perfil guardado.» en la barra | Aviso emergente «Perfil guardado» (§8) | `identidad.spec.ts` |
+| Nombre del equipo (sala y perfil) | «Mínimo 3 caracteres», «Máximo 24 caracteres», «Escribe un nombre», «Ese nombre ya lo usa otro equipo» | «El nombre del equipo debe tener entre 3 y 24 caracteres.», «Escribe un nombre para tu equipo.», «Ese nombre ya lo usa otro equipo. Elige otro.» | `identidad.spec.ts` |
+| Nombre del equipo (sala y formación) | « · Guardado», «Nombre guardado.» | Aviso emergente «Nombre guardado» | — |
+| Sala, sin participar | Botón «Unirse» | Botón principal «Unirme»; aviso «Te has unido a la partida» (§8) | — |
+| Sala | «Copiar enlace para invitar» → «Enlace copiado» en el botón | «Copiar enlace» y aviso emergente «Enlace copiado» (§8) | — |
+| Formación | «Alineación confirmada (versión N).», «Dorsal cambiado.», «Equipaciones guardadas.» | Avisos emergentes «Alineación confirmada», «Dorsal cambiado», «Equipaciones guardadas» | — (`alineacion.spec.ts` ya buscaba «Alineación confirmada») |
+| Marcadores | «(4 – 3 en penaltis)» | «4-3 en los penaltis» (§4) | — |
+| Partido 2D y reproducción | «¡GOL!» | «¡Gol!» (sin mayúsculas sostenidas) | `partido-2d.spec.ts` |
+| Campeón | Titular «¡{campeón}, campeón del torneo!» | Titular de cartel «Campeones» y, debajo, «¡{campeón}, campeón del torneo!» como subtítulo (§5) | — |
+| Derrota | Titular «{equipo} ha sido derrotado en {fase}» | Titular de cartel «Eliminados» («Subcampeones» si se perdió la final) y, debajo, «{equipo} ha sido derrotado en {fase}» (§5) | — |
+| Torneo | «🏆 Campeón: …» | Icono de trofeo y «Campeón: …» | — |
+| Eventos del partido | Emojis ⚽ 🟨 🟥 🩹 🔁 delante del texto | Icono SVG con texto alternativo en su propia columna (§6) | — |
+| Errores sin código del servidor | «No se pudo crear la partida», «No se pudieron cargar tus partidas»… | «No se ha podido crear la partida. Comprueba la conexión y vuelve a intentarlo.» y equivalentes (§8) | — |
+
+## 12. Revisión 2026-10-21 (FR-041 a FR-047; research R16)
+
+Cambios de la segunda ronda sobre lo anterior. El comportamiento no cambia (FR-038).
+
+| Lugar | Contrato |
+|---|---|
+| Todas | Capa `.ambiente` fija detrás del contenido (`aria-hidden`, `z-index: -1`): focos, grano y líneas de cal. Paneles de vidrio con desenfoque, borde con brillo y sombra; radios de la escala 6/12/20 px. |
+| Barra | Escudo + nombre en cartel cursivo; destino activo con barra lima luminosa. Menú móvil por debajo de **960 px** (antes 720). En la franja 2D por debajo de 480 px, solo el escudo (nombre para lectores). |
+| Botón principal | Fondo lima exacto (`background-color`) con degradado y resplandor encima; cartel cursivo de 22 px. Sigue siendo el único relleno lima. |
+| Inicio | Composición `.portada-escena` inerte: estadio, cuatro cartas reales en abanico (una por nivel) y el sobre abierto. Debajo, los tres pasos del juego (secuencia real). `?acceso=registro` abre el registro. |
+| Draft | ≥ 720 px: la pantalla ocupa el alto de la ventana; la rejilla 4 × 2 se escala con `zoom` (`useEscalaRejilla`) para que las 8 cartas, el reloj, la mesa, la plantilla y «Confirmar elección» se vean sin desplazarse. < 720 px: carrusel horizontal (`data-desplazable`). El titular «Sobre N» y «Turno N de 8» van en el carril de contexto. Reloj circular. Cartas elegibles con relieve y reflejo que siguen al ratón; la elegida se alza con luz lima. |
+| Apertura | Sobre ilustrado (`SobreArte`), haces de luz, dorsos con escudo y mesa escalada a la ventana. |
+| Cartas | Acabados plata, violeta oscuro, oro y holográfico oscuro; silueta de busto con emblema por demarcación. Maquetación y tamaños de 003/FR-009 sin cambios. |
+| Formación | Césped segado con viñeta y líneas reglamentarias (`LineasCampo`); fichas con la chapa de la equipación encima. |
+| Preparación | `TarjetaPreparacion` pasa de aviso ámbar a cartel `.partido-cartel` (`role="status"`): «contra {rival}» en cartel y el modo en dos losetas con icono. |
+| Marcador | Placas de equipo con la luz de su equipación (`--color-equipo`) y resultado en pieza central oscura. |
+| Finales | Campeón: trofeo ilustrado con haces y destellos, titular en oro. Derrota: estadio ilustrado apagándose. Un único momento animado; con movimiento reducido, fundidos. |
+| Nueva partida | Dos columnas: formulario con losetas (modo, dificultad) y resumen con el sobre ilustrado (oculto < 900 px). |
+| Sala | Cuenta atrás en cartel; asientos numerados con distintivo de iniciales; nombre del equipo en el lateral. |
+| Pruebas | `tema.spec.ts` comprueba la escala de radios y la capa de atmósfera en lugar de superficies planas; `jerarquia.spec.ts`, la fila propia con luz lima tenue y barra lima (`box-shadow`). |

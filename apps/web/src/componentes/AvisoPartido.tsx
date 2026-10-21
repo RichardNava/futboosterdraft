@@ -5,6 +5,7 @@ import { useConexion, useCuentaAtras } from '../conexion/useConexion';
 import { BarraPrincipal, type AccionBarra } from './BarraPrincipal';
 import { SelectorModo, type Modalidad } from './SelectorModo';
 
+
 interface Preparacion {
   jornada: number | null;
   partidoId: string | null;
@@ -75,22 +76,28 @@ export function usePreparacionPartido(partidaId: string): EstadoPreparacion | nu
   };
 }
 
-/** Tarjeta de la preparación: rival, plazo y selector de modo (sin el botón, que va en la barra principal). */
+/** Cartel del próximo partido (spec 004, FR-045): rival en cartel, plazo y selector de modo (el botón va en la barra principal). */
 export function TarjetaPreparacion({ preparacion }: { preparacion: EstadoPreparacion }) {
   const { prep, contraHumano, restante, modalidad, setModalidad } = preparacion;
   const horas = Math.floor((restante ?? 0) / 3600);
   const minutos = Math.floor(((restante ?? 0) % 3600) / 60);
   return (
-    <div className="aviso tarjeta-preparacion" role="status">
-      <p>
-        {prep.jornada !== null && `Jornada ${prep.jornada}: `}próximo partido contra <strong>{prep.rival.nombre}</strong>.{' '}
-        {prep.venceEn && restante !== null && `Tienes ${horas} h ${minutos} min para jugarlo. `}
-        {contraHumano ? 'Se jugará con la alineación que tengas guardada al abrirlo.' : 'Confirma tu alineación antes de empezar.'}
-      </p>
+    <section className="partido-cartel tarjeta-preparacion" role="status" aria-label="Próximo partido">
+      <div className="partido-cartel-info">
+        <p className="partido-cartel-jornada">{prep.jornada !== null ? `Jornada ${prep.jornada}: próximo partido` : 'Próximo partido'}</p>{' '}
+        <h2 className="partido-cartel-rival">
+          <span className="partido-cartel-contra">contra</span> {prep.rival.nombre}
+        </h2>
+        <p className="nota">
+          {prep.venceEn && restante !== null && `Tienes ${horas} h ${minutos} min para jugarlo. `}
+          {contraHumano ? 'Se jugará con la alineación que tengas guardada al abrirlo.' : 'Confirma tu alineación antes de empezar.'}
+        </p>
+      </div>
       <SelectorModo valor={modalidad} onCambiar={setModalidad} />
-    </div>
+    </section>
   );
 }
+
 
 /**
  * Aviso del próximo partido con su botón principal («Comenzar partido» contra un NPC o «Ver partido» contra un

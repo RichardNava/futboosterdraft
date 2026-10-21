@@ -1,9 +1,9 @@
 import { CLAVES_STATS, type Demarcacion, type Nivel } from '@fbd/domain';
 import { useId, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react';
 import { useTextosSpecials } from '../estado/catalogo';
-import '../estilos/cartas.css';
 import { ABREVIATURA_STAT, ETIQUETA_NIVEL } from '../textos/niveles';
 import { SiluetaJugador } from './SiluetaJugador';
+import { NombreRecortado } from './NombreRecortado';
 
 /** Datos de una carta (coincide con `JugadorResumen` del protocolo). */
 export interface CartaResumen {
@@ -26,6 +26,8 @@ interface Props {
   seleccionada?: boolean;
   dorsal?: number;
   onClick?: () => void;
+  /** Doble clic en la carta (en el draft, elige y confirma a la vez; spec 004, FR-056). */
+  onDobleClick?: () => void;
   /** Abre la ficha con la carta completa. */
   onVerFicha?: () => void;
 }
@@ -34,7 +36,7 @@ interface Props {
  * Carta de jugador (FR-001 a FR-005; contracts/ui.md): imagen, media y nombre arriba; posiciones resaltadas
  * justo debajo del nombre; los seis stats y los specials en el pie. El acabado depende del nivel.
  */
-export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick, onVerFicha }: Props) {
+export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick, onDobleClick, onVerFicha }: Props) {
   const clases = ['carta', compacta ? 'compacta' : 'completa', `nivel-${jugador.nivel.toLowerCase()}`, seleccionada ? 'seleccionada' : '']
     .filter(Boolean)
     .join(' ');
@@ -47,9 +49,10 @@ export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick,
       onClick();
     }
   };
-  // El cuerpo no es un <button> porque contiene los botones de los specials.
+  // El cuerpo no es un <button> por su contenido (stats, posiciones). Los botones de los specials van fuera de él, a su
+  // lado en el DOM, para que no haya controles anidados (spec 004, FR-030); el CSS los coloca al pie de la carta.
   const interactivo = onClick
-    ? { role: 'button', tabIndex: 0, 'aria-pressed': seleccionada ?? false, 'aria-label': etiqueta, onClick, onKeyDown: alPulsarTecla }
+    ? { role: 'button', tabIndex: 0, 'aria-pressed': seleccionada ?? false, 'aria-label': etiqueta, onClick, onDoubleClick: onDobleClick, onKeyDown: alPulsarTecla }
     : {};
 
   return (
@@ -63,6 +66,8 @@ export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick,
       <div className="carta-cuerpo" {...interactivo}>
         {compacta ? <ContenidoCompacto jugador={jugador} /> : <ContenidoCompleto jugador={jugador} />}
       </div>
+      {/* Siempre en la carta completa, aunque esté vacío: reserva el sitio de los specials y todas miden lo mismo (H1). */}
+      {!compacta && <Specials specials={jugador.specials} onClick={onClick} onDobleClick={onClick ? onDobleClick : undefined} />}
       {dorsal !== undefined && <span className="carta-dorsal">#{dorsal}</span>}
       {onVerFicha && (
         <button type="button" className="carta-ficha" onClick={onVerFicha} aria-label={`Ver carta de ${jugador.nombre} ${jugador.apellidos}`}>
@@ -89,9 +94,7 @@ function ContenidoCompacto({ jugador }: { jugador: CartaResumen }) {
   return (
     <>
       <span className="carta-media">{Math.round(jugador.media)}</span>
-      <span className="carta-nombre">
-        {jugador.nombre} {jugador.apellidos.split(' ')[0]}
-      </span>
+      <NombreRecortado texto={`${jugador.nombre} ${jugador.apellidos.split(' ')[0]}`} className="carta-nombre" />
       <Posiciones posiciones={jugador.posicion} />
     </>
   );
@@ -112,7 +115,9 @@ function ContenidoCompleto({ jugador }: { jugador: CartaResumen }) {
       </div>
       <div className="carta-nombre">
         <span className="carta-nombre-pila">{jugador.nombre}</span>
-        <span className="carta-apellidos">{jugador.apellidos}</span>
+        <span className="carta-apellidos">
+          <NombreRecortado texto={jugador.apellidos} lineas={2} />
+        </span>
       </div>
       <Posiciones posiciones={jugador.posicion} />
       <div className="carta-pie">
@@ -126,19 +131,24 @@ function ContenidoCompleto({ jugador }: { jugador: CartaResumen }) {
             ))}
           </dl>
         )}
-        {/* Siempre, aunque esté vacío: reserva el sitio de los specials y todas las cartas miden lo mismo (H1). */}
-        <Specials specials={jugador.specials} />
       </div>
     </>
   );
 }
 
-/** Cada special es un botón que abre su descripción en un popover (FR-004). */
-function Specials({ specials }: { specials: string[] }) {
+/**
+ * Cada special es un botón que abre su descripción en un popover (FR-004). Fuera de esos botones, el pie es parte
+ * de la carta: la pulsación y el doble clic en el hueco vacío cuentan como en el cuerpo (spec 004, FR-056).
+ */
+function Specials({ specials, onClick, onDobleClick }: { specials: string[]; onClick?: () => void; onDobleClick?: () => void }) {
   const textos = useTextosSpecials();
   const base = useId();
   const id = (s: string) => `${base}-${s}`.replace(/:/g, '');
   const detener = (e: MouseEvent) => e.stopPropagation();
+  // Los popovers son hijos en el árbol de React: sus eventos también llegan aquí y no cuentan.
+  const enHueco = (e: MouseEvent) => !(e.target as Element).closest('.carta-special, .carta-descripcion');
+  const alPulsar = onClick ? (e: MouseEvent) => enHueco(e) && onClick() : undefined;
+  const alPulsarDoble = onDobleClick ? (e: MouseEvent) => enHueco(e) && onDobleClick() : undefined;
   const conPuntero = (e: PointerEvent<HTMLButtonElement>, mostrar: boolean) => {
     if (e.pointerType !== 'mouse') return;
     const pop = document.getElementById(e.currentTarget.getAttribute('popovertarget') ?? '');
@@ -150,7 +160,8 @@ function Specials({ specials }: { specials: string[] }) {
     }
   };
   return (
-    <div className="carta-specials" data-cantidad={specials.length}>
+    // Sin rol ni foco propios: con el teclado se elige desde el cuerpo de la carta.
+    <div className={onClick ? 'carta-specials pulsable' : 'carta-specials'} data-cantidad={specials.length} onClick={alPulsar} onDoubleClick={alPulsarDoble}>
       {specials.map((s) => (
         <span key={s}>
           <button
