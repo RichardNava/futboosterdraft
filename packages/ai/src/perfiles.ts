@@ -51,7 +51,7 @@ export const FORMACIONES_BASICAS: readonly FormacionId[] = ['4-4-2', '4-3-3', '4
 
 const AVANZADO: PerfilNPC = {
   ruido: 1.5,
-  pesos: { media: 1, cobertura: 6, porteros: 8, sinergia: 2 },
+  pesos: { media: 1, cobertura: 6, porteros: 8, sinergia: 2, rasgos: 2 },
   alcanceFormaciones: 'objetivo',
   anticipacion: false,
   simulaciones: 0,
@@ -62,7 +62,7 @@ const AVANZADO: PerfilNPC = {
 export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
   amateur: {
     ruido: 8,
-    pesos: { media: 1, cobertura: 0, porteros: 0, sinergia: 0 },
+    pesos: { media: 1, cobertura: 0, porteros: 0, sinergia: 0, rasgos: 0.5 },
     alcanceFormaciones: 'basicas',
     anticipacion: false,
     simulaciones: 0,
@@ -71,7 +71,7 @@ export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
   },
   intermedio: {
     ruido: 4,
-    pesos: { media: 1, cobertura: 4, porteros: 6, sinergia: 0 },
+    pesos: { media: 1, cobertura: 4, porteros: 6, sinergia: 0, rasgos: 1 },
     alcanceFormaciones: 'basicas',
     anticipacion: false,
     simulaciones: 0,
@@ -81,7 +81,7 @@ export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
   avanzado: AVANZADO,
   PRO: {
     ruido: 0,
-    pesos: { media: 1, cobertura: 7, porteros: 10, sinergia: 3 },
+    pesos: { media: 1, cobertura: 7, porteros: 10, sinergia: 3, rasgos: 3 },
     alcanceFormaciones: 'todas',
     anticipacion: true,
     simulaciones: 20,

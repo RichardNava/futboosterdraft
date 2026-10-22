@@ -50,9 +50,9 @@ test('un solo campo: recolocar, intercambiar titulares y meter a un suplente', a
   await expect(page.locator(`.ficha-equipo[data-jugador="${idLd}"]`)).toHaveAttribute('data-casilla', 'DC');
   // Un jugador fuera de sus posiciones queda penalizado (salvo que juegue de LD o sea Todocampista: depende del draft).
   const partidaId = /partidas\/([^/]+)\//.exec(page.url())![1];
-  const { plantilla } = (await (await page.request.get(`/api/partidas/${partidaId}/alineacion`)).json()) as { plantilla: { id: number; posicion: string[]; specials: string[] }[] };
+  const { plantilla } = (await (await page.request.get(`/api/partidas/${partidaId}/alineacion`)).json()) as { plantilla: { id: number; posicion: string[]; virtudes: string[] }[] };
   const movido = plantilla.find((j) => j.id === Number(idDc))!;
-  if (!movido.posicion.includes('LD') && !movido.specials.includes('Todocampista')) {
+  if (!movido.posicion.includes('LD') && !movido.virtudes.includes('Todocampista')) {
     await expect(page.locator(`.ficha-equipo[data-jugador="${idDc}"]`)).toHaveAccessibleName(/fuera de posición/);
   }
 

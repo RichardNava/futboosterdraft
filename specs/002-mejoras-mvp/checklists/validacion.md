@@ -22,7 +22,7 @@ que quedan sin marcar necesitan personas o un equipo concreto, o no se cumplen t
 
 ## Escenarios del quickstart
 
-- [x] A. Cartas — `cartas.spec.ts` (sin desbordamiento a 1280 y 360 px, 4 specials, popovers, acabados)
+- [x] A. Cartas — `cartas.spec.ts` (sin desbordamiento a 1280 y 360 px, 4 virtudes, popovers, acabados)
 - [x] B. Apertura de sobre — `apertura.spec.ts` (3 veces, «Saltar», +6 s, silencio recordado, movimiento reducido, sin repetir al recargar) y `draft.test.ts`
 - [x] C. Avanzar sin esperas en solitario — `avanzar-solo.spec.ts`, `avanzar.test.ts`
 - [x] D. Draft con varios humanos — `draft-varios.spec.ts` (pasos 1 y 2), `navegacion.spec.ts` (paso 3: modal, cancelar, abandonar)

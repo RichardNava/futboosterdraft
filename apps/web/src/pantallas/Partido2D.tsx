@@ -9,6 +9,7 @@ import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal'
 import { estadoEquipoEnPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
 import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
 import { Chapa, GoleadoresFranja } from '../componentes/Marcador';
+import { Icono } from '../componentes/Icono';
 import { goleadoresDe } from '../componentes/goleadores';
 import { NombreRecortado } from '../componentes/NombreRecortado';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
@@ -36,6 +37,20 @@ const AVISO: Partial<Record<EstadoReloj, string>> = {
   cargando: 'Cargando…',
   fin: 'Final del partido',
 };
+
+/** Segundos de juego que se ve el rótulo «Penalti» tras pitarlo (spec 005, FR-071). */
+const TICKS_ROTULO_PENALTI = 90;
+
+/** Defectos colectivos activos en lo ya visto (spec 005, FR-044): el último aviso de cada equipo y defecto manda. */
+function malestarActivo(eventos: readonly EventoVista[]): { equipo: 'local' | 'visitante'; defecto: string; jugadorId: number }[] {
+  const estado = new Map<string, { equipo: 'local' | 'visitante'; defecto: string; jugadorId: number } | null>();
+  for (const e of eventos) {
+    if (e.tipo !== 'malestar') continue;
+    const clave = `${e.equipo}:${String(e.datos.defecto)}`;
+    estado.set(clave, e.datos.activo ? { equipo: e.equipo, defecto: String(e.datos.defecto), jugadorId: Number(e.datos.jugadorId) } : null);
+  }
+  return [...estado.values()].filter((x): x is NonNullable<typeof x> => x !== null);
+}
 
 const movimientoReducido = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
@@ -142,7 +157,10 @@ export function Partido2D() {
   const penaltis = tanda ? (tanda.datos.marcador as { local: number; visitante: number }) : null;
   const marcador: Marcador = alFinal ? fin.marcador : { local: goles('local'), visitante: goles('visitante') };
   const fase = alFinal ? 'finalizado' : (tramoActual?.fase ?? 'primera_parte');
-  const aviso = (alFinal || estadoReloj !== 'fin' ? AVISO[estadoReloj] : null) ?? null;
+  const ultimoPenalti = eventosVistos.findLast((e) => e.tipo === 'penalti');
+  const rotuloPenalti = ultimoPenalti !== undefined && tick - ultimoPenalti.tick <= TICKS_ROTULO_PENALTI ? 'Penalti' : null;
+  const aviso = (alFinal || estadoReloj !== 'fin' ? AVISO[estadoReloj] : null) ?? (estadoReloj === 'reproduciendo' ? rotuloPenalti : null);
+  const malestar = malestarActivo(eventosVistos);
 
   const superposicion = useRef<Superposicion>({ marcador, minuto, aviso });
   superposicion.current = { marcador, minuto, aviso: estadoReloj === 'cargando' && tramos.length === 0 ? null : aviso };
@@ -284,6 +302,11 @@ export function Partido2D() {
           visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
           goleadores={goleadoresDe(eventosVistos, nombre)}
         />
+        {malestar.map((m) => (
+          <p key={`${m.equipo}-${m.defecto}`} className="nota aviso-malestar" role="status">
+            <Icono nombre="informacion" /> Malestar en {nombresEquipo[m.equipo]}: {nombre(m.jugadorId)} ({m.defecto === 'Polemico' ? 'Polémico' : m.defecto})
+          </p>
+        ))}
       </div>
       {/* Campo y carril lateral a la medida de la ventana: sin desplazarse ni ampliar (FR-049). */}
       <div className="partido-2d-mesa">

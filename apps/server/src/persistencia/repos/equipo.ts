@@ -12,6 +12,8 @@ type Ejecutor = BaseDatos | Tx;
 export interface AlineacionGuardada extends Alineacion {
   version: number;
   confirmadaEn: Date;
+  /** Once confirmado del modo duelos: ya no se puede cambiar (spec 005, FR-063a). */
+  bloqueada: boolean;
 }
 
 export class RepoEquipo {
@@ -36,10 +38,11 @@ export class RepoEquipo {
       ...(fila.colocacion ? { colocacion: fila.colocacion as NonNullable<Alineacion['colocacion']> } : {}),
       version: fila.version,
       confirmadaEn: fila.confirmadaEn,
+      bloqueada: fila.bloqueada,
     };
   }
 
-  async guardarAlineacion(participanteId: string, a: Alineacion, ahora: number, ejecutor: Ejecutor = this.db): Promise<number> {
+  async guardarAlineacion(participanteId: string, a: Alineacion, ahora: number, ejecutor: Ejecutor = this.db, bloqueada = false): Promise<number> {
     const anterior = await this.ultimaAlineacion(participanteId, ejecutor);
     const version = (anterior?.version ?? 0) + 1;
     await ejecutor.insert(alineaciones).values({
@@ -51,6 +54,7 @@ export class RepoEquipo {
       tactica: a.tactica,
       lanzadores: a.lanzadores,
       colocacion: a.colocacion ?? null,
+      bloqueada,
       confirmadaEn: new Date(ahora),
     });
     return version;

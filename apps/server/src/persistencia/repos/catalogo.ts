@@ -1,13 +1,32 @@
 /**
  * Catálogo en memoria: se carga una vez al arrancar (el catálogo no cambia en ejecución).
+ *
+ * Cada partida ve las cartas en su versión de catálogo (spec 005, FR-036): `enVersion(1)` da las cartas de antes de
+ * la spec 005, sin defectos ni virtudes nuevas.
  */
-import type { Jugador } from '@fbd/domain';
+import { cartaEnVersion, VERSION_CATALOGO_ACTUAL, type Jugador } from '@fbd/domain';
 import { filaAJugador } from '../../http/catalogo';
 import type { BaseDatos } from '../db';
 import { jugadores } from '../esquema/index';
 
 export class Catalogo {
-  private constructor(private readonly porId: ReadonlyMap<number, Jugador>) {}
+  private readonly vistas = new Map<number, Catalogo>();
+
+  private constructor(
+    private readonly porId: ReadonlyMap<number, Jugador>,
+    readonly version = VERSION_CATALOGO_ACTUAL,
+  ) {}
+
+  /** El mismo catálogo con las cartas en una versión anterior (se calcula una vez por versión). */
+  enVersion(version: number): Catalogo {
+    if (version >= this.version) return this;
+    let vista = this.vistas.get(version);
+    if (!vista) {
+      vista = new Catalogo(new Map([...this.porId].map(([id, j]) => [id, cartaEnVersion(j, version)])), version);
+      this.vistas.set(version, vista);
+    }
+    return vista;
+  }
 
   static async cargar(db: BaseDatos): Promise<Catalogo> {
     const filas = await db.select().from(jugadores);
@@ -44,7 +63,8 @@ export class Catalogo {
       posicion: j.posicion,
       media: j.media,
       nivel: j.nivel,
-      specials: j.specials,
+      virtudes: j.virtudes,
+      defectos: j.defectos,
       stats: j.stats as unknown as Record<string, number>,
     };
   }

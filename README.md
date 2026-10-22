@@ -5,7 +5,7 @@ Manager de fútbol online basado en un **draft de sobres de cartas de jugadores*
 Cada participante construye su plantilla eligiendo jugadores de varios sobres. Después elige
 formación, once inicial y táctica, y compite en un torneo contra otros participantes o contra rivales
 controlados por la IA. Un motor de simulación resuelve los partidos a partir de los atributos de los
-jugadores, sus habilidades especiales y las decisiones tácticas.
+jugadores, sus virtudes y defectos y las decisiones tácticas.
 
 > **Estado del proyecto:** MVP implementado (las 6 historias de usuario del
 > [plan](specs/001-draft-manager-mvp/plan.md)): draft, preparación del equipo, partidos en simulación
@@ -40,6 +40,7 @@ También se puede jugar como **invitado**, sin cuenta, contra la IA.
 | [Modelo de datos](specs/001-draft-manager-mvp/data-model.md) | Entidades, validaciones y estados |
 | [Contratos](specs/001-draft-manager-mvp/contracts/) | API HTTP, protocolo WebSocket, motor de simulación, formato del catálogo de jugadores |
 | [Quickstart](specs/001-draft-manager-mvp/quickstart.md) | Cómo levantar y validar el sistema de principio a fin |
+| [Virtudes y defectos](docs/juego/virtudes-y-defectos.md) | Referencia de los rasgos de las cartas: efecto, activación, acumulación e impacto |
 
 ## Pila tecnológica
 

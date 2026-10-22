@@ -7,18 +7,21 @@
  * - **media**: la media efectiva de la carta en la mejor casilla que podría ocupar;
  * - **cobertura**: cuánto cubre posiciones que faltan para las formaciones viables;
  * - **porteros**: la escasez de porteros (se necesitan al menos 2);
- * - **sinergia**: specials de equipo que la plantilla aún no tiene y lanzadores que le faltan.
+ * - **sinergia**: virtudes de equipo que la plantilla aún no tiene y lanzadores que le faltan;
+ * - **rasgos** (spec 005, research R12): `Σ impacto(virtud) − Σ (1 − impacto(defecto))`, el impacto de la tabla de
+ *   rasgos, que los niveles bajos ponderan menos.
  */
 import {
   autoAlineacion,
   FORMACIONES,
+  rasgo,
   statsEfectivos,
   type Alineacion,
   type FormacionId,
   type Jugador,
   type ParametrosEquilibrado,
   type Posicion,
-  type Special,
+  type Virtud,
 } from '@fbd/domain';
 
 export interface PesosEvaluacion {
@@ -26,11 +29,13 @@ export interface PesosEvaluacion {
   cobertura: number;
   porteros: number;
   sinergia: number;
+  /** Puntos de media que vale un rasgo de impacto 1 (spec 005). */
+  rasgos: number;
 }
 
-/** Specials de equipo: su efecto no se acumula, así que el primero vale mucho más que los siguientes. */
-const SPECIALS_EQUIPO: readonly Special[] = ['Capitania', 'Jerarquia', 'Libero', 'BoxToBox', 'FortalezaMental', 'Motivador', 'Carismatico'];
-const LANZADORES: readonly Special[] = ['LanzadorPenalties', 'LanzadorFaltas'];
+/** Virtudes de equipo: su efecto no se acumula, así que el primero vale mucho más que los siguientes. */
+const VIRTUDES_EQUIPO: readonly Virtud[] = ['Capitania', 'Jerarquia', 'Libero', 'BoxToBox', 'FortalezaMental', 'Motivador', 'Carismatico'];
+const LANZADORES: readonly Virtud[] = ['LanzadorPenalties', 'LanzadorFaltas'];
 
 /** Plantilla objetivo (24 jugadores): con esto ya hay titular y suplente en cada línea. */
 const CUPO_DEMARCACION = { POR: 2, DEF: 8, MED: 8, DEL: 6 } as const;
@@ -45,8 +50,8 @@ export function mediaEnMejorCasilla(j: Jugador, formaciones: readonly FormacionI
   return mejor;
 }
 
-const encaja = (j: Pick<Jugador, 'posicion' | 'specials'>, admitidas: readonly Posicion[]) =>
-  admitidas.some((pos) => j.posicion.includes(pos)) || (j.specials.includes('Todocampista') && !admitidas.includes('POR'));
+const encaja = (j: Pick<Jugador, 'posicion' | 'virtudes'>, admitidas: readonly Posicion[]) =>
+  admitidas.some((pos) => j.posicion.includes(pos)) || (j.virtudes.includes('Todocampista') && !admitidas.includes('POR'));
 
 /**
  * Cobertura que aporta la carta (0..1): para cada formación, la fracción de las plazas sin cubrir
@@ -93,16 +98,23 @@ export function saturacion(carta: Pick<Jugador, 'demarcacion'>, plantilla: reado
   return n >= cupo ? -Math.min(1, (n - cupo + 1) / 3) : 0;
 }
 
-/** Sinergia de specials (0..1): specials de equipo nuevos para la plantilla y lanzadores que faltan. */
-export function sinergia(carta: Pick<Jugador, 'specials'>, plantilla: readonly Pick<Jugador, 'specials'>[]): number {
-  const presentes = new Set(plantilla.flatMap((j) => j.specials));
+/** Sinergia de virtudes (0..1): virtudes de equipo nuevas para la plantilla y lanzadores que faltan. */
+export function sinergia(carta: Pick<Jugador, 'virtudes'>, plantilla: readonly Pick<Jugador, 'virtudes'>[]): number {
+  const presentes = new Set(plantilla.flatMap((j) => j.virtudes));
   let valor = 0;
-  for (const s of carta.specials) {
-    if (SPECIALS_EQUIPO.includes(s)) valor += presentes.has(s) ? 0.1 : 0.5;
+  for (const s of carta.virtudes) {
+    if (VIRTUDES_EQUIPO.includes(s)) valor += presentes.has(s) ? 0.1 : 0.5;
     else if (LANZADORES.includes(s)) valor += presentes.has(s) ? 0.05 : 0.3;
     else valor += 0.15;
   }
   return Math.min(1, valor);
+}
+
+/** Valor de los rasgos de una carta (spec 005, FR-043): virtudes en positivo y defectos en negativo, por su impacto. */
+export function valorRasgos(carta: Pick<Jugador, 'virtudes' | 'defectos'>): number {
+  const virtudes = carta.virtudes.reduce((s, v) => s + rasgo(v).impacto, 0);
+  const defectos = carta.defectos.reduce((s, d) => s + (1 - rasgo(d).impacto), 0);
+  return virtudes - defectos;
 }
 
 /**
@@ -121,13 +133,14 @@ export function valorCarta(
     pesos.media * media +
     pesos.cobertura * (cobertura(carta, plantilla, formaciones) + saturacion(carta, plantilla)) +
     pesos.porteros * escasezPorteros(carta, plantilla) +
-    pesos.sinergia * sinergia(carta, plantilla)
+    pesos.sinergia * sinergia(carta, plantilla) +
+    pesos.rasgos * valorRasgos(carta)
   );
 }
 
 /**
  * Fuerza esperada de una alineación: media efectiva de los titulares en sus casillas, más la sinergia
- * de los specials de equipo presentes en el campo.
+ * de las virtudes de equipo presentes en el campo.
  */
 export function fuerzaAlineacion(a: Alineacion, porId: ReadonlyMap<number, Jugador>, p: ParametrosEquilibrado): number {
   const casillas = new Map(FORMACIONES[a.formacion].casillas.map((c) => [c.id, c]));
@@ -140,7 +153,7 @@ export function fuerzaAlineacion(a: Alineacion, porId: ReadonlyMap<number, Jugad
     titulares.push(j);
     total += statsEfectivos(j, c, p).media;
   }
-  const equipo = new Set(titulares.flatMap((j) => j.specials).filter((s) => SPECIALS_EQUIPO.includes(s)));
+  const equipo = new Set(titulares.flatMap((j) => j.virtudes).filter((s) => VIRTUDES_EQUIPO.includes(s)));
   return total / 11 + equipo.size * 0.5;
 }
 

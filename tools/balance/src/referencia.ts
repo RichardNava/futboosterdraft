@@ -12,7 +12,7 @@
 import { autoAlineacion, parametrosActuales, tacticaPorDefecto, TURNOS_POR_RONDA, type Alineacion, type FormacionId, type Jugador, type ParametrosEquilibrado } from '@fbd/domain';
 import { valorCarta } from '@fbd/ai';
 
-export const PESOS_REFERENCIA = { media: 1, cobertura: 4, porteros: 6, sinergia: 0 } as const;
+export const PESOS_REFERENCIA = { media: 1, cobertura: 4, porteros: 6, sinergia: 0, rasgos: 0 } as const;
 export const FORMACIONES_REFERENCIA: readonly FormacionId[] = ['4-4-2', '4-3-3'];
 
 /**

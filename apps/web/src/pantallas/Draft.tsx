@@ -41,7 +41,7 @@ export function Draft() {
   const [participantes, setParticipantes] = useState<{ id: string; nombre: string }[]>([]);
   const [aviso, setAviso] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ficha, setFicha] = useState<number | null>(null);
+  const [ficha, setFicha] = useState<CartaResumen | null>(null);
   /** Sobre propio recién abierto: animación de apertura (solo cuando el servidor la pide; FR-006). */
   const [apertura, setApertura] = useState<CartaResumen[] | null>(null);
   /** Turno mostrado ("ronda-turno"): el ack de una elección solo cuenta para el turno en que se envió. */
@@ -208,7 +208,7 @@ export function Draft() {
                 seleccionada={(confirmada ?? elegida) === j.id}
                 onClick={confirmada === null ? () => setElegida(j.id) : undefined}
                 onDobleClick={confirmada === null ? () => elegirYConfirmar(j.id) : undefined}
-                onVerFicha={() => setFicha(j.id)}
+                onVerFicha={() => setFicha(j)}
               />
             ))}
           </div>
@@ -299,7 +299,7 @@ export function Draft() {
                         {ETIQUETA_DEMARCACION[d]} ({misPorDemarcacion[d]!.length})
                       </h3>
                       {misPorDemarcacion[d]!.map((j) => (
-                        <CartaJugador key={j.id} jugador={j} compacta onVerFicha={() => setFicha(j.id)} />
+                        <CartaJugador key={j.id} jugador={j} compacta onVerFicha={() => setFicha(j)} />
                       ))}
                     </div>
                   ))}
@@ -309,7 +309,7 @@ export function Draft() {
           </section>
         </aside>
       </div>
-      {ficha !== null && <FichaJugador jugadorId={ficha} onCerrar={() => setFicha(null)} />}
+      {ficha !== null && <FichaJugador jugadorId={ficha.id} rasgos={ficha} onCerrar={() => setFicha(null)} />}
       <BarraPrincipal
         principal={confirmada === null ? { etiqueta: 'Confirmar elección', onClick: () => confirmar(), motivoDesactivado: elegida === null ? 'Elige una carta del sobre' : null } : null}
         estado={confirmada !== null ? <span role="status">Elección confirmada. {textoEspera}</span> : undefined}

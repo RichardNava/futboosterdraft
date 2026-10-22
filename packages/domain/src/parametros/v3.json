@@ -100,7 +100,7 @@
     "probPorteroEnHuecoPorDef": 0.5,
     "probGoatEnAlta": 0.2
   },
-  "specials": {
+  "virtudes": {
     "capitania": 1,
     "fortalezaMental": 2,
     "intimidante": 1,

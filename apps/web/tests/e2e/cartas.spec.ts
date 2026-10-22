@@ -36,7 +36,7 @@ for (const ancho of [1280, 360]) {
   });
 }
 
-test('disposición: cabecera, posiciones bajo el nombre y pie con 6 stats y los specials (FR-001)', async ({ page }) => {
+test('disposición: cabecera, posiciones bajo el nombre y pie con 6 stats y las virtudes (FR-001)', async ({ page }) => {
   await abrirCartas(page);
   const carta = page.locator('.carta.completa').first();
   const cabecera = await carta.locator('.carta-cabecera').boundingBox();
@@ -51,14 +51,14 @@ test('disposición: cabecera, posiciones bajo el nombre y pie con 6 stats y los 
   await expect(carta.locator('.carta-stat')).toHaveCount(6);
 });
 
-test('un GOAT con 4 specials muestra los 4 sin desplazamiento (FR-003)', async ({ page }) => {
+test('un GOAT con 4 virtudes muestra los 4 sin desplazamiento (FR-003)', async ({ page }) => {
   await abrirCartas(page);
-  const goat = page.locator('.carta.completa[data-nivel="GOAT"][data-specials="4"]').first();
+  const goat = page.locator('.carta.completa[data-nivel="GOAT"][data-virtudes="4"]').first();
   await expect(goat).toBeVisible();
-  await expect(goat.locator('.carta-special')).toHaveCount(4);
+  await expect(goat.locator('.carta-virtud')).toHaveCount(4);
   await goat.scrollIntoViewIfNeeded();
   const marco = (await goat.boundingBox())!;
-  for (const s of await goat.locator('.carta-special').all()) {
+  for (const s of await goat.locator('.carta-virtud').all()) {
     const caja = (await s.boundingBox())!;
     expect(caja.x).toBeGreaterThanOrEqual(marco.x);
     expect(caja.y).toBeGreaterThanOrEqual(marco.y);
@@ -67,11 +67,11 @@ test('un GOAT con 4 specials muestra los 4 sin desplazamiento (FR-003)', async (
   }
 });
 
-test('pulsar un special abre su descripción (FR-004)', async ({ page }) => {
+test('pulsar una virtud abre su descripción (FR-004)', async ({ page }) => {
   await abrirCartas(page);
-  const special = page.locator('.carta.completa .carta-special').first();
-  await special.click();
-  const id = await special.getAttribute('popovertarget');
+  const virtud = page.locator('.carta.completa .carta-virtud').first();
+  await virtud.click();
+  const id = await virtud.getAttribute('popovertarget');
   const descripcion = page.locator(`[id="${id}"]`);
   await expect(descripcion).toBeVisible();
   expect((await descripcion.textContent())!.length).toBeGreaterThan(10);
@@ -93,7 +93,7 @@ for (const [ancho, minimo] of [
   [1366, 16],
   [360, 14],
 ] as const) {
-  test(`a ${ancho} px los stats y los specials de la carta completa miden ≥ ${minimo} px, y el valor es ≥ 1,25 veces la abreviatura`, async ({ page }) => {
+  test(`a ${ancho} px los stats y las virtudes de la carta completa miden ≥ ${minimo} px, y el valor es ≥ 1,25 veces la abreviatura`, async ({ page }) => {
     await page.setViewportSize({ width: ancho, height: 900 });
     await abrirCartas(page);
     const medidas = await page.$$eval('.carta.completa', (cartas) =>
@@ -101,25 +101,27 @@ for (const [ancho, minimo] of [
         const tam = (el: Element) => parseFloat(getComputedStyle(el).fontSize);
         const peso = (el: Element) => Number(getComputedStyle(el).fontWeight);
         const stats = Array.from(c.querySelectorAll('.carta-stat')).map((s) => ({ dt: tam(s.querySelector('dt')!), dd: tam(s.querySelector('dd')!), negrita: peso(s.querySelector('dd')!) }));
-        const specials = Array.from(c.querySelectorAll('.carta-special')).map(tam);
-        return [{ stats, specials }];
+        const virtudes = Array.from(c.querySelectorAll('.carta-virtud')).map(tam);
+        // Con 5 o 6 rasgos, la letra puede reducirse para que quepan sin cortarse (ronda 2 de la spec 005).
+        const densa = c.querySelector('.carta-rasgos.densa') !== null;
+        return [{ stats, virtudes, densa }];
       }),
     );
-    for (const { stats, specials } of medidas) {
+    for (const { stats, virtudes, densa } of medidas) {
       for (const s of stats) {
         expect(s.dt).toBeGreaterThanOrEqual(minimo);
         expect(s.dd).toBeGreaterThanOrEqual(minimo);
         if (ancho > 1000) expect(s.dd / s.dt).toBeGreaterThanOrEqual(1.25 - 1e-6);
         expect(s.negrita).toBeGreaterThanOrEqual(700);
       }
-      for (const t of specials) expect(t).toBeGreaterThanOrEqual(minimo);
+      for (const t of virtudes) expect(t).toBeGreaterThanOrEqual(densa ? minimo * 0.6 - 0.01 : minimo);
     }
   });
 }
 
-test('un GOAT con 4 specials no desborda la carta (scrollHeight ≤ clientHeight) y las cuatro clases de nivel se aplican', async ({ page }) => {
+test('un GOAT con 4 virtudes no desborda la carta (scrollHeight ≤ clientHeight) y las cuatro clases de nivel se aplican', async ({ page }) => {
   await abrirCartas(page);
-  const goat = page.locator('.carta.completa[data-nivel="GOAT"][data-specials="4"]').first();
+  const goat = page.locator('.carta.completa[data-nivel="GOAT"][data-virtudes="4"]').first();
   expect(await goat.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
   for (const clase of ['nivel-superclase', 'nivel-epico', 'nivel-legendario', 'nivel-goat']) await expect(page.locator(`.carta.completa.${clase}`).first()).toBeVisible();
 });
@@ -135,24 +137,24 @@ test('con movimiento reducido no hay animación de brillo', async ({ page }) => 
 });
 
 for (const ancho of [1280, 360]) {
-  test(`a ${ancho} px todas las cartas completas miden lo mismo y cada special ocupa una línea sin cortarse (hallazgos H1 y H2)`, async ({ page }) => {
+  test(`a ${ancho} px todas las cartas completas miden lo mismo y cada virtud ocupa una línea sin cortarse (hallazgos H1 y H2)`, async ({ page }) => {
     await page.setViewportSize({ width: ancho, height: 900 });
     await abrirCartas(page);
     const medidas = await page.$$eval('.carta.completa', (cartas) =>
       cartas.map((c) => {
         const r = c.getBoundingClientRect();
-        const specials = Array.from(c.querySelectorAll<HTMLElement>('.carta-special')).map((s) => {
+        const virtudes = Array.from(c.querySelectorAll<HTMLElement>('.carta-virtud')).map((s) => {
           const alto = parseFloat(getComputedStyle(s).lineHeight) || parseFloat(getComputedStyle(s).fontSize) * 1.2;
           return { texto: s.textContent ?? '', cortado: s.scrollWidth > s.clientWidth + 1, lineas: Math.round(s.getBoundingClientRect().height / alto) };
         });
-        return { id: c.getAttribute('data-jugador'), ancho: Math.round(r.width), alto: Math.round(r.height), specials };
+        return { id: c.getAttribute('data-jugador'), ancho: Math.round(r.width), alto: Math.round(r.height), virtudes };
       }),
     );
     const altos = new Set(medidas.map((m) => m.alto));
     const anchos = new Set(medidas.map((m) => m.ancho));
     expect([...anchos].length, `anchos: ${[...anchos].join(', ')}`).toBe(1);
     expect(Math.max(...altos) - Math.min(...altos), `altos: ${[...altos].join(', ')}`).toBeLessThanOrEqual(1);
-    const malos = medidas.flatMap((m) => m.specials.filter((s) => s.cortado || s.lineas > 1).map((s) => `${m.id}: ${s.texto}`));
+    const malos = medidas.flatMap((m) => m.virtudes.filter((s) => s.cortado || s.lineas > 1).map((s) => `${m.id}: ${s.texto}`));
     expect(malos).toEqual([]);
   });
 }

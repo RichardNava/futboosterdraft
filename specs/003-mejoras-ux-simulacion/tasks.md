@@ -115,7 +115,7 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
 
 ## Phase 3: User Story 1 — Simulación 2D que parece fútbol de verdad (Priority: P1) 🎯 MVP
 
-**Goal**: juego combinado, sin pases largos hacia atrás irracionales y con tiros decididos con la distancia real. Variedad de goles (penalti 6–12 %, cabeza 10–18 %, falta directa 5–10 %, alrededor del 25 % desde fuera del área), media de 2,6–3,4 goles y stats y specials que se notan en las decisiones.
+**Goal**: juego combinado, sin pases largos hacia atrás irracionales y con tiros decididos con la distancia real. Variedad de goles (penalti 6–12 %, cabeza 10–18 %, falta directa 5–10 %, alrededor del 25 % desde fuera del área), media de 2,6–3,4 goles y stats y virtudes que se notan en las decisiones.
 
 **Independent Test**: `pnpm balance --n 1000 --serie todas` pasa SC-001 a SC-007 y SC-009. Ver un partido completo a x2 según quickstart A.
 
@@ -212,13 +212,13 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
     - en el despeje de un centro o de un córner dentro del área (`rematarBalonParado` y el centro de `juego.ts`), gol en propia puerta con probabilidad `tiro.autogol.despejeCentro × (1 − despejeCentroPorPuntoDefensa·(defensa − 70)/10)`, acotada a [0, 2·despejeCentro];
     - en `tiro.ts`, cuando un defensor desvía un tiro a puerta, gol en propia puerta con `tiro.autogol.desvio`;
     - el evento `gol` lleva `datos.tipo = 'propia'`, `datos.distancia` y `datos.zonaRemate` del punto del desvío o del despeje; el autor es el defensor, el gol suma al rival y no cuenta como gol ni asistencia de nadie.
-- [X] T029 [US1] Reforzar en la elección los specials con un efecto por debajo del umbral (research R10), en `opciones.ts`, `juego.ts` y `tiro.ts`:
+- [X] T029 [US1] Reforzar en la elección las virtudes con un efecto por debajo del umbral (research R10), en `opciones.ts`, `juego.ts` y `tiro.ts`:
   - Desbordante: regate por banda ×1,3;
   - Llegador: el centrocampista entra entre los rematadores de los centros;
   - Matador: en un mano a mano, siempre tira;
   - Lanzador de faltas: ya cubierto en T028.
 
-  Inventariar en un comentario de cabecera de `packages/engine/src/modificadores/specials.ts` la acción que mide cada special con efecto.
+  Inventariar en un comentario de cabecera de `packages/engine/src/modificadores/virtudes.ts` la acción que mide cada virtud con efecto.
 - [X] T030 [P] [US1] Crear `tools/balance/src/core.ts`: una serie Core en la que 8 NPC `avanzado` draftan con `generarCore()` de `tools/fixtures`, con la semilla de la serie, y se juega una liga a doble vuelta con sus alineaciones de `decidirAlineacion`. Devuelve un `ResultadoSerie` agregado por partido y un `porTorneo` con la media de cada torneo.
 - [X] T031 [US1] En `tools/balance/src/series.ts`, pasar `{ metricas: true }` a `avanzar` cuando se pida, y agregar `MetricasJugador` por jugador y los eventos de gol (`tipo`, `distancia`, `zonaRemate`).
 - [X] T032 [US1] Comprobaciones nuevas en `tools/balance/src/checks/partido.ts`, con los ids `003/SC-00x`:
@@ -228,13 +228,13 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
   - **SC-004**: `pasesLargos/pases` ≤ 15 % y `pasesLargosAtras` ≤ 0,5 por equipo y partido;
   - **SC-005**: conducciones ≥ 1,3 × la línea base de T003, y `pasesCortos/pases` ≥ 60 %;
   - **SC-006**: con +15 de regate, tiro y defensa en un titular, ≥ 25 %, ≥ 25 % y ≥ 20 % más en su acción; con +15 de pase, ≥ 15 % más de pases que rompen líneas; con +15 de físico y de velocidad, ≥ 15 % más de duelos ganados y ≥ 15 % más de conducciones largas; en todos los casos, su cuota de la acción del equipo, ≤ 60 %;
-  - **SC-007**: tabla de umbrales por special con efecto. Lanzador de faltas, ≥ 30 % más goles de falta directa; el resto, diferencia significativa (`mayorSignificativo`);
+  - **SC-007**: tabla de umbrales por virtud con efecto. Lanzador de faltas, ≥ 30 % más goles de falta directa; el resto, diferencia significativa (`mayorSignificativo`);
   - **SC-009**: repetir 001/SC-004 (equipo +5 gana ≥ 60 %) y comprobar que siguen pasando los SC de la 002 de `checks/partido.ts` y `checks/colocacion.ts`.
 - [X] T032a [US1] Crear `tools/balance/src/informe.ts` (Principio IX, verificable por una persona no técnica): en cada ejecución, `pnpm balance` genera `tools/balance/salida/informe.html` con una fila por comprobación (id, descripción en español, objetivo, valor medido y resultado ✅/❌), y en la cabecera la fecha, la semilla, `n` y la serie. HTML estático, sin dependencias. `cli.ts` lo genera siempre e imprime su ruta. Ampliar `tools/balance/tests/checks003.test.ts` (T018): el informe contiene una fila por comprobación ejecutada.
 - [ ] T033 [US1] Calibrar `packages/domain/src/parametros/v3.json` siguiendo el orden de research R8:
   1. receptor y pases;
   2. conducción;
-  3. stats y specials;
+  3. stats y virtudes;
   4. tiro por distancia (incluido el peso de la frontal, para el 22–28 % fuera del área);
   5. balón parado y autogoles (`tiro.autogol`, para el 1–3 %);
   6. `acciones.puerta.*` y `acciones.gol.*` para la media.
@@ -516,16 +516,16 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
 
 ## Phase 9: User Story 7 — Cartas con diseño final y fáciles de leer (Priority: P2)
 
-**Goal**: carta con marco propio, acabado por nivel y stats y specials legibles.
+**Goal**: carta con marco propio, acabado por nivel y stats y virtudes legibles.
 
 **Independent Test**: quickstart G. `pnpm e2e --grep cartas`.
 
 ### Tests for User Story 7 ⚠️
 
 - [X] T077 [P] [US7] Ampliar `apps/web/tests/e2e/cartas.spec.ts`:
-  - **portátil (1366 px)**: en la carta completa, `fontSize` de los stats y de los specials ≥ 16 px, y el valor del stat en negrita a ≥ 1,25 veces el tamaño de su abreviatura;
+  - **portátil (1366 px)**: en la carta completa, `fontSize` de los stats y de las virtudes ≥ 16 px, y el valor del stat en negrita a ≥ 1,25 veces el tamaño de su abreviatura;
   - **móvil (360 px)**: ≥ 14 px;
-  - un GOAT con 4 specials sin desbordamiento (`scrollHeight <= clientHeight`);
+  - un GOAT con 4 virtudes sin desbordamiento (`scrollHeight <= clientHeight`);
   - las cuatro clases de nivel aplicadas;
   - con `reducedMotion: 'reduce'`, sin animación de brillo.
 
@@ -534,13 +534,13 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
 - [X] T078 [US7] Rediseñar `apps/web/src/componentes/CartaJugador.tsx` y `apps/web/src/estilos/cartas.css` (research R20):
   - escudo con las esquinas superiores achaflanadas, franja diagonal del color del nivel y textura de grano con `repeating-linear-gradient`;
   - Barlow Condensed (T002) para la media, el nombre y los stats;
-  - specials en dos columnas;
+  - virtudes en dos columnas;
   - brillo animado solo en Legendario y GOAT, desactivado con `prefers-reduced-motion`;
   - tamaños de FR-009;
-  - mantener la variante `compacta` y los popovers de los specials (002/FR-004).
+  - mantener la variante `compacta` y los popovers de las virtudes (002/FR-004).
 
   Sin el marco, el logotipo ni la tipografía de EA SPORTS FC.
-- [X] T079 [P] [US7] Actualizar `apps/web/src/pantallas/PruebasCartas.tsx` para mostrar los cuatro niveles y un GOAT con 4 specials, en tamaño completo y compacto, para la revisión visual y la prueba SC-012.
+- [X] T079 [P] [US7] Actualizar `apps/web/src/pantallas/PruebasCartas.tsx` para mostrar los cuatro niveles y un GOAT con 4 virtudes, en tamaño completo y compacto, para la revisión visual y la prueba SC-012.
 
 **Checkpoint**: escenario G revisado; `cartas.spec.ts` pasa.
 
@@ -983,7 +983,7 @@ Tras Setup y Foundational:
 - [X] T134 [US2] H3: la carta ampliada se colapsaba en una franja; ancho explícito en `.vista-carta` y e2e de tamaño en `alineacion.spec.ts`.
 - [X] T135 [US2] H4: intercambio entre banquillo y resto de la plantilla (destinos `banquillo`/`reserva` con `sobre`, teclado), con pruebas unitarias y e2e.
 - [X] T136 [US1] H8: tras un gol, el saque empieza con el balón en el centro; prueba `packages/engine/tests/saqueCentro.test.ts`.
-- [X] T137 [US7] H1 y H2: cartas completas del mismo tamaño y specials en una línea; e2e en `cartas.spec.ts`.
+- [X] T137 [US7] H1 y H2: cartas completas del mismo tamaño y virtudes en una línea; e2e en `cartas.spec.ts`.
 - [X] T138 [US8] H10: las cartas del sobre no se ven detrás de la apertura; e2e en `apertura.spec.ts`.
 - [X] T139 [US2] H5 y H7 (FR-003b, FR-032): en `Alineacion.tsx`, el principal es siempre «Confirmar alineación», que guarda y lleva al torneo; se quitan el selector de modo y «Comenzar partido». Actualizar las e2e que empezaban el partido desde «Formación».
 - [X] T140 [US2] H6 (FR-001b): asignar los dorsales al terminar el draft, según la alineación automática, en `apps/server/src/actores/draft.ts`; confirmar el once no los reasigna. Pruebas de integración.

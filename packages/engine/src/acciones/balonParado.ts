@@ -1,11 +1,12 @@
 /**
  * Faltas, tarjetas, penaltis, faltas directas y fueras de juego (T086).
  */
-import { lanzadorEfectivo, type ParametrosEquilibrado } from '@fbd/domain';
+import { lanzadorEfectivo, parametrosEfectivos, type ParametrosEquilibrado } from '@fbd/domain';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
 import { decimasDeMetros, distanciaPorteria, enAreaRival } from '../espacio/campo';
 import { aAbsoluta, aEquipo, CENTRO_Y, centroCelda, type Punto } from '../espacio/geometria';
-import { tiene } from '../modificadores/specials';
+import { factorAmarilla, factorRoja, fairPlayer } from '../modificadores/defectos';
+import { tiene } from '../modificadores/virtudes';
 import { reponer } from './animaciones';
 import { emitir, interrumpir, type Contexto } from './contexto';
 import { comprobarLesion } from './lesiones';
@@ -26,12 +27,20 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
     { rol: 'defensor', jugadorId: victima.id },
   ]);
 
-  // Tarjetas.
-  if (ctx.rng.probabilidad(Math.round(d.probabilidadRojaDirectaPorFalta * 1000))) {
+  // Tarjetas. Un Fair player nunca ve la roja (spec 005, FR-033): el sorteo se hace igual, pero no se aplica.
+  if (ctx.rng.probabilidad(Math.round(d.probabilidadRojaDirectaPorFalta * 1000 * factorRoja(e, culpable))) && !fairPlayer(e, culpable)) {
     tarjetaRoja(ctx, defensor, culpable, 'directa');
   } else if (
     // Quien ya tiene amarilla se arriesga menos: la segunda es menos probable.
-    ctx.rng.probabilidad(Math.round(d.probabilidadAmarillaPorFalta * 1000 * (zona >= 4 ? 1.4 : 1) * (culpable.amarillas > 0 ? 0.4 : 1)))
+    ctx.rng.probabilidad(
+      Math.round(
+        d.probabilidadAmarillaPorFalta *
+          1000 *
+          (zona >= 4 ? 1.4 : 1) *
+          (culpable.amarillas > 0 ? parametrosEfectivos(e.parametros).disciplina.factorSegundaAmarilla : 1) *
+          factorAmarilla(e, culpable),
+      ),
+    )
   ) {
     amarilla(ctx, defensor, culpable);
   }
@@ -60,7 +69,8 @@ export function amarilla(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartid
   j.amarillas++;
   e.estadisticas[equipo.lado].amarillas++;
   emitir(ctx, 'amarilla', equipo.lado, [{ rol: 'autor', jugadorId: j.id }], { numero: j.amarillas }, true);
-  if (j.amarillas >= 2) tarjetaRoja(ctx, equipo, j, 'doble_amarilla');
+  // Un Fair player sigue en el campo con la segunda amarilla registrada (spec 005, FR-033).
+  if (j.amarillas >= 2 && !fairPlayer(e, j)) tarjetaRoja(ctx, equipo, j, 'doble_amarilla');
 }
 
 export function tarjetaRoja(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido, motivo: 'directa' | 'doble_amarilla'): void {
@@ -74,10 +84,14 @@ export function penalti(ctx: Contexto, atacante: EquipoEstado): void {
   const id = lanzadorEfectivo(atacante.lanzadores.penaltis, enCampo, 'penaltis');
   const lanzador = atacante.jugadores.find((j) => j.id === id);
   if (!lanzador) return;
-  emitir(ctx, 'penalti', atacante.lado, [{ rol: 'autor', jugadorId: lanzador.id }], {}, true);
+  const evento = emitir(ctx, 'penalti', atacante.lado, [{ rol: 'autor', jugadorId: lanzador.id }], {}, true);
   ctx.estado.balon = { posesion: atacante.lado, zona: 5, carril: 1, portadorId: lanzador.id, transicion: false };
   reponer(ctx, 'penalti', aAbsoluta(atacante.lado, { x: 8900, y: CENTRO_Y }), lanzador.id);
-  tirar(ctx, atacante, lanzador, 'penalti');
+  const resultado = tirar(ctx, atacante, lanzador, 'penalti');
+  // Resultado del lanzamiento en el propio evento (spec 005, FR-071), para el resumen: marca, falla o lo para el portero.
+  evento.datos.resultado = resultado === 'gol' ? 'gol' : resultado === 'parada' ? 'parada' : 'fuera';
+  const arquero = resultado === 'parada' ? ctx.estado.equipos[rival(atacante.lado)].jugadores.find((j) => j.enCampo && j.casillaId === 'POR') : undefined;
+  if (arquero) evento.datos.porteroId = arquero.id;
 }
 
 /** Ancho de la zona central de las faltas: el del área (|y − centro| ≤ 18,1 m). */

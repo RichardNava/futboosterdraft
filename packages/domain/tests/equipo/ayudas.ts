@@ -1,7 +1,7 @@
 /** Utilidades compartidas por las pruebas de equipo: jugadores sintéticos y el catálogo Core. */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { calcularMedia, CLAVES_STATS, type Demarcacion, type Jugador, type Posicion, type Special } from '../../src/catalogo/tipos';
+import { calcularMedia, CLAVES_STATS, type Demarcacion, type Jugador, type Posicion, type Virtud } from '../../src/catalogo/tipos';
 
 let siguienteId = 10_000;
 
@@ -9,7 +9,7 @@ export function jugador(
   demarcacion: Demarcacion,
   posicion: Posicion[],
   valor = 80,
-  specials: Special[] = [],
+  virtudes: Virtud[] = [],
   ajustes: Record<string, number> = {},
 ): Jugador {
   const stats = Object.fromEntries(CLAVES_STATS[demarcacion].map((c) => [c, ajustes[c] ?? valor])) as unknown as Jugador['stats'];
@@ -25,7 +25,8 @@ export function jugador(
     historia: '',
     stats,
     media: calcularMedia({ demarcacion, stats }),
-    specials,
+    virtudes,
+    defectos: [],
     nivel: 'Superclase',
     coleccion: 'Core',
   };

@@ -42,12 +42,17 @@ export const partidos = pgTable(
     /** Modalidad de cada humano, fijada en su primer `abrir` (spec 003, FR-035): `{ [participanteId]: 'rapida' | '2d' }`. */
     modalidades: jsonb('modalidades').notNull().default(sql`'{}'::jsonb`),
     /** Quién abrió primero un partido entre humanos (research R8). */
+    /** `futbol` = partido del motor; `duelos` = cruce del modo Duelo de jugadores (spec 005, data-model §6.3). */
+    tipo: text('tipo').$type<'futbol' | 'duelos'>().notNull().default('futbol'),
+    /** Resultado del cruce de duelos (`ResultadoCruce`), o null en los partidos de fútbol. */
+    duelos: jsonb('duelos'),
     abiertoPorId: uuid('abierto_por_id').references(() => participantes.id),
     iniciadoEn: timestamp('iniciado_en', { withTimezone: true }),
     finalizadoEn: timestamp('finalizado_en', { withTimezone: true }),
   },
   (t) => [
     index('partidos_partida_idx').on(t.partidaId),
+    check('partidos_tipo_ck', sql`${t.tipo} in ('futbol','duelos')`),
     check('partidos_resolucion_ck', sql`${t.resolucion} in ('directo','apertura','plazo','npc')`),
     check(
       'partidos_estado_ck',

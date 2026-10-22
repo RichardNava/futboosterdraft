@@ -43,10 +43,13 @@ test('FR-056: la carta se elige por el hueco del pie y con doble clic se confirm
   await expect(page.getByRole('heading', { name: /Turno 2 de 8/ })).toBeVisible();
   await page.getByRole('button', { name: 'Entendido' }).click();
 
-  // Una carta con hueco en el pie (menos de 4 specials): pulsar al fondo de él la elige.
+  // Una carta con hueco en el pie (menos de 4 rasgos entre virtudes y defectos): pulsar al fondo de él la elige.
   const sobre = page.locator('section[aria-label="Sobre actual"]');
-  const conHueco = sobre.locator('.carta[data-specials="0"], .carta[data-specials="1"], .carta[data-specials="2"], .carta[data-specials="3"]').first();
-  const pie = await conHueco.locator('.carta-specials').boundingBox();
+  const conHueco = sobre
+    .locator('.carta')
+    .filter({ has: page.locator('.carta-rasgos[data-total="0"], .carta-rasgos[data-total="1"], .carta-rasgos[data-total="2"], .carta-rasgos[data-total="3"]') })
+    .first();
+  const pie = await conHueco.locator('.carta-virtudes').boundingBox();
   await page.mouse.click(pie!.x + pie!.width / 2, pie!.y + pie!.height - 3);
   await expect(conHueco.locator('.carta-cuerpo')).toHaveAttribute('aria-pressed', 'true');
   await capturar(page, 'draft-hueco-pie');

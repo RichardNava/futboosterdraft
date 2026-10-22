@@ -395,10 +395,11 @@ sus campos completos, y buscar en el resto de la documentación definiciones dup
   los defectos; las virtudes conservan su estilo actual. El rojo de los defectos es información de juego, como
   los colores de nivel (004/FR-003), y DEBE distinguirse del color de error de los mensajes y mantener un
   contraste mínimo de 4,5:1 en su texto.
-- **FR-022**: En cada carta, las virtudes DEBEN mostrarse en una fila y los defectos en otra fila debajo,
-  ambas con los recuadros a tamaño normal y sin ocultar ningún rasgo (hasta 4 virtudes y 2 defectos). La
-  carta DEBE reservar el espacio de la fila de defectos aunque no tenga ninguno, para que todas las cartas
-  tengan el mismo tamaño y su contenido no se desplace.
+- **FR-022**: En cada carta, las virtudes DEBEN mostrarse primero y los defectos debajo, sin ocultar ningún
+  rasgo (hasta 4 virtudes y 2 defectos). La carta DEBE conservar el tamaño que tenía antes de los defectos (sitio
+  para cuatro rasgos, uno por fila) y todas las cartas DEBEN medir lo mismo. Con 5 o 6 rasgos, varios DEBEN
+  compartir fila cuando caben enteros; si aun así alguno se corta, DEBE reducirse el tamaño de la letra de los
+  rasgos hasta que quepan, sin cambiar el tamaño de la carta (ronda 2 de correcciones).
 - **FR-023**: Al pulsar o consultar un defecto DEBE mostrarse su nombre y su descripción en español, igual que
   con las virtudes, indicando que se trata de un defecto. El significado no DEBE depender solo del color
   (accesibilidad): el defecto se identifica también por texto o icono.

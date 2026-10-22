@@ -5,7 +5,7 @@
 import { candidatos } from '@fbd/domain';
 import type { EquipoEstado, JugadorEnPartido } from '../estado/estado';
 import { atributo } from '../modificadores/atributos';
-import { santoActivo, tiene } from '../modificadores/specials';
+import { santoActivo, tiene } from '../modificadores/virtudes';
 import { emitir, portero, type Contexto } from '../acciones/contexto';
 import { probabilidad, resolver } from '../acciones/duelo';
 import type { Lado } from '../tipos';
@@ -22,7 +22,7 @@ export function ordenTanda(equipo: EquipoEstado): JugadorEnPartido[] {
 
 function lanzar(ctx: Contexto, tirador: EquipoEstado, j: JugadorEnPartido, arqueroEquipo: EquipoEstado): boolean {
   const e = ctx.estado;
-  const s = e.parametros.specials;
+  const s = e.parametros.virtudes;
   const arquero = portero(arqueroEquipo);
   let ajuste = 0;
   if (tiene(j, 'LanzadorPenalties')) ajuste += s.bonusProbabilidadAlto;

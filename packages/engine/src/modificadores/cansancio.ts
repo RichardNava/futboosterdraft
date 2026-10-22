@@ -4,7 +4,11 @@
  * compañeros. Presión alta y marcaje individual aceleran el desgaste.
  */
 import { minutoDeJuego, type EquipoEstado, type EstadoMotor } from '../estado/estado';
-import { tiene } from './specials';
+import { factorCansancio, fatigado } from './defectos';
+import { tiene } from './virtudes';
+
+/** Minuto de juego en que empieza la segunda parte: el inicio del cansancio de un Fatigado (spec 005). */
+const INICIO_SEGUNDA_PARTE = 45;
 
 export function minutoInicioCansancio(estado: EstadoMotor, equipo: EquipoEstado): number {
   const c = estado.parametros.cansancio;
@@ -13,7 +17,10 @@ export function minutoInicioCansancio(estado: EstadoMotor, equipo: EquipoEstado)
 
 /** Acumula el cansancio de `segundos` de juego para los jugadores en el campo. */
 export function acumularCansancio(estado: EstadoMotor, equipo: EquipoEstado, segundos: number): void {
-  if (minutoDeJuego(estado.reloj) < minutoInicioCansancio(estado, equipo)) return;
+  const minuto = minutoDeJuego(estado.reloj);
+  const general = minuto >= minutoInicioCansancio(estado, equipo);
+  // Antes del inicio general solo se cansan los Fatigados, y desde la segunda parte (spec 005).
+  if (!general && (minuto < INICIO_SEGUNDA_PARTE || !equipo.jugadores.some((j) => j.enCampo && fatigado(estado, j)))) return;
   const p = estado.parametros;
   const t = equipo.tactica;
   let ritmo = p.cansancio.degradacionPorMinuto;
@@ -23,8 +30,8 @@ export function acumularCansancio(estado: EstadoMotor, equipo: EquipoEstado, seg
   let motivadores = 0;
   for (const o of equipo.jugadores) if (o.enCampo && tiene(o, 'Motivador')) motivadores++;
   for (const j of equipo.jugadores) {
-    if (!j.enCampo) continue;
-    let r = ritmo;
+    if (!j.enCampo || (!general && !fatigado(estado, j))) continue;
+    let r = ritmo * factorCansancio(estado, j);
     if (tiene(j, 'Incansable')) r *= p.cansancio.factorIncansable;
     if (motivadores - (tiene(j, 'Motivador') ? 1 : 0) > 0) r *= p.cansancio.factorMotivador;
     j.cansancio = Math.min(0.6, j.cansancio + (r * segundos) / 60);

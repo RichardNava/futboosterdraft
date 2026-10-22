@@ -11,6 +11,7 @@ import type { GestorPartidas } from '../actores/gestor';
 import type { ControladorPartida } from '../actores/partida';
 import { reproduccion } from '../actores/partidoEntreHumanos';
 import { equipacionesDelPartido, resumenAlineaciones } from '../actores/partidoRapido';
+import { vistaCruce } from '../actores/duelos';
 import { abrirPartido, emitirTorneo } from '../actores/torneo';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
@@ -48,6 +49,9 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
         jornada: fila.jornadaNumero,
         local: { id: fila.localId, nombre: nombre(fila.localId) },
         visitante: { id: fila.visitanteId, nombre: nombre(fila.visitanteId) },
+        tipo: fila.tipo,
+        // El detalle de los duelos y el marcador no se revelan hasta verlos (spec 005, contracts/http-api.md).
+        ...(fila.tipo === 'duelos' ? { duelos: null, marcador: null } : {}),
       };
     }
     return resumen(c, fila, participanteId);
@@ -70,6 +74,8 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
     const consulta = ConsultaReproduccion.safeParse(req.query ?? {});
     if (!consulta.success) throw errores.regla('MODALIDAD_INVALIDA', 'La modalidad debe ser «rapida» o «2d»');
     const { fila, c, participanteId } = await partidoDelUsuario(req, true);
+    // Los cruces de duelos no tienen reproducción: la animación sale de `abrir` (spec 005).
+    if (fila.tipo === 'duelos') throw errores.conflicto('NO_APLICA', 'Un cruce de duelos no tiene reproducción');
     const modalidad = consulta.data.modalidad ?? ((fila.modalidades as Record<string, 'rapida' | '2d'> | null) ?? {})[participanteId] ?? 'rapida';
     return reproduccion(c, fila, modalidad, participanteId);
   });
@@ -89,6 +95,21 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
 }
 
 async function resumen(c: ControladorPartida, fila: FilaPartido, participanteId: string) {
+  if (fila.tipo === 'duelos') {
+    const nombreDe = (pid: string) => (c.participante(pid) ? c.nombreDe(c.participante(pid)!) : pid);
+    return {
+      id: fila.id,
+      tipo: 'duelos' as const,
+      jornada: fila.jornadaNumero,
+      estado: fila.estado,
+      eliminatoria: fila.eliminatoria,
+      local: { id: fila.localId, nombre: nombreDe(fila.localId) },
+      visitante: { id: fila.visitanteId, nombre: nombreDe(fila.visitanteId) },
+      marcador: fila.marcador,
+      resolucion: fila.resolucion,
+      ...vistaCruce(c, fila),
+    };
+  }
   const empezado = fila.estado !== 'programado';
   const nombre = (pid: string) => (c.participante(pid) ? c.nombreDe(c.participante(pid)!) : pid);
   const enCurso = c.partidosEnCurso.get(fila.id);
@@ -99,6 +120,7 @@ async function resumen(c: ControladorPartida, fila: FilaPartido, participanteId:
   const dorsales = enCurso?.inicio.dorsales ?? (empezado ? { ...(await repoEquipo.dorsales(fila.localId)), ...(await repoEquipo.dorsales(fila.visitanteId)) } : null);
   return {
     id: fila.id,
+    tipo: 'futbol' as const,
     jornada: fila.jornadaNumero,
     estado: fila.estado,
     eliminatoria: fila.eliminatoria,

@@ -6,9 +6,12 @@ ellas.
 
 ## Carta de jugador (`CartaJugador`; FR-020 a FR-024; research R11)
 
-- Dos filas fijas bajo los stats:
-  - `carta-virtudes`: hasta 4 recuadros;
-  - `carta-defectos`: hasta 2. Su altura se reserva aunque esté vacía, para que todas las cartas midan lo mismo.
+- Zona de rasgos `carta-rasgos` bajo los stats, con el alto de cuatro filas (el de la carta antes de los defectos;
+  ronda 2), igual en todas las cartas:
+  - `carta-virtudes`: hasta 4 recuadros; ocupa el sitio que dejan los defectos (ese hueco también elige la carta);
+  - `carta-defectos`: hasta 2, debajo de las virtudes; sin defectos no ocupa sitio.
+  - Hasta 4 rasgos en total, uno por fila. Con 5 o 6 (`.densa`), varios comparten fila si caben enteros; si alguno se
+    corta, `ZonaRasgos` reduce la letra (`--escala-rasgos`, hasta el 60 %) sin cambiar el tamaño de la carta.
 - Recuadro de defecto (`carta-defecto`):
   - misma forma, tipografía y tamaño que el de virtud;
   - borde y texto con `--color-defecto` (rojo de juego, contraste ≥ 4,5:1, distinto de `--color-error`);
@@ -50,16 +53,27 @@ ellas.
 
 ## Duelos (`pantallas/Duelos.tsx`; FR-067; research R11)
 
-- **Cabecera**: los nombres de los dos equipos y el marcador de duelos, que se actualiza en cada duelo.
+- **Cabecera**: los nombres de los dos equipos (el visitante, alineado a la derecha) y el marcador de duelos, que se
+  actualiza en cada duelo.
+- **Fondo**: un ring de boxeo en perspectiva con el lienzo pintado como un campo y balones alrededor (`RingDuelo`),
+  con la opacidad muy reducida.
+- **Título de cada duelo**: el puesto y el número del duelo, y debajo «{jugador local} VS {jugador visitante}» en
+  letra de cartel, con el «VS» en una insignia dorada.
 - **Secuencia de los 11 puestos**, de portero a delanteros. En cada duelo:
   1. las dos cartas entran desde los lados (300 ms);
-  2. chocan en el centro: escala 1,08 y destello de 120 ms;
+  2. chocan en el centro: se empujan desde su borde interior (escala 1,06), destello de 120 ms y un estallido dorado
+     con ocho estrellas que salen despedidas;
   3. las puntuaciones cuentan hasta su valor (600 ms) con el desglose: media, posición, virtudes, defectos y, si está
-     activo, Estado de forma;
-  4. la ganadora queda resaltada y la perdedora atenuada. En un duelo nulo, las dos quedan neutras con el rótulo «Empate».
-- **Controles**: «×1», «×2» y «Saltar al resultado», accesibles por teclado. El visionado se marca al terminar o al
-  saltar.
-- **Resumen final**: tabla con los 11 duelos (puesto, jugadores, puntuaciones y ganador), el desempate si lo hubo
+     activo, Estado de forma. El desglose aparece tras el choque, a la izquierda de la carta local y a la derecha de la
+     visitante, para verlo sin desplazarse (por debajo de 760 px de ancho, bajo cada carta);
+  4. la ganadora queda resaltada y la perdedora atenuada, con el veredicto en una insignia ámbar sobre las cartas. En
+     un duelo nulo, las dos quedan neutras con el rótulo «Empate».
+- **Sonido**: un soplo suave al entrar las cartas (ganancia 0,05) y un golpe sordo con una campanilla al chocar
+  (0,1), más bajos que la apertura del sobre. Respetan el interruptor de sonido; con movimiento reducido no suenan.
+- **Controles**: «×1», «×2» y «Saltar al resultado», accesibles por teclado, en la barra principal para que estén
+  siempre a la vista. El visionado se marca al terminar o al saltar.
+- **Resumen final**: tabla con los 11 duelos (puesto, jugadores, puntuaciones y ganador: su nombre y su puntuación en
+  ámbar, con una estrella en su lateral exterior), el desempate si lo hubo
   («Empate a duelos: gana por suma de puntuaciones» o «… por sorteo») y el botón principal «Volver al torneo».
 - **`prefers-reduced-motion`**: sin desplazamientos ni choque; fundido de 150 ms entre duelos.
 - Solo se animan `transform` y `opacity`.

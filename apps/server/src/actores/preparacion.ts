@@ -35,6 +35,7 @@ export async function crearPartidosJornada(
       eliminatoria: opciones.eliminatoria ?? false,
       semilla: derivarSemilla(c.partida.semilla, `partido:${numero}:${i}`),
       versionParametros: parametrosActuales().version,
+      ...(c.partida.modo === 'duelos' ? { tipo: 'duelos' as const } : {}),
     });
     cruces.push({ partidoId: fila.id, local: e.local, visitante: e.visitante });
   }
@@ -101,6 +102,11 @@ export async function emitirPreparacion(c: ControladorPartida, ctx: ContextoComa
         // Solo hay plazo con varios humanos (contracts/realtime-protocol.md).
         ...(venceEn !== null ? { venceEn: new Date(venceEn).toISOString() } : {}),
         modalidadPreferida: await modalidadPreferida(c, pid),
+        // Modo duelos (spec 005, contracts/realtime-protocol.md): once único en la formación común.
+        modo: c.partida.modo,
+        ...(c.partida.modo === 'duelos'
+          ? { formacionFija: ((c.partida.configDuelos as { formacion?: string } | null)?.formacion ?? '4-3-3'), soloTitulares: true }
+          : {}),
       });
     }
   }

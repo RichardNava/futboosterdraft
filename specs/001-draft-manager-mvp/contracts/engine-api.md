@@ -64,6 +64,6 @@ function statsEfectivos(jugador: Jugador, casilla: Casilla, contexto: ContextoEq
    - Nunca hay más de 5 (o 6) sustituciones.
    - Un expulsado no vuelve al campo.
    - Un equipo con menos de 7 jugadores pierde 3-0 (Edge Cases).
-   - Los specials de equipo no se acumulan (FR-038).
+   - Las virtudes de equipo no se acumulan (FR-038).
    - El cansancio empieza en el minuto 65, o en el 55 con Presión alta (FR-036).
 4. **Eventos**: cada `EventoPartido` con `relevante: true` aparece en el resumen de la modalidad rápida (FR-044).

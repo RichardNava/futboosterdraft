@@ -1,8 +1,10 @@
 /**
  * Preparación del equipo en el servidor (T072; FR-026 a FR-031b).
  */
+import { decidirAlineacionDuelos } from '@fbd/ai';
 import {
   asignarDorsalesIniciales,
+  CONFIG_DUELOS_POR_DEFECTO,
   autoAlineacion,
   derivarSemilla,
   asignarDorsal,
@@ -11,9 +13,12 @@ import {
   ErrorDorsales,
   parametrosActuales,
   previsualizar,
+  proponerLanzadores,
+  tacticaPorDefecto,
   validarAlineacion,
   validarEquipaciones,
   type Alineacion,
+  type ConfigDuelos,
   type Dorsales,
   type Equipaciones,
   type Jugador,
@@ -28,9 +33,22 @@ export function exigirEquipoEditable(c: ControladorPartida): void {
   if (c.partida.estado !== 'en_torneo') throw errores.conflicto('PARTIDA_TERMINADA', 'La partida ya ha terminado');
 }
 
+/** Partida del modo Duelo de jugadores (spec 005). */
+export const esDuelos = (c: ControladorPartida): boolean => c.partida.modo === 'duelos';
+
+/** Formación común y Estado de forma de una partida de duelos. */
+export function configDuelos(c: ControladorPartida): ConfigDuelos {
+  return (c.partida.configDuelos as ConfigDuelos | null) ?? { ...CONFIG_DUELOS_POR_DEFECTO };
+}
+
+/** En el modo duelos no hay dorsales ni equipaciones (spec 005, FR-063). */
+function exigirNoDuelos(c: ControladorPartida): void {
+  if (esDuelos(c)) throw errores.conflicto('NO_DISPONIBLE_EN_MODO', 'No disponible en el modo Duelo de jugadores');
+}
+
 export async function plantillaDe(c: ControladorPartida, participanteId: string): Promise<Jugador[]> {
   const ids = (await c.servicios.repoDraft.plantillas([participanteId])).get(participanteId) ?? [];
-  return ids.map((id) => c.servicios.catalogo.jugador(id));
+  return ids.map((id) => c.catalogo.jugador(id));
 }
 
 /** Jugadores de baja (lesión o sanción). Las bajas se implementan con el torneo (US4). */
@@ -43,11 +61,14 @@ export async function alineacionVigente(c: ControladorPartida, participanteId: s
   const guardada = await c.servicios.repoEquipo.ultimaAlineacion(participanteId);
   const plantilla = await plantillaDe(c, participanteId);
   const bajas = bajasActivas(c, participanteId);
+  const duelos = esDuelos(c);
+  const enFormacion = !duelos || guardada?.formacion === configDuelos(c).formacion;
   const valida =
-    guardada && validarAlineacion(guardada, plantilla.map((j) => j.id), bajas).length === 0 ? guardada : undefined;
+    guardada && enFormacion && validarAlineacion(guardada, plantilla.map((j) => j.id), bajas).length === 0 ? guardada : undefined;
   return {
     alineacion: valida ?? alineacionAutomatica(c, participanteId, plantilla, bajas),
     confirmada: valida !== undefined,
+    bloqueada: duelos && valida?.bloqueada === true,
     version: valida?.version ?? null,
     plantilla,
     bajas,
@@ -60,7 +81,10 @@ export function alineacionAutomatica(c: ControladorPartida, participanteId: stri
   const clave = [...bajas].sort((a, b) => a - b).join(',');
   const guardada = c.autoAlineaciones.get(participanteId);
   if (guardada && guardada.bajas === clave) return guardada.alineacion;
-  const alineacion = autoAlineacion(plantilla, bajas, parametrosActuales());
+  // En el modo duelos, el once de más puntuación en la formación común (spec 005, T068).
+  const alineacion = esDuelos(c)
+    ? decidirAlineacionDuelos(plantilla, configDuelos(c).formacion, parametrosActuales(), bajas)
+    : autoAlineacion(plantilla, bajas, parametrosActuales());
   c.autoAlineaciones.set(participanteId, { bajas: clave, alineacion });
   return alineacion;
 }
@@ -74,11 +98,19 @@ export function detalleBajas(c: ControladorPartida, participanteId: string) {
 
 export function vistaEquipo(
   c: ControladorPartida,
-  datos: { alineacion: Alineacion; confirmada: boolean; version: number | null; plantilla: Jugador[]; bajas: Set<number>; bajasDetalle: ReturnType<typeof detalleBajas> },
+  datos: {
+    alineacion: Alineacion;
+    confirmada: boolean;
+    bloqueada: boolean;
+    version: number | null;
+    plantilla: Jugador[];
+    bajas: Set<number>;
+    bajasDetalle: ReturnType<typeof detalleBajas>;
+  },
   dorsales: Dorsales | null,
   equipaciones: Equipaciones | null,
 ) {
-  const { catalogo } = c.servicios;
+  const catalogo = c.catalogo;
   return {
     alineacion: datos.alineacion,
     confirmada: datos.confirmada,
@@ -89,6 +121,8 @@ export function vistaEquipo(
     bajasDetalle: datos.bajasDetalle,
     dorsales,
     equipaciones,
+    // Modo duelos (spec 005, contracts/http-api.md): once único en la formación común, sin banquillo.
+    ...(esDuelos(c) ? { bloqueada: datos.bloqueada, soloTitulares: true as const, formacionFija: configDuelos(c).formacion } : {}),
   };
 }
 
@@ -98,8 +132,41 @@ export function errorDeAlineacion(problemas: ReturnType<typeof validarAlineacion
   return errores.regla(p.codigo, p.mensaje, { motivos: problemas.flatMap((x) => x.motivos) });
 }
 
+/**
+ * Confirmación del once en el modo duelos (spec 005, FR-063, FR-063a): solo cuentan los titulares, en la formación
+ * común; el resto se guarda con valores por defecto. La primera confirmación lo bloquea y no se asignan dorsales.
+ */
+async function confirmarOnceDuelos(c: ControladorPartida, participanteId: string, a: Alineacion) {
+  const { repoEquipo, reloj } = c.servicios;
+  const anterior = await repoEquipo.ultimaAlineacion(participanteId);
+  if (anterior?.bloqueada) throw errores.conflicto('ALINEACION_BLOQUEADA', 'El once ya está confirmado para todo el torneo');
+  const fija = configDuelos(c).formacion;
+  if (a.formacion !== fija) throw errores.validacion('FORMACION_FIJA', `En este torneo se juega con el ${fija}`);
+  const plantilla = await plantillaDe(c, participanteId);
+  const porId = new Map(plantilla.map((j) => [j.id, j]));
+  const once: Alineacion = {
+    formacion: fija,
+    titulares: a.titulares,
+    suplentes: [],
+    tactica: tacticaPorDefecto(),
+    lanzadores: proponerLanzadores(a.titulares.flatMap((t) => (porId.has(t.jugadorId) ? [porId.get(t.jugadorId)!] : []))),
+  };
+  const problemas = validarAlineacion(once, plantilla.map((j) => j.id), bajasActivas(c, participanteId));
+  if (problemas.length) throw errorDeAlineacion(problemas);
+  const version = await repoEquipo.guardarAlineacion(participanteId, once, reloj.ahora(), undefined, true);
+  return { version, dorsales: null };
+}
+
+/** Bloquea el once vigente de un participante del modo duelos (al resolverse su primer cruce sin haberlo confirmado). */
+export async function bloquearOnceDuelos(c: ControladorPartida, participanteId: string, a: Alineacion): Promise<void> {
+  const { repoEquipo, reloj } = c.servicios;
+  if ((await repoEquipo.ultimaAlineacion(participanteId))?.bloqueada) return;
+  await repoEquipo.guardarAlineacion(participanteId, a, reloj.ahora(), undefined, true);
+}
+
 export async function confirmarAlineacion(c: ControladorPartida, participanteId: string, a: Alineacion) {
   exigirEquipoEditable(c);
+  if (esDuelos(c)) return confirmarOnceDuelos(c, participanteId, a);
   const { repoEquipo, reloj, db } = c.servicios;
   const plantilla = await plantillaDe(c, participanteId);
   const bajas = bajasActivas(c, participanteId);
@@ -136,6 +203,7 @@ export function dorsalesIniciales(c: ControladorPartida, participanteId: string,
 /** Reasigna un dorsal (FR-037): si otro jugador lo llevaba, se queda sin dorsal. */
 export async function cambiarDorsal(c: ControladorPartida, participanteId: string, jugadorId: number, dorsal: number) {
   exigirEquipoEditable(c);
+  exigirNoDuelos(c);
   if (c.partidoEnCurso?.(participanteId)) throw errores.conflicto('PARTIDO_EN_CURSO', 'No se pueden cambiar dorsales durante un partido');
   const { repoEquipo } = c.servicios;
   let actuales = await repoEquipo.dorsales(participanteId);
@@ -163,6 +231,7 @@ export async function cambiarDorsal(c: ControladorPartida, participanteId: strin
 
 export async function cambiarEquipaciones(c: ControladorPartida, participanteId: string, e: Equipaciones) {
   exigirEquipoEditable(c);
+  exigirNoDuelos(c);
   const problemas = validarEquipaciones(e, parametrosActuales());
   if (problemas.length) throw errores.regla(problemas[0]!.codigo, problemas[0]!.mensaje);
   await c.servicios.repoEquipo.guardarEquipaciones(participanteId, e);

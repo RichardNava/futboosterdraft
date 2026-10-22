@@ -27,6 +27,17 @@ export const AlineacionEntrada = z.object({
 });
 export type AlineacionEntrada = z.infer<typeof AlineacionEntrada>;
 
+/**
+ * Campos añadidos a `GET /api/partidas/:id/alineacion` en el modo duelos (spec 005, FR-063, FR-063a): el once se
+ * confirma una sola vez en la formación común y solo cuentan los titulares.
+ */
+export const AlineacionDuelos = z.object({
+  bloqueada: z.boolean(),
+  soloTitulares: z.literal(true),
+  formacionFija: AlineacionEntrada.shape.formacion,
+});
+export type AlineacionDuelos = z.infer<typeof AlineacionDuelos>;
+
 /** Reasignación de un dorsal (FR-037): si otro jugador lo llevaba, se queda sin dorsal. */
 export const DorsalesEntrada = z.object({ jugadorId: z.number().int(), dorsal: z.number() });
 

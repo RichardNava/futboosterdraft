@@ -1,5 +1,8 @@
 export * from './rng/xoshiro';
 export * from './catalogo/tipos';
+export * from './catalogo/rasgos';
+export * from './catalogo/versionCatalogo';
+export * from './catalogo/documentoRasgos';
 export * from './catalogo/validar';
 export * from './catalogo/coleccionCore';
 export * from './equipo/formaciones';
@@ -25,3 +28,4 @@ export * from './torneo/goleadores';
 export * from './torneo/bajas';
 export * from './torneo/torneo';
 export * from './torneo/eliminaciones';
+export * from './duelos/index';

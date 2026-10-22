@@ -282,7 +282,7 @@ description: "Lista de tareas de la spec 004: mejoras visuales y de diseño"
 - [X] T099 Goleadores en la franja del 2D (FR-053): `ListaGoleadores` exportada de `Marcador.tsx` y fila `.goleadores-2d` en `Partido2D.tsx` y `ReproduccionPartido.tsx`
 - [X] T100 [P] Goles resaltados (FR-054): clase `evento-gol` en `ResumenEventos.tsx` y estilo en `base.css`
 - [X] T101 [P] Campeón visible (FR-055): mensaje del campeón arriba y escena escalada con el alto en `PantallaCampeon.tsx` y `base.css`
-- [X] T102 Elegir carta en el draft (FR-056): el pie de specials reenvía la pulsación fuera de sus botones (`CartaJugador.tsx`), `onDobleClick` en `CartaJugador` y `CartaMesa`, y elegir y confirmar con doble clic en `Draft.tsx` sin envíos duplicados
+- [X] T102 Elegir carta en el draft (FR-056): el pie de virtudes reenvía la pulsación fuera de sus botones (`CartaJugador.tsx`), `onDobleClick` en `CartaJugador` y `CartaMesa`, y elegir y confirmar con doble clic en `Draft.tsx` sin envíos duplicados
 - [X] T103 Verificación: `pnpm lint`, `pnpm typecheck`, pruebas unitarias (483/483), e2e nueva `diseno/ronda4` (4/4) y de no regresión `diseno/*`, `finalizar`, `partido-2d`, `draft-solo`, `torneo-final`, `partido-rapido` y `cartas` (45/45); capturas de la portada a 1024 × 768, 1280 × 720, 1366 × 768 y 1920 × 1080, del 2D con goleadores, del resultado a 1366 y 390 y del campeón a 1366 × 768 y 390 × 844
 
 ---

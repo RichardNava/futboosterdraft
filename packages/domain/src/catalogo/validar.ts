@@ -1,17 +1,21 @@
 /**
- * Validación del catálogo de jugadores (FR-016 a FR-024). El seed rechaza el fichero entero si
- * cualquier jugador incumple una regla.
+ * Validación del catálogo de jugadores (FR-016 a FR-024; spec 005, FR-011, FR-013, FR-040). El seed rechaza el
+ * fichero entero si cualquier jugador incumple una regla. Los avisos de colección (`avisosColeccion`) no lo rechazan.
  */
+import { PAREJAS_INCOMPATIBLES, REPARTO_DEFECTOS } from './rasgos';
 import {
   CLAVES_STATS,
+  DEFECTOS,
   DEMARCACIONES,
-  MAX_SPECIALS,
+  MAX_DEFECTOS,
+  MAX_VIRTUDES,
   NIVELES,
   POSICIONES,
-  TODOS_LOS_SPECIALS,
+  TODAS_LAS_VIRTUDES,
   calcularMedia,
-  specialsPermitidos,
+  virtudesPermitidas,
   type Jugador,
+  type Nivel,
 } from './tipos';
 
 export type ReglaCatalogo =
@@ -30,10 +34,15 @@ export type ReglaCatalogo =
   | 'stats_rango'
   | 'media'
   | 'nivel'
-  | 'specials_repetidos'
-  | 'specials_maximo'
-  | 'special_desconocido'
-  | 'special_no_permitido'
+  | 'virtudes_repetidas'
+  | 'virtudes_maximo'
+  | 'virtud_desconocida'
+  | 'virtud_no_permitida'
+  | 'defecto_desconocido'
+  | 'defectos_repetidos'
+  | 'defectos_maximo'
+  | 'rasgos_incompatibles'
+  | 'reparto_defectos'
   | 'coleccion'
   | 'id'
   | 'id_repetido';
@@ -56,7 +65,8 @@ const CAMPOS: readonly (keyof Jugador)[] = [
   'historia',
   'stats',
   'media',
-  'specials',
+  'virtudes',
+  'defectos',
   'nivel',
   'coleccion',
 ];
@@ -160,26 +170,42 @@ export function validarJugador(entrada: unknown): ErrorCatalogo[] {
     }
   }
 
-  // Nivel y specials
+  // Nivel y virtudes
   const nivel = j.nivel;
   if (!incluye(NIVELES, nivel)) error('nivel', `Nivel desconocido: ${String(nivel)}`);
-  const specials = j.specials;
-  if (!Array.isArray(specials)) {
-    error('special_desconocido', 'Los specials deben ser una lista');
+  const virtudes = j.virtudes;
+  if (!Array.isArray(virtudes)) {
+    error('virtud_desconocida', 'Las virtudes deben ser una lista');
   } else {
-    if (new Set(specials).size !== specials.length) error('specials_repetidos', 'Specials repetidos');
-    if (incluye(NIVELES, nivel) && specials.length > MAX_SPECIALS[nivel]) {
-      error('specials_maximo', `Un ${nivel} tiene como máximo ${MAX_SPECIALS[nivel]} specials`);
+    if (new Set(virtudes).size !== virtudes.length) error('virtudes_repetidas', 'Virtudes repetidas');
+    if (incluye(NIVELES, nivel) && virtudes.length > MAX_VIRTUDES[nivel]) {
+      error('virtudes_maximo', `Un ${nivel} tiene como máximo ${MAX_VIRTUDES[nivel]} virtudes`);
     }
-    const desconocidos = specials.filter((s) => !incluye(TODOS_LOS_SPECIALS, s));
-    if (desconocidos.length) error('special_desconocido', `Specials desconocidos: ${desconocidos.join(', ')}`);
+    const desconocidos = virtudes.filter((s) => !incluye(TODAS_LAS_VIRTUDES, s));
+    if (desconocidos.length) error('virtud_desconocida', `Virtudes desconocidas: ${desconocidos.join(', ')}`);
     if (Array.isArray(posiciones)) {
-      const permitidos = specialsPermitidos({ demarcacion, posicion: posiciones as Jugador['posicion'] });
-      const noPermitidos = specials.filter((s) => incluye(TODOS_LOS_SPECIALS, s) && !permitidos.has(s));
+      const permitidos = virtudesPermitidas({ demarcacion, posicion: posiciones as Jugador['posicion'] });
+      const noPermitidos = virtudes.filter((s) => incluye(TODAS_LAS_VIRTUDES, s) && !permitidos.has(s));
       if (noPermitidos.length) {
-        error('special_no_permitido', `Specials no permitidos para un ${demarcacion}: ${noPermitidos.join(', ')}`);
+        error('virtud_no_permitida', `Virtudes no permitidas para un ${demarcacion}: ${noPermitidos.join(', ')}`);
       }
     }
+  }
+
+  // Defectos (spec 005)
+  const defectos = j.defectos;
+  if (!Array.isArray(defectos)) {
+    error('defecto_desconocido', 'Los defectos deben ser una lista');
+  } else {
+    if (new Set(defectos).size !== defectos.length) error('defectos_repetidos', 'Defectos repetidos');
+    if (defectos.length > MAX_DEFECTOS) error('defectos_maximo', `Como máximo ${MAX_DEFECTOS} defectos`);
+    const desconocidos = defectos.filter((d) => !incluye(DEFECTOS, d));
+    if (desconocidos.length) error('defecto_desconocido', `Defectos desconocidos: ${desconocidos.join(', ')}`);
+  }
+  if (Array.isArray(virtudes) && Array.isArray(defectos)) {
+    const rasgos = new Set<unknown>([...virtudes, ...defectos]);
+    const choques = PAREJAS_INCOMPATIBLES.filter(([a, b]) => rasgos.has(a) && rasgos.has(b));
+    if (choques.length) error('rasgos_incompatibles', `Rasgos incompatibles: ${choques.map(([a, b]) => `${a} y ${b}`).join(', ')}`);
   }
 
   return errores;
@@ -198,4 +224,45 @@ export function validarColeccion(jugadores: unknown): ErrorCatalogo[] {
     vistos.add(id);
   }
   return errores;
+}
+
+/** Tolerancia, en puntos porcentuales, del aviso `reparto_defectos`. */
+const TOLERANCIA_REPARTO = 0.05;
+
+/** Proporción de cartas con algún defecto en cada nivel presente en la colección. */
+export function proporcionDefectosPorNivel(jugadores: readonly Jugador[]): Partial<Record<Nivel, number>> {
+  const r: Partial<Record<Nivel, number>> = {};
+  for (const n of NIVELES) {
+    const delNivel = jugadores.filter((j) => j.nivel === n);
+    if (delNivel.length) r[n] = delNivel.filter((j) => j.defectos.length > 0).length / delNivel.length;
+  }
+  return r;
+}
+
+/**
+ * Avisos de una colección válida (no la rechazan). `reparto_defectos`: la proporción de cartas con defectos no crece
+ * con el nivel (con una tolerancia de ±5 puntos) o se aleja más de 5 puntos de `REPARTO_DEFECTOS` (FR-012, SC-008).
+ */
+export function avisosColeccion(jugadores: readonly Jugador[]): ErrorCatalogo[] {
+  const avisos: ErrorCatalogo[] = [];
+  const proporcion = proporcionDefectosPorNivel(jugadores);
+  const presentes = NIVELES.filter((n) => proporcion[n] !== undefined);
+  for (let i = 1; i < presentes.length; i++) {
+    const anterior = presentes[i - 1]!;
+    const nivel = presentes[i]!;
+    if (proporcion[nivel]! + TOLERANCIA_REPARTO < proporcion[anterior]!) {
+      avisos.push({ id: undefined, regla: 'reparto_defectos', mensaje: `Hay menos cartas con defectos en ${nivel} que en ${anterior}` });
+    }
+  }
+  for (const n of presentes) {
+    if (Math.abs(proporcion[n]! - REPARTO_DEFECTOS[n].conDefecto) > TOLERANCIA_REPARTO) {
+      const pct = (x: number) => `${Math.round(x * 100)} %`;
+      avisos.push({
+        id: undefined,
+        regla: 'reparto_defectos',
+        mensaje: `${n}: ${pct(proporcion[n]!)} de cartas con defectos (se espera ${pct(REPARTO_DEFECTOS[n].conDefecto)})`,
+      });
+    }
+  }
+  return avisos;
 }

@@ -22,7 +22,8 @@ function jugador(posicion: Posicion): Jugador {
     historia: '',
     stats,
     media: calcularMedia({ demarcacion, stats }),
-    specials: [],
+    virtudes: [],
+    defectos: [],
     nivel: 'Superclase',
     coleccion: 'Core',
   };

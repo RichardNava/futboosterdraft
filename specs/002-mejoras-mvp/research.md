@@ -101,7 +101,7 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
     - Juego vertical: favorece centros y balones largos.
 
     Los stats del portador fijan la calidad de la evaluación: con más visión ve opciones más lejanas y con más pase elige mejor entre ellas.
-  - **Resolución**: la acción elegida se resuelve con el duelo de stats de siempre (001/R7: logística, specials, rerolls). El defensor del duelo es el rival real más cercano a la trayectoria o al portador, y la distancia entre ambos entra como ajuste del duelo.
+  - **Resolución**: la acción elegida se resuelve con el duelo de stats de siempre (001/R7: logística, virtudes, rerolls). El defensor del duelo es el rival real más cercano a la trayectoria o al portador, y la distancia entre ambos entra como ajuste del duelo.
   - **Duración de cada acción**: sale de la física:
     - pase o centro: tiempo de vuelo del balón;
     - conducción: lo que tarda el portador en recorrer el tramo;
@@ -363,7 +363,7 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
   - **Disposición de la carta completa**:
     - **cabecera**: la media grande, el nombre y una silueta SVG genérica en línea, con una variante por demarcación;
     - **franja de posiciones**: distintivos de las posiciones y demarcación;
-    - **pie**: rejilla de 2 × 3 stats y los specials en distintivos de una línea, que se reducen y parten en dos líneas cuando hay 4.
+    - **pie**: rejilla de 2 × 3 stats y las virtudes en distintivos de una línea, que se reducen y parten en dos líneas cuando hay 4.
   - **Acabado por nivel**: variables CSS por nivel (marco, degradado, brillo):
     - Superclase: plata mate;
     - Épico: violeta;
@@ -371,7 +371,7 @@ Evaluación técnica que respalda FR-030 (conclusión ya aceptada por el usuario
     - GOAT: holográfico con un degradado cónico animado.
 
     Las animaciones respetan `prefers-reduced-motion`.
-  - **Specials**: cada special es un botón que abre un *popover* (atributo `popover` de HTML) con su descripción, que viene de `GET /api/catalogo/specials` y se guarda en caché al iniciar la sesión.
+  - **Virtudes**: cada virtud es un botón que abre un *popover* (atributo `popover` de HTML) con su descripción, que viene de `GET /api/catalogo/virtudes` y se guarda en caché al iniciar la sesión.
   - **Comprobación de SC-002**: una prueba de Playwright renderiza las cartas de la colección Core en 1280 px y 360 px y comprueba que ningún elemento interno desborda.
 - **Razón**: sin dependencias nuevas, y la comprobación de SC-002 queda automatizada.
 - **Alternativas consideradas**:

@@ -3,7 +3,7 @@ import { tacticaPorDefecto } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { estadoEquipoEnPartido, type AlineacionPartido, type EventoEquipo } from '../../src/componentes/estadoEquipoEnPartido';
 
-const carta = (id: number) => ({ id, nombre: 'J', apellidos: String(id), demarcacion: 'MED' as const, posicion: ['MC'], media: 75, nivel: 'Superclase' as const, specials: [] });
+const carta = (id: number) => ({ id, nombre: 'J', apellidos: String(id), demarcacion: 'MED' as const, posicion: ['MC'], media: 75, nivel: 'Superclase' as const, virtudes: [], defectos: [] });
 const alineacion: AlineacionPartido = {
   formacion: '4-4-2',
   titulares: ['POR', 'LD', 'DCD', 'DCI', 'LI', 'ED', 'MC-1', 'MC-2', 'EI', 'DC', 'SD'].map((casillaId, i) => ({ casillaId, jugador: carta(i + 1) })),

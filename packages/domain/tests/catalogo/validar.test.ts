@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import type { Jugador } from '../../src/catalogo/tipos';
-import { validarColeccion, validarJugador, type ReglaCatalogo } from '../../src/catalogo/validar';
+import { avisosColeccion, validarColeccion, validarJugador, type ReglaCatalogo } from '../../src/catalogo/validar';
 
 const base = {
   nombre: 'Prueba',
@@ -9,6 +11,7 @@ const base = {
   fecha_nacimiento: '1995-02-28',
   altura: 180,
   historia: '',
+  defectos: [],
   coleccion: 'Core',
 };
 
@@ -19,7 +22,7 @@ const portero: Jugador = {
   posicion: ['POR'],
   stats: { agilidad: 80, colocacion: 80, distribucion: 70, aereo: 75, defensa: 75, liderazgo: 70 },
   media: 75,
-  specials: ['Parapenalties'],
+  virtudes: ['Parapenalties'],
   nivel: 'Superclase',
 };
 const defensa: Jugador = {
@@ -29,7 +32,7 @@ const defensa: Jugador = {
   posicion: ['CD', 'LD'],
   stats: { velocidad: 80, tecnica: 70, tackling: 80, anticipacion: 75, marcaje: 75, liderazgo: 70 },
   media: 75,
-  specials: ['Infranqueable', 'BoxToBox'], // BoxToBox permitido por ser carrilero (FR-023)
+  virtudes: ['Infranqueable', 'BoxToBox'], // BoxToBox permitido por ser carrilero (FR-023)
   nivel: 'Epico',
 };
 const medio: Jugador = {
@@ -39,7 +42,7 @@ const medio: Jugador = {
   posicion: ['MC', 'EI'],
   stats: { velocidad: 70, tecnica: 80, pase: 85, posicionamiento: 80, vision: 85, disparo: 70 },
   media: 78.33,
-  specials: ['Todocampista', 'Capitania', 'Aura'],
+  virtudes: ['Todocampista', 'Capitania', 'Aura'],
   nivel: 'Legendario',
 };
 const delantero: Jugador = {
@@ -49,7 +52,7 @@ const delantero: Jugador = {
   posicion: ['DC'],
   stats: { velocidad: 90, regate: 92, finalizacion: 94, desmarque: 90, creatividad: 88, agresividad: 80 },
   media: 89,
-  specials: ['Matador', 'Rematador', 'Cabeceador', 'Robusto'],
+  virtudes: ['Matador', 'Rematador', 'Cabeceador', 'Robusto'],
   nivel: 'GOAT',
 };
 
@@ -81,14 +84,30 @@ describe('validarJugador', () => {
     ['stat no entero', { ...medio, stats: { ...medio.stats, pase: 80.5 } }, 'stats_rango'],
     ['media incorrecta', { ...medio, media: 80 }, 'media'],
     ['nivel desconocido', { ...medio, nivel: 'Épico' }, 'nivel'],
-    ['specials repetidos', { ...delantero, specials: ['Matador', 'Matador'] }, 'specials_repetidos'],
-    ['demasiados specials (Superclase)', { ...portero, specials: ['Parapenalties', 'Santo'] }, 'specials_maximo'],
-    ['demasiados specials (Épico)', { ...defensa, specials: ['Infranqueable', 'Jerarquia', 'Volador'] }, 'specials_maximo'],
-    ['special desconocido', { ...delantero, specials: ['Volar'] }, 'special_desconocido'],
-    ['special de otra demarcación', { ...medio, specials: ['Matador'] }, 'special_no_permitido'],
-    ['special de MED en defensa no carrilero', { ...defensa, posicion: ['DCI'] }, 'special_no_permitido'],
+    ['virtudes repetidas', { ...delantero, virtudes: ['Matador', 'Matador'] }, 'virtudes_repetidas'],
+    ['demasiadas virtudes (Superclase)', { ...portero, virtudes: ['Parapenalties', 'Santo'] }, 'virtudes_maximo'],
+    ['demasiadas virtudes (Épico)', { ...defensa, virtudes: ['Infranqueable', 'Jerarquia', 'Volador'] }, 'virtudes_maximo'],
+    ['virtud desconocida', { ...delantero, virtudes: ['Volar'] }, 'virtud_desconocida'],
+    ['virtud de otra demarcación', { ...medio, virtudes: ['Matador'] }, 'virtud_no_permitida'],
+    ['virtud de MED en defensa no carrilero', { ...defensa, posicion: ['DCI'] }, 'virtud_no_permitida'],
+    ['defecto desconocido', { ...delantero, defectos: ['Vago'] }, 'defecto_desconocido'],
+    ['defectos repetidos', { ...delantero, defectos: ['Chupon', 'Chupon'] }, 'defectos_repetidos'],
+    ['más de 2 defectos', { ...delantero, defectos: ['Chupon', 'Torpe', 'Fragil'] }, 'defectos_maximo'],
+    ['virtud y defecto incompatibles', { ...delantero, virtudes: ['DeAcero'], defectos: ['DeCristal'] }, 'rasgos_incompatibles'],
+    ['virtud de resistencia y Fatigado', { ...medio, virtudes: ['Incansable'], defectos: ['Fatigado'] }, 'rasgos_incompatibles'],
+    ['sin lista de defectos', { ...delantero, defectos: 'Chupon' }, 'defecto_desconocido'],
   ])('rechaza: %s', (_titulo, jugador, regla) => {
     expect(reglas(jugador)).toContain(regla);
+  });
+
+  it('un GOAT con 4 virtudes y 2 defectos compatibles es válido (FR-011)', () => {
+    expect(validarJugador({ ...delantero, nivel: 'GOAT', virtudes: ['Matador', 'Aura', 'Capitania', 'DeAcero'], defectos: ['Chupon', 'Estrellita'] })).toEqual([]);
+  });
+
+  it('el mensaje del máximo de defectos es «Como máximo 2 defectos»', () => {
+    expect(validarJugador({ ...delantero, defectos: ['Chupon', 'Torpe', 'Fragil'] }).find((e) => e.regla === 'defectos_maximo')?.mensaje).toBe(
+      'Como máximo 2 defectos',
+    );
   });
 
   it('el valor "Épico" con tilde no es válido en los datos: se escribe "Epico"', () => {
@@ -108,5 +127,33 @@ describe('validarColeccion', () => {
 
   it('rechaza algo que no es una lista', () => {
     expect(validarColeccion({})[0]?.regla).toBe('campos');
+  });
+});
+
+describe('avisosColeccion (reparto de defectos)', () => {
+  const cartas = (nivel: Jugador['nivel'], n: number, conDefecto: number): Jugador[] =>
+    Array.from({ length: n }, (_, i) => ({ ...delantero, id: 1000 + i, nivel, virtudes: [], defectos: i < conDefecto ? ['Torpe'] : [] }));
+
+  it('sin aviso si la proporción crece con el nivel y se acerca a REPARTO_DEFECTOS', () => {
+    const coleccion = [...cartas('Superclase', 20, 3), ...cartas('Epico', 20, 5), ...cartas('Legendario', 20, 7), ...cartas('GOAT', 20, 10)];
+    expect(avisosColeccion(coleccion)).toEqual([]);
+  });
+
+  it('avisa si un nivel alto tiene menos cartas con defectos que uno bajo', () => {
+    const coleccion = [...cartas('Superclase', 20, 6), ...cartas('Epico', 20, 1)];
+    expect(avisosColeccion(coleccion).map((a) => a.regla)).toContain('reparto_defectos');
+  });
+});
+
+describe('data/core.json con rasgos (spec 005, T050; SC-008)', () => {
+  const core = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
+
+  it('es válida: ninguna carta con más de 2 defectos ni con rasgos incompatibles', () => {
+    expect(validarColeccion(core)).toEqual([]);
+    expect(Math.max(...core.map((j) => j.defectos.length))).toBeLessThanOrEqual(2);
+  });
+
+  it('la proporción de cartas con defectos crece con el nivel y se ajusta al reparto', () => {
+    expect(avisosColeccion(core)).toEqual([]);
   });
 });

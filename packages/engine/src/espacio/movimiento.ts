@@ -8,7 +8,7 @@
  */
 import type { EquipoEstado, EstadoMotor, JugadorEnPartido, PosicionMovil } from '../estado/estado';
 import { atributoConBonus } from '../modificadores/atributos';
-import { bonusEquipo, bonusPorDemarcacion } from '../modificadores/specials';
+import { bonusEquipo, bonusPorDemarcacion } from '../modificadores/virtudes';
 import { acotar, dividir, escalar, isqrt } from './aritmetica';
 import { ANCHO, LARGO, type Punto } from './geometria';
 

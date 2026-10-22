@@ -64,6 +64,30 @@ Los valores finales se ajustan con la nueva comprobación `balance` **`disciplin
   `parada` o `tiro` siguiente.
 - La 2D muestra un rótulo «Penalti» al pitarlo.
 
+**Valores finales** (T083, `pnpm balance --n 1000 --serie todas --solo 005/SC-011,003/SC-001`, 2026-10-22):
+
+| Parámetro | 4.0.0 inicial | 4.0.0 final | Motivo del ajuste |
+|---|---|---|---|
+| `probabilidadFaltaPorEntrada` | 0,22 | 0,22 | — |
+| `probabilidadAmarillaPorFalta` | 0,33 | 0,38 | compensa las segundas amarillas que se quitan |
+| `probabilidadRojaDirectaPorFalta` | 0,011 | 0,005 | con 0,011 había 0,14 rojas directas y 0,23 por doble amarilla por partido |
+| `factorSegundaAmarilla` (nuevo; era la constante 0,4 del motor) | — | 0,2 | las dobles amarillas eran la mayor parte de las rojas |
+| `factorFaltaUltimoTercio` | 1,6 | 1,0 | menos faltas cerca del área: menos faltas directas y menos goles |
+| `factorFaltaArea` (solo faltas por entrada) | 0,55 | 0,53 | los duelos aéreos del área tienen su propio parámetro |
+| `probabilidadFaltaDueloAereoArea` | 0,03 | 0,035 | |
+| `lesiones.probabilidadPorEntrada` | 0,0095 | 0,013 | con 0,0095, 0,22–0,26 lesiones por partido |
+
+Resultado (por partido, sintética / Core): amarillas 3,77 / 3,70; rojas 0,20 / 0,21; penaltis 0,41 / 0,28; lesiones
+0,37 / 0,33. Todos dentro de FR-071 ±20 %.
+
+- **Penaltis**: la serie sintética (equipos iguales) tiene de forma natural unos 1,5 penaltis por cada uno de la Core
+  (ya con 3.0.0: 0,54 frente a 0,37). No hay un valor de `factorFaltaArea` que deje las dos en el centro del rango: el
+  elegido las deja dentro, la Core cerca del límite inferior.
+- **003/SC-001c (goles de la serie Core)**: falla con 3,47 goles por partido. También falla con los parámetros 3.0.0 sobre
+  el Core y los NPC actuales (3,50 goles; 53 % de los torneos en 2,6–3,4), así que no lo causan las frecuencias nuevas.
+  Queda como trabajo pendiente: revisar si lo sube el nuevo criterio de los NPC con los rasgos (R12) o el reparto de
+  rasgos de Core (R5).
+
 **Razón**:
 
 - Subir solo la probabilidad por falta haría que 1 de cada 2 faltas fuera tarjeta, algo poco creíble.

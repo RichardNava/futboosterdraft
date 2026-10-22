@@ -50,6 +50,12 @@ describe('tokens.css', () => {
     expect(contraste(token('color-accion-texto'), token('color-accion'))).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('el rojo de los defectos sobre su recuadro y sobre los fondos ≥ 4,5:1, y distinto del error (spec 005, FR-021)', () => {
+    expect(contraste(token('color-defecto'), token('color-defecto-chip'))).toBeGreaterThanOrEqual(4.5);
+    for (const f of fondos) expect(contraste(token('color-defecto'), token(f))).toBeGreaterThanOrEqual(4.5);
+    expect(token('color-defecto').toLowerCase()).not.toBe(token('color-error').toLowerCase());
+  });
+
   it('el texto suave sobre el botón apagado ≥ 4,5:1', () => {
     expect(contraste(token('color-texto-suave'), token('color-apagado'))).toBeGreaterThanOrEqual(4.5);
   });

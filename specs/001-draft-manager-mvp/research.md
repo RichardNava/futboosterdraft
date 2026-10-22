@@ -67,7 +67,7 @@ Cada apartado resuelve una incógnita del *Technical Context* con el formato
 
 ## R5. Persistencia
 
-- **Decisión**: PostgreSQL 16 con Drizzle ORM y migraciones versionadas. El catálogo de jugadores Core se carga desde un fichero JSON validado ([contracts/player-data.schema.json](./contracts/player-data.schema.json)) mediante un *seed* idempotente.
+- **Decisión**: PostgreSQL 16 con Drizzle ORM y migraciones versionadas. El catálogo de jugadores Core se carga desde un fichero JSON validado ([packages/protocol/schemas/player-data.schema.json](../../packages/protocol/schemas/player-data.schema.json)) mediante un *seed* idempotente.
 - **Razón**:
   - El modelo es relacional (partidas, mesas, elecciones, torneos, partidos, bajas) y necesita transacciones en la resolución de cada turno.
   - Las columnas JSONB guardan los stats, la alineación y el registro de eventos de cada partido.
@@ -89,8 +89,8 @@ Cada apartado resuelve una incógnita del *Technical Context* con el formato
 - **Decisión**: un motor de tiempo discreto, determinista y con semilla:
   - **PRNG**: generador propio `xoshiro128**` con semilla de 128 bits, guardada en el partido.
   - **Aritmética**: valores enteros o en "milésimas" para stats y probabilidades. Sin `Math.random`, sin funciones trigonométricas en las decisiones y sin depender del orden de iteración de objetos.
-  - **Paso del tiempo**: avanza en *ticks* de 1 segundo de juego (5.400 en 90 minutos). En cada tick, la posesión genera una acción según la zona del balón, la formación, la táctica y los specials. La acción se resuelve con un **duelo de stats**: probabilidad = función logística de (stat atacante efectivo − stat defensor efectivo) más los modificadores.
-  - **Stats efectivos**: base × penalización por posición × cansancio + specials de equipo (deduplicados, FR-038) + contexto (marcador, minuto).
+  - **Paso del tiempo**: avanza en *ticks* de 1 segundo de juego (5.400 en 90 minutos). En cada tick, la posesión genera una acción según la zona del balón, la formación, la táctica y las virtudes. La acción se resuelve con un **duelo de stats**: probabilidad = función logística de (stat atacante efectivo − stat defensor efectivo) más los modificadores.
+  - **Stats efectivos**: base × penalización por posición × cansancio + virtudes de equipo (deduplicados, FR-038) + contexto (marcador, minuto).
   - **"Reroll"** (Filigranas, Muro defensivo, Guante en el pie, Santo): se resuelve dos veces y se queda el mejor resultado, consumiendo números del PRNG de forma determinista.
   - **Posiciones espaciales**: el motor mantiene posiciones aproximadas de jugadores y balón en una rejilla del campo. La modalidad 2D las interpola entre fotogramas clave; la rápida las ignora.
   - **Puntos de decisión**: el motor se ejecuta **por tramos** hasta la siguiente interrupción del juego (2D) o hasta el descanso o el final (rápida). Las decisiones del participante se encolan y se aplican al empezar el tramo siguiente. Así ambas modalidades recorren exactamente la misma secuencia (FR-032, SC-008).
@@ -114,7 +114,7 @@ Cada apartado resuelve una incógnita del *Technical Context* con el formato
 ## R9. NPC
 
 - **Decisión**: una única función de evaluación compartida, con cuatro perfiles de "ruido y miopía":
-  - **Evaluación**: cuánto mejora una carta o una alineación la fuerza esperada del equipo. Combina la media efectiva en la mejor casilla disponible, la cobertura de las posiciones que faltan para las formaciones viables, la escasez de porteros y la sinergia de specials.
+  - **Evaluación**: cuánto mejora una carta o una alineación la fuerza esperada del equipo. Combina la media efectiva en la mejor casilla disponible, la cobertura de las posiciones que faltan para las formaciones viables, la escasez de porteros y la sinergia de virtudes.
   - **Amateur**: elige con mucho ruido y considera solo la media.
   - **Intermedio**: ruido moderado y cobertura básica de posiciones.
   - **Avanzado**: poco ruido; evaluación completa con 1 formación objetivo.

@@ -7,7 +7,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
 
 **Input**: Documentos de diseño en `/specs/001-draft-manager-mvp/`: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md).
 
-**Tests**: SE INCLUYEN. El Principio IX de la constitución exige pruebas automatizadas para el draft, las posiciones, los specials, el motor, la coherencia entre modalidades, la integridad y las desconexiones, y los criterios de éxito SC-001 a SC-017 son verificables. En cada historia, las pruebas se escriben **antes** que la implementación y deben fallar primero.
+**Tests**: SE INCLUYEN. El Principio IX de la constitución exige pruebas automatizadas para el draft, las posiciones, las virtudes, el motor, la coherencia entre modalidades, la integridad y las desconexiones, y los criterios de éxito SC-001 a SC-017 son verificables. En cada historia, las pruebas se escriben **antes** que la implementación y deben fallar primero.
 
 **Organization**: tareas agrupadas por historia de usuario. Gestor de paquetes: **pnpm**, siempre (research R17, [CLAUDE.md](../../CLAUDE.md)). Nunca npm, yarn ni bun.
 
@@ -70,14 +70,14 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - `Demarcacion = 'POR'|'DEF'|'MED'|'DEL'`.
   - `Posicion = POR|LI|LD|DCI|DCD|CI|CD|MD|MC|MII|MID|MCO|DC|SD|EI|ED`.
   - `Nivel = 'Superclase'|'Epico'|'Legendario'|'GOAT'`. En código y datos no se usan tildes; la etiqueta "Épico" para la interfaz se define en `apps/web/src/textos/niveles.ts`.
-  - Uniones `Special` de los 15 genéricos y los 5 de cada demarcación, con los identificadores exactos de data-model §1.2.
+  - Uniones `Virtud` de los 15 genéricos y los 5 de cada demarcación, con los identificadores exactos de data-model §1.2.
   - `StatsPOR/DEF/MED/DEL`, con las 6 claves exactas de FR-019.
   - Interfaz `Jugador`, con los 14 campos de FR-016.
 - [X] T017 Implementar `validarJugador(j)` y `validarColeccion(js)` en `packages/domain/src/catalogo/validar.ts`. Cada error devuelve `{ id, regla, mensaje }`. Reglas:
   - "exactamente las 6 claves de su demarcación (FR-019); enteros 1–99 (FR-020)".
   - "`media` = promedio de los 6 stats (±0,01)".
-  - "Superclase hasta 1, Épico hasta 2, Legendario hasta 3, GOAT hasta 4" specials, sin repetidos.
-  - Specials permitidos: genéricos más los de su demarcación; un DEF con `CI` o `CD` también puede tener los de MED.
+  - "Superclase hasta 1, Épico hasta 2, Legendario hasta 3, GOAT hasta 4" virtudes, sin repetidos.
+  - Virtudes permitidas: genéricas más las de su demarcación; un DEF con `CI` o `CD` también puede tener las de MED.
   - "Un POR solo tiene `POR`"; ningún jugador de campo tiene `POR`.
   - `posicion` con 1 o más elementos y sin repetidos.
   - `altura` 150–215; `coleccion` = "Core"; `id` único.
@@ -87,7 +87,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - Cansancio: `cansancio.inicioMin: 65`, `cansancio.inicioMinPresionAlta: 55`.
   - Lesiones: `lesiones.reparto: { leve, media, grave, larga: 0.02 }`, con `partidos: {leve:1, media:2, grave:3, larga:5}`.
   - Sobres: `sobres.probPorteroEnHuecoPorDef: 0.5`, `sobres.probGoatEnAlta: 0.2`.
-  - Bonificaciones fijas de specials: Capitanía +1, Fortaleza mental +2, Intimidante −1, Infranqueable +2 con regate ≥ 95, Jerarquía +1, Líbero +2, Box-to-Box +1.
+  - Bonificaciones fijas de virtudes: Capitanía +1, Fortaleza mental +2, Intimidante −1, Infranqueable +2 con regate ≥ 95, Jerarquía +1, Líbero +2, Box-to-Box +1.
   - Valores provisionales para el resto (efectos de táctica y formación, pendiente de la logística, tasas de faltas, tarjetas y lesiones).
   - `version: "1.0.0"`.
 - [X] T020 Crear el generador de contenido (después de los tipos y del validador del catálogo) `tools/fixtures/src/generarCore.ts`. Debe producir `data/core.json` con **300 jugadores ficticios** (nombres inventados, sin personas reales) que respeten exactamente esta tabla:
@@ -99,7 +99,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   | MED | 44 | 22 | 22 | 12 |
   | DEL | 30 | 15 | 15 | 8 |
 
-  Además: el nivel se escribe sin tilde en los datos (`"Epico"`); stats coherentes con el nivel (Superclase ~70–79 de media, Epico ~78–84, Legendario ~83–89, GOAT ~88–94), posiciones verosímiles por demarcación, specials dentro del máximo del nivel y `historia` breve. Ejecutarlo y versionar el resultado `data/core.json`.
+  Además: el nivel se escribe sin tilde en los datos (`"Epico"`); stats coherentes con el nivel (Superclase ~70–79 de media, Epico ~78–84, Legendario ~83–89, GOAT ~88–94), posiciones verosímiles por demarcación, virtudes dentro del máximo del nivel y `historia` breve. Ejecutarlo y versionar el resultado `data/core.json`.
 - [X] T021 Implementar las formaciones como datos estáticos en `packages/domain/src/equipo/formaciones.ts`, con las 10 formaciones y sus 11 casillas exactamente según la tabla de Assumptions de spec.md.
   - Cada casilla es `{ id, posicionesAdmitidas, zona: {x, y} }`.
   - La casilla central de una defensa de 3 o 5 tiene `posicionesAdmitidas: ['DCI','DCD']` (FR-025a).
@@ -115,7 +115,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
 
 - [X] T023 Configurar Drizzle en `apps/server/drizzle.config.ts` y definir el esquema base en `apps/server/src/persistencia/esquema/base.ts`:
   - `usuarios`: `id uuid`, `tipo 'registrado'|'invitado'`, `email` único y no nulo si `registrado`, `apodo` de 3–20 caracteres, `creadoEn`.
-  - `jugadores`: columnas del catálogo, `stats jsonb`, `specials text[]`.
+  - `jugadores`: columnas del catálogo, `stats jsonb`, `virtudes text[]`.
   - `partidas`: campos de data-model §2.2, con `CHECK` de `numParticipantes` según `modo` ("Liga 4–8; playoff ∈ {4, 8, 16}; mixto = 8").
   - `participantes`: campos de data-model §2.3.
   - `peticiones_procesadas`: `(partidaId, requestId)` PK, para descartar duplicados.
@@ -151,7 +151,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - `ping`/`pong`.
   - Al conectar, envía `estado` con la vista filtrada que proporcione el actor.
   - Contabiliza las desconexiones.
-- [X] T031 [P] Implementar las rutas del catálogo en `apps/server/src/http/catalogo.ts`: `GET /api/catalogo/jugadores/:id`, `GET /api/catalogo/formaciones` y `GET /api/catalogo/specials` (con nombre, ámbito y descripción en español de cada special, tomados de la especificación).
+- [X] T031 [P] Implementar las rutas del catálogo en `apps/server/src/http/catalogo.ts`: `GET /api/catalogo/jugadores/:id`, `GET /api/catalogo/formaciones` y `GET /api/catalogo/virtudes` (con nombre, ámbito y descripción en español de cada virtud, tomados de la especificación).
 - [X] T032 [P] Crear las utilidades de prueba del servidor en `apps/server/tests/helpers/`:
   - `bd.ts`: PostgreSQL con Testcontainers, migraciones y *seed* con un `core.json` reducido.
   - `app.ts`: construye la app con `RelojFalso`.
@@ -167,7 +167,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - `estado/sesion.ts`: Zustand.
   - Textos en español.
 - [X] T034 [P] Crear el componente reutilizable `apps/web/src/componentes/CartaJugador.tsx`:
-  - Muestra nombre, demarcación, posiciones, media redondeada al entero ("se muestra redondeada al entero más cercano"), nivel con su color y specials.
+  - Muestra nombre, demarcación, posiciones, media redondeada al entero ("se muestra redondeada al entero más cercano"), nivel con su color y virtudes.
   - Variante compacta.
   - `apps/web/src/componentes/FichaJugador.tsx`: ventana con la ficha completa (stats con abreviaturas AGI/COL/…, historia, nacionalidad, altura, edad), cargada de `GET /api/catalogo/jugadores/:id`.
 - [X] T035 Crear la pantalla `apps/web/src/pantallas/Inicio.tsx`, con los botones "Jugar como invitado", "Iniciar sesión" y "Registrarse" y sus formularios.
@@ -308,7 +308,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - Errores acumulados en `ALINEACION_INVALIDA`.
 - [X] T058 [P] [US2] Pruebas de táctica en `packages/domain/tests/equipo/tactica.test.ts`: valores por defecto (`zona`, `medio`, `false`, `equilibrado`, `false`); `lineaAdelantada` "No con `catenaccio`"; `juegoVertical` "No con `combinativo`" (`TACTICA_INCOMPATIBLE`).
 - [X] T059 [P] [US2] Pruebas de lanzadores y alineación automática en `packages/domain/tests/equipo/lanzadores.test.ts`:
-  - Se propone el titular con el special correspondiente (Lanzador de penalties, Lanzador de faltas, Guante en el pie) o, si no hay, el de mejor valor.
+  - Se propone el titular con la virtud correspondiente (Lanzador de penalties, Lanzador de faltas, Guante en el pie) o, si no hay, el de mejor valor.
   - La tanda tiene 5 titulares distintos.
   - La alineación automática siempre es válida y minimiza los jugadores fuera de posición.
 - [X] T060 [P] [US2] Pruebas de contrato de alineación en `apps/server/tests/contract/alineacion.test.ts`: `GET` / `POST previsualizar` / `PUT /api/partidas/:id/alineacion` con los errores `422 ALINEACION_INVALIDA`, `TACTICA_INCOMPATIBLE` y `JUGADOR_NO_DISPONIBLE`. No existe ninguna ruta que devuelva la alineación de un rival (FR-054a).
@@ -373,7 +373,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - Si expulsan al portero sin cambios, un jugador de campo pasa a la portería con −60 %.
   - El cansancio empieza en el minuto 65, o en el 55 con Presión alta.
   - Incansable y Motivador ralentizan el cansancio.
-  - Specials de equipo sin acumulación (dos Capitanía siguen dando +1).
+  - Virtudes de equipo sin acumulación (dos Capitanía siguen dando +1).
   - Fortaleza mental solo actúa yendo por detrás.
   - Santo solo hace reroll a partir del minuto 80, en la prórroga, o en eliminatoria yendo ganando o empatado; en liga, antes del minuto 80, no actúa.
   - En liga, el empate termina a los 90 minutos; en eliminatoria hay prórroga de 2 × 15 y penaltis.
@@ -414,11 +414,11 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - `cansancio.ts`: inicio en el minuto 65 o 55, degradación progresiva y factores de Incansable y Motivador.
   - `formacion.ts`: la ofensividad sube o baja **a la vez** las ocasiones propias (más jugadores en ataque, más llegadas) y las concedidas (más espacios a la espalda, peores transiciones defensivas). La amplitud cambia la zona de las acciones, por bandas o por dentro (FR-034).
   - `tactica.ts`: efectos de cada opción sobre la frecuencia de acciones, recuperaciones, fueras de juego provocados, ritmo de cansancio y tipo de ataque (FR-035).
-- [X] T084 [US3] Implementar los specials en `packages/engine/src/modificadores/specials.ts`, una función por special que indica qué tipo de acción o fase modifica y en qué medida (FR-037):
+- [X] T084 [US3] Implementar las virtudes en `packages/engine/src/modificadores/virtudes.ts`, una función por virtud que indica qué tipo de acción o fase modifica y en qué medida (FR-037):
   - Efectos cuantificados: Capitanía +1 a todos los compañeros; Fortaleza mental +2 yendo por detrás; Intimidante −1 al rival más cercano; Infranqueable +2 a tackling y marcaje frente a regate ≥ 95; Jerarquía +1 a la defensa; Líbero +2 al centro del campo; Box-to-Box +1 a defensa y ataque.
   - Rerolls: Filigranas, Muro defensivo, Guante en el pie y Santo. Santo solo actúa a partir del minuto 80, durante toda la prórroga, y en eliminatorias mientras su equipo va ganando o empatando.
   - El resto, según su descripción: Aura, Elegante, Presionador, Recuperador tras pérdida, Carismático, Potente, Robusto, Lanzador de faltas, Lanzador de penalties, Parapenalties, One-to-One, Ordenabarreras, Jugador de campo, Volador, Primer toque, Jugador entre líneas, Llegador, Matador, Rematador, Cabeceador, Desbordante.
-  - Los specials de equipo no se acumulan (FR-038). Las magnitudes no cuantificadas salen de los parámetros.
+  - Las virtudes de equipo no se acumulan (FR-038). Las magnitudes no cuantificadas salen de los parámetros.
 - [X] T085 [US3] Implementar las acciones con balón en `packages/engine/src/acciones/juego.ts` (salida de balón, pase, conducción, regate, entrada, intercepción, centro, remate, parada, despeje), y elegir la acción de cada tick según la zona, la formación, la táctica y los jugadores implicados (FR-033).
 - [X] T086 [US3] Implementar las acciones a balón parado y disciplinarias en `packages/engine/src/acciones/balonParado.ts`: falta, amarilla y roja (incluida la doble amarilla), fuera de juego, córner, falta directa y penalti, con los lanzadores designados y `lanzadorEfectivo`. Implementar las lesiones en `packages/engine/src/acciones/lesiones.ts`: probabilidad con la reducción de Robusto y gravedad con el reparto de los parámetros (2 % de larga duración).
 - [X] T087 [US3] Implementar los tramos y las decisiones en `packages/engine/src/tramos/avanzar.ts` y `packages/engine/src/tramos/decisiones.ts`:
@@ -534,7 +534,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
 - [X] T119 [P] [US5] Pruebas del evaluador en `packages/ai/tests/evaluador.test.ts`:
   - Una carta que cubre una posición que falta puntúa más que otra de media similar que no la cubre.
   - Con 0 porteros en la plantilla, la escasez de porteros sube el valor de un POR.
-  - La sinergia de specials puntúa.
+  - La sinergia de virtudes puntúa.
 - [X] T120 [P] [US5] Pruebas de niveles en `packages/ai/tests/niveles.test.ts`: con los mismos datos, el PRO es determinista (sin ruido) y elige el máximo del evaluador; en cualquier nivel, la alineación siempre es válida (11 titulares, un portero en la portería y formación permitida) y la decisión llega antes del límite de tiempo.
 - [X] T121 [P] [US5] Comprobación SC-010 en `tools/balance/src/checks/npc.ts`: `pnpm balance --torneos 100 --pro-vs-amateur` comprueba que el PRO termina por delante del amateur en ≥ 80 % de los torneos y el avanzado en ≥ 65 %.
 - [X] T122 [P] [US5] Pruebas de integración del relleno en `apps/server/tests/integration/npc.test.ts`: el relleno automático nunca asigna PRO; `POST /api/partidas/:id/npc { nivel: 'PRO' }` solo lo puede hacer el anfitrión; una partida de 1 humano y 7 NPC completa draft y torneo con todos los NPC eligiendo a tiempo.
@@ -545,7 +545,7 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - la media efectiva en la mejor casilla;
   - la cobertura de posiciones para las formaciones viables;
   - la escasez de porteros;
-  - la sinergia de specials.
+  - la sinergia de virtudes.
 - [X] T124 [P] [US5] Definir los perfiles de nivel en `packages/ai/src/perfiles.ts`, con ruido y alcance:
   - amateur: mucho ruido, solo la media;
   - intermedio: ruido moderado y cobertura básica;

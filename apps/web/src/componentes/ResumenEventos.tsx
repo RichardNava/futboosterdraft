@@ -22,6 +22,9 @@ const TIPO_GOL: Record<string, string> = {
   propia: 'en propia puerta',
 };
 
+/** Nombre visible de los defectos colectivos del evento `malestar` (spec 005, FR-044). */
+const DEFECTO_COLECTIVO: Record<string, string> = { Polemico: 'Polémico', Rebelde: 'Rebelde' };
+
 /** «jugada», «de cabeza»…, con la distancia del remate si se conoce: «de falta (23 m)». */
 export function tipoDeGol(datos: Record<string, unknown>): string {
   const tipo = TIPO_GOL[String(datos.tipo)] ?? 'jugada';
@@ -50,7 +53,17 @@ export function describirEvento(e: EventoVista, nombre: (id: number) => string):
     case 'sustitucion':
       return `Entra ${de('entra')} por ${de('sale')}${e.datos.automatica ? ' (cambio por lesión o expulsión)' : ''}`;
     case 'penalti':
+      // Con el resultado del lanzamiento (spec 005, FR-071): se ve si se marcó o se falló.
+      if (e.datos.resultado === 'gol') return `Penalti: marca ${de('autor')}`;
+      if (e.datos.resultado === 'parada') {
+        return typeof e.datos.porteroId === 'number' ? `Penalti: lo para ${nombre(e.datos.porteroId)}` : `Penalti: ${de('autor')} falla`;
+      }
+      if (e.datos.resultado === 'fuera') return `Penalti: ${de('autor')} falla`;
       return `Penalti a favor; lo lanza ${de('autor')}`;
+    case 'malestar':
+      return e.datos.activo
+        ? `Malestar en el equipo: ${de('autor')} (${DEFECTO_COLECTIVO[String(e.datos.defecto)] ?? String(e.datos.defecto)})`
+        : 'Se acaba el malestar';
     case 'tanda_lanzamiento':
       return `Tanda: ${de('autor')} ${e.datos.resultado === 'gol' ? 'marca' : 'falla'}`;
     case 'fin_tramo':
@@ -67,7 +80,8 @@ const ICONO_EVENTO: Partial<Record<string, { nombre: NombreIcono; etiqueta: stri
   roja: { nombre: 'roja', etiqueta: 'Tarjeta roja' },
   sustitucion: { nombre: 'cambio', etiqueta: 'Cambio' },
   lesion: { nombre: 'lesion', etiqueta: 'Lesión' },
-  penalti: { nombre: 'gol', etiqueta: 'Penalti' },
+  penalti: { nombre: 'penalti', etiqueta: 'Penalti' },
+  malestar: { nombre: 'informacion', etiqueta: 'Aviso' },
   tanda_lanzamiento: { nombre: 'gol', etiqueta: 'Tanda de penaltis' },
   ocasion: { nombre: 'informacion', etiqueta: 'Ocasión' },
   fin_tramo: { nombre: 'informacion', etiqueta: 'Fin del tramo' },

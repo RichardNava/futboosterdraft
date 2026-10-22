@@ -172,9 +172,9 @@ export function resumenAlineaciones(c: ControladorPartida, entrada: Pick<Entrada
     const ampliada = !ampliadaPara || ampliadaPara.includes(e.participanteId);
     return {
       formacion: e.formacion,
-      titulares: e.titulares.map((t) => ({ casillaId: t.casillaId, jugador: c.servicios.catalogo.resumen(t.jugador.id), ...(ampliada && t.ancla ? { ancla: t.ancla } : {}) })),
+      titulares: e.titulares.map((t) => ({ casillaId: t.casillaId, jugador: c.catalogo.resumen(t.jugador.id), ...(ampliada && t.ancla ? { ancla: t.ancla } : {}) })),
       ...(ampliada ? { colocacion: e.titulares.flatMap((t) => (t.ancla ? [{ jugadorId: t.jugador.id, x: t.ancla.x, y: t.ancla.y }] : [])) } : {}),
-      suplentes: e.suplentes.map((j) => c.servicios.catalogo.resumen(j.id)),
+      suplentes: e.suplentes.map((j) => c.catalogo.resumen(j.id)),
       tactica: e.tactica,
       ...(ampliada ? { lanzadores: e.lanzadores } : {}),
     };

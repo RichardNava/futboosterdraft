@@ -9,7 +9,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
     "generar-core": "tsx src/generarCore.ts",
-    "generar-escenarios": "tsx src/generarEscenarios.ts"
+    "generar-escenarios": "tsx src/generarEscenarios.ts",
+    "asignar-rasgos": "tsx src/asignarRasgos.ts"
   },
   "dependencies": {
     "@fbd/domain": "workspace:*",

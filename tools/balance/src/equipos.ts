@@ -1,7 +1,7 @@
 /**
  * Equipos sintéticos para el equilibrado: un jugador por casilla en su posición natural, con stats
  * alrededor de una media dada. Así cada comprobación aísla el efecto que mide (media, posición,
- * formación, táctica o special).
+ * formación, táctica o virtud).
  */
 import {
   calcularMedia,
@@ -16,7 +16,7 @@ import {
   type FormacionId,
   type Jugador,
   type Posicion,
-  type Special,
+  type Virtud,
   type Tactica,
 } from '@fbd/domain';
 import type { EquipoPartido } from '@fbd/engine';
@@ -42,7 +42,7 @@ const DEMARCACION_DE: Record<Posicion, Demarcacion> = {
 
 let siguienteId = 1_000_000;
 
-export function jugadorSintetico(posicion: Posicion, media: number, rng: Rng, specials: Special[] = []): Jugador {
+export function jugadorSintetico(posicion: Posicion, media: number, rng: Rng, virtudes: Virtud[] = []): Jugador {
   const demarcacion = DEMARCACION_DE[posicion];
   const stats = Object.fromEntries(
     CLAVES_STATS[demarcacion].map((c) => [c, Math.max(1, Math.min(99, media + rng.entero(-3, 3)))]),
@@ -59,7 +59,8 @@ export function jugadorSintetico(posicion: Posicion, media: number, rng: Rng, sp
     historia: '',
     stats,
     media: calcularMedia({ demarcacion, stats }),
-    specials,
+    virtudes,
+    defectos: [],
     nivel: 'Superclase',
     coleccion: 'Core',
   };
@@ -69,7 +70,7 @@ export interface OpcionesEquipo {
   formacion?: FormacionId;
   media?: number;
   tactica?: Partial<Tactica>;
-  specials?: Special[];
+  virtudes?: Virtud[];
   semilla?: string;
   participanteId?: string;
 }
@@ -80,10 +81,10 @@ export function equipoSintetico(opciones: OpcionesEquipo = {}): EquipoPartido {
   const rng = new Rng(semillaDesdeTexto(opciones.semilla ?? `equipo-${formacion}-${media}`));
   const titulares = FORMACIONES[formacion].casillas.map((c) => {
     const posicion: Posicion = c.id === CASILLA_CENTRAL ? 'DCI' : c.posicionesAdmitidas[0]!;
-    return { casillaId: c.id, jugador: jugadorSintetico(posicion, media, rng, opciones.specials ?? []) };
+    return { casillaId: c.id, jugador: jugadorSintetico(posicion, media, rng, opciones.virtudes ?? []) };
   });
   const suplentes = (['POR', 'DCI', 'LD', 'MC', 'MCO', 'DC', 'EI'] as Posicion[]).map((p) =>
-    jugadorSintetico(p, media - 3, rng, opciones.specials ?? []),
+    jugadorSintetico(p, media - 3, rng, opciones.virtudes ?? []),
   );
   return {
     participanteId: opciones.participanteId ?? 'sintetico',

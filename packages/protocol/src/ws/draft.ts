@@ -12,7 +12,9 @@ export const JugadorResumen = z.object({
   posicion: z.array(z.string()),
   media: z.number(),
   nivel: z.enum(['Superclase', 'Epico', 'Legendario', 'GOAT']),
-  specials: z.array(z.string()),
+  virtudes: z.array(z.string()),
+  /** Spec 005: defectos de la carta (0 a 2). */
+  defectos: z.array(z.string()),
   stats: z.record(z.number()),
 });
 export type JugadorResumen = z.infer<typeof JugadorResumen>;
@@ -36,6 +38,9 @@ export const MsgSalaActualizada = z.object({
   participantes: z.array(ParticipanteSala),
   plazasLibres: z.number().int(),
   venceBusquedaEn: z.string().datetime().nullable(),
+  /** Spec 005: modo de juego y, en el modo duelos, su formación común y el Estado de forma. */
+  modo: z.enum(['liga', 'playoff', 'mixto', 'duelos']).optional(),
+  duelos: z.object({ formacion: z.string(), estadoForma: z.boolean() }).nullable().optional(),
 });
 export type MsgSalaActualizada = z.infer<typeof MsgSalaActualizada>;
 

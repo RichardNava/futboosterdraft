@@ -29,6 +29,8 @@ interface PartidoVista {
   /** `pendiente_de_ver`: partido propio entre humanos que aún no has visto (spec 002, FR-030). */
   estado: string;
   resueltoAutomaticamente: boolean;
+  /** `duelos` en los cruces del modo Duelo de jugadores (spec 005). */
+  tipo?: 'futbol' | 'duelos';
 }
 
 interface JornadaVista {
@@ -57,7 +59,7 @@ interface FilaClasificacion {
 }
 
 interface VistaTorneo {
-  modo: 'liga' | 'playoff' | 'mixto';
+  modo: 'liga' | 'playoff' | 'mixto' | 'duelos';
   fase: 'liga' | 'eliminatoria' | null;
   jornadaActual: number | null;
   jornadas: JornadaVista[];
@@ -99,10 +101,16 @@ const ETIQUETA_RONDA: Record<string, string> = {
 
 const tituloJornada = (j: JornadaVista) => (j.tipo === 'liga' ? `Jornada ${j.numero}` : (ETIQUETA_RONDA[j.tipo] ?? j.tipo));
 
-function textoMarcador(m: Marcador): string {
+function textoMarcador(m: Marcador, tipo?: string): string {
   if (!m) return '–';
+  // En un cruce de duelos, los duelos ganados (spec 005, contracts/ui.md): «Duelos 7–4».
+  if (tipo === 'duelos') return `Duelos ${m.local}–${m.visitante}`;
   return `${m.local} – ${m.visitante}${m.penaltis ? ` (${m.penaltis.local}–${m.penaltis.visitante} pen.)` : ''}`;
 }
+
+/** Ruta para ver un partido (o un cruce de duelos) ya resuelto. */
+const rutaVer = (partidaId: string, p: Pick<PartidoVista, 'partidoId' | 'tipo'>, reproduccion: boolean) =>
+  p.tipo === 'duelos' ? `/partidas/${partidaId}/duelos/${p.partidoId}` : `/partidas/${partidaId}/${reproduccion ? 'reproduccion' : 'partido'}/${p.partidoId}`;
 
 /** Pantalla del torneo (T116): clasificación, cuadro, calendario, jornada actual y campeón. */
 export function Torneo() {
@@ -185,6 +193,15 @@ export function Torneo() {
   // Partidos propios entre humanos ya jugados que aún no ha visto (de cualquier jornada; spec 002, FR-030).
   const pendientes = vista.jornadas.flatMap((j) => j.partidos).filter((p) => p.partidoId !== null && vista.pendientesDeVer.includes(p.partidoId));
 
+  // Modo duelos (spec 005, contracts/ui.md): «Ver duelos» en el cruce propio pendiente de ver; si aún espera al once,
+  // ir a confirmarlo.
+  const cruceSinVer = pendientes.find((p) => p.tipo === 'duelos');
+  const accionDuelos = cruceSinVer
+    ? { etiqueta: 'Ver duelos', onClick: () => navegar(`/partidas/${partidaId}/duelos/${cruceSinVer.partidoId}`) }
+    : miPartido?.estado === 'programado'
+      ? { etiqueta: 'Confirmar mi once', onClick: () => navegar(`/partidas/${partidaId}/alineacion`) }
+      : null;
+
   const finJornada = !vista.campeon && !actual?.estado.startsWith('abierta') && vista.siguienteJornada === 'manual' && vista.jornadaActual !== null;
 
   const mostrarResultado = async (partidoId: string) => {
@@ -211,7 +228,7 @@ export function Torneo() {
           <BandejaAvisos actualizar={avisosNuevos} />
         </nav>
       </header>
-      {preparacion && <TarjetaPreparacion preparacion={preparacion} />}
+      {preparacion && vista.modo !== 'duelos' && <TarjetaPreparacion preparacion={preparacion} />}
 
       {vista.campeon && (
         <div className="campeon" role="status">
@@ -240,7 +257,7 @@ export function Torneo() {
                 <span>
                   <strong>{p.local?.nombre}</strong> – <strong>{p.visitante?.nombre}</strong>
                 </span>
-                <PendienteDeVer partidaId={partidaId!} partidoId={p.partidoId!} onMostrar={(id) => void mostrarResultado(id)} />
+                <PendienteDeVer partidaId={partidaId!} partido={p} onMostrar={(id) => void mostrarResultado(id)} />
               </li>
             ))}
           </ul>
@@ -332,7 +349,9 @@ export function Torneo() {
       {/* La barra, hija directa de la pantalla para que `position: sticky` la mantenga a la vista (FR-006). */}
       {vista.campeon ? (
         <BotonAvanzar situacion="fin_torneo" onAvanzar={() => navegar('/')} />
-      ) : preparacion ? (
+      ) : vista.modo === 'duelos' && accionDuelos ? (
+        <BarraPrincipal principal={accionDuelos} />
+      ) : preparacion && vista.modo !== 'duelos' ? (
         <BarraPrincipal principal={preparacion.accion} />
       ) : (
         finJornada && (
@@ -490,9 +509,9 @@ function Calendario({ jornadas, partidaId, yo }: { jornadas: JornadaVista[]; par
                 <NombreRecortado texto={p.local?.nombre ?? 'Por decidir'} />
                 <span className="resultado-partido">
                   {p.estado === 'finalizado' && p.partidoId ? (
-                    <Link to={`/partidas/${partidaId}/partido/${p.partidoId}`}>{textoMarcador(p.marcador)}</Link>
+                    <Link to={rutaVer(partidaId, p, false)}>{textoMarcador(p.marcador, p.tipo)}</Link>
                   ) : p.estado === 'pendiente_de_ver' && p.partidoId ? (
-                    <Link to={`/partidas/${partidaId}/reproduccion/${p.partidoId}`}>Pendiente de ver</Link>
+                    <Link to={rutaVer(partidaId, p, true)}>Pendiente de ver</Link>
                   ) : (
                     textoMarcador(null)
                   )}
@@ -510,13 +529,14 @@ function Calendario({ jornadas, partidaId, yo }: { jornadas: JornadaVista[]; par
 }
 
 /** Partido propio entre humanos ya jugado que aún no has visto: verlo o mostrar el resultado sin verlo. */
-function PendienteDeVer({ partidaId, partidoId, onMostrar }: { partidaId: string; partidoId: string; onMostrar: (partidoId: string) => void }) {
+function PendienteDeVer({ partidaId, partido, onMostrar }: { partidaId: string; partido: PartidoVista; onMostrar: (partidoId: string) => void }) {
   const navegar = useNavigate();
+  const partidoId = partido.partidoId!;
   return (
     <>
       <Insignia texto="Pendiente de ver" suave />
-      <button type="button" className="secundario" onClick={() => navegar(`/partidas/${partidaId}/reproduccion/${partidoId}`)}>
-        Ver partido
+      <button type="button" className="secundario" onClick={() => navegar(rutaVer(partidaId, partido, true))}>
+        {partido.tipo === 'duelos' ? 'Ver duelos' : 'Ver partido'}
       </button>
       <button type="button" className="secundario" onClick={() => onMostrar(partidoId)}>
         Mostrar resultado

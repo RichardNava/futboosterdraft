@@ -4,7 +4,7 @@
  *
  * Diseño propio (sin elementos de EA SPORTS FC): escudo con las esquinas superiores achaflanadas, franja diagonal
  * del color del nivel y textura de grano. Barlow Condensed (OFL) para la media, el nombre y los stats. En la carta
- * completa, los stats y los specials se leen a ≥ 16 px en portátil y ≥ 14 px a 360 px (FR-009).
+ * completa, los stats y las virtudes se leen a ≥ 16 px en portátil y ≥ 14 px a 360 px (FR-009).
  *
  * La carta completa tiene proporción de carta (≈ 5:7) y se lee igual de 160 a 280 px de ancho: los tamaños
  * salen del ancho de la propia carta (container queries, unidades cqi) con `clamp()`. Si el contenido no cabe
@@ -209,14 +209,15 @@
   min-height: 100%;
 }
 
-/* Carta completa: el cuerpo ocupa el alto que dejan los specials, que van debajo, fuera del botón de la carta. */
+/* Carta completa: el cuerpo ocupa el alto que dejan los rasgos, que van debajo, fuera del botón de la carta. */
 .carta.completa > .carta-cuerpo {
   flex: 1 0 auto;
   min-height: 0;
   padding-bottom: clamp(3px, 2.2cqi, 6px);
 }
 
-.carta.completa > .carta-specials {
+/* Virtudes y, debajo, defectos (spec 005, FR-020 a FR-022), en el sitio que reservaba la carta antes de los defectos. */
+.carta.completa > .carta-rasgos {
   padding: 0 clamp(6px, 4.5cqi, 12px) clamp(6px, 4.5cqi, 12px);
 }
 
@@ -327,7 +328,7 @@
   line-height: 1.3;
 }
 
-/* Pie: 6 stats y specials. */
+/* Pie: 6 stats y virtudes. */
 .carta-pie {
   margin-top: auto;
   display: flex;
@@ -366,31 +367,73 @@
 }
 
 /*
- * Specials en una columna, cada uno en una sola línea (hallazgo H2), con sitio reservado para los cuatro de un
- * GOAT (H1): todas las cartas completas miden lo mismo, tengan los specials que tengan.
+ * Rasgos (ronda 2 de la spec 005): toda carta completa reserva cuatro filas, como antes de los defectos, y todas miden
+ * lo mismo tengan los rasgos que tengan (H1, FR-022). Hasta cuatro rasgos van uno por fila (H2); con cinco o seis
+ * (`.densa`), varios comparten fila si caben enteros. Si aun así alguno se corta, `ZonaRasgos` reduce la letra con
+ * `--escala-rasgos`; el alto de la zona sale de su propia letra, que no cambia, así que la carta no crece.
  */
-.carta-specials {
-  --alto-special: calc(1.5em + 2px);
-  --hueco-special: 3px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-auto-rows: var(--alto-special);
-  align-content: start;
-  gap: var(--hueco-special);
+.carta-rasgos {
+  --alto-virtud: calc(1.5em + 2px);
+  --hueco-virtud: 3px;
+  box-sizing: content-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hueco-virtud);
+  height: calc(4 * var(--alto-virtud) + 3 * var(--hueco-virtud));
+  overflow: hidden;
   font-family: var(--carta-letra);
   font-size: 1rem;
 }
 
-.carta.completa .carta-specials {
-  height: calc(4 * var(--alto-special) + 3 * var(--hueco-special));
+.carta-virtudes,
+.carta-defectos {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--hueco-virtud);
+  min-height: 0;
+  font-size: calc(1em * var(--escala-rasgos, 1));
 }
 
-/* En una carta elegible, el hueco del pie sin specials también la elige (spec 004, FR-056). */
-.carta-specials.pulsable {
+/* Las virtudes ocupan el sitio que dejan los defectos: ese hueco del pie también elige la carta (spec 004, FR-056). */
+.carta-virtudes {
+  flex: 1 1 auto;
+}
+
+.carta-defectos {
+  flex: none;
+}
+
+/* Sin defectos, su fila no ocupa sitio (ni el hueco entre filas): las cuatro filas quedan para las virtudes. */
+.carta-defectos:empty {
+  display: none;
+}
+
+.carta-virtudes > span,
+.carta-defectos > span {
+  display: flex;
+  flex: 1 1 100%;
+  min-width: 0;
+  height: var(--alto-virtud);
+}
+
+.carta-rasgos.densa .carta-virtudes > span,
+.carta-rasgos.densa .carta-defectos > span {
+  flex-basis: auto;
+}
+
+/* En una carta elegible, el hueco del pie sin rasgos también la elige (spec 004, FR-056). */
+.carta-virtudes.pulsable,
+.carta-defectos.pulsable {
   cursor: pointer;
 }
 
-.carta-special {
+.carta-virtud,
+.carta-defecto {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   /* Relleno lateral pequeño: «Recuperador tras pérdida» cabe en una línea a 14 px en una carta de 160 px (H2). */
   padding: 0.15em 0.2em;
   border-radius: 8px;
@@ -406,9 +449,30 @@
   cursor: help;
 }
 
-.carta-special:focus-visible {
+.carta-virtud:focus-visible,
+.carta-defecto:focus-visible {
   outline: 2px solid var(--color-accion);
   outline-offset: 1px;
+}
+
+/*
+ * Defecto: misma forma y tamaño que una virtud, en rojo de juego sobre su propio recuadro oscuro (contraste ≥ 4,5:1
+ * en cualquier nivel) y con el icono «defecto» delante, para no depender del color (spec 005, FR-021).
+ */
+.carta-defecto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+  border-color: var(--color-defecto);
+  background: var(--color-defecto-chip);
+  color: var(--color-defecto);
+}
+
+.carta-defecto-icono {
+  flex: none;
+  width: 0.8em;
+  height: 0.8em;
 }
 
 .carta-descripcion[popover] {
@@ -462,7 +526,7 @@
 /* En móvil (360 px), ≥ 14 px (FR-009). */
 @media (max-width: 480px) {
   .carta.completa .carta-stat dt,
-  .carta.completa .carta-specials {
+  .carta.completa .carta-rasgos {
     font-size: 0.875rem;
   }
 

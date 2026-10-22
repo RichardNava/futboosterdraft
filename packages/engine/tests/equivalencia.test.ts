@@ -14,7 +14,8 @@ import {
   type EventoPartido,
   type ResultadoTramo,
 } from '../src/index';
-import { entrada } from './ayudas';
+import { DEFECTOS, PARAMETROS_V4 } from '@fbd/domain';
+import { entrada, equipo } from './ayudas';
 
 const SEMILLAS = 200;
 
@@ -82,6 +83,33 @@ function jugarRapida(e: EntradaPartido, decisiones: readonly DecisionRegistrada[
   }
   return { eventos, marcador: r!.marcador, decisiones: estado.decisiones, fase: estado.fase };
 }
+
+/** Entrada 4.0.0 con los 15 defectos repartidos entre los dos equipos, titulares y suplentes (spec 005, FR-041). */
+function entradaConDefectos(semilla: string): EntradaPartido {
+  const local = equipo('local');
+  const visitante = equipo('visitante');
+  const cartas = [...local.titulares.map((t) => t), ...visitante.titulares.map((t) => t)];
+  cartas.forEach((t, i) => {
+    t.jugador = { ...t.jugador, defectos: [DEFECTOS[i % DEFECTOS.length]!, DEFECTOS[(i + 7) % DEFECTOS.length]!] };
+  });
+  for (const eq of [local, visitante]) eq.suplentes = eq.suplentes.map((j, i) => ({ ...j, defectos: [DEFECTOS[(i * 2) % DEFECTOS.length]!] }));
+  return entrada(semilla, { version: PARAMETROS_V4.version, parametros: PARAMETROS_V4, local, visitante });
+}
+
+describe('equivalencia entre modalidades con defectos (spec 005, T042; FR-041)', () => {
+  it('con los 15 defectos en juego, la 2D, la rápida y los cortes por ticks dan el mismo partido (30 semillas)', () => {
+    for (let i = 0; i < 30; i++) {
+      const e = entradaConDefectos(`eq-defectos-${i}`);
+      const d2 = jugar2D(e, { decisiones: true });
+      const rapida = jugarRapida(e, d2.decisiones);
+      const porTicks = jugarPorTicks(e, { decisiones: true });
+      expect(d2.fase).toBe('finalizado');
+      expect(rapida.eventos).toEqual(d2.eventos);
+      expect(rapida.marcador).toEqual(d2.marcador);
+      expect(porTicks.eventos).toEqual(d2.eventos);
+    }
+  });
+});
 
 describe('equivalencia entre modalidades (SC-008)', () => {
   it(`sin decisiones, 'interrupcion' encadenado da lo mismo que 'parte' y que 'final' (${SEMILLAS} semillas)`, () => {

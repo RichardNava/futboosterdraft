@@ -29,6 +29,10 @@ export const MsgPreparacionInicio = z.object({
   venceEn: z.string().datetime().optional(),
   /** Modalidad preseleccionada: la última que usó el participante (o su perfil), `rapida` si no hay (FR-032). */
   modalidadPreferida: z.enum(['rapida', '2d']),
+  /** Spec 005: modo de juego y, en el modo duelos, la formación común y que solo cuentan los titulares. */
+  modo: z.enum(['liga', 'playoff', 'mixto', 'duelos']).optional(),
+  formacionFija: z.string().optional(),
+  soloTitulares: z.literal(true).optional(),
 });
 
 export const MsgPartidoInicio = z.object({

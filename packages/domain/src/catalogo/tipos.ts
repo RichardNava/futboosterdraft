@@ -36,15 +36,15 @@ export const POSICIONES_POR_DEMARCACION: Readonly<Record<Demarcacion, readonly P
 export const NIVELES = ['Superclase', 'Epico', 'Legendario', 'GOAT'] as const;
 export type Nivel = (typeof NIVELES)[number];
 
-/** Máximo de specials por nivel (FR-021). */
-export const MAX_SPECIALS: Readonly<Record<Nivel, number>> = {
+/** Máximo de virtudes por nivel (FR-021). */
+export const MAX_VIRTUDES: Readonly<Record<Nivel, number>> = {
   Superclase: 1,
   Epico: 2,
   Legendario: 3,
   GOAT: 4,
 };
 
-export const SPECIALS_GENERICOS = [
+export const VIRTUDES_GENERICAS = [
   'Incansable',
   'Motivador',
   'LanzadorFaltas',
@@ -60,34 +60,65 @@ export const SPECIALS_GENERICOS = [
   'Carismatico',
   'Potente',
   'Robusto',
+  // Spec 005 (FR-030 a FR-034).
+  'DeAcero',
+  'Versatil',
+  'FairPlayer',
+  'Revulsivo',
 ] as const;
 
-export const SPECIALS_POR = ['Parapenalties', 'OneToOne', 'Santo', 'Ordenabarreras', 'JugadorDeCampo'] as const;
-export const SPECIALS_DEF = ['Infranqueable', 'Jerarquia', 'Volador', 'Libero', 'MuroDefensivo'] as const;
-export const SPECIALS_MED = ['Llegador', 'BoxToBox', 'PrimerToque', 'Todocampista', 'JugadorEntreLineas'] as const;
-export const SPECIALS_DEL = ['Matador', 'Rematador', 'Cabeceador', 'Desbordante', 'GuanteEnElPie'] as const;
+export const VIRTUDES_POR = ['Parapenalties', 'OneToOne', 'Santo', 'Ordenabarreras', 'JugadorDeCampo'] as const;
+export const VIRTUDES_DEF = ['Infranqueable', 'Jerarquia', 'Volador', 'Libero', 'MuroDefensivo'] as const;
+export const VIRTUDES_MED = ['Llegador', 'BoxToBox', 'PrimerToque', 'Todocampista', 'JugadorEntreLineas'] as const;
+export const VIRTUDES_DEL = ['Matador', 'Rematador', 'Cabeceador', 'Desbordante', 'GuanteEnElPie'] as const;
 
-export type SpecialGenerico = (typeof SPECIALS_GENERICOS)[number];
-export type SpecialPOR = (typeof SPECIALS_POR)[number];
-export type SpecialDEF = (typeof SPECIALS_DEF)[number];
-export type SpecialMED = (typeof SPECIALS_MED)[number];
-export type SpecialDEL = (typeof SPECIALS_DEL)[number];
-export type Special = SpecialGenerico | SpecialPOR | SpecialDEF | SpecialMED | SpecialDEL;
+export type VirtudGenerica = (typeof VIRTUDES_GENERICAS)[number];
+export type VirtudPOR = (typeof VIRTUDES_POR)[number];
+export type VirtudDEF = (typeof VIRTUDES_DEF)[number];
+export type VirtudMED = (typeof VIRTUDES_MED)[number];
+export type VirtudDEL = (typeof VIRTUDES_DEL)[number];
+export type Virtud = VirtudGenerica | VirtudPOR | VirtudDEF | VirtudMED | VirtudDEL;
 
-export const SPECIALS_POR_DEMARCACION: Readonly<Record<Demarcacion, readonly Special[]>> = {
-  POR: SPECIALS_POR,
-  DEF: SPECIALS_DEF,
-  MED: SPECIALS_MED,
-  DEL: SPECIALS_DEL,
+export const VIRTUDES_POR_DEMARCACION: Readonly<Record<Demarcacion, readonly Virtud[]>> = {
+  POR: VIRTUDES_POR,
+  DEF: VIRTUDES_DEF,
+  MED: VIRTUDES_MED,
+  DEL: VIRTUDES_DEL,
 };
 
-export const TODOS_LOS_SPECIALS: readonly Special[] = [
-  ...SPECIALS_GENERICOS,
-  ...SPECIALS_POR,
-  ...SPECIALS_DEF,
-  ...SPECIALS_MED,
-  ...SPECIALS_DEL,
+export const TODAS_LAS_VIRTUDES: readonly Virtud[] = [
+  ...VIRTUDES_GENERICAS,
+  ...VIRTUDES_POR,
+  ...VIRTUDES_DEF,
+  ...VIRTUDES_MED,
+  ...VIRTUDES_DEL,
 ];
+
+/** Defectos (spec 005, FR-010 a FR-016): todos genéricos. */
+export const DEFECTOS = [
+  'Agresivo',
+  'Impulsivo',
+  'Fragil',
+  'Fatigado',
+  'Polemico',
+  'Indisciplinado',
+  'Canchero',
+  'Rebelde',
+  'Torpe',
+  'Provocador',
+  'DeCristal',
+  'Estrellita',
+  'Chupon',
+  'Inflexible',
+  'MalDefensor',
+] as const;
+export type Defecto = (typeof DEFECTOS)[number];
+
+/** Máximo de defectos de una carta, en cualquier nivel (FR-011). */
+export const MAX_DEFECTOS = 2;
+
+/** Virtud o defecto. */
+export type Rasgo = Virtud | Defecto;
 
 /** Claves exactas de stats por demarcación (FR-019). */
 export const CLAVES_STATS = {
@@ -118,7 +149,8 @@ export interface Jugador {
   historia: string;
   stats: Stats;
   media: number;
-  specials: Special[];
+  virtudes: Virtud[];
+  defectos: Defecto[];
   nivel: Nivel;
   coleccion: string;
 }
@@ -135,12 +167,12 @@ export function calcularMedia(jugador: Pick<Jugador, 'demarcacion' | 'stats'>): 
   return valores.reduce((a, b) => a + b, 0) / valores.length;
 }
 
-/** Specials que puede tener un jugador según su demarcación y posiciones (FR-022, FR-023). */
-export function specialsPermitidos(jugador: Pick<Jugador, 'demarcacion' | 'posicion'>): ReadonlySet<Special> {
-  const permitidos = new Set<Special>([...SPECIALS_GENERICOS, ...SPECIALS_POR_DEMARCACION[jugador.demarcacion]]);
+/** Virtudes que puede tener un jugador según su demarcación y posiciones (FR-022, FR-023). */
+export function virtudesPermitidas(jugador: Pick<Jugador, 'demarcacion' | 'posicion'>): ReadonlySet<Virtud> {
+  const permitidos = new Set<Virtud>([...VIRTUDES_GENERICAS, ...VIRTUDES_POR_DEMARCACION[jugador.demarcacion]]);
   const esCarrilero = jugador.posicion.includes('CI') || jugador.posicion.includes('CD');
   if (jugador.demarcacion === 'DEF' && esCarrilero) {
-    for (const s of SPECIALS_MED) permitidos.add(s);
+    for (const s of VIRTUDES_MED) permitidos.add(s);
   }
   return permitidos;
 }

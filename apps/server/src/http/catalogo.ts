@@ -1,21 +1,13 @@
 /**
- * Rutas del catálogo (T031): ficha de jugador, formaciones y specials.
+ * Rutas del catálogo (T031): ficha de jugador, formaciones y rasgos (virtudes y defectos).
  */
-import { FORMACIONES_IDS, FORMACIONES, TODOS_LOS_SPECIALS, SPECIALS_GENERICOS, SPECIALS_POR, SPECIALS_DEF, SPECIALS_MED, type Special } from '@fbd/domain';
+import { cartaEnVersion, FORMACIONES_IDS, FORMACIONES, VERSION_CATALOGO_ACTUAL, type Jugador } from '@fbd/domain';
 import { asc, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import type { BaseDatos } from '../persistencia/db';
 import { jugadores } from '../persistencia/esquema/index';
 import { errores } from './errores';
-import { TEXTOS_SPECIALS } from './textosSpecials';
-
-export function ambitoSpecial(s: Special): 'generico' | 'POR' | 'DEF' | 'MED' | 'DEL' {
-  if ((SPECIALS_GENERICOS as readonly Special[]).includes(s)) return 'generico';
-  if ((SPECIALS_POR as readonly Special[]).includes(s)) return 'POR';
-  if ((SPECIALS_DEF as readonly Special[]).includes(s)) return 'DEF';
-  if ((SPECIALS_MED as readonly Special[]).includes(s)) return 'MED';
-  return 'DEL';
-}
+import { TEXTOS_RASGOS } from './textosRasgos';
 
 /** Fila de base de datos → objeto Jugador del catálogo. */
 export function filaAJugador(f: typeof jugadores.$inferSelect) {
@@ -31,29 +23,38 @@ export function filaAJugador(f: typeof jugadores.$inferSelect) {
     historia: f.historia,
     stats: f.stats,
     media: f.media,
-    specials: f.specials,
+    virtudes: f.virtudes,
+    defectos: f.defectos,
     nivel: f.nivel,
     coleccion: f.coleccion,
   };
 }
 
+function versionPedida(valor: string | undefined): number {
+  if (valor === undefined) return VERSION_CATALOGO_ACTUAL;
+  const v = Number(valor);
+  if (!Number.isInteger(v) || v < 1 || v > VERSION_CATALOGO_ACTUAL) throw errores.validacion('VERSION_INVALIDA', `Versión de catálogo desconocida: ${valor}`);
+  return v;
+}
+
 export function registrarRutasCatalogo(app: FastifyInstance, db: BaseDatos): void {
   // Catálogo completo (público, como cada ficha); lo usa la página de pruebas de las cartas (SC-002).
-  app.get('/api/catalogo/jugadores', async () =>
-    (await db.select().from(jugadores).orderBy(asc(jugadores.id))).map(filaAJugador),
-  );
+  // `?version=1` sirve las cartas de antes de la spec 005, para las vistas de partidas antiguas (research R4).
+  app.get<{ Querystring: { version?: string } }>('/api/catalogo/jugadores', async (req) => {
+    const version = versionPedida(req.query.version);
+    return (await db.select().from(jugadores).orderBy(asc(jugadores.id))).map((f) => cartaEnVersion(filaAJugador(f) as Jugador, version));
+  });
 
-  app.get<{ Params: { id: string } }>('/api/catalogo/jugadores/:id', async (req) => {
+  app.get<{ Params: { id: string }; Querystring: { version?: string } }>('/api/catalogo/jugadores/:id', async (req) => {
     const id = Number(req.params.id);
     if (!Number.isInteger(id)) throw errores.validacion('ID_INVALIDO', 'El id del jugador debe ser un entero');
+    const version = versionPedida(req.query.version);
     const fila = (await db.select().from(jugadores).where(eq(jugadores.id, id)).limit(1))[0];
     if (!fila) throw errores.noEncontrado('JUGADOR_NO_ENCONTRADO', `No existe el jugador ${id}`);
-    return filaAJugador(fila);
+    return cartaEnVersion(filaAJugador(fila) as Jugador, version);
   });
 
   app.get('/api/catalogo/formaciones', async () => FORMACIONES_IDS.map((id) => FORMACIONES[id]));
 
-  app.get('/api/catalogo/specials', async () =>
-    TODOS_LOS_SPECIALS.map((s) => ({ id: s, ambito: ambitoSpecial(s), ...TEXTOS_SPECIALS[s] })),
-  );
+  app.get('/api/catalogo/rasgos', async () => TEXTOS_RASGOS);
 }

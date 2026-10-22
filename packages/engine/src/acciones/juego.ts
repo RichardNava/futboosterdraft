@@ -13,7 +13,8 @@ import { anotar } from '../metricas';
 import { velocidadMaxima } from '../espacio/movimiento';
 import { atributo, type Atributo } from '../modificadores/atributos';
 import { desplazamientoAtaque, probabilidadAvance, probabilidadBanda, type TipoAccion } from '../modificadores/formacionTactica';
-import { ajusteDuelo, bonusInfranqueable, tiene } from '../modificadores/specials';
+import { factorFalta, factorFaltaArea } from '../modificadores/defectos';
+import { ajusteDuelo, bonusInfranqueable, tiene } from '../modificadores/virtudes';
 import { balonCon, conducir, controlar, recuperarSuelto, reponer, ticksDeCarrera, ticksDeVuelo, volar } from './animaciones';
 import { falta, fueraDeJuego } from './balonParado';
 import { cercanoACelda, elegirPonderado, esPortero, interrumpir, jugadorPorId, pasarTiempo, rivalCercano, type Contexto } from './contexto';
@@ -88,7 +89,7 @@ function perder(ctx: Contexto, atacante: EquipoEstado, perdedor: JugadorEnPartid
   // La zona y el carril salen de la posición real del balón (vista del que recupera).
   const real = zonaCarrilDe(defensor.lado, e.espacio.balon);
   const zonaRecuperacion = real.zona;
-  const s = e.parametros.specials;
+  const s = e.parametros.virtudes;
 
   // Recuperador tras pérdida: presiona de inmediato para volver a robarla.
   if (tiene(perdedor, 'RecuperadorTrasPerdida') && recuperador) {
@@ -143,9 +144,9 @@ function puntoFuera(ctx: Contexto, atacante: EquipoEstado, porFondo: boolean): P
   return aAbsoluta(atacante.lado, p);
 }
 
-/** Ajustes de probabilidad por specials del atacante en una acción concreta. */
-function ajusteSpecialsAccion(ctx: Contexto, accion: TipoAccion, j: JugadorEnPartido, zona: number, carril: number, defensor: JugadorEnPartido | undefined): number {
-  const s = ctx.estado.parametros.specials;
+/** Ajustes de probabilidad por virtudes del atacante en una acción concreta. */
+export function ajusteVirtudesAccion(ctx: Contexto, accion: TipoAccion, j: JugadorEnPartido, zona: number, carril: number, defensor: JugadorEnPartido | undefined): number {
+  const s = ctx.estado.parametros.virtudes;
   let a = 0;
   if (tiene(j, 'PrimerToque') && (accion === 'pase_corto' || accion === 'pase_espacio')) a += s.bonusProbabilidadMedio;
   if (tiene(j, 'Elegante') && (accion === 'pase_corto' || accion === 'conduccion') && zona <= 3) a += s.bonusProbabilidadMedio;
@@ -421,7 +422,7 @@ export function paso(ctx: Contexto): void {
       atacante: atributo(e, atacante, portador, atA) + aj.atacante,
       defensor: valorDefensor + aj.defensor,
       desplazamiento: desplazamientoAtaque(e, atacante, defensor, accion, zona),
-      ajuste: aj.probabilidad + ajusteSpecialsAccion(ctx, accion, portador, zona, carril, rivalDuelo),
+      ajuste: aj.probabilidad + ajusteVirtudesAccion(ctx, accion, portador, zona, carril, rivalDuelo),
       ...(esPase(accion) ? { pendiente: p.acciones.pendientePase } : {}),
     },
     p,
@@ -447,7 +448,13 @@ export function paso(ctx: Contexto): void {
     const frenado = rivalDuelo ? alLadoDe(e, portador.id, rivalDuelo.id) : posPortador;
     // Cerca del área se frena más con falta (spec 003: más faltas directas y penaltis, research R7).
     const cercaArea = (en?.yo.x ?? 0) >= ULTIMO_TERCIO ? p.disciplina.factorFaltaUltimoTercio : 1;
-    if ((accion === 'regate' || accion === 'conduccion') && rivalDuelo && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaPorEntrada * 1000 * 1.6 * cercaArea))) {
+    if (
+      (accion === 'regate' || accion === 'conduccion') &&
+      rivalDuelo &&
+      ctx.rng.probabilidad(
+        Math.round(p.disciplina.probabilidadFaltaPorEntrada * 1000 * 1.6 * cercaArea * factorFalta(e, rivalDuelo) * factorFaltaArea(e, atacante.lado, frenado)),
+      )
+    ) {
       conducir(ctx, accion, portador.id, { x: frenado.x, y: frenado.y }, { exito: false, maximo: 20 });
       falta(ctx, atacante, portador, defensor, rivalDuelo);
       return;
@@ -489,7 +496,15 @@ export function paso(ctx: Contexto): void {
   if ((accion === 'regate' || accion === 'conduccion') && rivalDuelo) anotar(ctx.metricas, portador.id, 'duelosGanados');
   if (accion === 'regate') anotar(ctx.metricas, portador.id, 'regatesGanados');
   // Un duelo ganado con regate o conducción también puede acabar en falta del defensor.
-  if ((accion === 'regate' || accion === 'conduccion') && rivalDuelo && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaPorEntrada * 1000 * 0.5))) {
+  if (
+    (accion === 'regate' || accion === 'conduccion') &&
+    rivalDuelo &&
+    ctx.rng.probabilidad(
+      Math.round(
+        p.disciplina.probabilidadFaltaPorEntrada * 1000 * 0.5 * factorFalta(e, rivalDuelo) * factorFaltaArea(e, atacante.lado, alLadoDe(e, portador.id, rivalDuelo.id)),
+      ),
+    )
+  ) {
     const frenado = alLadoDe(e, portador.id, rivalDuelo.id);
     conducir(ctx, accion, portador.id, { x: frenado.x, y: frenado.y }, { exito: true, maximo: 20 });
     falta(ctx, atacante, portador, defensor, rivalDuelo);

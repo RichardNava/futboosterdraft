@@ -1,6 +1,6 @@
 /**
  * Tiros (T085; spec 003, research R6, R7 y R11): precisión frente al bloqueo y gol frente a la parada del
- * portero, con la distancia y el ángulo reales del tirador, los specials de remate (Matador, Rematador,
+ * portero, con la distancia y el ángulo reales del tirador, las virtudes de remate (Matador, Rematador,
  * Cabeceador, Llegador, lanzadores) y de portero (Parapenalties, One-to-One, Ordenabarreras y el reroll de
  * Santo), y los goles en propia puerta (despejes de centros y tiros desviados).
  */
@@ -12,7 +12,8 @@ import { sacadorDeCentro } from '../espacio/colocacion';
 import { anotar } from '../metricas';
 import { atributo } from '../modificadores/atributos';
 import { desplazamientoAtaque } from '../modificadores/formacionTactica';
-import { ajusteDuelo, santoActivo, tiene } from '../modificadores/specials';
+import { factorAutogol } from '../modificadores/defectos';
+import { ajusteDuelo, santoActivo, tiene } from '../modificadores/virtudes';
 import type { GrupoGol, TipoTiro as TipoTiroGol, ZonaRemate } from '../tipos';
 import { controlar, reponer, volar } from './animaciones';
 import { falta } from './balonParado';
@@ -89,7 +90,8 @@ export function golEnPropia(ctx: Contexto, beneficiario: EquipoEstado, autor: Ju
 export function despejeEnPropia(ctx: Contexto, atacante: EquipoEstado, defensor: EquipoEstado, despejador: JugadorEnPartido): boolean {
   const q = ctx.estado.espacio.jugadores[despejador.id];
   if (!q || !enAreaRival(aEquipo(atacante.lado, q))) return false;
-  if (!ctx.rng.probabilidad(probabilidadAutogolDespeje(ctx.estado.parametros, defensaDe(ctx, defensor, despejador)))) return false;
+  const prob = probabilidadAutogolDespeje(ctx.estado.parametros, defensaDe(ctx, defensor, despejador)) * factorAutogol(ctx.estado, despejador);
+  if (!ctx.rng.probabilidad(Math.round(prob))) return false;
   golEnPropia(ctx, atacante, despejador);
   return true;
 }
@@ -105,7 +107,7 @@ export interface OpcionesTiro {
 export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnPartido, tipoPedido: TipoTiro, opciones: OpcionesTiro = {}): ResultadoTiro {
   const e = ctx.estado;
   const p = e.parametros;
-  const s = p.specials;
+  const s = p.virtudes;
   const defensor = e.equipos[rival(atacante.lado)];
   const stats = e.estadisticas[atacante.lado];
   // Distancia y ángulo reales desde la posición del tirador (research R6); a balón parado, desde el punto del saque.
@@ -169,7 +171,7 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
   e.estadisticas[atacante.lado].tirosPuerta++;
 
   // Un tiro a puerta desviado por el defensor que lo tapa puede acabar en su propia portería (FR-020).
-  if (bloqueador && ctx.rng.probabilidad(Math.round(p.tiro.autogol.desvio * 1000))) {
+  if (bloqueador && ctx.rng.probabilidad(Math.round(p.tiro.autogol.desvio * 1000 * factorAutogol(e, bloqueador)))) {
     emitir(ctx, 'tiro', atacante.lado, autor, { tipo, resultado: 'desviado', ...enRemate });
     golEnPropia(ctx, atacante, bloqueador);
     return 'gol';
@@ -290,7 +292,7 @@ export function rematarBalonParado(
 ): void {
   const e = ctx.estado;
   const p = e.parametros;
-  const s = p.specials;
+  const s = p.virtudes;
   const enCampoAtk = atacante.jugadores.filter((j) => j.enCampo);
   const lanzador =
     enCampoAtk.find((j) => j.id === atacante.lanzadores[tipo]) ??

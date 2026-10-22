@@ -32,7 +32,7 @@ El MVP implementa el ciclo central del juego: **draft → alineación → partid
 
 **Package Manager**: **pnpm 9** (obligatorio; R17). Workspaces de pnpm, `packageManager` fijado en el `package.json` raíz, `only-allow pnpm` en `preinstall`, un único `pnpm-lock.yaml`, e instalación en CI con `--frozen-lockfile`. npm, yarn y bun no se usan.
 
-**Storage**: PostgreSQL 16, con JSONB para stats, alineaciones y eventos de cada partido. El catálogo Core se carga desde un JSON validado contra `packages/protocol/schemas/player-data.schema.json`, la fuente única del esquema, copiada desde [contracts/player-data.schema.json](./contracts/player-data.schema.json).
+**Storage**: PostgreSQL 16, con JSONB para stats, alineaciones y eventos de cada partido. El catálogo Core se carga desde un JSON validado contra `packages/protocol/schemas/player-data.schema.json`, la fuente única del esquema, descrita en [contracts/player-data.README.md](./contracts/player-data.README.md).
 
 **Testing**: Vitest, fast-check (propiedades), Testcontainers (PostgreSQL), Playwright (de principio a fin), herramienta `balance` (Monte Carlo para los SC estadísticos) y k6 (carga).
 
@@ -63,7 +63,7 @@ El MVP implementa el ciclo central del juego: **draft → alineación → partid
 
 | Principio | Verificación | Estado |
 |-----------|--------------|--------|
-| **I. La estrategia es determinante** | Duelos de stats con penalización por posición, formación, táctica y specials (R7). SC-004 a SC-006 se verifican por Monte Carlo (R8). Todas las magnitudes están en parámetros versionados y probados. | ✅ |
+| **I. La estrategia es determinante** | Duelos de stats con penalización por posición, formación, táctica y virtudes (R7). SC-004 a SC-006 se verifican por Monte Carlo (R8). Todas las magnitudes están en parámetros versionados y probados. | ✅ |
 | **II. El draft es el núcleo** | 3 sobres × 8 cartas, turno simultáneo, circulación izquierda, derecha e izquierda, 24 jugadores (FR-006 a FR-012). Resolución del turno, validación, duplicados y desconexiones definidos (data-model §3, realtime-protocol). | ✅ |
 | **III. Reglas del dominio explícitas** | Todas las reglas en `packages/domain` (y `engine`), sin E/S; ni la interfaz ni el servidor las duplican. Los valores numéricos están en `ParametrosEquilibrado`. | ✅ |
 | **IV. Simulación coherente y verificable** | Motor puro y determinista que se prueba sin interfaz; equivalencia entre modalidades probada (engine-api, invariante 2; SC-008). | ✅ |
@@ -98,7 +98,7 @@ specs/001-draft-manager-mvp/
 │   ├── http-api.md                # API HTTP/JSON
 │   ├── realtime-protocol.md       # mensajes WebSocket
 │   ├── engine-api.md              # interfaz del motor (interna, compartida)
-│   └── player-data.schema.json    # formato del catálogo de jugadores
+│   └── player-data.README.md      # enlace al esquema del catálogo (packages/protocol)
 ├── checklists/requirements.md
 └── tasks.md             # Fase 2 (/speckit-tasks), no se crea aquí
 ```
@@ -114,7 +114,7 @@ data/
 packages/
 ├── domain/                       # Reglas puras (Principio III)
 │   ├── src/
-│   │   ├── catalogo/             # Jugador, specials, validación de carga (FR-016 a FR-024)
+│   │   ├── catalogo/             # Jugador, virtudes, validación de carga (FR-016 a FR-024)
 │   │   ├── sobres/               # generación de mesa con semilla (FR-011, FR-014, R16)
 │   │   ├── draft/                # mesa, turnos, rotación, auto-elección (FR-006 a FR-013)
 │   │   ├── equipo/               # formaciones, casillas, alineación, táctica, lanzadores (FR-025 a FR-031)
@@ -126,7 +126,7 @@ packages/
 │   ├── src/
 │   │   ├── estado/               # estado del partido, posiciones en rejilla, fases
 │   │   ├── acciones/             # pase, regate, entrada, remate, parada, falta, tarjeta, lesión…
-│   │   ├── modificadores/        # posición, cansancio, specials, táctica, formación
+│   │   ├── modificadores/        # posición, cansancio, virtudes, táctica, formación
 │   │   ├── tramos/               # avanzar hasta un punto de decisión; decisiones encoladas
 │   │   └── penaltis/
 │   └── tests/                    # determinismo, equivalencia entre modalidades, reglas

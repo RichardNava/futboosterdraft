@@ -39,3 +39,6 @@
   lesiones). Se deja abierto a propósito: el usuario pidió decidirlo en `/speckit-clarify` viendo los valores
   actuales.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
+- Implementación (2026-10-22, `/speckit-implement`): FR-071 se aplicó con los objetivos de research R2 (amarillas 4,
+  rojas 0,20, penaltis 0,35 y lesiones 0,35 por partido, ±20 %), comprobados con `balance` (005/SC-011). Los valores
+  finales de los parámetros 4.0.0 están en research R2.

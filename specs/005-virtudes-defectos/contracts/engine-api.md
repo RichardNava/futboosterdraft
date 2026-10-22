@@ -55,7 +55,9 @@ Solo las diferencias con 3.0.0:
 }
 ```
 
-Los valores de `disciplina` y `lesiones` son iniciales y se ajustan con la comprobación `disciplina` (research R2).
+Los valores de `disciplina` y `lesiones` son iniciales; los finales (con `factorSegundaAmarilla` y
+`factorFaltaUltimoTercio`) están en research R2. `gravedadForzada` recibe también el estado (`gravedadForzada(estado, j)`)
+para ser neutra con parámetros 3.x.
 
 ## Garantías
 

@@ -28,7 +28,14 @@ export type NombreIcono =
   | 'escudo'
   | 'balon'
   | 'rayo'
-  | 'campo';
+  | 'campo'
+  | 'defecto'
+  | 'duelo'
+  | 'estrella'
+  | 'penalti';
+
+/** Contorno del perfil de una cara mirando a la derecha (frente, nariz, boca, barbilla y cuello), para el icono `duelo`. */
+const PERFIL_DUELO = 'M5.5 2.5C8 3 9.2 4.6 9.2 6.6c0 .6-.1 1.1-.3 1.5l1.8 2.6-1.5.6.6 1-.7.6.6.8c0 1.6-1 2.3-2.2 2.3 0 2.3 1.1 4.2 2.6 5.5';
 
 const TRAZOS: Record<NombreIcono, ReactNode> = {
   gol: (
@@ -128,6 +135,27 @@ const TRAZOS: Record<NombreIcono, ReactNode> = {
     </>
   ),
   trofeo: <path d="M8 4h8v5a4 4 0 01-8 0zM8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M12 13v4M9 20h6v-3H9z" />,
+  // Defecto de una carta (spec 005, FR-021): triángulo hacia abajo, para no depender del color.
+  defecto: <path d="M5 6h14l-7 12z" />,
+  // Modo Duelo de jugadores (spec 005, FR-060): solo el contorno de dos perfiles enfrentados, como en el jarrón de
+  // Rubin, sin la parte trasera de las cabezas. El de la derecha es el reflejo del de la izquierda.
+  duelo: (
+    <>
+      <path d={PERFIL_DUELO} />
+      <path d={PERFIL_DUELO} transform="matrix(-1 0 0 1 24 0)" />
+    </>
+  ),
+  // Ganador de un duelo en el resumen (spec 005, ronda 2).
+  estrella: <path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" fill="currentColor" />,
+  // Penalti (spec 005, FR-071): balón en el punto de penalti, delante de la portería.
+  penalti: (
+    <>
+      <path d="M4 10V5h16v5" />
+      <path d="M4 5l3 3h10l3-3" />
+      <circle cx="12" cy="16" r="3" />
+      <path d="M8 21h8" />
+    </>
+  ),
 };
 
 interface Props {

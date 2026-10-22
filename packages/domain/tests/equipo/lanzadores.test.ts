@@ -20,15 +20,15 @@ describe('lanzadores (FR-029a)', () => {
     jugador('DEF', ['DCI'], 80),
   ];
 
-  it('propone al titular con el special correspondiente', () => {
+  it('propone al titular con la virtud correspondiente', () => {
     const l = proponerLanzadores(titulares);
     expect(l.penaltis).toBe(titulares[1]!.id);
     expect(l.faltas).toBe(titulares[3]!.id);
     expect(l.corners).toBe(titulares[4]!.id);
   });
 
-  it('sin special, propone al de mejor valor para esa acción', () => {
-    const sin = titulares.map((j) => ({ ...j, specials: [] }));
+  it('sin virtud, propone al de mejor valor para esa acción', () => {
+    const sin = titulares.map((j) => ({ ...j, virtudes: [] }));
     const l = proponerLanzadores(sin);
     expect(l.penaltis).toBe(titulares[2]!.id); // finalización 92
     expect(l.corners).toBe(titulares[5]!.id); // pase 90

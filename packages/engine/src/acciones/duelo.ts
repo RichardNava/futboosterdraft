@@ -19,7 +19,7 @@ export interface Duelo {
   defensor: number;
   /** Desplazamientos adicionales en la escala de la sigmoide (formación, táctica…). */
   desplazamiento?: number;
-  /** Ajustes directos de probabilidad (specials como Aura: +0,04). */
+  /** Ajustes directos de probabilidad (virtudes como Aura: +0,04). */
   ajuste?: number;
   /** Multiplicador de la pendiente de la diferencia de stats (los pases dependen más del pase, SC-008). */
   pendiente?: number;

@@ -1,12 +1,12 @@
 /**
  * Rutas de partidas (T051; contracts/http-api.md).
  */
-import { AnadirNPC, CrearPartida, CuerpoNombreEquipo } from '@fbd/protocol';
+import { AnadirNPC, ConfigDuelosEntrada, CrearPartida, CuerpoNombreEquipo } from '@fbd/protocol';
 import type { FastifyInstance } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
 import { cambiarNombreEquipo } from '../actores/identidad';
 import { misPartidas } from '../actores/misPartidas';
-import { anadirNPC, iniciar, unirse } from '../actores/sala';
+import { anadirNPC, configurarDuelos, iniciar, unirse } from '../actores/sala';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
 import { errores } from './errores';
@@ -56,6 +56,13 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
     const c = await gestor.obtenerOError(req.params.id);
     await c.ejecutar((ctx) => anadirNPC(c, ctx, req.usuario!.id, nivel));
     return gestor.resumen(c, req.usuario!.id);
+  });
+
+  // Formación común y Estado de forma del modo duelos (spec 005, FR-061): solo el anfitrión y antes del draft.
+  app.put<{ Params: { id: string } }>('/api/partidas/:id/duelos', { preHandler: requiereSesion }, async (req) => {
+    const c = await gestor.obtenerOError(req.params.id);
+    const cuerpo = ConfigDuelosEntrada.safeParse(req.body);
+    return c.ejecutar((ctx) => configurarDuelos(c, ctx, req.usuario!.id, cuerpo.success ? cuerpo.data : null));
   });
 
   app.post<{ Params: { id: string } }>('/api/partidas/:id/iniciar', { preHandler: requiereSesion }, async (req) => {

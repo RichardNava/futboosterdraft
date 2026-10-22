@@ -10,7 +10,7 @@ export type FilaPartido = typeof partidos.$inferSelect;
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
-export type ResumenPartido = Pick<FilaPartido, 'id' | 'jornadaNumero' | 'localId' | 'visitanteId' | 'marcador' | 'estado' | 'resolucion'>;
+export type ResumenPartido = Pick<FilaPartido, 'id' | 'jornadaNumero' | 'localId' | 'visitanteId' | 'marcador' | 'estado' | 'resolucion' | 'tipo'>;
 
 export type Resolucion = 'directo' | 'apertura' | 'plazo' | 'npc';
 
@@ -30,6 +30,8 @@ export class RepoPartidos {
       eliminatoria: boolean;
       semilla: string;
       versionParametros: string;
+      /** `duelos` en los cruces del modo Duelo de jugadores (spec 005). */
+      tipo?: 'futbol' | 'duelos';
     },
     ejecutor: Ejecutor = this.db,
   ): Promise<FilaPartido> {
@@ -68,6 +70,7 @@ export class RepoPartidos {
         marcador: partidos.marcador,
         estado: partidos.estado,
         resolucion: partidos.resolucion,
+        tipo: partidos.tipo,
       })
       .from(partidos)
       .where(eq(partidos.partidaId, partidaId))

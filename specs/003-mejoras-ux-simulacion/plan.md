@@ -122,7 +122,7 @@ Detalle en [data-model.md](./data-model.md) §9.
 
 | Principio | Verificación | Estado |
 |-----------|--------------|--------|
-| **I. La estrategia es determinante** | Los stats y los specials pesan más, porque cambian qué acción se elige (FR-021, FR-022). La colocación y la táctica siguen entrando en el cálculo. La dificultad de los NPC sale de peores decisiones y no de porcentajes impuestos (FR-037). SC-006, SC-007, SC-009 y SC-010 lo miden con `balance`. | ✅ |
+| **I. La estrategia es determinante** | Los stats y las virtudes pesan más, porque cambian qué acción se elige (FR-021, FR-022). La colocación y la táctica siguen entrando en el cálculo. La dificultad de los NPC sale de peores decisiones y no de porcentajes impuestos (FR-037). SC-006, SC-007, SC-009 y SC-010 lo miden con `balance`. | ✅ |
 | **II. El draft es el núcleo** | Las reglas del draft no cambian. La animación pasa de 6 a 8 s, con el margen del primer turno ajustado (FR-013), así que no resta tiempo de elección. Los errores de draft de los NPC se aplican sobre su evaluación; las reglas son las mismas para todos. | ✅ |
 | **III. Reglas del dominio explícitas** | En `packages/domain` están: equipaciones v2 con la regla de parecido (R24), validación del nombre de equipo (R23), eliminaciones derivadas del torneo (R22) y la colocación, que no cambia. La interfaz usa esas funciones y no las duplica. | ✅ |
 | **IV. Simulación coherente y verificable** | El tiro usa la posición real, así que lo que se ve coincide con lo que se calcula (R6). Las métricas nuevas (distancia del remate, longitud del pase, acciones por jugador) se prueban sin interfaz. | ✅ |
@@ -234,7 +234,7 @@ apps/web/src/
 ├── componentes/GestionEquipo.tsx          ✚ gestión durante el partido sobre CampoEquipo (R17)
 ├── componentes/ResultadoPartido.tsx       ✚ marcador, eventos y estadísticas, común a la rápida y a la 2D (R18)
 ├── componentes/SelectorModo.tsx           ✚ (R19)
-├── componentes/CartaJugador.tsx           ✎ diseño final; texto de stats y specials ≥ texto base (R20)
+├── componentes/CartaJugador.tsx           ✎ diseño final; texto de stats y virtudes ≥ texto base (R20)
 ├── componentes/AperturaSobre.tsx          ✎ partículas, cartas completas, ≤ 8 s (R21)
 ├── componentes/particulas.ts              ✚ sistema de partículas en Canvas 2D con presupuesto por fotograma
 ├── componentes/EditorEquipacion.tsx       ✚ diseño y colores, con vista previa SVG (R24)

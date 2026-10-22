@@ -42,7 +42,7 @@ coherente (FR-051).
 |---|---|---|---|
 | Capitania | genérico | 0,80 | +1 a todo el once |
 | FortalezaMental | genérico | 0,60 | +2 a todo el once, solo yendo por detrás |
-| Aura | genérico | 0,55 | más éxito en todas sus acciones |
+| Aura | genérico | 0,70 | más éxito en todas sus acciones (era 0,55; T099) |
 | Incansable | genérico | 0,45 | menos cansancio propio |
 | Motivador | genérico | 0,55 | menos cansancio de todos |
 | LanzadorPenalties | genérico | 0,35 | situacional |
@@ -70,7 +70,7 @@ coherente (FR-051).
 | Libero | DEF | 0,65 | +2 al mediocampo |
 | MuroDefensivo | DEF | 0,50 | |
 | Llegador | MED | 0,50 | |
-| BoxToBox | MED | 0,60 | +1 a defensa y ataque |
+| BoxToBox | MED | 0,70 | +1 a defensa y ataque (era 0,60; T099) |
 | PrimerToque | MED | 0,45 | |
 | Todocampista | MED | 0,50 | sin penalización fuera de posición |
 | JugadorEntreLineas | MED | 0,45 | |
@@ -85,20 +85,37 @@ coherente (FR-051).
 | Defecto | Impacto | Motivo |
 |---|---|---|
 | Polemico | 0,25 | −5 % a todo el once yendo por detrás |
-| Rebelde | 0,40 | −5 % a todo el once desde el banquillo; evitable si no se convoca |
+| Rebelde | 0,15 | −5 % a todo el once desde el banquillo; evitable si no se convoca (era 0,40; T099: el perjuicio medido es el mayor de los defectos) |
 | Estrellita | 0,35 | −10 % propio si no es el mejor |
 | Agresivo | 0,40 | rojas × 2: jugar con 10 |
 | MalDefensor | 0,40 | |
 | Chupon | 0,45 | |
 | Fragil | 0,50 | lesiones × 3 |
 | DeCristal | 0,55 | lesiones siempre largas |
-| Fatigado | 0,55 | se cansa desde el minuto 46 |
+| Fatigado | 0,40 | se cansa desde el minuto 46 (era 0,55; T099) |
 | Indisciplinado | 0,60 | cansancio × 1,5 |
 | Canchero | 0,60 | más faltas y penaltis en contra |
 | Impulsivo | 0,65 | amarillas × 2 |
 | Torpe | 0,70 | autogoles × 2 (sobre una base baja) |
 | Inflexible | 0,75 | +5 puntos de penalización fuera de posición |
 | Provocador | 0,85 | solo frente a rivales GOAT |
+
+### Ajuste tras la medición (T099, 2026-10-22)
+
+Medición: 300 partidos por rasgo (serie A/B sintética, semilla 1), efecto = diferencia de goles con − sin.
+
+| Rasgo | Antes | Después | Efecto medido |
+|---|---|---|---|
+| Aura | 0,55 | 0,70 | +0,36 goles (el segundo mayor de las virtudes) |
+| BoxToBox | 0,60 | 0,70 | +0,37 goles (el mayor) |
+| Rebelde | 0,40 | 0,15 | −1,54 goles (el mayor perjuicio: la IA de la serie no lo saca y castiga todo el partido) |
+| Fatigado | 0,55 | 0,40 | −0,26 goles |
+
+Correlación de Spearman con los impactos nuevos: **defectos 0,63** (era 0,51) ✅; **virtudes 0,54** (era 0,51), por debajo
+de 0,6. No se ajustan más virtudes porque el error de la medida (≈ 0,15 goles por partido con 300 partidos) es del
+tamaño de casi todas las diferencias entre ellas, y cinco virtudes (Versátil, Revulsivo, Ordenabarreras,
+Infranqueable, Todocampista) no actúan en la serie sintética (efecto 0): ordenar por esa medida sería ajustar al ruido.
+Queda pendiente una medición con más partidos o con escenarios propios para esas virtudes.
 
 ## Incompatibilidades (simétricas)
 

@@ -128,7 +128,8 @@ html {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  padding-right: 0.08em;
+  /* El degradado se recorta a la caja del texto: hueco para el remate inclinado de la primera y la última letra. */
+  padding-inline: 0.04em 0.16em;
 }
 
 .entradilla {
@@ -2771,7 +2772,7 @@ html {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  padding-inline: 0.06em;
+  padding-inline: 0.06em 0.16em;
 }
 
 .pantalla-final h2 {
@@ -2958,7 +2959,8 @@ html {
 }
 
 /* Nombres en cursiva de cartel: sitio para el remate de la última letra al recortarlos. */
-:is(.equipo-marcador, .equipos-2d, .partida-resumen) .nombre-recortado {
+:is(.equipo-marcador, .equipos-2d, .partida-resumen) .nombre-recortado,
+.nombre-recortado.cursiva {
   padding-right: 0.14em;
 }
 

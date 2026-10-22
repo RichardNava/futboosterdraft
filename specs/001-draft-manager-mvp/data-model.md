@@ -25,7 +25,7 @@ valores enumerados van en español y **sin tildes** en el código y en los datos
 | `historia` | texto | Puede estar vacío. |
 | `stats` | `StatsPOR \| StatsDEF \| StatsMED \| StatsDEL` | Exactamente las 6 claves de su demarcación (FR-019); enteros 1–99 (FR-020). |
 | `media` | número | **Derivado**: promedio de los 6 stats; se recalcula al cargar y debe coincidir (±0,01) con el valor del fichero. |
-| `specials` | `Special[]` (sin repetidos) | Cantidad ≤ máximo del nivel (FR-021); permitidos según la demarcación (FR-022) y la regla de carrileros (FR-023). |
+| `virtudes` | `Virtud[]` (sin repetidos) | Cantidad ≤ máximo del nivel (FR-021); permitidos según la demarcación (FR-022) y la regla de carrileros (FR-023). |
 | `nivel` | `'Superclase' \| 'Epico' \| 'Legendario' \| 'GOAT'` | Sin tildes en código y datos; la interfaz muestra "Épico". |
 | `coleccion` | texto | En el MVP, `"Core"`. |
 
@@ -37,10 +37,12 @@ valores enumerados van en español y **sin tildes** en el código y en los datos
 
 Un jugador PUEDE tener posiciones de otra línea (p. ej. un MED con `EI`) siempre que no sea `POR`. Un POR solo tiene `POR`. *(Supuesto del plan: la especificación no lo prohíbe y aporta riqueza; si se quiere restringir, basta con endurecer la validación.)*
 
-**Specials permitidos**:
-- Siempre: los 15 genéricos.
-- Además, los de su demarcación.
-- Un DEF con `CI` o `CD` en `posicion` puede tener también los de MED (FR-023).
+**Virtudes permitidas**:
+- Siempre: las genéricas.
+- Además, las de su demarcación.
+- Un DEF con `CI` o `CD` en `posicion` puede tener también las de MED (FR-023).
+
+*[Actualizado por la [spec 005](../005-virtudes-defectos/spec.md): la lista de virtudes y defectos está en [virtudes y defectos](../../docs/juego/virtudes-y-defectos.md); una carta tiene además de 0 a 2 defectos.]*
 
 **Validación de carga (FR-024)**: el *seed* rechaza el fichero entero si cualquier jugador incumple
 alguna regla, e informa del `id` y de la regla incumplida.
@@ -48,7 +50,7 @@ alguna regla, e informa del `id` y de la regla incumplida.
 ### 1.2 Tipos enumerados
 
 - `Posicion` = `POR | LI | LD | DCI | DCD | CI | CD | MD | MC | MII | MID | MCO | DC | SD | EI | ED`.
-- `Special`:
+- `Virtud`:
   - Genéricos (15): `Incansable, Motivador, LanzadorFaltas, LanzadorPenalties, Aura, Capitania, Filigranas, FortalezaMental, Intimidante, Elegante, Presionador, RecuperadorTrasPerdida, Carismatico, Potente, Robusto`.
   - POR: `Parapenalties, OneToOne, Santo, Ordenabarreras, JugadorDeCampo`.
   - DEF: `Infranqueable, Jerarquia, Volador, Libero, MuroDefensivo`.
@@ -80,7 +82,7 @@ alguna regla, e informa del `id` y de la regla incumplida.
 Fichero versionado (`version: semver`) en `packages/domain/src/parametros/`, porque lo usan el generador de sobres, la pantalla de alineación y el motor. Contiene, entre otros:
 - `penalizacionFueraPosicion` (0,25) y `penalizacionPorteria` (0,60).
 - `cansancio`: minuto de inicio (65; 55 con Presión alta), ritmo de degradación y factores de Incansable y Motivador.
-- Bonificaciones de los specials que la especificación no cuantifica.
+- Bonificaciones de las virtudes que la especificación no cuantifica.
 - Pendiente de la función logística de los duelos.
 - Probabilidades de falta, de tarjeta y de lesión, y el reparto de gravedad: leve, media, grave y larga duración (2 %).
 - Efectos de cada opción táctica y de cada formación.
@@ -228,7 +230,7 @@ Mientras el turno está abierto, la elección solo se envía al propio participa
 | `lanzadores` | `{ penaltis, faltas, corners: Jugador.id, tanda: Jugador.id[5] }` | Titulares; propuestos automáticamente y editables (FR-029a). |
 | `confirmadaEn` | fecha y hora | — |
 
-**Valores derivados** (no se guardan): stats efectivos por casilla, aplicando la penalización por posición (FR-027, FR-025a y la excepción de Todocampista) y los specials de equipo, para mostrarlos en pantalla (FR-028).
+**Valores derivados** (no se guardan): stats efectivos por casilla, aplicando la penalización por posición (FR-027, FR-025a y la excepción de Todocampista) y las virtudes de equipo, para mostrarlos en pantalla (FR-028).
 
 **Alineación automática (FR-031 y Edge Cases)**: elige la formación y la asignación que maximizan la suma de medias efectivas con el mínimo de jugadores fuera de posición. Se usa el mismo evaluador que los NPC (R9, perfil "intermedio").
 

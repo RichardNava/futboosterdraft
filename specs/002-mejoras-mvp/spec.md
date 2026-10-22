@@ -38,19 +38,19 @@
 
 ### User Story 1 - Cartas de jugador vistosas y legibles (Priority: P1)
 
-Durante el draft, en la plantilla y en la ficha de un jugador, el participante ve cada jugador como una carta coleccionable. En la parte superior destacan la imagen, el nombre y la media. Justo debajo del nombre aparecen, bien resaltadas, las posiciones que puede ocupar. En la parte inferior se leen con claridad los seis stats y los specials. El nivel de la carta (Superclase, Épico, Legendario, GOAT) se reconoce de un vistazo por su acabado.
+Durante el draft, en la plantilla y en la ficha de un jugador, el participante ve cada jugador como una carta coleccionable. En la parte superior destacan la imagen, el nombre y la media. Justo debajo del nombre aparecen, bien resaltadas, las posiciones que puede ocupar. En la parte inferior se leen con claridad los seis stats y las virtudes. El nivel de la carta (Superclase, Épico, Legendario, GOAT) se reconoce de un vistazo por su acabado.
 
 **Why this priority**: Las cartas son el elemento más visible del draft, y el draft es la pieza central del juego. Una carta clara y atractiva mejora a la vez la toma de decisiones y el deseo de coleccionar.
 
-**Independent Test**: Se puede probar abriendo un sobre en el draft y la pantalla de plantilla, y comprobando que cada carta muestra imagen, nombre, media, posiciones, stats y specials en la disposición indicada, y que las cartas de distinto nivel se distinguen sin leer el texto del nivel.
+**Independent Test**: Se puede probar abriendo un sobre en el draft y la pantalla de plantilla, y comprobando que cada carta muestra imagen, nombre, media, posiciones, stats y virtudes en la disposición indicada, y que las cartas de distinto nivel se distinguen sin leer el texto del nivel.
 
 **Acceptance Scenarios**:
 
 1. **Given** un sobre abierto en el draft, **When** el participante mira una carta, **Then** ve en la parte superior la imagen del jugador (un icono genérico de personaje en esta fase), su nombre y su media destacada.
-2. **Given** una carta, **When** el participante la mira, **Then** ve justo debajo del nombre, resaltadas, todas las posiciones del jugador, y en la parte inferior sus seis stats (abreviatura y valor) y todos sus specials.
-3. **Given** un GOAT con 4 specials, **When** se muestra su carta, **Then** toda su información cabe en la carta y se lee sin desplazarse dentro de ella ni ampliar la pantalla.
+2. **Given** una carta, **When** el participante la mira, **Then** ve justo debajo del nombre, resaltadas, todas las posiciones del jugador, y en la parte inferior sus seis stats (abreviatura y valor) y todos sus virtudes.
+3. **Given** un GOAT con 4 virtudes, **When** se muestra su carta, **Then** toda su información cabe en la carta y se lee sin desplazarse dentro de ella ni ampliar la pantalla.
 4. **Given** cuatro cartas de niveles distintos, **When** se muestran juntas, **Then** cada nivel tiene un acabado visual propio y los niveles más altos resultan claramente más llamativos.
-5. **Given** un special en una carta, **When** el participante lo señala o lo toca, **Then** ve su descripción.
+5. **Given** una virtud en una carta, **When** el participante lo señala o lo toca, **Then** ve su descripción.
 
 ---
 
@@ -261,7 +261,7 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 - **Cambio de velocidad en mitad de una acción** (balón en el aire): se aplica al instante y la acción sigue a la nueva velocidad. Durante una pausa anunciada, la duración de la pausa no cambia.
 - **Expulsión o lesión sin cambio**: el equipo vuelve a repartir las anclas de la línea afectada para cubrir el hueco, y la forma del equipo se mantiene coherente. Un sustituto hereda el ancla del jugador al que sustituye.
 - **Jugador con varias posiciones que dan penalizaciones distintas**: se aplica la más favorable (ver Assumptions).
-- **Special Todocampista**: sigue anulando la penalización por posición salvo en la portería, por encima de la nueva tabla.
+- **Virtud Todocampista**: sigue anulando la penalización por posición salvo en la portería, por encima de la nueva tabla.
 - **Casilla "central del medio" de una defensa de 3 o 5** (001/FR-025a): un DEF sin DCI ni DCD recibe la penalización dentro de la demarcación (−10 %).
 - **Jugador arrastrado a una zona que no se corresponde con ninguna casilla de la formación**: su posición efectiva es la de la zona en la que queda, con la penalización correspondiente, y la formación pasa a ser personalizada.
 - **Colocación extrema** (p. ej. 9 jugadores en ataque, o dos jugadores en el mismo punto): se permite, siempre que la alineación sea válida (FR-034a). El sistema avisa de las distribuciones muy desequilibradas antes de confirmar, y separa ligeramente a los jugadores superpuestos.
@@ -284,10 +284,10 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 - **FR-001**: Cada carta de jugador DEBE mostrar, con esta disposición:
   - **Parte superior**: la imagen del jugador, su nombre y su media, con la media y el nombre en un tamaño claramente destacado. En esta fase la imagen PUEDE ser un icono genérico de personaje, pero DEBE estar siempre presente.
   - **Debajo del nombre**: todas las posiciones del jugador, resaltadas (p. ej. como distintivos), y su demarcación.
-  - **Parte inferior**: los seis stats (abreviatura y valor) y todos los specials por su nombre.
+  - **Parte inferior**: los seis stats (abreviatura y valor) y todas las virtudes por su nombre.
 - **FR-002**: Cada nivel (Superclase, Épico, Legendario, GOAT) DEBE tener un acabado visual propio (marco, colores, brillo o equivalente) que permita reconocerlo sin leer su nombre. El atractivo visual DEBE crecer con el nivel.
-- **FR-003**: Toda la información de la carta DEBE caber y leerse sin desplazamiento interno ni ampliación, incluido el caso de un GOAT con 4 specials, tanto en pantallas de escritorio como en móviles de 360 px de ancho.
-- **FR-004**: La descripción de cada special DEBE poder consultarse desde la carta (al señalarlo o tocarlo).
+- **FR-003**: Toda la información de la carta DEBE caber y leerse sin desplazamiento interno ni ampliación, incluido el caso de un GOAT con 4 virtudes, tanto en pantallas de escritorio como en móviles de 360 px de ancho.
+- **FR-004**: La descripción de cada virtud DEBE poder consultarse desde la carta (al señalarlo o tocarlo).
 - **FR-005**: El mismo diseño de carta DEBE usarse en el draft, en la plantilla y en la ficha del jugador. En listas largas PUEDE usarse una versión compacta, desde la que se pueda abrir la carta completa.
 
 #### Apertura de sobre
@@ -430,7 +430,7 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
   | DEF, MED o DEL | POR | −60 % |
 
   "MED (MCO)" y "MED (MD)" se refieren al jugador de origen según sus posiciones. "MED (MCO)" como destino se refiere a la casilla MCO. Si a un jugador le corresponden varias filas por tener varias posiciones, se aplica la penalización más baja.
-- **FR-033**: Los specials que anulan o modifican la penalización por posición (como Todocampista) DEBEN mantener su efecto sobre la nueva tabla. La pantalla de alineación DEBE mostrar, para cada titular fuera de posición, el porcentaje de penalización aplicado junto a sus stats y su media efectivos (001/FR-028).
+- **FR-033**: Las virtudes que anulan o modifican la penalización por posición (como Todocampista) DEBEN mantener su efecto sobre la nueva tabla. La pantalla de alineación DEBE mostrar, para cada titular fuera de posición, el porcentaje de penalización aplicado junto a sus stats y su media efectivos (001/FR-028).
 - **FR-034**: Colocación libre: en la pantalla de tácticas, el participante DEBE poder arrastrar a cualquier titular de campo a cualquier zona del campo. *[Actualizado por la [spec 003](../003-mejoras-ux-simulacion/spec.md): la colocación libre se hace en el campo de la pantalla «Formación», no en uno aparte (003/FR-001).]*
   - El campo se divide en zonas, cada una asociada a un código de posición de 001/FR-018. Incluye la zona del central del medio de 001/FR-025a.
   - La posición efectiva del jugador, y por tanto su penalización, DEBE ser la de la zona en la que queda.
@@ -470,7 +470,7 @@ Al cerrar esta spec DEBEN actualizarse en la 001:
 
 ### Key Entities *(include if feature involves data)*
 
-- **Carta (presentación)**: representación visual de un jugador. Imagen (genérica en el MVP), nombre, media, posiciones, demarcación, stats, specials y acabado según el nivel.
+- **Carta (presentación)**: representación visual de un jugador. Imagen (genérica en el MVP), nombre, media, posiciones, demarcación, stats, virtudes y acabado según el nivel.
 - **Regla de penalización por posición**: demarcación (o rol MCO/MD) de origen, demarcación o posición de destino, y porcentaje de penalización.
 - **Zona del campo**: área del campo de la pantalla de tácticas asociada a un código de posición; determina la posición efectiva de un titular colocado en ella.
 - **Colocación del titular**: punto del campo en el que el participante coloca a cada titular, con su posición efectiva resultante. Forma parte de la alineación.

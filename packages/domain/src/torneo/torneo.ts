@@ -112,7 +112,8 @@ function jornadaDeRonda(cuadro: Cuadro, ronda: number, numero: number): JornadaT
 
 export function crearTorneo(modo: Modo, participantes: string[], mesas: string[][], semilla: Semilla): EstadoTorneo {
   const base = { modo, participantes, mesas, semilla, resultados: [], campeon: null, bajas: estadoBajasVacio(), aportaciones: [] };
-  if (modo === 'playoff') {
+  // El modo Duelo de jugadores usa el cuadro del playoff (spec 005, research R10).
+  if (modo === 'playoff' || modo === 'duelos') {
     const cuadro = cuadroPlayoff(participantes, mesas, derivarSemilla(semilla, 'cuadro'));
     return { ...base, fase: 'eliminatoria', cuadro, jornadas: [jornadaDeRonda(cuadro, 0, 1)] };
   }

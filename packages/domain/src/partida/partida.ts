@@ -1,9 +1,23 @@
 /**
  * Entidad Partida (data-model §2.2): configuración, validación y máquina de estados.
  */
+import type { ConfigDuelos } from '../duelos/tipos';
+import { esFormacionId } from '../equipo/formaciones';
 import { Rng, type Semilla } from '../rng/xoshiro';
 
-export type Modo = 'liga' | 'playoff' | 'mixto';
+/** `duelos`: modo Duelo de jugadores (spec 005, FR-060), con el cuadro del playoff y cruces resueltos por duelos. */
+export type Modo = 'liga' | 'playoff' | 'mixto' | 'duelos';
+export const MODOS: readonly Modo[] = ['liga', 'playoff', 'mixto', 'duelos'];
+
+/** Formación común y Estado de forma por defecto del modo Duelo de jugadores (spec 005, FR-061, FR-064a). */
+export const CONFIG_DUELOS_POR_DEFECTO: Readonly<ConfigDuelos> = { formacion: '4-3-3', estadoForma: true };
+
+/** Configuración de duelos válida (formación conocida y Estado de forma booleano). */
+export function configDuelosValida(c: unknown): c is ConfigDuelos {
+  if (typeof c !== 'object' || c === null) return false;
+  const { formacion, estadoForma } = c as Record<string, unknown>;
+  return esFormacionId(formacion) && typeof estadoForma === 'boolean';
+}
 /** Modo de simulación de un partido: lo elige cada participante al abrirlo (spec 003, FR-032 a FR-035). */
 export type ModoSimulacion = 'rapida' | '2d';
 export type NivelNPC = 'amateur' | 'intermedio' | 'avanzado' | 'PRO';
@@ -50,6 +64,8 @@ export interface ConfigPartida {
   dificultad: Dificultad;
   tiempos: TiemposPartida;
   colecciones: string[];
+  /** Solo en el modo duelos (spec 005): formación común y Estado de forma; por defecto, `CONFIG_DUELOS_POR_DEFECTO`. */
+  duelos?: ConfigDuelos;
 }
 
 export const TIEMPOS_POR_DEFECTO: TiemposPartida = {
@@ -78,7 +94,7 @@ export interface ErrorConfig {
 export function numParticipantesValido(modo: Modo, n: number): boolean {
   if (!Number.isInteger(n)) return false;
   if (modo === 'liga') return n >= 4 && n <= 8;
-  if (modo === 'playoff') return n === 4 || n === 8 || n === 16;
+  if (modo === 'playoff' || modo === 'duelos') return n === 4 || n === 8 || n === 16;
   return n === 8;
 }
 
@@ -91,8 +107,12 @@ export function validarConfigPartida(c: ConfigPartida, anfitrion: TipoUsuario): 
   if (!numParticipantesValido(c.modo, c.numParticipantes)) {
     errores.push({
       codigo: 'NUM_PARTICIPANTES_INVALIDO',
-      mensaje: 'Participantes: liga de 4 a 8; playoff de 4, 8 o 16; mixto, 8',
+      mensaje: 'Participantes: liga de 4 a 8; playoff y Duelo de jugadores de 4, 8 o 16; mixto, 8',
     });
+  }
+  if (!MODOS.includes(c.modo)) errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'Modo de juego desconocido' });
+  if (c.duelos !== undefined && (c.modo !== 'duelos' || !configDuelosValida(c.duelos))) {
+    errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'Configuración de duelos inválida' });
   }
   const humanas = plazasHumanasEfectivas(c);
   if (!Number.isInteger(humanas) || humanas < 1) {

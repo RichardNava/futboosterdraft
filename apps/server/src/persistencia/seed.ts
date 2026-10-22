@@ -97,7 +97,8 @@ export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[
         historia: j.historia,
         stats: j.stats,
         media: j.media,
-        specials: j.specials,
+        virtudes: j.virtudes,
+        defectos: j.defectos,
         nivel: j.nivel,
         coleccion: j.coleccion,
       };

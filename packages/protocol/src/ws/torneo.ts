@@ -7,7 +7,7 @@ const Ref = z.object({ id: z.string(), nombre: z.string() }).nullable();
 
 export const MsgTorneoActualizado = z.object({
   t: z.literal('torneo.actualizado'),
-  modo: z.enum(['liga', 'playoff', 'mixto']),
+  modo: z.enum(['liga', 'playoff', 'mixto', 'duelos']),
   fase: z.enum(['liga', 'eliminatoria']).nullable(),
   jornadaActual: z.number().int().nullable(),
   jornadas: z.array(
@@ -29,6 +29,8 @@ export const MsgTorneoActualizado = z.object({
           estado: z.string(),
           resueltoAutomaticamente: z.boolean(),
           resolucion: z.enum(['directo', 'apertura', 'plazo', 'npc']).nullable().optional(),
+          /** `duelos` en los cruces del modo Duelo de jugadores (spec 005). */
+          tipo: z.enum(['futbol', 'duelos']).optional(),
         }),
       ),
     }),

@@ -110,7 +110,7 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
 }
 
 export function comprobarSC015(n: number, semilla: number): Comprobacion {
-  const robustos = equipoSintetico({ semilla: 'sc015', specials: ['Robusto'] });
+  const robustos = equipoSintetico({ semilla: 'sc015', virtudes: ['Robusto'] });
   const normales = equipoSintetico({ semilla: 'sc015', participanteId: 'b' });
   // Cuatro veces más partidos: las lesiones son poco frecuentes.
   const r = serie(robustos, normales, n * 4, semilla, 'sc015');

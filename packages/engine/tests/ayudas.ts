@@ -13,7 +13,8 @@ import {
   type FormacionId,
   type Jugador,
   type Posicion,
-  type Special,
+  type Defecto,
+  type Virtud,
   type Tactica,
 } from '@fbd/domain';
 import type { Contexto } from '../src/acciones/contexto';
@@ -26,7 +27,7 @@ const DEM: Record<Posicion, Demarcacion> = {
 
 let id = 1;
 
-export function jugador(posicion: Posicion, valor = 80, specials: Special[] = []): Jugador {
+export function jugador(posicion: Posicion, valor = 80, virtudes: Virtud[] = []): Jugador {
   const demarcacion = DEM[posicion];
   const stats = Object.fromEntries(CLAVES_STATS[demarcacion].map((c) => [c, valor])) as unknown as Jugador['stats'];
   return {
@@ -41,7 +42,8 @@ export function jugador(posicion: Posicion, valor = 80, specials: Special[] = []
     historia: '',
     stats,
     media: calcularMedia({ demarcacion, stats }),
-    specials,
+    virtudes,
+    defectos: [],
     nivel: 'Superclase',
     coleccion: 'Core',
   };
@@ -49,13 +51,13 @@ export function jugador(posicion: Posicion, valor = 80, specials: Special[] = []
 
 export function equipo(
   participanteId: string,
-  opciones: { formacion?: FormacionId; valor?: number; tactica?: Partial<Tactica>; specials?: Special[]; specialsPortero?: Special[] } = {},
+  opciones: { formacion?: FormacionId; valor?: number; tactica?: Partial<Tactica>; virtudes?: Virtud[]; virtudesPortero?: Virtud[] } = {},
 ): EquipoPartido {
   const formacion = opciones.formacion ?? '4-4-2';
   const titulares = FORMACIONES[formacion].casillas.map((c) => {
     const pos: Posicion = c.id === CASILLA_CENTRAL ? 'DCI' : c.posicionesAdmitidas[0]!;
-    const specials = pos === 'POR' ? (opciones.specialsPortero ?? []) : (opciones.specials ?? []);
-    return { casillaId: c.id, jugador: jugador(pos, opciones.valor ?? 80, specials) };
+    const virtudes = pos === 'POR' ? (opciones.virtudesPortero ?? []) : (opciones.virtudes ?? []);
+    return { casillaId: c.id, jugador: jugador(pos, opciones.valor ?? 80, virtudes) };
   });
   const suplentes = (['POR', 'DCI', 'LD', 'MC', 'MCO', 'DC', 'EI'] as Posicion[]).map((p) => jugador(p, (opciones.valor ?? 80) - 3));
   return {
@@ -112,4 +114,10 @@ export function darBalon(estado: EstadoMotor, lado: 'local' | 'visitante', porta
   const p = estado.espacio.jugadores[portador.id]!;
   estado.espacio.balon = { x: p.x, y: p.y, z: 0 };
   estado.balon = { posesion: lado, zona, carril, portadorId: portador.id, transicion: false };
+}
+
+/** Cambia las virtudes y los defectos de un jugador del estado (pruebas de rasgos de la spec 005). */
+export function ponerRasgos(j: JugadorEnPartido, rasgos: { virtudes?: Virtud[]; defectos?: Defecto[] }): JugadorEnPartido {
+  j.jugador = { ...j.jugador, virtudes: rasgos.virtudes ?? j.jugador.virtudes, defectos: rasgos.defectos ?? j.jugador.defectos };
+  return j;
 }
