@@ -184,7 +184,7 @@
   --barra-principal-alto: 72px;
   --barra-navegacion-alto: 60px;
   /* Proporción del sobre: la de las cartas completas tal como se ven (no su `aspect-ratio` mínimo de 5 : 7). */
-  --proporcion-sobre: 200 / 420;
+  --proporcion-sobre: 200 / 376;
   --objetivo-tactil: 44px;
   --ancho-lectura: 72ch;
   --ancho-pantalla: 1240px;

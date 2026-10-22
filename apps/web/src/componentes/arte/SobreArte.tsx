@@ -1,14 +1,14 @@
 import { useId } from 'react';
 
-/** Alto del dibujo para 200 de ancho: el de las cartas completas con sus dos filas de rasgos (spec 005, FR-022). */
-const ALTO = 420;
+/** Alto del dibujo para 200 de ancho: el de las cartas completas, con sitio para cuatro rasgos (spec 005, FR-022). */
+const ALTO = 376;
 /** Desplazamiento del motivo central respecto al dibujo original de 360 de alto. */
 const CENTRO = (ALTO - 360) / 2;
 
 /**
  * Sobre de cartas ilustrado (spec 004, FR-044): lámina de foil verde noche con los bordes dentados del sellado,
  * franjas holográficas, una banda lima y el escudo. `rasgado` quita el borde superior (el sobre recién abierto).
- * Tiene la proporción de las cartas tal como se ven (≈ 10 : 21, `--proporcion-sobre`), no la de un cromo cuadrado.
+ * Tiene la proporción de las cartas tal como se ven (≈ 8 : 15, `--proporcion-sobre`), no la de un cromo cuadrado.
  */
 export function SobreArte({ className, rasgado = false }: { className?: string; rasgado?: boolean }) {
   const id = useId().replace(/:/g, '');
