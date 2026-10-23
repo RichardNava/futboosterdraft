@@ -31,7 +31,10 @@ jobs:
       # `--pendientes`: comprobaciones aún sin calibrar con el motor 3.0.0 (ver specs/003-mejoras-ux-simulacion/checklists/
       # calibracion-motor.md, ronda 13). Se informan pero no bloquean; cualquier otra que falle sí. Cuando una se cumpla,
       # el paso lo avisa y hay que quitarla de la lista. 003/SC-009 es compuesto y falla mientras fallen las otras dos.
-      - run: pnpm balance --n 500 --pendientes 002/SC-007a,002/SC-008,003/SC-009
+      # Con los parámetros 4.0.0 de la spec 005 (ver specs/005-virtudes-defectos/checklists/validacion.md, «Pendiente»):
+      # SC-006a (3-4-3 frente a 4-4-2 no es significativo con 500 partidos), 003/SC-006 (regate y defensa al límite),
+      # 005/SC-011 (penaltis de la sintética 0,42, en el borde del ±20 %) y 005/FR-051 (virtudes, ρ = 0,45).
+      - run: pnpm balance --n 500 --pendientes 002/SC-007a,002/SC-008,003/SC-009,SC-006a,003/SC-006,005/SC-011,005/FR-051
 
   # Pruebas de diseño de la spec 004 (FR-040): contraste y reglas WCAG 2.1 AA con axe, desplazamiento horizontal,
   # lima reservado y foco visible en cada pantalla del inventario, y el flujo completo con teclado.

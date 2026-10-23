@@ -53,6 +53,16 @@ La primera pasada completa dio 81 de 85. Las 4 que fallaban, ya corregidas y rep
   sobre el Core y los NPC actuales (3,50). No lo causan las frecuencias nuevas; ver research R2.
 - **FR-051 en las virtudes**: ρ = 0,54 (< 0,6). Ver [contracts/rasgos.md](../contracts/rasgos.md); hace falta una
   medición con más partidos o escenarios propios para las cinco virtudes que la serie sintética no activa.
+- **CI (`pnpm balance --n 500`)**: la validación se hizo con 1.000 partidos, y el paso de CI usa 500. Con 500 fallan
+  cuatro comprobaciones (37 de 44, 2026-10-23), que pasan a `--pendientes` en `.github/workflows/ci.yml` hasta
+  recalibrarlas:
+  - **SC-006a**: 3-4-3 GF 1,89 / GC 2,62 · 4-4-2 GF 1,74 / GC 1,57 · 5-4-1 GF 1,17 / GC 1,04. El orden se cumple,
+    pero 3-4-3 frente a 4-4-2 en goles a favor no es significativo con 500 partidos (con 1.000 sí).
+  - **003/SC-006**: regate y defensa por debajo de su objetivo (con 1.000 ya estaba al límite).
+  - **005/SC-011**: penaltis de la serie sintética 0,42 (límite 0,42; con 1.000, 0,41). Es el desequilibrio entre la
+    sintética y la Core que describe research R2.
+  - **005/FR-051**: virtudes, ρ = 0,45. Los más fuera de orden son Jerarquia, Llegador, LanzadorFaltas, JugadorDeCampo
+    y RecuperadorTrasPerdida.
 - **Rendimiento**: los 25 ms por partido no se alcanzan en esta máquina ni con la 004; la 005 queda a +3,6 % de ella
   (se quitó un 13 % de coste con búsquedas de rasgos por conjunto).
 - **Carpetas temporales**: `D:/fbdb` y `D:/fbdc` (restos de `node_modules` de las ramas base, bloqueados) se pueden
