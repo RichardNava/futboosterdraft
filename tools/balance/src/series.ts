@@ -2,8 +2,8 @@
  * Series de partidos para el equilibrado (T090): N partidos con semillas reproducibles, alternando
  * quién juega en casa, y agregación de resultados y estadísticas por equipo.
  */
-import { parametrosActuales, semillaDesdeTexto } from '@fbd/domain';
-import { avanzar, crearPartido, type EquipoPartido, type EstadisticasEquipo, type MetricasJugador } from '@fbd/engine';
+import { parametrosActuales, semillaDesdeTexto, type ParametrosEquilibrado } from '@fbd/domain';
+import { avanzar, crearPartido, type EquipoPartido, type EstadisticasEquipo, type EstadoMotor, type MetricasJugador, type ResultadoTramo } from '@fbd/engine';
 
 /** Un gol de la serie, para los repartos por tipo, distancia y zona (spec 003, T031). */
 export interface GolSerie {
@@ -20,6 +20,12 @@ export interface OpcionesSerie {
   eliminatoria?: boolean;
   /** Métricas por jugador del equipo A en cada partido (spec 003, research R11). */
   metricas?: boolean;
+  /** Parámetros de la serie (por defecto, los actuales); p. ej. con probabilidades base forzadas (spec 005). */
+  parametros?: ParametrosEquilibrado;
+  /** Se llama en cada tick con el estado del motor y el lado del equipo A (spec 005, comprobación `rasgos`). */
+  observador?: (estado: EstadoMotor, ladoA: 'local' | 'visitante') => void;
+  /** Se llama al terminar cada partido con su resultado y el lado del equipo A. */
+  alTerminar?: (final: ResultadoTramo, ladoA: 'local' | 'visitante') => void;
 }
 
 export interface ResultadoSerie {
@@ -39,10 +45,13 @@ export interface ResultadoSerie {
   goles: GolSerie[];
   /** Métricas de los jugadores del equipo A en cada partido (solo con `metricas`). */
   metricasA: Record<number, MetricasJugador>[];
+  /** Penaltis pitados en la serie, de los dos equipos (spec 005, SC-011). */
+  penaltis: number;
 }
 
 export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: number, etiqueta: string, opciones: boolean | OpcionesSerie = false): ResultadoSerie {
-  const { eliminatoria = false, metricas = false } = typeof opciones === 'boolean' ? { eliminatoria: opciones } : opciones;
+  const { eliminatoria = false, metricas = false, parametros = parametrosActuales(), observador, alTerminar } =
+    typeof opciones === 'boolean' ? { eliminatoria: opciones } : opciones;
   const idsA = new Set([...a.titulares.map((t) => t.jugador.id), ...a.suplentes.map((j) => j.id)]);
   const r: ResultadoSerie = {
     n,
@@ -59,11 +68,12 @@ export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: nu
     resultados: [],
     goles: [],
     metricasA: [],
+    penaltis: 0,
   };
   const inicio = Date.now();
-  const parametros = parametrosActuales();
   for (let i = 0; i < n; i++) {
     const aEnCasa = i % 2 === 0;
+    const ladoA = aEnCasa ? 'local' : 'visitante';
     const final = avanzar(
       crearPartido({
         version: parametros.version,
@@ -74,9 +84,11 @@ export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: nu
         visitante: aEnCasa ? b : a,
       }),
       'final',
-      { metricas },
+      { metricas, ...(observador ? { observador: (e: EstadoMotor) => observador(e, ladoA) } : {}) },
     );
+    alTerminar?.(final, ladoA);
     r.resultados.push(`${final.marcador.local}-${final.marcador.visitante}`);
+    r.penaltis += final.eventos.filter((ev) => ev.tipo === 'penalti').length;
     for (const ev of final.eventos) {
       if (ev.tipo !== 'gol') continue;
       const deA = (ev.equipo === 'local') === aEnCasa;

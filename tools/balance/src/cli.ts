@@ -8,6 +8,7 @@
  *   pnpm balance --solo 003/SC-001,SC-004     solo esas comprobaciones (por id o prefijo de id)
  *   pnpm balance --torneos 100                comprobaciones de NPC (003/SC-010, SC-010a y SC-010b)
  *   pnpm balance --pendientes 002/SC-008      se ejecutan e informan, pero su fallo no da código 1 (id exacto)
+ *   pnpm balance --solo 005/SC-004            efecto de cada defecto y virtud de la spec 005
  *
  * Cada ejecución genera además `tools/balance/salida/informe.html` (Principio IX, T032a).
  */
@@ -116,6 +117,10 @@ export async function grupos(): Promise<GrupoComprobaciones[]> {
   const { gruposPartido } = await import('./checks/partido');
   const { gruposPartido003 } = await import('./checks/partido003');
   const { gruposNPC } = await import('./checks/npc');
+  const { gruposRasgos } = await import('./checks/rasgos');
+  const { gruposDisciplina } = await import('./checks/disciplina');
+  const { gruposDuelos } = await import('./checks/duelos');
+  const { gruposImpacto } = await import('./checks/impacto');
   return [
     ...gruposPartido003(),
     ...gruposPartido(),
@@ -125,6 +130,10 @@ export async function grupos(): Promise<GrupoComprobaciones[]> {
       ejecutar: (o) => comprobacionesColocacion(o.n, o.seed),
     },
     ...gruposNPC(),
+    ...gruposRasgos(),
+    ...gruposDisciplina(),
+    ...gruposDuelos(),
+    ...gruposImpacto(),
   ];
 }
 

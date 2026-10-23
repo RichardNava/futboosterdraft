@@ -19,9 +19,9 @@ import { anguloTiro, AREA, decimasDeMetros, distanciaPorteria, ULTIMO_TERCIO } f
 import { papelLlegada } from '../espacio/objetivos';
 import { aEquipo, type Punto } from '../espacio/geometria';
 import { atributo } from '../modificadores/atributos';
-import { tiene } from '../modificadores/specials';
+import { tiene } from '../modificadores/virtudes';
 import type { Lado } from '../tipos';
-import { elegirPonderado, esPortero, holgura, radioDe, type Contexto } from './contexto';
+import { candidatoDefensivo, elegirPonderado, esPortero, holgura, radioDe, type Contexto } from './contexto';
 import { pesoTiro } from './pesoTiro';
 
 export type TipoPase = 'pase_corto' | 'pase_largo' | 'pase_espacio';
@@ -191,14 +191,22 @@ export function interceptorDePase(ctx: Contexto, defensor: EquipoEstado, origen:
   const e = ctx.estado;
   let mejor: JugadorEnPartido | undefined;
   let mejorEfectiva = Infinity;
+  let segundo: JugadorEnPartido | undefined;
+  let segundoEfectiva = Infinity;
   for (const j of defensor.jugadores) {
     const q = j.enCampo ? e.espacio.jugadores[j.id] : undefined;
     if (!q) continue;
     const efectiva = dividir(distanciaASegmento(q, origen, destino) * 1000, radioDe(e, defensor, j, 'anticipacion'));
     if (efectiva < mejorEfectiva || (efectiva === mejorEfectiva && mejor !== undefined && j.id < mejor.id)) {
+      segundo = mejor;
+      segundoEfectiva = mejorEfectiva;
       mejor = j;
       mejorEfectiva = efectiva;
+    } else if (efectiva < segundoEfectiva || (efectiva === segundoEfectiva && segundo !== undefined && j.id < segundo.id)) {
+      segundo = j;
+      segundoEfectiva = efectiva;
     }
   }
-  return mejor;
+  // Mal defensor (spec 005): la mitad de peso como candidato a cortar el pase.
+  return candidatoDefensivo(ctx, mejor, segundo);
 }

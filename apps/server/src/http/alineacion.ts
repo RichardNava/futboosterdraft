@@ -59,7 +59,7 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
       const problemas = validarAlineacion(a, [...ids], c.bajasActivas?.(participanteId) ?? new Set());
       const titularesDePlantilla = { ...a, titulares: a.titulares.filter((t) => ids.has(t.jugadorId)) };
       return {
-        previsualizacion: previsualizar(titularesDePlantilla, (id) => c.servicios.catalogo.jugador(id), parametrosActuales()),
+        previsualizacion: previsualizar(titularesDePlantilla, (id) => c.catalogo.jugador(id), parametrosActuales()),
         errores: problemas.map((p) => ({ codigo: p.codigo, mensaje: p.mensaje, motivos: p.motivos })),
       };
     });
@@ -68,8 +68,10 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
   app.put<{ Params: { id: string } }>('/api/partidas/:id/alineacion', { preHandler: requiereSesion }, async (req) => {
     const a = AlineacionEntrada.parse(req.body);
     const { c, participanteId } = await contexto(req);
-    return c.ejecutar(async () => {
+    return c.ejecutar(async (ctx) => {
       await confirmarAlineacion(c, participanteId, a);
+      // Duelos (spec 005): con el once ya bloqueado, sus cruces de la ronda abierta se pueden resolver.
+      if (c.partida.modo === 'duelos') await c.resolverDuelos?.(ctx);
       return vista(c, participanteId);
     });
   });

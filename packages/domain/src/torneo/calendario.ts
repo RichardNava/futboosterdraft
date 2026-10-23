@@ -53,6 +53,6 @@ export function calendarioLiga(participantes: readonly string[], semilla: Semill
 export function partidosTotales(modo: Modo, n: number): number {
   const liga = n * (n - 1);
   if (modo === 'liga') return liga;
-  if (modo === 'playoff') return n - 1;
+  if (modo === 'playoff' || modo === 'duelos') return n - 1;
   return liga + 3; // mixto: liga + 2 semifinales + final
 }

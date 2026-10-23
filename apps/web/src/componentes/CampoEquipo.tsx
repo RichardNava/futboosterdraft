@@ -30,6 +30,8 @@ interface Props {
   /** Distintivos por jugador (baja, tarjetas, lesión, cansancio). */
   distintivos?: ReadonlyMap<number, ReactNode>;
   maxBanquillo?: number;
+  /** Sin banquillo (modo Duelo de jugadores, spec 005): solo el campo y el resto de la plantilla. */
+  sinBanquillo?: boolean;
   onSoltar: (jugadorId: number, destino: DestinoSoltar) => void;
   onMover: (jugadorId: number, dx: number, dy: number) => void;
   onArrastrando?: (arrastrando: boolean) => void;
@@ -51,7 +53,8 @@ interface Arrastre {
  * Se dibuja en vertical, con la propia portería abajo: x (0–1000) hacia arriba e y (0–640) de izquierda a derecha.
  */
 export function CampoEquipo(props: Props) {
-  const { estado, colocacion, jugadores, parametros, dorsales, colores, modo, reserva = [], bloqueados, distintivos, maxBanquillo = 7, onSoltar, onMover, onArrastrando } = props;
+  const { estado, colocacion, jugadores, parametros, dorsales, colores, modo, reserva = [], bloqueados, distintivos, maxBanquillo = 7, sinBanquillo, onSoltar, onMover, onArrastrando } =
+    props;
   const campo = useRef<HTMLDivElement>(null);
   const banquillo = useRef<HTMLDivElement>(null);
   const restoPlantilla = useRef<HTMLDivElement>(null);
@@ -87,7 +90,7 @@ export function CampoEquipo(props: Props) {
   const destinoEn = (x: number, y: number): DestinoSoltar => {
     const p = puntoCampo(x, y);
     if (p) return { tipo: 'campo', punto: p };
-    if (dentro(banquillo.current, x, y)) {
+    if (!sinBanquillo && dentro(banquillo.current, x, y)) {
       const sobre = fichaListaEn(banquillo.current, x, y);
       return sobre === undefined ? { tipo: 'banquillo' } : { tipo: 'banquillo', sobre };
     }
@@ -252,12 +255,14 @@ export function CampoEquipo(props: Props) {
         </div>
       </div>
       <div className="campo-equipo-lateral">
-        <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
-          <h2>
-            Banquillo ({estado.banquillo.length}/{maxBanquillo})
-          </h2>
-          <div className="lista-compacta">{estado.banquillo.map(fichaLista)}</div>
-        </section>
+        {!sinBanquillo && (
+          <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
+            <h2>
+              Banquillo ({estado.banquillo.length}/{maxBanquillo})
+            </h2>
+            <div className="lista-compacta">{estado.banquillo.map(fichaLista)}</div>
+          </section>
+        )}
         {reserva.length > 0 && (
           <section ref={restoPlantilla} aria-label="Resto de la plantilla" data-testid="reserva">
             <h2>Resto de la plantilla</h2>

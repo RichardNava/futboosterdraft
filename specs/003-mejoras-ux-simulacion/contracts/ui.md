@@ -98,9 +98,9 @@ Define el comportamiento observable de la interfaz que las pruebas e2e y las pru
 - **Marco propio**: escudo achaflanado, franja del color del nivel y textura.
 - **Brillo**: animado solo en Legendario y GOAT. Sin brillo con movimiento reducido.
 - **Tamaño del texto en la carta completa**:
-  - en portátil, stats y specials ≥ 16 px (1rem), con el valor del stat en negrita a 1,25 veces el tamaño de su abreviatura;
+  - en portátil, stats y virtudes ≥ 16 px (1rem), con el valor del stat en negrita a 1,25 veces el tamaño de su abreviatura;
   - a 360 px, ≥ 14 px.
-- Un GOAT con 4 specials no se desborda. La variante compacta se mantiene en las listas largas.
+- Un GOAT con 4 virtudes no se desborda. La variante compacta se mantiene en las listas largas.
 
 ## Apertura de sobre (`AperturaSobre`, FR-011 a FR-015; research R21)
 

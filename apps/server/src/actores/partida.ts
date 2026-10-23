@@ -4,6 +4,7 @@
  * Todo cambio de estado pasa por `ejecutar`, que lo encola en el actor de la partida. La lógica de
  * cada fase vive en `sala.ts` y `draft.ts`.
  */
+import type { Catalogo } from '../persistencia/repos/catalogo';
 import type { MesaPersistida } from '../persistencia/repos/draft';
 import type { FilaParticipante, FilaPartida } from '../persistencia/repos/partidas';
 import { ActorPartida, type ContextoComando } from './actor';
@@ -47,6 +48,11 @@ export class ControladorPartida {
    * calcularla en cada partido era de lo más caro con carga (T140).
    */
   readonly autoAlineaciones = new Map<string, { bajas: string; alineacion: Alineacion }>();
+  /**
+   * Modo duelos (spec 005): resuelve los cruces de la ronda abierta que ya se pueden resolver y sigue el torneo. Lo
+   * engancha el torneo; lo llaman la confirmación del once y la apertura de un cruce.
+   */
+  resolverDuelos?: (ctx: ContextoComando, opciones?: { forzar?: boolean; soloPartido?: string }) => Promise<void>;
   /** Crea el torneo y abre la primera jornada (las pruebas pueden sustituirlo para fijar los cruces). */
   programarPrimeraJornada?: (ctx: ContextoComando) => Promise<void>;
 
@@ -74,6 +80,11 @@ export class ControladorPartida {
 
   get partidaId(): string {
     return this.partida.id;
+  }
+
+  /** Catálogo en la versión de esta partida (spec 005, FR-036). */
+  get catalogo(): Catalogo {
+    return this.servicios.catalogo.enVersion(this.partida.versionCatalogo);
   }
 
   ejecutar<T>(comando: (ctx: ContextoComando) => Promise<T> | T): Promise<T> {

@@ -8,7 +8,8 @@
  *   transición; sin motivo, ×`pases.factorSinMotivo`.
  * - **Tiro** por distancia y ángulo reales (R6): una única acción `tiro` con `pesoTiro`.
  * - **Stats** (R9): `factorStat` acotado, y solo cuando la situación permite la acción.
- * - **Specials** (R10): Desbordante regatea más por banda.
+ * - **Virtudes** (R10): Desbordante regatea más por banda.
+ * - **Defectos** (spec 005): un Chupón pasa la mitad.
  *
  * Distancias en décimas y coordenadas del equipo que ataca.
  */
@@ -18,7 +19,8 @@ import { anguloTiro, decimasDeMetros, distanciaPorteria, enAreaRival } from '../
 import { aEquipo, type Punto } from '../espacio/geometria';
 import { atributo } from '../modificadores/atributos';
 import { ofensividad, pesosAcciones, type TipoAccion } from '../modificadores/formacionTactica';
-import { tiene } from '../modificadores/specials';
+import { factorPase } from '../modificadores/defectos';
+import { tiene } from '../modificadores/virtudes';
 import { esPortero, holgura } from './contexto';
 import { pesoTiro } from './pesoTiro';
 import { distanciaASegmento } from './receptor';
@@ -182,6 +184,7 @@ export function pesosConEspacio(
   const fRegate = conRegate ? factorStat(attr('regate'), f.regate) / 1000 : 1;
   const fFisico = en.espacio >= quince ? factorStat((attr('velocidad') + attr('fisico')) / 2, f.fisico) / 1000 : 1;
   const fPase = factorStat(attr('pase'), f.pase) / 1000;
+  const chupon = factorPase(estado, portador);
   const fVision = factorStat(attr('vision'), f.vision) / 1000;
   const motivos = pesos.some(([a]) => a === 'pase_largo') ? motivosPaseLargo(estado, atacante, portador, en) : [];
   const salida: [TipoAccion, number][] = pesos.map(([accion, peso]) => {
@@ -194,13 +197,13 @@ export function pesosConEspacio(
         x = (en.rivalEncima ? 1.1 : 0.5) * fRegate * (tiene(portador, 'Desbordante') && carril !== 1 ? 1.6 : 1);
         break;
       case 'pase_corto':
-        x = 1.6 * fPase;
+        x = 1.6 * fPase * chupon;
         break;
       case 'pase_espacio':
-        x = fPase * fVision;
+        x = fPase * fVision * chupon;
         break;
       case 'pase_largo':
-        x = fPase * factorPaseLargo(motivos, p);
+        x = fPase * factorPaseLargo(motivos, p) * chupon;
         break;
       case 'centro':
         // Sin nadie que pueda atacar el punto de remate no se centra.

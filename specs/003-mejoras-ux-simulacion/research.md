@@ -170,7 +170,7 @@ Como la queja de "exceso de goles" de las pruebas con personas viene de partidos
   - **Orden de calibración**, para no perseguir varios efectos a la vez:
     1. receptor y pases (R3 y R4);
     2. conducción (R5);
-    3. stats y specials en la elección (R9 y R10);
+    3. stats y virtudes en la elección (R9 y R10);
     4. tiro por distancia (R6);
     5. balón parado (R7);
     6. ajuste final de `acciones.gol.*` para la media.
@@ -203,22 +203,18 @@ Como la queja de "exceso de goles" de las pruebas con personas viene de partidos
   - Que el atacante siga buscando al defensor más débil, con menos probabilidad: seguiría penalizando al buen defensa.
   - Factores exponenciales: con stats altos (90+) concentran la acción en un solo jugador, contra la cota del 60 % de SC-006.
 
-## R10. Peso medible de los specials (FR-022, SC-007)
+## R10. Peso medible de las virtudes (FR-022, SC-007)
 
 - **Decisión**:
-  - **Inventario**: cada special con efecto en el partido ([specials.ts](../../packages/engine/src/modificadores/specials.ts), [tiro.ts](../../packages/engine/src/acciones/tiro.ts) y [juego.ts](../../packages/engine/src/acciones/juego.ts)) tiene una **acción medida** y un **umbral de efecto** en `balance`. Ejemplos:
-    - Lanzador de faltas: +30 % de goles de falta directa;
-    - Cabeceador: más goles de cabeza del jugador;
-    - Desbordante: más regates ganados por banda;
-    - Muro defensivo: menos tiros a puerta en contra desde la frontal.
-  - **Efectos que se refuerzan**: los specials que hoy solo ajustan la probabilidad de éxito, y cuyo efecto queda por debajo del umbral, también ajustan la elección:
+  - **Inventario**: cada virtud con efecto en el partido tiene una **acción medida** y un **umbral de efecto** en `balance`. *[Actualizado por la [spec 005](../005-virtudes-defectos/spec.md): el efecto de cada virtud está en [virtudes y defectos](../../docs/juego/virtudes-y-defectos.md); el inventario de acciones medidas sigue en [virtudes.ts](../../packages/engine/src/modificadores/virtudes.ts).]*
+  - **Efectos que se refuerzan**: las virtudes que hoy solo ajustan la probabilidad de éxito, y cuyo efecto queda por debajo del umbral, también ajustan la elección:
     - Desbordante: regate por banda ×1,3;
     - Llegador: el centrocampista se suma al área en los centros;
     - Lanzador de faltas: más tiro directo (R7);
     - Matador: tiro en vez de pase en un mano a mano.
-  - **Tabla de umbrales**: SC-007 queda como una comprobación por special en `checks/partido.ts`, con la tabla de umbrales en el propio check.
-- **Razón**: SC-007 pide una diferencia medible para cada special con efecto. Medir special por special con el mismo equipo, con y sin él, aísla el efecto del de los stats y la táctica.
-- **Alternativas consideradas**: medir solo los specials de remate. Así no se comprueba "cada special con efecto en el partido".
+  - **Tabla de umbrales**: SC-007 queda como una comprobación por virtud en `checks/partido.ts`, con la tabla de umbrales en el propio check.
+- **Razón**: SC-007 pide una diferencia medible para cada virtud con efecto. Medir virtud por virtud con el mismo equipo, con y sin él, aísla el efecto del de los stats y la táctica.
+- **Alternativas consideradas**: medir solo las virtudes de remate. Así no se comprueba "cada virtud con efecto en el partido".
 
 ## R11. Métricas de equilibrado y registro de los goles (SC-001 a SC-007)
 
@@ -411,12 +407,12 @@ Como la queja de "exceso de goles" de las pruebas con personas viene de partidos
     - brillo animado solo en Legendario y GOAT, desactivado con movimiento reducido.
   - **Tipografía**:
     - **Barlow Condensed** (OFL), servida desde `public/fuentes/` con su LICENCIA, para la media, el nombre y los stats;
-    - el texto de los specials, con la fuente base de la interfaz.
+    - el texto de las virtudes, con la fuente base de la interfaz.
   - **Legibilidad (FR-009)**:
-    - en la carta completa de portátil, el texto de los stats y de los specials es ≥ `1rem`, el tamaño del texto base;
+    - en la carta completa de portátil, el texto de los stats y de las virtudes es ≥ `1rem`, el tamaño del texto base;
     - el valor del stat va en negrita a 1,25 veces el tamaño de su abreviatura;
     - en la carta completa de móvil (360 px), ≥ `0,875rem`;
-    - los 4 specials de un GOAT caben en dos columnas, sin desplazamiento interno (002/FR-003).
+    - las 4 virtudes de un GOAT caben en dos columnas, sin desplazamiento interno (002/FR-003).
 
     Un test de Playwright mide `getComputedStyle().fontSize` y el desbordamiento.
   - **Sin elementos de marca**: ni el marco, ni el logotipo, ni la tipografía de EA SPORTS FC (FR-008). Se revisa en la checklist de cierre.
@@ -543,7 +539,7 @@ Como la queja de "exceso de goles" de las pruebas con personas viene de partidos
 | SC-004 | `balance`: `pasesLargos / pases`, `pasesLargosAtras` por equipo |
 | SC-005 | `balance`: conducciones frente a la línea base (R1: 17,2) y `pasesCortos / pases` |
 | SC-006 | `balance`: `MetricasJugador` con y sin +15 en un stat, y la cuota del jugador ≤ 60 % |
-| SC-007 | `balance`: tabla de umbrales por special (R10) |
+| SC-007 | `balance`: tabla de umbrales por virtud (R10) |
 | SC-008 | prueba con ≥ 5 personas: 2 minutos de la 2D de `c8a1627` y 2 minutos de la nueva, con los escenarios fijos de `tools/fixtures` |
 | SC-009 | `balance` (001/SC-004 y SC-008) más `equivalencia.test.ts` del motor |
 | SC-010, SC-010a, SC-010b | `balance --torneos`, con el participante de referencia (R13), y revisión de los 20 drafts guardados |

@@ -126,3 +126,23 @@ describe('Partida', () => {
     expect(debeAbandonarsePorDesconexion(null, desconectadoDesde + 60 * 60_000)).toBe(false);
   });
 });
+
+describe('modo Duelo de jugadores (spec 005, T059)', () => {
+  it('solo admite 4, 8 o 16 participantes', async () => {
+    const { numParticipantesValido } = await import('../../src/index');
+    for (const n of [4, 8, 16]) expect(numParticipantesValido('duelos', n)).toBe(true);
+    for (const n of [2, 5, 6, 7, 12, 32]) expect(numParticipantesValido('duelos', n)).toBe(false);
+  });
+
+  it('la configuración por defecto es 4-3-3 con Estado de forma, y se valida', async () => {
+    const { CONFIG_DUELOS_POR_DEFECTO, configDuelosValida, configPorDefecto, validarConfigPartida } = await import('../../src/index');
+    expect(CONFIG_DUELOS_POR_DEFECTO).toEqual({ formacion: '4-3-3', estadoForma: true });
+    expect(configDuelosValida({ formacion: '4-4-2', estadoForma: false })).toBe(true);
+    expect(configDuelosValida({ formacion: '9-9-9', estadoForma: true })).toBe(false);
+    const base = { ...configPorDefecto(), modo: 'duelos' as const, numParticipantes: 8 };
+    expect(validarConfigPartida({ ...base, duelos: { formacion: '4-3-3', estadoForma: true } }, 'registrado')).toEqual([]);
+    expect(validarConfigPartida({ ...base, duelos: { formacion: 'x' as never, estadoForma: true } }, 'registrado').map((e) => e.codigo)).toContain('CONFIG_INVALIDA');
+    // La configuración de duelos solo tiene sentido en el modo duelos.
+    expect(validarConfigPartida({ ...base, modo: 'liga', duelos: { formacion: '4-3-3', estadoForma: true } }, 'registrado').map((e) => e.codigo)).toContain('CONFIG_INVALIDA');
+  });
+});

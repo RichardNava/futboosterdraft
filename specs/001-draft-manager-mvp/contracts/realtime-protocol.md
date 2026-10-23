@@ -38,7 +38,7 @@ y se descarta.
 | `partido.fin` | `{ marcador, penaltis?, eventos: EventoPartido[] (relevantes), estadisticas, bajasNuevas: Baja[] }` | Final del partido (FR-047, FR-043). |
 | `aviso` | `{ tipo, partidaId, partidoId?, texto }` | Avisos en vivo (FR-056b). |
 
-`JugadorResumen` = `{ id, nombre, apellidos, demarcacion, posicion, media, nivel, specials, stats }`. La ficha completa (historia, etc.) se pide por HTTP.
+`JugadorResumen` = `{ id, nombre, apellidos, demarcacion, posicion, media, nivel, virtudes, stats }`. La ficha completa (historia, etc.) se pide por HTTP.
 
 `Fotograma` = `{ tick, balon: [x, y], j: { [jugadorId]: [x, y] } }`, con coordenadas normalizadas 0–1000 (longitud) y 0–640 (anchura), y un fotograma por segundo de juego.
 

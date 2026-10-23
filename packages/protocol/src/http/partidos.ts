@@ -17,6 +17,33 @@ export type CuerpoAbrir = z.infer<typeof CuerpoAbrir>;
 export const RespuestaAbrir = z.object({ modo: z.enum(['directo', 'reproduccion']), modalidad: Modalidad });
 export type RespuestaAbrir = z.infer<typeof RespuestaAbrir>;
 
+/** Un lado de un duelo (spec 005, contracts/duelos-api.md): puntuaciones en centésimas. */
+const LadoDuelo = z.object({
+  jugadorId: z.number().int(),
+  media: z.number().int(),
+  penalizacion: z.number().int(),
+  bonusVirtudes: z.number().int(),
+  malusDefectos: z.number().int(),
+  forma: z.number().int(),
+  puntuacion: z.number().int(),
+});
+
+/** Resultado de un cruce del modo Duelo de jugadores (`ResultadoCruce` del dominio). */
+export const ResultadoCruce = z.object({
+  formacion: z.string(),
+  estadoForma: z.boolean(),
+  duelos: z.array(z.object({ casillaId: z.string(), local: LadoDuelo, visitante: LadoDuelo, ganador: z.enum(['local', 'visitante', 'nulo']) })),
+  ganados: z.object({ local: z.number().int(), visitante: z.number().int() }),
+  sumas: z.object({ local: z.number().int(), visitante: z.number().int() }),
+  desempate: z.enum(['duelos', 'suma', 'sorteo']),
+  ganador: z.enum(['local', 'visitante']),
+});
+export type ResultadoCruce = z.infer<typeof ResultadoCruce>;
+
+/** `POST /api/partidos/:id/abrir` en un cruce de duelos: el resultado completo para la animación y las cartas. */
+export const RespuestaAbrirDuelos = z.object({ modo: z.literal('duelos'), duelos: ResultadoCruce, cartas: z.record(z.unknown()) });
+export type RespuestaAbrirDuelos = z.infer<typeof RespuestaAbrirDuelos>;
+
 const Marcador = z.object({
   local: z.number(),
   visitante: z.number(),

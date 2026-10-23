@@ -16,6 +16,7 @@
  */
 import { FORMACIONES } from '@fbd/domain';
 import type { EquipoEstado, EstadoMotor } from '../estado/estado';
+import { factorDefensivo } from '../modificadores/defectos';
 import type { Lado } from '../tipos';
 import { acotar, dist2, dividir, escalar, isqrt } from './aritmetica';
 import { ULTIMO_TERCIO } from './campo';
@@ -226,7 +227,9 @@ function elegirPresionadores(estado: EstadoMotor, defensor: EquipoEstado): { ids
     const q = estado.espacio.jugadores[j.id];
     if (!q) continue;
     const d = dist2(q.x, q.y, b.x, b.y);
-    if (d <= limite) candidatos.push({ id: j.id, d });
+    // Mal defensor (spec 005): presiona como si estuviera al doble de distancia, pero sigue siendo candidato.
+    const f = factorDefensivo(estado, j);
+    if (d <= limite) candidatos.push({ id: j.id, d: f === 1 ? d : Math.floor(d / (f * f)) });
   }
   candidatos.sort((a, c) => a.d - c.d || a.id - c.id);
   return { ids: candidatos.slice(0, n).map((c) => c.id), coordinada: coordinada && n > p.presionadores };

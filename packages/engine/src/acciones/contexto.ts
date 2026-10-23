@@ -13,6 +13,7 @@ import { aAbsoluta, centroCelda, type Punto } from '../espacio/geometria';
 import { fotograma, pasoEspacial } from '../espacio/paso';
 import { acumularCansancio } from '../modificadores/cansancio';
 import { atributo } from '../modificadores/atributos';
+import { actualizarMalestar, factorDefensivo } from '../modificadores/defectos';
 import type { Metricas } from '../metricas';
 import type { EventoPartido, Fotograma, Lado, RolEvento, TipoEvento } from '../tipos';
 
@@ -68,6 +69,8 @@ export function pasarTiempo(ctx: Contexto, segundos: number, parada = false): vo
     }
     acumularCansancio(e, e.equipos.local, 1);
     acumularCansancio(e, e.equipos.visitante, 1);
+    // Polémico y Rebelde (spec 005, FR-044): aviso al activarse o desactivarse.
+    actualizarMalestar(ctx);
     pasoEspacial(e);
     if (ctx.fotogramas && e.tick % 2 === 0) anotarFotograma(ctx);
     ctx.observador?.(e);
@@ -135,6 +138,8 @@ export function rivalCercano(ctx: Contexto, defensor: EquipoEstado, incluirPorte
   const b = e.espacio.balon;
   let mejor: JugadorEnPartido | undefined;
   let mejorEfectiva = Infinity;
+  let segundo: JugadorEnPartido | undefined;
+  let segundoEfectiva = Infinity;
   for (const j of defensor.jugadores) {
     const p = j.enCampo && (incluirPortero || !esPortero(j)) ? e.espacio.jugadores[j.id] : undefined;
     if (!p) continue;
@@ -142,11 +147,27 @@ export function rivalCercano(ctx: Contexto, defensor: EquipoEstado, incluirPorte
     // Distancia al cuadrado entre el radio al cuadrado (en milésimas): enteros seguros hasta 10^15.
     const efectiva = Math.floor((dist2(p.x, p.y, b.x, b.y) * 1_000_000) / (radio * radio));
     if (efectiva < mejorEfectiva || (efectiva === mejorEfectiva && mejor !== undefined && j.id < mejor.id)) {
+      segundo = mejor;
+      segundoEfectiva = mejorEfectiva;
       mejor = j;
       mejorEfectiva = efectiva;
+    } else if (efectiva < segundoEfectiva || (efectiva === segundoEfectiva && segundo !== undefined && j.id < segundo.id)) {
+      segundo = j;
+      segundoEfectiva = efectiva;
     }
   }
-  return mejor;
+  return candidatoDefensivo(ctx, mejor, segundo);
+}
+
+/**
+ * Mal defensor (spec 005, research R6): su peso como candidato a defender se multiplica por `defectos.malDefensor`.
+ * Si le tocaba a él y hay otro candidato, le cede la acción con probabilidad 1 − factor; si es el único, defiende.
+ */
+export function candidatoDefensivo(ctx: Contexto, mejor: JugadorEnPartido | undefined, segundo: JugadorEnPartido | undefined): JugadorEnPartido | undefined {
+  if (!mejor || !segundo) return mejor;
+  const f = factorDefensivo(ctx.estado, mejor);
+  if (f >= 1) return mejor;
+  return ctx.rng.probabilidad(Math.round((1 - f) * 1000)) ? segundo : mejor;
 }
 
 /** Distancia al cuadrado del rival más cercano a un punto (lo libre que está; research R4). */

@@ -22,7 +22,7 @@ Ajustes acumulados, con los valores que quedaron en `v3.json`:
 | | `pases.factorConMotivo` / `factorSinMotivo` | 1,4 / 0,15 (cambio de orientación ×1,5 en el código) |
 | | `decision.factores.pase` | k 1,0, máx. 2 |
 | 2. Conducción | `decision.conduccion.factorMax` | 14 |
-| 3. Stats y specials | `decision.factores.remate` | k 0,22, máx. 1,4 |
+| 3. Stats y virtudes | `decision.factores.remate` | k 0,22, máx. 1,4 |
 | | `decision.factores.regate` | k 0,35, máx. 1,8 |
 | | `acciones.duelo.pendiente` | 0,04 |
 | | `acciones.controlPorStat` | 4 |
@@ -59,7 +59,7 @@ Cambios de modelo durante estas rondas (no son parámetros):
 | ✔ 003/SC-004 | 13,0 % de pases largos; 0,00 largos hacia atrás por equipo y partido |
 | ✔ 003/SC-005 | 27,3 conducciones por equipo y partido (+62 %); 60,6 % de pases cortos |
 | ✘ 003/SC-006 | regate +25 % (justo en el límite), pase que rompe líneas +8 % (objetivo +15 %); tiro, defensa y físico cumplen |
-| ✘ 003/SC-007 | Filigranas +37 % de regates ganados, sin significación; el resto de specials cumplen |
+| ✘ 003/SC-007 | Filigranas +37 % de regates ganados, sin significación; el resto de virtudes cumplen |
 | ✔ SC-004, SC-006a–e, SC-007, SC-015, SC-011, SC-011b, 002/SC-007b | |
 | ✘ 002/SC-007a | contraataques 2,8 (objetivo 3); el resto cumple |
 | ✘ 002/SC-008 | +10 de pase en los centrocampistas: +2,5 % de pases completados (objetivo +10 %) |
@@ -76,7 +76,7 @@ Cambios: `decision.factores.pase` k 1,2 y máx. 3; `decision.factores.regate` k 
 | Comprobación | Resultado |
 |---|---|
 | ✔ 003/SC-006 | regate +39 %, tiro +779 %, defensa +28 %, pase que rompe líneas +17 %, duelos +80 %, conducciones largas +39 % |
-| ✔ 003/SC-007 | todos los specials con efecto (Filigranas +72 % de regates ganados) |
+| ✔ 003/SC-007 | todas las virtudes con efecto (Filigranas +72 % de regates ganados) |
 | ✘ 002/SC-007a | contraataques 2,9 (objetivo 3) |
 | ✘ 002/SC-008 | +4,6 % de pases completados (objetivo +10 %) |
 | ✘ 002/SC-018 | colocación GF 2,21 frente a 2,05 (no significativo) |

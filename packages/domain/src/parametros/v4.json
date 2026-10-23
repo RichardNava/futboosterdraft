@@ -1,0 +1,481 @@
+{
+  "version": "4.0.0",
+  "penalizacionPosicion": {
+    "mismaDemarcacion": 0.1,
+    "porteria": 0.6,
+    "cruces": [
+      {
+        "origen": "DEL",
+        "destino": "MED",
+        "valor": 0.2
+      },
+      {
+        "origen": "DEL",
+        "destino": "MED_MCO",
+        "valor": 0.2
+      },
+      {
+        "origen": "DEL",
+        "destino": "DEF",
+        "valor": 0.4
+      },
+      {
+        "origen": "MED",
+        "destino": "DEL",
+        "valor": 0.2
+      },
+      {
+        "origen": "MED",
+        "destino": "DEF",
+        "valor": 0.2
+      },
+      {
+        "origen": "MED_MCO",
+        "destino": "DEL",
+        "valor": 0.1
+      },
+      {
+        "origen": "MED_MCO",
+        "destino": "DEF",
+        "valor": 0.3
+      },
+      {
+        "origen": "MED_MD",
+        "destino": "DEL",
+        "valor": 0.3
+      },
+      {
+        "origen": "MED_MD",
+        "destino": "DEF",
+        "valor": 0.1
+      },
+      {
+        "origen": "DEF",
+        "destino": "DEL",
+        "valor": 0.4
+      },
+      {
+        "origen": "DEF",
+        "destino": "MED",
+        "valor": 0.2
+      },
+      {
+        "origen": "DEF",
+        "destino": "MED_MCO",
+        "valor": 0.3
+      }
+    ]
+  },
+  "cansancio": {
+    "inicioMin": 65,
+    "inicioMinPresionAlta": 55,
+    "degradacionPorMinuto": 0.004,
+    "factorIncansable": 0.5,
+    "factorMotivador": 0.75
+  },
+  "lesiones": {
+    "probabilidadPorEntrada": 0.013,
+    "reduccionRobusto": 0.45,
+    "reparto": {
+      "leve": 0.6,
+      "media": 0.27,
+      "grave": 0.11,
+      "larga": 0.02
+    },
+    "partidos": {
+      "leve": 1,
+      "media": 2,
+      "grave": 3,
+      "larga": 5
+    }
+  },
+  "disciplina": {
+    "probabilidadFaltaPorEntrada": 0.22,
+    "probabilidadAmarillaPorFalta": 0.38,
+    "probabilidadRojaDirectaPorFalta": 0.005,
+    "probabilidadFaltaDueloAereoArea": 0.035,
+    "factorFaltaUltimoTercio": 1.0,
+    "factorFaltaArea": 0.53,
+    "factorSegundaAmarilla": 0.2
+  },
+  "sobres": {
+    "probPorteroEnHuecoPorDef": 0.5,
+    "probGoatEnAlta": 0.2
+  },
+  "virtudes": {
+    "capitania": 1,
+    "fortalezaMental": 2,
+    "intimidante": 1,
+    "infranqueable": 2,
+    "infranqueableUmbralRegate": 95,
+    "jerarquia": 1,
+    "libero": 2,
+    "boxToBox": 1,
+    "bonusProbabilidadLeve": 0.04,
+    "bonusProbabilidadMedio": 0.08,
+    "bonusProbabilidadAlto": 0.15,
+    "santoMinutoInicio": 80,
+    "revulsivo": 0.05,
+    "versatil": 0.05
+  },
+  "defectos": {
+    "canchero": 1.5,
+    "impulsivo": 2,
+    "agresivo": 2,
+    "fragil": 3,
+    "indisciplinado": 1.5,
+    "torpe": 2,
+    "chupon": 0.5,
+    "malDefensor": 0.5,
+    "inflexible": 0.05,
+    "polemico": 0.05,
+    "rebelde": 0.05,
+    "estrellita": 0.1,
+    "provocador": 1
+  },
+  "duelos": {
+    "pesoVirtud": 1,
+    "pesoDefecto": 1,
+    "estadoForma": 2
+  },
+  "duelo": {
+    "pendiente": 0.04,
+    "probabilidadMinima": 0.03,
+    "probabilidadMaxima": 0.97
+  },
+  "formaciones": {
+    "efectoOfensividad": 0.45,
+    "efectoAmplitud": 0.08
+  },
+  "tacticas": {
+    "individual": {
+      "recuperacion": 0.04,
+      "cansancio": 0.1,
+      "vulnerableDesmarque": 0.04
+    },
+    "catenaccio": {
+      "ofensiva": -0.35,
+      "defensiva": 0.9,
+      "posesionRival": 0.08
+    },
+    "presionAlta": {
+      "recuperacionCampoRival": 0.35,
+      "cansancio": 0.25,
+      "vulnerableEspalda": 0.05
+    },
+    "lineaAdelantada": {
+      "fuerasDeJuegoProvocados": 0.18,
+      "vulnerableEspalda": 0.08
+    },
+    "contraataque": {
+      "posesion": -0.12,
+      "peligroTransicion": 0.4
+    },
+    "combinativo": {
+      "posesion": 0.12,
+      "perdidasPase": -0.05
+    },
+    "vertical": {
+      "accionesBanda": 0.15,
+      "pasesLargos": 0.12
+    }
+  },
+  "equipaciones": {
+    "umbralDistanciaColor": 120
+  },
+  "acciones": {
+    "paseCorto": 3.0,
+    "paseLargo": 0.9,
+    "conduccion": 0.5,
+    "regate": -0.3,
+    "paseEspacio": 0.3,
+    "centro": 0.0,
+    "duelaAereo": 0.0,
+    "despejeBalonParado": 0.0,
+    "puerta": {
+      "normal": 0.5,
+      "cabeza": 0.0,
+      "lejano": -0.2,
+      "manoAMano": 0.8,
+      "falta": 0.6,
+      "penalti": 1.6
+    },
+    "gol": {
+      "normal": 0.15,
+      "cabeza": 0.0,
+      "lejano": -0.6,
+      "manoAMano": 0.05,
+      "falta": 0.6,
+      "penalti": 1.2
+    },
+    "probabilidadFueraDeJuegoBase": 0.06,
+    "probabilidadCornerTrasParada": 0.3,
+    "probabilidadCornerTrasDespeje": 0.35,
+    "probabilidadBalonFuera": 0.08,
+    "dificultadZona": 0.13,
+    "probabilidadManoAMano": 0.12,
+    "centroRaso": 0.35,
+    "bonusLlegada": 2.5,
+    "regateHaciaDentro": 0.3,
+    "avanceZonaBaja": 0.45,
+    "avanceZonaAlta": 0.35,
+    "llegadaArea": 0.5,
+    "pesoPasePorStat": 0.8,
+    "statPaseReferencia": 70,
+    "pendientePase": 1.5,
+    "atraccionPasador": 1.3,
+    "controlPaseTicks": 6,
+    "controlPorStat": 4
+  },
+  "reproduccion": {
+    "ticksPorSegundoX2": 23.5,
+    "descuentoMinS": 60,
+    "descuentoMaxS": 180,
+    "pausaGolMs": 2000,
+    "tandaLanzamientoMsX2": 3000,
+    "anticipacionTicks": 60,
+    "esperaMaximaCambioS": 60
+  },
+  "colocacion": {
+    "beta": 1.0,
+    "gamma": 0.5,
+    "limite": 3,
+    "separacionMinima": 30
+  },
+  "asincrono": {
+    "nivelDecisiones": "automatico"
+  },
+  "npc": {
+    "errores": {
+      "amateur": {
+        "probabilidad": {
+          "draft": 800,
+          "alineacion": 800,
+          "colocacion": 800,
+          "formacion": 800,
+          "tactica": 800,
+          "lanzadores": 800,
+          "partido": 800
+        },
+        "costeMaximo": 12,
+        "dudosaPorDraft": false
+      },
+      "intermedio": {
+        "probabilidad": {
+          "draft": 600,
+          "alineacion": 600,
+          "colocacion": 600,
+          "formacion": 600,
+          "tactica": 600,
+          "lanzadores": 600,
+          "partido": 600
+        },
+        "costeMaximo": 10,
+        "dudosaPorDraft": false
+      },
+      "avanzado": {
+        "probabilidad": {
+          "draft": 350,
+          "alineacion": 350,
+          "colocacion": 350,
+          "formacion": 350,
+          "tactica": 350,
+          "lanzadores": 350,
+          "partido": 350
+        },
+        "costeMaximo": 5,
+        "dudosaPorDraft": false
+      },
+      "PRO": {
+        "probabilidad": {
+          "draft": 125,
+          "alineacion": 125,
+          "colocacion": 125,
+          "formacion": 125,
+          "tactica": 125,
+          "lanzadores": 125,
+          "partido": 125
+        },
+        "costeMaximo": 1.5,
+        "dudosaPorDraft": true
+      },
+      "automatico": {
+        "probabilidad": {
+          "draft": 0,
+          "alineacion": 0,
+          "colocacion": 0,
+          "formacion": 0,
+          "tactica": 0,
+          "lanzadores": 0,
+          "partido": 0
+        },
+        "costeMaximo": 0,
+        "dudosaPorDraft": false
+      }
+    }
+  },
+  "draft": {
+    "margenAnimacionS": 8
+  },
+  "espacio": {
+    "llegadaAlArea": {
+      "xExtremo": 8800,
+      "xMediapunta": 7900,
+      "factorAncho": 0.6,
+      "xProgresion": 5000,
+      "pendienteStat": 100
+    },
+    "velocidadJugadorMin": 22,
+    "velocidadJugadorMax": 36,
+    "statVelocidadMin": 50,
+    "statVelocidadMax": 95,
+    "factorVelocidadConBalon": 0.92,
+    "aceleracion": 3,
+    "frenada": 5,
+    "radioSeparacion": 110,
+    "velocidadBalon": {
+      "raso": 200,
+      "largo": 175,
+      "centro": 150,
+      "tiro": 210,
+      "despeje": 160,
+      "suelto": 120
+    },
+    "vueloMinimoTicks": 4,
+    "controlMinimoTicks": 1,
+    "controlMaximoTicks": 4,
+    "basculacionLarga": {
+      "porteria": 0.12,
+      "defensa": 0.4,
+      "medio": 0.5,
+      "ataque": 0.55
+    },
+    "basculacionAncha": {
+      "porteria": 0.1,
+      "defensa": 0.3,
+      "medio": 0.35,
+      "ataque": 0.3
+    },
+    "desplazamientoFase": {
+      "conBalon": 500,
+      "sinBalon": -450
+    },
+    "aperturaConBalon": 0.12,
+    "cierreSinBalon": 0.12,
+    "desplazamientoBloque": {
+      "catenaccio": -900,
+      "medio": 0,
+      "presion_alta": 800
+    },
+    "lineaAdelantada": 450,
+    "separacionLineasConBalon": [
+      952,
+      2381
+    ],
+    "separacionLineasSinBalon": [
+      762,
+      1714
+    ],
+    "presionadores": 2,
+    "presionCoordinada": {
+      "jugadores": 3,
+      "ticks": 118
+    },
+    "distanciaPresion": 2500,
+    "marcajeIndividual": 0.6,
+    "conduccionMaxima": 500,
+    "esperaSaqueMaxima": 12,
+    "esperaColocacionMaxima": 150,
+    "velocidadBasculacion": 24
+  },
+  "pases": {
+    "distanciaCorto": 1905,
+    "distanciaLargo": 3333,
+    "factorDireccion": {
+      "adelante": 1,
+      "lateral": 0.8,
+      "atrasCorto": 0.5,
+      "atrasLargo": 0.05
+    },
+    "factorSinMotivo": 0.15,
+    "factorConMotivo": 1.4,
+    "atraccionPasadorAcotada": [
+      0.7,
+      1.8
+    ]
+  },
+  "decision": {
+    "factores": {
+      "regate": {
+        "k": 0.4,
+        "min": 0.6,
+        "max": 1.8
+      },
+      "remate": {
+        "k": 0.22,
+        "min": 0.5,
+        "max": 1.4
+      },
+      "pase": {
+        "k": 1.2,
+        "min": 0.5,
+        "max": 3
+      },
+      "vision": {
+        "k": 0.25,
+        "min": 0.6,
+        "max": 1.6
+      },
+      "fisico": {
+        "k": 0.2,
+        "min": 0.7,
+        "max": 1.5
+      }
+    },
+    "radioIntervencionPorPunto": 0.04,
+    "radioIntervencionMax": 0.4,
+    "conduccion": {
+      "espacioMin": 285,
+      "espacioMax": 1430,
+      "factorMin": 6,
+      "factorMax": 14,
+      "distanciaMin": 400,
+      "distanciaMax": 800
+    }
+  },
+  "tiro": {
+    "pesoPorTramo": [
+      {
+        "hastaM": 11,
+        "peso": 200
+      },
+      {
+        "hastaM": 16.5,
+        "peso": 150
+      },
+      {
+        "hastaM": 25,
+        "peso": 55
+      },
+      {
+        "hastaM": 35,
+        "peso": 20
+      }
+    ],
+    "anguloMinimoGrados": 6,
+    "anguloReducidoGrados": 15,
+    "pendienteDistancia": 0.35,
+    "pendienteAngulo": 0.5,
+    "porteroAdelantadoM": 15,
+    "faltaDirectaTiro": {
+      "distanciaMinM": 17,
+      "distanciaMaxM": 30,
+      "probabilidad": 0.8
+    },
+    "autogol": {
+      "despejeCentro": 0.008,
+      "despejeCentroPorPuntoDefensa": 0.03,
+      "desvio": 0.008
+    }
+  }
+}

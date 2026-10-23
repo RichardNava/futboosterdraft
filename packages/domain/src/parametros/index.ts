@@ -8,6 +8,7 @@
 import v1 from './v1.json';
 import v2 from './v2.json';
 import v3 from './v3.json';
+import v4 from './v4.json';
 
 export type GravedadLesion = 'leve' | 'media' | 'grave' | 'larga';
 
@@ -141,6 +142,16 @@ export interface ParametrosEquilibrado {
     probabilidadFaltaDueloAereoArea: number;
     /** Multiplicador de la falta en un regate o una conducción frenados en el último tercio rival (research R7). */
     factorFaltaUltimoTercio: number;
+    /**
+     * Multiplicador de la probabilidad de falta dentro del área rival (spec 005, research R2): mantiene los penaltis
+     * al subir las faltas. Neutro (1) en las versiones 1.x a 3.x.
+     */
+    factorFaltaArea?: number;
+    /**
+     * Multiplicador de la amarilla para quien ya tiene una (se arriesga menos; spec 005, research R2). En las versiones
+     * 1.x a 3.x era la constante 0,4 del motor.
+     */
+    factorSegundaAmarilla?: number;
   };
   sobres: {
     /** Probabilidad de que el hueco "POR o DEF" sea un portero (FR-014). */
@@ -148,7 +159,7 @@ export interface ParametrosEquilibrado {
     /** Probabilidad de que la carta alta sea GOAT en lugar de Legendario (FR-014). */
     probGoatEnAlta: number;
   };
-  specials: {
+  virtudes: {
     capitania: number;
     fortalezaMental: number;
     intimidante: number;
@@ -161,7 +172,14 @@ export interface ParametrosEquilibrado {
     bonusProbabilidadMedio: number;
     bonusProbabilidadAlto: number;
     santoMinutoInicio: number;
+    /** Spec 005: Revulsivo multiplica sus stats por 1 + revulsivo; Versátil resta este tanto a su penalización. */
+    revulsivo?: number;
+    versatil?: number;
   };
+  /** Defectos (spec 005, research R6 y R7): factores (neutro 1) y sumandos (neutro 0). */
+  defectos?: ParametrosDefectos;
+  /** Modo Duelo de jugadores (spec 005, research R9): peso de los rasgos y amplitud del Estado de forma en puntos. */
+  duelos?: ParametrosDuelos;
   duelo: {
     /** Pendiente de la logística: cuánto pesa cada punto de diferencia de stats. */
     pendiente: number;
@@ -277,6 +295,81 @@ export interface ParametrosEquilibrado {
   };
 }
 
+export interface ParametrosDefectos {
+  /** Multiplicadores de probabilidad o de peso. */
+  canchero: number;
+  impulsivo: number;
+  agresivo: number;
+  fragil: number;
+  indisciplinado: number;
+  torpe: number;
+  chupon: number;
+  malDefensor: number;
+  /** Puntos porcentuales sumados a la penalización por posición. */
+  inflexible: number;
+  /** Fracción restada a los stats (0,05 = −5 %). */
+  polemico: number;
+  rebelde: number;
+  estrellita: number;
+  /** Puntos sumados a cada GOAT rival en el campo. */
+  provocador: number;
+}
+
+export interface ParametrosDuelos {
+  pesoVirtud: number;
+  pesoDefecto: number;
+  /** El Estado de forma suma o resta hasta este número de puntos. */
+  estadoForma: number;
+}
+
+/** Parámetros con las secciones de la spec 005 siempre presentes. */
+export type ParametrosCompletos = ParametrosEquilibrado & {
+  disciplina: ParametrosEquilibrado['disciplina'] & { factorFaltaArea: number; factorSegundaAmarilla: number };
+  virtudes: ParametrosEquilibrado['virtudes'] & { revulsivo: number; versatil: number };
+  defectos: ParametrosDefectos;
+  duelos: ParametrosDuelos;
+};
+
+/** Valores neutros de los defectos: con ellos, un defecto no cambia nada (versiones 1.x a 3.x). */
+export const DEFECTOS_NEUTROS: Readonly<ParametrosDefectos> = {
+  canchero: 1,
+  impulsivo: 1,
+  agresivo: 1,
+  fragil: 1,
+  indisciplinado: 1,
+  torpe: 1,
+  chupon: 1,
+  malDefensor: 1,
+  inflexible: 0,
+  polemico: 0,
+  rebelde: 0,
+  estrellita: 0,
+  provocador: 0,
+};
+
+const DUELOS_NEUTROS: Readonly<ParametrosDuelos> = { pesoVirtud: 1, pesoDefecto: 1, estadoForma: 2 };
+
+const completos = new WeakMap<ParametrosEquilibrado, ParametrosCompletos>();
+
+/**
+ * Parámetros con las secciones nuevas de la spec 005 rellenas con valores neutros cuando faltan (research R7): así
+ * un partido 3.0.0 se juega exactamente igual con el motor de la spec 005. El resultado se guarda por objeto.
+ */
+export function parametrosEfectivos(p: ParametrosEquilibrado): ParametrosCompletos {
+  let c = completos.get(p);
+  if (!c) {
+    c = {
+      ...p,
+      disciplina: { ...p.disciplina, factorFaltaArea: p.disciplina.factorFaltaArea ?? 1, factorSegundaAmarilla: p.disciplina.factorSegundaAmarilla ?? 0.4 },
+      virtudes: { ...p.virtudes, revulsivo: p.virtudes.revulsivo ?? 0, versatil: p.virtudes.versatil ?? 0 },
+      defectos: { ...DEFECTOS_NEUTROS, ...p.defectos },
+      duelos: { ...DUELOS_NEUTROS, ...p.duelos },
+    };
+    completos.set(p, c);
+  }
+  return c;
+}
+
 /** Stats que influyen en la elección de acciones (research R9). */
 export type FactorDecision = 'regate' | 'remate' | 'pase' | 'vision' | 'fisico';
 
@@ -307,7 +400,13 @@ export interface ParametrosErroresNPC {
 
 export const PARAMETROS_V3: ParametrosEquilibrado = v3 as ParametrosEquilibrado;
 
-const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = { [PARAMETROS_V3.version]: PARAMETROS_V3 };
+/** Parámetros 4.0.0 de la spec 005: defectos, virtudes nuevas, duelos y frecuencias de disciplina y lesiones. */
+export const PARAMETROS_V4: ParametrosEquilibrado = v4 as ParametrosEquilibrado;
+
+const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
+  [PARAMETROS_V3.version]: PARAMETROS_V3,
+  [PARAMETROS_V4.version]: PARAMETROS_V4,
+};
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
 export class VersionNoSoportada extends Error {
@@ -324,10 +423,10 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V3;
+  return PARAMETROS_V4;
 }
 
-/** Versión mayor mínima que el motor actual puede simular. */
+/** Versión mayor mínima que el motor actual puede simular (las 3.x y 4.x se reproducen). */
 export const VERSION_MAYOR_SOPORTADA = 3;
 
 /** Parámetros de una versión concreta, para reproducir un partido (FR-040). Las versiones 1.x y 2.x lanzan `VersionNoSoportada`. */

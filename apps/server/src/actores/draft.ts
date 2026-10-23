@@ -32,7 +32,8 @@ import type { ControladorPartida } from './partida';
 
 /** Crea las mesas (1, o 2 de 8 en el playoff de 16) a partir de los participantes ya sentados. */
 export async function iniciarDraft(c: ControladorPartida, ctx: ContextoComando, asientos: string[][]): Promise<void> {
-  const { catalogo, reloj, repoDraft, repoPartidas, db } = c.servicios;
+  const { reloj, repoDraft, repoPartidas, db } = c.servicios;
+  const catalogo = c.catalogo;
   const ahora = reloj.ahora();
   const pool = catalogo.pool(c.partida.colecciones);
   const tiempos = c.partida.tiempos as { turnoDraftS: number };
@@ -127,7 +128,7 @@ const dudosasHechas = new WeakMap<ControladorPartida, Set<string>>();
 
 /** Carta que elige un NPC según su nivel (T128): mira su sobre, su plantilla parcial y cuántos quedan en la mesa. */
 function eleccionNPC(c: ControladorPartida, mesa: Mesa, semillaMesa: string, pid: string, nivel: NivelNPC): number {
-  const { catalogo } = c.servicios;
+  const catalogo = c.catalogo;
   const sobre = sobreDe(mesa, pid).restantes.map((id) => catalogo.jugador(id));
   const parcial = vistaParticipante(mesa, pid).misElecciones.map((id) => catalogo.jugador(id));
   const semilla = derivarSemilla(semillaMesa, `npc:${pid}:${mesa.ronda}:${mesa.turno}`);
@@ -201,7 +202,8 @@ export async function vencerTurno(c: ControladorPartida, ctx: ContextoComando, i
 
 async function resolver(c: ControladorPartida, ctx: ContextoComando, indice: number): Promise<void> {
   const m = c.mesas.find((x) => x.indice === indice)!;
-  const { reloj, repoDraft, db, metricas, temporizadores, catalogo } = c.servicios;
+  const { reloj, repoDraft, db, metricas, temporizadores } = c.servicios;
+  const catalogo = c.catalogo;
   const ahora = reloj.ahora();
   const inicio = Date.now();
   temporizadores.cancelar(c.clave(`turno:${indice}`));
@@ -235,7 +237,8 @@ async function resolver(c: ControladorPartida, ctx: ContextoComando, indice: num
 }
 
 async function terminarDraft(c: ControladorPartida, ctx: ContextoComando): Promise<void> {
-  const { repoDraft, repoPartidas, db, catalogo } = c.servicios;
+  const { repoDraft, repoPartidas, db } = c.servicios;
+  const catalogo = c.catalogo;
   const todas: Record<string, number[]> = {};
   for (const m of c.mesas) Object.assign(todas, plantillas(m.mesa));
   await db.transaction(async (tx) => {
@@ -253,7 +256,8 @@ async function terminarDraft(c: ControladorPartida, ctx: ContextoComando): Promi
       const plantilla = (todas[p.id] ?? []).map((id) => catalogo.jugador(id));
       if (plantilla.length === 0) continue;
       const automatica = alineacionAutomatica(c, p.id, plantilla, new Set());
-      await c.servicios.repoEquipo.guardarDorsales(p.id, dorsalesIniciales(c, p.id, plantilla, automatica), tx);
+      // En el modo duelos no hay dorsales (spec 005, FR-063).
+      if (c.partida.modo !== 'duelos') await c.servicios.repoEquipo.guardarDorsales(p.id, dorsalesIniciales(c, p.id, plantilla, automatica), tx);
     }
     await repoPartidas.actualizarEstado(c.id, 'en_torneo', tx);
   });
@@ -296,7 +300,7 @@ function emitirProgreso(c: ControladorPartida, ctx: ContextoComando, mesa: Mesa)
 
 export function mensajeTurno(c: ControladorPartida, indice: number, mesa: Mesa, participanteId: string) {
   const v = vistaParticipante(mesa, participanteId);
-  const { catalogo } = c.servicios;
+  const catalogo = c.catalogo;
   return {
     t: 'draft.turno',
     mesa: indice,
@@ -315,7 +319,7 @@ export function vistaDraft(c: ControladorPartida, participanteId: string) {
   const m = c.mesaDe(participanteId);
   if (!m) return null;
   const v = vistaParticipante(m.mesa, participanteId);
-  const { catalogo } = c.servicios;
+  const catalogo = c.catalogo;
   return {
     mesa: m.indice,
     ronda: v.ronda,

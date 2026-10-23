@@ -22,19 +22,19 @@ jobs:
       - run: pnpm test:integration
       - run: pnpm test:equivalence
       - run: pnpm --filter @fbd/engine bench
-      # Umbral de FR-028a (≤ 25 ms por partido sin fotogramas y ≤ 30 ms resolverResto desde el minuto 0), más el
-      # partido con métricas por jugador (≤ 30 ms, spec 003).
-      # El motor de la spec 002 mide hoy unos 80 ms (T086 sigue abierta): el paso informa sin bloquear
-      # hasta que la optimización lo cumpla; entonces hay que quitar `continue-on-error`.
+      # Umbral de FR-028a, revisado en la spec 005: ≤ 120 ms por partido sin fotogramas, con métricas por jugador
+      # (spec 003) y en resolverResto desde el minuto 0. El motor mide unos 80 ms en CI; el paso bloquea.
       - run: pnpm --filter @fbd/balance umbral-motor
-        continue-on-error: true
       # 500 partidos por serie: con 200, algunas diferencias reales (4-4-2 frente a 5-4-1) no llegan a ser significativas.
       # Incluye las comprobaciones de la spec 002 (SC-007, SC-008, SC-011 y SC-018) y las de la serie sintética de la
       # spec 003 (003/SC-001 a 003/SC-009); la serie Core (003/SC-001c) y los torneos de NPC (003/SC-010) se lanzan aparte.
       # `--pendientes`: comprobaciones aún sin calibrar con el motor 3.0.0 (ver specs/003-mejoras-ux-simulacion/checklists/
       # calibracion-motor.md, ronda 13). Se informan pero no bloquean; cualquier otra que falle sí. Cuando una se cumpla,
       # el paso lo avisa y hay que quitarla de la lista. 003/SC-009 es compuesto y falla mientras fallen las otras dos.
-      - run: pnpm balance --n 500 --pendientes 002/SC-007a,002/SC-008,003/SC-009
+      # Con los parámetros 4.0.0 de la spec 005 (ver specs/005-virtudes-defectos/checklists/validacion.md, «Pendiente»):
+      # SC-006a (3-4-3 frente a 4-4-2 no es significativo con 500 partidos), 003/SC-006 (regate y defensa al límite),
+      # 005/SC-011 (penaltis de la sintética 0,42, en el borde del ±20 %) y 005/FR-051 (virtudes, ρ = 0,45).
+      - run: pnpm balance --n 500 --pendientes 002/SC-007a,002/SC-008,003/SC-009,SC-006a,003/SC-006,005/SC-011,005/FR-051
 
   # Pruebas de diseño de la spec 004 (FR-040): contraste y reglas WCAG 2.1 AA con axe, desplazamiento horizontal,
   # lima reservado y foco visible en cada pantalla del inventario, y el flujo completo con teclado.

@@ -3,8 +3,9 @@
 Juego de fútbol manager online basado en un draft de sobres de cartas de jugadores.
 
 - Principios del proyecto: [.specify/memory/constitution.md](.specify/memory/constitution.md)
-- Especificación y plan en curso: [specs/001-draft-manager-mvp/](specs/001-draft-manager-mvp/)
+- Especificación y plan en curso: [specs/005-virtudes-defectos/](specs/005-virtudes-defectos/)
 - Guía de estilos visuales (referencia de la spec 004): [docs/diseno/DESIGN.md](docs/diseno/DESIGN.md)
+- Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)
 
 ## Convenciones
 

@@ -1,44 +1,47 @@
 /**
- * Textos de los specials (FR-004; research R16): nombre visible y descripción, de
- * `GET /api/catalogo/specials`. Se cargan una sola vez por sesión del navegador.
+ * Textos de los rasgos, virtudes y defectos (FR-004; research R16; spec 005): nombre visible y descripción, de
+ * `GET /api/catalogo/rasgos`. Se cargan una sola vez por sesión del navegador. Los ids de virtudes y defectos no se
+ * repiten, así que van en un solo mapa.
  */
 import { useEffect } from 'react';
 import { create } from 'zustand';
 import { api } from '../api/cliente';
 
-export interface TextoSpecial {
+export interface TextoRasgo {
   id: string;
   nombre: string;
   descripcion: string;
+  ambito?: string;
+  impacto?: number;
 }
 
 interface EstadoCatalogo {
-  specials: Record<string, TextoSpecial> | null;
+  rasgos: Record<string, TextoRasgo> | null;
   cargando: boolean;
-  cargarSpecials(): Promise<void>;
+  cargarRasgos(): Promise<void>;
 }
 
 const useCatalogo = create<EstadoCatalogo>((set, get) => ({
-  specials: null,
+  rasgos: null,
   cargando: false,
-  async cargarSpecials() {
-    if (get().specials || get().cargando) return;
+  async cargarRasgos() {
+    if (get().rasgos || get().cargando) return;
     set({ cargando: true });
     try {
-      const lista = await api<TextoSpecial[]>('/api/catalogo/specials');
-      set({ specials: Object.fromEntries(lista.map((s) => [s.id, s])) });
+      const { virtudes, defectos } = await api<{ virtudes: TextoRasgo[]; defectos: TextoRasgo[] }>('/api/catalogo/rasgos');
+      set({ rasgos: Object.fromEntries([...virtudes, ...defectos].map((s) => [s.id, s])) });
     } finally {
       set({ cargando: false });
     }
   },
 }));
 
-/** Textos de los specials; mientras se cargan, `null` (la carta muestra el identificador). */
-export function useTextosSpecials(): Record<string, TextoSpecial> | null {
-  const specials = useCatalogo((s) => s.specials);
-  const cargar = useCatalogo((s) => s.cargarSpecials);
+/** Textos de los rasgos; mientras se cargan, `null` (la carta muestra el identificador). */
+export function useTextosRasgos(): Record<string, TextoRasgo> | null {
+  const rasgos = useCatalogo((s) => s.rasgos);
+  const cargar = useCatalogo((s) => s.cargarRasgos);
   useEffect(() => {
-    if (!specials) void cargar().catch(() => undefined);
-  }, [specials, cargar]);
-  return specials;
+    if (!rasgos) void cargar().catch(() => undefined);
+  }, [rasgos, cargar]);
+  return rasgos;
 }

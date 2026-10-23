@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { POSICIONES, POSICIONES_POR_DEMARCACION, type Demarcacion, type Posicion } from '../../src/catalogo/tipos';
 import { casilla, CASILLA_CENTRAL } from '../../src/equipo/formaciones';
 import { penalizacionPorPosicion, statsEfectivos } from '../../src/equipo/statsEfectivos';
-import { PARAMETROS_V3 } from '../../src/parametros/index';
+import { PARAMETROS_V3, PARAMETROS_V4 } from '../../src/parametros/index';
 import { jugador } from './ayudas';
 
 const p = PARAMETROS_V3;
@@ -120,5 +120,49 @@ describe('statsEfectivos (FR-028, FR-033)', () => {
     const valores = Object.values(r.stats);
     expect(Math.min(...valores)).toBeGreaterThanOrEqual(1);
     expect(r.media).toBeCloseTo(valores.reduce((a, b) => a + b, 0) / valores.length);
+  });
+});
+
+describe('Inflexible (spec 005, T040; FR-014; research R6)', () => {
+  const p4 = PARAMETROS_V4;
+  const mc = casilla('4-4-2', 'MC-1')!;
+  const ed = casilla('4-4-2', 'ED')!;
+
+  it('suma 5 puntos a la penalización si es mayor que 0', () => {
+    const j = { ...jugador('MED', ['MC']), defectos: ['Inflexible' as const] };
+    expect(penalizacionPorPosicion(j, ed, p4)).toBeCloseTo(penalizacionPorPosicion({ ...j, defectos: [] }, ed, p4) + 0.05);
+  });
+
+  it('en una posición válida sigue en 0', () => {
+    const j = { ...jugador('MED', ['MC']), defectos: ['Inflexible' as const] };
+    expect(penalizacionPorPosicion(j, mc, p4)).toBe(0);
+  });
+
+  it('con parámetros 3.0.0 no cambia nada', () => {
+    const j = { ...jugador('MED', ['MC']), defectos: ['Inflexible' as const] };
+    expect(penalizacionPorPosicion(j, ed, p)).toBe(penalizacionPorPosicion({ ...j, defectos: [] }, ed, p));
+  });
+});
+
+describe('Versátil (spec 005, T088; FR-032; research R6)', () => {
+  const p4 = PARAMETROS_V4;
+  const mc = casilla('4-4-2', 'MC-1')!;
+  const ed = casilla('4-4-2', 'ED')!;
+  const mii = casilla('4-3-3', 'MII')!;
+
+  it('resta 5 puntos a la penalización si es mayor que 0', () => {
+    const j = jugador('MED', ['MC'], 80, ['Versatil']);
+    expect(penalizacionPorPosicion(j, ed, p4)).toBeCloseTo(penalizacionPorPosicion({ ...j, virtudes: [] }, ed, p4) - 0.05);
+    // Misma demarcación: de 10 a 5 puntos.
+    expect(penalizacionPorPosicion(j, mii, p4)).toBeCloseTo(0.05);
+  });
+
+  it('en una posición válida sigue en 0 (nunca negativa)', () => {
+    expect(penalizacionPorPosicion(jugador('MED', ['MC'], 80, ['Versatil']), mc, p4)).toBe(0);
+  });
+
+  it('con parámetros 3.0.0 no cambia nada', () => {
+    const j = jugador('MED', ['MC'], 80, ['Versatil']);
+    expect(penalizacionPorPosicion(j, ed, p)).toBe(penalizacionPorPosicion({ ...j, virtudes: [] }, ed, p));
   });
 });

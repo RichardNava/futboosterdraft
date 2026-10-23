@@ -29,7 +29,7 @@ Las cabeceras `Idempotency-Key` en los `POST` que cambian estado permiten repeti
 |---------------|-------------|
 | `GET /api/catalogo/jugadores/:id` | Ficha completa de un jugador (FR-013). |
 | `GET /api/catalogo/formaciones` | Las 10 formaciones con sus casillas, posiciones admitidas y zonas. |
-| `GET /api/catalogo/specials` | Nombre, ámbito y descripción de cada special. |
+| `GET /api/catalogo/virtudes` | Nombre, ámbito y descripción de cada virtud. |
 
 ## Partidas
 

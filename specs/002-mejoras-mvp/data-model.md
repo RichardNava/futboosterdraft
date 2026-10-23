@@ -236,7 +236,7 @@ Desaparecen las transiciones con «Seguir» de dos humanos y la espera al reloj 
 | `JugadorEnPartido.posicion` | **Nuevo**: posición efectiva (`Posicion`, o las admitidas por la zona central). |
 | `EquipoEstado.perfil` | **Nuevo**: `{ ofensividad, amplitud }` calculados (R13). Sustituye a la consulta de `FORMACIONES[formacion].perfil` en `formacionTactica`. |
 | `espacio` | **Nuevo**: `{ jugadores: { [id]: { x, y, vx, vy } }, balon: { x, y, z, vx, vy, accion: AccionEnCurso \| null } }`, en coordenadas absolutas (el local ataca hacia x = 1000) y enteros en décimas de unidad. |
-| `balon.zona`, `balon.carril` | Pasan a **derivarse** de `espacio.balon`. Se conservan como lectura para las reglas que los usan (specials por zona, dificultad por zona). |
+| `balon.zona`, `balon.carril` | Pasan a **derivarse** de `espacio.balon`. Se conservan como lectura para las reglas que los usan (virtudes por zona, dificultad por zona). |
 | `posesion` | **Nuevo**: `{ inicioTick, pasesSeguidos }`, para `secuencias`. |
 
 `AccionEnCurso` = `{ tipo, deId, aId?, origen, destino, inicioTick, finTick, aerea }`.

@@ -2,7 +2,7 @@
  * Comprobaciones de la spec 003 (research R25; T032): 003/SC-001 a 003/SC-007. 003/SC-009 la compone `cli.ts`
  * con el resultado de las comprobaciones de las specs 001 y 002. Todas con semillas fijas.
  */
-import { CASILLA_CENTRAL, calcularMedia, FORMACIONES, proponerLanzadores, type FormacionId, type Jugador, type Special } from '@fbd/domain';
+import { CASILLA_CENTRAL, calcularMedia, FORMACIONES, proponerLanzadores, type FormacionId, type Jugador, type Virtud } from '@fbd/domain';
 import type { EquipoPartido, MetricasJugador } from '@fbd/engine';
 import type { GrupoComprobaciones } from '../cli';
 import { serieCore } from '../core';
@@ -165,8 +165,8 @@ export function comprobarSC005(n: number, semilla: number): Comprobacion {
   };
 }
 
-/** Mismo equipo con un titular (por casilla) con stats y specials cambiados; conserva su id. */
-export function conTitular(equipo: EquipoPartido, casillaId: string, cambios: { stats?: Record<string, number>; specials?: Special[] }): EquipoPartido {
+/** Mismo equipo con un titular (por casilla) con stats y virtudes cambiadas; conserva su id. */
+export function conTitular(equipo: EquipoPartido, casillaId: string, cambios: { stats?: Record<string, number>; virtudes?: Virtud[] }): EquipoPartido {
   const titulares = equipo.titulares.map((t) => {
     if (t.casillaId !== casillaId) return t;
     const j = t.jugador;
@@ -176,7 +176,7 @@ export function conTitular(equipo: EquipoPartido, casillaId: string, cambios: { 
       stats[k] = Math.max(1, Math.min(99, stats[k]! + d));
     }
     const nuevos = stats as unknown as Jugador['stats'];
-    const jugador: Jugador = { ...j, stats: nuevos, media: calcularMedia({ demarcacion: j.demarcacion, stats: nuevos }), specials: [...j.specials, ...(cambios.specials ?? [])] };
+    const jugador: Jugador = { ...j, stats: nuevos, media: calcularMedia({ demarcacion: j.demarcacion, stats: nuevos }), virtudes: [...j.virtudes, ...(cambios.virtudes ?? [])] };
     return { ...t, jugador };
   });
   return { ...equipo, titulares, lanzadores: proponerLanzadores(titulares.map((t) => t.jugador)) };
@@ -240,30 +240,30 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
   const { base, rival } = equipos003();
   const sin = serieBase(n, semilla);
   const golesFaltaEquipo = (r: ResultadoSerie) => r.estadisticasA.map((e) => e.golesPorTipo.falta);
-  const casos: { special: Special; casilla: string; nombre: string; medida: (r: ResultadoSerie, id: number) => number[]; aumentoMinimo?: number }[] = [
-    { special: 'LanzadorFaltas', casilla: 'MC-1', nombre: 'goles de falta directa', medida: (r) => golesFaltaEquipo(r), aumentoMinimo: 0.3 },
-    { special: 'Cabeceador', casilla: 'DC', nombre: 'goles de cabeza del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.golesCabeza) },
-    { special: 'Matador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
-    { special: 'Rematador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
-    { special: 'Llegador', casilla: 'MC-1', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
-    { special: 'Desbordante', casilla: 'EI', nombre: 'regates intentados', medida: (r, id) => sumaMetrica(r, id, (m) => m.regates) },
-    { special: 'Filigranas', casilla: 'EI', nombre: 'regates ganados', medida: (r, id) => sumaMetrica(r, id, (m) => m.regatesGanados) },
+  const casos: { virtud: Virtud; casilla: string; nombre: string; medida: (r: ResultadoSerie, id: number) => number[]; aumentoMinimo?: number }[] = [
+    { virtud: 'LanzadorFaltas', casilla: 'MC-1', nombre: 'goles de falta directa', medida: (r) => golesFaltaEquipo(r), aumentoMinimo: 0.3 },
+    { virtud: 'Cabeceador', casilla: 'DC', nombre: 'goles de cabeza del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.golesCabeza) },
+    { virtud: 'Matador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
+    { virtud: 'Rematador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
+    { virtud: 'Llegador', casilla: 'MC-1', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
+    { virtud: 'Desbordante', casilla: 'EI', nombre: 'regates intentados', medida: (r, id) => sumaMetrica(r, id, (m) => m.regates) },
+    { virtud: 'Filigranas', casilla: 'EI', nombre: 'regates ganados', medida: (r, id) => sumaMetrica(r, id, (m) => m.regatesGanados) },
   ];
   let ok = true;
   const partes: string[] = [];
   for (const c of casos) {
     const id = base.titulares.find((t) => t.casillaId === c.casilla)!.jugador.id;
-    const con = serie(conTitular(base, c.casilla, { specials: [c.special] }), rival, n, semilla, 'sc003', { metricas: true });
+    const con = serie(conTitular(base, c.casilla, { virtudes: [c.virtud] }), rival, n, semilla, 'sc003', { metricas: true });
     const a = c.medida(sin, id);
     const b = c.medida(con, id);
     const aumento = media(a) > 0 ? media(b) / media(a) - 1 : 0;
     const bien = c.aumentoMinimo !== undefined ? aumento >= c.aumentoMinimo : mayorSignificativo(b, a);
     ok &&= bien;
-    partes.push(`${c.special}: ${c.nombre} ${media(a).toFixed(3)} → ${media(b).toFixed(3)} (+${(100 * aumento).toFixed(0)} %)${bien ? '' : ' ✘'}`);
+    partes.push(`${c.virtud}: ${c.nombre} ${media(a).toFixed(3)} → ${media(b).toFixed(3)} (+${(100 * aumento).toFixed(0)} %)${bien ? '' : ' ✘'}`);
   }
   return {
     id: '003/SC-007',
-    descripcion: 'Specials con efecto: Lanzador de faltas ≥ 30 % más goles de falta directa; el resto, diferencia significativa en su acción',
+    descripcion: 'Virtudes con efecto: Lanzador de faltas ≥ 30 % más goles de falta directa; el resto, diferencia significativa en su acción',
     ok,
     detalle: partes.join(' · '),
   };

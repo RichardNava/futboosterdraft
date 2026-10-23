@@ -51,6 +51,14 @@
   --color-advertencia: #ffd000;
   --color-error: #ff7a6b;
 
+  /*
+   * Defectos de las cartas (spec 005, FR-021; excepción de color de información de juego, 004/FR-003): rojo de juego,
+   * distinto del error, sobre un recuadro oscuro propio para que contraste en cartas claras y oscuras. Siempre con el
+   * icono «defecto» delante.
+   */
+  --color-defecto: #ff5a6e;
+  --color-defecto-chip: #2b0b12;
+
   /* Niveles de las cartas fuera de la carta (FR-004): ≥ 4,5:1 como texto */
   --nivel-superclase: #b9c8d8;
   --nivel-epico: #c7a2ff;
@@ -150,6 +158,9 @@
   --mascara-fundido-arriba: linear-gradient(180deg, transparent 0%, #000 30%);
   --sombra-trofeo: drop-shadow(0 0 40px rgb(243 197 82 / 45%)) drop-shadow(0 30px 30px rgb(0 0 0 / 60%));
   --color-oro-tenue: rgb(243 197 82 / 16%);
+  /* Duelos (spec 005, ronda 2): halo del «VS» dorado y del estallido del choque. */
+  --sombra-oro: 0 0 18px rgb(243 197 82 / 45%);
+  --sombra-estallido: drop-shadow(0 0 10px rgb(243 197 82 / 70%));
   /* Destellos dorados alrededor del trofeo. */
   --destellos:
     radial-gradient(circle at 18% 30%, #fff1c9 0 1.5px, transparent 2.5px),
@@ -173,7 +184,7 @@
   --barra-principal-alto: 72px;
   --barra-navegacion-alto: 60px;
   /* Proporción del sobre: la de las cartas completas tal como se ven (no su `aspect-ratio` mínimo de 5 : 7). */
-  --proporcion-sobre: 200 / 360;
+  --proporcion-sobre: 200 / 376;
   --objetivo-tactil: 44px;
   --ancho-lectura: 72ch;
   --ancho-pantalla: 1240px;

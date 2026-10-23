@@ -93,27 +93,27 @@ description: "Lista de tareas de las mejoras del MVP de Fútboosterdraft"
 
 ## Phase 3: User Story 1 — Cartas de jugador vistosas y legibles (Priority: P1) 🎯 MVP
 
-**Goal**: carta con imagen, nombre y media arriba, posiciones resaltadas debajo del nombre, stats y specials abajo, y un acabado propio por nivel; legible a 360 px.
+**Goal**: carta con imagen, nombre y media arriba, posiciones resaltadas debajo del nombre, stats y virtudes abajo, y un acabado propio por nivel; legible a 360 px.
 
-**Independent Test**: abrir un sobre en el draft y la plantilla y comprobar la disposición, el popover de los specials y que los cuatro niveles se distinguen sin leer el texto (quickstart, escenario A).
+**Independent Test**: abrir un sobre en el draft y la plantilla y comprobar la disposición, el popover de las virtudes y que los cuatro niveles se distinguen sin leer el texto (quickstart, escenario A).
 
 ### Tests for User Story 1 ⚠️
 
 - [X] T017 [P] [US1] Prueba de principio a fin `apps/web/tests/e2e/cartas.spec.ts` (SC-002, escenario A):
   - en la ruta de pruebas `/_pruebas/cartas` (T023), con viewports de 1280 y 360 px de ancho, ningún elemento de ninguna carta de la colección Core desborda (`scrollWidth <= clientWidth` y `scrollHeight <= clientHeight` en la carta y sus hijos);
-  - el orden vertical es cabecera (silueta, media, nombre) → franja de posiciones → pie (6 stats y specials);
-  - un GOAT con 4 specials muestra los 4 sin desplazamiento;
-  - pulsar o enfocar un special abre su descripción;
+  - el orden vertical es cabecera (silueta, media, nombre) → franja de posiciones → pie (6 stats y virtudes);
+  - un GOAT con 4 virtudes muestra los 4 sin desplazamiento;
+  - pulsar o enfocar una virtud abre su descripción;
   - las cartas de los cuatro niveles tienen un `data-nivel` distinto y un color de marco distinto.
 
 ### Implementation for User Story 1
 
 - [X] T018 [P] [US1] Crear `apps/web/src/estilos/cartas.css` con variables CSS por nivel (marco, degradado y brillo; research R16): Superclase plata mate, Épico violeta, Legendario oro con brillo animado suave, GOAT holográfico con degradado cónico animado. Las animaciones se detienen con `@media (prefers-reduced-motion: reduce)`. Contraste de texto ≥ 4,5:1.
 - [X] T019 [P] [US1] Crear `apps/web/src/componentes/SiluetaJugador.tsx`: silueta SVG en línea, con una variante por demarcación (POR, DEF, MED, DEL) y `aria-hidden`.
-- [X] T020 [P] [US1] Crear la caché de descripciones de los specials en `apps/web/src/estado/catalogo.ts`: carga `GET /api/catalogo/specials` una vez por sesión y la expone con un hook.
+- [X] T020 [P] [US1] Crear la caché de descripciones de las virtudes en `apps/web/src/estado/catalogo.ts`: carga `GET /api/catalogo/virtudes` una vez por sesión y la expone con un hook.
 - [X] T021 [US1] Rehacer `apps/web/src/componentes/CartaJugador.tsx` con las variantes `completa` y `compacta` (contracts/ui.md, research R16):
-  - completa: proporción ≈ 5:7, *container queries* y `clamp()` para leerse de 160 a 280 px de ancho; cabecera con `SiluetaJugador`, media y nombre (los textos más grandes); franja con distintivos de posiciones y demarcación justo debajo del nombre; pie con rejilla 2 × 3 de stats (abreviatura y valor) y los specials como botones de una línea que pasan a dos líneas con 4;
-  - cada special es un `<button popovertarget>` que abre un `popover` con la descripción de T020, al pasar el puntero, al tocar o con el teclado;
+  - completa: proporción ≈ 5:7, *container queries* y `clamp()` para leerse de 160 a 280 px de ancho; cabecera con `SiluetaJugador`, media y nombre (los textos más grandes); franja con distintivos de posiciones y demarcación justo debajo del nombre; pie con rejilla 2 × 3 de stats (abreviatura y valor) y las virtudes como botones de una línea que pasan a dos líneas con 4;
+  - cada virtud es un `<button popovertarget>` que abre un `popover` con la descripción de T020, al pasar el puntero, al tocar o con el teclado;
   - compacta: media, nombre, posiciones y nivel por el color del marco; al tocarla abre la completa;
   - atributo `data-nivel` con el nivel (`Superclase`, `Epico`, `Legendario`, `GOAT`) y etiqueta visible desde `apps/web/src/textos/niveles.ts`.
 - [X] T022 [US1] Usar la carta completa en `apps/web/src/pantallas/Draft.tsx`, `apps/web/src/pantallas/Plantillas.tsx` y `apps/web/src/componentes/FichaJugador.tsx`, y la compacta en las listas largas (banquillo de `apps/web/src/pantallas/Alineacion.tsx`), con apertura de la completa (FR-005).
@@ -502,7 +502,7 @@ description: "Lista de tareas de las mejoras del MVP de Fútboosterdraft"
 - [X] T152 [P] Proponer la enmienda PATCH v1.0.3 de `.specify/memory/constitution.md` (con `/speckit-constitution`) que añada a "Decisiones resueltas" la referencia a `specs/002-mejoras-mvp/` (FR-030), según el seguimiento de plan.md.
 - [ ] T153 [P] Actualizar la prueba de carga `tools/load/beta-100.js` al protocolo nuevo (`abrir` en lugar de `listo`, `siguiente-jornada`, sin preparación con temporizador ni `partido.velocidad`) y volver a medir 001/SC-017 con el motor nuevo.
 - [X] T154 [P] Aplicar el límite de peticiones de `apps/server/src/http/limitador.ts` a las rutas y mensajes nuevos (`abrir`, `reproduccion`, `visto`, `revelar`, `siguiente-jornada`, `mis-partidas`, `partido.finalizar`, `partida.pausar`) y ampliar la auditoría de visibilidad (001/T141) a los mensajes nuevos.
-- [X] T155 [P] Revisión de accesibilidad en `apps/web/src/`: popovers de los specials con teclado, contraste de los acabados de nivel, alternativa al arrastre en `CampoTacticas`, `prefers-reduced-motion` en cartas y apertura, y etiquetas del interruptor de sonido y de la barra.
+- [X] T155 [P] Revisión de accesibilidad en `apps/web/src/`: popovers de las virtudes con teclado, contraste de los acabados de nivel, alternativa al arrastre en `CampoTacticas`, `prefers-reduced-motion` en cartas y apertura, y etiquetas del interruptor de sonido y de la barra.
 - [X] T156 [P] Eliminar el código muerto: `CampoAlineacion` si ya no se usa, velocidades 16 y 32, `rival_listo`, `procesarVelocidad`, `editarDorsales` y la tabla `DURACION` del motor.
 - [X] T157 [P] Actualizar `README.md` y `docs/despliegue.md`: comando `pnpm --filter @fbd/engine bench`, y terminar los partidos en juego antes de desplegar la versión con parámetros 2.0.0 (research R12).
 - [X] T158 Poner el umbral del bench en `.github/workflows/ci.yml` (falla si un partido sin fotogramas supera 25 ms o `resolverResto` desde el minuto 0 supera 30 ms) y añadir a `pnpm balance --n 200` las comprobaciones SC-007, SC-008, SC-011 y SC-018.

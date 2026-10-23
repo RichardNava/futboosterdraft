@@ -5,6 +5,7 @@
 import { identidadInicial } from './identidad';
 import { randomBytes } from 'node:crypto';
 import {
+  CONFIG_DUELOS_POR_DEFECTO,
   configPorDefecto,
   derivarSemilla,
   plazasHumanasEfectivas,
@@ -108,6 +109,8 @@ export class GestorPartidas {
       tiempos: { ...base.tiempos, ...entrada.tiempos },
       // Un invitado solo juega contra la IA: una única plaza humana (FR-000).
       plazasHumanas: usuario.tipo === 'invitado' ? (entrada.plazasHumanas ?? 1) : entrada.plazasHumanas,
+      // Modo Duelo de jugadores (spec 005, FR-061): formación común y Estado de forma, con sus valores por defecto.
+      ...(entrada.modo === 'duelos' ? { duelos: entrada.duelos ?? { ...CONFIG_DUELOS_POR_DEFECTO } } : entrada.duelos ? { duelos: entrada.duelos } : {}),
     };
     const problemas = validarConfigPartida(config, usuario.tipo);
     const prohibido = problemas.find((p) => p.codigo === 'INVITADO_NO_PERMITIDO');

@@ -13,6 +13,8 @@ import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, etique
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
 import { SobreArte } from '../componentes/arte/SobreArte';
+import { ConfigDuelos } from '../componentes/ConfigDuelos';
+import type { ConfigDuelos as Duelos } from '@fbd/domain';
 
 interface ParticipanteSala {
   id: string;
@@ -28,6 +30,9 @@ interface Sala {
   participantes: ParticipanteSala[];
   plazasLibres: number;
   venceBusquedaEn: string | null;
+  modo?: string;
+  /** Modo Duelo de jugadores (spec 005): formación común y Estado de forma. */
+  duelos?: Duelos | null;
 }
 
 /** Sala de espera (T053): participantes, búsqueda y acciones del anfitrión. */
@@ -220,6 +225,7 @@ export function Sala() {
           )}
         </section>
 
+        {sala.modo === 'duelos' && sala.duelos && <ConfigDuelos partidaId={partidaId!} duelos={sala.duelos} editable={esAnfitrion} />}
         <div className="sala-lateral panel">
           {(() => {
             const mio = sala.participantes.find((p) => p.id === yo);

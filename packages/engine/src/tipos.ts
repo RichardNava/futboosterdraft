@@ -44,7 +44,9 @@ export type TipoEvento =
   | 'interrupcion'
   | 'inicio_tramo'
   | 'fin_tramo'
-  | 'tanda_lanzamiento';
+  | 'tanda_lanzamiento'
+  /** Polémico o Rebelde se activa o se desactiva (spec 005, FR-044): `{ defecto, activo, jugadorId }`. */
+  | 'malestar';
 
 export type RolEvento = 'autor' | 'asistente' | 'defensor' | 'portero' | 'entra' | 'sale';
 

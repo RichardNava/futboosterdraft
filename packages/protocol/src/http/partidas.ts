@@ -7,6 +7,11 @@ import { ParticipanteSala } from '../ws/draft';
 export const NivelNPC = z.enum(['amateur', 'intermedio', 'avanzado', 'PRO']);
 /** Dificultad de la partida: niveles del relleno automático de NPC (spec 003, FR-038a). */
 export const Dificultad = z.enum(['facil', 'normal', 'dificil']);
+/** Modos de juego; `duelos` es el modo Duelo de jugadores (spec 005, FR-060). */
+export const ModoPartida = z.enum(['liga', 'playoff', 'mixto', 'duelos']);
+/** Formación común y Estado de forma del modo duelos (spec 005, FR-061, FR-064a). */
+export const ConfigDuelosEntrada = z.object({ formacion: z.enum(['3-4-3', '4-3-3', '4-4-2', '4-4-2-diamante', '4-2-3-1', '3-5-2', '5-4-1', '5-3-2', '4-5-1', '3-3-3-1']), estadoForma: z.boolean() }).strict();
+export type ConfigDuelosEntrada = z.infer<typeof ConfigDuelosEntrada>;
 
 /**
  * El ritmo ya no se elige: se deduce del número de humanos (research R9). El esquema es estricto, así que
@@ -17,8 +22,10 @@ export const Dificultad = z.enum(['facil', 'normal', 'dificil']);
  */
 export const CrearPartida = z
   .object({
-  modo: z.enum(['liga', 'playoff', 'mixto']),
+  modo: ModoPartida,
   numParticipantes: z.number().int(),
+  /** Solo con `modo: 'duelos'`; si falta, `{ formacion: '4-3-3', estadoForma: true }`. */
+  duelos: ConfigDuelosEntrada.optional(),
   /** Obsoleto (spec 003): se ignora. */
   tipoSimulacion: z.unknown().optional(),
   plazoJornadaHoras: z.number().int().min(1).max(24 * 14).optional(),
@@ -44,8 +51,12 @@ export const AnadirNPC = z.object({ nivel: NivelNPC });
 export const ResumenPartida = z.object({
   id: z.string().uuid(),
   anfitrionId: z.string(),
-  modo: z.enum(['liga', 'playoff', 'mixto']),
+  modo: ModoPartida,
   numParticipantes: z.number().int(),
+  /** Configuración del modo duelos, o null en los demás modos (spec 005). */
+  duelos: ConfigDuelosEntrada.nullable(),
+  /** Versión del catálogo con que se juega (spec 005, FR-036). */
+  versionCatalogo: z.number().int(),
   /** Hay plazos de jornada: la partida tiene 2 o más humanos activos (research R9). */
   conPlazos: z.boolean(),
   plazoJornadaHoras: z.number().int(),

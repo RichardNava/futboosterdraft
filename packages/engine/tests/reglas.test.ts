@@ -4,7 +4,7 @@ import { expulsar } from '../src/acciones/plantel';
 import type { Contexto } from '../src/acciones/contexto';
 import { atributo } from '../src/modificadores/atributos';
 import { acumularCansancio } from '../src/modificadores/cansancio';
-import { bonusEquipo, santoActivo } from '../src/modificadores/specials';
+import { bonusEquipo, santoActivo } from '../src/modificadores/virtudes';
 import { aplicarDecision, avanzar, crearPartido, type EstadoMotor } from '../src/index';
 import { entrada, equipo, partido, rngDePrueba } from './ayudas';
 
@@ -114,7 +114,7 @@ describe('reglas del motor', () => {
   });
 
   it('Incansable y Motivador ralentizan el cansancio', () => {
-    const base = crearPartido(entrada('fatiga', { local: equipo('local'), visitante: equipo('visitante', { specials: ['Incansable'] }) }));
+    const base = crearPartido(entrada('fatiga', { local: equipo('local'), visitante: equipo('visitante', { virtudes: ['Incansable'] }) }));
     base.reloj = { parte: 2, segundosEnParte: 30 * 60, paradas: 0, descuento: null };
     acumularCansancio(base, base.equipos.local, 600);
     acumularCansancio(base, base.equipos.visitante, 600);
@@ -124,27 +124,27 @@ describe('reglas del motor', () => {
 
     const conMotivador = crearPartido(entrada('fatiga-2'));
     const eq = conMotivador.equipos.local;
-    eq.jugadores.find((j) => j.casillaId === 'MC-1')!.jugador = { ...eq.jugadores.find((j) => j.casillaId === 'MC-1')!.jugador, specials: ['Motivador'] };
+    eq.jugadores.find((j) => j.casillaId === 'MC-1')!.jugador = { ...eq.jugadores.find((j) => j.casillaId === 'MC-1')!.jugador, virtudes: ['Motivador'] };
     conMotivador.reloj = { parte: 2, segundosEnParte: 30 * 60, paradas: 0, descuento: null };
     acumularCansancio(conMotivador, eq, 600);
     const companero = eq.jugadores.find((j) => j.casillaId === 'DC')!.cansancio;
     expect(companero).toBeLessThan(normal);
   });
 
-  it('los specials de equipo no se acumulan: dos Capitanía siguen dando +1', () => {
-    const e = crearPartido(entrada('capitania', { local: equipo('local', { specials: ['Capitania'] }) }));
+  it('las virtudes de equipo no se acumulan: dos Capitanía siguen dando +1', () => {
+    const e = crearPartido(entrada('capitania', { local: equipo('local', { virtudes: ['Capitania'] }) }));
     const eq = local(e);
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.specials.capitania);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.virtudes.capitania);
   });
 
   it('Fortaleza mental solo actúa yendo por detrás', () => {
-    const e = crearPartido(entrada('fortaleza', { local: equipo('local', { specials: ['FortalezaMental'] }) }));
+    const e = crearPartido(entrada('fortaleza', { local: equipo('local', { virtudes: ['FortalezaMental'] }) }));
     const eq = local(e);
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
     expect(bonusEquipo(e, eq, j)).toBe(0);
     e.marcador = { local: 0, visitante: 1 };
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.specials.fortalezaMental);
+    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.virtudes.fortalezaMental);
   });
 
   it('Santo: desde el minuto 80, en la prórroga y en eliminatoria yendo ganando o empatado; en liga antes del 80, no', () => {

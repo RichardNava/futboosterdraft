@@ -22,8 +22,8 @@ personas.
 
 | # | Tipo | Hallazgo | Área |
 |---|---|---|---|
-| H1 | Defecto | Las cartas cambian de tamaño según el número de specials; deben tener siempre el mismo tamaño. | US7, `cartas.css` |
-| H2 | Defecto | Los nombres de los specials se cortan a mitad de palabra; cada special debe ocupar siempre una línea. | US7, `cartas.css` |
+| H1 | Defecto | Las cartas cambian de tamaño según el número de virtudes; deben tener siempre el mismo tamaño. | US7, `cartas.css` |
+| H2 | Defecto | Los nombres de las virtudes se cortan a mitad de palabra; cada virtud debe ocupar siempre una línea. | US7, `cartas.css` |
 | H3 | **Crítico** | En «Formación», al pasar el cursor por una ficha no se ve la carta, sino una franja vertical que ocupa toda la pantalla. | US2, `VistaCarta` |
 | H4 | **Crítico** | No se puede intercambiar entre «Banquillo» y «Resto de la plantilla». | US2, `CampoEquipo` |
 | H5 | Cambio de requisito | «Confirmar alineación» debe llevar a la pantalla del torneo. | US2/US4, FR-002, FR-006 |
@@ -62,8 +62,8 @@ personas.
 
 | # | Causa | Corrección | Prueba |
 |---|---|---|---|
-| H1 | La carta completa crecía cuando el contenido no cabía en la proporción 5:7, y lo que no cabía dependía del jugador: número de specials (y ningún contenedor sin specials), largo de los apellidos y número de posiciones. | La carta reserva siempre el mismo sitio: 4 líneas de specials (el contenedor se pinta aunque esté vacío), 2 líneas de apellidos y 1 de posiciones. | e2e `cartas` «todas las cartas completas miden lo mismo…», a 1280 y 360 px sobre toda la colección Core. |
-| H2 | Specials en dos columnas con `overflow-wrap: anywhere`: las palabras se partían. | Una columna, cada special en una línea (`white-space: nowrap`), letra condensada de la carta y menos relleno lateral; sigue a ≥ 16 px en portátil y ≥ 14 px a 360 px (FR-009). | La misma e2e: ningún special cortado ni en más de una línea; las de desborde y tamaño mínimo siguen pasando. |
+| H1 | La carta completa crecía cuando el contenido no cabía en la proporción 5:7, y lo que no cabía dependía del jugador: número de virtudes (y ningún contenedor sin virtudes), largo de los apellidos y número de posiciones. | La carta reserva siempre el mismo sitio: 4 líneas de virtudes (el contenedor se pinta aunque esté vacío), 2 líneas de apellidos y 1 de posiciones. | e2e `cartas` «todas las cartas completas miden lo mismo…», a 1280 y 360 px sobre toda la colección Core. |
+| H2 | Virtudes en dos columnas con `overflow-wrap: anywhere`: las palabras se partían. | Una columna, cada virtud en una línea (`white-space: nowrap`), letra condensada de la carta y menos relleno lateral; sigue a ≥ 16 px en portátil y ≥ 14 px a 360 px (FR-009). | La misma e2e: ninguna virtud cortada ni en más de una línea; las de desborde y tamaño mínimo siguen pasando. |
 | H10 | La capa de la apertura es semitransparente y la sección «Sobre actual» del draft ya estaba pintada debajo. | Mientras dura la apertura, «Sobre actual» queda con `visibility: hidden` (conserva el sitio) y `aria-hidden`; aparece al terminar. | e2e `apertura`: oculta durante la animación y visible al terminar. |
 
 Además, `draft-solo.spec.ts` avanzaba 52 s para vencer el primer turno, que desde T082 dura 53 s (45 + 8 de margen); ahora avanza 54 s.

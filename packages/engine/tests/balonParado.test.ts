@@ -153,3 +153,22 @@ describe('goles en propia puerta (FR-020, SC-003)', () => {
     expect(e.equipos.visitante.jugadores.some((j) => j.id === autor.jugadorId)).toBe(true);
   });
 });
+
+describe('factorFaltaArea (spec 005, T079; research R2)', () => {
+  it('multiplica la probabilidad de falta solo dentro del área; con 3.0.0 vale 1', async () => {
+    const { factorFaltaArea } = await import('../src/modificadores/defectos');
+    const { PARAMETROS_V4 } = await import('@fbd/domain');
+    const q = conParametros((x) => {
+      (x as { disciplina: { factorFaltaArea?: number } }).disciplina.factorFaltaArea = 0.55;
+    });
+    const e4 = crearPartido(entrada('area', { version: PARAMETROS_V4.version, parametros: { ...PARAMETROS_V4, disciplina: { ...PARAMETROS_V4.disciplina, factorFaltaArea: 0.55 } } }));
+    expect(factorFaltaArea(e4, 'local', { x: 9000, y: 3200 })).toBe(0.55);
+    expect(factorFaltaArea(e4, 'local', { x: 7000, y: 3200 })).toBe(1);
+    // Para el visitante, su área de ataque es la del otro lado (coordenadas absolutas).
+    expect(factorFaltaArea(e4, 'visitante', { x: 1000, y: 3200 })).toBe(0.55);
+    expect(factorFaltaArea(e4, 'local')).toBe(0.55);
+    const e3 = partido('area-v3');
+    expect(factorFaltaArea(e3, 'local', { x: 9000, y: 3200 })).toBe(1);
+    expect(q.version).toBe('3.0.0');
+  });
+});

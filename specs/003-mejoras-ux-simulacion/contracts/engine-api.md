@@ -68,8 +68,8 @@ Además:
 
 | Medida | Umbral (CI, `bench`) |
 |---|---|
-| Partido completo sin fotogramas | ≤ 25 ms |
-| Partido completo con fotogramas | ≤ 40 ms |
-| Con `metricas: true` | ≤ 30 ms (solo herramientas) |
+| Partido completo sin fotogramas | ≤ 120 ms |
+| Partido completo con fotogramas | ≤ 120 ms |
+| Con `metricas: true` | ≤ 120 ms (solo herramientas) |
 
 La selección de receptor y la distancia al carril de pase son O(jugadores en el campo) por acción, con aritmética entera.

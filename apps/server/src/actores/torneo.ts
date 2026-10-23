@@ -44,7 +44,9 @@ import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
 import { entreHumanos, resolverPartidoEntreHumanos, terminarPartidoEntreHumanosEnJuego } from './partidoEntreHumanos';
 import { esHumano, forzarFinal, iniciarPartido, nivelNPCDe, type PartidoEnCurso } from './partidoRapido';
+import { cartasDelCruce, resolverCrucesDuelos } from './duelos';
 import { crearPartidosJornada, emitirPreparacion, resolverPartidosSinHumanos } from './preparacion';
+import type { ResultadoCruce } from '@fbd/domain';
 
 /** Aviso anticipado antes de que venza el plazo de una jornada asíncrona. */
 export const AVISO_PLAZO_MS = 2 * 60 * 60 * 1000;
@@ -72,10 +74,17 @@ export function engancharTorneo(c: ControladorPartida, deps: DependenciasTorneo)
   c.alTerminarPartido = (ctx, p) => registrarPartido(c, ctx, p);
   c.trasTerminarPartido = (ctx) => despuesDePartido(c, ctx, deps);
   c.alAsignarDorsales = async (pid, asignados) => {
-    const texto = `Nuevos dorsales en tu equipo: ${asignados.map((a) => `${c.servicios.catalogo.resumen(a.jugadorId).apellidos.split(' ')[0]} lleva el ${a.dorsal}`).join(', ')}.`;
+    const texto = `Nuevos dorsales en tu equipo: ${asignados.map((a) => `${c.catalogo.resumen(a.jugadorId).apellidos.split(' ')[0]} lleva el ${a.dorsal}`).join(', ')}.`;
     await avisarHumanos(c, deps, [pid], 'dorsal_asignado', texto);
   };
   c.programarPrimeraJornada ??= (ctx) => iniciarTorneo(c, ctx, deps);
+  c.resolverDuelos = (ctx, opciones) => resolverDuelos(c, ctx, deps, opciones);
+}
+
+/** Modo duelos (spec 005, T070): resuelve los cruces que se pueden y, si ha resuelto alguno, sigue el torneo. */
+async function resolverDuelos(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo, opciones: { forzar?: boolean; soloPartido?: string } = {}) {
+  if (c.partida.modo !== 'duelos') return;
+  if ((await resolverCrucesDuelos(c, opciones)) > 0) await despuesDePartido(c, ctx, deps);
 }
 
 export async function iniciarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
@@ -144,8 +153,12 @@ async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando
   await emitirTorneo(c, ctx);
   if (!silenciosas.has(c)) await emitirPreparacion(c, ctx, venceEn);
   // Los partidos sin humanos se resuelven ya; los demás esperan a que su humano los abra.
-  await resolverPartidosSinHumanos(c, ctx);
-  if (venceEn === null) return;
+  if (c.partida.modo !== 'duelos') await resolverPartidosSinHumanos(c, ctx);
+  if (venceEn === null) {
+    // Duelos: los cruces cuyos onces ya están fijados se resuelven al abrir la ronda.
+    await resolverDuelos(c, ctx, deps);
+    return;
+  }
   await avisarHumanos(
     c,
     deps,
@@ -154,6 +167,7 @@ async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando
     `Se abre la jornada ${j.numero}. Tienes hasta el ${new Date(venceEn).toISOString().replace('T', ' ').slice(0, 16)} (UTC) para jugar tu partido.`,
   );
   programarPlazos(c, deps, j.numero, venceEn);
+  await resolverDuelos(c, ctx, deps);
 }
 
 function programarPlazos(c: ControladorPartida, deps: DependenciasTorneo, numero: number, venceEn: number): void {
@@ -179,6 +193,11 @@ function programarPlazos(c: ControladorPartida, deps: DependenciasTorneo, numero
 /** Vence el plazo de una jornada: se resuelve todo lo pendiente (FR-056a; spec 002, FR-030). */
 async function vencerJornada(c: ControladorPartida, ctx: ContextoComando, numero: number): Promise<void> {
   if (!c.jornada || c.jornada.numero !== numero) return;
+  // Duelos: al vencer el plazo, la alineación automática de quien no confirmó, también bloqueada.
+  if (c.partida.modo === 'duelos') {
+    await c.resolverDuelos?.(ctx, { forzar: true });
+    return;
+  }
   for (const cruce of [...c.jornada.cruces]) {
     const enCurso = c.partidosEnCurso.get(cruce.partidoId);
     if (enCurso) {
@@ -192,7 +211,10 @@ async function vencerJornada(c: ControladorPartida, ctx: ContextoComando, numero
   }
 }
 
-export type ResultadoAbrir = { modo: 'directo' | 'reproduccion'; modalidad: ModoSimulacion } | { error: 'PARTIDO_NO_ENCONTRADO' | 'JORNADA_NO_ABIERTA' };
+export type ResultadoAbrir =
+  | { modo: 'directo' | 'reproduccion'; modalidad: ModoSimulacion }
+  | { modo: 'duelos'; duelos: ResultadoCruce; cartas: Record<number, unknown> }
+  | { error: 'PARTIDO_NO_ENCONTRADO' | 'JORNADA_NO_ABIERTA' };
 
 /**
  * «Comenzar partido» o «Ver partido» (`POST /api/partidos/:id/abrir`, research R8 y R9). Contra un NPC,
@@ -209,6 +231,17 @@ export async function abrirPartido(
   const fila = await repoPartidos.obtener(partidoId);
   if (!fila || fila.partidaId !== c.id || (fila.localId !== participanteId && fila.visitanteId !== participanteId)) {
     return { error: 'PARTIDO_NO_ENCONTRADO' };
+  }
+  // Cruce de duelos (spec 005): se resuelve ya si falta (fijando el once de quien lo abre) y se entrega para la animación.
+  if (fila.tipo === 'duelos') {
+    if (fila.estado === 'programado') {
+      if (!c.jornada?.cruces.some((x) => x.partidoId === partidoId)) return { error: 'JORNADA_NO_ABIERTA' };
+      await c.resolverDuelos?.(ctx, { forzar: true, soloPartido: fila.id });
+    }
+    const resuelta = await repoPartidos.obtener(partidoId);
+    const duelos = resuelta?.duelos as ResultadoCruce | null;
+    if (!resuelta || !duelos) return { error: 'JORNADA_NO_ABIERTA' };
+    return { modo: 'duelos', duelos, cartas: cartasDelCruce(c, duelos) };
   }
   const rival = fila.localId === participanteId ? fila.visitanteId : fila.localId;
   const contraHumano = esHumano(c, rival) && esHumano(c, participanteId);
@@ -352,13 +385,12 @@ export async function marcarPantallaVista(c: ControladorPartida, participanteId:
 async function terminarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
   await c.servicios.repoPartidas.actualizarEstado(c.id, 'terminada');
   c.partida = { ...c.partida, estado: transicion(c.partida.estado as 'en_torneo', 'terminar_torneo') };
-  await avisarHumanos(
-    c,
-    deps,
-    c.participantes.map((p) => p.id),
-    'torneo_terminado',
-    `El torneo ha terminado. Campeón: ${nombre(c, c.torneo!.campeon!)}.`,
-  );
+  // A quien aún tiene partidos o duelos sin ver no se le nombra al campeón: lo verá al terminar de verlos.
+  for (const p of c.participantes) {
+    const sinVer = p.tipo === 'humano' && (await pendientesDe(c, p.id)).length > 0;
+    const texto = sinVer ? 'El torneo ha terminado. Mira tus partidos pendientes para conocer al campeón.' : `El torneo ha terminado. Campeón: ${nombre(c, c.torneo!.campeon!)}.`;
+    await avisarHumanos(c, deps, [p.id], 'torneo_terminado', texto);
+  }
   const { emitirEstadoATodos } = await import('./vistas');
   await emitirEstadoATodos(c, ctx);
 }
@@ -446,6 +478,10 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
   const crucesOcultos = new Set(
     partidos.filter((x) => oculto.has(x.id)).map((x) => [x.localId, x.visitanteId].sort().join()),
   );
+  // Quien pasa de un cruce que no ha visto tampoco se revela en las rondas siguientes: allí sale «Por decidir» y esos
+  // cruces van sin ganador ni partido. En duelos los cruces se resuelven al instante y, si no, el cuadro lo delataría.
+  const pases = t.cuadro ? pasesOcultos(t.cuadro, crucesOcultos) : null;
+  const refEnRonda = (ronda: number | undefined, pid?: string) => (ronda !== undefined && pid && pases?.ocultos[ronda]?.has(pid) ? null : ref(pid));
   // Eliminación propia (spec 003, FR-039): no se revela hasta que ha visto el partido que lo eliminó.
   const eliminacion = participanteId ? eliminacionVista(t, participanteId, partidos, oculto) : null;
   const miEliminacion = eliminacion ? { fase: eliminacion.fase, etiqueta: ETIQUETA_FASE[eliminacion.fase] } : null;
@@ -467,22 +503,26 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
         venceEn: fila?.venceEn?.toISOString() ?? null,
         descansa: ref(j.descansa),
         partidos: j.cruces.map((cruce) => {
-          const partido = partidos.find((x) => x.jornadaNumero === j.numero && x.localId === cruce.local && x.visitanteId === cruce.visitante);
+          const local = refEnRonda(j.rondaCuadro, cruce.local);
+          const visitante = refEnRonda(j.rondaCuadro, cruce.visitante);
+          const sinRevelar = local === null || visitante === null;
+          const partido = sinRevelar ? undefined : partidos.find((x) => x.jornadaNumero === j.numero && x.localId === cruce.local && x.visitanteId === cruce.visitante);
           const pendiente = partido !== undefined && oculto.has(partido.id);
           return {
             partidoId: partido?.id ?? null,
-            local: ref(cruce.local),
-            visitante: ref(cruce.visitante),
+            local,
+            visitante,
             marcador: pendiente ? null : (partido?.marcador ?? null),
             estado: pendiente ? 'pendiente_de_ver' : (partido?.estado ?? 'pendiente'),
             resueltoAutomaticamente: partido && !pendiente ? resueltoAutomaticamente(partido) : false,
             resolucion: partido && !pendiente ? (partido.resolucion as 'directo' | 'apertura' | 'plazo' | 'npc') : null,
+            tipo: (partido?.tipo ?? (t.modo === 'duelos' ? 'duelos' : 'futbol')) as 'futbol' | 'duelos',
           };
         }),
       };
     }),
     clasificacion:
-      t.modo === 'playoff'
+      t.modo === 'playoff' || t.modo === 'duelos'
         ? []
         : clasificacionActual(t, { excluirPartidos: pendientes }).map((f, i) => ({
             posicion: i + 1,
@@ -492,17 +532,18 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
           })),
     cuadro: t.cuadro
       ? {
-          rondas: t.cuadro.rondas.map((r) => ({
+          rondas: t.cuadro.rondas.map((r, k) => ({
             tipo: r.tipo,
-            cruces: r.cruces.map((x) => {
-              const sinGanador = x.local && x.visitante && crucesOcultos.has([x.local, x.visitante].sort().join());
-              return { local: ref(x.local), visitante: ref(x.visitante), ganador: sinGanador ? null : ref(x.ganador) };
-            }),
+            cruces: r.cruces.map((x, i) => ({
+              local: refEnRonda(k, x.local),
+              visitante: refEnRonda(k, x.visitante),
+              ganador: pases?.sinGanador[k]?.[i] ? null : ref(x.ganador),
+            })),
           })),
         }
       : null,
     // El campeón solo se oculta si la final es un partido que este participante aún no ha visto.
-    campeon: finalOculta(t, crucesOcultos) ? null : ref(t.campeon ?? undefined),
+    campeon: pases?.sinGanador.at(-1)?.[0] ? null : ref(t.campeon ?? undefined),
     pendientesDeVer: pendientes,
     siguienteJornada: siguiente,
     // Máximos goleadores y asistentes (FR-039 a FR-042): sin los partidos que aún no ha visto.
@@ -516,7 +557,8 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
  * (FR-042) y las `limite` primeras (todas si es `null`).
  */
 export async function filasTabla(c: ControladorPartida, filas: FilaTabla[], limite: number | null) {
-  const { catalogo, repoEquipo } = c.servicios;
+  const { repoEquipo } = c.servicios;
+  const catalogo = c.catalogo;
   const dorsales = new Map<string, Record<number, number> | null>();
   for (const pid of new Set(filas.map((f) => f.participanteId))) dorsales.set(pid, await repoEquipo.dorsales(pid));
   const conNombre = filas
@@ -542,9 +584,22 @@ export async function tablaCompleta(c: ControladorPartida, participanteId: strin
   return filasTabla(c, filas, null);
 }
 
-function finalOculta(t: EstadoTorneo, crucesOcultos: ReadonlySet<string>): boolean {
-  const final = t.cuadro?.rondas[t.cuadro.rondas.length - 1]?.cruces[0];
-  return !!final?.local && !!final.visitante && crucesOcultos.has([final.local, final.visitante].sort().join());
+/**
+ * Qué no se puede revelar del cuadro a quien tiene cruces sin ver (`crucesOcultos`, por pareja): por ronda, los
+ * participantes que han llegado a ella desde un cruce sin ver y los cruces cuyo ganador no se muestra (los no vistos y
+ * los que tienen a alguno de esos participantes). Se propaga de ronda en ronda hasta la final.
+ */
+export function pasesOcultos(cuadro: NonNullable<EstadoTorneo['cuadro']>, crucesOcultos: ReadonlySet<string>) {
+  const ocultos = cuadro.rondas.map(() => new Set<string>());
+  const sinGanador = cuadro.rondas.map((r, k) =>
+    r.cruces.map((x) => {
+      const noVisto = !!x.local && !!x.visitante && crucesOcultos.has([x.local, x.visitante].sort().join());
+      const oculto = noVisto || (!!x.local && ocultos[k]!.has(x.local)) || (!!x.visitante && ocultos[k]!.has(x.visitante));
+      if (oculto && x.ganador) ocultos[k + 1]?.add(x.ganador);
+      return oculto;
+    }),
+  );
+  return { ocultos, sinGanador };
 }
 
 /** `torneo.actualizado` a cada humano con su propia vista (research R8). */

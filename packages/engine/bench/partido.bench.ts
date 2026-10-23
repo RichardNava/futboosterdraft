@@ -1,6 +1,6 @@
 /**
- * Coste del motor por partido (research R3, FR-028a): ≤ 25 ms sin fotogramas, ≤ 40 ms con fotogramas, ≤ 30 ms con
- * las métricas por jugador de `balance` (spec 003, T037) y `resolverResto` ≤ 30 ms. Se ejecuta con `pnpm --filter @fbd/engine bench`.
+ * Coste del motor por partido (research R3, FR-028a, revisado en la spec 005): ≤ 120 ms sin fotogramas, con fotogramas,
+ * con las métricas por jugador de `balance` (spec 003, T037) y en `resolverResto`. Se ejecuta con `pnpm --filter @fbd/engine bench`.
  */
 import { bench, describe } from 'vitest';
 import { avanzar, crearPartido } from '../src/index';

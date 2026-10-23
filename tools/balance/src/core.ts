@@ -7,7 +7,7 @@
  * Devuelve un `ResultadoSerie` agregado por partido (A = local, B = visitante) y la media de goles de cada torneo.
  */
 import { decidirAlineacion, elegirCarta, equipoDesdeAlineacion, jugarHastaElFinal } from '@fbd/ai';
-import { calendarioLiga, derivarSemilla, parametrosActuales, type Alineacion } from '@fbd/domain';
+import { calendarioLiga, derivarSemilla, parametrosActuales, type Alineacion, type ParametrosEquilibrado } from '@fbd/domain';
 import { crearPartido } from '@fbd/engine';
 import { draftMesa } from './checks/npc';
 import type { ResultadoSerie } from './series';
@@ -21,8 +21,7 @@ export interface ResultadoCore {
 const PARTIDOS_POR_TORNEO = 56;
 
 /** Juega torneos Core hasta sumar al menos `n` partidos. */
-export function serieCore(n: number, semilla: number): ResultadoCore {
-  const p = parametrosActuales();
+export function serieCore(n: number, semilla: number, p: ParametrosEquilibrado = parametrosActuales()): ResultadoCore {
   const r: ResultadoSerie = {
     n: 0,
     victoriasA: 0,
@@ -38,6 +37,7 @@ export function serieCore(n: number, semilla: number): ResultadoCore {
     resultados: [],
     goles: [],
     metricasA: [],
+    penaltis: 0,
   };
   const porTorneo: number[] = [];
   const inicio = Date.now();
@@ -83,6 +83,7 @@ export function serieCore(n: number, semilla: number): ResultadoCore {
         r.resultados.push(`${local}-${visitante}`);
         r.estadisticasA.push(fin.estadisticas.local);
         r.estadisticasB.push(fin.estadisticas.visitante);
+        r.penaltis += fin.eventos.filter((ev) => ev.tipo === 'penalti').length;
         for (const ev of fin.eventos) {
           if (ev.tipo !== 'gol') continue;
           r.goles.push({

@@ -50,7 +50,7 @@ La tercera ronda se aprueba. Últimos ajustes visuales y una corrección del dra
 - Q: ¿Qué añade la franja del 2D? → A: Los goleadores con su minuto, como el marcador del resultado (FR-053; amplía FR-048).
 - Q: ¿Cómo se ven los goles en «Lo que ha pasado»? → A: Resaltados sobre el resto de eventos (FR-054).
 - Q: ¿Qué tapa la barra en la pantalla del campeón? → A: El nombre del campeón; pasa a la parte superior (FR-055).
-- Q: ¿Cómo se elige una carta en el draft? → A: Pulsando en cualquier parte de la carta que no sea un special (también la zona vacía del pie), y con doble clic se elige y confirma a la vez (FR-056).
+- Q: ¿Cómo se elige una carta en el draft? → A: Pulsando en cualquier parte de la carta que no sea una virtud (también la zona vacía del pie), y con doble clic se elige y confirma a la vez (FR-056).
 
 ### Session 2026-10-21 — Ronda 5 (correcciones)
 
@@ -244,7 +244,7 @@ Estos requisitos **sustituyen** a FR-008, a la frase de FR-002 "NO DEBE usarse e
 - **FR-053 (goleadores en la franja del 2D)**: la franja del marcador del partido 2D, en directo y en su reproducción, DEBE mostrar en letra pequeña los goleadores de cada equipo con el minuto, con las mismas reglas que FR-048 y solo con los goles ya vistos; sin romper FR-049.
 - **FR-054 (goles resaltados)**: en la lista de eventos («Lo que ha pasado» del 2D y el resumen del resultado), los goles DEBEN destacar sobre el resto (fondo y borde con la luz del oro y el texto en negrita), sin usar el lima.
 - **FR-055 (campeón visible)**: en la pantalla del campeón, el mensaje con el nombre del campeón DEBE ir en la parte superior, sin que lo tape la barra del botón «Volver al menú», a 1366 × 768 y a 390 × 844.
-- **FR-056 (elegir carta en el draft)**: la carta del sobre DEBE elegirse al pulsar en cualquier punto de ella salvo los botones de los specials y el de la ficha (también el hueco del pie sin specials); el doble clic en una carta la elige y confirma la elección sin pasar por «Confirmar elección». Una sola elección por turno: un segundo envío mientras el primero está en curso se ignora.
+- **FR-056 (elegir carta en el draft)**: la carta del sobre DEBE elegirse al pulsar en cualquier punto de ella salvo los botones de las virtudes y el de la ficha (también el hueco del pie sin virtudes); el doble clic en una carta la elige y confirma la elección sin pasar por «Confirmar elección». Una sola elección por turno: un segundo envío mientras el primero está en curso se ignora.
 - **FR-057 (dorsales alineados)**: en «Dorsales», cada jugador DEBE ocupar una celda con columnas fijas (dorsal actual, nombre recortado con puntos suspensivos y campo), de modo que los campos queden alineados en vertical y en horizontal. Bajo cada campo, dos botones pequeños con iconos, «Aceptar» y «Descartar», que solo se ven con un número escrito y ocupan su sitio siempre (la celda no cambia de alto); Intro acepta y Escape descarta. Se mantiene el aviso cuando el número lo lleva otro jugador.
 - **FR-058 (tablas de goleadores y asistentes)**: las tablas de máximos goleadores y asistentes DEBEN mostrar sus filas debajo de los encabezados, como el resto de tablas. La lista de goleadores del marcador (FR-048, FR-053) usa su propia clase, `.lista-goleadores`.
 - **FR-059 (sobre con forma de carta)**: el sobre ilustrado DEBE tener la proporción de las cartas completas tal como se ven (≈ 5 : 9, `--proporcion-sobre`) en todos los lugares donde aparece (portada, nueva partida, sala, apertura y fin del draft); donde convive con cartas (portada y apertura), también su mismo ancho.

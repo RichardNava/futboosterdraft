@@ -1,7 +1,7 @@
 /**
  * Repositorio de partidas y participantes.
  */
-import { plazasHumanasEfectivas, type ConfigPartida, type Equipaciones, type EstadoPartida, type ModoSimulacion, type NivelNPC } from '@fbd/domain';
+import { plazasHumanasEfectivas, VERSION_CATALOGO_ACTUAL, type ConfigDuelos, type ConfigPartida, type Equipaciones, type EstadoPartida, type ModoSimulacion, type NivelNPC } from '@fbd/domain';
 import { errores } from '../../http/errores';
 import { and, asc, desc, eq, inArray, isNull } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
@@ -33,12 +33,20 @@ export class RepoPartidas {
         tiempos: config.tiempos,
         colecciones: config.colecciones,
         semilla: datos.semilla,
+        // Las partidas nuevas juegan con el catálogo actual (spec 005, FR-036).
+        versionCatalogo: VERSION_CATALOGO_ACTUAL,
+        configDuelos: config.modo === 'duelos' ? (config.duelos ?? null) : null,
         // La lógica de juego usa siempre el reloj del servidor, nunca la hora de la base de datos.
         creadaEn: new Date(datos.ahora),
         actualizadaEn: new Date(datos.ahora),
       })
       .returning();
     return fila!;
+  }
+
+  /** Formación común y Estado de forma del modo duelos (spec 005, FR-061). */
+  async guardarConfigDuelos(partidaId: string, duelos: ConfigDuelos, ejecutor: Ejecutor = this.db): Promise<void> {
+    await ejecutor.update(partidas).set({ configDuelos: duelos }).where(eq(partidas.id, partidaId));
   }
 
   /** Última modalidad con la que el participante abrió un partido (spec 003, FR-032). */

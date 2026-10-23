@@ -10,7 +10,7 @@ los identificadores del código van sin tilde.
 |------|-----------|-------|
 | Cabecera | Silueta genérica (variante por demarcación), **media** y **nombre** | La media y el nombre son los textos más grandes de la carta. |
 | Franja | Distintivos de las posiciones y demarcación | Justo debajo del nombre, con un color de relleno que destaque. |
-| Pie | 6 stats (abreviatura y valor, rejilla de 2 × 3) y los specials | Los specials son botones. Al pasar el puntero o tocarlos, se abre su descripción (`popover`). |
+| Pie | 6 stats (abreviatura y valor, rejilla de 2 × 3) y las virtudes | Las virtudes son botones. Al pasar el puntero o tocarlos, se abre su descripción (`popover`). |
 | Acabado | Superclase (plata), Épico (violeta), Legendario (oro con brillo), GOAT (holográfico) | Se distingue sin leer el texto. El brillo se detiene con `prefers-reduced-motion`. |
 
 - **Variante compacta**: media, nombre, posiciones y nivel por el color del marco. Al tocarla se abre la carta completa.

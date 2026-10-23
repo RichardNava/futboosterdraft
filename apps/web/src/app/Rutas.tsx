@@ -12,6 +12,7 @@ import { ReproduccionPartido } from '../pantallas/ReproduccionPartido';
 import { Sala } from '../pantallas/Sala';
 import { Perfil } from '../pantallas/Perfil';
 import { Torneo } from '../pantallas/Torneo';
+import { Duelos } from '../pantallas/Duelos';
 import { Marco } from './Marco';
 import { PantallaCargando } from '../componentes/Esqueleto';
 
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
       { path: '/partidas/:partidaId/partido/:partidoId', element: conSesion(<Partido />) },
       { path: '/partidas/:partidaId/torneo', element: conSesion(<Torneo />) },
       { path: '/partidas/:partidaId/reproduccion/:partidoId', element: conSesion(<ReproduccionPartido />) },
+      { path: '/partidas/:partidaId/duelos/:partidoId', element: conSesion(<Duelos />) },
       ...(PruebasCartas
         ? [
             {

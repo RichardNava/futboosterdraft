@@ -27,6 +27,7 @@ import {
 import { errorAlineacion, errorColocacion, errorFormacion, errorLanzadores, errorTactica, esErrorAdmisible, type ContextoErrores } from './errores';
 import { fuerzaAlineacion, fuerzaPlantilla } from './evaluador';
 import { erroresDe, FORMACIONES_BASICAS, PERFILES, TODAS_LAS_FORMACIONES, type FamiliaError, type NivelIA } from './perfiles';
+import { ajustarAlineacionPorRasgos } from './rasgos';
 import { equipoDesdeAlineacion, simularCandidata } from './pro/simulacionPrueba';
 
 export interface OpcionesAlineacion {
@@ -84,8 +85,12 @@ export function decidirAlineacionDetallada(
   opciones: OpcionesAlineacion = {},
 ): { alineacion: Alineacion; errores: FamiliaError[] } {
   const p = opciones.parametros ?? parametrosActuales();
-  const correcta = alineacionCorrecta(nivel, plantilla, bajas, rivalPlantilla, semilla, opciones);
-  return conErrores(nivel, correcta, plantilla, bajas, rivalPlantilla, semilla, p);
+  // Los rasgos (spec 005) los tienen en cuenta todos los niveles salvo el amateur, que no se fija en ellos. Se ajustan
+  // también tras los errores: uno de formación rehace la alineación desde la plantilla.
+  const ajustar = (a: Alineacion) => (nivel === 'amateur' ? a : ajustarAlineacionPorRasgos(a, plantilla, bajas, p));
+  const correcta = ajustar(alineacionCorrecta(nivel, plantilla, bajas, rivalPlantilla, semilla, opciones));
+  const r = conErrores(nivel, correcta, plantilla, bajas, rivalPlantilla, semilla, p);
+  return { ...r, alineacion: ajustar(r.alineacion) };
 }
 
 /**

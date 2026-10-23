@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Booster draft de tres sobres de ocho cartas con selección simultánea; modelo de jugadores (demarcación, posiciones, stats, specials, niveles, colecciones); formaciones y opciones tácticas; simulación rápida y simulación 2D; modos de juego liga, playoff y mixto; algoritmo de simulación complejo; jugadores NPC con cuatro niveles de IA."
+**Input**: User description: "Booster draft de tres sobres de ocho cartas con selección simultánea; modelo de jugadores (demarcación, posiciones, stats, virtudes, niveles, colecciones); formaciones y opciones tácticas; simulación rápida y simulación 2D; modos de juego liga, playoff y mixto; algoritmo de simulación complejo; jugadores NPC con cuatro niveles de IA."
 
 ## Clarifications
 
@@ -19,7 +19,7 @@
 - Q: ¿Quién decide qué jugador lanza los penaltis, las faltas directas y los córners: el participante o el sistema? → A: Automático por defecto, pero el participante puede designar en la alineación al lanzador de penaltis, de faltas y de córners, y el orden de la tanda; si el designado no está en el campo, lanza el siguiente mejor.
 - Q: ¿Cómo se asignan los dorsales y los colores de cada equipo? → A: Al elegir el once tras el draft, los dorsales se asignan automáticamente según la posición (1 POR, 2 LD, 3 LI, 4 central derecho, 5 central izquierdo, 6 MD, 8 MC/MII/MID, 10 MCO, 7 EI, 9 DC, 11 ED); el resto recibe un dorsal aleatorio. Cada equipo recibe colores aleatorios para la primera y la segunda equipación. El participante puede personalizar dorsales y colores.
 - Q: ¿Cómo debe afectar la formación al resultado? → A: Debe cambiar el comportamiento de los jugadores y el algoritmo: una formación ofensiva (p. ej. 3-4-3) hace más probable marcar y también recibir goles; una defensiva (p. ej. 5-4-1) hace menos probable tanto marcar como recibir.
-- Q: ¿Cuándo se activa el special Santo? → A: En los últimos 10 minutos (minuto 80 en adelante), durante toda la prórroga, y en eliminatorias mientras su equipo va ganando o empatando (el rival necesita remontar). "Partido señalado" = eliminatoria.
+- Q: ¿Cuándo se activa la virtud Santo? → A: En los últimos 10 minutos (minuto 80 en adelante), durante toda la prórroga, y en eliminatorias mientras su equipo va ganando o empatando (el rival necesita remontar). "Partido señalado" = eliminatoria.
 - Q: ¿Cuándo se pierde una partida de invitado? → A: Al cerrar la sesión o tras 10 minutos seguidos sin conexión; antes de eso puede volver y seguir donde lo dejó.
 - Q: ¿Llevan tildes los identificadores y valores en el código? → A: No. El código y los datos no usan tildes (p. ej. el nivel es `Epico`); las tildes solo aparecen en los textos que se muestran en la interfaz ("Épico").
 
@@ -56,7 +56,7 @@ Con su plantilla de 24 jugadores, el participante elige una de las diez formacio
 
 1. **Given** una plantilla de 24 jugadores, **When** el participante elige la formación 4-3-3, **Then** se le muestran las 11 casillas de esa formación, cada una con su código de posición.
 2. **Given** una casilla de posición "LD", **When** el participante coloca a un jugador cuyas posiciones no incluyen "LD", **Then** el sistema marca la casilla como "fuera de posición" y muestra sus stats y su media penalizadas.
-3. **Given** un centrocampista con el special "Todocampista", **When** se coloca en cualquier casilla que no sea de portero, **Then** no recibe penalización por posición.
+3. **Given** un centrocampista con la virtud "Todocampista", **When** se coloca en cualquier casilla que no sea de portero, **Then** no recibe penalización por posición.
 4. **Given** la opción "Marcaje individual" activada, **When** el participante selecciona "Defensa en zona", **Then** "Marcaje individual" se desactiva automáticamente (opciones excluyentes).
 5. **Given** un equipo con 11 titulares, formación y táctica válidas, **When** el participante confirma, **Then** la alineación queda guardada para el siguiente partido.
 6. **Given** una alineación con el titular que tiene "Lanzador de penalties", **When** el participante abre la pantalla de lanzadores, **Then** ese jugador aparece propuesto como lanzador de penaltis, y el participante puede cambiarlo por otro titular.
@@ -197,7 +197,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 
 #### Jugadores
 
-- **FR-016**: Cada jugador DEBE tener: identificador, nombre, apellidos, nacionalidad, fecha de nacimiento, altura, demarcación, lista de posiciones, historia, stats, media, specials, nivel y colección.
+- **FR-016**: Cada jugador DEBE tener: identificador, nombre, apellidos, nacionalidad, fecha de nacimiento, altura, demarcación, lista de posiciones, historia, stats, media, virtudes, nivel y colección.
 - **FR-017**: La demarcación DEBE ser una de: POR (portero), DEF (defensa), MED (centrocampista), DEL (atacante).
 - **FR-018**: Las posiciones válidas DEBEN ser: POR; LI, LD, DCI, DCD, CI, CD (defensas); MD, MC, MII, MID, MCO (centrocampistas); DC, SD, EI, ED (atacantes). Un jugador PUEDE tener varias posiciones.
 - **FR-019**: Cada jugador DEBE tener exactamente seis stats, según su demarcación:
@@ -206,13 +206,9 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   - MED: velocidad (VEL), técnica (TEC), pase (PAS), posicionamiento (POS), visión (VIS), disparo (DIS).
   - DEL: velocidad (VEL), regate (REG), finalización (FIN), desmarque (DES), creatividad (CRE), agresividad (AGR).
 - **FR-020**: Cada stat DEBE ser un valor entero entre 1 y 99, y la media DEBE ser el promedio aritmético de los seis stats del jugador.
-- **FR-021**: El nivel DEBE limitar el número máximo de specials: Superclase hasta 1, Épico hasta 2, Legendario hasta 3, GOAT hasta 4.
-- **FR-022**: Un jugador DEBE poder tener specials genéricos (Incansable, Motivador, Lanzador de faltas, Lanzador de penalties, Aura, Capitanía, Filigranas, Fortaleza mental, Intimidante, Elegante, Presionador, Recuperador tras pérdida, Carismático, Potente, Robusto) y specials de su demarcación:
-  - POR: Parapenalties, One-to-One, Santo, Ordenabarreras, Jugador de campo.
-  - DEF: Infranqueable, Jerarquía, Volador, Líbero, Muro defensivo.
-  - MED: Llegador, Box-to-Box, Primer toque, Todocampista, Jugador entre líneas.
-  - DEL: Matador, Rematador, Cabeceador, Desbordante, Guante en el pie.
-- **FR-023**: Un defensa que tenga entre sus posiciones CI o CD (carrilero) PUEDE tener además specials de centrocampista.
+- **FR-021**: El nivel DEBE limitar el número máximo de virtudes: Superclase hasta 1, Épico hasta 2, Legendario hasta 3, GOAT hasta 4.
+- **FR-022**: Un jugador DEBE poder tener virtudes genéricas y virtudes de su demarcación (POR, DEF, MED o DEL). *[Actualizado por la [spec 005](../005-virtudes-defectos/spec.md): la lista de virtudes y defectos, con su ámbito, está en [virtudes y defectos](../../docs/juego/virtudes-y-defectos.md).]*
+- **FR-023**: Un defensa que tenga entre sus posiciones CI o CD (carrilero) PUEDE tener además virtudes de centrocampista.
 - **FR-024**: El sistema DEBE rechazar en la carga de datos cualquier jugador que incumpla las reglas de FR-016 a FR-023.
 
 #### Formaciones, alineación y táctica
@@ -220,7 +216,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **FR-025**: El participante DEBE poder elegir entre las formaciones 3-4-3, 4-3-3, 4-4-2 en cuadrado, 4-4-2 en diamante, 4-2-3-1, 3-5-2, 5-4-1, 5-3-2, 4-5-1 y 3-3-3-1, cada una con 11 casillas de posición definidas (ver tabla en Assumptions). *[Actualizado por la spec 002: las formaciones son colocaciones de partida; cada titular se puede colocar libremente y su posición efectiva es la de su zona (002/FR-034).]*
 - **FR-025a**: En las formaciones con defensa de 3 o de 5, la casilla del central del medio ("central del medio") NO es una posición de jugador: ningún jugador la tiene en su lista de posiciones. Un jugador con DCI o DCD entre sus posiciones DEBE poder ocuparla sin penalización; cualquier otro jugador recibe la penalización normal por estar fuera de posición.
 - **FR-026**: Una alineación válida DEBE tener 11 titulares distintos, uno por casilla, y hasta 7 suplentes elegidos entre los 13 jugadores restantes de la plantilla.
-- **FR-027**: Un jugador colocado en una casilla cuya posición no figure en su lista de posiciones DEBE sufrir una penalización severa en sus stats; la penalización DEBE ser mayor para un jugador de campo en la portería o un portero fuera de ella. El special Todocampista anula la penalización salvo en la portería. *[Sustituido por la spec 002: penalización graduada por demarcación de origen y destino (002/FR-031 a FR-033).]*
+- **FR-027**: Un jugador colocado en una casilla cuya posición no figure en su lista de posiciones DEBE sufrir una penalización severa en sus stats; la penalización DEBE ser mayor para un jugador de campo en la portería o un portero fuera de ella. La virtud Todocampista anula la penalización salvo en la portería. *[Sustituido por la spec 002: penalización graduada por demarcación de origen y destino (002/FR-031 a FR-033).]*
 - **FR-028**: El sistema DEBE mostrar en la pantalla de alineación, para cada titular, sus stats y su media efectivos en la casilla asignada, y señalar visualmente los jugadores fuera de posición.
 - **FR-029**: El participante DEBE poder configurar las opciones tácticas agrupadas así (radio = excluyentes, casilla = combinable):
   - Sistema defensivo (radio, obligatorio): Defensa en zona (por defecto) | Marcaje individual.
@@ -229,7 +225,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   - Estilo con balón (radio): Equilibrado (por defecto) | Contraataque | Juego combinativo.
   - Juego vertical (casilla): no compatible con Juego combinativo.
 - **FR-029a**: La alineación DEBE incluir un lanzador de penaltis, uno de faltas directas, uno de córners y el orden de los 5 primeros lanzadores de una tanda de penaltis.
-  - El sistema los DEBE proponer automáticamente: el titular con el special correspondiente (Lanzador de penalties, Lanzador de faltas, Guante en el pie) y, si no hay ninguno, el titular con mejor valor para esa acción.
+  - El sistema los DEBE proponer automáticamente: el titular con la virtud correspondiente (Lanzador de penalties, Lanzador de faltas, Guante en el pie) y, si no hay ninguno, el titular con mejor valor para esa acción.
   - El participante DEBE poder cambiarlos en la pantalla de alineación y en las ventanas de cambios del partido.
   - Si el designado no está en el campo (sustituido, expulsado o lesionado), lanza el siguiente mejor candidato según el mismo criterio. En una tanda de penaltis, los jugadores que no estaban en el campo al final del partido NO DEBEN lanzar.
 - **FR-030**: El sistema DEBE rechazar configuraciones tácticas incompatibles y alineaciones inválidas, tanto desde la interfaz como en la validación del servidor.
@@ -246,23 +242,15 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 #### Motor de simulación
 
 - **FR-032**: Existirá un único motor de simulación; la simulación rápida y la 2D DEBEN usar el mismo motor y, con las mismas condiciones iniciales, decisiones y semilla, DEBEN producir los mismos eventos y el mismo resultado.
-- **FR-033**: El motor DEBE simular el partido como una secuencia de acciones de juego (salida de balón, pase, conducción, regate, entrada, intercepción, centro, remate, parada, despeje, falta, tarjeta, fuera de juego, córner, falta directa, penalti, lesión, sustitución) cuyo éxito se resuelve enfrentando los stats relevantes de los jugadores implicados, modificados por specials, posición, formación, táctica, cansancio y contexto del partido.
+- **FR-033**: El motor DEBE simular el partido como una secuencia de acciones de juego (salida de balón, pase, conducción, regate, entrada, intercepción, centro, remate, parada, despeje, falta, tarjeta, fuera de juego, córner, falta directa, penalti, lesión, sustitución) cuyo éxito se resuelve enfrentando los stats relevantes de los jugadores implicados, modificados por virtudes, posición, formación, táctica, cansancio y contexto del partido.
 - **FR-034**: La formación DEBE cambiar el comportamiento de los jugadores y el algoritmo de simulación, según su **ofensividad** (ver la tabla de Assumptions): *[Actualizado por la spec 002: la ofensividad y la amplitud se calculan a partir de la colocación real sobre la formación de partida (002/FR-034b).]*
   - Una formación más ofensiva (p. ej. 3-4-3) DEBE aumentar la probabilidad de **marcar y también de recibir** goles: más jugadores en ataque, más ocasiones propias y más espacios a la espalda.
   - Una formación más defensiva (p. ej. 5-4-1) DEBE reducir la probabilidad **tanto de marcar como de recibir**: bloque más ordenado y reactivo, menos ocasiones para ambos.
   - La formación también DEBE influir en la zona y el tipo de las acciones: por bandas o por dentro, juego directo o elaborado.
 - **FR-035**: Cada opción táctica DEBE tener un efecto definido y comprobable en la simulación (frecuencia y zona de las acciones, probabilidad de recuperación, fueras de juego provocados, ritmo de cansancio, tipo de ataque).
-- **FR-036**: A partir del minuto 65 los stats de cada jugador DEBEN degradarse leve y progresivamente por cansancio; con Presión alta la degradación DEBE empezar en el minuto 55. Los specials Incansable (para el propio jugador) y Motivador (para los compañeros en el campo) DEBEN ralentizar esa degradación.
-- **FR-037**: Cada special DEBE aplicarse exactamente según su definición; en particular:
-  - Capitanía: +1 a la media de todos los compañeros en el campo mientras esté jugando.
-  - Fortaleza mental: +2 a la media de todos los compañeros en el campo mientras su equipo vaya perdiendo.
-  - Intimidante: −1 a los atributos enfrentados del rival más cercano en cada acción.
-  - Infranqueable: +2 a tackling y marcaje frente a atacantes con regate ≥ 95.
-  - Jerarquía: +1 a la media defensiva del equipo. Líbero: +2 a la media del centro del campo. Box-to-Box: +1 a la media de la defensa y del ataque.
-  - Filigranas, Muro defensivo, Guante en el pie y Santo: "reroll" en su acción concreta, quedándose con el mejor resultado de dos resoluciones.
-  - Santo solo está activo en los últimos 10 minutos del partido (minuto 80 en adelante), durante toda la prórroga, y en partidos de eliminatoria mientras su equipo va ganando o empatando.
-  - Los specials restantes aumentan la probabilidad de éxito o frecuencia de las acciones descritas en su definición.
-- **FR-038**: Varios specials del mismo tipo en el campo NO DEBEN acumular su bonificación de equipo más de una vez (p. ej. dos jugadores con Capitanía siguen dando +1).
+- **FR-036**: A partir del minuto 65 los stats de cada jugador DEBEN degradarse leve y progresivamente por cansancio; con Presión alta la degradación DEBE empezar en el minuto 55. Las virtudes Incansable (para el propio jugador) y Motivador (para los compañeros en el campo) DEBEN ralentizar esa degradación.
+- **FR-037**: Cada virtud DEBE aplicarse exactamente según su definición. *[Actualizado por la [spec 005](../005-virtudes-defectos/spec.md): el efecto exacto de cada virtud y defecto, su activación y su acumulación están en [virtudes y defectos](../../docs/juego/virtudes-y-defectos.md).]*
+- **FR-038**: Varias virtudes del mismo tipo en el campo NO DEBEN acumular su bonificación de equipo más de una vez (p. ej. dos jugadores con Capitanía siguen dando +1).
 - **FR-039**: El motor DEBE incorporar aleatoriedad controlada, de forma que el mejor equipo no gane siempre pero las diferencias de plantilla, posición y táctica sean determinantes en el conjunto de partidos (ver criterios de éxito SC-004 a SC-006).
 - **FR-040**: Cada partido DEBE poder reproducirse a partir de sus condiciones iniciales, sus decisiones registradas y su semilla, para auditoría y pruebas.
 - **FR-041**: Los partidos de eliminatoria empatados tras 90 minutos DEBEN ir a una prórroga de 2 × 15 minutos y, si persiste el empate, a penaltis (5 lanzamientos por equipo y muerte súbita); los partidos de liga pueden terminar en empate.
@@ -273,7 +261,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
   - En la liga (y en la fase de liga del modo mixto), las amarillas sueltas DEBEN acumularse entre partidos: al llegar a 3 amarillas acumuladas, el jugador cumple 1 partido de sanción y su contador vuelve a 0. Las dos amarillas que provocan una expulsión por doble amarilla no suman al contador. En los partidos de eliminatoria las amarillas no se acumulan.
   - Los jugadores sancionados o lesionados NO DEBEN poder alinearse, ni como titulares ni como suplentes, hasta cumplir su baja; el contador avanza con cada partido que juega su equipo.
   - En el modo mixto, las bajas pendientes al terminar la liga se trasladan a la fase eliminatoria. Todas las bajas desaparecen al terminar el torneo.
-  - El special Robusto DEBE reducir tanto la probabilidad de lesión como su gravedad.
+  - La virtud Robusto DEBE reducir tanto la probabilidad de lesión como su gravedad.
 
 #### Simulación rápida
 
@@ -321,9 +309,9 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 
 ### Key Entities *(include if feature involves data)*
 
-- **Jugador (carta)**: un futbolista ficticio de una colección. Datos personales (nombre, apellidos, nacionalidad, fecha de nacimiento, altura, historia), demarcación, posiciones en las que rinde, seis stats según demarcación, media, nivel y specials.
+- **Jugador (carta)**: un futbolista ficticio de una colección. Datos personales (nombre, apellidos, nacionalidad, fecha de nacimiento, altura, historia), demarcación, posiciones en las que rinde, seis stats según demarcación, media, nivel y virtudes.
 - **Colección**: conjunto de jugadores que forma el pool de cartas; en el MVP solo "Core".
-- **Special**: habilidad con nombre, ámbito (genérico o de una demarcación) y efecto definido en la simulación.
+- **Virtud**: habilidad con nombre, ámbito (genérico o de una demarcación) y efecto definido en la simulación.
 - **Partida**: lo que crea el anfitrión. Modo de juego, número de participantes, tipo de simulación, ritmo del torneo (en directo o asíncrono, con su plazo por jornada), configuración de NPC y estado (buscando participantes, en draft, en torneo, terminada).
 - **Participante**: humano o NPC (con su nivel) que ocupa un asiento en una mesa de draft y compite en el torneo con una plantilla. Tiene una primera y una segunda equipación (colores principal y secundario de cada una).
 - **Mesa de draft**: 4 a 8 participantes con asientos ordenados; contiene 3 rondas de sobres y su estado turno a turno.
@@ -362,7 +350,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **SC-012**: Una liga de 4 genera 12 partidos (6 por participante), una de 8 genera 56 (14 por participante), un playoff de 16 genera 15 partidos y un mixto genera 59 partidos (56 de liga + 3 de eliminatoria).
 - **SC-013**: El 100 % de los sobres generados contiene 8 cartas: 1 POR o DEF, 2 DEF, 3 MED y 2 DEL, y 4 Superclase, 2 Épico, 1 Legendario y 1 carta alta Legendario o GOAT. En 10.000 sobres generados, el hueco "POR o DEF" es POR en un 50 % ± 1 punto, y la carta alta es GOAT en un 20 % ± 1 punto.
 - **SC-014**: En el 100 % de los partidos comprobados, ningún jugador sancionado o lesionado aparece en el once ni en el banquillo, y cada baja termina exactamente tras el número de partidos indicado.
-- **SC-015**: En 1.000 partidos, los jugadores con Robusto sufren al menos un 30 % menos de lesiones que jugadores comparables sin ese special.
+- **SC-015**: En 1.000 partidos, los jugadores con Robusto sufren al menos un 30 % menos de lesiones que jugadores comparables sin esa virtud.
 - **SC-016**: El 100 % de los torneos asíncronos de prueba, incluidos aquellos en los que algún humano no llega a conectarse, terminan en un máximo de (número de jornadas × plazo de jornada).
 - **SC-017**: Con 100 partidas activas a la vez (unos 800 participantes conectados, mezcla de drafts en curso y jornadas de torneo):
   - En el 95 % de los turnos de draft, todos los participantes reciben el nuevo sobre en menos de 1 segundo desde la última elección.
@@ -394,7 +382,7 @@ En lugar del resumen, el participante ve el campo desde arriba con los jugadores
 - **Asientos**: se asignan al azar al empezar el draft y se mantienen durante los tres sobres.
 - **Tiempos por defecto (ajustables en la configuración del juego)**: búsqueda de participantes 3 min; turno de draft 45 s; preparación de equipo antes de cada partido 3 min (5 min antes del primero); descanso 2 min.
 - **Elección automática**: al vencer el turno se elige la carta de mayor media del sobre; si hay empate, la primera en el orden del sobre.
-- **Escala de stats**: enteros de 1 a 99 (coherente con el umbral "regate +95" de Infranqueable). Un nivel PUEDE tener menos specials que su máximo (p. ej. un Superclase con 0 specials).
+- **Escala de stats**: enteros de 1 a 99 (coherente con el umbral "regate +95" de Infranqueable). Un nivel PUEDE tener menos virtudes que su máximo (p. ej. un Superclase con 0 virtudes).
 - **Penalización por posición** (valores iniciales sujetos a equilibrado): −25 % a todos los stats para un jugador de campo fuera de sus posiciones; −60 % para un jugador de campo en la portería o un portero fuera de ella. *[Sustituida por la spec 002: tabla de 002/FR-031 a FR-033.]*
 - **Mapeo de casillas por formación** (la casilla "DCI/DCD" es el central del medio de una defensa de 3 o 5 y admite sin penalización a jugadores con DCI o DCD, ver FR-025a; en defensas de 4 se usan laterales LI/LD y en defensas de 3 o 5 carrileros CI/CD; las bandas de una línea de 4 o 5 medios las ocupan extremos EI/ED):
 

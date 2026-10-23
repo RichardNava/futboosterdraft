@@ -35,8 +35,8 @@ export const CRUCE_MAXIMO = 0.2;
 /** Distancia máxima (en valor de carta) de la decisión dudosa del PRO a la mejor carta (FR-037b). */
 export const DISTANCIA_DUDOSA = 1.5;
 
-/** Specials de equipo (igual que el evaluador: su efecto no se acumula). */
-const SPECIALS_EQUIPO = new Set(['Capitania', 'Jerarquia', 'Libero', 'BoxToBox', 'FortalezaMental', 'Motivador', 'Carismatico']);
+/** Virtudes de equipo (igual que el evaluador: su efecto no se acumula). */
+const VIRTUDES_EQUIPO = new Set(['Capitania', 'Jerarquia', 'Libero', 'BoxToBox', 'FortalezaMental', 'Motivador', 'Carismatico']);
 
 export interface ContextoErrores {
   plantilla: readonly Jugador[];
@@ -49,13 +49,13 @@ const porIdDe = (plantilla: readonly Jugador[]) => new Map(plantilla.map((j) => 
 
 /**
  * Fuerza de una alineación con su colocación: media efectiva de los titulares en la zona en la que juegan,
- * más la sinergia de los specials de equipo (como `fuerzaAlineacion`, pero mirando la colocación).
+ * más la sinergia de las virtudes de equipo (como `fuerzaAlineacion`, pero mirando la colocación).
  */
 export function fuerzaColocada(a: Alineacion, plantilla: readonly Jugador[], p: ParametrosEquilibrado): number {
   const porId = porIdDe(plantilla);
   const vista = previsualizar(a, (id) => porId.get(id)!, p);
   const total = vista.titulares.reduce((s, t) => s + t.media, 0);
-  const equipo = new Set(a.titulares.flatMap((t) => porId.get(t.jugadorId)?.specials ?? []).filter((s) => SPECIALS_EQUIPO.has(s)));
+  const equipo = new Set(a.titulares.flatMap((t) => porId.get(t.jugadorId)?.virtudes ?? []).filter((s) => VIRTUDES_EQUIPO.has(s)));
   return total / 11 + equipo.size * 0.5;
 }
 

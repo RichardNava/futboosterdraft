@@ -7,9 +7,11 @@
  * - Todocampista: sin penalización fuera de la portería.
  * - Misma demarcación, posición que no tiene: −`mismaDemarcacion` (10 %).
  * - Otra demarcación: la tabla de cruces de FR-032. Con varias posiciones, se aplica la menor.
+ * - Inflexible y Versátil (spec 005): si hay penalización, 5 puntos porcentuales más (`defectos.inflexible`) o menos
+ *   (`virtudes.versatil`, con un mínimo de 0).
  */
 import { CLAVES_STATS, POSICIONES_POR_DEMARCACION, type Demarcacion, type Jugador, type Posicion } from '../catalogo/tipos';
-import type { ParametrosEquilibrado, RolPenalizacion } from '../parametros/index';
+import { parametrosEfectivos, type ParametrosEquilibrado, type RolPenalizacion } from '../parametros/index';
 
 export interface StatsEfectivos {
   stats: Record<string, number>;
@@ -50,15 +52,24 @@ function claseDestino(destino: DestinoPosicion): RolPenalizacion | 'POR' {
 const demarcacionDeRol = (r: RolPenalizacion | 'POR'): Demarcacion => (r === 'MED_MCO' || r === 'MED_MD' ? 'MED' : r);
 
 export function penalizacionPorPosicion(
-  jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'specials'>,
+  jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'virtudes' | 'defectos'>,
   destino: DestinoPosicion,
   p: ParametrosEquilibrado,
 ): number {
+  const base = penalizacionBase(jugador, destino, p);
+  if (base <= 0) return base;
+  // Spec 005 (research R6): ajustes en puntos porcentuales, solo fuera de posición.
+  const e = parametrosEfectivos(p);
+  if (jugador.virtudes.includes('Versatil')) return Math.max(0, base - e.virtudes.versatil);
+  return jugador.defectos?.includes('Inflexible') ? base + e.defectos.inflexible : base;
+}
+
+function penalizacionBase(jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'virtudes'>, destino: DestinoPosicion, p: ParametrosEquilibrado): number {
   const tabla = p.penalizacionPosicion;
   if (destino.posicionesAdmitidas.some((pos) => jugador.posicion.includes(pos))) return 0;
   const destinoPortero = destino.posicionesAdmitidas.includes('POR');
   if (destinoPortero !== (jugador.demarcacion === 'POR')) return tabla.porteria;
-  if (jugador.specials.includes('Todocampista')) return 0;
+  if (jugador.virtudes.includes('Todocampista')) return 0;
   const clase = claseDestino(destino);
   let menor = Number.POSITIVE_INFINITY;
   for (const posicion of jugador.posicion) {

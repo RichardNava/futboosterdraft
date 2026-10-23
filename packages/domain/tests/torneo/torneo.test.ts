@@ -88,3 +88,32 @@ describe('clasificación sin los partidos pendientes de ver (FR-030, research R8
     expect(clasificacionActual(t, { excluirPartidos: [] })).toEqual(completa);
   });
 });
+
+describe('torneo del modo Duelo de jugadores (spec 005, T065)', () => {
+  it('usa el cuadro del playoff y registra los cruces sin bajas ni sanciones', async () => {
+    const { crearTorneo, registrarResultado, cerrarJornadaSiCompleta, semillaDesdeTexto: semilla } = await import('../../src/index');
+    const participantes = ['a', 'b', 'c', 'd'];
+    let t = crearTorneo('duelos', participantes, [participantes], semilla('duelos'));
+    expect(t.fase).toBe('eliminatoria');
+    expect(t.cuadro?.rondas).toHaveLength(2);
+    const j = t.jornadas[0]!;
+    for (const [indice, cruce] of j.cruces.entries()) {
+      // Empate a duelos ganados: el desempate decide quién pasa (como unos penaltis).
+      t = registrarResultado(t, {
+        jornada: j.numero,
+        indice,
+        local: cruce.local,
+        visitante: cruce.visitante,
+        golesLocal: 5,
+        golesVisitante: 5,
+        penaltis: { local: 0, visitante: 1 },
+        partidoId: `p${indice}`,
+        eventos: [],
+      }).torneo;
+    }
+    t = cerrarJornadaSiCompleta(t, j.numero).torneo;
+    expect(t.bajas.bajas).toEqual([]);
+    expect(t.cuadro!.rondas[1]!.cruces[0]!.local).toBe(j.cruces[0]!.visitante);
+    expect(t.jornadas).toHaveLength(2);
+  });
+});

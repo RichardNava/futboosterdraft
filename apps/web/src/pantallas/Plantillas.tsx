@@ -30,7 +30,7 @@ export function Plantillas() {
   const [miId, setMiId] = useState<string | null>(null);
   const [seleccion, setSeleccion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ficha, setFicha] = useState<number | null>(null);
+  const [ficha, setFicha] = useState<CartaResumen | null>(null);
   const preparacion = usePreparacionPartido(partidaId ?? '');
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export function Plantillas() {
                   const baja = actual.bajas?.find((b) => b.jugadorId === j.id);
                   return (
                     <div key={j.id}>
-                      <CartaJugador jugador={j} compacta onVerFicha={() => setFicha(j.id)} />
+                      <CartaJugador jugador={j} compacta onVerFicha={() => setFicha(j)} />
                       {baja && <DistintivoBaja baja={baja} />}
                     </div>
                   );
@@ -102,7 +102,7 @@ export function Plantillas() {
           })}
         </div>
       )}
-      {ficha !== null && <FichaJugador jugadorId={ficha} onCerrar={() => setFicha(null)} />}
+      {ficha !== null && <FichaJugador jugadorId={ficha.id} rasgos={ficha} onCerrar={() => setFicha(null)} />}
       {/* Al final de la pantalla, para que `position: sticky` la mantenga a la vista (FR-006). */}
       {preparacion && <BarraPrincipal principal={preparacion.accion} />}
     </main>

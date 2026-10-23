@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://futboosterdraft/schemas/player-data.schema.json",
   "title": "Catálogo de jugadores de una colección",
-  "description": "Formato del fichero de seed (p. ej. data/core.json). Fuente única en código: packages/protocol/schemas/player-data.schema.json (este fichero es su copia de diseño). Las reglas que JSON Schema no expresa bien se validan además en packages/domain (FR-024): media = promedio de stats (±0,01), specials de MED solo para DEF con CI/CD (FR-023), posiciones de un POR solo 'POR', ids únicos en la colección.",
+  "description": "Formato del fichero de seed (p. ej. data/core.json). Fuente única en código: packages/protocol/schemas/player-data.schema.json. Las reglas que JSON Schema no expresa bien se validan además en packages/domain (FR-024): media = promedio de stats (±0,01), virtudes de MED solo para DEF con CI/CD (FR-023), posiciones de un POR solo 'POR', ids únicos en la colección.",
   "type": "object",
   "required": ["coleccion", "version", "jugadores"],
   "additionalProperties": false,
@@ -14,11 +14,12 @@
   "$defs": {
     "stat": { "type": "integer", "minimum": 1, "maximum": 99 },
     "posicion": { "enum": ["POR", "LI", "LD", "DCI", "DCD", "CI", "CD", "MD", "MC", "MII", "MID", "MCO", "DC", "SD", "EI", "ED"] },
-    "specialGenerico": { "enum": ["Incansable", "Motivador", "LanzadorFaltas", "LanzadorPenalties", "Aura", "Capitania", "Filigranas", "FortalezaMental", "Intimidante", "Elegante", "Presionador", "RecuperadorTrasPerdida", "Carismatico", "Potente", "Robusto"] },
-    "specialPOR": { "enum": ["Parapenalties", "OneToOne", "Santo", "Ordenabarreras", "JugadorDeCampo"] },
-    "specialDEF": { "enum": ["Infranqueable", "Jerarquia", "Volador", "Libero", "MuroDefensivo"] },
-    "specialMED": { "enum": ["Llegador", "BoxToBox", "PrimerToque", "Todocampista", "JugadorEntreLineas"] },
-    "specialDEL": { "enum": ["Matador", "Rematador", "Cabeceador", "Desbordante", "GuanteEnElPie"] },
+    "virtudGenerica": { "enum": ["Incansable", "Motivador", "LanzadorFaltas", "LanzadorPenalties", "Aura", "Capitania", "Filigranas", "FortalezaMental", "Intimidante", "Elegante", "Presionador", "RecuperadorTrasPerdida", "Carismatico", "Potente", "Robusto", "DeAcero", "Versatil", "FairPlayer", "Revulsivo"] },
+    "virtudPOR": { "enum": ["Parapenalties", "OneToOne", "Santo", "Ordenabarreras", "JugadorDeCampo"] },
+    "virtudDEF": { "enum": ["Infranqueable", "Jerarquia", "Volador", "Libero", "MuroDefensivo"] },
+    "virtudMED": { "enum": ["Llegador", "BoxToBox", "PrimerToque", "Todocampista", "JugadorEntreLineas"] },
+    "virtudDEL": { "enum": ["Matador", "Rematador", "Cabeceador", "Desbordante", "GuanteEnElPie"] },
+    "defecto": { "enum": ["Agresivo", "Impulsivo", "Fragil", "Fatigado", "Polemico", "Indisciplinado", "Canchero", "Rebelde", "Torpe", "Provocador", "DeCristal", "Estrellita", "Chupon", "Inflexible", "MalDefensor"] },
     "statsPOR": {
       "type": "object", "additionalProperties": false,
       "required": ["agilidad", "colocacion", "distribucion", "aereo", "defensa", "liderazgo"],
@@ -54,7 +55,7 @@
     "jugador": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "nombre", "apellidos", "nacionalidad", "fecha_nacimiento", "altura", "demarcacion", "posicion", "historia", "stats", "media", "specials", "nivel", "coleccion"],
+      "required": ["id", "nombre", "apellidos", "nacionalidad", "fecha_nacimiento", "altura", "demarcacion", "posicion", "historia", "stats", "media", "virtudes", "defectos", "nivel", "coleccion"],
       "properties": {
         "id": { "type": "integer", "minimum": 1 },
         "nombre": { "type": "string", "minLength": 1 },
@@ -67,20 +68,21 @@
         "historia": { "type": "string" },
         "stats": { "type": "object" },
         "media": { "type": "number", "minimum": 1, "maximum": 99 },
-        "specials": { "type": "array", "uniqueItems": true, "maxItems": 4, "items": { "type": "string" } },
+        "virtudes": { "type": "array", "uniqueItems": true, "maxItems": 4, "items": { "type": "string" } },
+        "defectos": { "type": "array", "uniqueItems": true, "minItems": 0, "maxItems": 2, "items": { "$ref": "#/$defs/defecto" } },
         "nivel": { "enum": ["Superclase", "Epico", "Legendario", "GOAT"] },
         "coleccion": { "type": "string", "const": "Core" }
       },
       "allOf": [
-        { "if": { "properties": { "nivel": { "const": "Superclase" } } }, "then": { "properties": { "specials": { "maxItems": 1 } } } },
-        { "if": { "properties": { "nivel": { "const": "Epico" } } }, "then": { "properties": { "specials": { "maxItems": 2 } } } },
-        { "if": { "properties": { "nivel": { "const": "Legendario" } } }, "then": { "properties": { "specials": { "maxItems": 3 } } } },
+        { "if": { "properties": { "nivel": { "const": "Superclase" } } }, "then": { "properties": { "virtudes": { "maxItems": 1 } } } },
+        { "if": { "properties": { "nivel": { "const": "Epico" } } }, "then": { "properties": { "virtudes": { "maxItems": 2 } } } },
+        { "if": { "properties": { "nivel": { "const": "Legendario" } } }, "then": { "properties": { "virtudes": { "maxItems": 3 } } } },
         {
           "if": { "properties": { "demarcacion": { "const": "POR" } } },
           "then": { "properties": {
             "stats": { "$ref": "#/$defs/statsPOR" },
             "posicion": { "items": { "const": "POR" } },
-            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialPOR" }] } }
+            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudPOR" }] } }
           } }
         },
         {
@@ -88,7 +90,7 @@
           "then": { "properties": {
             "stats": { "$ref": "#/$defs/statsDEF" },
             "posicion": { "items": { "not": { "const": "POR" } } },
-            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialDEF" }, { "$ref": "#/$defs/specialMED" }] } }
+            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudDEF" }, { "$ref": "#/$defs/virtudMED" }] } }
           } }
         },
         {
@@ -96,7 +98,7 @@
           "then": { "properties": {
             "stats": { "$ref": "#/$defs/statsMED" },
             "posicion": { "items": { "not": { "const": "POR" } } },
-            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialMED" }] } }
+            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudMED" }] } }
           } }
         },
         {
@@ -104,7 +106,7 @@
           "then": { "properties": {
             "stats": { "$ref": "#/$defs/statsDEL" },
             "posicion": { "items": { "not": { "const": "POR" } } },
-            "specials": { "items": { "anyOf": [{ "$ref": "#/$defs/specialGenerico" }, { "$ref": "#/$defs/specialDEL" }] } }
+            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudDEL" }] } }
           } }
         }
       ]

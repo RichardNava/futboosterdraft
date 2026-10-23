@@ -32,9 +32,9 @@ Cada escenario se puede repetir sin conocer el código (Principio IX).
 ### A. Cartas (US1; SC-001, SC-002)
 
 1. Crea una liga de 4 como invitado y entra al draft.
-2. En cada carta: arriba están la silueta, la media y el nombre; debajo del nombre, las posiciones resaltadas; abajo, los 6 stats y los specials.
-3. Toca un special: aparece su descripción.
-4. Busca un GOAT con 4 specials (o usa la ficha de cualquier GOAT desde la plantilla): se lee entero sin desplazarse.
+2. En cada carta: arriba están la silueta, la media y el nombre; debajo del nombre, las posiciones resaltadas; abajo, los 6 stats y las virtudes.
+3. Toca una virtud: aparece su descripción.
+4. Busca un GOAT con 4 virtudes (o usa la ficha de cualquier GOAT desde la plantilla): se lee entero sin desplazarse.
 5. Repite en un móvil, o con la emulación de 360 px de ancho de las herramientas del navegador.
 6. Pon juntas cartas de los cuatro niveles: se distinguen por el acabado.
 

@@ -1326,3 +1326,370 @@ span.error {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Modo Duelo de jugadores (spec 005) ---------- */
+
+.config-duelos-fila {
+  display: flex;
+  gap: var(--espacio-4);
+  align-items: flex-start;
+}
+
+.config-duelos-campos {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.miniatura-formacion {
+  flex: none;
+  width: 64px;
+  height: 84px;
+}
+
+.miniatura-campo {
+  fill: var(--cesped);
+  stroke: var(--linea-campo);
+}
+
+.miniatura-linea {
+  stroke: var(--linea-campo);
+}
+
+.miniatura-casilla {
+  fill: var(--color-texto);
+}
+
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.duelos-cabecera {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.duelos-equipo {
+  display: flex;
+  min-width: 0;
+}
+
+/* El visitante, pegado a la derecha y separado del marcador (ronda 2). */
+.duelos-equipo.visitante {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.duelos-marcador {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+/*
+ * Escenario de un duelo (spec 005, ronda 2): ring de boxeo con motivos de fútbol al fondo, título «A VS B» sobre el
+ * puesto, las dos cartas en el centro y el desglose de cada una a su lado exterior, que aparece tras el choque. Así
+ * todo cabe a 1366 × 768 sin desplazarse.
+ */
+.duelo-escenario {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: var(--espacio-3);
+  justify-items: center;
+  padding: var(--espacio-3) var(--espacio-2) var(--espacio-4);
+  overflow: hidden;
+  border-radius: var(--radio);
+}
+
+.duelo-ring {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  color: var(--color-texto);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.duelo-titulo {
+  display: grid;
+  gap: var(--espacio-1);
+  justify-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.duelo-puesto {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.duelo-enfrentamiento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--espacio-3);
+  width: min(100%, 760px);
+  margin: 0;
+  font-family: var(--letra-cartel);
+  font-size: clamp(1.4rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.duelo-rival {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* Cursiva: hueco para que el remate inclinado de la última letra no se recorte. */
+  padding-inline: 0.06em 0.18em;
+}
+
+.duelo-rival:first-child {
+  text-align: right;
+}
+
+.duelo-rival:last-child {
+  text-align: left;
+}
+
+.duelo-vs {
+  padding: 0.05em 0.4em;
+  border-radius: var(--radio);
+  background: var(--color-oro);
+  color: var(--color-lienzo-hondo);
+  font-style: italic;
+  transform: skewX(-10deg);
+  box-shadow: var(--sombra-oro);
+}
+
+.duelo-pareja {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+  justify-content: center;
+  width: min(100%, 940px);
+}
+
+/* Cada lado: desglose por fuera y carta hacia el centro. */
+.duelo-lado {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 240px);
+  align-items: center;
+  gap: var(--espacio-3);
+  will-change: transform, opacity;
+}
+
+.duelo-lado.visitante {
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+}
+
+/* El choque empuja cada carta desde su borde interior, para que se toquen sin taparse. */
+.duelo-lado.local {
+  transform-origin: right center;
+}
+
+.duelo-lado.visitante {
+  transform-origin: left center;
+}
+
+.duelo-lado.local .duelo-desglose {
+  order: -1;
+}
+
+.duelo-destello {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 40%, var(--color-foco), transparent 60%);
+}
+
+/* Estallido con estrellas del choque, en el punto donde se tocan las cartas. */
+.duelo-choque {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.duelo-estallido,
+.duelo-chispa {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.duelo-estallido {
+  width: 150px;
+  height: 150px;
+  overflow: visible;
+}
+
+.duelo-estallido polygon {
+  fill: var(--color-oro);
+  filter: var(--sombra-estallido);
+}
+
+.duelo-estallido circle {
+  fill: var(--color-foco);
+}
+
+.duelo-chispa {
+  display: block;
+  color: var(--color-oro);
+  font-size: 1.4rem;
+  line-height: 0;
+}
+
+.duelo-desglose {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  margin: 0;
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio);
+  background: var(--color-elevado);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--duracion-media) var(--curva-salida),
+    transform var(--duracion-media) var(--curva-salida);
+}
+
+.duelo-desglose.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.duelo-desglose > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+
+.duelo-desglose dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.duelo-total {
+  font-weight: 800;
+  border-top: 1px solid var(--color-divisor);
+}
+
+/* Velocidades de los duelos en la barra principal: del tamaño de sus botones, no de la barra. */
+.barra-principal-estado > .velocidades {
+  justify-self: start;
+  font-size: 1rem;
+}
+
+/* Con las velocidades, la barra cabe en una fila también a 360 px. */
+.barra-principal-estado:has(> .velocidades) {
+  flex: 0 0 auto;
+}
+
+/* Veredicto: insignia ámbar sobre las cartas, sin ocupar sitio bajo ellas. */
+.duelo-veredicto {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  z-index: 1;
+  margin: 0;
+  padding: 0.25em 0.9em;
+  border-radius: var(--radio-pildora);
+  background: var(--color-oro);
+  color: var(--color-lienzo-hondo);
+  box-shadow: var(--sombra-oro);
+  font-family: var(--letra-cartel);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.duelos-resumen table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.duelos-resumen th,
+.duelos-resumen td {
+  padding: var(--espacio-1) var(--espacio-2);
+  border-bottom: 1px solid var(--color-divisor);
+  font-variant-numeric: tabular-nums;
+}
+
+/* El visitante, alineado a la derecha, con su estrella en el lateral exterior. */
+.duelos-tabla th:last-child,
+.duelos-tabla td:last-child,
+.duelos-tabla td:nth-child(4) {
+  text-align: right;
+}
+
+/* Ganador de cada duelo: en ámbar y con una estrella en su lateral (ronda 2). */
+.duelo-fila.gana-local td:nth-child(2),
+.duelo-fila.gana-local td:nth-child(3),
+.duelo-fila.gana-visitante td:nth-child(4),
+.duelo-fila.gana-visitante td:nth-child(5) {
+  color: var(--color-oro);
+  font-weight: 800;
+}
+
+.duelo-estrella {
+  vertical-align: -0.125em;
+  margin-inline: 0 var(--espacio-1);
+}
+
+.duelos-tabla td:last-child .duelo-estrella {
+  margin-inline: var(--espacio-1) 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duelo-desglose {
+    transform: none;
+    transition: opacity var(--duracion-corta) linear;
+  }
+}
+
+/* Sin sitio a los lados: el desglose vuelve debajo de su carta. */
+@media (max-width: 760px) {
+  .duelo-lado,
+  .duelo-lado.visitante {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .duelo-lado.local .duelo-desglose {
+    order: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .duelo-pareja {
+    gap: var(--espacio-2);
+  }
+
+  /* A 360 px los nombres del título pasan a dos líneas en lugar de recortarse. */
+  .duelo-enfrentamiento {
+    gap: var(--espacio-2);
+    font-size: 1.15rem;
+  }
+
+  .duelo-rival {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

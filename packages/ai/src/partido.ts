@@ -26,6 +26,7 @@ import {
 import { TACTICA_DEFENSIVA, TACTICA_OFENSIVA } from './alineacion';
 import { errorPartido } from './errores';
 import { erroresDe, PERFILES, type NivelIA } from './perfiles';
+import { revulsivoParaEntrar, umbralCansancioDe } from './rasgos';
 
 const iguales = (a: Tactica, b: Tactica) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -53,7 +54,7 @@ export function decidirEnPartido(
       .sort((a, b) => b.jugador.media - a.jugador.media || a.id - b.id)[0];
   const salen = equipo.jugadores
     .filter((j) => j.enCampo && j.jugador.demarcacion !== 'POR')
-    .map((j) => ({ j, motivo: j.cansancio >= perfil.umbralCansancio ? j.cansancio : perfil.protegeAmonestados && estado.fase === 'descanso' && j.amarillas > 0 && j.jugador.demarcacion === 'DEF' ? 0.5 : 0 }))
+    .map((j) => ({ j, motivo: j.cansancio >= umbralCansancioDe(j.jugador, perfil.umbralCansancio) ? j.cansancio : perfil.protegeAmonestados && estado.fase === 'descanso' && j.amarillas > 0 && j.jugador.demarcacion === 'DEF' ? 0.5 : 0 }))
     .filter((x) => x.motivo > 0)
     .sort((a, b) => b.motivo - a.motivo || a.j.id - b.j.id);
   for (const { j } of salen) {
@@ -62,6 +63,13 @@ export function decidirEnPartido(
     if (!entra) continue;
     usados.add(entra.id);
     decisiones.push({ participanteId, tipo: 'sustitucion', datos: { sale: j.id, entra: entra.id } });
+    quedan--;
+  }
+  // Revulsivo (spec 005): entra en el descanso.
+  const revulsivo = quedan > 0 ? revulsivoParaEntrar(estado, lado, new Set([...usados, ...decisiones.flatMap((d) => (d.tipo === 'sustitucion' ? [d.datos.sale] : []))])) : null;
+  if (revulsivo) {
+    usados.add(revulsivo.entra.id);
+    decisiones.push({ participanteId, tipo: 'sustitucion', datos: { sale: revulsivo.sale.id, entra: revulsivo.entra.id } });
     quedan--;
   }
 

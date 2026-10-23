@@ -7,7 +7,7 @@ import {
   type Jugador,
   type Nivel,
   type Posicion,
-  type Special,
+  type Virtud,
 } from '@fbd/domain';
 
 const DEM: Record<Posicion, Demarcacion> = Object.fromEntries(
@@ -16,7 +16,7 @@ const DEM: Record<Posicion, Demarcacion> = Object.fromEntries(
 
 let id = 1;
 
-export function jugador(posicion: Posicion, valor = 80, specials: Special[] = [], otras: Posicion[] = []): Jugador {
+export function jugador(posicion: Posicion, valor = 80, virtudes: Virtud[] = [], otras: Posicion[] = []): Jugador {
   const demarcacion = DEM[posicion];
   const stats = Object.fromEntries(CLAVES_STATS[demarcacion].map((c) => [c, valor])) as unknown as Jugador['stats'];
   const nivel: Nivel = valor >= 88 ? 'GOAT' : valor >= 83 ? 'Legendario' : valor >= 78 ? 'Epico' : 'Superclase';
@@ -33,7 +33,9 @@ export function jugador(posicion: Posicion, valor = 80, specials: Special[] = []
     stats,
     media: 0,
     nivel,
-    specials,
+    virtudes,
+    defectos: [],
+    coleccion: 'Core',
   } as Jugador;
   j.media = calcularMedia(j);
   return j;

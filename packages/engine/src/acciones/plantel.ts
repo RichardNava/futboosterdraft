@@ -25,6 +25,7 @@ export function sustituir(ctx: Contexto, equipo: EquipoEstado, sale: JugadorEnPa
   delete esp.jugadores[sale.id];
   delete esp.destinos[sale.id];
   entra.enCampo = true;
+  entra.entroDesdeBanquillo = true;
   sale.enCampo = false;
   sale.retirado = true;
   sale.casillaId = null;

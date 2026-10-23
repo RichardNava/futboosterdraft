@@ -11,6 +11,8 @@ export type { EstadoMotor, JugadorEnPartido, EquipoEstado } from './estado/estad
 export { maxSustituciones, minutoDeJuego, minutoMostrable } from './estado/estado';
 export { avanzar, type ResultadoTramo } from './tramos/avanzar';
 export { ordenJugadores } from './espacio/paso';
+// Efectos de los defectos en los stats (spec 005): la herramienta de equilibrado los mide en partidos reales.
+export { bonusProvocador, multiplicadorEquipo, multiplicadorIndividual } from './modificadores/defectos';
 export { encolarLote, validarDecision, type ResultadoDecision, type ResultadoLote } from './tramos/decisiones';
 export * from './tipos';
 

@@ -7,9 +7,9 @@ import { SobreArte } from '../componentes/arte/SobreArte';
 import { useSesion } from '../estado/sesion';
 import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, type Dificultad, type NivelNPC } from '../textos/niveles';
 
-type Modo = 'liga' | 'playoff' | 'mixto';
+type Modo = 'liga' | 'playoff' | 'mixto' | 'duelos';
 
-const PARTICIPANTES: Record<Modo, number[]> = { liga: [4, 5, 6, 7, 8], playoff: [4, 8, 16], mixto: [8] };
+const PARTICIPANTES: Record<Modo, number[]> = { liga: [4, 5, 6, 7, 8], playoff: [4, 8, 16], mixto: [8], duelos: [4, 8, 16] };
 
 /** Formulario de creación de partida (T052; FR-001). */
 export function CrearPartida() {
@@ -69,10 +69,10 @@ export function CrearPartida() {
         <form className="formulario ancho crear-formulario" onSubmit={(e) => void enviar(e)}>
           <fieldset className="losetas">
             <legend>Modo de juego</legend>
-            {(['liga', 'playoff', 'mixto'] as const).map((m) => (
+            {(['liga', 'playoff', 'mixto', 'duelos'] as const).map((m) => (
               <label key={m} className="loseta">
                 <input type="radio" name="modo" checked={modo === m} onChange={() => cambiarModo(m)} />
-                <Icono nombre={m === 'liga' ? 'partidas' : m === 'playoff' ? 'trofeo' : 'escudo'} tamano={26} className="loseta-icono" />
+                <Icono nombre={ICONO_MODO[m]} tamano={26} className="loseta-icono" />
                 <span className="loseta-texto">
                   <strong>{ETIQUETA_MODO[m]}</strong>{' '}
                   <span className="nota">{DETALLE_MODO[m]}</span>
@@ -223,10 +223,14 @@ export function CrearPartida() {
   );
 }
 
-const ETIQUETA_MODO = { liga: 'Liga', playoff: 'Playoff', mixto: 'Mixto' } as const;
+const ETIQUETA_MODO = { liga: 'Liga', playoff: 'Playoff', mixto: 'Mixto', duelos: 'Duelo de jugadores' } as const;
+
+/** Icono de cada modo (spec 005, FR-060): todos tienen el suyo, con el mismo trazo. */
+const ICONO_MODO = { liga: 'partidas', playoff: 'trofeo', mixto: 'escudo', duelos: 'duelo' } as const;
 
 const DETALLE_MODO = {
   liga: 'Ida y vuelta: todos contra todos.',
   playoff: 'Eliminatorias hasta la final.',
   mixto: 'Liga de 8 y después semifinales y final.',
+  duelos: 'Eliminatorias por duelos entre jugadores, puesto por puesto.',
 } as const;

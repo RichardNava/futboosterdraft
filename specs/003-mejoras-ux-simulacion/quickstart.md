@@ -86,7 +86,7 @@ Cada escenario se puede repetir sin conocer el código (Principio IX).
 
 ### G. Cartas (US7; SC-012)
 
-1. En el draft, en un portátil, lee en voz alta los seis stats y los specials de una carta GOAT con 4 specials, sin ampliar la pantalla.
+1. En el draft, en un portátil, lee en voz alta los seis stats y las virtudes de una carta GOAT con 4 virtudes, sin ampliar la pantalla.
 2. Muestra juntas cartas de los cuatro niveles: cada una tiene su acabado propio, y Legendario y GOAT son claramente más llamativas.
 3. La carta no reproduce el marco, el logotipo ni la tipografía de EA SPORTS FC.
 

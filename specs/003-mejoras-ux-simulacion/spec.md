@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Spec 3 — Mejoras de interfaz, simulación y experiencia de juego: interfaz «Formación» (colocación en el campo de la alineación y vista ampliada de las cartas al pasar el cursor); diseño de las cartas; efectos de apertura de los sobres; botones importantes más visibles y siempre accesibles; simulación 2D (realismo, media de goles, variedad de goles, peso de stats y specials, finalización anticipada a una pantalla de resultado y gestión visual del equipo en el descanso); elección del modo de simulación antes de cada partido; menor dificultad de los NPC; feedback de derrota y de campeón; nombre del equipo para todos y equipaciones con rayas, franjas y varios colores."
+**Input**: User description: "Spec 3 — Mejoras de interfaz, simulación y experiencia de juego: interfaz «Formación» (colocación en el campo de la alineación y vista ampliada de las cartas al pasar el cursor); diseño de las cartas; efectos de apertura de los sobres; botones importantes más visibles y siempre accesibles; simulación 2D (realismo, media de goles, variedad de goles, peso de stats y virtudes, finalización anticipada a una pantalla de resultado y gestión visual del equipo en el descanso); elección del modo de simulación antes de cada partido; menor dificultad de los NPC; feedback de derrota y de campeón; nombre del equipo para todos y equipaciones con rayas, franjas y varios colores."
 
 **Relación con las specs anteriores**: esta especificación modifica y amplía [specs/001-draft-manager-mvp/spec.md](../001-draft-manager-mvp/spec.md) y [specs/002-mejoras-mvp/spec.md](../002-mejoras-mvp/spec.md). Las referencias del tipo "001/FR-045" o "002/FR-034" apuntan a requisitos de esas specs. Cuando un requisito de esta spec contradice uno anterior, prevalece el de esta spec, y la spec afectada se actualiza para reflejarlo (ver "Requisitos de specs anteriores afectados").
 
@@ -20,7 +20,7 @@
 - Mejora añadida por el usuario en la misma respuesta: cuando el equipo del participante queda eliminado en un torneo contra NPC y quedan partidos por jugar, el resto del torneo se simula entero de una vez, sin ir partido a partido (FR-041a y FR-041b).
 - Q: ¿Los 2,6–3,4 goles son un objetivo por partido? → A: No. Es la media de un torneo (y de las series de partidos). Cada partido puede acabar de cualquier forma, 0-0, 2-1 o 5-2, siempre que la media quede en el rango.
 - Q: ¿Qué reparto de goles por zona y tipo se busca? → A: *(La parte de la zona está sustituida por la decisión del 2026-10-19 sobre SC-002: alrededor del 25 % fuera del área.)* Entre el 60 % y el 65 % de los goles desde dentro del área; entre el 6 % y el 12 % de penalti, entre el 10 % y el 18 % de cabeza y entre el 5 % y el 10 % de falta directa.
-- Q: ¿Se fijan porcentajes de victoria contra cada nivel de NPC? → A: No. Ningún porcentaje se impone: la probabilidad de marcar, evitar goles y ganar sale del motor, que combina stats, specials, medias, colocación y decisiones tácticas. Los NPC son más fáciles porque toman peores decisiones que ahora en el draft y en la preparación del equipo. El PRO apenas comete errores, pero también toma alguna decisión dudosa para dar opciones al humano.
+- Q: ¿Se fijan porcentajes de victoria contra cada nivel de NPC? → A: No. Ningún porcentaje se impone: la probabilidad de marcar, evitar goles y ganar sale del motor, que combina stats, virtudes, medias, colocación y decisiones tácticas. Los NPC son más fáciles porque toman peores decisiones que ahora en el draft y en la preparación del equipo. El PRO apenas comete errores, pero también toma alguna decisión dudosa para dar opciones al humano.
 
 ### Session 2026-10-18 (/speckit-clarify)
 
@@ -89,7 +89,7 @@ El participante ve un partido 2D y reconoce el fútbol: los equipos combinan con
 
 ### User Story 2 - Preparar el equipo sobre un único campo con cartas a la vista (Priority: P1)
 
-En la pantalla «Formación», el participante ve un solo campo con sus titulares. En ese campo elige y cambia titulares, y también arrastra a cada jugador a la zona exacta donde quiere que juegue. Desaparece el segundo campo de «colocación», que no funcionaba bien. Al pasar el cursor por encima de la ficha de cualquier jugador, en el campo o en el banquillo, aparece su carta completa, con stats y specials, sin necesidad de abrir otra pantalla.
+En la pantalla «Formación», el participante ve un solo campo con sus titulares. En ese campo elige y cambia titulares, y también arrastra a cada jugador a la zona exacta donde quiere que juegue. Desaparece el segundo campo de «colocación», que no funcionaba bien. Al pasar el cursor por encima de la ficha de cualquier jugador, en el campo o en el banquillo, aparece su carta completa, con stats y virtudes, sin necesidad de abrir otra pantalla.
 
 **Why this priority**: Es la pantalla en la que el participante pasa más tiempo antes de cada partido, y hoy obliga a manejar dos campos, uno de los cuales falla. Unificar la colocación y poder consultar cada carta al instante mejora directamente las decisiones tácticas, que son el núcleo del juego (Principio I).
 
@@ -183,16 +183,16 @@ Cuando el participante pulsa «Finalizar partido» durante un partido 2D, deja d
 
 ### User Story 7 - Cartas con diseño final y fáciles de leer (Priority: P2)
 
-Las cartas de jugador tienen un diseño cercano al de la versión final, con la referencia visual de las cartas de EA SPORTS FC pero con una identidad propia del juego. Toda la información se lee con comodidad, incluidos los stats y los specials, que hoy son demasiado pequeños.
+Las cartas de jugador tienen un diseño cercano al de la versión final, con la referencia visual de las cartas de EA SPORTS FC pero con una identidad propia del juego. Toda la información se lee con comodidad, incluidos los stats y las virtudes, que hoy son demasiado pequeños.
 
-**Why this priority**: Las cartas son lo más visible del draft (002/US1). El diseño actual funciona, pero los stats y specials cuestan de leer y la carta no transmite todavía el atractivo de una carta coleccionable.
+**Why this priority**: Las cartas son lo más visible del draft (002/US1). El diseño actual funciona, pero los stats y virtudes cuestan de leer y la carta no transmite todavía el atractivo de una carta coleccionable.
 
-**Independent Test**: Se puede probar mostrando cartas de los cuatro niveles en el draft, en la plantilla y en la vista ampliada de «Formación», y comprobando que una persona lee todos los stats y specials sin ampliar la pantalla.
+**Independent Test**: Se puede probar mostrando cartas de los cuatro niveles en el draft, en la plantilla y en la vista ampliada de «Formación», y comprobando que una persona lee todos los stats y virtudes sin ampliar la pantalla.
 
 **Acceptance Scenarios**:
 
-1. **Given** una carta en el draft en un portátil, **When** el participante la mira a una distancia normal, **Then** lee los seis stats y los nombres de todos los specials sin ampliar la pantalla.
-2. **Given** un GOAT con 4 specials, **When** se muestra su carta, **Then** todo cabe en la carta y se lee sin desplazarse dentro de ella (002/FR-003).
+1. **Given** una carta en el draft en un portátil, **When** el participante la mira a una distancia normal, **Then** lee los seis stats y los nombres de todas las virtudes sin ampliar la pantalla.
+2. **Given** un GOAT con 4 virtudes, **When** se muestra su carta, **Then** todo cabe en la carta y se lee sin desplazarse dentro de ella (002/FR-003).
 3. **Given** cartas de los cuatro niveles, **When** se muestran juntas, **Then** cada nivel tiene un acabado propio y los más altos son claramente más llamativos (002/FR-002).
 4. **Given** una carta, **When** se compara con las cartas de EA SPORTS FC, **Then** recuerda a una carta coleccionable de fútbol, pero no copia su marco, su logotipo ni su tipografía.
 
@@ -321,9 +321,9 @@ Todos los participantes, incluidos los invitados, ponen nombre a su equipo. Adem
 
 #### Diseño de las cartas (US7)
 
-- **FR-008**: El diseño de las cartas DEBE acercarse al de la versión final y mantener la disposición de 002/FR-001 (imagen, nombre y media arriba; posiciones bajo el nombre; stats y specials abajo), así como los acabados por nivel de 002/FR-002. PUEDE inspirarse en las cartas de EA SPORTS FC, pero NO DEBE reproducir su marco, su logotipo, su tipografía ni otros elementos de marca.
-- **FR-009**: En la carta completa, los valores y abreviaturas de los stats y los nombres de los specials DEBEN leerse sin ampliar la pantalla. Para ello, en un portátil, el texto de los stats y de los specials DEBE ser como mínimo tan grande como el texto normal de la interfaz, y el valor de los stats DEBE destacar sobre su abreviatura.
-- **FR-010**: Se mantienen 002/FR-003 (todo cabe sin desplazamiento interno, también un GOAT con 4 specials), 002/FR-004 (descripción de cada special al señalarlo o tocarlo) y 002/FR-005 (mismo diseño en draft, plantilla y ficha, con versión compacta en listas largas).
+- **FR-008**: El diseño de las cartas DEBE acercarse al de la versión final y mantener la disposición de 002/FR-001 (imagen, nombre y media arriba; posiciones bajo el nombre; stats y virtudes abajo), así como los acabados por nivel de 002/FR-002. PUEDE inspirarse en las cartas de EA SPORTS FC, pero NO DEBE reproducir su marco, su logotipo, su tipografía ni otros elementos de marca.
+- **FR-009**: En la carta completa, los valores y abreviaturas de los stats y los nombres de las virtudes DEBEN leerse sin ampliar la pantalla. Para ello, en un portátil, el texto de los stats y de las virtudes DEBE ser como mínimo tan grande como el texto normal de la interfaz, y el valor de los stats DEBE destacar sobre su abreviatura.
+- **FR-010**: Se mantienen 002/FR-003 (todo cabe sin desplazamiento interno, también un GOAT con 4 virtudes), 002/FR-004 (descripción de cada virtud al señalarlo o tocarlo) y 002/FR-005 (mismo diseño en draft, plantilla y ficha, con versión compacta en listas largas).
 
 #### Apertura de los sobres (US8)
 
@@ -350,7 +350,7 @@ Los requisitos de este bloque afectan al motor compartido y, por tanto, a las do
   - Más físico y velocidad → más duelos ganados y más conducciones largas en espacios abiertos.
 
   La influencia DEBE ser gradual y estar acotada por la situación del juego: un buen regateador no regatea siempre, y un buen tirador no tira desde cualquier sitio (SC-006).
-- **FR-022**: Peso de los specials: cada special que afecte a una acción del partido DEBE notarse en el comportamiento o en el resultado de esa acción de forma reconocible (por ejemplo, Lanzador de faltas aumenta claramente los goles de falta directa de su equipo), sin anular el efecto de los stats ni de la táctica. El efecto de cada special DEBE poder medirse en series de partidos (SC-007).
+- **FR-022**: Peso de las virtudes: cada virtud que afecte a una acción del partido DEBE notarse en el comportamiento o en el resultado de esa acción de forma reconocible (por ejemplo, Lanzador de faltas aumenta claramente los goles de falta directa de su equipo), sin anular el efecto de los stats ni de la táctica. El efecto de cada virtud DEBE poder medirse en series de partidos (SC-007).
 - **FR-023**: Las mejoras de FR-016 a FR-022 NO DEBEN empeorar los criterios de la 002 sobre la 2D (002/SC-005 a SC-008 y SC-007a), salvo los que esta spec cambia expresamente.
 
 #### Finalización anticipada (US6)
@@ -377,7 +377,7 @@ Los requisitos de este bloque afectan al motor compartido y, por tanto, a las do
 #### Dificultad de los NPC (US9)
 
 - **FR-036**: La dificultad de los NPC DEBE reducirse haciendo que tomen peores decisiones que ahora en el draft y en la preparación del equipo (alineación, colocación, formación, táctica y lanzadores), y también en los cambios durante el partido. La reducción DEBE ser mayor en los niveles amateur e intermedio.
-- **FR-037**: La dificultad DEBE ajustarse solo mediante la calidad de esas decisiones (001/FR-058). Ningún porcentaje de victoria, de gol o de parada DEBE fijarse ni corregirse por nivel de NPC: la probabilidad de marcar, de evitar goles y de ganar DEBE salir siempre del motor, que combina stats, specials, medias, posiciones, colocación y decisiones tácticas de los dos equipos (Principio I). Los NPC NO DEBEN recibir cartas peores, stats rebajados, ventajas ni reglas distintas de las de los humanos (Principios I y VI), y el motor NO DEBE tratar de forma distinta a un equipo por ser NPC o humano.
+- **FR-037**: La dificultad DEBE ajustarse solo mediante la calidad de esas decisiones (001/FR-058). Ningún porcentaje de victoria, de gol o de parada DEBE fijarse ni corregirse por nivel de NPC: la probabilidad de marcar, de evitar goles y de ganar DEBE salir siempre del motor, que combina stats, virtudes, medias, posiciones, colocación y decisiones tácticas de los dos equipos (Principio I). Los NPC NO DEBEN recibir cartas peores, stats rebajados, ventajas ni reglas distintas de las de los humanos (Principios I y VI), y el motor NO DEBE tratar de forma distinta a un equipo por ser NPC o humano.
 - **FR-037a**: Errores por nivel: cada nivel DEBE cometer errores de decisión creíbles, que un jugador reconocería como errores propios de alguien que juega peor, no como decisiones absurdas. Por ejemplo: elegir en el draft una carta de más media que no encaja en la plantilla, dejar en el banquillo a un jugador mejor, colocar a un jugador fuera de su posición, o elegir una táctica poco adecuada al rival. La frecuencia y la gravedad de los errores DEBEN bajar con el nivel.
 - **FR-037b**: El nivel PRO DEBE apenas cometer errores, pero NO DEBE tomar siempre la mejor opción: también DEBE tomar de vez en cuando decisiones dudosas, para que un humano tenga opciones reales de ganarle. Esto sustituye a 001/FR-060.
 - **FR-038**: Los niveles DEBEN seguir siendo ordenados: contra el mismo participante, cada nivel DEBE ganar más partidos que el inferior (001/SC-010). Este orden es una consecuencia medida de la calidad de las decisiones, no un resultado impuesto.
@@ -444,7 +444,7 @@ Salvo que se diga otra cosa, las series de partidos se juegan entre equipos equi
   - con 15 puntos más de físico y de velocidad, ese jugador gana al menos un 15 % más de duelos y hace al menos un 15 % más de conducciones largas;
 
   y en ningún caso el jugador mejorado concentra más del 60 % de esa acción de su equipo (no se vuelve predecible).
-- **SC-007**: En series de 1.000 partidos, cada special con efecto en el partido produce una diferencia medible en su acción respecto al mismo equipo sin él. Por ejemplo, un equipo con Lanzador de faltas marca al menos un 30 % más de goles de falta directa.
+- **SC-007**: En series de 1.000 partidos, cada virtud con efecto en el partido produce una diferencia medible en su acción respecto al mismo equipo sin él. Por ejemplo, un equipo con Lanzador de faltas marca al menos un 30 % más de goles de falta directa.
 - **SC-008**: En una prueba con al menos 5 personas, cada una ve 2 minutos de la 2D de la versión actual y 2 minutos de la nueva, y puntúa de 1 a 5 si "parece un partido de fútbol". La nota media de la nueva es al menos 3,5 y al menos 1 punto superior a la de la versión actual.
 - **SC-009**: Los criterios de equivalencia y de ventaja de la estrategia de la 001 y la 002 siguen cumpliéndose con el motor nuevo: la simulación rápida y la 2D dan el mismo partido en el 100 % de las comparaciones con la misma semilla (001/SC-008), y el equipo con 5 puntos más de media gana al menos el 60 % de los partidos (001/SC-004).
 - **SC-010**: En series de torneos simulados de un participante de referencia contra NPC de cada nivel, se mide el porcentaje de partidos que gana el participante. Estos porcentajes son una comprobación, no un objetivo que el motor imponga (FR-037):
@@ -456,7 +456,7 @@ Salvo que se diga otra cosa, las series de partidos se juegan entre equipos equi
 - **SC-010a**: En series de 1.000 partidos con las mismas alineaciones, tácticas y semillas, el resultado es idéntico en el 100 % de los casos tanto si cada equipo lo controla un humano como si lo controla un NPC de cualquier nivel: la dificultad solo cambia las decisiones, nunca el cálculo del partido.
 - **SC-010b**: En la revisión de 20 drafts y preparaciones de equipo de cada nivel, los errores de decisión bajan de amateur a PRO; los del PRO son escasos pero existen (al menos una decisión dudosa en la mayoría de sus drafts), y en ningún nivel aparece una decisión absurda (por ejemplo, un portero de delantero centro teniendo delanteros en el banquillo).
 - **SC-011**: En una prueba con al menos 5 personas que juegan su primer torneo contra NPC amateur, al menos el 80 % gana al menos un partido y al menos el 50 % gana más partidos de los que pierde.
-- **SC-012**: En una prueba con al menos 5 personas, al menos el 80 % lee correctamente en voz alta, sin ampliar la pantalla, los seis stats y los nombres de los specials de una carta GOAT con 4 specials en un portátil, en menos de 10 segundos.
+- **SC-012**: En una prueba con al menos 5 personas, al menos el 80 % lee correctamente en voz alta, sin ampliar la pantalla, los seis stats y los nombres de las virtudes de una carta GOAT con 4 virtudes en un portátil, en menos de 10 segundos.
 - **SC-013**: En el 100 % de las pantallas del flujo de juego, el botón principal se ve sin desplazar la pantalla, en un portátil de 1366 × 768 y en un móvil de 360 × 640, y sigue visible al desplazarse por el contenido. En una prueba con al menos 5 personas, al menos el 90 % encuentra el botón para avanzar en menos de 2 segundos en cada pantalla.
 - **SC-014**: En una prueba con al menos 5 personas, al menos el 80 % coloca a un jugador en una zona concreta del campo y cambia un titular por un suplente en la pantalla «Formación» sin ayuda y en menos de 30 segundos cada cosa.
 - **SC-015**: Al pasar el cursor sobre una ficha, la carta completa aparece en menos de 0,5 segundos en el 95 % de los casos, y en el 100 % de los casos se muestra entera dentro de la pantalla.

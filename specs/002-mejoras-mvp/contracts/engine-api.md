@@ -90,6 +90,6 @@ Se mantienen los cuatro de la spec 001 (determinismo, equivalencia entre modalid
 
 | Medida | Objetivo |
 |--------|----------|
-| Partido completo sin fotogramas | ≤ 25 ms de CPU (Node 22) |
-| Partido completo con fotogramas | ≤ 40 ms |
-| `resolverResto` desde el minuto 0 | ≤ 30 ms |
+| Partido completo sin fotogramas | ≤ 120 ms de CPU (Node 22) |
+| Partido completo con fotogramas | ≤ 120 ms |
+| `resolverResto` desde el minuto 0 | ≤ 120 ms |

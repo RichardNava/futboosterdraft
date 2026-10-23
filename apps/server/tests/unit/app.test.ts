@@ -35,12 +35,15 @@ describe('app HTTP (sin base de datos)', () => {
     expect(formaciones.every((f) => f.casillas.length === 11)).toBe(true);
   });
 
-  it('GET /api/catalogo/specials devuelve los 35 specials con nombre y ámbito', async () => {
-    const r = await servidor.app.inject({ method: 'GET', url: '/api/catalogo/specials' });
-    const specials = r.json() as { id: string; nombre: string; ambito: string }[];
-    expect(specials).toHaveLength(35);
-    expect(specials.find((s) => s.id === 'Capitania')).toMatchObject({ nombre: 'Capitanía', ambito: 'generico' });
-    expect(specials.find((s) => s.id === 'BoxToBox')?.ambito).toBe('MED');
+  it('GET /api/catalogo/rasgos devuelve las 39 virtudes y los 15 defectos con nombre, ámbito e impacto', async () => {
+    const r = await servidor.app.inject({ method: 'GET', url: '/api/catalogo/rasgos' });
+    type Texto = { id: string; nombre: string; ambito: string; impacto: number };
+    const { virtudes, defectos } = r.json() as { virtudes: Texto[]; defectos: Texto[] };
+    expect(virtudes).toHaveLength(39);
+    expect(defectos).toHaveLength(15);
+    expect(defectos.find((d) => d.id === 'Fragil')).toMatchObject({ nombre: 'Frágil', ambito: 'generico', impacto: 0.5 });
+    expect(virtudes.find((s) => s.id === 'Capitania')).toMatchObject({ nombre: 'Capitanía', ambito: 'generico' });
+    expect(virtudes.find((s) => s.id === 'BoxToBox')?.ambito).toBe('MED');
   });
 
   it('una ruta inexistente de la API devuelve el formato de error común', async () => {

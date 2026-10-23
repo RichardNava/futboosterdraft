@@ -140,7 +140,7 @@ test('inventario: derrota y campeón', async ({ page }) => {
     const texto = (await principal.textContent()) ?? '';
     if (texto.includes('Simular')) await principal.click();
     else if (texto.includes('Ver campeón')) await principal.click();
-    else await page.request.post(`/api/partidas/${id}/simular-resto`);
+    else await page.request.post(`/api/partidas/${id}/simular-resto`, { headers: { 'Idempotency-Key': crypto.randomUUID() } });
     if (!texto.includes('Simular') && !texto.includes('Ver campeón')) await page.goto(`/partidas/${id}/torneo`);
   }
   await expect(page.getByRole('heading', { level: 1, name: 'Campeones', exact: true })).toBeVisible({ timeout: 60_000 });

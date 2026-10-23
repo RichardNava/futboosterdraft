@@ -100,7 +100,9 @@ export const jugadores = pgTable(
     historia: text('historia').notNull(),
     stats: jsonb('stats').notNull(),
     media: real('media').notNull(),
-    specials: text('specials').array().notNull(),
+    virtudes: text('virtudes').array().notNull(),
+    /** Defectos de la carta (spec 005, migración 0010). */
+    defectos: text('defectos').array().notNull().default(sql`'{}'::text[]`),
     nivel: text('nivel').notNull(),
     coleccion: text('coleccion').notNull(),
   },
@@ -133,18 +135,23 @@ export const partidas = pgTable(
     colecciones: text('colecciones').array().notNull().default(sql`ARRAY['Core']::text[]`),
     estado: text('estado').notNull().default('buscando'),
     semilla: text('semilla').notNull(),
+    /** Versión del catálogo con que se juega (spec 005, FR-036): 1 = cartas anteriores a la spec 005. */
+    versionCatalogo: integer('version_catalogo').notNull().default(1),
+    /** Formación común y Estado de forma del modo duelos (spec 005, FR-061): `ConfigDuelos`, o null. */
+    configDuelos: jsonb('config_duelos'),
     creadaEn: timestamp('creada_en', { withTimezone: true }).notNull().defaultNow(),
     actualizadaEn: timestamp('actualizada_en', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index('partidas_estado_idx').on(t.estado),
-    check('partidas_modo_ck', sql`${t.modo} in ('liga','playoff','mixto')`),
-    // "Liga 4–8; playoff ∈ {4, 8, 16}; mixto = 8"
+    check('partidas_modo_ck', sql`${t.modo} in ('liga','playoff','mixto','duelos')`),
+    // "Liga 4–8; playoff ∈ {4, 8, 16}; mixto = 8; duelos como el playoff"
     check(
       'partidas_num_participantes_ck',
       sql`(${t.modo} = 'liga' and ${t.numParticipantes} between 4 and 8)
         or (${t.modo} = 'playoff' and ${t.numParticipantes} in (4, 8, 16))
-        or (${t.modo} = 'mixto' and ${t.numParticipantes} = 8)`,
+        or (${t.modo} = 'mixto' and ${t.numParticipantes} = 8)
+        or (${t.modo} = 'duelos' and ${t.numParticipantes} in (4, 8, 16))`,
     ),
     check(
       'partidas_estado_ck',

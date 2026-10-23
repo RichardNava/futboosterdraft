@@ -2,11 +2,13 @@
  * Sala de una partida (T049; FR-000 a FR-005, FR-059).
  */
 import {
+  configDuelosValida,
   derivarSemilla,
   MINUTOS_ABANDONO_INVITADO,
   rellenarConNPC,
   sortearAsientos,
   transicion,
+  type ConfigDuelos,
   type NivelNPC,
 } from '@fbd/domain';
 import { errores } from '../http/errores';
@@ -31,6 +33,8 @@ export function resumenSala(c: ControladorPartida) {
       nombreAjustado: nombresAjustados.get(c)?.has(p.id) ?? false,
     })),
     plazasLibres: c.partida.numParticipantes - c.participantes.length,
+    modo: c.partida.modo as 'liga' | 'playoff' | 'mixto' | 'duelos',
+    duelos: (c.partida.configDuelos as ConfigDuelos | null) ?? null,
     venceBusquedaEn:
       c.partida.estado === 'buscando'
         ? new Date(c.partida.creadaEn.getTime() + (c.partida.tiempos as { busquedaS: number }).busquedaS * 1000).toISOString()
@@ -40,6 +44,22 @@ export function resumenSala(c: ControladorPartida) {
 
 function emitirSala(c: ControladorPartida, ctx: ContextoComando): void {
   ctx.emitirATodos({ t: 'sala.actualizada', ...resumenSala(c) });
+}
+
+/**
+ * El anfitrión cambia la formación común o el Estado de forma del modo duelos (spec 005, FR-061; contracts/http-api.md):
+ * solo mientras la partida está en la sala; al empezar el draft queda fijada. Es idempotente.
+ */
+export async function configurarDuelos(c: ControladorPartida, ctx: ContextoComando, usuarioId: string, duelos: unknown): Promise<{ duelos: ConfigDuelos }> {
+  if (!c.esAnfitrion(usuarioId)) throw errores.prohibido('SOLO_ANFITRION', 'Solo el anfitrión puede elegir la formación y el Estado de forma');
+  if (c.partida.modo !== 'duelos') throw errores.conflicto('MODO_NO_DUELOS', 'La partida no es de Duelo de jugadores');
+  if (c.partida.estado !== 'buscando') throw errores.conflicto('CONFIG_FIJADA', 'La configuración de los duelos ya no se puede cambiar');
+  if (!configDuelosValida(duelos)) throw errores.validacion('CONFIG_INVALIDA', 'Formación desconocida o configuración inválida');
+  const nueva: ConfigDuelos = { formacion: duelos.formacion, estadoForma: duelos.estadoForma };
+  await c.servicios.repoPartidas.guardarConfigDuelos(c.id, nueva);
+  c.partida.configDuelos = nueva;
+  emitirSala(c, ctx);
+  return { duelos: nueva };
 }
 
 /** Programa el temporizador de búsqueda (FR-003): al vencer, se rellenan las plazas y empieza el draft. */

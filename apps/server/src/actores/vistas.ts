@@ -23,13 +23,16 @@ export function resumenPartida(c: ControladorPartida, usuarioId: string | undefi
     plazoJornadaHoras: p.plazoJornadaHoras,
     dificultad: p.dificultad,
     estado: p.estado,
+    duelos: p.configDuelos ?? null,
+    versionCatalogo: p.versionCatalogo,
     participantes: resumenSala(c).participantes,
     miParticipanteId: (usuarioId && c.participanteDeUsuario(usuarioId)?.id) ?? null,
   };
 }
 
 export async function plantillasVisibles(c: ControladorPartida) {
-  const { repoDraft, catalogo } = c.servicios;
+  const { repoDraft } = c.servicios;
+  const catalogo = c.catalogo;
   const porParticipante = await repoDraft.plantillas(c.participantes.map((p) => p.id));
   return c.participantes.map((p) => ({
     participanteId: p.id,

@@ -10,6 +10,11 @@ import { Dialogo } from './Dialogo';
 
 interface Props {
   jugadorId: number;
+  /**
+   * Virtudes y defectos de la carta tal como se ven en la partida (spec 005, FR-036): en una partida anterior a la
+   * spec 005, sin los rasgos añadidos después. Si faltan, los del catálogo actual.
+   */
+  rasgos?: { virtudes: string[]; defectos: string[] };
   onCerrar: () => void;
 }
 
@@ -25,14 +30,14 @@ function edad(fechaNacimiento: string): number {
 }
 
 /** Ventana con la carta completa y los datos personales de un jugador (FR-013; spec 002, FR-005). */
-export function FichaJugador({ jugadorId, onCerrar }: Props) {
+export function FichaJugador({ jugadorId, rasgos, onCerrar }: Props) {
   const [jugador, setJugador] = useState<Jugador | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let vigente = true;
     api<Jugador>(`/api/catalogo/jugadores/${jugadorId}`)
-      .then((j) => vigente && setJugador(j))
+      .then((j) => vigente && setJugador(rasgos ? ({ ...j, ...rasgos } as Jugador) : j))
       .catch((e: Error) => vigente && setError(e.message));
     return () => {
       vigente = false;

@@ -170,6 +170,18 @@ Midnight Canvas background, 1px Footer Rule (#39393b) top border, small-text lin
 - Don't use #e5e5e5 for borders on dark surfaces — it's too bright; reserve it for white-card contexts
 - Don't place buttons or cards directly on photography without a surface container — floating cards need their white or charcoal background to read
 
+### Excepción en Fútboosterdraft: colores de información de juego (spec 004, FR-003; spec 005, FR-021)
+
+Los colores de los niveles de las cartas y el rojo de los **defectos** son información de juego, no decoración, y son
+las únicas excepciones a «un solo color cromático»:
+
+- `--color-defecto` (`#ff5a6e`): texto y borde de cada defecto en las cartas, sobre su propio recuadro
+  `--color-defecto-chip` (`#2b0b12`), para contrastar ≥ 4,5:1 tanto en las cartas claras como en las oscuras. Es
+  distinto de `--color-error` (`#ff7a6b`), que solo se usa en los mensajes de error.
+- Un defecto siempre lleva el icono `defecto` (triángulo hacia abajo) delante del nombre: el color nunca es la única
+  señal.
+- Los contrastes los comprueba `apps/web/tests/unit/tokens.test.ts`.
+
 ## Surfaces
 
 | Level | Name | Value | Purpose |

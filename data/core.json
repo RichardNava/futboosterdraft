@@ -23,7 +23,8 @@
         "liderazgo": 67
       },
       "media": 70,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -48,7 +49,8 @@
         "liderazgo": 71
       },
       "media": 74,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -73,9 +75,10 @@
         "liderazgo": 71
       },
       "media": 75.33,
-      "specials": [
+      "virtudes": [
         "JugadorDeCampo"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -100,7 +103,8 @@
         "liderazgo": 71
       },
       "media": 77.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -125,8 +129,11 @@
         "liderazgo": 70
       },
       "media": 71.17,
-      "specials": [
+      "virtudes": [
         "LanzadorPenalties"
+      ],
+      "defectos": [
+        "Chupon"
       ],
       "nivel": "Superclase",
       "coleccion": "Core"
@@ -152,7 +159,8 @@
         "liderazgo": 68
       },
       "media": 70.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -177,7 +185,8 @@
         "liderazgo": 75
       },
       "media": 73,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -202,8 +211,11 @@
         "liderazgo": 64
       },
       "media": 71.67,
-      "specials": [
+      "virtudes": [
         "Ordenabarreras"
+      ],
+      "defectos": [
+        "Torpe"
       ],
       "nivel": "Superclase",
       "coleccion": "Core"
@@ -229,9 +241,10 @@
         "liderazgo": 67
       },
       "media": 70.17,
-      "specials": [
+      "virtudes": [
         "JugadorDeCampo"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -256,7 +269,8 @@
         "liderazgo": 74
       },
       "media": 76.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -281,7 +295,10 @@
         "liderazgo": 74
       },
       "media": 74.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "DeCristal"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -306,7 +323,10 @@
         "liderazgo": 78
       },
       "media": 78.5,
-      "specials": [],
+      "virtudes": [
+        "Revulsivo"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -331,9 +351,10 @@
         "liderazgo": 69
       },
       "media": 73.5,
-      "specials": [
+      "virtudes": [
         "JugadorDeCampo"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -358,7 +379,10 @@
         "liderazgo": 77
       },
       "media": 79.33,
-      "specials": [],
+      "virtudes": [
+        "Revulsivo"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -383,8 +407,12 @@
         "liderazgo": 80
       },
       "media": 80.67,
-      "specials": [
-        "JugadorDeCampo"
+      "virtudes": [
+        "JugadorDeCampo",
+        "Versatil"
+      ],
+      "defectos": [
+        "Agresivo"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -410,9 +438,10 @@
         "liderazgo": 83
       },
       "media": 82.17,
-      "specials": [
+      "virtudes": [
         "JugadorDeCampo"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -437,9 +466,11 @@
         "liderazgo": 82
       },
       "media": 80.67,
-      "specials": [
-        "OneToOne"
+      "virtudes": [
+        "OneToOne",
+        "Revulsivo"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -464,9 +495,11 @@
         "liderazgo": 75
       },
       "media": 81.5,
-      "specials": [
-        "Ordenabarreras"
+      "virtudes": [
+        "Ordenabarreras",
+        "DeAcero"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -491,10 +524,11 @@
         "liderazgo": 80
       },
       "media": 80.5,
-      "specials": [
+      "virtudes": [
         "Parapenalties",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -519,8 +553,11 @@
         "liderazgo": 76
       },
       "media": 82.5,
-      "specials": [
+      "virtudes": [
         "Parapenalties"
+      ],
+      "defectos": [
+        "Canchero"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -546,10 +583,11 @@
         "liderazgo": 78
       },
       "media": 78.83,
-      "specials": [
+      "virtudes": [
         "Parapenalties",
         "Ordenabarreras"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -574,9 +612,10 @@
         "liderazgo": 79
       },
       "media": 83.17,
-      "specials": [
+      "virtudes": [
         "Parapenalties"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -601,11 +640,12 @@
         "liderazgo": 88
       },
       "media": 89,
-      "specials": [
+      "virtudes": [
         "Robusto",
         "OneToOne",
         "Parapenalties"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -630,11 +670,12 @@
         "liderazgo": 82
       },
       "media": 84.67,
-      "specials": [
+      "virtudes": [
         "Elegante",
         "Parapenalties",
         "JugadorDeCampo"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -659,10 +700,14 @@
         "liderazgo": 85
       },
       "media": 88.5,
-      "specials": [
+      "virtudes": [
         "JugadorDeCampo",
         "Elegante",
         "Parapenalties"
+      ],
+      "defectos": [
+        "Indisciplinado",
+        "Provocador"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -688,10 +733,13 @@
         "liderazgo": 78
       },
       "media": 84,
-      "specials": [
+      "virtudes": [
         "Potente",
         "Santo",
         "OneToOne"
+      ],
+      "defectos": [
+        "Impulsivo"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -717,9 +765,14 @@
         "liderazgo": 86
       },
       "media": 87.33,
-      "specials": [
+      "virtudes": [
         "JugadorDeCampo",
-        "Santo"
+        "Santo",
+        "DeAcero"
+      ],
+      "defectos": [
+        "Estrellita",
+        "Indisciplinado"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -745,11 +798,12 @@
         "liderazgo": 87
       },
       "media": 87.17,
-      "specials": [
+      "virtudes": [
         "OneToOne",
         "Potente",
         "Carismatico"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -774,10 +828,13 @@
         "liderazgo": 83
       },
       "media": 89.83,
-      "specials": [
+      "virtudes": [
         "Ordenabarreras",
         "OneToOne",
         "Santo"
+      ],
+      "defectos": [
+        "Impulsivo"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -803,11 +860,14 @@
         "liderazgo": 94
       },
       "media": 91.67,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida",
         "OneToOne",
         "Incansable",
         "Parapenalties"
+      ],
+      "defectos": [
+        "Impulsivo"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -833,10 +893,15 @@
         "liderazgo": 87
       },
       "media": 88.17,
-      "specials": [
+      "virtudes": [
         "Santo",
         "Ordenabarreras",
-        "Filigranas"
+        "Filigranas",
+        "FairPlayer"
+      ],
+      "defectos": [
+        "Torpe",
+        "Fragil"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -862,11 +927,15 @@
         "liderazgo": 91
       },
       "media": 88,
-      "specials": [
+      "virtudes": [
         "Parapenalties",
         "Aura",
         "OneToOne",
         "JugadorDeCampo"
+      ],
+      "defectos": [
+        "Provocador",
+        "Canchero"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -893,9 +962,10 @@
         "liderazgo": 71
       },
       "media": 73.67,
-      "specials": [
+      "virtudes": [
         "Jerarquia"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -920,7 +990,8 @@
         "liderazgo": 72
       },
       "media": 76.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -946,7 +1017,10 @@
         "liderazgo": 76
       },
       "media": 79.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "Indisciplinado"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -972,7 +1046,8 @@
         "liderazgo": 77
       },
       "media": 74.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -998,9 +1073,10 @@
         "liderazgo": 77
       },
       "media": 78.17,
-      "specials": [
+      "virtudes": [
         "Infranqueable"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1027,9 +1103,10 @@
         "liderazgo": 62
       },
       "media": 70.67,
-      "specials": [
+      "virtudes": [
         "LanzadorPenalties"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1055,7 +1132,8 @@
         "liderazgo": 74
       },
       "media": 76.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1081,9 +1159,10 @@
         "liderazgo": 72
       },
       "media": 78.5,
-      "specials": [
+      "virtudes": [
         "Jerarquia"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1108,9 +1187,10 @@
         "liderazgo": 72
       },
       "media": 77.33,
-      "specials": [
+      "virtudes": [
         "MuroDefensivo"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1135,9 +1215,10 @@
         "liderazgo": 77
       },
       "media": 78,
-      "specials": [
+      "virtudes": [
         "Jerarquia"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1162,7 +1243,8 @@
         "liderazgo": 76
       },
       "media": 77.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1188,9 +1270,10 @@
         "liderazgo": 75
       },
       "media": 75,
-      "specials": [
+      "virtudes": [
         "Volador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1216,9 +1299,10 @@
         "liderazgo": 76
       },
       "media": 75.67,
-      "specials": [
+      "virtudes": [
         "Volador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1244,9 +1328,10 @@
         "liderazgo": 73
       },
       "media": 76.83,
-      "specials": [
+      "virtudes": [
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1272,7 +1357,8 @@
         "liderazgo": 70
       },
       "media": 74.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1298,7 +1384,8 @@
         "liderazgo": 69
       },
       "media": 71.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1324,8 +1411,11 @@
         "liderazgo": 74
       },
       "media": 77,
-      "specials": [
+      "virtudes": [
         "Carismatico"
+      ],
+      "defectos": [
+        "Inflexible"
       ],
       "nivel": "Superclase",
       "coleccion": "Core"
@@ -1351,7 +1441,10 @@
         "liderazgo": 70
       },
       "media": 74.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "Agresivo"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1377,9 +1470,10 @@
         "liderazgo": 73
       },
       "media": 72.17,
-      "specials": [
+      "virtudes": [
         "Motivador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1404,9 +1498,10 @@
         "liderazgo": 74
       },
       "media": 78.17,
-      "specials": [
+      "virtudes": [
         "Infranqueable"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1431,9 +1526,10 @@
         "liderazgo": 77
       },
       "media": 75.33,
-      "specials": [
+      "virtudes": [
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1459,9 +1555,10 @@
         "liderazgo": 73
       },
       "media": 77.17,
-      "specials": [
+      "virtudes": [
         "Libero"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1487,7 +1584,10 @@
         "liderazgo": 68
       },
       "media": 73.33,
-      "specials": [],
+      "virtudes": [
+        "DeAcero"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1513,9 +1613,10 @@
         "liderazgo": 62
       },
       "media": 71.67,
-      "specials": [
+      "virtudes": [
         "Volador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1541,7 +1642,8 @@
         "liderazgo": 67
       },
       "media": 72.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1566,9 +1668,10 @@
         "liderazgo": 77
       },
       "media": 78,
-      "specials": [
+      "virtudes": [
         "Incansable"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1594,9 +1697,10 @@
         "liderazgo": 67
       },
       "media": 71.5,
-      "specials": [
+      "virtudes": [
         "Libero"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1621,7 +1725,8 @@
         "liderazgo": 70
       },
       "media": 76.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1647,9 +1752,10 @@
         "liderazgo": 78
       },
       "media": 77.5,
-      "specials": [
+      "virtudes": [
         "Incansable"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1674,7 +1780,8 @@
         "liderazgo": 64
       },
       "media": 72.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1700,9 +1807,10 @@
         "liderazgo": 63
       },
       "media": 71.67,
-      "specials": [
+      "virtudes": [
         "Libero"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1728,9 +1836,10 @@
         "liderazgo": 73
       },
       "media": 74.17,
-      "specials": [
+      "virtudes": [
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1756,7 +1865,12 @@
         "liderazgo": 74
       },
       "media": 75.17,
-      "specials": [],
+      "virtudes": [
+        "FairPlayer"
+      ],
+      "defectos": [
+        "Fragil"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1782,7 +1896,8 @@
         "liderazgo": 69
       },
       "media": 70.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1808,9 +1923,10 @@
         "liderazgo": 75
       },
       "media": 76.83,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1836,9 +1952,10 @@
         "liderazgo": 73
       },
       "media": 79.17,
-      "specials": [
+      "virtudes": [
         "Libero"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1864,7 +1981,8 @@
         "liderazgo": 73
       },
       "media": 77,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1890,7 +2008,10 @@
         "liderazgo": 77
       },
       "media": 79.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "Estrellita"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1917,9 +2038,10 @@
         "liderazgo": 63
       },
       "media": 71.67,
-      "specials": [
+      "virtudes": [
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1944,7 +2066,10 @@
         "liderazgo": 72
       },
       "media": 71.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "Agresivo"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1969,9 +2094,10 @@
         "liderazgo": 77
       },
       "media": 78.17,
-      "specials": [
+      "virtudes": [
         "Incansable"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -1996,7 +2122,8 @@
         "liderazgo": 77
       },
       "media": 74.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -2021,9 +2148,10 @@
         "liderazgo": 75
       },
       "media": 78.5,
-      "specials": [
+      "virtudes": [
         "Infranqueable"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -2050,7 +2178,10 @@
         "liderazgo": 68
       },
       "media": 75.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "Inflexible"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -2075,8 +2206,12 @@
         "liderazgo": 69
       },
       "media": 80.33,
-      "specials": [
-        "Jerarquia"
+      "virtudes": [
+        "Jerarquia",
+        "FairPlayer"
+      ],
+      "defectos": [
+        "Polemico"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -2103,10 +2238,11 @@
         "liderazgo": 77
       },
       "media": 82,
-      "specials": [
+      "virtudes": [
         "Jerarquia",
         "Incansable"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2133,9 +2269,10 @@
         "liderazgo": 78
       },
       "media": 79.83,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2160,10 +2297,11 @@
         "liderazgo": 78
       },
       "media": 80.33,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "BoxToBox"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2189,8 +2327,11 @@
         "liderazgo": 81
       },
       "media": 83,
-      "specials": [
+      "virtudes": [
         "Elegante"
+      ],
+      "defectos": [
+        "DeCristal"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -2217,9 +2358,10 @@
         "liderazgo": 76
       },
       "media": 79.67,
-      "specials": [
+      "virtudes": [
         "Jerarquia"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2245,9 +2387,10 @@
         "liderazgo": 77
       },
       "media": 78.33,
-      "specials": [
+      "virtudes": [
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2273,9 +2416,10 @@
         "liderazgo": 80
       },
       "media": 83.17,
-      "specials": [
+      "virtudes": [
         "Potente"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2301,9 +2445,11 @@
         "liderazgo": 88
       },
       "media": 82,
-      "specials": [
-        "BoxToBox"
+      "virtudes": [
+        "BoxToBox",
+        "FairPlayer"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2329,10 +2475,11 @@
         "liderazgo": 78
       },
       "media": 81.33,
-      "specials": [
+      "virtudes": [
         "Potente",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2357,8 +2504,11 @@
         "liderazgo": 79
       },
       "media": 79.83,
-      "specials": [
+      "virtudes": [
         "Incansable"
+      ],
+      "defectos": [
+        "Torpe"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -2385,10 +2535,11 @@
         "liderazgo": 78
       },
       "media": 82.5,
-      "specials": [
+      "virtudes": [
         "Capitania",
         "Infranqueable"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2414,10 +2565,11 @@
         "liderazgo": 78
       },
       "media": 80.67,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "BoxToBox"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2442,9 +2594,10 @@
         "liderazgo": 79
       },
       "media": 81.33,
-      "specials": [
+      "virtudes": [
         "Infranqueable"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2470,9 +2623,10 @@
         "liderazgo": 77
       },
       "media": 82,
-      "specials": [
+      "virtudes": [
         "Incansable"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2497,9 +2651,11 @@
         "liderazgo": 79
       },
       "media": 81,
-      "specials": [
-        "Todocampista"
+      "virtudes": [
+        "Todocampista",
+        "DeAcero"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2524,9 +2680,10 @@
         "liderazgo": 74
       },
       "media": 80.5,
-      "specials": [
+      "virtudes": [
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2551,9 +2708,10 @@
         "liderazgo": 84
       },
       "media": 82.33,
-      "specials": [
+      "virtudes": [
         "Aura"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2579,10 +2737,11 @@
         "liderazgo": 77
       },
       "media": 82.5,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2608,9 +2767,11 @@
         "liderazgo": 74
       },
       "media": 80,
-      "specials": [
-        "Volador"
+      "virtudes": [
+        "Volador",
+        "Versatil"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2636,10 +2797,11 @@
         "liderazgo": 81
       },
       "media": 82.5,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "Motivador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -2665,8 +2827,11 @@
         "liderazgo": 79
       },
       "media": 84,
-      "specials": [
+      "virtudes": [
         "Jerarquia"
+      ],
+      "defectos": [
+        "DeCristal"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -2692,11 +2857,12 @@
         "liderazgo": 87
       },
       "media": 87.67,
-      "specials": [
+      "virtudes": [
         "Jerarquia",
         "Volador",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -2722,10 +2888,13 @@
         "liderazgo": 82
       },
       "media": 83,
-      "specials": [
+      "virtudes": [
         "Intimidante",
         "Potente",
         "Incansable"
+      ],
+      "defectos": [
+        "Impulsivo"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -2753,10 +2922,14 @@
         "liderazgo": 84
       },
       "media": 84.17,
-      "specials": [
+      "virtudes": [
         "BoxToBox",
         "Infranqueable",
         "FortalezaMental"
+      ],
+      "defectos": [
+        "Estrellita",
+        "Provocador"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -2783,9 +2956,12 @@
         "liderazgo": 79
       },
       "media": 87,
-      "specials": [
+      "virtudes": [
         "Infranqueable",
         "Potente"
+      ],
+      "defectos": [
+        "Polemico"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -2812,11 +2988,12 @@
         "liderazgo": 74
       },
       "media": 83,
-      "specials": [
+      "virtudes": [
         "Elegante",
         "Infranqueable",
         "Potente"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -2841,9 +3018,13 @@
         "liderazgo": 86
       },
       "media": 87.5,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida",
-        "Volador"
+        "Volador",
+        "FairPlayer"
+      ],
+      "defectos": [
+        "Fatigado"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -2869,10 +3050,13 @@
         "liderazgo": 79
       },
       "media": 88.67,
-      "specials": [
+      "virtudes": [
         "Volador",
         "MuroDefensivo",
         "Infranqueable"
+      ],
+      "defectos": [
+        "Polemico"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -2898,11 +3082,12 @@
         "liderazgo": 81
       },
       "media": 86.83,
-      "specials": [
+      "virtudes": [
         "BoxToBox",
         "Incansable",
         "Potente"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -2927,9 +3112,13 @@
         "liderazgo": 87
       },
       "media": 85.17,
-      "specials": [
+      "virtudes": [
         "Todocampista",
         "BoxToBox"
+      ],
+      "defectos": [
+        "Torpe",
+        "Estrellita"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -2955,10 +3144,13 @@
         "liderazgo": 87
       },
       "media": 87.17,
-      "specials": [
+      "virtudes": [
         "Jerarquia",
         "Volador",
         "LanzadorFaltas"
+      ],
+      "defectos": [
+        "Impulsivo"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -2984,10 +3176,11 @@
         "liderazgo": 78
       },
       "media": 84.5,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3013,10 +3206,12 @@
         "liderazgo": 84
       },
       "media": 83,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida",
-        "Incansable"
+        "Incansable",
+        "DeAcero"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3042,11 +3237,12 @@
         "liderazgo": 84
       },
       "media": 87,
-      "specials": [
+      "virtudes": [
         "Jerarquia",
         "BoxToBox",
         "MuroDefensivo"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3071,11 +3267,12 @@
         "liderazgo": 82
       },
       "media": 86.83,
-      "specials": [
+      "virtudes": [
         "Potente",
         "Infranqueable",
         "Volador"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3100,11 +3297,12 @@
         "liderazgo": 82
       },
       "media": 88.33,
-      "specials": [
+      "virtudes": [
         "Potente",
         "Presionador",
         "Libero"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3130,9 +3328,13 @@
         "liderazgo": 86
       },
       "media": 88.5,
-      "specials": [
+      "virtudes": [
         "Incansable",
-        "Potente"
+        "Potente",
+        "FairPlayer"
+      ],
+      "defectos": [
+        "Torpe"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -3158,10 +3360,11 @@
         "liderazgo": 80
       },
       "media": 89,
-      "specials": [
+      "virtudes": [
         "Volador",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3187,9 +3390,13 @@
         "liderazgo": 85
       },
       "media": 88.83,
-      "specials": [
+      "virtudes": [
         "Elegante",
         "Presionador"
+      ],
+      "defectos": [
+        "Estrellita",
+        "Impulsivo"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -3215,11 +3422,12 @@
         "liderazgo": 85
       },
       "media": 84.17,
-      "specials": [
+      "virtudes": [
         "Presionador",
         "MuroDefensivo",
         "Incansable"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3246,10 +3454,11 @@
         "liderazgo": 82
       },
       "media": 88.5,
-      "specials": [
+      "virtudes": [
         "Infranqueable",
         "MuroDefensivo"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3276,10 +3485,11 @@
         "liderazgo": 85
       },
       "media": 86.67,
-      "specials": [
+      "virtudes": [
         "Potente",
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -3305,10 +3515,13 @@
         "liderazgo": 85
       },
       "media": 87.17,
-      "specials": [
+      "virtudes": [
         "Libero",
         "Presionador",
         "Incansable"
+      ],
+      "defectos": [
+        "Provocador"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -3334,12 +3547,13 @@
         "liderazgo": 85
       },
       "media": 89.83,
-      "specials": [
+      "virtudes": [
         "Presionador",
         "FortalezaMental",
         "Incansable",
         "Libero"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3365,12 +3579,13 @@
         "liderazgo": 89
       },
       "media": 94.17,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "BoxToBox",
         "Infranqueable",
         "Motivador"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3395,11 +3610,14 @@
         "liderazgo": 89
       },
       "media": 93,
-      "specials": [
+      "virtudes": [
         "Potente",
         "Infranqueable",
         "Aura",
         "Jerarquia"
+      ],
+      "defectos": [
+        "Agresivo"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -3425,11 +3643,14 @@
         "liderazgo": 85
       },
       "media": 90.83,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida",
         "Infranqueable",
         "LanzadorFaltas",
         "Filigranas"
+      ],
+      "defectos": [
+        "Estrellita"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -3456,12 +3677,13 @@
         "liderazgo": 85
       },
       "media": 91,
-      "specials": [
+      "virtudes": [
         "Volador",
         "Presionador",
         "Infranqueable",
         "MuroDefensivo"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3486,12 +3708,13 @@
         "liderazgo": 94
       },
       "media": 94,
-      "specials": [
+      "virtudes": [
         "Volador",
         "LanzadorFaltas",
         "BoxToBox",
         "Libero"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3516,11 +3739,13 @@
         "liderazgo": 87
       },
       "media": 89.17,
-      "specials": [
+      "virtudes": [
         "Libero",
         "Carismatico",
-        "Presionador"
+        "Presionador",
+        "Versatil"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3546,10 +3771,13 @@
         "liderazgo": 85
       },
       "media": 90.5,
-      "specials": [
+      "virtudes": [
         "BoxToBox",
         "Carismatico",
         "Infranqueable"
+      ],
+      "defectos": [
+        "Torpe"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -3575,11 +3803,14 @@
         "liderazgo": 84
       },
       "media": 92,
-      "specials": [
+      "virtudes": [
         "Potente",
         "Infranqueable",
         "LanzadorFaltas",
         "Jerarquia"
+      ],
+      "defectos": [
+        "DeCristal"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -3606,12 +3837,13 @@
         "liderazgo": 90
       },
       "media": 93.5,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "Intimidante",
         "Capitania",
         "Potente"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3637,12 +3869,13 @@
         "liderazgo": 85
       },
       "media": 91.17,
-      "specials": [
+      "virtudes": [
         "Presionador",
         "Potente",
         "LanzadorPenalties",
         "LanzadorFaltas"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3668,11 +3901,13 @@
         "liderazgo": 91
       },
       "media": 90.5,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "BoxToBox",
-        "Carismatico"
+        "Carismatico",
+        "Revulsivo"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -3697,7 +3932,8 @@
         "disparo": 65
       },
       "media": 71.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3722,7 +3958,10 @@
         "disparo": 87
       },
       "media": 79.67,
-      "specials": [],
+      "virtudes": [
+        "Versatil"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3747,8 +3986,11 @@
         "disparo": 77
       },
       "media": 79.5,
-      "specials": [
+      "virtudes": [
         "Elegante"
+      ],
+      "defectos": [
+        "Fatigado"
       ],
       "nivel": "Superclase",
       "coleccion": "Core"
@@ -3776,8 +4018,11 @@
         "disparo": 78
       },
       "media": 79.33,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas"
+      ],
+      "defectos": [
+        "DeCristal"
       ],
       "nivel": "Superclase",
       "coleccion": "Core"
@@ -3804,8 +4049,11 @@
         "disparo": 82
       },
       "media": 76.83,
-      "specials": [
+      "virtudes": [
         "Filigranas"
+      ],
+      "defectos": [
+        "Indisciplinado"
       ],
       "nivel": "Superclase",
       "coleccion": "Core"
@@ -3831,7 +4079,8 @@
         "disparo": 71
       },
       "media": 72.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3857,9 +4106,10 @@
         "disparo": 83
       },
       "media": 78,
-      "specials": [
+      "virtudes": [
         "Carismatico"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3885,9 +4135,10 @@
         "disparo": 69
       },
       "media": 72.83,
-      "specials": [
+      "virtudes": [
         "BoxToBox"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3912,9 +4163,10 @@
         "disparo": 74
       },
       "media": 74.5,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3939,9 +4191,10 @@
         "disparo": 76
       },
       "media": 73,
-      "specials": [
+      "virtudes": [
         "Carismatico"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3966,9 +4219,10 @@
         "disparo": 77
       },
       "media": 74.83,
-      "specials": [
+      "virtudes": [
         "PrimerToque"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -3993,9 +4247,10 @@
         "disparo": 74
       },
       "media": 78.67,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4020,9 +4275,10 @@
         "disparo": 71
       },
       "media": 77.5,
-      "specials": [
+      "virtudes": [
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4048,9 +4304,10 @@
         "disparo": 80
       },
       "media": 76,
-      "specials": [
+      "virtudes": [
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4076,9 +4333,10 @@
         "disparo": 68
       },
       "media": 72.83,
-      "specials": [
+      "virtudes": [
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4103,7 +4361,8 @@
         "disparo": 79
       },
       "media": 72.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4129,7 +4388,8 @@
         "disparo": 70
       },
       "media": 73.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4156,7 +4416,8 @@
         "disparo": 74
       },
       "media": 72,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4181,7 +4442,12 @@
         "disparo": 69
       },
       "media": 73.17,
-      "specials": [],
+      "virtudes": [
+        "Versatil"
+      ],
+      "defectos": [
+        "Canchero"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4207,7 +4473,8 @@
         "disparo": 73
       },
       "media": 77.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4233,7 +4500,8 @@
         "disparo": 75
       },
       "media": 74.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4260,7 +4528,8 @@
         "disparo": 84
       },
       "media": 76.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4285,7 +4554,8 @@
         "disparo": 76
       },
       "media": 75.5,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4310,7 +4580,8 @@
         "disparo": 79
       },
       "media": 78.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4336,9 +4607,10 @@
         "disparo": 74
       },
       "media": 74.33,
-      "specials": [
+      "virtudes": [
         "Incansable"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4363,9 +4635,10 @@
         "disparo": 71
       },
       "media": 77.33,
-      "specials": [
+      "virtudes": [
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4392,7 +4665,12 @@
         "disparo": 76
       },
       "media": 79.33,
-      "specials": [],
+      "virtudes": [
+        "Versatil"
+      ],
+      "defectos": [
+        "Agresivo"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4418,9 +4696,10 @@
         "disparo": 72
       },
       "media": 73.33,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4446,7 +4725,8 @@
         "disparo": 82
       },
       "media": 72,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4472,9 +4752,10 @@
         "disparo": 72
       },
       "media": 72.67,
-      "specials": [
+      "virtudes": [
         "Todocampista"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4499,7 +4780,8 @@
         "disparo": 74
       },
       "media": 76.5,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4524,7 +4806,8 @@
         "disparo": 73
       },
       "media": 70.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4549,7 +4832,10 @@
         "disparo": 69
       },
       "media": 75.67,
-      "specials": [],
+      "virtudes": [
+        "DeAcero"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4574,7 +4860,8 @@
         "disparo": 78
       },
       "media": 72.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4600,9 +4887,10 @@
         "disparo": 74
       },
       "media": 71.33,
-      "specials": [
+      "virtudes": [
         "Motivador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4628,7 +4916,8 @@
         "disparo": 74
       },
       "media": 76.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4653,9 +4942,10 @@
         "disparo": 69
       },
       "media": 74.33,
-      "specials": [
+      "virtudes": [
         "Carismatico"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4681,9 +4971,10 @@
         "disparo": 71
       },
       "media": 74.83,
-      "specials": [
+      "virtudes": [
         "Llegador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4710,7 +5001,10 @@
         "disparo": 79
       },
       "media": 78,
-      "specials": [],
+      "virtudes": [
+        "FairPlayer"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4736,9 +5030,10 @@
         "disparo": 73
       },
       "media": 77.17,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4764,7 +5059,10 @@
         "disparo": 78
       },
       "media": 78.5,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "DeCristal"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4790,7 +5088,10 @@
         "disparo": 78
       },
       "media": 78.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "Canchero"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4815,9 +5116,10 @@
         "disparo": 78
       },
       "media": 79.33,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4842,7 +5144,8 @@
         "disparo": 73
       },
       "media": 78.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -4867,10 +5170,11 @@
         "disparo": 80
       },
       "media": 80.67,
-      "specials": [
+      "virtudes": [
         "BoxToBox",
         "RecuperadorTrasPerdida"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -4896,9 +5200,10 @@
         "disparo": 85
       },
       "media": 84.83,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -4924,10 +5229,11 @@
         "disparo": 76
       },
       "media": 81.5,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -4954,10 +5260,11 @@
         "disparo": 78
       },
       "media": 80.33,
-      "specials": [
+      "virtudes": [
         "Motivador",
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -4983,9 +5290,12 @@
         "disparo": 77
       },
       "media": 81,
-      "specials": [
+      "virtudes": [
         "Presionador",
         "RecuperadorTrasPerdida"
+      ],
+      "defectos": [
+        "Torpe"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -5013,8 +5323,11 @@
         "disparo": 75
       },
       "media": 78.17,
-      "specials": [
+      "virtudes": [
         "Capitania"
+      ],
+      "defectos": [
+        "MalDefensor"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -5040,10 +5353,11 @@
         "disparo": 76
       },
       "media": 79,
-      "specials": [
+      "virtudes": [
         "Llegador",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5069,10 +5383,11 @@
         "disparo": 78
       },
       "media": 80,
-      "specials": [
+      "virtudes": [
         "Elegante",
         "Llegador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5098,10 +5413,11 @@
         "disparo": 83
       },
       "media": 78.83,
-      "specials": [
+      "virtudes": [
         "Carismatico",
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5126,10 +5442,11 @@
         "disparo": 83
       },
       "media": 80.17,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida",
         "Carismatico"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5154,10 +5471,11 @@
         "disparo": 89
       },
       "media": 82.5,
-      "specials": [
+      "virtudes": [
         "Carismatico",
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5182,9 +5500,12 @@
         "disparo": 91
       },
       "media": 82.67,
-      "specials": [
+      "virtudes": [
         "Capitania",
         "Carismatico"
+      ],
+      "defectos": [
+        "Canchero"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -5210,9 +5531,10 @@
         "disparo": 75
       },
       "media": 80.17,
-      "specials": [
+      "virtudes": [
         "Llegador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5237,9 +5559,12 @@
         "disparo": 81
       },
       "media": 79.33,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas",
         "Capitania"
+      ],
+      "defectos": [
+        "Agresivo"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -5266,10 +5591,11 @@
         "disparo": 80
       },
       "media": 82.5,
-      "specials": [
+      "virtudes": [
         "Elegante",
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5294,9 +5620,12 @@
         "disparo": 80
       },
       "media": 81,
-      "specials": [
+      "virtudes": [
         "Presionador",
         "RecuperadorTrasPerdida"
+      ],
+      "defectos": [
+        "Rebelde"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -5322,9 +5651,10 @@
         "disparo": 79
       },
       "media": 79.83,
-      "specials": [
+      "virtudes": [
         "PrimerToque"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5350,9 +5680,12 @@
         "disparo": 83
       },
       "media": 83.33,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas",
         "JugadorEntreLineas"
+      ],
+      "defectos": [
+        "DeCristal"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -5378,9 +5711,10 @@
         "disparo": 85
       },
       "media": 83.83,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5406,10 +5740,11 @@
         "disparo": 85
       },
       "media": 81.17,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "LanzadorPenalties"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5434,9 +5769,10 @@
         "disparo": 81
       },
       "media": 79.67,
-      "specials": [
+      "virtudes": [
         "Filigranas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5462,10 +5798,11 @@
         "disparo": 84
       },
       "media": 83,
-      "specials": [
+      "virtudes": [
         "Llegador",
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -5491,10 +5828,11 @@
         "disparo": 89
       },
       "media": 86.67,
-      "specials": [
+      "virtudes": [
         "Carismatico",
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5520,10 +5858,11 @@
         "disparo": 81
       },
       "media": 88,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "Presionador"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5549,10 +5888,12 @@
         "disparo": 86
       },
       "media": 87.5,
-      "specials": [
+      "virtudes": [
         "Capitania",
-        "Llegador"
+        "Llegador",
+        "Revulsivo"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5578,10 +5919,11 @@
         "disparo": 90
       },
       "media": 87.83,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5606,11 +5948,12 @@
         "disparo": 83
       },
       "media": 84.33,
-      "specials": [
+      "virtudes": [
         "Llegador",
         "Elegante",
         "PrimerToque"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5636,10 +5979,11 @@
         "disparo": 84
       },
       "media": 87,
-      "specials": [
+      "virtudes": [
         "Llegador",
         "JugadorEntreLineas"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5664,11 +6008,12 @@
         "disparo": 84
       },
       "media": 87.17,
-      "specials": [
+      "virtudes": [
         "Elegante",
         "FortalezaMental",
         "Llegador"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5694,10 +6039,12 @@
         "disparo": 84
       },
       "media": 83.5,
-      "specials": [
+      "virtudes": [
         "Filigranas",
-        "JugadorEntreLineas"
+        "JugadorEntreLineas",
+        "Versatil"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5723,11 +6070,12 @@
         "disparo": 93
       },
       "media": 86.5,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas",
         "Capitania",
         "Carismatico"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5752,10 +6100,14 @@
         "disparo": 85
       },
       "media": 85,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "RecuperadorTrasPerdida",
         "LanzadorPenalties"
+      ],
+      "defectos": [
+        "Rebelde",
+        "Fatigado"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -5782,10 +6134,11 @@
         "disparo": 90
       },
       "media": 88.33,
-      "specials": [
+      "virtudes": [
         "Llegador",
         "RecuperadorTrasPerdida"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5811,10 +6164,12 @@
         "disparo": 82
       },
       "media": 85,
-      "specials": [
+      "virtudes": [
         "Presionador",
-        "Robusto"
+        "Robusto",
+        "DeAcero"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5841,11 +6196,12 @@
         "disparo": 92
       },
       "media": 88.83,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "Potente",
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5870,11 +6226,12 @@
         "disparo": 80
       },
       "media": 84.5,
-      "specials": [
+      "virtudes": [
         "PrimerToque",
         "BoxToBox",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5899,9 +6256,13 @@
         "disparo": 87
       },
       "media": 87.83,
-      "specials": [
+      "virtudes": [
         "Motivador",
-        "Elegante"
+        "Elegante",
+        "FairPlayer"
+      ],
+      "defectos": [
+        "Provocador"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -5928,9 +6289,12 @@
         "disparo": 83
       },
       "media": 84,
-      "specials": [
+      "virtudes": [
         "Capitania",
         "PrimerToque"
+      ],
+      "defectos": [
+        "Estrellita"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -5956,10 +6320,12 @@
         "disparo": 91
       },
       "media": 86,
-      "specials": [
+      "virtudes": [
         "Potente",
-        "Carismatico"
+        "Carismatico",
+        "Versatil"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -5984,9 +6350,13 @@
         "disparo": 79
       },
       "media": 86.5,
-      "specials": [
+      "virtudes": [
         "Presionador",
-        "Capitania"
+        "Capitania",
+        "Revulsivo"
+      ],
+      "defectos": [
+        "Polemico"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -6013,10 +6383,14 @@
         "disparo": 86
       },
       "media": 84.5,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "Carismatico",
         "Presionador"
+      ],
+      "defectos": [
+        "Polemico",
+        "Canchero"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -6042,11 +6416,12 @@
         "disparo": 95
       },
       "media": 89,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas",
         "Filigranas",
         "Carismatico"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -6071,11 +6446,12 @@
         "disparo": 84
       },
       "media": 88.17,
-      "specials": [
+      "virtudes": [
         "Todocampista",
         "Intimidante",
         "BoxToBox"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -6101,10 +6477,12 @@
         "disparo": 86
       },
       "media": 88.83,
-      "specials": [
+      "virtudes": [
         "Llegador",
-        "JugadorEntreLineas"
+        "JugadorEntreLineas",
+        "Revulsivo"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -6131,12 +6509,13 @@
         "disparo": 91
       },
       "media": 92,
-      "specials": [
+      "virtudes": [
         "BoxToBox",
         "Robusto",
         "Elegante",
         "Capitania"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -6163,11 +6542,13 @@
         "disparo": 94
       },
       "media": 93,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "Potente",
-        "Motivador"
+        "Motivador",
+        "DeAcero"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -6193,11 +6574,12 @@
         "disparo": 93
       },
       "media": 92.67,
-      "specials": [
+      "virtudes": [
         "Capitania",
         "Filigranas",
         "BoxToBox"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -6222,11 +6604,14 @@
         "disparo": 89
       },
       "media": 90.33,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida",
         "FortalezaMental",
         "Presionador",
         "Llegador"
+      ],
+      "defectos": [
+        "Agresivo"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -6253,11 +6638,13 @@
         "disparo": 88
       },
       "media": 88.5,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "Llegador",
-        "FortalezaMental"
+        "FortalezaMental",
+        "FairPlayer"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -6282,10 +6669,15 @@
         "disparo": 84
       },
       "media": 90.17,
-      "specials": [
+      "virtudes": [
         "Intimidante",
         "RecuperadorTrasPerdida",
-        "Elegante"
+        "Elegante",
+        "FairPlayer"
+      ],
+      "defectos": [
+        "Impulsivo",
+        "Estrellita"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -6312,11 +6704,13 @@
         "disparo": 92
       },
       "media": 90.33,
-      "specials": [
+      "virtudes": [
         "Llegador",
         "JugadorEntreLineas",
-        "Elegante"
+        "Elegante",
+        "DeAcero"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -6342,11 +6736,14 @@
         "disparo": 83
       },
       "media": 89,
-      "specials": [
+      "virtudes": [
         "Incansable",
         "Capitania",
         "LanzadorFaltas",
         "BoxToBox"
+      ],
+      "defectos": [
+        "Agresivo"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -6372,10 +6769,15 @@
         "disparo": 90
       },
       "media": 90.33,
-      "specials": [
+      "virtudes": [
         "Llegador",
         "BoxToBox",
-        "Elegante"
+        "Elegante",
+        "Versatil"
+      ],
+      "defectos": [
+        "Rebelde",
+        "Torpe"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -6401,11 +6803,14 @@
         "disparo": 87
       },
       "media": 92.17,
-      "specials": [
+      "virtudes": [
         "JugadorEntreLineas",
         "Llegador",
         "Filigranas",
         "LanzadorPenalties"
+      ],
+      "defectos": [
+        "Estrellita"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -6432,11 +6837,15 @@
         "disparo": 93
       },
       "media": 94,
-      "specials": [
+      "virtudes": [
         "Presionador",
         "JugadorEntreLineas",
         "Llegador",
         "RecuperadorTrasPerdida"
+      ],
+      "defectos": [
+        "MalDefensor",
+        "DeCristal"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -6464,11 +6873,15 @@
         "disparo": 90
       },
       "media": 92.17,
-      "specials": [
+      "virtudes": [
         "BoxToBox",
         "PrimerToque",
         "FortalezaMental",
         "Carismatico"
+      ],
+      "defectos": [
+        "MalDefensor",
+        "Provocador"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -6496,9 +6909,10 @@
         "agresividad": 69
       },
       "media": 72.17,
-      "specials": [
+      "virtudes": [
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6524,7 +6938,8 @@
         "agresividad": 72
       },
       "media": 72.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6550,9 +6965,10 @@
         "agresividad": 66
       },
       "media": 74,
-      "specials": [
+      "virtudes": [
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6578,7 +6994,10 @@
         "agresividad": 75
       },
       "media": 77.5,
-      "specials": [],
+      "virtudes": [
+        "Revulsivo"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6603,7 +7022,8 @@
         "agresividad": 67
       },
       "media": 70.67,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6628,7 +7048,8 @@
         "agresividad": 70
       },
       "media": 75.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6653,7 +7074,8 @@
         "agresividad": 68
       },
       "media": 70.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6678,7 +7100,8 @@
         "agresividad": 68
       },
       "media": 73.5,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6703,9 +7126,10 @@
         "agresividad": 78
       },
       "media": 77.33,
-      "specials": [
+      "virtudes": [
         "Matador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6731,7 +7155,10 @@
         "agresividad": 70
       },
       "media": 71,
-      "specials": [],
+      "virtudes": [
+        "DeAcero"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6756,9 +7183,10 @@
         "agresividad": 66
       },
       "media": 73.33,
-      "specials": [
+      "virtudes": [
         "LanzadorPenalties"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6784,7 +7212,8 @@
         "agresividad": 72
       },
       "media": 79.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6809,9 +7238,10 @@
         "agresividad": 64
       },
       "media": 71.33,
-      "specials": [
+      "virtudes": [
         "LanzadorFaltas"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6837,8 +7267,11 @@
         "agresividad": 72
       },
       "media": 75.5,
-      "specials": [
+      "virtudes": [
         "Desbordante"
+      ],
+      "defectos": [
+        "Chupon"
       ],
       "nivel": "Superclase",
       "coleccion": "Core"
@@ -6864,7 +7297,10 @@
         "agresividad": 76
       },
       "media": 77.33,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "Chupon"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6890,9 +7326,10 @@
         "agresividad": 67
       },
       "media": 70.5,
-      "specials": [
+      "virtudes": [
         "GuanteEnElPie"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6917,7 +7354,8 @@
         "agresividad": 67
       },
       "media": 71.5,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6942,9 +7380,10 @@
         "agresividad": 77
       },
       "media": 79,
-      "specials": [
+      "virtudes": [
         "LanzadorPenalties"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6970,9 +7409,10 @@
         "agresividad": 71
       },
       "media": 76.5,
-      "specials": [
+      "virtudes": [
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -6997,9 +7437,10 @@
         "agresividad": 74
       },
       "media": 76,
-      "specials": [
+      "virtudes": [
         "Motivador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7025,9 +7466,10 @@
         "agresividad": 80
       },
       "media": 78,
-      "specials": [
+      "virtudes": [
         "Filigranas"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7052,7 +7494,8 @@
         "agresividad": 72
       },
       "media": 75.83,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7079,7 +7522,8 @@
         "agresividad": 71
       },
       "media": 74.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7106,7 +7550,10 @@
         "agresividad": 72
       },
       "media": 75.83,
-      "specials": [],
+      "virtudes": [
+        "FairPlayer"
+      ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7131,9 +7578,10 @@
         "agresividad": 67
       },
       "media": 73,
-      "specials": [
+      "virtudes": [
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7159,7 +7607,10 @@
         "agresividad": 68
       },
       "media": 74.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [
+        "MalDefensor"
+      ],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7184,9 +7635,10 @@
         "agresividad": 76
       },
       "media": 76.33,
-      "specials": [
+      "virtudes": [
         "GuanteEnElPie"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7212,7 +7664,8 @@
         "agresividad": 66
       },
       "media": 71.17,
-      "specials": [],
+      "virtudes": [],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7238,9 +7691,10 @@
         "agresividad": 75
       },
       "media": 71.67,
-      "specials": [
+      "virtudes": [
         "Cabeceador"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7265,9 +7719,10 @@
         "agresividad": 71
       },
       "media": 76.5,
-      "specials": [
+      "virtudes": [
         "Robusto"
       ],
+      "defectos": [],
       "nivel": "Superclase",
       "coleccion": "Core"
     },
@@ -7293,9 +7748,11 @@
         "agresividad": 87
       },
       "media": 83,
-      "specials": [
-        "GuanteEnElPie"
+      "virtudes": [
+        "GuanteEnElPie",
+        "Revulsivo"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7320,8 +7777,13 @@
         "agresividad": 76
       },
       "media": 82,
-      "specials": [
-        "Filigranas"
+      "virtudes": [
+        "Filigranas",
+        "DeAcero"
+      ],
+      "defectos": [
+        "Agresivo",
+        "Canchero"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -7347,10 +7809,11 @@
         "agresividad": 81
       },
       "media": 82.33,
-      "specials": [
+      "virtudes": [
         "GuanteEnElPie",
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7375,8 +7838,13 @@
         "agresividad": 80
       },
       "media": 83.17,
-      "specials": [
-        "Cabeceador"
+      "virtudes": [
+        "Cabeceador",
+        "FairPlayer"
+      ],
+      "defectos": [
+        "MalDefensor",
+        "Indisciplinado"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -7402,9 +7870,13 @@
         "agresividad": 76
       },
       "media": 80,
-      "specials": [
+      "virtudes": [
         "Desbordante",
         "Cabeceador"
+      ],
+      "defectos": [
+        "Chupon",
+        "Rebelde"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -7431,10 +7903,11 @@
         "agresividad": 79
       },
       "media": 81.83,
-      "specials": [
+      "virtudes": [
         "Matador",
         "Cabeceador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7459,9 +7932,12 @@
         "agresividad": 85
       },
       "media": 83.67,
-      "specials": [
+      "virtudes": [
         "GuanteEnElPie",
         "Rematador"
+      ],
+      "defectos": [
+        "Chupon"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -7487,10 +7963,11 @@
         "agresividad": 82
       },
       "media": 82.67,
-      "specials": [
+      "virtudes": [
         "Intimidante",
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7516,8 +7993,12 @@
         "agresividad": 77
       },
       "media": 80.83,
-      "specials": [
-        "Filigranas"
+      "virtudes": [
+        "Filigranas",
+        "Revulsivo"
+      ],
+      "defectos": [
+        "Indisciplinado"
       ],
       "nivel": "Epico",
       "coleccion": "Core"
@@ -7544,9 +8025,11 @@
         "agresividad": 81
       },
       "media": 79.83,
-      "specials": [
-        "Robusto"
+      "virtudes": [
+        "Robusto",
+        "Versatil"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7571,10 +8054,11 @@
         "agresividad": 74
       },
       "media": 80.67,
-      "specials": [
+      "virtudes": [
         "Elegante",
         "GuanteEnElPie"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7599,9 +8083,10 @@
         "agresividad": 80
       },
       "media": 84.5,
-      "specials": [
+      "virtudes": [
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7626,9 +8111,10 @@
         "agresividad": 81
       },
       "media": 84.67,
-      "specials": [
+      "virtudes": [
         "Filigranas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7653,10 +8139,11 @@
         "agresividad": 78
       },
       "media": 80.17,
-      "specials": [
+      "virtudes": [
         "Desbordante",
         "Filigranas"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7681,10 +8168,11 @@
         "agresividad": 78
       },
       "media": 82.17,
-      "specials": [
+      "virtudes": [
         "GuanteEnElPie",
         "Rematador"
       ],
+      "defectos": [],
       "nivel": "Epico",
       "coleccion": "Core"
     },
@@ -7710,10 +8198,11 @@
         "agresividad": 89
       },
       "media": 84.33,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "LanzadorPenalties"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -7739,11 +8228,12 @@
         "agresividad": 85
       },
       "media": 85.17,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "Desbordante",
         "GuanteEnElPie"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -7769,10 +8259,13 @@
         "agresividad": 77
       },
       "media": 85,
-      "specials": [
+      "virtudes": [
         "Desbordante",
         "GuanteEnElPie",
         "Filigranas"
+      ],
+      "defectos": [
+        "Estrellita"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -7799,9 +8292,12 @@
         "agresividad": 84
       },
       "media": 86.83,
-      "specials": [
+      "virtudes": [
         "LanzadorPenalties",
         "LanzadorFaltas"
+      ],
+      "defectos": [
+        "Torpe"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -7827,10 +8323,12 @@
         "agresividad": 88
       },
       "media": 89.33,
-      "specials": [
+      "virtudes": [
         "Elegante",
-        "GuanteEnElPie"
+        "GuanteEnElPie",
+        "Versatil"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -7856,10 +8354,11 @@
         "agresividad": 82
       },
       "media": 86,
-      "specials": [
+      "virtudes": [
         "LanzadorPenalties",
         "Elegante"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -7884,11 +8383,12 @@
         "agresividad": 79
       },
       "media": 85,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "GuanteEnElPie",
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -7913,10 +8413,11 @@
         "agresividad": 90
       },
       "media": 89,
-      "specials": [
+      "virtudes": [
         "RecuperadorTrasPerdida",
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -7941,10 +8442,11 @@
         "agresividad": 85
       },
       "media": 86,
-      "specials": [
+      "virtudes": [
         "Desbordante",
         "FortalezaMental"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -7969,10 +8471,13 @@
         "agresividad": 91
       },
       "media": 88.67,
-      "specials": [
+      "virtudes": [
         "Matador",
         "Rematador",
         "Cabeceador"
+      ],
+      "defectos": [
+        "Chupon"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -7999,11 +8504,12 @@
         "agresividad": 81
       },
       "media": 84.5,
-      "specials": [
+      "virtudes": [
         "Rematador",
         "Filigranas",
         "Desbordante"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -8029,10 +8535,13 @@
         "agresividad": 83
       },
       "media": 88.5,
-      "specials": [
+      "virtudes": [
         "Rematador",
         "Motivador",
         "Aura"
+      ],
+      "defectos": [
+        "Polemico"
       ],
       "nivel": "Legendario",
       "coleccion": "Core"
@@ -8058,11 +8567,12 @@
         "agresividad": 76
       },
       "media": 83.17,
-      "specials": [
+      "virtudes": [
         "FortalezaMental",
         "GuanteEnElPie",
         "Filigranas"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -8087,11 +8597,12 @@
         "agresividad": 82
       },
       "media": 83.5,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "LanzadorFaltas",
         "Rematador"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -8116,11 +8627,12 @@
         "agresividad": 83
       },
       "media": 85.33,
-      "specials": [
+      "virtudes": [
         "Matador",
         "Filigranas",
         "Aura"
       ],
+      "defectos": [],
       "nivel": "Legendario",
       "coleccion": "Core"
     },
@@ -8145,11 +8657,13 @@
         "agresividad": 88
       },
       "media": 88.67,
-      "specials": [
+      "virtudes": [
         "Desbordante",
         "Presionador",
-        "GuanteEnElPie"
+        "GuanteEnElPie",
+        "Revulsivo"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -8174,11 +8688,15 @@
         "agresividad": 88
       },
       "media": 91.17,
-      "specials": [
+      "virtudes": [
         "Cabeceador",
         "Matador",
         "Rematador",
         "GuanteEnElPie"
+      ],
+      "defectos": [
+        "Polemico",
+        "Inflexible"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -8204,11 +8722,13 @@
         "agresividad": 86
       },
       "media": 90.5,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "Carismatico",
-        "GuanteEnElPie"
+        "GuanteEnElPie",
+        "DeAcero"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -8233,11 +8753,14 @@
         "agresividad": 86
       },
       "media": 92.17,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "FortalezaMental",
         "LanzadorPenalties",
         "LanzadorFaltas"
+      ],
+      "defectos": [
+        "Provocador"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -8264,12 +8787,13 @@
         "agresividad": 91
       },
       "media": 91.5,
-      "specials": [
+      "virtudes": [
         "Matador",
         "LanzadorPenalties",
         "Intimidante",
         "Cabeceador"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -8296,10 +8820,14 @@
         "agresividad": 85
       },
       "media": 91.5,
-      "specials": [
+      "virtudes": [
         "Matador",
         "LanzadorPenalties",
-        "RecuperadorTrasPerdida"
+        "RecuperadorTrasPerdida",
+        "Revulsivo"
+      ],
+      "defectos": [
+        "Estrellita"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"
@@ -8326,11 +8854,12 @@
         "agresividad": 88
       },
       "media": 88.33,
-      "specials": [
+      "virtudes": [
         "Capitania",
         "GuanteEnElPie",
         "Rematador"
       ],
+      "defectos": [],
       "nivel": "GOAT",
       "coleccion": "Core"
     },
@@ -8355,10 +8884,14 @@
         "agresividad": 89
       },
       "media": 89.83,
-      "specials": [
+      "virtudes": [
         "Filigranas",
         "Desbordante",
-        "Cabeceador"
+        "Cabeceador",
+        "Versatil"
+      ],
+      "defectos": [
+        "Chupon"
       ],
       "nivel": "GOAT",
       "coleccion": "Core"

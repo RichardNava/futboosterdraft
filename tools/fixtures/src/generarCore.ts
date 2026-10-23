@@ -14,11 +14,12 @@ import { resolve } from 'node:path';
 import {
   CLAVES_STATS,
   DISTRIBUCION_CORE,
-  MAX_SPECIALS,
+  MAX_VIRTUDES,
   Rng,
-  SPECIALS_GENERICOS,
-  SPECIALS_POR_DEMARCACION,
-  SPECIALS_MED,
+  VIRTUDES_GENERICAS,
+  VIRTUDES_NUEVAS_005,
+  VIRTUDES_POR_DEMARCACION,
+  VIRTUDES_MED,
   calcularMedia,
   semillaDesdeTexto,
   validarColeccion,
@@ -26,7 +27,7 @@ import {
   type Jugador,
   type Nivel,
   type Posicion,
-  type Special,
+  type Virtud,
 } from '@fbd/domain';
 
 export { DISTRIBUCION_CORE } from '@fbd/domain';
@@ -104,8 +105,8 @@ const PERFIL: Readonly<Partial<Record<Posicion, readonly string[]>>> = {
   ED: ['velocidad', 'regate'],
 };
 
-/** Specials especialmente ligados a una posición (más probables). */
-const SPECIALS_AFINES: Readonly<Partial<Record<Posicion, readonly Special[]>>> = {
+/** Virtudes especialmente ligadas a una posición (más probables). */
+const VIRTUDES_AFINES: Readonly<Partial<Record<Posicion, readonly Virtud[]>>> = {
   POR: ['Parapenalties', 'OneToOne', 'Santo', 'Ordenabarreras', 'JugadorDeCampo'],
   DCI: ['Infranqueable', 'Jerarquia', 'Volador', 'MuroDefensivo', 'Potente'],
   DCD: ['Infranqueable', 'Jerarquia', 'Volador', 'MuroDefensivo', 'Potente'],
@@ -182,16 +183,18 @@ function generarStats(rng: Rng, demarcacion: Demarcacion, principal: Posicion, n
   throw new Error(`No se pudieron generar stats para ${demarcacion}/${nivel}`);
 }
 
-function generarSpecials(rng: Rng, jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'nivel'>): Special[] {
-  const maximo = MAX_SPECIALS[jugador.nivel];
+function generarVirtudes(rng: Rng, jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'nivel'>): Virtud[] {
+  const maximo = MAX_VIRTUDES[jugador.nivel];
   // Los niveles altos suelen llenar sus huecos; un Superclase puede no tener ninguno.
   const cantidad = jugador.nivel === 'Superclase' ? rng.entero(0, 1) : rng.entero(Math.max(1, maximo - 1), maximo);
-  const permitidos = new Set<Special>([...SPECIALS_GENERICOS, ...SPECIALS_POR_DEMARCACION[jugador.demarcacion]]);
+  // Las virtudes de la spec 005 no las reparte el generador original, sino la pasada de `asignarRasgos` (research R5).
+  const genericas = VIRTUDES_GENERICAS.filter((v) => !VIRTUDES_NUEVAS_005.includes(v));
+  const permitidos = new Set<Virtud>([...genericas, ...VIRTUDES_POR_DEMARCACION[jugador.demarcacion]]);
   if (jugador.demarcacion === 'DEF' && (jugador.posicion.includes('CI') || jugador.posicion.includes('CD'))) {
-    for (const s of SPECIALS_MED) permitidos.add(s);
+    for (const s of VIRTUDES_MED) permitidos.add(s);
   }
-  const afines = (SPECIALS_AFINES[jugador.posicion[0]!] ?? []).filter((s) => permitidos.has(s));
-  const elegidos = new Set<Special>();
+  const afines = (VIRTUDES_AFINES[jugador.posicion[0]!] ?? []).filter((s) => permitidos.has(s));
+  const elegidos = new Set<Virtud>();
   while (elegidos.size < cantidad) {
     const pool = rng.probabilidad(650) && afines.length ? afines : [...permitidos];
     elegidos.add(rng.elegir(pool));
@@ -245,7 +248,8 @@ export function generarCore(semillaTexto = 'futboosterdraft-core-v1'): Jugador[]
           historia: `${nombre} ${apellidos.split(' ')[0]} (${nacionalidad}) es ${NIVELES_TEXTO[nivel]}. Destaca como ${posicion[0]}.`,
           stats,
           media,
-          specials: generarSpecials(rng, base),
+          virtudes: generarVirtudes(rng, base),
+          defectos: [],
           nivel,
           coleccion: 'Core',
         });

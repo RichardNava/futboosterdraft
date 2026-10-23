@@ -50,6 +50,8 @@ export interface JugadorEnPartido {
   ancla?: { x: number; y: number };
   /** Posición efectiva (la de la zona de su ancla) si se colocó libremente (US7). */
   posicion?: Posicion;
+  /** Entró desde el banquillo, también al sustituir a un lesionado (spec 005, Revulsivo). */
+  entroDesdeBanquillo: boolean;
 }
 
 export interface EquipoEstado {
@@ -174,6 +176,8 @@ export interface EstadoMotor {
   decisiones: DecisionRegistrada[];
   /** Equipo que perdió el partido por quedarse con menos de 7 jugadores. */
   derrotaPorInferioridad: Lado | null;
+  /** Defectos colectivos activos ahora en cada equipo (spec 005, FR-044), para avisar solo cuando cambian. */
+  malestar: Record<Lado, { defecto: 'Polemico' | 'Rebelde'; jugadorId: number }[]>;
   /** Saque de la segunda parte: el equipo que no sacó en la primera. */
   sacoPrimeraParte: Lado;
   /** Capa espacial: posiciones de jugadores y balón (research R3). */
@@ -289,8 +293,21 @@ export function colocar(equipo: EquipoEstado, colocacion: readonly PuntoColocaci
   equipo.perfil = { ofensividad: r.ofensividad, amplitud: r.amplitud };
 }
 
-function nuevoJugador(jugador: Jugador, casillaId: string | null, enCampo: boolean): JugadorEnPartido {
-  return { id: jugador.id, jugador, casillaId, enCampo, retirado: false, expulsado: false, lesionado: false, amarillas: 0, cansancio: 0 };
+function nuevoJugador(carta: Jugador, casillaId: string | null, enCampo: boolean): JugadorEnPartido {
+  // Las cartas guardadas en los partidos anteriores a la spec 005 no tienen defectos.
+  const jugador = carta.defectos ? carta : { ...carta, defectos: [] };
+  return {
+    id: jugador.id,
+    jugador,
+    casillaId,
+    enCampo,
+    retirado: false,
+    expulsado: false,
+    lesionado: false,
+    amarillas: 0,
+    cansancio: 0,
+    entroDesdeBanquillo: false,
+  };
 }
 
 /** Ancla de un titular: el punto de su casilla en la formación (unidades, coordenadas del equipo). */
@@ -322,6 +339,7 @@ export function crearPartido(entrada: EntradaPartido): EstadoMotor {
     decisionesPendientes: [],
     decisiones: [],
     derrotaPorInferioridad: null,
+    malestar: { local: [], visitante: [] },
     sacoPrimeraParte: 'local',
     espacio: {
       jugadores: {},

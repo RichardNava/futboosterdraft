@@ -15,7 +15,7 @@ const equipo = (participanteId: string) =>
     lanzadores: { penaltis: 1, faltas: 1, corners: 1, tanda: [1] },
   }) as never;
 
-const c = { servicios: { catalogo: { resumen: (id: number) => ({ id }) } } } as never;
+const c = { catalogo: { resumen: (id: number) => ({ id }) } } as never;
 
 describe('visibilidad de partido.inicio (T127)', () => {
   it('el rival llega sin colocación, anclas ni lanzadores', () => {

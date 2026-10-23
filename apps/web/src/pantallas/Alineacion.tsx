@@ -29,6 +29,7 @@ import { mostrarAviso } from '../estado/avisos';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
 import { Dialogo } from '../componentes/Dialogo';
+import { Insignia } from '../componentes/Insignia';
 
 export interface CasillaVista {
   casillaId: string;
@@ -50,6 +51,10 @@ interface DatosEquipo {
   /** Spec 003, FR-042: nombre del equipo, editable hasta que se abre el primer partido. */
   nombreEquipo?: string;
   nombreEditable?: boolean;
+  /** Modo Duelo de jugadores (spec 005, FR-063, FR-063a): once único en la formación común, confirmado una vez. */
+  soloTitulares?: true;
+  formacionFija?: FormacionId;
+  bloqueada?: boolean;
 }
 
 const NOMBRE_FORMACION: Record<FormacionId, string> = Object.fromEntries(
@@ -99,6 +104,8 @@ export function Alineacion() {
   const [nombreEquipo, setNombreEquipo] = useState('');
   /** Cambio de formación pendiente de confirmar (FR-002a). */
   const [formacionPendiente, setFormacionPendiente] = useState<FormacionId | null>(null);
+  /** Diálogo «Confirmar once» del modo duelos. */
+  const [confirmandoOnce, setConfirmandoOnce] = useState(false);
 
   const aplicarDatos = useCallback((d: DatosEquipo) => {
     setDatos(d);
@@ -157,8 +164,16 @@ export function Alineacion() {
     setCampo(r.estado);
   };
 
-  const alSoltar = (jugadorId: number, destino: DestinoSoltar) => setCampo((c) => (c ? soltar(c, jugadorId, destino, opcionesCampo) : c));
-  const alMover = (jugadorId: number, dx: number, dy: number) => setCampo((c) => (c ? mover(c, jugadorId, dx, dy, opcionesCampo) : c));
+  // En el modo duelos no hay colocación libre: solo se cambia quién ocupa cada casilla, y con el once bloqueado, nada.
+  const duelos = datos?.soloTitulares === true;
+  const bloqueada = datos?.bloqueada === true;
+  const alSoltar = (jugadorId: number, destino: DestinoSoltar) =>
+    setCampo((c) => {
+      if (!c || bloqueada) return c;
+      const n = soltar(c, jugadorId, destino, opcionesCampo);
+      return duelos ? { ...n, puntos: {} } : n;
+    });
+  const alMover = (jugadorId: number, dx: number, dy: number) => setCampo((c) => (c && !duelos ? mover(c, jugadorId, dx, dy, opcionesCampo) : c));
 
   const confirmar = async () => {
     const a = alineacionActual();
@@ -234,13 +249,17 @@ export function Alineacion() {
   const sinCambios = firma(datos.alineacion) === firma(actual);
   const confirmada = sinCambios && datos.confirmada;
   // «Confirmar alineación» guarda y vuelve al torneo, donde se prepara el partido (FR-003b).
-  const principal: AccionBarra = {
-    etiqueta: 'Confirmar alineación',
-    onClick: async () => {
-      if (await confirmar()) navegar(`/partidas/${partidaId}/torneo`);
-    },
-    motivoDesactivado: motivo ? `No se puede confirmar: ${motivo}` : null,
-  };
+  const principal: AccionBarra | null = duelos
+    ? bloqueada
+      ? null
+      : { etiqueta: 'Confirmar once', onClick: () => setConfirmandoOnce(true), motivoDesactivado: motivo ? `No se puede confirmar: ${motivo}` : null }
+    : {
+        etiqueta: 'Confirmar alineación',
+        onClick: async () => {
+          if (await confirmar()) navegar(`/partidas/${partidaId}/torneo`);
+        },
+        motivoDesactivado: motivo ? `No se puede confirmar: ${motivo}` : null,
+      };
 
   return (
     <main className="pantalla alineacion">
@@ -249,16 +268,23 @@ export function Alineacion() {
         <Link className="boton secundario" to={`/partidas/${partidaId}/torneo`}>
           Torneo
         </Link>
-        <label>
-          Formación{' '}
-          <select value={campo.formacion} onChange={(e) => cambiarFormacion(e.target.value as FormacionId)}>
-            {FORMACIONES_IDS.map((id) => (
-              <option key={id} value={id}>
-                {NOMBRE_FORMACION[id]}
-              </option>
-            ))}
-          </select>
-        </label>
+        {duelos ? (
+          <p className="formacion-fija">
+            Formación <strong>{NOMBRE_FORMACION[campo.formacion]}</strong> <span className="nota">(la elige el anfitrión para todos)</span>
+            {bloqueada && <Insignia texto="Once confirmado" />}
+          </p>
+        ) : (
+          <label>
+            Formación{' '}
+            <select value={campo.formacion} onChange={(e) => cambiarFormacion(e.target.value as FormacionId)}>
+              {FORMACIONES_IDS.map((id) => (
+                <option key={id} value={id}>
+                  {NOMBRE_FORMACION[id]}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
       </header>
 
       {porteroEnPorteria && porteroEnPorteria.demarcacion !== 'POR' && (
@@ -268,7 +294,11 @@ export function Alineacion() {
       )}
 
       <p className="nota">
-        Arrastra a los jugadores para elegir titulares, intercambiarlos o colocarlos donde quieras; o selecciónalos con Intro y muévelos con las flechas.
+        {duelos
+          ? bloqueada
+            ? 'Este es tu once para todo el torneo. Cada jugador se enfrenta en un duelo al rival de su misma casilla.'
+            : 'Elige tu once: arrastra a los jugadores de la plantilla a cada casilla. Cada uno se enfrentará en un duelo al rival de su misma casilla.'
+          : 'Arrastra a los jugadores para elegir titulares, intercambiarlos o colocarlos donde quieras; o selecciónalos con Intro y muévelos con las flechas.'}{' '}
         Pasa el cursor (o mantén pulsado) sobre una ficha para ver su carta.
       </p>
       <CampoEquipo
@@ -282,10 +312,12 @@ export function Alineacion() {
         reserva={reserva}
         bloqueados={bajas}
         distintivos={distintivos}
+        sinBanquillo={duelos}
         onSoltar={alSoltar}
         onMover={alMover}
       />
 
+      {!duelos && (
       <div className="colocacion-resumen" aria-live="polite">
         <p>
           <strong>
@@ -310,6 +342,7 @@ export function Alineacion() {
           </button>
         )}
       </div>
+      )}
 
       {mensaje && (
         <Aviso tipo="error">
@@ -324,6 +357,8 @@ export function Alineacion() {
         </Aviso>
       )}
 
+      {!duelos && (
+        <>
       <details className="seccion-plegable" open>
         <summary>Táctica</summary>
         <section aria-label="Táctica">
@@ -340,6 +375,8 @@ export function Alineacion() {
         <summary>Dorsales</summary>
         <EditorDorsales plantilla={datos.plantilla} dorsales={datos.dorsales} asignar={asignarDorsal} />
       </details>
+        </>
+      )}
 
       <details className="seccion-plegable">
         <summary>Nombre del equipo</summary>
@@ -360,7 +397,7 @@ export function Alineacion() {
         )}
       </details>
 
-      {equipaciones && (
+      {equipaciones && !duelos && (
         <details className="seccion-plegable">
           <summary>Equipaciones</summary>
           <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
@@ -382,9 +419,37 @@ export function Alineacion() {
           </div>
         </Dialogo>
       )}
+      {confirmandoOnce && (
+        <Dialogo rol="alertdialog" etiquetadoPor="titulo-confirmar-once" alEscape={() => setConfirmandoOnce(false)}>
+          <p id="titulo-confirmar-once">Este será tu once para todo el torneo. No podrás cambiarlo.</p>
+          <div className="acciones">
+            <button
+              type="button"
+              className="principal"
+              onClick={async () => {
+                setConfirmandoOnce(false);
+                if (await confirmar()) navegar(`/partidas/${partidaId}/torneo`);
+              }}
+            >
+              Confirmar
+            </button>
+            <button type="button" className="texto" onClick={() => setConfirmandoOnce(false)}>
+              Seguir editando
+            </button>
+          </div>
+        </Dialogo>
+      )}
       <BarraPrincipal
         principal={principal}
-        estado={datos.confirmada ? `Última confirmada: versión ${datos.version}${confirmada ? '' : ' · hay cambios sin confirmar'}` : 'Aún no has confirmado ninguna alineación.'}
+        estado={
+          duelos
+            ? bloqueada
+              ? 'Once confirmado para todo el torneo.'
+              : 'Aún no has confirmado tu once.'
+            : datos.confirmada
+              ? `Última confirmada: versión ${datos.version}${confirmada ? '' : ' · hay cambios sin confirmar'}`
+              : 'Aún no has confirmado ninguna alineación.'
+        }
       />
     </main>
   );

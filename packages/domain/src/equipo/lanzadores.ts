@@ -1,10 +1,10 @@
 /**
  * Lanzadores de penaltis, faltas directas y córners, y orden de la tanda (FR-029a).
  *
- * Propuesta automática: el titular con el special de la acción (Lanzador de penalties, Lanzador de
+ * Propuesta automática: el titular con la virtud de la acción (Lanzador de penalties, Lanzador de
  * faltas, Guante en el pie) y, si no hay, el de mejor valor en el stat de esa acción.
  */
-import type { Demarcacion, Jugador, Special } from '../catalogo/tipos';
+import type { Demarcacion, Jugador, Virtud } from '../catalogo/tipos';
 
 export type TipoLanzamiento = 'penaltis' | 'faltas' | 'corners';
 
@@ -16,7 +16,7 @@ export interface Lanzadores {
   tanda: number[];
 }
 
-const SPECIAL_DE: Readonly<Record<TipoLanzamiento, Special>> = {
+const VIRTUD_DE: Readonly<Record<TipoLanzamiento, Virtud>> = {
   penaltis: 'LanzadorPenalties',
   faltas: 'LanzadorFaltas',
   corners: 'GuanteEnElPie',
@@ -35,12 +35,12 @@ export function valorLanzamiento(j: Pick<Jugador, 'demarcacion' | 'stats'>, tipo
   return j.demarcacion === 'POR' ? valor * 0.5 : valor;
 }
 
-/** Candidatos ordenados: primero los que tienen el special, después por valor (y por id si empatan). */
+/** Candidatos ordenados: primero los que tienen la virtud, después por valor (y por id si empatan). */
 export function candidatos(jugadores: readonly Jugador[], tipo: TipoLanzamiento): Jugador[] {
-  const special = SPECIAL_DE[tipo];
+  const virtud = VIRTUD_DE[tipo];
   return [...jugadores].sort((a, b) => {
-    const sa = a.specials.includes(special) ? 1 : 0;
-    const sb = b.specials.includes(special) ? 1 : 0;
+    const sa = a.virtudes.includes(virtud) ? 1 : 0;
+    const sb = b.virtudes.includes(virtud) ? 1 : 0;
     if (sa !== sb) return sb - sa;
     const diferencia = valorLanzamiento(b, tipo) - valorLanzamiento(a, tipo);
     return diferencia !== 0 ? diferencia : a.id - b.id;

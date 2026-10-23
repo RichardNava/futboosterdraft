@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { penalti } from '../src/acciones/balonParado';
 import { avanzar, type EstadoMotor } from '../src/index';
-import { equipo, partido } from './ayudas';
+import { contextoDe, equipo, partido, titularEn } from './ayudas';
 
 function tanda(semilla: string, cambios: Parameters<typeof partido>[1] = {}) {
   const e: EstadoMotor = partido(semilla, { eliminatoria: true, ...cambios });
@@ -57,9 +58,26 @@ describe('tanda de penaltis (FR-041, FR-029a)', () => {
       return goles / tiros;
     };
     const base = tasa({});
-    const conParapenalties = tasa({ local: equipo('local', { specialsPortero: ['Parapenalties'] }) });
-    const conLanzadores = tasa({ visitante: equipo('visitante', { specials: ['LanzadorPenalties'] }) });
+    const conParapenalties = tasa({ local: equipo('local', { virtudesPortero: ['Parapenalties'] }) });
+    const conLanzadores = tasa({ visitante: equipo('visitante', { virtudes: ['LanzadorPenalties'] }) });
     expect(conParapenalties).toBeLessThan(base);
     expect(conLanzadores).toBeGreaterThan(base);
+  });
+});
+
+describe('penalti con resultado (spec 005, T080; FR-071)', () => {
+  it("el evento penalti lleva datos.resultado ∈ {'gol', 'parada', 'fuera'} al resolverse, y el portero si lo para", () => {
+    const vistos = new Set<string>();
+    for (let i = 0; i < 60; i++) {
+      const e = partido(`penalti-resultado-${i}`);
+      penalti(contextoDe(e, `penalti-resultado-${i}`), e.equipos.local);
+      const ev = e.eventos.find((x) => x.tipo === 'penalti')!;
+      expect(['gol', 'parada', 'fuera']).toContain(ev.datos.resultado);
+      vistos.add(String(ev.datos.resultado));
+      if (ev.datos.resultado === 'parada') expect(ev.datos.porteroId).toBe(titularEn(e, 'visitante', 'POR').id);
+      if (ev.datos.resultado === 'gol') expect(e.eventos.some((x) => x.tipo === 'gol')).toBe(true);
+    }
+    expect(vistos.has('gol')).toBe(true);
+    expect(vistos.size).toBeGreaterThan(1);
   });
 });

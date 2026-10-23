@@ -94,7 +94,7 @@ test.describe('con movimiento reducido', () => {
 
     // Hasta el final del torneo y la pantalla del campeón.
     const t = await jugarHastaCaer(page, id);
-    if (!t.campeon) await page.request.post(`/api/partidas/${id}/simular-resto`);
+    if (!t.campeon) await page.request.post(`/api/partidas/${id}/simular-resto`, { headers: { 'Idempotency-Key': crypto.randomUUID() } });
     expect((await vistaTorneo(page, id)).campeon).not.toBeNull();
     await page.goto(`/partidas/${id}/torneo`);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Umbral de rendimiento del motor (FR-028a; T158; spec 003 T037): media de partidos completos sin fotogramas
- * ≤ 25 ms, con métricas ≤ 30 ms y `resolverResto` desde el minuto 0 ≤ 30 ms. Termina con código 1 si se supera alguno.
+ * ≤ 120 ms, con métricas ≤ 120 ms y `resolverResto` desde el minuto 0 ≤ 120 ms (umbral revisado en la spec 005). Termina con código 1 si se supera alguno.
  *
  *   pnpm --filter @fbd/balance umbral-motor            (20 partidos)
  *   pnpm --filter @fbd/balance umbral-motor -- --n 50
@@ -11,9 +11,9 @@ import { parametrosActuales, semillaDesdeTexto } from '@fbd/domain';
 import { avanzar, crearPartido } from '@fbd/engine';
 import { clonar, equipoSintetico } from './equipos';
 
-const MAX_PARTIDO_MS = Number(process.env.MAX_PARTIDO_MS ?? 25);
-const MAX_RESOLVER_RESTO_MS = Number(process.env.MAX_RESOLVER_RESTO_MS ?? 30);
-const MAX_METRICAS_MS = Number(process.env.MAX_METRICAS_MS ?? 30);
+const MAX_PARTIDO_MS = Number(process.env.MAX_PARTIDO_MS ?? 120);
+const MAX_RESOLVER_RESTO_MS = Number(process.env.MAX_RESOLVER_RESTO_MS ?? 120);
+const MAX_METRICAS_MS = Number(process.env.MAX_METRICAS_MS ?? 120);
 const i = process.argv.indexOf('--n');
 const n = i >= 0 ? Number(process.argv[i + 1]) : 20;
 

@@ -83,6 +83,8 @@ export function NombreRecortado({ texto, como: Elemento = 'span', lineas = 1, cl
   const ref = useRef<HTMLElement>(null);
   const etiqueta = useRef<HTMLSpanElement>(null);
   const [recortado, setRecortado] = useState(false);
+  // En cursiva, la última letra sobresale de su caja: con la clase `cursiva` el CSS le deja sitio para no recortarla.
+  const [cursiva, setCursiva] = useState(false);
   const recortadoRef = useRef(false);
   recortadoRef.current = recortado;
   const temporizador = useRef<number | undefined>(undefined);
@@ -91,7 +93,10 @@ export function NombreRecortado({ texto, como: Elemento = 'span', lineas = 1, cl
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const medir = () => setRecortado(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+    const medir = () => {
+      setCursiva(getComputedStyle(el).fontStyle !== 'normal');
+      setRecortado(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+    };
     medir();
     if (typeof ResizeObserver === 'undefined') return;
     const observador = new ResizeObserver(medir);
@@ -170,7 +175,7 @@ export function NombreRecortado({ texto, como: Elemento = 'span', lineas = 1, cl
     if (e.pointerType === 'mouse') ocultar();
   };
 
-  const clases = ['nombre-recortado', lineas === 2 ? 'dos-lineas' : '', className].filter(Boolean).join(' ');
+  const clases = ['nombre-recortado', lineas === 2 ? 'dos-lineas' : '', cursiva ? 'cursiva' : '', className].filter(Boolean).join(' ');
   return (
     <>
       <Elemento

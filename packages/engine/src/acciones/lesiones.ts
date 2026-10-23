@@ -5,7 +5,8 @@
  */
 import type { GravedadLesion } from '@fbd/domain';
 import type { EquipoEstado, JugadorEnPartido } from '../estado/estado';
-import { tiene } from '../modificadores/specials';
+import { deAcero, factorLesion, gravedadForzada } from '../modificadores/defectos';
+import { tiene } from '../modificadores/virtudes';
 import { emitir, type Contexto } from './contexto';
 import { retirarLesionado } from './plantel';
 
@@ -23,12 +24,16 @@ function sortearGravedad(ctx: Contexto): GravedadLesion {
 
 /** Comprueba si el jugador se lesiona en una entrada. Devuelve `true` si se ha lesionado. */
 export function comprobarLesion(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido, factor = 1): boolean {
+  // De acero (spec 005, FR-031): nunca se lesiona; se comprueba antes que cualquier otro factor.
+  if (deAcero(ctx.estado, j)) return false;
   const l = ctx.estado.parametros.lesiones;
   const robusto = tiene(j, 'Robusto');
-  const prob = l.probabilidadPorEntrada * factor * (robusto ? 1 - l.reduccionRobusto : 1);
+  const prob = l.probabilidadPorEntrada * factor * (robusto ? 1 - l.reduccionRobusto : 1) * factorLesion(ctx.estado, j);
   if (!ctx.rng.probabilidad(Math.round(prob * 1000))) return false;
-  let gravedad = sortearGravedad(ctx);
-  if (robusto) {
+  // De cristal (spec 005): siempre de larga duración, sin sortear.
+  const forzada = gravedadForzada(ctx.estado, j);
+  let gravedad = forzada ?? sortearGravedad(ctx);
+  if (robusto && !forzada) {
     const otra = sortearGravedad(ctx);
     if (ORDEN.indexOf(otra) < ORDEN.indexOf(gravedad)) gravedad = otra;
   }
