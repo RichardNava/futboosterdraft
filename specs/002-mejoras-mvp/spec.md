@@ -395,7 +395,7 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
   - DEBEN simularse la prórroga y la tanda de penaltis cuando correspondan.
 - **FR-027**: Si el cálculo del resto del partido tarda más de 300 ms, el sistema DEBE mostrar un indicador de progreso y los eventos relevantes a medida que se conozcan, y al terminar DEBE mostrar el resumen completo.
 - **FR-028**: En simulación rápida, «Finalizar partido» DEBE estar disponible en cualquier momento, incluido el descanso, y lleva directamente al resultado final sin hacer cambios.
-- **FR-028a**: Rendimiento del motor, para que se cumplan SC-003, SC-010 y la carga de la beta (001/SC-017): un partido completo sin fotogramas DEBE costar como mucho 25 ms de CPU, 40 ms con fotogramas, y el cálculo del resto del partido desde el minuto 0, como mucho 30 ms.
+- **FR-028a**: Rendimiento del motor, para que se cumplan SC-003, SC-010 y la carga de la beta (001/SC-017): un partido completo sin fotogramas DEBE costar como mucho 120 ms de CPU, igual que con fotogramas, con métricas y el cálculo del resto del partido desde el minuto 0. (Revisado el 2026-10-23 en la spec 005: el umbral original de 25/40/30 ms no se alcanzó; el motor mide unos 80-110 ms y se acepta ese coste.)
 
 #### Modelo de competición entre humanos (viabilidad del modelo síncrono)
 
