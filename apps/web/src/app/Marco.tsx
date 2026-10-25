@@ -11,6 +11,8 @@ import { Dialogo } from '../componentes/Dialogo';
 import { Insignia } from '../componentes/Insignia';
 import { useAvisos } from '../estado/avisos';
 import { Escudo } from '../componentes/arte/Escudo';
+import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
+import { useSaldo } from '../estado/saldo';
 
 /** Capa de atmósfera del estadio (spec 004, FR-041): focos, grano y las líneas de cal del campo en perspectiva. */
 function Ambiente() {
@@ -81,6 +83,18 @@ export function Marco() {
   // Conexión perdida con la partida: insignia de advertencia en la barra (spec 004, FR-023).
   const sinConexion = useAvisos((s) => s.avisos.some((a) => a.id === 'conexion'));
   useEffect(prepararDesbloqueo, []);
+  // Saldo de fragmentos en la barra, solo para registrados; se vuelve a pedir en cada cambio de pantalla.
+  const saldo = useSaldo((s) => s.saldo);
+  const esRegistrado = usuario?.tipo === 'registrado';
+  useEffect(() => {
+    if (!esRegistrado) {
+      useSaldo.setState({ saldo: null });
+      return;
+    }
+    api<{ saldo: number }>('/api/fragmentos/saldo')
+      .then((r) => useSaldo.setState({ saldo: r.saldo }))
+      .catch(() => undefined);
+  }, [esRegistrado, usuario?.id, ubicacion.pathname]);
   const [abandonando, setAbandonando] = useState(false);
   const salida = useRef<Salida>(null);
   const bloqueo = useBlocker(({ currentLocation, nextLocation }) => {
@@ -175,6 +189,12 @@ export function Marco() {
               <ul className="enlaces-navegacion">{listaEnlaces(false)}</ul>
               {interruptorSonido(false)}
             </div>
+            {esRegistrado && saldo !== null && (
+              <Link to="/tienda#fragmentos" className="saldo-navegacion" aria-label={`Fragmentos: ${formatoFragmentos.format(saldo)}. Comprar fragmentos`} title="Comprar fragmentos">
+                <Icono nombre="cristal" tamano={18} />
+                {formatoFragmentos.format(saldo)}
+              </Link>
+            )}
             <MenuNavegacion enlaces={listaEnlaces(false)} sonido={interruptorSonido(true)} />
           </>
         )}

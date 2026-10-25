@@ -31,6 +31,8 @@ export function registrarRutasColeccion(app: FastifyInstance, auth: Auth, econom
     economia.desfragmentar(req.usuario!.id, idCarta(req.params.id)),
   );
 
+  app.get('/api/fragmentos/saldo', { preHandler: soloRegistrados }, async (req) => economia.leerSaldo(req.usuario!.id));
+
   app.get<{ Querystring: { antes?: string; limite?: string } }>('/api/fragmentos/movimientos', { preHandler: soloRegistrados }, async (req) => {
     const antes = req.query.antes === undefined ? undefined : new Date(req.query.antes);
     if (antes && Number.isNaN(antes.getTime())) throw errores.validacion('FECHA_INVALIDA', '"antes" debe ser una fecha ISO');

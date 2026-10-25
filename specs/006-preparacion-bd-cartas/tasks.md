@@ -288,6 +288,13 @@ en el historial (quickstart G).
 
 ---
 
+## Phase 11: Ronda de ajustes tras las pruebas
+
+- [X] T105 [P] Saldo de fragmentos en la barra con el icono `cristal`: `GET /api/fragmentos/saldo` (`apps/server/src/http/coleccion.ts`), almacén `apps/web/src/estado/saldo.ts` y enlace a `/tienda#fragmentos` en `apps/web/src/app/Marco.tsx`
+- [X] T106 [P] Paginador de «Colección» encima y debajo de la rejilla, con botones de la página actual y las cuatro siguientes (`apps/web/src/pantallas/Coleccion.tsx`)
+- [X] T107 [P] Corregir «Tu sobre»: las cartas se quedaban en una franja porque `.carta` (container-type: inline-size) no tiene ancho propio dentro de una celda centrada (`apps/web/src/estilos/coleccion.css`)
+- [X] T108 Eliminar la cuenta desde «Mi perfil»: `DELETE /api/cuenta` (`apps/server/src/auth/rutas.ts`, `GestorPartidas.eliminarCuenta`) y la confirmación en `apps/web/src/pantallas/Perfil.tsx`
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

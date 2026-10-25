@@ -133,6 +133,21 @@
   padding-inline: var(--espacio-2);
 }
 
+.paginador-arriba {
+  margin-top: 0;
+  margin-bottom: var(--espacio-4);
+}
+
+.paginador .numero {
+  min-width: var(--espacio-10);
+}
+
+.paginador .numero[aria-current='page'] {
+  border-color: var(--color-accion);
+  color: var(--color-accion);
+  font-weight: 800;
+}
+
 .ficha-coleccion {
   display: grid;
   grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
@@ -329,6 +344,8 @@
 }
 
 .cartas-sobre .rejilla-cartas {
+  /* La carta (container-type: inline-size) no tiene ancho propio: centrada en su celda se quedaba en una franja. */
+  justify-items: stretch;
   margin: 0;
   padding: 0;
   list-style: none;

@@ -87,6 +87,11 @@ export class ServicioEconomia {
     await ejecutor.insert(saldosFragmentos).values({ usuarioId }).onConflictDoNothing();
   }
 
+  /** Saldo de fragmentos para la barra de navegación. */
+  async leerSaldo(usuarioId: string): Promise<{ saldo: number }> {
+    return { saldo: await this.saldo(this.db, usuarioId) };
+  }
+
   async leerColeccion(usuarioId: string): Promise<RespuestaColeccion> {
     await this.asegurarColeccion(usuarioId);
     const filas = await this.cartas(this.db, usuarioId);

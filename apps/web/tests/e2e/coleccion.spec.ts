@@ -35,8 +35,14 @@ test('300 cartas, búsqueda sin tildes, orden por nacionalidad, última página,
 
   await page.getByLabel('Ordenar por').selectOption('nacionalidad');
   await page.getByRole('button', { name: /Orden ascendente/ }).click();
-  await page.getByRole('button', { name: 'Última' }).click();
-  await expect(page.getByText(/Página (\d+) de \1/)).toBeVisible();
+  // Paginador encima y debajo de la rejilla, con la página actual y las cuatro siguientes.
+  const abajo = page.getByRole('navigation', { name: 'Páginas', exact: true });
+  await expect(page.getByRole('navigation', { name: 'Páginas (arriba)' })).toBeVisible();
+  await expect(abajo.getByRole('button', { name: /^Página \d+$/ })).toHaveCount(5);
+  await abajo.getByRole('button', { name: 'Página 5' }).click();
+  await expect(abajo.getByRole('button', { name: 'Página 5' })).toHaveAttribute('aria-current', 'page');
+  await abajo.getByRole('button', { name: 'Última' }).click();
+  await expect(abajo.getByText(/Página (\d+) de \1/)).toBeVisible();
 
   await page.getByRole('radio', { name: 'Grande' }).click();
   await page.reload();

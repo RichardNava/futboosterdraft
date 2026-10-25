@@ -8,12 +8,16 @@ import { registrar } from './ayudas';
 
 test('paquete de 1.000 fragmentos con la cinta de pago de prueba (US7)', async ({ page }) => {
   await registrar(page);
-  await page.goto('/tienda');
+  // El saldo de la barra lleva a los paquetes de fragmentos de la tienda.
+  await page.goto('/');
+  await page.getByRole('link', { name: /^Fragmentos: 0\./ }).click();
+  await expect(page).toHaveURL(/\/tienda#fragmentos$/);
   await page.locator('[data-paquete="fragmentos-1000"]').getByRole('button', { name: /Comprar/ }).click();
   const dialogo = page.getByRole('dialog');
   await expect(dialogo.getByText('PAGO DE PRUEBA — no se cobra nada')).toBeVisible();
   await dialogo.getByRole('button', { name: 'Confirmar compra' }).click();
   await expect(page.locator('.tienda-saldo')).toContainText('1.000');
+  await expect(page.locator('.saldo-navegacion')).toContainText('1.000');
 });
 
 test('sobre con fragmentos desde «Colección»: apertura, 8 cartas nuevas y saldo −1.000 (US4)', async ({ page }) => {
@@ -30,6 +34,8 @@ test('sobre con fragmentos desde «Colección»: apertura, 8 cartas nuevas y sal
   await sobre.getByRole('radio', { name: 'Revelar una a una' }).click();
   for (let i = 1; i <= 8; i++) await sobre.getByRole('button', { name: `Revelar la carta ${i}` }).click();
   await expect(sobre.locator('.carta.completa')).toHaveCount(8);
+  // Cada carta ocupa su celda: antes se quedaba en una franja de ancho casi nulo.
+  expect((await sobre.locator('.carta.completa').first().boundingBox())!.width).toBeGreaterThan(120);
   const nombre = await sobre.locator('.carta.completa .carta-apellidos').first().innerText();
   await sobre.getByRole('link', { name: 'Ver en mi colección' }).click();
   await expect(page.locator('.coleccion-resumen')).toContainText('308');

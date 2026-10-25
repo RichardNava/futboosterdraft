@@ -15,10 +15,10 @@ import {
   type NivelNPC,
 } from '@fbd/domain';
 import type { CrearPartida } from '@fbd/protocol';
-import { inArray } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import type { UsuarioSesion } from '../auth/auth';
 import { errores } from '../http/errores';
-import { usuarios } from '../persistencia/esquema/index';
+import { participantes, partidas, usuarios } from '../persistencia/esquema/index';
 import type { FilaPartida } from '../persistencia/repos/partidas';
 import { reprogramarTurnos } from './draft';
 import { enPartido } from './partidoRapido';
@@ -213,6 +213,25 @@ export class GestorPartidas {
       if (c.partida.anfitrionId !== usuario.id) continue;
       await c.ejecutar((ctx) => abandonarPartidaInvitado(c, ctx));
       this.quitar(c.id);
+    }
+  }
+
+  /**
+   * Elimina una cuenta registrada: desaparecen las partidas que creó y, en las ajenas, un NPC ocupa su plaza. Su
+   * colección, fragmentos, compras y perfil se borran en cascada con el usuario. Los controladores en memoria de
+   * esas partidas se descartan para que se reconstruyan desde la base de datos.
+   */
+  async eliminarCuenta(usuarioId: string): Promise<void> {
+    await this.servicios.db.transaction(async (tx) => {
+      await tx.delete(partidas).where(eq(partidas.anfitrionId, usuarioId));
+      await tx
+        .update(participantes)
+        .set({ tipo: 'npc', usuarioId: null, nivelNPC: 'intermedio', controladoPorNPC: true })
+        .where(eq(participantes.usuarioId, usuarioId));
+      await tx.delete(usuarios).where(eq(usuarios.id, usuarioId));
+    });
+    for (const c of [...this.controladores.values()]) {
+      if (c.partida.anfitrionId === usuarioId || c.participantes.some((p) => p.usuarioId === usuarioId)) this.quitar(c.id);
     }
   }
 

@@ -40,6 +40,8 @@ carta (draft, plantillas, alineación).
 | `PUT /api/coleccion/cartas/:id` cuerpo `{ activa: boolean }` | `200 { carta: CartaPoseida, minimo: EstadoMinimo }` |
 | `POST /api/coleccion/cartas/:id/desfragmentar` | `200 { fragmentos: number, saldo: number, minimo: EstadoMinimo }` |
 | `GET /api/fragmentos/movimientos?antes=<iso>&limite=50` | `200 { saldo, movimientos: { id, importe, motivo, referencia, descripcion, creadoEn }[] }`, del más reciente al más antiguo (FR-018) |
+| `GET /api/fragmentos/saldo` | `200 { saldo }`: el saldo que muestra la barra de navegación |
+| `DELETE /api/cuenta` | Solo registrados (invitado `403 INVITADO_NO_PERMITIDO`). `200`, cierra la sesión y borra el usuario: sus partidas como anfitrión, colección, fragmentos, compras y perfil; en las partidas ajenas su plaza pasa a un NPC |
 
 **Errores**:
 

@@ -6,7 +6,7 @@
 import { NIVELES } from '@fbd/domain';
 import type { ProductoColeccion, ProductoFragmentos, RespuestaTienda, ResumenCompra } from '@fbd/protocol';
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { comprarColeccion, comprarFragmentos, comprarSobre, ErrorApi, obtenerTienda } from '../api/cliente';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { CartaJugador } from '../componentes/CartaJugador';
@@ -16,6 +16,7 @@ import { PantallaCargando } from '../componentes/Esqueleto';
 import { EstadoVacio } from '../componentes/EstadoVacio';
 import { SobreArte } from '../componentes/arte/SobreArte';
 import { mostrarAviso } from '../estado/avisos';
+import { useSaldo } from '../estado/saldo';
 import { ETIQUETA_NIVEL } from '../textos/niveles';
 
 type Pago =
@@ -41,6 +42,15 @@ export function Tienda() {
   useEffect(() => {
     void cargar();
   }, []);
+  useEffect(() => {
+    if (tienda) useSaldo.setState({ saldo: tienda.saldo });
+  }, [tienda?.saldo]);
+  // El saldo de la barra enlaza a `/tienda#fragmentos`: se baja a los paquetes en cuanto la tienda está cargada.
+  const { hash } = useLocation();
+  const cargada = tienda !== null;
+  useEffect(() => {
+    if (cargada && hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' });
+  }, [cargada, hash]);
 
   if (error) return <EstadoVacio mensaje={error} accion={<button onClick={() => void cargar()}>Reintentar</button>} />;
   if (!tienda) return <PantallaCargando forma="filas" />;
@@ -151,7 +161,7 @@ export function Tienda() {
         </div>
       </section>
 
-      <section aria-labelledby="titulo-paquetes">
+      <section id="fragmentos" aria-labelledby="titulo-paquetes">
         <h2 id="titulo-paquetes">Fragmentos</h2>
         <div className="tienda-paquetes">
           {tienda.paquetes.map((p) => (

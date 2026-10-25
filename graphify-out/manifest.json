@@ -180,9 +180,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/gestor.ts": {
-    "mtime": 1792945477.8243124,
-    "seen": 1792947847.5198028,
-    "ast_hash": "011d81514f715dfaee727540295524e2",
+    "mtime": 1792963755.608997,
+    "seen": 1792965554.6786826,
+    "ast_hash": "dd4a666ab3697d8998ba7c70f69c4c2d",
     "semantic_hash": ""
   },
   "apps/server/src/actores/misPartidas.ts": {
@@ -264,9 +264,9 @@
     "semantic_hash": "ffba9a1e8b2a484fee9265238ed105f9"
   },
   "apps/server/src/auth/rutas.ts": {
-    "mtime": 1792945244.151884,
-    "seen": 1792947847.5219364,
-    "ast_hash": "2a829e02305420b3462099e005fdd881",
+    "mtime": 1792963755.4288652,
+    "seen": 1792965554.6855965,
+    "ast_hash": "69b5a2d0dbffb729055f372328335639",
     "semantic_hash": ""
   },
   "apps/server/src/avisos/servicio.ts": {
@@ -468,9 +468,9 @@
     "semantic_hash": "cde9297a5932d62e2c5198c2fd696fe0"
   },
   "apps/server/src/servidor.ts": {
-    "mtime": 1792945444.9166756,
-    "seen": 1792947847.5273721,
-    "ast_hash": "3a7e0584527cd438d9ff5d5596b28bce",
+    "mtime": 1792963755.540082,
+    "seen": 1792965554.7031195,
+    "ast_hash": "b904d1306a3079973a26f316c7a6a140",
     "semantic_hash": ""
   },
   "apps/server/src/ws/pasarela.ts": {
@@ -534,10 +534,10 @@
     "semantic_hash": "76e3fa5d19e0cc6c9a88b38f6ab43ed4"
   },
   "apps/server/tests/integration/auth.test.ts": {
-    "mtime": 1792153826.4101133,
-    "seen": 1792327978.027492,
-    "ast_hash": "1eb42595c03ff65e0da24e467122cd6b",
-    "semantic_hash": "1eb42595c03ff65e0da24e467122cd6b"
+    "mtime": 1792963779.4187799,
+    "seen": 1792965554.7089117,
+    "ast_hash": "b99311dc303e0426e779b58ce4c9c8e4",
+    "semantic_hash": ""
   },
   "apps/server/tests/integration/avanzar.test.ts": {
     "mtime": 1792484980.7423208,
@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/Marco.tsx": {
-    "mtime": 1792946441.8176754,
-    "seen": 1792947847.5343337,
-    "ast_hash": "1bb5119c76abf3066ab49b7cdbf9087e",
+    "mtime": 1792963815.936407,
+    "seen": 1792965554.7235901,
+    "ast_hash": "1101148e5d8a54d65a5872a6e94476e7",
     "semantic_hash": ""
   },
   "apps/web/src/app/Rutas.tsx": {
@@ -2082,9 +2082,9 @@
     "semantic_hash": "5d9adb618448c82498a1711504f10c9e"
   },
   "docs/despliegue.md": {
-    "mtime": 1792947638.5470142,
-    "seen": 1792947847.5945349,
-    "ast_hash": "61dc792a0108855d338e0fd7dbca10e2",
+    "mtime": 1792961815.74113,
+    "seen": 1792965555.2942083,
+    "ast_hash": "00097b315e56b2363889ed3a200bdfb6",
     "semantic_hash": ""
   },
   "pnpm-workspace.yaml": {
@@ -2502,9 +2502,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Perfil.tsx": {
-    "mtime": 1792592850.8040197,
-    "seen": 1792645202.6971908,
-    "ast_hash": "6e82d02c99f425f369735577d8e7a970",
+    "mtime": 1792963901.3673046,
+    "seen": 1792965554.7538912,
+    "ast_hash": "bcc0bfa24239313ec6ff031cb50a3a6c",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/boton-principal.spec.ts": {
@@ -2832,9 +2832,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Icono.tsx": {
-    "mtime": 1792946441.817167,
-    "seen": 1792947847.5387497,
-    "ast_hash": "177d851087c4b542a624edb1706aa105",
+    "mtime": 1792963815.8538215,
+    "seen": 1792965554.7353034,
+    "ast_hash": "d40188e2220db21b5a46de4a33291079",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Insignia.tsx": {
@@ -3564,15 +3564,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/economia/servicio.ts": {
-    "mtime": 1792946482.5164938,
-    "seen": 1792947847.5221033,
-    "ast_hash": "157fd3ba295b17c3cc6c90c5d0d93108",
+    "mtime": 1792963755.199837,
+    "seen": 1792965554.686087,
+    "ast_hash": "5f2a0302abc90979f93fcadfbeb700f5",
     "semantic_hash": ""
   },
   "apps/server/src/http/coleccion.ts": {
-    "mtime": 1792945444.7805016,
-    "seen": 1792947847.5226512,
-    "ast_hash": "ccc162e3b32e0c3b994824655d52ba7c",
+    "mtime": 1792963755.2020645,
+    "seen": 1792965554.6881833,
+    "ast_hash": "ddb87be4aa11d4fa0218ce74211a56a9",
     "semantic_hash": ""
   },
   "apps/server/src/http/tienda.ts": {
@@ -3648,15 +3648,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Coleccion.tsx": {
-    "mtime": 1792946610.08912,
-    "seen": 1792947847.5440814,
-    "ast_hash": "4a67002eda693e04a883104421013b4e",
+    "mtime": 1792963847.0308504,
+    "seen": 1792965554.7501698,
+    "ast_hash": "9711e7fca853a35cfbff1531b4c13de5",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Tienda.tsx": {
-    "mtime": 1792946610.0750828,
-    "seen": 1792947847.5457819,
-    "ast_hash": "d968d04a01a6d9058cda1074c4fa06c6",
+    "mtime": 1792963846.9398284,
+    "seen": 1792965554.7558029,
+    "ast_hash": "bcc108da5f74eea164dbf26d2474088d",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/coleccion/filtrado.ts": {
@@ -3672,15 +3672,15 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/coleccion.spec.ts": {
-    "mtime": 1792947373.8730216,
-    "seen": 1792947847.5470579,
-    "ast_hash": "abeb53db85336af5aa64ebcb89756200",
+    "mtime": 1792963878.9386163,
+    "seen": 1792965554.7606175,
+    "ast_hash": "898cb180d35fe62f956436eee38d1876",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/tienda.spec.ts": {
-    "mtime": 1792946688.8685982,
-    "seen": 1792947847.5513608,
-    "ast_hash": "b2cc450ef8c121d05c7b652294460956",
+    "mtime": 1792964604.9148836,
+    "seen": 1792965554.7746017,
+    "ast_hash": "fe816a127cfd1f649c2b5aa9e44377c9",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/filtradoColeccion.test.ts": {
@@ -4218,9 +4218,9 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/tasks.md": {
-    "mtime": 1792947652.158336,
-    "seen": 1792947847.6067348,
-    "ast_hash": "941806ba31570ec7a5c2b52a2d38ba2a",
+    "mtime": 1792965485.2401597,
+    "seen": 1792965555.313754,
+    "ast_hash": "c49eeddda8474db5fec41bfdf745778a",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/ARG.svg": {
@@ -4413,6 +4413,12 @@
     "mtime": 1792945971.8047016,
     "seen": 1792947847.606803,
     "ast_hash": "6026627fc6b640d05592309953f76552",
+    "semantic_hash": ""
+  },
+  "apps/web/src/estado/saldo.ts": {
+    "mtime": 1792963815.712873,
+    "seen": 1792965554.7489903,
+    "ast_hash": "1b040f22b5de6638ca4d7fc14ba8c7d3",
     "semantic_hash": ""
   }
 }

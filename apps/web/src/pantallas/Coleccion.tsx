@@ -17,6 +17,7 @@ import { PantallaCargando } from '../componentes/Esqueleto';
 import { FichaCartaColeccion } from '../componentes/FichaCartaColeccion';
 import { InterruptorActiva } from '../componentes/InterruptorActiva';
 import { mostrarAviso } from '../estado/avisos';
+import { useSaldo } from '../estado/saldo';
 import { useSesion } from '../estado/sesion';
 import { ETIQUETA_NIVEL } from '../textos/niveles';
 import {
@@ -145,6 +146,9 @@ export function Coleccion() {
     return r.ok ? null : textoMinimo(r);
   };
   const nombresColecciones = useMemo(() => new Map((datos?.colecciones ?? []).map((c) => [c.id, c.nombre])), [datos]);
+  useEffect(() => {
+    if (datos) useSaldo.setState({ saldo: datos.saldo });
+  }, [datos?.saldo]);
 
   if (error) return <EstadoVacio mensaje={error} accion={<button onClick={() => void cargar()}>Reintentar</button>} />;
   if (!datos) return <PantallaCargando forma="cartas" />;
@@ -297,6 +301,8 @@ export function Coleccion() {
         </div>
       </section>
 
+      {lista.length > 0 && <Paginador pagina={pagina} paginas={paginas} irA={irA} posicion="arriba" />}
+
       <div ref={rejilla} className="coleccion-rejilla-medida">
         {lista.length === 0 ? (
           <EstadoVacio
@@ -331,25 +337,7 @@ export function Coleccion() {
         )}
       </div>
 
-      {lista.length > 0 && (
-        <nav className="paginador" aria-label="Páginas">
-          <button type="button" className="secundario" disabled={pagina === 0} onClick={() => irA(0)}>
-            Primera
-          </button>
-          <button type="button" className="secundario" disabled={pagina === 0} onClick={() => irA(pagina - 1)}>
-            Anterior
-          </button>
-          <span aria-live="polite">
-            Página {pagina + 1} de {paginas}
-          </span>
-          <button type="button" className="secundario" disabled={pagina >= paginas - 1} onClick={() => irA(pagina + 1)}>
-            Siguiente
-          </button>
-          <button type="button" className="secundario" disabled={pagina >= paginas - 1} onClick={() => irA(paginas - 1)}>
-            Última
-          </button>
-        </nav>
-      )}
+      {lista.length > 0 && <Paginador pagina={pagina} paginas={paginas} irA={irA} posicion="abajo" />}
 
       {ficha && (
         <FichaCartaColeccion
@@ -363,6 +351,45 @@ export function Coleccion() {
       )}
       {historial && <HistorialFragmentos saldo={datos.saldo} onCerrar={() => setHistorial(false)} />}
     </main>
+  );
+}
+
+/** Botones con número: la página actual y las cuatro siguientes. */
+const PAGINAS_VISIBLES = 5;
+
+/** Paginador de la rejilla; va encima y debajo de ella (solo el de abajo anuncia el cambio de página). */
+function Paginador({ pagina, paginas, irA, posicion }: { pagina: number; paginas: number; irA: (p: number) => void; posicion: 'arriba' | 'abajo' }) {
+  const numeros = Array.from({ length: Math.min(PAGINAS_VISIBLES, paginas - pagina) }, (_, i) => pagina + i);
+  return (
+    <nav className={`paginador paginador-${posicion}`} aria-label={posicion === 'arriba' ? 'Páginas (arriba)' : 'Páginas'}>
+      <button type="button" className="secundario" disabled={pagina === 0} onClick={() => irA(0)}>
+        Primera
+      </button>
+      <button type="button" className="secundario" disabled={pagina === 0} onClick={() => irA(pagina - 1)}>
+        Anterior
+      </button>
+      {numeros.map((p) => (
+        <button
+          key={p}
+          type="button"
+          className="secundario numero"
+          aria-current={p === pagina ? 'page' : undefined}
+          aria-label={`Página ${p + 1}`}
+          onClick={() => irA(p)}
+        >
+          {p + 1}
+        </button>
+      ))}
+      <span aria-live={posicion === 'abajo' ? 'polite' : undefined}>
+        Página {pagina + 1} de {paginas}
+      </span>
+      <button type="button" className="secundario" disabled={pagina >= paginas - 1} onClick={() => irA(pagina + 1)}>
+        Siguiente
+      </button>
+      <button type="button" className="secundario" disabled={pagina >= paginas - 1} onClick={() => irA(paginas - 1)}>
+        Última
+      </button>
+    </nav>
   );
 }
 

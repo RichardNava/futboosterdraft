@@ -59,10 +59,12 @@ export function crearHooksSesion(auth: Auth) {
 export interface OpcionesRutasAuth {
   /** Se llama al cerrar sesión, antes de invalidarla (p. ej. para abandonar partidas de invitado). */
   alCerrarSesion?: (usuario: UsuarioSesion) => Promise<void>;
+  /** Borra la cuenta y sus datos; sin él, `DELETE /api/cuenta` no se registra. */
+  alEliminarCuenta?: (usuario: UsuarioSesion) => Promise<void>;
 }
 
 export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: OpcionesRutasAuth = {}): void {
-  const { requiereSesion } = crearHooksSesion(auth);
+  const { requiereSesion, requiereRegistrado } = crearHooksSesion(auth);
 
   // API interna de Better Auth.
   app.route({
@@ -116,6 +118,16 @@ export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: O
     const respuesta = await auth.api.signOut({ headers: cabecerasWeb(req), asResponse: true });
     return reenviar(reply, respuesta);
   });
+
+  // Primero se cierra la sesión para devolver las cookies que la borran; el borrado arrastra sesiones y cuentas.
+  const alEliminarCuenta = opciones.alEliminarCuenta;
+  if (alEliminarCuenta) {
+    app.delete('/api/cuenta', { preHandler: requiereRegistrado }, async (req, reply) => {
+      const respuesta = await auth.api.signOut({ headers: cabecerasWeb(req), asResponse: true });
+      await alEliminarCuenta(req.usuario!);
+      return reenviar(reply, respuesta);
+    });
+  }
 
   app.get('/api/me', { preHandler: requiereSesion }, async (req) => ({ usuario: req.usuario }));
 }

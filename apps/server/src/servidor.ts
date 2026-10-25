@@ -193,7 +193,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     logger,
     metricas,
     peticiones,
-    opcionesAuth: { alCerrarSesion: (u) => gestor.alCerrarSesion(u) },
+    opcionesAuth: { alCerrarSesion: (u) => gestor.alCerrarSesion(u), alEliminarCuenta: (u) => gestor.eliminarCuenta(u.id) },
     ...(config.limites?.http ? { limiteHttp: config.limites.http } : {}),
   });
   pasarela.registrarRuta(app);
