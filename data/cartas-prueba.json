@@ -1,0 +1,2357 @@
+{
+  "version": "1.0.0",
+  "jugadores": [
+    {
+      "id": 301,
+      "nombre": "Piet",
+      "apellidos": "Ferogo Norardez",
+      "nombre_carta": "Piet Ferogo",
+      "nacionalidad": "URY",
+      "fecha_nacimiento": "1987-12-09",
+      "altura": 194,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Piet Ferogo (URY) es un fijo en cualquier once. Destaca como POR.",
+      "stats": {
+        "agilidad": 74,
+        "colocacion": 78,
+        "distribucion": 62,
+        "aereo": 72,
+        "defensa": 69,
+        "liderazgo": 72
+      },
+      "media": 71.17,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 302,
+      "nombre": "Eloy",
+      "apellidos": "Esordez Horides",
+      "nombre_carta": "Eloy Esordez",
+      "nacionalidad": "JPN",
+      "fecha_nacimiento": "1986-06-14",
+      "altura": 185,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Eloy Esordez (JPN) es un fijo en cualquier once. Destaca como POR.",
+      "stats": {
+        "agilidad": 80,
+        "colocacion": 78,
+        "distribucion": 65,
+        "aereo": 73,
+        "defensa": 70,
+        "liderazgo": 72
+      },
+      "media": 73,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 303,
+      "nombre": "Hugo",
+      "apellidos": "Esides Galilver",
+      "nombre_carta": "Hugo Esides",
+      "nacionalidad": "COL",
+      "fecha_nacimiento": "1995-04-22",
+      "altura": 195,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Hugo Esides (COL) es una figura de su generación. Destaca como POR.",
+      "stats": {
+        "agilidad": 85,
+        "colocacion": 89,
+        "distribucion": 77,
+        "aereo": 78,
+        "defensa": 85,
+        "liderazgo": 79
+      },
+      "media": 82.17,
+      "virtudes": [
+        "JugadorDeCampo",
+        "Motivador"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 304,
+      "nombre": "Quim",
+      "apellidos": "Horirmos Dorensa",
+      "nombre_carta": "Quim Horirmos",
+      "nacionalidad": "ITA",
+      "fecha_nacimiento": "1999-04-24",
+      "altura": 197,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Quim Horirmos (ITA) es una figura de su generación. Destaca como POR.",
+      "stats": {
+        "agilidad": 89,
+        "colocacion": 91,
+        "distribucion": 82,
+        "aereo": 80,
+        "defensa": 79,
+        "liderazgo": 79
+      },
+      "media": 83.33,
+      "virtudes": [
+        "JugadorDeCampo"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 305,
+      "nombre": "Jorge",
+      "apellidos": "Baronas Saludez",
+      "nombre_carta": "Jorge Baronas",
+      "nacionalidad": "WAL",
+      "fecha_nacimiento": "2005-01-25",
+      "altura": 187,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Jorge Baronas (WAL) es una leyenda en activo. Destaca como POR.",
+      "stats": {
+        "agilidad": 91,
+        "colocacion": 92,
+        "distribucion": 83,
+        "aereo": 85,
+        "defensa": 91,
+        "liderazgo": 86
+      },
+      "media": 88,
+      "virtudes": [
+        "Ordenabarreras",
+        "Parapenalties"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 306,
+      "nombre": "Héctor",
+      "apellidos": "Ferengo Norerio",
+      "nombre_carta": "Héctor Ferengo",
+      "nacionalidad": "SEN",
+      "fecha_nacimiento": "1987-07-13",
+      "altura": 198,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Héctor Ferengo (SEN) es una leyenda en activo. Destaca como POR.",
+      "stats": {
+        "agilidad": 95,
+        "colocacion": 85,
+        "distribucion": 79,
+        "aereo": 85,
+        "defensa": 82,
+        "liderazgo": 76
+      },
+      "media": 83.67,
+      "virtudes": [
+        "FortalezaMental",
+        "Capitania"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 307,
+      "nombre": "Gonzalo",
+      "apellidos": "Barirres Belargo",
+      "nombre_carta": "Gonzalo Barirres",
+      "nacionalidad": "HRV",
+      "fecha_nacimiento": "2001-07-25",
+      "altura": 199,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Gonzalo Barirres (HRV) es uno de los mejores de todos los tiempos. Destaca como POR.",
+      "stats": {
+        "agilidad": 99,
+        "colocacion": 93,
+        "distribucion": 91,
+        "aereo": 87,
+        "defensa": 92,
+        "liderazgo": 85
+      },
+      "media": 91.17,
+      "virtudes": [
+        "Ordenabarreras",
+        "OneToOne",
+        "Parapenalties"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 308,
+      "nombre": "Lucas",
+      "apellidos": "Lanelgo Torennez",
+      "nombre_carta": "Lucas Lanelgo",
+      "nacionalidad": "MEX",
+      "fecha_nacimiento": "1999-07-01",
+      "altura": 197,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Lucas Lanelgo (MEX) es uno de los mejores de todos los tiempos. Destaca como POR.",
+      "stats": {
+        "agilidad": 97,
+        "colocacion": 97,
+        "distribucion": 86,
+        "aereo": 87,
+        "defensa": 83,
+        "liderazgo": 83
+      },
+      "media": 88.83,
+      "virtudes": [
+        "JugadorDeCampo",
+        "RecuperadorTrasPerdida",
+        "Presionador",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 309,
+      "nombre": "Callum",
+      "apellidos": "Ferarres Ibirmos",
+      "nombre_carta": "Callum Ferarres",
+      "nacionalidad": "ITA",
+      "fecha_nacimiento": "1990-12-02",
+      "altura": 194,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI",
+        "CI"
+      ],
+      "historia": "Callum Ferarres (ITA) es un fijo en cualquier once. Destaca como LI.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 85,
+        "tackling": 70,
+        "anticipacion": 68,
+        "marcaje": 79,
+        "liderazgo": 75
+      },
+      "media": 75.83,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 310,
+      "nombre": "Marco",
+      "apellidos": "Quinutes Dorargo",
+      "nombre_carta": "Marco Quinutes",
+      "nacionalidad": "USA",
+      "fecha_nacimiento": "1987-11-13",
+      "altura": 191,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Marco Quinutes (USA) es un fijo en cualquier once. Destaca como DCD.",
+      "stats": {
+        "velocidad": 68,
+        "tecnica": 73,
+        "tackling": 77,
+        "anticipacion": 71,
+        "marcaje": 76,
+        "liderazgo": 67
+      },
+      "media": 72,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 311,
+      "nombre": "Lucas",
+      "apellidos": "Valesa Galirvia",
+      "nombre_carta": "Lucas Valesa",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "2000-02-17",
+      "altura": 176,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Lucas Valesa (ENG) es una figura de su generación. Destaca como DCD.",
+      "stats": {
+        "velocidad": 77,
+        "tecnica": 80,
+        "tackling": 89,
+        "anticipacion": 91,
+        "marcaje": 92,
+        "liderazgo": 80
+      },
+      "media": 84.83,
+      "virtudes": [
+        "Presionador",
+        "Potente"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 312,
+      "nombre": "Lucas",
+      "apellidos": "Salaral Horaver",
+      "nombre_carta": "Lucas Salaral",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1993-03-24",
+      "altura": 175,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI"
+      ],
+      "historia": "Lucas Salaral (DEU) es una figura de su generación. Destaca como DCI.",
+      "stats": {
+        "velocidad": 75,
+        "tecnica": 75,
+        "tackling": 82,
+        "anticipacion": 85,
+        "marcaje": 83,
+        "liderazgo": 83
+      },
+      "media": 80.5,
+      "virtudes": [
+        "Aura",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 313,
+      "nombre": "Héctor",
+      "apellidos": "Salelral Ferorgo",
+      "nombre_carta": "Héctor Salelral",
+      "nacionalidad": "WAL",
+      "fecha_nacimiento": "1996-11-15",
+      "altura": 194,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI",
+        "DCD"
+      ],
+      "historia": "Héctor Salelral (WAL) es una leyenda en activo. Destaca como DCI.",
+      "stats": {
+        "velocidad": 79,
+        "tecnica": 84,
+        "tackling": 90,
+        "anticipacion": 95,
+        "marcaje": 91,
+        "liderazgo": 86
+      },
+      "media": 87.5,
+      "virtudes": [
+        "MuroDefensivo",
+        "Volador"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 314,
+      "nombre": "Leo",
+      "apellidos": "Galodez Ferirdes",
+      "nombre_carta": "Leo Galodez",
+      "nacionalidad": "HRV",
+      "fecha_nacimiento": "1999-03-21",
+      "altura": 175,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI",
+        "DCD"
+      ],
+      "historia": "Leo Galodez (HRV) es una leyenda en activo. Destaca como DCI.",
+      "stats": {
+        "velocidad": 84,
+        "tecnica": 86,
+        "tackling": 93,
+        "anticipacion": 88,
+        "marcaje": 85,
+        "liderazgo": 76
+      },
+      "media": 85.33,
+      "virtudes": [
+        "Volador",
+        "Jerarquia",
+        "FortalezaMental"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 315,
+      "nombre": "Víctor",
+      "apellidos": "Zarildes Barurio",
+      "nombre_carta": "Víctor Zarildes",
+      "nacionalidad": "MEX",
+      "fecha_nacimiento": "1994-02-14",
+      "altura": 190,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD"
+      ],
+      "historia": "Víctor Zarildes (MEX) es uno de los mejores de todos los tiempos. Destaca como DCD.",
+      "stats": {
+        "velocidad": 89,
+        "tecnica": 89,
+        "tackling": 99,
+        "anticipacion": 99,
+        "marcaje": 99,
+        "liderazgo": 89
+      },
+      "media": 94,
+      "virtudes": [
+        "Jerarquia",
+        "Infranqueable",
+        "MuroDefensivo"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 316,
+      "nombre": "Carlos",
+      "apellidos": "Palario Calinas",
+      "nombre_carta": "Carlos Palario",
+      "nacionalidad": "URY",
+      "fecha_nacimiento": "2001-07-18",
+      "altura": 195,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI"
+      ],
+      "historia": "Carlos Palario (URY) es uno de los mejores de todos los tiempos. Destaca como DCI.",
+      "stats": {
+        "velocidad": 91,
+        "tecnica": 92,
+        "tackling": 93,
+        "anticipacion": 96,
+        "marcaje": 99,
+        "liderazgo": 83
+      },
+      "media": 92.33,
+      "virtudes": [
+        "Libero",
+        "Potente",
+        "Volador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 317,
+      "nombre": "Gael",
+      "apellidos": "Quinuda Ibarlla",
+      "nombre_carta": "Gael Quinuda",
+      "nacionalidad": "ITA",
+      "fecha_nacimiento": "1996-12-12",
+      "altura": 188,
+      "demarcacion": "MED",
+      "posicion": [
+        "MID"
+      ],
+      "historia": "Gael Quinuda (ITA) es un fijo en cualquier once. Destaca como MID.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 80,
+        "pase": 82,
+        "posicionamiento": 73,
+        "vision": 70,
+        "disparo": 76
+      },
+      "media": 75.5,
+      "virtudes": [
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 318,
+      "nombre": "Álvaro",
+      "apellidos": "Beluvia Orumos",
+      "nombre_carta": "Álvaro Beluvia",
+      "nacionalidad": "SEN",
+      "fecha_nacimiento": "1988-08-03",
+      "altura": 180,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Álvaro Beluvia (SEN) es un fijo en cualquier once. Destaca como MD.",
+      "stats": {
+        "velocidad": 73,
+        "tecnica": 77,
+        "pase": 83,
+        "posicionamiento": 80,
+        "vision": 80,
+        "disparo": 69
+      },
+      "media": 77,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 319,
+      "nombre": "Milo",
+      "apellidos": "Lanarmos Torilrio",
+      "nombre_carta": "Milo Lanarmos",
+      "nacionalidad": "NGA",
+      "fecha_nacimiento": "1994-01-19",
+      "altura": 182,
+      "demarcacion": "MED",
+      "posicion": [
+        "MID",
+        "MC"
+      ],
+      "historia": "Milo Lanarmos (NGA) es una figura de su generación. Destaca como MID.",
+      "stats": {
+        "velocidad": 75,
+        "tecnica": 93,
+        "pase": 84,
+        "posicionamiento": 73,
+        "vision": 79,
+        "disparo": 72
+      },
+      "media": 79.33,
+      "virtudes": [
+        "Llegador",
+        "JugadorEntreLineas"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 320,
+      "nombre": "Callum",
+      "apellidos": "Ferunas Valires",
+      "nombre_carta": "Callum Ferunas",
+      "nacionalidad": "USA",
+      "fecha_nacimiento": "2005-09-10",
+      "altura": 187,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD"
+      ],
+      "historia": "Callum Ferunas (USA) es una figura de su generación. Destaca como MC.",
+      "stats": {
+        "velocidad": 71,
+        "tecnica": 82,
+        "pase": 83,
+        "posicionamiento": 78,
+        "vision": 83,
+        "disparo": 76
+      },
+      "media": 78.83,
+      "virtudes": [
+        "Presionador"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 321,
+      "nombre": "Vasco",
+      "apellidos": "Rosarrio Zarannas",
+      "nombre_carta": "Vasco Rosarrio",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2001-02-27",
+      "altura": 185,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD",
+        "MID"
+      ],
+      "historia": "Vasco Rosarrio (ARG) es una leyenda en activo. Destaca como MC.",
+      "stats": {
+        "velocidad": 87,
+        "tecnica": 86,
+        "pase": 92,
+        "posicionamiento": 84,
+        "vision": 97,
+        "disparo": 85
+      },
+      "media": 88.5,
+      "virtudes": [
+        "PrimerToque",
+        "Potente"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 322,
+      "nombre": "Ruben",
+      "apellidos": "Monenmar Delutal",
+      "nombre_carta": "Ruben Monenmar",
+      "nacionalidad": "NGA",
+      "fecha_nacimiento": "1995-07-01",
+      "altura": 175,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO",
+        "SD"
+      ],
+      "historia": "Ruben Monenmar (NGA) es una leyenda en activo. Destaca como MCO.",
+      "stats": {
+        "velocidad": 86,
+        "tecnica": 93,
+        "pase": 80,
+        "posicionamiento": 82,
+        "vision": 89,
+        "disparo": 90
+      },
+      "media": 86.67,
+      "virtudes": [
+        "JugadorEntreLineas",
+        "LanzadorFaltas",
+        "Carismatico"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 323,
+      "nombre": "Jorge",
+      "apellidos": "Galilnez Corires",
+      "nombre_carta": "Jorge Galilnez",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "2003-07-11",
+      "altura": 167,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MII",
+        "MID"
+      ],
+      "historia": "Jorge Galilnez (FRA) es uno de los mejores de todos los tiempos. Destaca como MC.",
+      "stats": {
+        "velocidad": 88,
+        "tecnica": 92,
+        "pase": 99,
+        "posicionamiento": 85,
+        "vision": 95,
+        "disparo": 93
+      },
+      "media": 92,
+      "virtudes": [
+        "Incansable",
+        "RecuperadorTrasPerdida",
+        "Capitania",
+        "Carismatico"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 324,
+      "nombre": "Milo",
+      "apellidos": "Calimar Toriltal",
+      "nombre_carta": "Milo Calimar",
+      "nacionalidad": "MAR",
+      "fecha_nacimiento": "1996-06-27",
+      "altura": 169,
+      "demarcacion": "MED",
+      "posicion": [
+        "MID"
+      ],
+      "historia": "Milo Calimar (MAR) es uno de los mejores de todos los tiempos. Destaca como MID.",
+      "stats": {
+        "velocidad": 83,
+        "tecnica": 92,
+        "pase": 98,
+        "posicionamiento": 95,
+        "vision": 90,
+        "disparo": 89
+      },
+      "media": 91.17,
+      "virtudes": [
+        "Elegante",
+        "BoxToBox",
+        "JugadorEntreLineas"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 325,
+      "nombre": "Noah",
+      "apellidos": "Hororgo Quinarver",
+      "nombre_carta": "Noah Hororgo",
+      "nacionalidad": "HRV",
+      "fecha_nacimiento": "1990-06-19",
+      "altura": 194,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC",
+        "SD"
+      ],
+      "historia": "Noah Hororgo (HRV) es un fijo en cualquier once. Destaca como DC.",
+      "stats": {
+        "velocidad": 74,
+        "regate": 68,
+        "finalizacion": 79,
+        "desmarque": 76,
+        "creatividad": 66,
+        "agresividad": 68
+      },
+      "media": 71.83,
+      "virtudes": [
+        "Rematador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 326,
+      "nombre": "Enzo",
+      "apellidos": "Ibarver Feramar",
+      "nombre_carta": "Enzo Ibarver",
+      "nacionalidad": "MAR",
+      "fecha_nacimiento": "1989-06-03",
+      "altura": 183,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "ED"
+      ],
+      "historia": "Enzo Ibarver (MAR) es un fijo en cualquier once. Destaca como EI.",
+      "stats": {
+        "velocidad": 78,
+        "regate": 75,
+        "finalizacion": 74,
+        "desmarque": 68,
+        "creatividad": 68,
+        "agresividad": 72
+      },
+      "media": 72.5,
+      "virtudes": [
+        "Matador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 327,
+      "nombre": "Unai",
+      "apellidos": "Noranas Valango",
+      "nombre_carta": "Unai Noranas",
+      "nacionalidad": "SEN",
+      "fecha_nacimiento": "1996-06-09",
+      "altura": 172,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED"
+      ],
+      "historia": "Unai Noranas (SEN) es una figura de su generación. Destaca como ED.",
+      "stats": {
+        "velocidad": 84,
+        "regate": 86,
+        "finalizacion": 77,
+        "desmarque": 76,
+        "creatividad": 76,
+        "agresividad": 78
+      },
+      "media": 79.5,
+      "virtudes": [
+        "Filigranas"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 328,
+      "nombre": "Fabio",
+      "apellidos": "Marental Esomar",
+      "nombre_carta": "Fabio Marental",
+      "nacionalidad": "NIR",
+      "fecha_nacimiento": "2001-11-25",
+      "altura": 174,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Fabio Marental (NIR) es una figura de su generación. Destaca como EI.",
+      "stats": {
+        "velocidad": 81,
+        "regate": 88,
+        "finalizacion": 74,
+        "desmarque": 82,
+        "creatividad": 71,
+        "agresividad": 78
+      },
+      "media": 79,
+      "virtudes": [
+        "Carismatico",
+        "Capitania"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 329,
+      "nombre": "Quim",
+      "apellidos": "Marandes Palazal",
+      "nombre_carta": "Quim Marandes",
+      "nacionalidad": "MAR",
+      "fecha_nacimiento": "1995-05-13",
+      "altura": 186,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Quim Marandes (MAR) es una leyenda en activo. Destaca como DC.",
+      "stats": {
+        "velocidad": 84,
+        "regate": 79,
+        "finalizacion": 90,
+        "desmarque": 89,
+        "creatividad": 79,
+        "agresividad": 77
+      },
+      "media": 83,
+      "virtudes": [
+        "Matador",
+        "Rematador"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 330,
+      "nombre": "Dani",
+      "apellidos": "Marenlla Jarenral",
+      "nombre_carta": "Dani Marenlla",
+      "nacionalidad": "SEN",
+      "fecha_nacimiento": "1990-05-01",
+      "altura": 183,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Dani Marenlla (SEN) es una leyenda en activo. Destaca como EI.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 90,
+        "finalizacion": 90,
+        "desmarque": 77,
+        "creatividad": 77,
+        "agresividad": 80
+      },
+      "media": 83.67,
+      "virtudes": [
+        "GuanteEnElPie",
+        "Desbordante",
+        "Filigranas"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 331,
+      "nombre": "Eloy",
+      "apellidos": "Salavia Lanoda",
+      "nombre_carta": "Eloy Salavia",
+      "nacionalidad": "NLD",
+      "fecha_nacimiento": "1992-05-09",
+      "altura": 180,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED"
+      ],
+      "historia": "Eloy Salavia (NLD) es uno de los mejores de todos los tiempos. Destaca como ED.",
+      "stats": {
+        "velocidad": 97,
+        "regate": 93,
+        "finalizacion": 89,
+        "desmarque": 83,
+        "creatividad": 87,
+        "agresividad": 84
+      },
+      "media": 88.83,
+      "virtudes": [
+        "Desbordante",
+        "Filigranas",
+        "GuanteEnElPie"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 332,
+      "nombre": "Jaime",
+      "apellidos": "Rosanres Rosilmar",
+      "nombre_carta": "Jaime Rosanres",
+      "nacionalidad": "SCO",
+      "fecha_nacimiento": "1986-08-26",
+      "altura": 173,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Jaime Rosanres (SCO) es uno de los mejores de todos los tiempos. Destaca como DC.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 92,
+        "finalizacion": 97,
+        "desmarque": 99,
+        "creatividad": 88,
+        "agresividad": 81
+      },
+      "media": 90.83,
+      "virtudes": [
+        "LanzadorPenalties",
+        "Carismatico",
+        "Matador",
+        "Rematador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 333,
+      "nombre": "Rubén",
+      "apellidos": "Ureltes Monilvia",
+      "nombre_carta": "Rubén Ureltes",
+      "nacionalidad": "JPN",
+      "fecha_nacimiento": "1995-10-19",
+      "altura": 181,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Rubén Ureltes (JPN) es una figura de su generación. Destaca como EI.",
+      "stats": {
+        "velocidad": 85,
+        "regate": 89,
+        "finalizacion": 85,
+        "desmarque": 76,
+        "creatividad": 77,
+        "agresividad": 81
+      },
+      "media": 82.17,
+      "virtudes": [
+        "Filigranas",
+        "GuanteEnElPie"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 334,
+      "nombre": "Wim",
+      "apellidos": "Lanannas Valuzal",
+      "nombre_carta": "Wim Lanannas",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "2003-01-22",
+      "altura": 170,
+      "demarcacion": "MED",
+      "posicion": [
+        "MID",
+        "MC"
+      ],
+      "historia": "Wim Lanannas (DEU) es un fijo en cualquier once. Destaca como MID.",
+      "stats": {
+        "velocidad": 77,
+        "tecnica": 78,
+        "pase": 77,
+        "posicionamiento": 68,
+        "vision": 72,
+        "disparo": 79
+      },
+      "media": 75.17,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 335,
+      "nombre": "Víctor",
+      "apellidos": "Lanenver Delazal",
+      "nombre_carta": "Víctor Lanenver",
+      "nacionalidad": "HRV",
+      "fecha_nacimiento": "2003-12-12",
+      "altura": 190,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Víctor Lanenver (HRV) es una leyenda en activo. Destaca como DCD.",
+      "stats": {
+        "velocidad": 84,
+        "tecnica": 87,
+        "tackling": 89,
+        "anticipacion": 90,
+        "marcaje": 88,
+        "liderazgo": 86
+      },
+      "media": 87.33,
+      "virtudes": [
+        "Infranqueable",
+        "LanzadorPenalties",
+        "Volador"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 336,
+      "nombre": "Iker",
+      "apellidos": "Corilres Orores",
+      "nombre_carta": "Iker Corilres",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1999-01-12",
+      "altura": 190,
+      "demarcacion": "DEF",
+      "posicion": [
+        "CD",
+        "LD"
+      ],
+      "historia": "Iker Corilres (ENG) es una figura de su generación. Destaca como CD.",
+      "stats": {
+        "velocidad": 85,
+        "tecnica": 92,
+        "tackling": 82,
+        "anticipacion": 85,
+        "marcaje": 80,
+        "liderazgo": 74
+      },
+      "media": 83,
+      "virtudes": [
+        "Libero"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 337,
+      "nombre": "Rubén",
+      "apellidos": "Laneral Zarada",
+      "nombre_carta": "Rubén Laneral",
+      "nacionalidad": "COL",
+      "fecha_nacimiento": "1993-03-07",
+      "altura": 194,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED"
+      ],
+      "historia": "Rubén Laneral (COL) es un fijo en cualquier once. Destaca como ED.",
+      "stats": {
+        "velocidad": 81,
+        "regate": 80,
+        "finalizacion": 71,
+        "desmarque": 71,
+        "creatividad": 75,
+        "agresividad": 69
+      },
+      "media": 74.5,
+      "virtudes": [
+        "Filigranas"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 338,
+      "nombre": "Iván",
+      "apellidos": "Torarsa Rosanmos",
+      "nombre_carta": "Iván Torarsa",
+      "nacionalidad": "ITA",
+      "fecha_nacimiento": "2002-05-02",
+      "altura": 179,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC",
+        "DCD"
+      ],
+      "historia": "Iván Torarsa (ITA) es una figura de su generación. Destaca como MD.",
+      "stats": {
+        "velocidad": 80,
+        "tecnica": 86,
+        "pase": 87,
+        "posicionamiento": 90,
+        "vision": 77,
+        "disparo": 83
+      },
+      "media": 83.83,
+      "virtudes": [
+        "LanzadorFaltas",
+        "RecuperadorTrasPerdida"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 339,
+      "nombre": "Piet",
+      "apellidos": "Mariral Quinorgo",
+      "nombre_carta": "Piet Mariral",
+      "nacionalidad": "JPN",
+      "fecha_nacimiento": "2004-05-01",
+      "altura": 190,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI"
+      ],
+      "historia": "Piet Mariral (JPN) es uno de los mejores de todos los tiempos. Destaca como ED.",
+      "stats": {
+        "velocidad": 99,
+        "regate": 97,
+        "finalizacion": 87,
+        "desmarque": 95,
+        "creatividad": 95,
+        "agresividad": 89
+      },
+      "media": 93.67,
+      "virtudes": [
+        "Elegante",
+        "Filigranas",
+        "RecuperadorTrasPerdida"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 340,
+      "nombre": "Yago",
+      "apellidos": "Uretes Oreldez",
+      "nombre_carta": "Yago Uretes",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1988-01-18",
+      "altura": 167,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED"
+      ],
+      "historia": "Yago Uretes (DEU) es una leyenda en activo. Destaca como ED.",
+      "stats": {
+        "velocidad": 91,
+        "regate": 92,
+        "finalizacion": 84,
+        "desmarque": 78,
+        "creatividad": 80,
+        "agresividad": 76
+      },
+      "media": 83.5,
+      "virtudes": [
+        "Matador",
+        "Filigranas",
+        "GuanteEnElPie"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 341,
+      "nombre": "Andrés",
+      "apellidos": "Quinarzal Calilgo",
+      "nombre_carta": "Andrés Quinarzal",
+      "nacionalidad": "ITA",
+      "fecha_nacimiento": "1988-03-09",
+      "altura": 189,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD"
+      ],
+      "historia": "Andrés Quinarzal (ITA) es uno de los mejores de todos los tiempos. Destaca como DCD.",
+      "stats": {
+        "velocidad": 90,
+        "tecnica": 85,
+        "tackling": 98,
+        "anticipacion": 99,
+        "marcaje": 99,
+        "liderazgo": 97
+      },
+      "media": 94.67,
+      "virtudes": [
+        "Volador",
+        "Jerarquia",
+        "MuroDefensivo"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 342,
+      "nombre": "Leo",
+      "apellidos": "Jaredes Mararzal",
+      "nombre_carta": "Leo Jaredes",
+      "nacionalidad": "SCO",
+      "fecha_nacimiento": "2003-04-18",
+      "altura": 190,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Leo Jaredes (SCO) es uno de los mejores de todos los tiempos. Destaca como POR.",
+      "stats": {
+        "agilidad": 97,
+        "colocacion": 98,
+        "distribucion": 96,
+        "aereo": 96,
+        "defensa": 83,
+        "liderazgo": 97
+      },
+      "media": 94.5,
+      "virtudes": [
+        "RecuperadorTrasPerdida",
+        "Filigranas",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 343,
+      "nombre": "Rafa",
+      "apellidos": "Belosa Valumar",
+      "nombre_carta": "Rafa Belosa",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2006-06-08",
+      "altura": 199,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Rafa Belosa (ARG) es un fijo en cualquier once. Destaca como POR.",
+      "stats": {
+        "agilidad": 77,
+        "colocacion": 78,
+        "distribucion": 72,
+        "aereo": 72,
+        "defensa": 71,
+        "liderazgo": 65
+      },
+      "media": 72.5,
+      "virtudes": [
+        "OneToOne"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 344,
+      "nombre": "Unai",
+      "apellidos": "Orotes Torirzal",
+      "nombre_carta": "Unai Orotes",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2000-12-18",
+      "altura": 188,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Unai Orotes (ARG) es un fijo en cualquier once. Destaca como POR.",
+      "stats": {
+        "agilidad": 77,
+        "colocacion": 80,
+        "distribucion": 73,
+        "aereo": 75,
+        "defensa": 77,
+        "liderazgo": 74
+      },
+      "media": 76,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 345,
+      "nombre": "Carlos",
+      "apellidos": "Monilres Barenrio",
+      "nombre_carta": "Carlos Monilres",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1989-02-20",
+      "altura": 183,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Carlos Monilres (ARG) es una figura de su generación. Destaca como POR.",
+      "stats": {
+        "agilidad": 85,
+        "colocacion": 91,
+        "distribucion": 87,
+        "aereo": 80,
+        "defensa": 78,
+        "liderazgo": 82
+      },
+      "media": 83.83,
+      "virtudes": [
+        "OneToOne"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 346,
+      "nombre": "Hugo",
+      "apellidos": "Delenver Delilnas",
+      "nombre_carta": "Hugo Delenver",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2002-03-23",
+      "altura": 188,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Hugo Delenver (ARG) es una figura de su generación. Destaca como POR.",
+      "stats": {
+        "agilidad": 87,
+        "colocacion": 84,
+        "distribucion": 77,
+        "aereo": 76,
+        "defensa": 78,
+        "liderazgo": 81
+      },
+      "media": 80.5,
+      "virtudes": [
+        "Santo"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 347,
+      "nombre": "Piet",
+      "apellidos": "Galella Palamar",
+      "nombre_carta": "Piet Galella",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2006-12-18",
+      "altura": 186,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Piet Galella (ARG) es una leyenda en activo. Destaca como POR.",
+      "stats": {
+        "agilidad": 91,
+        "colocacion": 92,
+        "distribucion": 79,
+        "aereo": 84,
+        "defensa": 83,
+        "liderazgo": 79
+      },
+      "media": 84.67,
+      "virtudes": [
+        "Parapenalties",
+        "Ordenabarreras",
+        "JugadorDeCampo"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 348,
+      "nombre": "Otto",
+      "apellidos": "Quinilral Oravia",
+      "nombre_carta": "Otto Quinilral",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1999-04-10",
+      "altura": 197,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Otto Quinilral (ARG) es una leyenda en activo. Destaca como POR.",
+      "stats": {
+        "agilidad": 93,
+        "colocacion": 97,
+        "distribucion": 87,
+        "aereo": 86,
+        "defensa": 87,
+        "liderazgo": 88
+      },
+      "media": 89.67,
+      "virtudes": [
+        "JugadorDeCampo",
+        "Santo"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 349,
+      "nombre": "Ruben",
+      "apellidos": "Horenzal Belures",
+      "nombre_carta": "Ruben Horenzal",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1987-02-05",
+      "altura": 191,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Ruben Horenzal (ARG) es uno de los mejores de todos los tiempos. Destaca como POR.",
+      "stats": {
+        "agilidad": 93,
+        "colocacion": 91,
+        "distribucion": 90,
+        "aereo": 90,
+        "defensa": 85,
+        "liderazgo": 95
+      },
+      "media": 90.67,
+      "virtudes": [
+        "Presionador",
+        "Santo",
+        "Parapenalties"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 350,
+      "nombre": "Quim",
+      "apellidos": "Baruzal Palanmos",
+      "nombre_carta": "Quim Baruzal",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2003-09-25",
+      "altura": 186,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Quim Baruzal (ARG) es uno de los mejores de todos los tiempos. Destaca como POR.",
+      "stats": {
+        "agilidad": 93,
+        "colocacion": 98,
+        "distribucion": 85,
+        "aereo": 85,
+        "defensa": 90,
+        "liderazgo": 84
+      },
+      "media": 89.17,
+      "virtudes": [
+        "LanzadorPenalties",
+        "Incansable",
+        "JugadorDeCampo",
+        "Capitania"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/por.svg",
+      "imagen_bg": "/cartas/fondos/por.svg"
+    },
+    {
+      "id": 351,
+      "nombre": "Ugo",
+      "apellidos": "Toranez Marirrio",
+      "nombre_carta": "Ugo Toranez",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2001-06-07",
+      "altura": 175,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI"
+      ],
+      "historia": "Ugo Toranez (ARG) es un fijo en cualquier once. Destaca como LI.",
+      "stats": {
+        "velocidad": 77,
+        "tecnica": 78,
+        "tackling": 75,
+        "anticipacion": 72,
+        "marcaje": 69,
+        "liderazgo": 64
+      },
+      "media": 72.5,
+      "virtudes": [
+        "Libero"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 352,
+      "nombre": "Julen",
+      "apellidos": "Calorrio Jarates",
+      "nombre_carta": "Julen Calorrio",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1997-08-17",
+      "altura": 187,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI",
+        "DCD"
+      ],
+      "historia": "Julen Calorrio (ARG) es un fijo en cualquier once. Destaca como DCI.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 75,
+        "tackling": 79,
+        "anticipacion": 78,
+        "marcaje": 79,
+        "liderazgo": 77
+      },
+      "media": 76.67,
+      "virtudes": [],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 353,
+      "nombre": "Diego",
+      "apellidos": "Corenda Norardes",
+      "nombre_carta": "Diego Corenda",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2004-07-28",
+      "altura": 187,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI",
+        "CI"
+      ],
+      "historia": "Diego Corenda (ARG) es una figura de su generación. Destaca como LI.",
+      "stats": {
+        "velocidad": 84,
+        "tecnica": 93,
+        "tackling": 84,
+        "anticipacion": 79,
+        "marcaje": 77,
+        "liderazgo": 86
+      },
+      "media": 83.83,
+      "virtudes": [
+        "Incansable",
+        "Presionador"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 354,
+      "nombre": "Aitor",
+      "apellidos": "Norardez Salornez",
+      "nombre_carta": "Aitor Norardez",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1989-08-12",
+      "altura": 185,
+      "demarcacion": "DEF",
+      "posicion": [
+        "CD",
+        "LD"
+      ],
+      "historia": "Aitor Norardez (ARG) es una figura de su generación. Destaca como CD.",
+      "stats": {
+        "velocidad": 90,
+        "tecnica": 92,
+        "tackling": 77,
+        "anticipacion": 75,
+        "marcaje": 74,
+        "liderazgo": 79
+      },
+      "media": 81.17,
+      "virtudes": [
+        "Llegador",
+        "BoxToBox"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 355,
+      "nombre": "Eloy",
+      "apellidos": "Quinorgo Palantes",
+      "nombre_carta": "Eloy Quinorgo",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2003-07-08",
+      "altura": 175,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD"
+      ],
+      "historia": "Eloy Quinorgo (ARG) es una leyenda en activo. Destaca como DCD.",
+      "stats": {
+        "velocidad": 85,
+        "tecnica": 85,
+        "tackling": 88,
+        "anticipacion": 90,
+        "marcaje": 94,
+        "liderazgo": 88
+      },
+      "media": 88.33,
+      "virtudes": [
+        "RecuperadorTrasPerdida",
+        "Jerarquia",
+        "MuroDefensivo"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 356,
+      "nombre": "Callum",
+      "apellidos": "Urelnez Urario",
+      "nombre_carta": "Callum Urelnez",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1991-01-14",
+      "altura": 187,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI"
+      ],
+      "historia": "Callum Urelnez (ARG) es una leyenda en activo. Destaca como DCI.",
+      "stats": {
+        "velocidad": 82,
+        "tecnica": 84,
+        "tackling": 91,
+        "anticipacion": 88,
+        "marcaje": 90,
+        "liderazgo": 76
+      },
+      "media": 85.17,
+      "virtudes": [
+        "MuroDefensivo",
+        "Volador",
+        "Intimidante"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 357,
+      "nombre": "Filipe",
+      "apellidos": "Palonas Salendez",
+      "nombre_carta": "Filipe Palonas",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2002-02-26",
+      "altura": 182,
+      "demarcacion": "DEF",
+      "posicion": [
+        "CI",
+        "LI"
+      ],
+      "historia": "Filipe Palonas (ARG) es uno de los mejores de todos los tiempos. Destaca como CI.",
+      "stats": {
+        "velocidad": 94,
+        "tecnica": 91,
+        "tackling": 92,
+        "anticipacion": 83,
+        "marcaje": 93,
+        "liderazgo": 92
+      },
+      "media": 90.83,
+      "virtudes": [
+        "Incansable",
+        "Aura",
+        "BoxToBox",
+        "Todocampista"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 358,
+      "nombre": "Lasse",
+      "apellidos": "Delelmos Maranvia",
+      "nombre_carta": "Lasse Delelmos",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2004-12-04",
+      "altura": 181,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI",
+        "CI"
+      ],
+      "historia": "Lasse Delelmos (ARG) es uno de los mejores de todos los tiempos. Destaca como LI.",
+      "stats": {
+        "velocidad": 95,
+        "tecnica": 95,
+        "tackling": 87,
+        "anticipacion": 91,
+        "marcaje": 85,
+        "liderazgo": 91
+      },
+      "media": 90.67,
+      "virtudes": [
+        "Presionador",
+        "Potente",
+        "Incansable",
+        "Libero"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/def.svg",
+      "imagen_bg": "/cartas/fondos/def.svg"
+    },
+    {
+      "id": 359,
+      "nombre": "Pablo",
+      "apellidos": "Jarirtal Norudez",
+      "nombre_carta": "Pablo Jarirtal",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2004-12-20",
+      "altura": 182,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Pablo Jarirtal (ARG) es un fijo en cualquier once. Destaca como MD.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 74,
+        "pase": 78,
+        "posicionamiento": 79,
+        "vision": 67,
+        "disparo": 75
+      },
+      "media": 74.83,
+      "virtudes": [
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 360,
+      "nombre": "Julen",
+      "apellidos": "Delendez Zareldes",
+      "nombre_carta": "Julen Delendez",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1991-07-06",
+      "altura": 188,
+      "demarcacion": "MED",
+      "posicion": [
+        "MID"
+      ],
+      "historia": "Julen Delendez (ARG) es un fijo en cualquier once. Destaca como MID.",
+      "stats": {
+        "velocidad": 66,
+        "tecnica": 78,
+        "pase": 79,
+        "posicionamiento": 71,
+        "vision": 69,
+        "disparo": 72
+      },
+      "media": 72.5,
+      "virtudes": [
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 361,
+      "nombre": "Callum",
+      "apellidos": "Palelrio Dorendes",
+      "nombre_carta": "Callum Palelrio",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1992-08-05",
+      "altura": 188,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Callum Palelrio (ARG) es una figura de su generación. Destaca como MD.",
+      "stats": {
+        "velocidad": 80,
+        "tecnica": 74,
+        "pase": 85,
+        "posicionamiento": 93,
+        "vision": 76,
+        "disparo": 82
+      },
+      "media": 81.67,
+      "virtudes": [
+        "BoxToBox",
+        "RecuperadorTrasPerdida"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 362,
+      "nombre": "Félix",
+      "apellidos": "Zarornez Horarres",
+      "nombre_carta": "Félix Zarornez",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2006-06-09",
+      "altura": 171,
+      "demarcacion": "MED",
+      "posicion": [
+        "MII"
+      ],
+      "historia": "Félix Zarornez (ARG) es una figura de su generación. Destaca como MII.",
+      "stats": {
+        "velocidad": 75,
+        "tecnica": 87,
+        "pase": 85,
+        "posicionamiento": 85,
+        "vision": 81,
+        "disparo": 83
+      },
+      "media": 82.67,
+      "virtudes": [
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 363,
+      "nombre": "Gonzalo",
+      "apellidos": "Torenmar Ibades",
+      "nombre_carta": "Gonzalo Torenmar",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1991-04-20",
+      "altura": 184,
+      "demarcacion": "MED",
+      "posicion": [
+        "MII"
+      ],
+      "historia": "Gonzalo Torenmar (ARG) es una leyenda en activo. Destaca como MII.",
+      "stats": {
+        "velocidad": 86,
+        "tecnica": 91,
+        "pase": 91,
+        "posicionamiento": 88,
+        "vision": 91,
+        "disparo": 84
+      },
+      "media": 88.5,
+      "virtudes": [
+        "RecuperadorTrasPerdida",
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 364,
+      "nombre": "Rafa",
+      "apellidos": "Calilvia Dorarres",
+      "nombre_carta": "Rafa Calilvia",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2002-02-05",
+      "altura": 169,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO"
+      ],
+      "historia": "Rafa Calilvia (ARG) es una leyenda en activo. Destaca como MCO.",
+      "stats": {
+        "velocidad": 81,
+        "tecnica": 88,
+        "pase": 80,
+        "posicionamiento": 89,
+        "vision": 90,
+        "disparo": 95
+      },
+      "media": 87.17,
+      "virtudes": [
+        "JugadorEntreLineas",
+        "Carismatico"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 365,
+      "nombre": "Gonzalo",
+      "apellidos": "Esartes Barural",
+      "nombre_carta": "Gonzalo Esartes",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2005-09-04",
+      "altura": 187,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Gonzalo Esartes (ARG) es uno de los mejores de todos los tiempos. Destaca como MD.",
+      "stats": {
+        "velocidad": 87,
+        "tecnica": 82,
+        "pase": 92,
+        "posicionamiento": 91,
+        "vision": 89,
+        "disparo": 90
+      },
+      "media": 88.5,
+      "virtudes": [
+        "Capitania",
+        "Presionador",
+        "RecuperadorTrasPerdida"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 366,
+      "nombre": "Quim",
+      "apellidos": "Delinas Jariltes",
+      "nombre_carta": "Quim Delinas",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1989-11-03",
+      "altura": 170,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD"
+      ],
+      "historia": "Quim Delinas (ARG) es uno de los mejores de todos los tiempos. Destaca como MD.",
+      "stats": {
+        "velocidad": 89,
+        "tecnica": 89,
+        "pase": 98,
+        "posicionamiento": 97,
+        "vision": 95,
+        "disparo": 87
+      },
+      "media": 92.5,
+      "virtudes": [
+        "RecuperadorTrasPerdida",
+        "Presionador",
+        "Potente",
+        "Carismatico"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/med.svg",
+      "imagen_bg": "/cartas/fondos/med.svg"
+    },
+    {
+      "id": 367,
+      "nombre": "Jonas",
+      "apellidos": "Baralla Ureda",
+      "nombre_carta": "Jonas Baralla",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2000-11-25",
+      "altura": 185,
+      "demarcacion": "DEL",
+      "posicion": [
+        "SD",
+        "DC",
+        "MCO"
+      ],
+      "historia": "Jonas Baralla (ARG) es un fijo en cualquier once. Destaca como SD.",
+      "stats": {
+        "velocidad": 66,
+        "regate": 78,
+        "finalizacion": 66,
+        "desmarque": 77,
+        "creatividad": 82,
+        "agresividad": 73
+      },
+      "media": 73.67,
+      "virtudes": [
+        "Matador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 368,
+      "nombre": "Joel",
+      "apellidos": "Lanelmos Calosa",
+      "nombre_carta": "Joel Lanelmos",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1995-08-06",
+      "altura": 185,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Joel Lanelmos (ARG) es un fijo en cualquier once. Destaca como EI.",
+      "stats": {
+        "velocidad": 81,
+        "regate": 79,
+        "finalizacion": 72,
+        "desmarque": 76,
+        "creatividad": 76,
+        "agresividad": 75
+      },
+      "media": 76.5,
+      "virtudes": [
+        "Desbordante"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 369,
+      "nombre": "Bastien",
+      "apellidos": "Norutes Zarormos",
+      "nombre_carta": "Bastien Norutes",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1993-05-01",
+      "altura": 164,
+      "demarcacion": "DEL",
+      "posicion": [
+        "SD",
+        "DC"
+      ],
+      "historia": "Bastien Norutes (ARG) es una figura de su generación. Destaca como SD.",
+      "stats": {
+        "velocidad": 70,
+        "regate": 81,
+        "finalizacion": 81,
+        "desmarque": 83,
+        "creatividad": 86,
+        "agresividad": 78
+      },
+      "media": 79.83,
+      "virtudes": [
+        "LanzadorPenalties"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 370,
+      "nombre": "Sven",
+      "apellidos": "Coreres Ibever",
+      "nombre_carta": "Sven Coreres",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2002-04-08",
+      "altura": 171,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Sven Coreres (ARG) es una figura de su generación. Destaca como EI.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 89,
+        "finalizacion": 77,
+        "desmarque": 81,
+        "creatividad": 83,
+        "agresividad": 87
+      },
+      "media": 84.17,
+      "virtudes": [
+        "Carismatico",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "Epico",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 371,
+      "nombre": "Héctor",
+      "apellidos": "Jarario Zariltal",
+      "nombre_carta": "Héctor Jarario",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2002-10-19",
+      "altura": 184,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Héctor Jarario (ARG) es una leyenda en activo. Destaca como DC.",
+      "stats": {
+        "velocidad": 74,
+        "regate": 77,
+        "finalizacion": 90,
+        "desmarque": 90,
+        "creatividad": 86,
+        "agresividad": 83
+      },
+      "media": 83.33,
+      "virtudes": [
+        "GuanteEnElPie",
+        "Cabeceador",
+        "LanzadorPenalties"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 372,
+      "nombre": "Mateo",
+      "apellidos": "Torilgo Palites",
+      "nombre_carta": "Mateo Torilgo",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2005-05-05",
+      "altura": 183,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Mateo Torilgo (ARG) es una leyenda en activo. Destaca como EI.",
+      "stats": {
+        "velocidad": 87,
+        "regate": 92,
+        "finalizacion": 87,
+        "desmarque": 75,
+        "creatividad": 83,
+        "agresividad": 77
+      },
+      "media": 83.5,
+      "virtudes": [
+        "Desbordante",
+        "Aura"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 373,
+      "nombre": "Callum",
+      "apellidos": "Quinirnas Salenlla",
+      "nombre_carta": "Callum Quinirnas",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1986-04-09",
+      "altura": 166,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Callum Quinirnas (ARG) es uno de los mejores de todos los tiempos. Destaca como EI.",
+      "stats": {
+        "velocidad": 98,
+        "regate": 99,
+        "finalizacion": 95,
+        "desmarque": 90,
+        "creatividad": 87,
+        "agresividad": 95
+      },
+      "media": 94,
+      "virtudes": [
+        "GuanteEnElPie",
+        "Filigranas",
+        "Desbordante"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 374,
+      "nombre": "Unai",
+      "apellidos": "Barortal Horarnas",
+      "nombre_carta": "Unai Barortal",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1989-08-05",
+      "altura": 180,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI"
+      ],
+      "historia": "Unai Barortal (ARG) es uno de los mejores de todos los tiempos. Destaca como EI.",
+      "stats": {
+        "velocidad": 99,
+        "regate": 99,
+        "finalizacion": 84,
+        "desmarque": 85,
+        "creatividad": 93,
+        "agresividad": 95
+      },
+      "media": 92.5,
+      "virtudes": [
+        "Motivador",
+        "Desbordante",
+        "GuanteEnElPie"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    },
+    {
+      "id": 375,
+      "nombre": "Jonas",
+      "apellidos": "Torazal Horover",
+      "nombre_carta": "Jonas Torazal",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "2003-10-10",
+      "altura": 190,
+      "demarcacion": "DEL",
+      "posicion": [
+        "SD",
+        "DC"
+      ],
+      "historia": "Jonas Torazal (ARG) es uno de los mejores de todos los tiempos. Destaca como SD.",
+      "stats": {
+        "velocidad": 81,
+        "regate": 94,
+        "finalizacion": 87,
+        "desmarque": 92,
+        "creatividad": 94,
+        "agresividad": 90
+      },
+      "media": 89.67,
+      "virtudes": [
+        "LanzadorPenalties",
+        "Matador",
+        "Aura"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/siluetas/del.svg",
+      "imagen_bg": "/cartas/fondos/del.svg"
+    }
+  ]
+}

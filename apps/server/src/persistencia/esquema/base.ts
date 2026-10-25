@@ -92,6 +92,8 @@ export const jugadores = pgTable(
     id: integer('id').primaryKey(),
     nombre: text('nombre').notNull(),
     apellidos: text('apellidos').notNull(),
+    /** Nombre destacado en la carta (spec 006, migración 0011). */
+    nombreCarta: text('nombre_carta').notNull(),
     nacionalidad: text('nacionalidad').notNull(),
     fechaNacimiento: text('fecha_nacimiento').notNull(),
     altura: integer('altura').notNull(),
@@ -104,10 +106,11 @@ export const jugadores = pgTable(
     /** Defectos de la carta (spec 005, migración 0010). */
     defectos: text('defectos').array().notNull().default(sql`'{}'::text[]`),
     nivel: text('nivel').notNull(),
-    coleccion: text('coleccion').notNull(),
+    /** Imagen superior y fondo de la carta (spec 006, R7). La pertenencia a colecciones va en `colecciones_cartas`. */
+    imagen: text('imagen').notNull(),
+    imagenBg: text('imagen_bg').notNull(),
   },
   (t) => [
-    index('jugadores_coleccion_idx').on(t.coleccion),
     check('jugadores_demarcacion_ck', sql`${t.demarcacion} in ('POR','DEF','MED','DEL')`),
     check('jugadores_nivel_ck', sql`${t.nivel} in ('Superclase','Epico','Legendario','GOAT')`),
     check('jugadores_altura_ck', sql`${t.altura} between 150 and 215`),
@@ -132,7 +135,9 @@ export const partidas = pgTable(
     /** Niveles del relleno automático de NPC (spec 003, FR-038a). */
     dificultad: text('dificultad').$type<Dificultad>().notNull().default('normal'),
     tiempos: jsonb('tiempos').notNull(),
-    colecciones: text('colecciones').array().notNull().default(sql`ARRAY['Core']::text[]`),
+    colecciones: text('colecciones').array().notNull().default(sql`ARRAY['core']::text[]`),
+    /** Foto de las cartas activas del anfitrión registrado al crear la partida (spec 006, R12); null = `colecciones`. */
+    poolCartas: integer('pool_cartas').array(),
     estado: text('estado').notNull().default('buscando'),
     semilla: text('semilla').notNull(),
     /** Versión del catálogo con que se juega (spec 005, FR-036): 1 = cartas anteriores a la spec 005. */

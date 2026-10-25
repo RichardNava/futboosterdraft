@@ -136,11 +136,17 @@ export type StatsMED = StatsDe<'MED'>;
 export type StatsDEL = StatsDe<'DEL'>;
 export type Stats = StatsPOR | StatsDEF | StatsMED | StatsDEL;
 
-/** Jugador (carta) del catálogo: los 14 campos de FR-016. */
+/**
+ * Jugador (carta) del catálogo: los campos de FR-016. Desde la spec 006 la carta no sabe en qué colecciones está
+ * (R1): la pertenencia vive en `Coleccion`.
+ */
 export interface Jugador {
   id: number;
   nombre: string;
   apellidos: string;
+  /** Nombre corto que se destaca en la carta (FR-047a). */
+  nombre_carta: string;
+  /** Código de `SELECCIONES`. */
   nacionalidad: string;
   fecha_nacimiento: string;
   altura: number;
@@ -152,7 +158,27 @@ export interface Jugador {
   virtudes: Virtud[];
   defectos: Defecto[];
   nivel: Nivel;
-  coleccion: string;
+  /** Imagen superior (ruta del sitio bajo `/cartas/`). */
+  imagen: string;
+  /** Imagen de fondo de la acción (ruta del sitio bajo `/cartas/`). */
+  imagen_bg: string;
+}
+
+/** Versiones de una carta (R2). La premium llegará con su propia tabla de presentación. */
+export const VERSIONES_CARTA = ['normal'] as const;
+export type VersionCarta = (typeof VERSIONES_CARTA)[number];
+
+export type TipoColeccion = 'basica' | 'pago';
+
+/** Colección del catálogo, ya normalizada (data-model §1.2). */
+export interface Coleccion {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  tipo: TipoColeccion;
+  precioCentimos?: number;
+  destacadas?: number[];
+  cartas: { id: number; version: VersionCarta }[];
 }
 
 /** Valores de los stats de un jugador en el orden canónico de su demarcación. */

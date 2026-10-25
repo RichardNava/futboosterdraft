@@ -66,7 +66,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:migrate
-      - run: pnpm seed --file data/core.json
+      - run: pnpm seed
       - run: pnpm --filter @fbd/web exec playwright install --with-deps chromium
       - run: pnpm --filter @fbd/web e2e tests/e2e/diseno
       - uses: actions/upload-artifact@v4

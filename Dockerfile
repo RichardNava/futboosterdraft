@@ -38,7 +38,7 @@ COPY --from=compilacion /salida/node_modules ./node_modules
 COPY --from=compilacion /app/apps/server/dist ./dist
 COPY --from=compilacion /app/apps/server/drizzle ./drizzle
 COPY --from=compilacion /app/apps/web/dist ./web
-COPY --from=compilacion /app/data/core.json ./data/core.json
+COPY --from=compilacion /app/data ./data
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=15s --timeout=3s --start-period=20s \

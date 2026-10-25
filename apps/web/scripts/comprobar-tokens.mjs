@@ -14,7 +14,6 @@ const EXCEPCIONES = {
   'src/pantallas/PruebasCartas.tsx': 'pantalla de desarrollo fuera del inventario',
   'src/componentes/colores.ts': 'conversión de los colores de equipación, que vienen de los datos',
   'src/componentes/AperturaSobre.tsx': 'partículas de la apertura de sobres (objeto de juego, 003/FR-011 a FR-015)',
-  'src/componentes/SiluetaJugador.tsx': 'silueta dentro de la carta (objeto de juego, 003/FR-008)',
 };
 
 /** Carpetas cuyos ficheros pueden contener literales, con el motivo. */

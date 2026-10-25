@@ -1,3 +1,4 @@
+import { nombreCartaDe } from '../componentes/CartaJugador';
 import { useEffect, useMemo, useState } from 'react';
 import { coloresDe } from '../componentes/colores';
 import type { Equipacion } from '@fbd/domain';
@@ -53,7 +54,7 @@ export function nombresDePartido(inicio: Inicio): Map<number, string> {
     const a = inicio.alineaciones[lado];
     for (const j of [...a.titulares.map((t) => t.jugador), ...a.suplentes]) {
       const dorsal = inicio.dorsales[j.id];
-      mapa.set(j.id, `${dorsal ? `${dorsal}. ` : ''}${j.nombre} ${j.apellidos.split(' ')[0]}`);
+      mapa.set(j.id, `${dorsal ? `${dorsal}. ` : ''}${nombreCartaDe(j)}`);
     }
   }
   return mapa;

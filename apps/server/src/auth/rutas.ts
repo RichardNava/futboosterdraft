@@ -48,7 +48,12 @@ export function crearHooksSesion(auth: Auth) {
       throw errores.prohibido('INVITADO_NO_PERMITIDO', 'Esta acción requiere una cuenta registrada');
     }
   };
-  return { requiereSesion, requiereRegistrado };
+  // Colección y tienda (spec 006, contracts/http-api.md): sin sesión 401 SIN_SESION; invitado 403 SOLO_REGISTRADOS.
+  const soloRegistrados = async (req: FastifyRequest) => {
+    await requiereSesion(req);
+    if (req.usuario?.tipo !== 'registrado') throw errores.prohibido('SOLO_REGISTRADOS', 'La colección y la tienda son solo para usuarios registrados');
+  };
+  return { requiereSesion, requiereRegistrado, soloRegistrados };
 }
 
 export interface OpcionesRutasAuth {

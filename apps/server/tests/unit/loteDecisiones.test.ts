@@ -11,7 +11,7 @@ let siguiente = 1;
 function jugador(posicion: Posicion): Jugador {
   const demarcacion = DEM[posicion]!;
   const stats = Object.fromEntries(CLAVES_STATS[demarcacion].map((c) => [c, 78])) as unknown as Jugador['stats'];
-  return { id: siguiente++, nombre: 'J', apellidos: posicion, nacionalidad: 'ESP', fecha_nacimiento: '1995-01-01', altura: 180, demarcacion, posicion: [posicion], historia: '', stats, media: calcularMedia({ demarcacion, stats }), virtudes: [], defectos: [], nivel: 'Superclase', coleccion: 'Core' };
+  return { id: siguiente++, nombre: 'J', apellidos: posicion, nacionalidad: 'ESP', fecha_nacimiento: '1995-01-01', altura: 180, demarcacion, posicion: [posicion], historia: '', stats, media: calcularMedia({ demarcacion, stats }), virtudes: [], defectos: [], nivel: 'Superclase', nombre_carta: 'J', imagen: '/cartas/siluetas/med.svg', imagen_bg: '/cartas/fondos/med.svg' };
 }
 function equipo(participanteId: string): EquipoPartido {
   const titulares = FORMACIONES['4-4-2'].casillas.map((c) => ({ casillaId: c.id, jugador: jugador(c.id === 'CENTRAL' ? 'DCI' : c.posicionesAdmitidas[0]!) }));

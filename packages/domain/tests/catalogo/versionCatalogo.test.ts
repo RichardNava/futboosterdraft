@@ -28,6 +28,11 @@ describe('cartaEnVersion', () => {
     const antes = new Map(leer('../fixtures/core-004.json').map((j) => [j.id, j]));
     const ahora = leer('../../../../data/core.json');
     expect(ahora).toHaveLength(300);
-    for (const j of ahora) expect(cartaEnVersion(j, 1)).toEqual({ ...antes.get(j.id)!, defectos: [] });
+    // La spec 006 solo cambia la presentación (nombre_carta, imágenes, GBR → ENG/SCO/WAL/NIR) y quita `coleccion`.
+    for (const j of ahora) {
+      const { coleccion: _c, ...antigua } = antes.get(j.id)! as Jugador & { coleccion?: string };
+      const { nombre_carta, imagen, imagen_bg, nacionalidad, historia } = j;
+      expect(cartaEnVersion(j, 1)).toEqual({ ...antigua, defectos: [], nombre_carta, imagen, imagen_bg, nacionalidad, historia });
+    }
   });
 });

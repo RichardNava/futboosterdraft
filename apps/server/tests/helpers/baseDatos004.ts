@@ -70,7 +70,7 @@ export async function baseDatos004(): Promise<BaseDatos004> {
     await bd.db.execute(
       sql`insert into jugadores (id, nombre, apellidos, nacionalidad, fecha_nacimiento, altura, demarcacion, posicion, historia, stats, media, ${sql.raw(CLAVE_004)}, nivel, coleccion)
           values (${c.id}, ${c.nombre}, ${c.apellidos}, ${c.nacionalidad}, ${c.fecha_nacimiento}, ${c.altura}, ${c.demarcacion}, ${arrayPg(c.posicion)}::text[], ${c.historia},
-                  ${JSON.stringify(c.stats)}::jsonb, ${c.media}, ${arrayPg(fila[CLAVE_004] as string[])}::text[], ${c.nivel}, ${c.coleccion})`,
+                  ${JSON.stringify(c.stats)}::jsonb, ${c.media}, ${arrayPg(fila[CLAVE_004] as string[])}::text[], ${c.nivel}, 'Core')`,
     );
   }
 

@@ -2,7 +2,9 @@
  * Validación del catálogo de jugadores (FR-016 a FR-024; spec 005, FR-011, FR-013, FR-040). El seed rechaza el
  * fichero entero si cualquier jugador incumple una regla. Los avisos de colección (`avisosColeccion`) no lo rechazan.
  */
+import { DISTRIBUCION_CORE, recuentoPorDemarcacionYNivel } from './coleccionCore';
 import { PAREJAS_INCOMPATIBLES, REPARTO_DEFECTOS } from './rasgos';
+import { esSeleccion } from './selecciones';
 import {
   CLAVES_STATS,
   DEFECTOS,
@@ -14,6 +16,8 @@ import {
   TODAS_LAS_VIRTUDES,
   calcularMedia,
   virtudesPermitidas,
+  VERSIONES_CARTA,
+  type Coleccion,
   type Jugador,
   type Nivel,
 } from './tipos';
@@ -43,6 +47,8 @@ export type ReglaCatalogo =
   | 'defectos_maximo'
   | 'rasgos_incompatibles'
   | 'reparto_defectos'
+  | 'nombre_carta'
+  | 'imagen'
   | 'coleccion'
   | 'id'
   | 'id_repetido';
@@ -57,6 +63,7 @@ const CAMPOS: readonly (keyof Jugador)[] = [
   'id',
   'nombre',
   'apellidos',
+  'nombre_carta',
   'nacionalidad',
   'fecha_nacimiento',
   'altura',
@@ -68,10 +75,13 @@ const CAMPOS: readonly (keyof Jugador)[] = [
   'virtudes',
   'defectos',
   'nivel',
-  'coleccion',
+  'imagen',
+  'imagen_bg',
 ];
 
-const COLECCIONES_VALIDAS = new Set(['Core']);
+/** Rutas de imagen de una carta (contracts/datos-cartas.md). */
+const RUTA_IMAGEN = /^\/cartas\/[a-z0-9/_-]+\.(svg|png|webp|jpg)$/;
+const MAX_NOMBRE_CARTA = 24;
 
 function esFechaIsoValida(texto: string): boolean {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(texto);
@@ -108,17 +118,22 @@ export function validarJugador(entrada: unknown): ErrorCatalogo[] {
     if (typeof j[campo] !== 'string' || (j[campo] as string).trim() === '') error('texto_vacio', `"${campo}" vacío`);
   }
   if (typeof j.historia !== 'string') error('texto_vacio', '"historia" debe ser texto (puede estar vacío)');
-  if (typeof j.nacionalidad !== 'string' || j.nacionalidad.trim().length < 2) {
-    error('nacionalidad', 'La nacionalidad debe tener al menos 2 caracteres');
+  if (!esSeleccion(j.nacionalidad)) {
+    error('nacionalidad', `Nacionalidad desconocida: ${String(j.nacionalidad)} (debe ser un código de SELECCIONES)`);
+  }
+  if (typeof j.nombre_carta !== 'string' || j.nombre_carta.trim() === '' || j.nombre_carta.length > MAX_NOMBRE_CARTA) {
+    error('nombre_carta', `"nombre_carta" debe ser un texto no vacío de ${MAX_NOMBRE_CARTA} caracteres como máximo`);
+  }
+  for (const campo of ['imagen', 'imagen_bg'] as const) {
+    if (typeof j[campo] !== 'string' || !RUTA_IMAGEN.test(j[campo])) {
+      error('imagen', `"${campo}" debe ser una ruta que empieza por /cartas/ (svg, png, webp o jpg)`);
+    }
   }
   if (typeof j.fecha_nacimiento !== 'string' || !esFechaIsoValida(j.fecha_nacimiento)) {
     error('fecha_nacimiento', 'La fecha de nacimiento debe ser una fecha ISO válida (YYYY-MM-DD)');
   }
   if (!Number.isInteger(j.altura) || (j.altura as number) < 150 || (j.altura as number) > 215) {
     error('altura', 'La altura debe ser un entero entre 150 y 215 cm');
-  }
-  if (!COLECCIONES_VALIDAS.has(j.coleccion as string)) {
-    error('coleccion', 'La colección debe ser "Core"');
   }
 
   const demarcacion = j.demarcacion;
@@ -265,4 +280,90 @@ export function avisosColeccion(jugadores: readonly Jugador[]): ErrorCatalogo[] 
     }
   }
   return avisos;
+}
+
+const ID_COLECCION = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+export interface ResultadoCatalogo {
+  /** Colecciones normalizadas: cada entrada de `cartas` como `{ id, version }` (R3). */
+  colecciones: Coleccion[];
+  errores: ErrorCatalogo[];
+}
+
+/**
+ * Validación cruzada de cartas y colecciones (spec 006, data-model §1.2). `colecciones` es la lista del fichero
+ * `data/colecciones.json` (`precio_centimos`, entradas de `cartas` como `id` o `{ id, version }`).
+ */
+export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcacion' | 'nivel'>[], colecciones: unknown): ResultadoCatalogo {
+  const errores: ErrorCatalogo[] = [];
+  const error = (id: unknown, mensaje: string) => errores.push({ id, regla: 'coleccion', mensaje });
+  if (!Array.isArray(colecciones)) {
+    return { colecciones: [], errores: [{ id: undefined, regla: 'coleccion', mensaje: 'Las colecciones deben ser una lista' }] };
+  }
+  const porId = new Map(cartas.map((c) => [c.id, c]));
+  const usadas = new Set<number>();
+  const ids = new Set<string>();
+  const normalizadas: Coleccion[] = [];
+
+  for (const entrada of colecciones as Record<string, unknown>[]) {
+    const id = entrada?.id;
+    if (typeof id !== 'string' || !ID_COLECCION.test(id)) error(id, `Id de colección inválido: ${String(id)} (kebab-case sin tildes)`);
+    else if (ids.has(id)) error(id, `Id de colección repetido: ${id}`);
+    else ids.add(id);
+    for (const campo of ['nombre', 'descripcion'] as const) {
+      if (typeof entrada?.[campo] !== 'string' || (entrada[campo] as string).trim() === '') error(id, `"${campo}" vacío`);
+    }
+    const tipo = entrada?.tipo;
+    if (tipo !== 'basica' && tipo !== 'pago') error(id, `Tipo de colección desconocido: ${String(tipo)}`);
+    const precio = entrada?.precio_centimos;
+    if (tipo === 'pago' && (!Number.isInteger(precio) || (precio as number) <= 0)) error(id, 'Una colección de pago necesita precio_centimos > 0');
+    if (tipo === 'basica' && precio !== undefined) error(id, 'La colección básica no lleva precio');
+
+    const lista: Coleccion['cartas'] = [];
+    const vistas = new Set<number>();
+    for (const c of Array.isArray(entrada?.cartas) ? (entrada.cartas as unknown[]) : []) {
+      const carta = typeof c === 'number' ? { id: c, version: 'normal' } : (c as { id?: unknown; version?: unknown });
+      const cid = carta?.id as number;
+      if (!incluye(VERSIONES_CARTA, carta?.version)) error(id, `Versión desconocida de la carta ${String(cid)}: ${String(carta?.version)}`);
+      if (!porId.has(cid)) error(id, `La carta ${String(cid)} no existe`);
+      else if (vistas.has(cid)) error(id, `La carta ${cid} aparece dos veces`);
+      else {
+        vistas.add(cid);
+        usadas.add(cid);
+        lista.push({ id: cid, version: carta.version as Coleccion['cartas'][number]['version'] });
+      }
+    }
+    if (!Array.isArray(entrada?.cartas) || lista.length === 0) error(id, 'La colección no tiene cartas');
+
+    const destacadas = entrada?.destacadas;
+    if (destacadas !== undefined && (!Array.isArray(destacadas) || destacadas.some((d) => !vistas.has(d as number)))) {
+      error(id, 'Las destacadas deben ser cartas de la colección');
+    }
+
+    normalizadas.push({
+      id: id as string,
+      nombre: entrada?.nombre as string,
+      descripcion: entrada?.descripcion as string,
+      tipo: tipo as Coleccion['tipo'],
+      ...(precio !== undefined ? { precioCentimos: precio as number } : {}),
+      ...(Array.isArray(destacadas) ? { destacadas: destacadas as number[] } : {}),
+      cartas: lista,
+    });
+  }
+
+  const basicas = normalizadas.filter((c) => c.tipo === 'basica');
+  if (basicas.length !== 1 || basicas[0]!.id !== 'core') {
+    error(undefined, 'Debe haber exactamente una colección básica, con id "core"');
+  } else {
+    const recuento = recuentoPorDemarcacionYNivel(basicas[0]!.cartas.map((c) => porId.get(c.id)!));
+    const fuera = (Object.keys(DISTRIBUCION_CORE) as (keyof typeof DISTRIBUCION_CORE)[]).flatMap((d) =>
+      NIVELES.filter((n) => recuento[d][n] !== DISTRIBUCION_CORE[d][n]).map((n) => `${d} ${n}: ${recuento[d][n]}/${DISTRIBUCION_CORE[d][n]}`),
+    );
+    if (fuera.length) error('core', `Core no cumple DISTRIBUCION_CORE: ${fuera.join(', ')}`);
+  }
+
+  for (const c of cartas) {
+    if (!usadas.has(c.id)) errores.push({ id: c.id, regla: 'coleccion', mensaje: `La carta ${c.id} no pertenece a ninguna colección` });
+  }
+  return { colecciones: normalizadas, errores };
 }

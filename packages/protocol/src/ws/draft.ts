@@ -8,6 +8,11 @@ export const JugadorResumen = z.object({
   id: z.number().int(),
   nombre: z.string(),
   apellidos: z.string(),
+  /** Spec 006: nombre destacado, selección e imágenes de la carta (FR-043 a FR-047a). */
+  nombreCarta: z.string(),
+  nacionalidad: z.string(),
+  imagen: z.string(),
+  imagenBg: z.string(),
   demarcacion: z.enum(['POR', 'DEF', 'MED', 'DEL']),
   posicion: z.array(z.string()),
   media: z.number(),

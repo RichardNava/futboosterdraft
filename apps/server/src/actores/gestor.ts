@@ -119,10 +119,12 @@ export class GestorPartidas {
       throw errores.regla(problemas[0]!.codigo, problemas[0]!.mensaje, { problemas });
     }
 
-    const { db, repoPartidas } = this.servicios;
+    const { db, repoPartidas, economia } = this.servicios;
+    // Foto de la colección activa del anfitrión registrado (spec 006, FR-014); un invitado juega con Core (FR-015).
+    const poolCartas = usuario.tipo === 'registrado' ? await economia.poolActivo(usuario.id) : null;
     const semilla = randomBytes(16).toString('hex');
     const partidaId = await db.transaction(async (tx) => {
-      const partida = await repoPartidas.crear({ anfitrionId: usuario.id, config, semilla, ahora: this.servicios.reloj.ahora() }, tx);
+      const partida = await repoPartidas.crear({ anfitrionId: usuario.id, config, semilla, poolCartas, ahora: this.servicios.reloj.ahora() }, tx);
       // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
       const identidad = await identidadInicial(this.servicios, usuario, []);
       await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones);

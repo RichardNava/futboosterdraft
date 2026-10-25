@@ -5,7 +5,7 @@ import { cartaEnVersion, FORMACIONES_IDS, FORMACIONES, VERSION_CATALOGO_ACTUAL, 
 import { asc, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import type { BaseDatos } from '../persistencia/db';
-import { jugadores } from '../persistencia/esquema/index';
+import { coleccionesCartas, jugadores } from '../persistencia/esquema/index';
 import { errores } from './errores';
 import { TEXTOS_RASGOS } from './textosRasgos';
 
@@ -15,6 +15,7 @@ export function filaAJugador(f: typeof jugadores.$inferSelect) {
     id: f.id,
     nombre: f.nombre,
     apellidos: f.apellidos,
+    nombre_carta: f.nombreCarta,
     nacionalidad: f.nacionalidad,
     fecha_nacimiento: f.fechaNacimiento,
     altura: f.altura,
@@ -26,8 +27,21 @@ export function filaAJugador(f: typeof jugadores.$inferSelect) {
     virtudes: f.virtudes,
     defectos: f.defectos,
     nivel: f.nivel,
-    coleccion: f.coleccion,
+    imagen: f.imagen,
+    imagen_bg: f.imagenBg,
   };
+}
+
+/** Colecciones de cada carta (spec 006): `colecciones_cartas` agrupada por jugador. */
+async function pertenencia(db: BaseDatos, id?: number): Promise<Map<number, string[]>> {
+  const filas = await db
+    .select()
+    .from(coleccionesCartas)
+    .where(id === undefined ? undefined : eq(coleccionesCartas.jugadorId, id))
+    .orderBy(asc(coleccionesCartas.coleccionId));
+  const r = new Map<number, string[]>();
+  for (const f of filas) r.set(f.jugadorId, [...(r.get(f.jugadorId) ?? []), f.coleccionId]);
+  return r;
 }
 
 function versionPedida(valor: string | undefined): number {
@@ -42,7 +56,11 @@ export function registrarRutasCatalogo(app: FastifyInstance, db: BaseDatos): voi
   // `?version=1` sirve las cartas de antes de la spec 005, para las vistas de partidas antiguas (research R4).
   app.get<{ Querystring: { version?: string } }>('/api/catalogo/jugadores', async (req) => {
     const version = versionPedida(req.query.version);
-    return (await db.select().from(jugadores).orderBy(asc(jugadores.id))).map((f) => cartaEnVersion(filaAJugador(f) as Jugador, version));
+    const colecciones = await pertenencia(db);
+    return (await db.select().from(jugadores).orderBy(asc(jugadores.id))).map((f) => ({
+      ...cartaEnVersion(filaAJugador(f) as Jugador, version),
+      colecciones: colecciones.get(f.id) ?? [],
+    }));
   });
 
   app.get<{ Params: { id: string }; Querystring: { version?: string } }>('/api/catalogo/jugadores/:id', async (req) => {
@@ -51,7 +69,7 @@ export function registrarRutasCatalogo(app: FastifyInstance, db: BaseDatos): voi
     const version = versionPedida(req.query.version);
     const fila = (await db.select().from(jugadores).where(eq(jugadores.id, id)).limit(1))[0];
     if (!fila) throw errores.noEncontrado('JUGADOR_NO_ENCONTRADO', `No existe el jugador ${id}`);
-    return cartaEnVersion(filaAJugador(fila) as Jugador, version);
+    return { ...cartaEnVersion(filaAJugador(fila) as Jugador, version), colecciones: (await pertenencia(db, id)).get(id) ?? [] };
   });
 
   app.get('/api/catalogo/formaciones', async () => FORMACIONES_IDS.map((id) => FORMACIONES[id]));

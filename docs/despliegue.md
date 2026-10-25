@@ -16,7 +16,7 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 - `dist/seed.js`: la carga del catálogo.
 - `drizzle/`: las migraciones.
 - `web/`: la web compilada.
-- `data/core.json`: la colección Core.
+- `data/`: las cartas (`core.json`, `cartas-prueba.json`) y las colecciones (`colecciones.json`).
 - Las dependencias de producción.
 
 ## 2. Variables de entorno
@@ -107,13 +107,20 @@ location / {
 
 ## 4. Cargar el catálogo
 
-La primera vez, y cada vez que cambie la colección, carga los jugadores. La carga es idempotente (*upsert* por `id`). Si el fichero tiene cualquier error, lo rechaza entero (FR-024).
+La primera vez, y cada vez que cambien las cartas o las colecciones, carga el catálogo. Por defecto lee `data/core.json`, `data/cartas-prueba.json` y `data/colecciones.json` (spec 006). La carga es idempotente (*upsert* por `id`) y va en una transacción: si cualquier fichero tiene un error, rechaza el lote entero (FR-024). Informa del recuento por demarcación × nivel de cada colección y, si una colección de pago ya vendida gana cartas, de lo que entrega a sus compradores.
 
 ```bash
-docker exec futboosterdraft node dist/seed.js --file data/core.json
+docker exec futboosterdraft node dist/seed.js
+docker exec futboosterdraft node dist/seed.js --file data/core.json --file otras.json --colecciones colecciones.json
 ```
 
-Para cargar otro fichero, móntalo en el contenedor y pasa su ruta en `--file`.
+**Después de cargar el catálogo, reinicia el servidor** (`docker restart futboosterdraft`): el catálogo se lee en memoria al arrancar, y hasta reiniciar no conoce las cartas nuevas (quien recibió una al ampliarse su colección vería un error en «Colección»).
+
+Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas.md` (esquemas en `packages/protocol/schemas/`).
+
+> **Riesgo abierto que bloquea producción: escudos de las selecciones.** Las cartas pueden mostrar el escudo oficial de cada selección junto a su bandera (FR-044), pero su licencia no está revisada. Hasta entonces los escudos están desactivados (`ESCUDOS_ACTIVOS = false` en `apps/web/src/textos/selecciones.ts`) y la carpeta `apps/web/public/escudos/` no existe. Para activarlos: obtener los escudos con licencia, guardarlos como `apps/web/public/escudos/{CODIGO}.svg` (códigos de `SELECCIONES`) y poner la constante a `true`. Las banderas son de `flag-icons` (MIT; `apps/web/public/banderas/LICENSE`).
+>
+> **Pagos simulados.** Todas las compras en euros de la tienda son de prueba (`compras.simulada = true`, FR-031): no hay pasarela de pago.
 
 ## 5. Comprobaciones y métricas
 

@@ -1,9 +1,9 @@
 import { CLAVES_STATS, type Demarcacion, type Nivel } from '@fbd/domain';
-import { useId, useLayoutEffect, useRef, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
 import { useTextosRasgos } from '../estado/catalogo';
 import { ABREVIATURA_STAT, ETIQUETA_NIVEL } from '../textos/niveles';
+import { nombreSeleccion, rutaBandera, rutaEscudo } from '../textos/selecciones';
 import { Icono } from './Icono';
-import { SiluetaJugador } from './SiluetaJugador';
 import { NombreRecortado } from './NombreRecortado';
 
 /** Datos de una carta (coincide con `JugadorResumen` del protocolo). */
@@ -20,7 +20,22 @@ export interface CartaResumen {
   defectos: string[];
   /** Los seis stats de su demarcación; la carta completa los muestra en el pie. */
   stats?: Record<string, number>;
+  /**
+   * Spec 006 (FR-043 a FR-047a): nombre destacado, selección e imágenes. Opcionales: las cartas guardadas en partidos
+   * anteriores no los tienen y se pintan con los valores genéricos.
+   */
+  nombreCarta?: string;
+  nacionalidad?: string;
+  imagen?: string;
+  imagenBg?: string;
 }
+
+/** Nombre destacado de la carta: `nombreCarta` o, en cartas antiguas, el nombre y el primer apellido. */
+export function nombreCartaDe(j: Pick<CartaResumen, 'nombre' | 'apellidos' | 'nombreCarta'>): string {
+  return j.nombreCarta ?? `${j.nombre} ${j.apellidos.split(' ')[0]}`;
+}
+
+const generica = (carpeta: 'siluetas' | 'fondos', j: CartaResumen) => `/cartas/${carpeta}/${j.demarcacion.toLowerCase()}.svg`;
 
 interface Props {
   jugador: CartaResumen;
@@ -43,7 +58,8 @@ export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick,
   const clases = ['carta', compacta ? 'compacta' : 'completa', `nivel-${jugador.nivel.toLowerCase()}`, seleccionada ? 'seleccionada' : '']
     .filter(Boolean)
     .join(' ');
-  const etiqueta = `${jugador.nombre} ${jugador.apellidos}, media ${Math.round(jugador.media)}, ${ETIQUETA_NIVEL[jugador.nivel]}`;
+  const seleccion = jugador.nacionalidad ? `, ${nombreSeleccion(jugador.nacionalidad)}` : '';
+  const etiqueta = `${jugador.nombre} ${jugador.apellidos}${seleccion}, media ${Math.round(jugador.media)}, ${ETIQUETA_NIVEL[jugador.nivel]}`;
 
   const alPulsarTecla = (e: KeyboardEvent<HTMLDivElement>) => {
     if (!onClick || e.target !== e.currentTarget) return;
@@ -67,6 +83,7 @@ export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick,
       data-defectos={jugador.defectos.length}
       title={compacta ? ETIQUETA_NIVEL[jugador.nivel] : undefined}
     >
+      {!compacta && <ImagenCarta key={jugador.imagenBg ?? jugador.demarcacion} tipo="fondo" ruta={jugador.imagenBg ?? generica('fondos', jugador)} generica={generica('fondos', jugador)} />}
       <div className="carta-cuerpo" {...interactivo}>
         {compacta ? <ContenidoCompacto jugador={jugador} /> : <ContenidoCompleto jugador={jugador} />}
       </div>
@@ -103,10 +120,40 @@ function ContenidoCompacto({ jugador }: { jugador: CartaResumen }) {
   return (
     <>
       <span className="carta-media">{Math.round(jugador.media)}</span>
-      <NombreRecortado texto={`${jugador.nombre} ${jugador.apellidos.split(' ')[0]}`} className="carta-nombre" />
+      {jugador.nacionalidad && <Bandera key={jugador.nacionalidad} codigo={jugador.nacionalidad} />}
+      <NombreRecortado texto={nombreCartaDe(jugador)} className="carta-nombre" />
       <Posiciones posiciones={jugador.posicion} />
     </>
   );
+}
+
+/** Bandera de la selección (FR-043); si no carga, el código en texto (FR-048). */
+function Bandera({ codigo }: { codigo: string }) {
+  const [fallo, setFallo] = useState(false);
+  if (fallo) return <span className="carta-bandera-codigo">{codigo}</span>;
+  return <img className="carta-bandera" src={rutaBandera(codigo)} alt={nombreSeleccion(codigo)} title={nombreSeleccion(codigo)} onError={() => setFallo(true)} />;
+}
+
+/** Escudo de la selección (FR-044): decorativo; si no hay o no carga, no se muestra (FR-048). */
+function Escudo({ codigo }: { codigo: string }) {
+  const [fallo, setFallo] = useState(false);
+  const ruta = rutaEscudo(codigo);
+  if (!ruta || fallo) return null;
+  return <img className="carta-escudo" src={ruta} alt="" onError={() => setFallo(true)} />;
+}
+
+/**
+ * Imagen superior o fondo de acción (R7; FR-045 a FR-048). Un `.svg` se pinta como máscara con el color del nivel
+ * (`currentColor`); si no carga, la máscara queda vacía, sin icono roto. Otra imagen va en un `<img>` que, si falla,
+ * pasa a la genérica de la demarcación.
+ */
+function ImagenCarta({ tipo, ruta, generica: rutaGenerica }: { tipo: 'imagen' | 'fondo'; ruta: string; generica: string }) {
+  const [actual, setActual] = useState(ruta);
+  const clase = tipo === 'imagen' ? 'carta-silueta' : 'carta-fondo-accion';
+  if (actual.endsWith('.svg')) {
+    return <span className={`${clase} mascara`} style={{ '--carta-mascara': `url("${actual}")` } as CSSProperties} aria-hidden="true" />;
+  }
+  return <img className={clase} src={actual} alt="" aria-hidden="true" onError={() => setActual(rutaGenerica)} />;
 }
 
 function ContenidoCompleto({ jugador }: { jugador: CartaResumen }) {
@@ -119,13 +166,21 @@ function ContenidoCompleto({ jugador }: { jugador: CartaResumen }) {
             {Math.round(jugador.media)}
           </span>
           <span className="carta-demarcacion">{jugador.demarcacion}</span>
+          {jugador.nacionalidad && (
+            <span className="carta-procedencia">
+              <Bandera key={jugador.nacionalidad} codigo={jugador.nacionalidad} />
+              <Escudo key={`e-${jugador.nacionalidad}`} codigo={jugador.nacionalidad} />
+            </span>
+          )}
         </div>
-        <SiluetaJugador demarcacion={jugador.demarcacion} className="carta-silueta" />
+        <ImagenCarta key={jugador.imagen ?? jugador.demarcacion} tipo="imagen" ruta={jugador.imagen ?? generica('siluetas', jugador)} generica={generica('siluetas', jugador)} />
       </div>
       <div className="carta-nombre">
-        <span className="carta-nombre-pila">{jugador.nombre}</span>
         <span className="carta-apellidos">
-          <NombreRecortado texto={jugador.apellidos} lineas={2} />
+          <NombreRecortado texto={nombreCartaDe(jugador)} lineas={2} />
+        </span>
+        <span className="carta-nombre-pila">
+          <NombreRecortado texto={`${jugador.nombre} ${jugador.apellidos}`} />
         </span>
       </div>
       <Posiciones posiciones={jugador.posicion} />

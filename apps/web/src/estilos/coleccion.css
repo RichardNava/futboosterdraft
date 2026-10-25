@@ -1,0 +1,379 @@
+/*
+ * Colección y tienda (spec 006, FR-025 a FR-042; contracts/ui.md). Solo tokens de tokens.css; funcionan a 360 px.
+ */
+
+/* ---------- Colección ---------- */
+
+.coleccion-cabecera {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.coleccion-cabecera h1 {
+  grid-column: 1 / -1;
+}
+
+.coleccion-resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-3) var(--espacio-6);
+  margin: 0;
+}
+
+.coleccion-resumen > div {
+  display: grid;
+  gap: var(--espacio-1);
+}
+
+.coleccion-resumen dt {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+.coleccion-resumen dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.coleccion-resumen dd[data-cumple='false'] {
+  color: var(--color-advertencia);
+}
+
+.coleccion-resumen .saldo {
+  padding: 0;
+  min-height: 0;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.coleccion-herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-5);
+}
+
+.coleccion-herramientas label {
+  display: grid;
+  gap: var(--espacio-1);
+  font-size: var(--texto-pequeno);
+  color: var(--color-texto-suave);
+}
+
+.coleccion-busqueda {
+  display: flex;
+  gap: var(--espacio-2);
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.coleccion-busqueda input {
+  flex: 1;
+  min-width: 0;
+}
+
+.coleccion-rejilla {
+  display: grid;
+  grid-template-columns: repeat(var(--columnas, 1), minmax(0, 1fr));
+  gap: var(--espacio-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.coleccion-carta {
+  display: grid;
+  gap: var(--espacio-2);
+  justify-items: center;
+  min-width: 0;
+}
+
+.coleccion-rejilla.tamano-pequeno .coleccion-carta {
+  justify-items: stretch;
+}
+
+.coleccion-carta > .carta {
+  width: 100%;
+}
+
+/* Inactiva: atenuada y con su etiqueta (FR-040). */
+.coleccion-carta.inactiva > .carta {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+}
+
+.coleccion-carta-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  font-size: var(--texto-pequeno);
+}
+
+.interruptor-activa input[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.paginador {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-6);
+  font-variant-numeric: tabular-nums;
+}
+
+.paginador > span {
+  padding-inline: var(--espacio-2);
+}
+
+.ficha-coleccion {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
+  gap: var(--espacio-5);
+  align-items: start;
+}
+
+.ficha-coleccion-datos {
+  display: grid;
+  gap: var(--espacio-3);
+  justify-items: start;
+}
+
+.ficha-coleccion-datos h2,
+.ficha-coleccion-datos p {
+  margin: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 559.98px) {
+  .ficha-coleccion {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .ficha-coleccion-carta {
+    width: min(220px, 100%);
+  }
+}
+
+.historial-fragmentos {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.historial-fragmentos th,
+.historial-fragmentos td {
+  padding: var(--espacio-2);
+  border-bottom: 1px solid var(--color-divisor);
+  text-align: left;
+}
+
+.historial-fragmentos td:last-child {
+  text-align: right;
+  font-weight: 700;
+}
+
+.historial-fragmentos .positivo {
+  color: var(--color-accion);
+}
+
+.historial-fragmentos .negativo {
+  color: var(--color-texto-suave);
+}
+
+/* ---------- Tienda ---------- */
+
+.tienda-cabecera {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.tienda-cabecera h1 {
+  grid-column: 1 / -1;
+}
+
+.tienda-saldo {
+  margin: 0;
+  font-size: var(--texto-subtitulo);
+}
+
+.tienda-producto h2,
+.tienda-producto h3,
+.tienda-producto p {
+  margin: 0;
+}
+
+.tienda-producto {
+  display: grid;
+  gap: var(--espacio-3);
+  align-content: start;
+}
+
+.tienda-sobre {
+  grid-template-columns: minmax(80px, 140px) minmax(0, 1fr);
+  align-items: center;
+}
+
+.tienda-sobre > div {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.tienda-sobre-arte {
+  width: 100%;
+  height: auto;
+}
+
+.tienda-producto .lista-compacta {
+  display: grid;
+  gap: var(--espacio-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tienda-colecciones,
+.tienda-paquetes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--espacio-4);
+}
+
+.tienda-paquetes {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+}
+
+.tienda-producto.adquirida {
+  border-color: var(--color-oro);
+}
+
+/* Sello «Adquirida» (FR-027, FR-028a). */
+.sello-adquirida {
+  justify-self: start;
+  padding: var(--espacio-1) var(--espacio-3);
+  border: 3px solid var(--color-oro);
+  border-radius: var(--radio);
+  color: var(--color-oro);
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  text-transform: uppercase;
+  transform: rotate(-6deg);
+}
+
+.sello-adquirida.pequeno {
+  font-size: var(--texto-subtitulo);
+}
+
+.confirmacion-compra {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--espacio-4);
+  background: var(--color-velo);
+}
+
+.confirmacion-trofeo {
+  width: min(200px, 40vw);
+  filter: var(--sombra-trofeo);
+}
+
+.confirmacion-compra .sello-adquirida {
+  justify-self: center;
+  font-size: var(--titulo-grande);
+}
+
+.confirmacion-compra .saltar {
+  position: absolute;
+  top: var(--espacio-4);
+  right: var(--espacio-4);
+}
+
+.resumen-cartas {
+  max-height: 40vh;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cartas-sobre {
+  position: fixed;
+  inset: var(--espacio-4);
+  z-index: 40;
+  display: grid;
+  gap: var(--espacio-4);
+  align-content: start;
+  overflow-y: auto;
+  background-color: var(--vidrio-fuerte);
+}
+
+.cartas-sobre .rejilla-cartas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carta-boca-abajo > * {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.carta-boca-abajo {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cinta-pago-prueba {
+  margin: 0 0 var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio);
+  background: var(--color-advertencia);
+  color: var(--color-accion-texto);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.pago-precio {
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-weight: 800;
+}
+
+/* Pantalla del campeón: la recompensa de fragmentos (spec 006, FR-019). */
+.pantalla-final .final-recompensa {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: var(--texto-subtitulo);
+}
+
+.pantalla-final .final-recompensa strong {
+  color: var(--color-oro);
+}

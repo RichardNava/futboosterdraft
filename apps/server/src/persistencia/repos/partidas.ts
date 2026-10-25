@@ -16,7 +16,7 @@ export class RepoPartidas {
   constructor(private readonly db: BaseDatos) {}
 
   async crear(
-    datos: { anfitrionId: string; config: ConfigPartida; semilla: string; ahora: number },
+    datos: { anfitrionId: string; config: ConfigPartida; semilla: string; ahora: number; poolCartas?: number[] | null },
     ejecutor: Ejecutor = this.db,
   ): Promise<FilaPartida> {
     const { config } = datos;
@@ -32,6 +32,7 @@ export class RepoPartidas {
         dificultad: config.dificultad,
         tiempos: config.tiempos,
         colecciones: config.colecciones,
+        poolCartas: datos.poolCartas ?? null,
         semilla: datos.semilla,
         // Las partidas nuevas juegan con el catálogo actual (spec 005, FR-036).
         versionCatalogo: VERSION_CATALOGO_ACTUAL,

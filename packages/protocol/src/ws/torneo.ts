@@ -53,6 +53,8 @@ export const MsgTorneoActualizado = z.object({
   /** Eliminado, sin humanos en competición y con el torneo sin terminar (FR-041a). */
   puedeSimularResto: z.boolean().optional(),
   pantallas: z.object({ derrotaVista: z.boolean(), campeonVisto: z.boolean() }).optional(),
+  /** Spec 006 (R14): fragmentos ganados por quien recibe la vista si es el campeón registrado; si no, null. */
+  recompensaFragmentos: z.number().int().nullable().optional(),
 });
 
 /** Fila de las tablas de goleadores y asistentes. */

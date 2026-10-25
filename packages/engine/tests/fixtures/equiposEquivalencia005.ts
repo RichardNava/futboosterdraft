@@ -59,7 +59,9 @@ function sintetico(id: number, posicion: Posicion, valor: number, virtudes: Virt
     virtudes,
     defectos: [],
     nivel: 'Superclase',
-    coleccion: 'Core',
+    nombre_carta: 'Prueba',
+    imagen: '/cartas/siluetas/med.svg',
+    imagen_bg: '/cartas/fondos/med.svg',
   };
 }
 

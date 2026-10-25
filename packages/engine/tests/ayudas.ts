@@ -45,7 +45,9 @@ export function jugador(posicion: Posicion, valor = 80, virtudes: Virtud[] = [])
     virtudes,
     defectos: [],
     nivel: 'Superclase',
-    coleccion: 'Core',
+    nombre_carta: 'Prueba',
+    imagen: '/cartas/siluetas/med.svg',
+    imagen_bg: '/cartas/fondos/med.svg',
   };
 }
 

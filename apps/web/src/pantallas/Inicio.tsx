@@ -100,6 +100,11 @@ export function Inicio() {
               <Link className="boton secundario" to="/mis-partidas">
                 Mis partidas
               </Link>
+              {usuario.tipo === 'registrado' && (
+                <Link className="boton secundario" to="/coleccion">
+                  Colección
+                </Link>
+              )}
               {usuario.tipo === 'registrado' && <BandejaAvisos />}
             </div>
             <div className="inicio-cuenta">

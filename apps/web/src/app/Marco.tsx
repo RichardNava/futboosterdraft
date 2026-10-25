@@ -119,7 +119,15 @@ export function Marco() {
   const cuenta: Enlace = usuario
     ? { a: usuario.tipo === 'registrado' ? '/perfil' : '/cuenta', texto: 'Mi perfil', icono: 'perfil' }
     : { a: '/?acceso=entrar', texto: 'Iniciar sesión', icono: 'perfil' };
-  const enlaces = [...ENLACES, cuenta];
+  // Colección y tienda, solo para registrados (spec 006, FR-025, FR-034).
+  const registrado: Enlace[] =
+    usuario?.tipo === 'registrado'
+      ? [
+          { a: '/coleccion', texto: 'Colección', icono: 'cartas' },
+          { a: '/tienda', texto: 'Tienda', icono: 'tienda' },
+        ]
+      : [];
+  const enlaces = [...ENLACES, ...registrado, cuenta];
   const textoSonido = sonido ? 'Silenciar los sonidos' : 'Activar los sonidos';
   const interruptorSonido = (conTexto: boolean) => (
     <button
