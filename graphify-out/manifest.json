@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/draft.test.ts": {
-    "mtime": 1792484980.743362,
-    "seen": 1792485016.6159978,
-    "ast_hash": "a6266ac9bf65b9094c26e4670e0f5058",
+    "mtime": 1793050649.57596,
+    "seen": 1793050835.7354348,
+    "ast_hash": "b769bf35d6719122ec8ccb651fd714a1",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/finalizar.test.ts": {
@@ -2388,9 +2388,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/simular-resto.test.ts": {
-    "mtime": 1792484980.7493641,
-    "seen": 1792485016.6160161,
-    "ast_hash": "cea415932c20f51a21f98ab2f8002a07",
+    "mtime": 1793050650.78736,
+    "seen": 1793050835.7383597,
+    "ast_hash": "4ba8e7e46d5cdab6a04e76bed3a9b978",
     "semantic_hash": ""
   },
   "apps/server/tests/unit/loteDecisiones.test.ts": {
@@ -4539,126 +4539,6 @@
     "mtime": 1792970330.6997335,
     "seen": 1792971016.7175887,
     "ast_hash": "67225b24142e556f8c87d5b83140ea87",
-    "semantic_hash": ""
-  },
-  "assets/background_1.png": {
-    "mtime": 1792967799.3858423,
-    "seen": 1792971016.7175927,
-    "ast_hash": "85a94563e5b5a1de2f5e6b55252cb07f",
-    "semantic_hash": ""
-  },
-  "assets/background_2.png": {
-    "mtime": 1792967904.3563123,
-    "seen": 1792971016.7175972,
-    "ast_hash": "18605a830b84cdab9cd6712526402e8e",
-    "semantic_hash": ""
-  },
-  "assets/background_3.png": {
-    "mtime": 1792967925.6707916,
-    "seen": 1792971016.7176013,
-    "ast_hash": "4fc4a18a1db3eff5217f9c5d918c8b2e",
-    "semantic_hash": ""
-  },
-  "assets/background_4.png": {
-    "mtime": 1792967939.2828968,
-    "seen": 1792971016.7176049,
-    "ast_hash": "4308cf7914fc76bce7c2abcbdf286b95",
-    "semantic_hash": ""
-  },
-  "assets/background_5.png": {
-    "mtime": 1792967950.040793,
-    "seen": 1792971016.717608,
-    "ast_hash": "1ce8a51bee6bb0ffff0dd5505e82b23f",
-    "semantic_hash": ""
-  },
-  "assets/defensa_bg1.png": {
-    "mtime": 1792966320.034884,
-    "seen": 1792971016.717612,
-    "ast_hash": "3427f5ba84dabb9afea2ecb2ca396487",
-    "semantic_hash": ""
-  },
-  "assets/defensa_bg2.png": {
-    "mtime": 1792966301.353448,
-    "seen": 1792971016.7176156,
-    "ast_hash": "69514c4169e8986f82f1155b7741d250",
-    "semantic_hash": ""
-  },
-  "assets/defensa_bg3.png": {
-    "mtime": 1792966927.6869226,
-    "seen": 1792971016.7176194,
-    "ast_hash": "07da4161ca4e9121a80e5c20ee435724",
-    "semantic_hash": ""
-  },
-  "assets/delantero_bg1.png": {
-    "mtime": 1792966427.0635993,
-    "seen": 1792971016.7176235,
-    "ast_hash": "c3c954afe63a96f7954b62f647b49426",
-    "semantic_hash": ""
-  },
-  "assets/delantero_bg2.png": {
-    "mtime": 1792966438.6297107,
-    "seen": 1792971016.717627,
-    "ast_hash": "0a9fc40eed0c33c0dc9c8b6554cb737a",
-    "semantic_hash": ""
-  },
-  "assets/delantero_bg3.png": {
-    "mtime": 1792966865.529922,
-    "seen": 1792971016.7176304,
-    "ast_hash": "3bdc4689d4ba2fa7771f28e973414b9c",
-    "semantic_hash": ""
-  },
-  "assets/delantero_bg4.png": {
-    "mtime": 1792966965.9537973,
-    "seen": 1792971016.717634,
-    "ast_hash": "41a9598d7c5f8a6b55f2b4e90d42b8c4",
-    "semantic_hash": ""
-  },
-  "assets/duelo_bg.png": {
-    "mtime": 1792967883.5248532,
-    "seen": 1792971016.7176385,
-    "ast_hash": "051d15c562c634ae28f5012e416d91e6",
-    "semantic_hash": ""
-  },
-  "assets/medio_bg1.png": {
-    "mtime": 1792966365.51671,
-    "seen": 1792971016.7176428,
-    "ast_hash": "1505b410ec5b4ba9c6c34bbd13f2510f",
-    "semantic_hash": ""
-  },
-  "assets/medio_bg2.png": {
-    "mtime": 1792966794.896664,
-    "seen": 1792971016.717647,
-    "ast_hash": "2ea5739c57d1edd4325c00e4ce7f17d0",
-    "semantic_hash": ""
-  },
-  "assets/medio_bg3.png": {
-    "mtime": 1792966881.1601906,
-    "seen": 1792971016.717651,
-    "ast_hash": "80ce72364a8a5aef23abbd9428986404",
-    "semantic_hash": ""
-  },
-  "assets/medio_bg4.png": {
-    "mtime": 1792966946.041224,
-    "seen": 1792971016.7176545,
-    "ast_hash": "6034469522137831fd68b5a817565ffd",
-    "semantic_hash": ""
-  },
-  "assets/portero_bg1.png": {
-    "mtime": 1792966283.6120846,
-    "seen": 1792971016.717658,
-    "ast_hash": "5363a2c29a05bc54db17e5f189525f64",
-    "semantic_hash": ""
-  },
-  "assets/portero_bg2.png": {
-    "mtime": 1792966833.1681676,
-    "seen": 1792971016.7176614,
-    "ast_hash": "35220d007d4f947dbab2b0ff49bc652d",
-    "semantic_hash": ""
-  },
-  "assets/portero_bg3.png": {
-    "mtime": 1792966910.459016,
-    "seen": 1792971016.7176647,
-    "ast_hash": "5ed0e3d5d5314d43ceb48b070db45bc6",
     "semantic_hash": ""
   }
 }

@@ -89,12 +89,15 @@ describe('simular el resto del torneo (T099)', () => {
     const u = await crearInvitado(srv.url);
     const p = await crear(u, { modo: 'playoff', numParticipantes: 8 });
     const [t] = await jugarHastaCaer(p.partidaId, [u]);
-    expect(t.campeon).toBeNull();
-    expect(['cuartos', 'semifinal', 'final']).toContain(t.miEliminacion.fase);
-    expect(t.miEliminacion.etiqueta).toBe({ cuartos: 'Cuartos de final', semifinal: 'Semifinales', final: 'Final' }[t.miEliminacion.fase as string]);
-    expect(t.puedeSimularResto).toBe(t.miEliminacion.fase !== 'final');
+    // Aun saboteado puede llegar a la final (o ganarla): entonces ya hay campeón y no queda nada que simular.
+    if (t.campeon) {
+      expect(t.puedeSimularResto).toBe(false);
+      return p.cerrar();
+    }
+    expect(['cuartos', 'semifinal']).toContain(t.miEliminacion.fase);
+    expect(t.miEliminacion.etiqueta).toBe({ cuartos: 'Cuartos de final', semifinal: 'Semifinales' }[t.miEliminacion.fase as string]);
+    expect(t.puedeSimularResto).toBe(true);
     expect(t.pantallas).toEqual({ derrotaVista: false, campeonVisto: false });
-    if (t.miEliminacion.fase === 'final') return p.cerrar();
 
     // Sin la cabecera de idempotencia, 400.
     expect((await peticion(srv.url, `/api/partidas/${p.partidaId}/simular-resto`, { metodo: 'POST', cookie: u.cookie })).estado).toBe(400);
