@@ -294,12 +294,20 @@
   top: 12%;
   left: 8%;
   z-index: -1;
-  width: 84%;
-  height: 70%;
-  object-fit: cover;
+  width: 90%;
+  height: 76%;
+  /* Las fotos son recortes del jugador sobre transparente: enteras dentro del hueco, sin cortarle brazos ni piernas. */
+  object-fit: contain;
+  /* Posicionado desde abajo: centrada, el retrato de la cabecera le tapaba la cabeza. */
+  object-position: center 80%;
   opacity: 0.25;
   color: var(--carta-texto);
   pointer-events: none;
+}
+
+/* Las fotos llegan hasta el pie de la carta para que, pegadas abajo, ocupen todo el alto y no queden cortas. */
+img.carta-fondo-accion {
+  height: 88%;
 }
 
 /*

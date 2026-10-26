@@ -14,10 +14,23 @@ import { Escudo } from '../componentes/arte/Escudo';
 import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
 import { useSaldo } from '../estado/saldo';
 
-/** Capa de atmósfera del estadio (spec 004, FR-041): focos, grano y las líneas de cal del campo en perspectiva. */
-function Ambiente() {
+const FONDOS_PANTALLA = 5;
+/** Fondo de cada vista, sorteado la primera vez que se visita y fijo durante la sesión. */
+const fondoDeVista = new Map<string, string>();
+
+/** Foto de fondo de la ruta: la de duelos es fija; el resto, una de las `background_<n>` al azar por vista. */
+function fondoPantalla(ruta: string): string {
+  const vista = /^\/partidas\/[^/]+\/([^/]+)/.exec(ruta)?.[1] ?? ruta.split('/')[1] ?? '';
+  if (vista === 'duelos') return '/fondos/duelo_bg.webp';
+  if (!fondoDeVista.has(vista)) fondoDeVista.set(vista, `/fondos/background_${Math.floor(Math.random() * FONDOS_PANTALLA) + 1}.webp`);
+  return fondoDeVista.get(vista)!;
+}
+
+/** Capa de atmósfera del estadio (spec 004, FR-041): foto de fondo, focos, grano y las líneas de cal en perspectiva. */
+function Ambiente({ ruta }: { ruta: string }) {
   return (
     <div className="ambiente" aria-hidden="true">
+      <div className="ambiente-foto" style={{ backgroundImage: `url("${fondoPantalla(ruta)}")` }} />
       <svg className="ambiente-cal" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet">
         <rect x="20" y="20" width="960" height="600" />
         <path d="M500 20v600" />
@@ -168,7 +181,7 @@ export function Marco() {
 
   return (
     <>
-      <Ambiente />
+      <Ambiente ruta={ubicacion.pathname} />
       <nav className={compacta ? 'barra-navegacion compacta' : 'barra-navegacion'} aria-label="Navegación principal">
         <Link to="/" className="marca">
           <Escudo className="escudo" tamano={compacta ? 24 : 32} />

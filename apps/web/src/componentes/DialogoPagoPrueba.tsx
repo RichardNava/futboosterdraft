@@ -42,7 +42,7 @@ export function DialogoPagoPrueba({ titulo, resumen, precioCentimos, comprar, on
   };
 
   return (
-    <Dialogo etiquetadoPor="titulo-pago" alEscape={enviando ? undefined : onCancelar}>
+    <Dialogo etiquetadoPor="titulo-pago" alEscape={enviando ? undefined : onCancelar} alPulsarFondo={enviando ? undefined : onCancelar}>
       <p className="cinta-pago-prueba" role="note">
         PAGO DE PRUEBA — no se cobra nada
       </p>

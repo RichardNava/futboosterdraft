@@ -295,6 +295,13 @@ en el historial (quickstart G).
 - [X] T107 [P] Corregir «Tu sobre»: las cartas se quedaban en una franja porque `.carta` (container-type: inline-size) no tiene ancho propio dentro de una celda centrada (`apps/web/src/estilos/coleccion.css`)
 - [X] T108 Eliminar la cuenta desde «Mi perfil»: `DELETE /api/cuenta` (`apps/server/src/auth/rutas.ts`, `GestorPartidas.eliminarCuenta`) y la confirmación en `apps/web/src/pantallas/Perfil.tsx`
 
+## Phase 12: Ronda de ajustes antes del cierre
+
+- [X] T109 [P] «Tu sobre»: botones arriba junto al título y dos filas de cuatro cartas escaladas con `useEscalaRejilla` para caber sin scroll (dos por fila y con scroll por debajo de 720 px) (`apps/web/src/pantallas/Tienda.tsx`, `apps/web/src/estilos/coleccion.css`, `apps/web/tests/e2e/tienda.spec.ts`)
+- [X] T110 [P] Cerrar al pulsar fuera los diálogos de pago de prueba (salvo mientras se envía) y de confirmación de compra (`DialogoPagoPrueba.tsx`, `ConfirmacionCompra.tsx`); la ficha del jugador ya lo hacía
+- [X] T111 [P] Fotos de fondo de las cartas en `apps/web/public/cartas/fondos/<portero|defensa|medio|delantero>_bg<n>.webp` (WebP recortado a 504 px de ancho): `fondoDe` en `CartaJugador.tsx` elige una por demarcación y por id si la carta solo tiene el fondo genérico; se pintan con `object-fit: contain` (`apps/web/tests/unit/fondoCarta.test.ts`)
+- [X] T112 [P] Fondos de pantalla `apps/web/public/fondos/background_<n>.webp` al 30 % en la capa `Ambiente` de `apps/web/src/app/Marco.tsx`, sorteados por vista una vez por sesión; en duelos, `duelo_bg.webp` sustituye al ring (se elimina `RingDuelo.tsx`)
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

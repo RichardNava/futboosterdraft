@@ -15,6 +15,7 @@ import { DialogoPagoPrueba, formatoEuros, formatoFragmentos } from '../component
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { EstadoVacio } from '../componentes/EstadoVacio';
 import { SobreArte } from '../componentes/arte/SobreArte';
+import { useEscalaRejilla } from '../componentes/useEscalaRejilla';
 import { mostrarAviso } from '../estado/avisos';
 import { useSaldo } from '../estado/saldo';
 import { ETIQUETA_NIVEL } from '../textos/niveles';
@@ -235,9 +236,23 @@ export function Tienda() {
 function CartasDelSobre({ resumen, onSeguir }: { resumen: ResumenCompra; onSeguir: () => void }) {
   const [unaAUna, setUnaAUna] = useState(false);
   const [reveladas, setReveladas] = useState(resumen.cartas.length);
+  const mesa = useRef<HTMLDivElement>(null);
+  const rejilla = useRef<HTMLUListElement>(null);
+  // Las dos filas de cuatro, escaladas para caber enteras bajo la cabecera, como en la apertura.
+  useEscalaRejilla(mesa, rejilla, { minima: 0.3, maxima: 1.15, clave: reveladas });
   return (
     <section className="panel cartas-sobre" aria-labelledby="titulo-cartas-sobre">
-      <h2 id="titulo-cartas-sobre">Tu sobre</h2>
+      <div className="cartas-sobre-cabecera">
+        <h2 id="titulo-cartas-sobre">Tu sobre</h2>
+        <div className="acciones">
+          <Link className="boton secundario" to="/coleccion">
+            Ver en mi colección
+          </Link>
+          <button type="button" className="boton-principal" data-principal="" onClick={onSeguir}>
+            Seguir comprando
+          </button>
+        </div>
+      </div>
       <div className="segmentado" role="radiogroup" aria-label="Revelar">
         <button
           type="button"
@@ -262,26 +277,20 @@ function CartasDelSobre({ resumen, onSeguir }: { resumen: ResumenCompra; onSegui
           Todas
         </button>
       </div>
-      <ul className="rejilla-cartas" aria-label="Cartas del sobre">
-        {resumen.cartas.map((c, i) => (
-          <li key={c.id}>
-            {i < reveladas ? (
-              <CartaJugador jugador={c} />
-            ) : (
-              <button type="button" className="carta-boca-abajo" onClick={() => setReveladas(i + 1)} aria-label={`Revelar la carta ${i + 1}`}>
-                <SobreArte />
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
-      <div className="acciones">
-        <Link className="boton secundario" to="/coleccion">
-          Ver en mi colección
-        </Link>
-        <button type="button" className="boton-principal" data-principal="" onClick={onSeguir}>
-          Seguir comprando
-        </button>
+      <div ref={mesa} className="cartas-sobre-mesa">
+        <ul ref={rejilla} className="rejilla-cartas" aria-label="Cartas del sobre">
+          {resumen.cartas.map((c, i) => (
+            <li key={c.id}>
+              {i < reveladas ? (
+                <CartaJugador jugador={c} />
+              ) : (
+                <button type="button" className="carta-boca-abajo" onClick={() => setReveladas(i + 1)} aria-label={`Revelar la carta ${i + 1}`}>
+                  <SobreArte />
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

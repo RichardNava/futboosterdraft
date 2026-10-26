@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/Marco.tsx": {
-    "mtime": 1792963815.936407,
-    "seen": 1792965554.7235901,
-    "ast_hash": "1101148e5d8a54d65a5872a6e94476e7",
+    "mtime": 1792970387.6462207,
+    "seen": 1792971016.5335112,
+    "ast_hash": "a963b2478cefecdc92799297691145b9",
     "semantic_hash": ""
   },
   "apps/web/src/app/Rutas.tsx": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaJugador.tsx": {
-    "mtime": 1792946076.9829965,
-    "seen": 1792947847.5369701,
-    "ast_hash": "089ff41d1b974bd16aa5e3107d1004ae",
+    "mtime": 1792970369.710812,
+    "seen": 1792971016.536381,
+    "ast_hash": "cde070d7aa6d29959c87e915e30a4f33",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/DistintivoBaja.tsx": {
@@ -3168,9 +3168,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Duelos.tsx": {
-    "mtime": 1792946096.8335884,
-    "seen": 1792947847.5444224,
-    "ast_hash": "1d6a2adddd33da5477227e095244adf8",
+    "mtime": 1792970435.1312003,
+    "seen": 1792971016.5452566,
+    "ast_hash": "1206813a4ed66727fef24e93d39285eb",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/defectos.spec.ts": {
@@ -3539,12 +3539,6 @@
     "ast_hash": "6263b630eeee49a4e1be94540ed898e1",
     "semantic_hash": ""
   },
-  "apps/web/src/componentes/arte/RingDuelo.tsx": {
-    "mtime": 1792757964.1295137,
-    "seen": 1792758030.916134,
-    "ast_hash": "5145441ad5cf9c00c4d4c7df6dd0283a",
-    "semantic_hash": ""
-  },
   "apps/server/tests/unit/pasesOcultos.test.ts": {
     "mtime": 1792757964.126392,
     "seen": 1792758030.909716,
@@ -3624,15 +3618,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ConfirmacionCompra.tsx": {
-    "mtime": 1792946482.5407226,
-    "seen": 1792947847.53731,
-    "ast_hash": "347fbbc45af73874e6f44311f371c14d",
+    "mtime": 1792970443.1401503,
+    "seen": 1792971016.5367436,
+    "ast_hash": "e528034ebf85965b52a1faa766e3ad3d",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/DialogoPagoPrueba.tsx": {
-    "mtime": 1792946610.0620844,
-    "seen": 1792947847.5374825,
-    "ast_hash": "5a63a68c205c4cfadb429074164dc93e",
+    "mtime": 1792970443.0192919,
+    "seen": 1792971016.5369234,
+    "ast_hash": "5a62956a127b404cd52935780063d9e0",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/FichaCartaColeccion.tsx": {
@@ -3654,9 +3648,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Tienda.tsx": {
-    "mtime": 1792963846.9398284,
-    "seen": 1792965554.7558029,
-    "ast_hash": "bcc108da5f74eea164dbf26d2474088d",
+    "mtime": 1792970854.1420658,
+    "seen": 1792971016.547328,
+    "ast_hash": "51adab53b8871787259ec07821b2e61b",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/coleccion/filtrado.ts": {
@@ -3678,9 +3672,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/tienda.spec.ts": {
-    "mtime": 1792964604.9148836,
-    "seen": 1792965554.7746017,
-    "ast_hash": "fe816a127cfd1f649c2b5aa9e44377c9",
+    "mtime": 1792970954.0887141,
+    "seen": 1792971016.5560372,
+    "ast_hash": "cbb738ec94572984c6aaf4b5f8488edc",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/filtradoColeccion.test.ts": {
@@ -4176,9 +4170,9 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/contracts/http-api.md": {
-    "mtime": 1792943709.6131759,
-    "seen": 1792947847.606719,
-    "ast_hash": "6796b614f6a180bf801bfa207793863c",
+    "mtime": 1792965577.890527,
+    "seen": 1792971016.7024586,
+    "ast_hash": "a051f320d6ee39a9bbf600fcebdaa4ab",
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/contracts/ui.md": {
@@ -4218,9 +4212,9 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/tasks.md": {
-    "mtime": 1792965485.2401597,
-    "seen": 1792965555.313754,
-    "ast_hash": "c49eeddda8474db5fec41bfdf745778a",
+    "mtime": 1792970969.1855347,
+    "seen": 1792971016.704634,
+    "ast_hash": "74bf72b89ef71900f6f96d780c8d88ec",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/ARG.svg": {
@@ -4419,6 +4413,252 @@
     "mtime": 1792963815.712873,
     "seen": 1792965554.7489903,
     "ast_hash": "1b040f22b5de6638ca4d7fc14ba8c7d3",
+    "semantic_hash": ""
+  },
+  "apps/web/tests/unit/fondoCarta.test.ts": {
+    "mtime": 1792970517.9778147,
+    "seen": 1792971016.5577712,
+    "ast_hash": "d4eae7550f9884eb4e78585708d327bf",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/defensa_bg1.webp": {
+    "mtime": 1792970308.4410808,
+    "seen": 1792971016.713823,
+    "ast_hash": "426887dba6031526893afcd98648c4f8",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/defensa_bg2.webp": {
+    "mtime": 1792970311.3525648,
+    "seen": 1792971016.7138305,
+    "ast_hash": "1be54965b351a43c8cb98b01da4e9f79",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/defensa_bg3.webp": {
+    "mtime": 1792970315.2117658,
+    "seen": 1792971016.7138357,
+    "ast_hash": "a797a76c66f5023737e41dea392a45f3",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/delantero_bg1.webp": {
+    "mtime": 1792970318.7711585,
+    "seen": 1792971016.71433,
+    "ast_hash": "eed9ff47d227694f71e6bcef61ad59b1",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/delantero_bg2.webp": {
+    "mtime": 1792970322.5013258,
+    "seen": 1792971016.7143357,
+    "ast_hash": "b8318feae8a4da30fcffab01af3335f4",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/delantero_bg3.webp": {
+    "mtime": 1792970325.704171,
+    "seen": 1792971016.7143397,
+    "ast_hash": "1e48d3db0a4b5b91f112cd81db24c1b6",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/delantero_bg4.webp": {
+    "mtime": 1792970329.8656185,
+    "seen": 1792971016.7143438,
+    "ast_hash": "f8927354f9a5d5ac63800261027f064c",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/medio_bg1.webp": {
+    "mtime": 1792970334.2958145,
+    "seen": 1792971016.714838,
+    "ast_hash": "95a5947dea73b0827ca0669cbe756a42",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/medio_bg2.webp": {
+    "mtime": 1792970340.0768497,
+    "seen": 1792971016.7148433,
+    "ast_hash": "988e11cd9355e506b13bb44a0173b6b6",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/medio_bg3.webp": {
+    "mtime": 1792970343.7008715,
+    "seen": 1792971016.7148476,
+    "ast_hash": "4831cdbec5d20e663b8b94ca9206d5d7",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/medio_bg4.webp": {
+    "mtime": 1792970346.7575943,
+    "seen": 1792971016.7148519,
+    "ast_hash": "a8b467131a87ee31af1397dac53999e1",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/portero_bg1.webp": {
+    "mtime": 1792970350.2369418,
+    "seen": 1792971016.7152517,
+    "ast_hash": "2e2b4af145f2aa7469118be425c11a6d",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/portero_bg2.webp": {
+    "mtime": 1792970353.5842865,
+    "seen": 1792971016.7152562,
+    "ast_hash": "0f6d60b17cedca4440c037dfb5d4fed8",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cartas/fondos/portero_bg3.webp": {
+    "mtime": 1792970357.418932,
+    "seen": 1792971016.7152598,
+    "ast_hash": "47ae5a7b26cb72f95c49bedd193d088c",
+    "semantic_hash": ""
+  },
+  "apps/web/public/fondos/background_1.webp": {
+    "mtime": 1792970302.8943856,
+    "seen": 1792971016.7175663,
+    "ast_hash": "4ed7de56cd6e0af7abe239be35d57e6f",
+    "semantic_hash": ""
+  },
+  "apps/web/public/fondos/background_2.webp": {
+    "mtime": 1792970303.399961,
+    "seen": 1792971016.7175715,
+    "ast_hash": "3341917272bc4ef373ee58a91e4006fa",
+    "semantic_hash": ""
+  },
+  "apps/web/public/fondos/background_3.webp": {
+    "mtime": 1792970303.8299541,
+    "seen": 1792971016.7175758,
+    "ast_hash": "d56407a808f4facbb481cf9d25e9439f",
+    "semantic_hash": ""
+  },
+  "apps/web/public/fondos/background_4.webp": {
+    "mtime": 1792970304.2779462,
+    "seen": 1792971016.7175794,
+    "ast_hash": "22ba80bac30b360a619dba88af87fc62",
+    "semantic_hash": ""
+  },
+  "apps/web/public/fondos/background_5.webp": {
+    "mtime": 1792970304.832726,
+    "seen": 1792971016.7175837,
+    "ast_hash": "4c2ccb3f29dc399a684fba461db0c8ae",
+    "semantic_hash": ""
+  },
+  "apps/web/public/fondos/duelo_bg.webp": {
+    "mtime": 1792970330.6997335,
+    "seen": 1792971016.7175887,
+    "ast_hash": "67225b24142e556f8c87d5b83140ea87",
+    "semantic_hash": ""
+  },
+  "assets/background_1.png": {
+    "mtime": 1792967799.3858423,
+    "seen": 1792971016.7175927,
+    "ast_hash": "85a94563e5b5a1de2f5e6b55252cb07f",
+    "semantic_hash": ""
+  },
+  "assets/background_2.png": {
+    "mtime": 1792967904.3563123,
+    "seen": 1792971016.7175972,
+    "ast_hash": "18605a830b84cdab9cd6712526402e8e",
+    "semantic_hash": ""
+  },
+  "assets/background_3.png": {
+    "mtime": 1792967925.6707916,
+    "seen": 1792971016.7176013,
+    "ast_hash": "4fc4a18a1db3eff5217f9c5d918c8b2e",
+    "semantic_hash": ""
+  },
+  "assets/background_4.png": {
+    "mtime": 1792967939.2828968,
+    "seen": 1792971016.7176049,
+    "ast_hash": "4308cf7914fc76bce7c2abcbdf286b95",
+    "semantic_hash": ""
+  },
+  "assets/background_5.png": {
+    "mtime": 1792967950.040793,
+    "seen": 1792971016.717608,
+    "ast_hash": "1ce8a51bee6bb0ffff0dd5505e82b23f",
+    "semantic_hash": ""
+  },
+  "assets/defensa_bg1.png": {
+    "mtime": 1792966320.034884,
+    "seen": 1792971016.717612,
+    "ast_hash": "3427f5ba84dabb9afea2ecb2ca396487",
+    "semantic_hash": ""
+  },
+  "assets/defensa_bg2.png": {
+    "mtime": 1792966301.353448,
+    "seen": 1792971016.7176156,
+    "ast_hash": "69514c4169e8986f82f1155b7741d250",
+    "semantic_hash": ""
+  },
+  "assets/defensa_bg3.png": {
+    "mtime": 1792966927.6869226,
+    "seen": 1792971016.7176194,
+    "ast_hash": "07da4161ca4e9121a80e5c20ee435724",
+    "semantic_hash": ""
+  },
+  "assets/delantero_bg1.png": {
+    "mtime": 1792966427.0635993,
+    "seen": 1792971016.7176235,
+    "ast_hash": "c3c954afe63a96f7954b62f647b49426",
+    "semantic_hash": ""
+  },
+  "assets/delantero_bg2.png": {
+    "mtime": 1792966438.6297107,
+    "seen": 1792971016.717627,
+    "ast_hash": "0a9fc40eed0c33c0dc9c8b6554cb737a",
+    "semantic_hash": ""
+  },
+  "assets/delantero_bg3.png": {
+    "mtime": 1792966865.529922,
+    "seen": 1792971016.7176304,
+    "ast_hash": "3bdc4689d4ba2fa7771f28e973414b9c",
+    "semantic_hash": ""
+  },
+  "assets/delantero_bg4.png": {
+    "mtime": 1792966965.9537973,
+    "seen": 1792971016.717634,
+    "ast_hash": "41a9598d7c5f8a6b55f2b4e90d42b8c4",
+    "semantic_hash": ""
+  },
+  "assets/duelo_bg.png": {
+    "mtime": 1792967883.5248532,
+    "seen": 1792971016.7176385,
+    "ast_hash": "051d15c562c634ae28f5012e416d91e6",
+    "semantic_hash": ""
+  },
+  "assets/medio_bg1.png": {
+    "mtime": 1792966365.51671,
+    "seen": 1792971016.7176428,
+    "ast_hash": "1505b410ec5b4ba9c6c34bbd13f2510f",
+    "semantic_hash": ""
+  },
+  "assets/medio_bg2.png": {
+    "mtime": 1792966794.896664,
+    "seen": 1792971016.717647,
+    "ast_hash": "2ea5739c57d1edd4325c00e4ce7f17d0",
+    "semantic_hash": ""
+  },
+  "assets/medio_bg3.png": {
+    "mtime": 1792966881.1601906,
+    "seen": 1792971016.717651,
+    "ast_hash": "80ce72364a8a5aef23abbd9428986404",
+    "semantic_hash": ""
+  },
+  "assets/medio_bg4.png": {
+    "mtime": 1792966946.041224,
+    "seen": 1792971016.7176545,
+    "ast_hash": "6034469522137831fd68b5a817565ffd",
+    "semantic_hash": ""
+  },
+  "assets/portero_bg1.png": {
+    "mtime": 1792966283.6120846,
+    "seen": 1792971016.717658,
+    "ast_hash": "5363a2c29a05bc54db17e5f189525f64",
+    "semantic_hash": ""
+  },
+  "assets/portero_bg2.png": {
+    "mtime": 1792966833.1681676,
+    "seen": 1792971016.7176614,
+    "ast_hash": "35220d007d4f947dbab2b0ff49bc652d",
+    "semantic_hash": ""
+  },
+  "assets/portero_bg3.png": {
+    "mtime": 1792966910.459016,
+    "seen": 1792971016.7176647,
+    "ast_hash": "5ed0e3d5d5314d43ceb48b070db45bc6",
     "semantic_hash": ""
   }
 }

@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
-import { RingDuelo } from '../componentes/arte/RingDuelo';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { CartaJugador, type CartaResumen, nombreCartaDe } from '../componentes/CartaJugador';
 import { PantallaCargando } from '../componentes/Esqueleto';
@@ -227,7 +226,6 @@ export function Duelos() {
 
       {actual ? (
         <section className="duelo-escenario" aria-label={`Duelo ${ahora.indice + 1} de ${n}: ${etiqueta(actual.casillaId)}`}>
-          <RingDuelo className="duelo-ring" />
           <header className="duelo-titulo">
             <p className="duelo-puesto">
               {etiqueta(actual.casillaId)} · {ahora.indice + 1}/{n}

@@ -37,6 +37,24 @@ export function nombreCartaDe(j: Pick<CartaResumen, 'nombre' | 'apellidos' | 'no
 
 const generica = (carpeta: 'siluetas' | 'fondos', j: CartaResumen) => `/cartas/${carpeta}/${j.demarcacion.toLowerCase()}.svg`;
 
+/** Fotos de fondo por demarcación (`public/cartas/fondos/<nombre>_bg<n>.webp`). */
+const FOTOS_FONDO: Record<Demarcacion, [nombre: string, cantidad: number]> = {
+  POR: ['portero', 3],
+  DEF: ['defensa', 3],
+  MED: ['medio', 4],
+  DEL: ['delantero', 4],
+};
+
+/**
+ * Fondo de acción: el propio de la carta o, si solo tiene el genérico de su demarcación, una de las fotos de esa
+ * demarcación elegida al azar por su id (la misma carta lleva siempre la misma).
+ */
+export function fondoDe(j: CartaResumen): string {
+  if (j.imagenBg && j.imagenBg !== generica('fondos', j)) return j.imagenBg;
+  const [nombre, cantidad] = FOTOS_FONDO[j.demarcacion];
+  return `/cartas/fondos/${nombre}_bg${(Math.imul(j.id, 2654435761) >>> 0) % cantidad + 1}.webp`;
+}
+
 interface Props {
   jugador: CartaResumen;
   /** Versión para listas largas: media, nombre, posiciones y nivel por el color del marco (FR-005). */
@@ -83,7 +101,7 @@ export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick,
       data-defectos={jugador.defectos.length}
       title={compacta ? ETIQUETA_NIVEL[jugador.nivel] : undefined}
     >
-      {!compacta && <ImagenCarta key={jugador.imagenBg ?? jugador.demarcacion} tipo="fondo" ruta={jugador.imagenBg ?? generica('fondos', jugador)} generica={generica('fondos', jugador)} />}
+      {!compacta && <ImagenCarta key={fondoDe(jugador)} tipo="fondo" ruta={fondoDe(jugador)} generica={generica('fondos', jugador)} />}
       <div className="carta-cuerpo" {...interactivo}>
         {compacta ? <ContenidoCompacto jugador={jugador} /> : <ContenidoCompleto jugador={jugador} />}
       </div>

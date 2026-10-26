@@ -36,6 +36,12 @@ test('sobre con fragmentos desde «Colección»: apertura, 8 cartas nuevas y sal
   await expect(sobre.locator('.carta.completa')).toHaveCount(8);
   // Cada carta ocupa su celda: antes se quedaba en una franja de ancho casi nulo.
   expect((await sobre.locator('.carta.completa').first().boundingBox())!.width).toBeGreaterThan(120);
+  // Dos filas de cuatro que caben sin scroll.
+  const filas = await sobre.locator('.carta.completa').evaluateAll((cs) => cs.map((c) => Math.round(c.getBoundingClientRect().top)));
+  expect(new Set(filas.slice(0, 4)).size).toBe(1);
+  expect(new Set(filas.slice(4)).size).toBe(1);
+  expect(filas[4]).toBeGreaterThan(filas[0]!);
+  expect(await sobre.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
   const nombre = await sobre.locator('.carta.completa .carta-apellidos').first().innerText();
   await sobre.getByRole('link', { name: 'Ver en mi colección' }).click();
   await expect(page.locator('.coleccion-resumen')).toContainText('308');

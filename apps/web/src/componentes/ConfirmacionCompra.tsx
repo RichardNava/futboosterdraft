@@ -55,7 +55,7 @@ export function ConfirmacionCompra({ nombre, resumen, onSeguir }: Props) {
   }
 
   return (
-    <Dialogo etiquetadoPor="titulo-confirmacion" alEscape={onSeguir}>
+    <Dialogo etiquetadoPor="titulo-confirmacion" alEscape={onSeguir} alPulsarFondo={onSeguir}>
       <h2 id="titulo-confirmacion">{nombre}: adquirida</h2>
       <p>
         {resumen.cartas.length} cartas nuevas

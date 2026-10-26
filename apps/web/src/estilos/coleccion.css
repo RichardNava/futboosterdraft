@@ -337,18 +337,55 @@
   inset: var(--espacio-4);
   z-index: 40;
   display: grid;
+  /* Cabecera y selector arriba; el resto, para las cartas. */
+  grid-template-rows: auto auto minmax(0, 1fr);
   gap: var(--espacio-4);
-  align-content: start;
   overflow-y: auto;
   background-color: var(--vidrio-fuerte);
 }
 
+/* Título y botones en una fila arriba: se usan sin bajar hasta el final de las cartas. */
+.cartas-sobre-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.cartas-sobre-cabecera h2,
+.cartas-sobre-cabecera .acciones {
+  margin: 0;
+}
+
+.cartas-sobre-mesa {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .cartas-sobre .rejilla-cartas {
+  /* Dos filas de cuatro a tamaño natural; `useEscalaRejilla` las amplía o reduce para que quepan sin scroll. */
+  grid-template-columns: repeat(4, 200px);
   /* La carta (container-type: inline-size) no tiene ancho propio: centrada en su celda se quedaba en una franja. */
   justify-items: stretch;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Por debajo de 720 px no se escala (como en la apertura): dos por fila y se baja con scroll. */
+@media (max-width: 719.98px) {
+  .cartas-sobre-mesa {
+    overflow-y: auto;
+  }
+
+  .cartas-sobre .rejilla-cartas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-self: start;
+    width: 100%;
+  }
 }
 
 .carta-boca-abajo > * {
