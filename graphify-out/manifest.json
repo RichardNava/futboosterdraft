@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/partido-rapido.test.ts": {
-    "mtime": 1792484980.7483656,
-    "seen": 1792485016.616013,
-    "ast_hash": "f518fc3efd49eb71cff3bf5525da83fb",
+    "mtime": 1793051921.4076629,
+    "seen": 1793052029.7683482,
+    "ast_hash": "95c5f11ae58eaeb064469cb9c2790e73",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/reproduccion.test.ts": {
