@@ -12,6 +12,9 @@ import { GestorPartidas } from './actores/gestor';
 import { crearAuth, type Auth } from './auth/auth';
 import { construirApp } from './http/app';
 import { registrarRutasCatalogo } from './http/catalogo';
+import { registrarRutasColeccion } from './http/coleccion';
+import { registrarRutasTienda } from './http/tienda';
+import { ServicioEconomia } from './economia/servicio';
 import { errores } from './http/errores';
 import { registrarRutasAlineacion } from './http/alineacion';
 import { registrarRutasPartidas } from './http/partidas';
@@ -69,6 +72,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   const peticiones = config.peticiones ?? new AlmacenPeticionesBD(config.db);
   const catalogo = config.catalogo ?? (await Catalogo.cargar(config.db));
   const temporizadores = new Temporizadores(config.reloj);
+  const economia = new ServicioEconomia(config.db, catalogo);
 
   // El gestor se crea después de la autenticación y la pasarela, que lo usan a través de esta referencia.
   const ref: { gestor?: GestorPartidas } = {};
@@ -105,6 +109,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     repoVisionados: new RepoVisionados(config.db),
     repoPerfiles: new RepoPerfiles(config.db),
     catalogo,
+    economia,
     reloj: config.reloj,
     temporizadores,
     difusor: pasarela,
@@ -188,7 +193,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     logger,
     metricas,
     peticiones,
-    opcionesAuth: { alCerrarSesion: (u) => gestor.alCerrarSesion(u) },
+    opcionesAuth: { alCerrarSesion: (u) => gestor.alCerrarSesion(u), alEliminarCuenta: (u) => gestor.eliminarCuenta(u.id) },
     ...(config.limites?.http ? { limiteHttp: config.limites.http } : {}),
   });
   pasarela.registrarRuta(app);
@@ -198,6 +203,8 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   registrarRutasPartidos(app, auth, gestor);
   registrarRutasTorneo(app, auth, gestor, { avisos });
   registrarRutasPerfil(app, auth, gestor.servicios);
+  registrarRutasColeccion(app, auth, economia);
+  registrarRutasTienda(app, auth, economia);
 
   // Reloj simulado en desarrollo (quickstart, escenario E): permite adelantar plazos.
   if (config.reloj instanceof RelojFalso) {

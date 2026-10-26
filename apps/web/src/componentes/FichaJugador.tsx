@@ -64,7 +64,7 @@ export function FichaJugador({ jugadorId, rasgos, onCerrar }: Props) {
             </h2>
             {/* La misma carta que en el draft y la plantilla (FR-005). */}
             <div className="ficha-carta">
-              <CartaJugador jugador={{ ...jugador, stats: jugador.stats as unknown as Record<string, number> }} />
+              <CartaJugador jugador={{ ...jugador, nombreCarta: jugador.nombre_carta, imagenBg: jugador.imagen_bg, stats: jugador.stats as unknown as Record<string, number> }} />
             </div>
             <p className="ficha-meta">
               {ETIQUETA_DEMARCACION[jugador.demarcacion]} · <span className={`texto-nivel nivel-${jugador.nivel.toLowerCase()}`}>{ETIQUETA_NIVEL[jugador.nivel]}</span> ·{' '}

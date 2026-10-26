@@ -25,7 +25,9 @@ function jugador(posicion: Posicion): Jugador {
     virtudes: [],
     defectos: [],
     nivel: 'Superclase',
-    coleccion: 'Core',
+    nombre_carta: 'Prueba',
+    imagen: '/cartas/siluetas/med.svg',
+    imagen_bg: '/cartas/fondos/med.svg',
   };
 }
 const plantilla = (['POR', 'LD', 'DCD', 'DCI', 'LI', 'ED', 'MC', 'MC', 'EI', 'DC', 'SD', 'POR', 'DCI', 'MC', 'DC', 'EI', 'MCO', 'LD'] as Posicion[]).map(jugador);

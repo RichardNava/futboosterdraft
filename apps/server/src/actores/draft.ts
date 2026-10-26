@@ -35,7 +35,8 @@ export async function iniciarDraft(c: ControladorPartida, ctx: ContextoComando, 
   const { reloj, repoDraft, repoPartidas, db } = c.servicios;
   const catalogo = c.catalogo;
   const ahora = reloj.ahora();
-  const pool = catalogo.pool(c.partida.colecciones);
+  // La foto de la colección activa del anfitrión o, si no hay, Core (spec 006, R12; FR-016: los cupos no cambian).
+  const pool = catalogo.poolPartida(c.partida);
   const tiempos = c.partida.tiempos as { turnoDraftS: number };
 
   const nuevas = asientos.map((participantes, indice) => {

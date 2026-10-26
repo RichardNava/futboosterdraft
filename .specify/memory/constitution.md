@@ -1,11 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.4 → 1.1.0 (MINOR: se añade la sección "Flujo de trabajo de desarrollo" con una
-  regla nueva sobre las operaciones de git que pueden ejecutar los agentes; ningún principio se
-  elimina ni se redefine)
+- Version change: 1.1.0 → 1.1.1 (PATCH: «Colecciones adicionales a "Core"» pasa de «Decisiones aún
+  pendientes» a «Decisiones resueltas», con la referencia a `specs/006-preparacion-bd-cartas/`; ningún
+  principio cambia)
 - Principios modificados: ninguno
-- Secciones añadidas: "Flujo de trabajo de desarrollo" (los agentes de IA NO ejecutan `git commit`
-  ni `git push`; solo los sugieren con el comando listo para copiar)
+- Secciones añadidas: ninguna
 - Secciones eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
 - TODOs pendientes: añadir a "Decisiones resueltas" la referencia a `specs/003-mejoras-ux-simulacion/`
@@ -231,13 +230,19 @@ Resueltas para el MVP en `specs/001-draft-manager-mvp/`:
 - **Tecnología**: pila tecnológica, persistencia y protocolo cliente-servidor → `plan.md` y
   `research.md`.
 
+Resuelta en `specs/006-preparacion-bd-cartas/`:
+
+- **Colecciones adicionales a "Core"**: pertenencia de las cartas a varias colecciones, colección propia
+  y colección activa con su mínimo, obtención jugando (fragmentos por torneos ganados y por
+  desfragmentar), compra de sobres, colecciones y fragmentos (pago simulado en el MVP) y efecto en los
+  sobres (el pool del torneo es la colección activa del anfitrión, con los mismos cupos) → `spec.md`
+  (FR-001 a FR-033), `plan.md` y `research.md` (R1 a R18).
+
 ### Decisiones aún pendientes
 
 Lo siguiente NO está aprobado como requisito y DEBE concretarse en una especificación propia antes de
 implementarse:
 
-- Colecciones adicionales a "Core": mecanismos de obtención jugando, compra con dinero real y su
-  efecto en la composición de los sobres. Siempre dentro de los límites del Principio VII.
 - Modos de juego adicionales a liga, playoff y mixto.
 
 ## Flujo de trabajo de desarrollo
@@ -280,4 +285,4 @@ persona, que revisa los cambios antes de confirmarlos.
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.1.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-20
+**Version**: 1.1.1 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-25

@@ -29,6 +29,7 @@ import {
   type Posicion,
   type Virtud,
 } from '@fbd/domain';
+import { imagenesGenericas, nombreCarta } from './migrarCartas006';
 
 export { DISTRIBUCION_CORE } from '@fbd/domain';
 
@@ -136,8 +137,8 @@ const NOMBRES = [
 const SILABAS_INICIO = ['Bar', 'Cal', 'Dor', 'Es', 'Fer', 'Gal', 'Hor', 'Ib', 'Jar', 'Lan', 'Mar', 'Nor', 'Or', 'Pal', 'Quin', 'Ros', 'Sal', 'Tor', 'Ur', 'Val', 'Zar', 'Bel', 'Cor', 'Del', 'Mon'];
 const SILABAS_MEDIO = ['a', 'e', 'i', 'o', 'ar', 'en', 'il', 'or', 'u', 'an', 'el', 'ir'];
 const SILABAS_FIN = ['da', 'des', 'go', 'lla', 'mos', 'nez', 'ral', 'res', 'rio', 'sa', 'tes', 'via', 'zal', 'dez', 'nas', 'ver', 'mar', 'tal'];
-// Códigos ISO 3166-1 alfa-3.
-const NACIONALIDADES = ['ESP', 'ARG', 'BRA', 'FRA', 'ITA', 'PRT', 'DEU', 'GBR', 'URY', 'COL', 'MEX', 'NLD', 'BEL', 'HRV', 'SEN', 'NGA', 'MAR', 'JPN', 'USA', 'CHL'];
+// Códigos de `SELECCIONES` (spec 006: las naciones del Reino Unido van por separado).
+const NACIONALIDADES = ['ESP', 'ARG', 'BRA', 'FRA', 'ITA', 'PRT', 'DEU', 'ENG', 'URY', 'COL', 'MEX', 'NLD', 'BEL', 'HRV', 'SEN', 'NGA', 'MAR', 'JPN', 'USA', 'CHL'];
 const ALTURA: Readonly<Record<Demarcacion, [number, number]>> = {
   POR: [183, 200],
   DEF: [172, 195],
@@ -211,48 +212,64 @@ function generarPosiciones(rng: Rng, demarcacion: Demarcacion): Posicion[] {
   return posiciones;
 }
 
+export interface OpcionesJugador {
+  id: number;
+  demarcacion: Demarcacion;
+  nivel: Nivel;
+  /** Si falta, se sortea entre `NACIONALIDADES`. */
+  nacionalidad?: string;
+  /** Nombres completos ya usados: el generador no los repite y añade el suyo. */
+  nombresUsados: Set<string>;
+}
+
+/** Genera una carta válida (stats, media, nivel y virtudes con las reglas del catálogo); la reutiliza la spec 006. */
+export function generarJugador(rng: Rng, o: OpcionesJugador): Jugador {
+  const { id, demarcacion, nivel } = o;
+  let nombre: string;
+  let apellidos: string;
+  do {
+    nombre = rng.elegir(NOMBRES);
+    apellidos = `${apellido(rng)} ${apellido(rng)}`;
+  } while (o.nombresUsados.has(`${nombre} ${apellidos}`));
+  o.nombresUsados.add(`${nombre} ${apellidos}`);
+
+  const posicion = generarPosiciones(rng, demarcacion);
+  const stats = generarStats(rng, demarcacion, posicion[0]!, nivel);
+  const media = Math.round(calcularMedia({ demarcacion, stats }) * 100) / 100;
+  const anio = rng.entero(1986, 2006);
+  const mes = String(rng.entero(1, 12)).padStart(2, '0');
+  const dia = String(rng.entero(1, 28)).padStart(2, '0');
+  const [altMin, altMax] = ALTURA[demarcacion];
+  const nacionalidad = o.nacionalidad ?? rng.elegir(NACIONALIDADES);
+  const base = { demarcacion, posicion, nivel };
+  return {
+    id,
+    nombre,
+    apellidos,
+    nombre_carta: nombreCarta(nombre, apellidos),
+    nacionalidad,
+    fecha_nacimiento: `${anio}-${mes}-${dia}`,
+    altura: rng.entero(altMin, altMax),
+    demarcacion,
+    posicion,
+    historia: `${nombre} ${apellidos.split(' ')[0]} (${nacionalidad}) es ${NIVELES_TEXTO[nivel]}. Destaca como ${posicion[0]}.`,
+    stats,
+    media,
+    virtudes: generarVirtudes(rng, base),
+    defectos: [],
+    nivel,
+    ...imagenesGenericas(demarcacion),
+  };
+}
+
 export function generarCore(semillaTexto = 'futboosterdraft-core-v1'): Jugador[] {
   const rng = new Rng(semillaDesdeTexto(semillaTexto));
   const jugadores: Jugador[] = [];
   const nombresUsados = new Set<string>();
-  let id = 1;
   for (const demarcacion of ['POR', 'DEF', 'MED', 'DEL'] as const) {
     for (const nivel of ['Superclase', 'Epico', 'Legendario', 'GOAT'] as const) {
       for (let n = 0; n < DISTRIBUCION_CORE[demarcacion][nivel]; n++) {
-        let nombre: string;
-        let apellidos: string;
-        do {
-          nombre = rng.elegir(NOMBRES);
-          apellidos = `${apellido(rng)} ${apellido(rng)}`;
-        } while (nombresUsados.has(`${nombre} ${apellidos}`));
-        nombresUsados.add(`${nombre} ${apellidos}`);
-
-        const posicion = generarPosiciones(rng, demarcacion);
-        const stats = generarStats(rng, demarcacion, posicion[0]!, nivel);
-        const media = Math.round(calcularMedia({ demarcacion, stats }) * 100) / 100;
-        const anio = rng.entero(1986, 2006);
-        const mes = String(rng.entero(1, 12)).padStart(2, '0');
-        const dia = String(rng.entero(1, 28)).padStart(2, '0');
-        const [altMin, altMax] = ALTURA[demarcacion];
-        const nacionalidad = rng.elegir(NACIONALIDADES);
-        const base = { demarcacion, posicion, nivel };
-        jugadores.push({
-          id: id++,
-          nombre,
-          apellidos,
-          nacionalidad,
-          fecha_nacimiento: `${anio}-${mes}-${dia}`,
-          altura: rng.entero(altMin, altMax),
-          demarcacion,
-          posicion,
-          historia: `${nombre} ${apellidos.split(' ')[0]} (${nacionalidad}) es ${NIVELES_TEXTO[nivel]}. Destaca como ${posicion[0]}.`,
-          stats,
-          media,
-          virtudes: generarVirtudes(rng, base),
-          defectos: [],
-          nivel,
-          coleccion: 'Core',
-        });
+        jugadores.push(generarJugador(rng, { id: jugadores.length + 1, demarcacion, nivel, nombresUsados }));
       }
     }
   }
@@ -273,7 +290,7 @@ function principal(): void {
     console.error(errores.slice(0, 20));
     throw new Error(`La colección generada tiene ${errores.length} errores`);
   }
-  const fichero = { coleccion: 'Core', version: '1.0.0', jugadores };
+  const fichero = { version: '1.0.0', jugadores };
   writeFileSync(salida, JSON.stringify(fichero, null, 2) + '\n', 'utf-8');
   console.log(`Escritos ${jugadores.length} jugadores en ${salida}`);
 }

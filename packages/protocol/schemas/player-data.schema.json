@@ -1,17 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://futboosterdraft/schemas/player-data.schema.json",
-  "title": "Catálogo de jugadores de una colección",
-  "description": "Formato del fichero de seed (p. ej. data/core.json). Fuente única en código: packages/protocol/schemas/player-data.schema.json. Las reglas que JSON Schema no expresa bien se validan además en packages/domain (FR-024): media = promedio de stats (±0,01), virtudes de MED solo para DEF con CI/CD (FR-023), posiciones de un POR solo 'POR', ids únicos en la colección.",
+  "title": "Fichero de cartas del catálogo",
+  "description": "Formato del fichero de seed (p. ej. data/core.json, data/cartas-prueba.json). La pertenencia a colecciones va en colecciones.schema.json (spec 006). Fuente única en código: packages/protocol/schemas/player-data.schema.json. Las reglas que JSON Schema no expresa bien se validan además en packages/domain (FR-024): media = promedio de stats (±0,01), virtudes de MED solo para DEF con CI/CD (FR-023), posiciones de un POR solo 'POR', ids únicos en la colección.",
   "type": "object",
-  "required": ["coleccion", "version", "jugadores"],
+  "required": ["version", "jugadores"],
   "additionalProperties": false,
   "properties": {
-    "coleccion": { "type": "string", "const": "Core" },
     "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
-    "jugadores": { "type": "array", "minItems": 192, "items": { "$ref": "#/$defs/jugador" } }
+    "jugadores": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/jugador" } }
   },
   "$defs": {
+    "nacionalidad": { "enum": ["ARG", "BEL", "BRA", "CHL", "COL", "DEU", "ENG", "ESP", "FRA", "HRV", "ITA", "JPN", "MAR", "MEX", "NGA", "NIR", "NLD", "PRT", "SCO", "SEN", "URY", "USA", "WAL"] },
+    "rutaImagen": { "type": "string", "pattern": "^/cartas/[a-z0-9/_-]+\\.(svg|png|webp|jpg)$" },
     "stat": { "type": "integer", "minimum": 1, "maximum": 99 },
     "posicion": { "enum": ["POR", "LI", "LD", "DCI", "DCD", "CI", "CD", "MD", "MC", "MII", "MID", "MCO", "DC", "SD", "EI", "ED"] },
     "virtudGenerica": { "enum": ["Incansable", "Motivador", "LanzadorFaltas", "LanzadorPenalties", "Aura", "Capitania", "Filigranas", "FortalezaMental", "Intimidante", "Elegante", "Presionador", "RecuperadorTrasPerdida", "Carismatico", "Potente", "Robusto", "DeAcero", "Versatil", "FairPlayer", "Revulsivo"] },
@@ -55,12 +56,13 @@
     "jugador": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "nombre", "apellidos", "nacionalidad", "fecha_nacimiento", "altura", "demarcacion", "posicion", "historia", "stats", "media", "virtudes", "defectos", "nivel", "coleccion"],
+      "required": ["id", "nombre", "apellidos", "nacionalidad", "fecha_nacimiento", "altura", "demarcacion", "posicion", "historia", "stats", "media", "virtudes", "defectos", "nivel", "nombre_carta", "imagen", "imagen_bg"],
       "properties": {
         "id": { "type": "integer", "minimum": 1 },
         "nombre": { "type": "string", "minLength": 1 },
         "apellidos": { "type": "string", "minLength": 1 },
-        "nacionalidad": { "type": "string", "minLength": 2 },
+        "nombre_carta": { "type": "string", "minLength": 1, "maxLength": 24 },
+        "nacionalidad": { "$ref": "#/$defs/nacionalidad" },
         "fecha_nacimiento": { "type": "string", "format": "date" },
         "altura": { "type": "integer", "minimum": 150, "maximum": 215 },
         "demarcacion": { "enum": ["POR", "DEF", "MED", "DEL"] },
@@ -71,7 +73,8 @@
         "virtudes": { "type": "array", "uniqueItems": true, "maxItems": 4, "items": { "type": "string" } },
         "defectos": { "type": "array", "uniqueItems": true, "minItems": 0, "maxItems": 2, "items": { "$ref": "#/$defs/defecto" } },
         "nivel": { "enum": ["Superclase", "Epico", "Legendario", "GOAT"] },
-        "coleccion": { "type": "string", "const": "Core" }
+        "imagen": { "$ref": "#/$defs/rutaImagen" },
+        "imagen_bg": { "$ref": "#/$defs/rutaImagen" }
       },
       "allOf": [
         { "if": { "properties": { "nivel": { "const": "Superclase" } } }, "then": { "properties": { "virtudes": { "maxItems": 1 } } } },

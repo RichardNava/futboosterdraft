@@ -17,7 +17,14 @@ export function PruebasCartas() {
     void api<Jugador[]>('/api/catalogo/jugadores').then(setJugadores);
   }, []);
   if (!jugadores) return <p className="cargando">Cargando…</p>;
-  const resumen = (j: Jugador) => ({ ...j, stats: j.stats as unknown as Record<string, number> });
+  const resumen = (j: Jugador) => ({ ...j, nombreCarta: j.nombre_carta, imagenBg: j.imagen_bg, stats: j.stats as unknown as Record<string, number> });
+  // Spec 006 (SC-009): una carta de cada demarcación y una GOAT con fondo propio en imagen (no SVG).
+  const presentacion = (['POR', 'DEF', 'MED', 'DEL'] as const)
+    .map((d) => jugadores.find((j) => j.demarcacion === d))
+    .filter((j): j is Jugador => j !== undefined)
+    .map(resumen);
+  const goat = jugadores.find((j) => j.nivel === 'GOAT');
+  if (goat) presentacion.push({ ...resumen(goat), imagenBg: '/cartas/propias/goat-prueba.png' });
   const muestra = [
     ...NIVELES.map((n) => jugadores.find((j) => j.nivel === n)),
     jugadores.find((j) => j.nivel === 'GOAT' && j.virtudes.length === 4 && j.defectos.length === 2),
@@ -36,6 +43,14 @@ export function PruebasCartas() {
         <div className="lista-compacta">
           {muestra.map((j, i) => (
             <CartaJugador key={`c${i}`} jugador={resumen(j)} compacta />
+          ))}
+        </div>
+      </section>
+      <section aria-label="Presentación" className="muestra-cartas">
+        <h2>Una carta de cada demarcación y una GOAT con imagen de fondo propia</h2>
+        <div className="rejilla-cartas muestra" data-prueba="presentacion">
+          {presentacion.map((j, i) => (
+            <CartaJugador key={`p${i}`} jugador={j} />
           ))}
         </div>
       </section>

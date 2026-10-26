@@ -62,7 +62,9 @@ export function jugadorSintetico(posicion: Posicion, media: number, rng: Rng, vi
     virtudes,
     defectos: [],
     nivel: 'Superclase',
-    coleccion: 'Core',
+    nombre_carta: 'Prueba',
+    imagen: '/cartas/siluetas/med.svg',
+    imagen_bg: '/cartas/fondos/med.svg',
   };
 }
 

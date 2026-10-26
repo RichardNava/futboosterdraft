@@ -1,3 +1,4 @@
+import { nombreCartaDe } from '../componentes/CartaJugador';
 import {
   FORMACIONES,
   FORMACIONES_IDS,
@@ -238,7 +239,7 @@ export function Alineacion() {
   const colores = equipaciones ? coloresDe(equipaciones.primera) : { principal: '#1f7a4d', secundario: '#ffffff' }; // lint-tokens: datos de equipación
   const nombre = (id: number) => {
     const j = porId.get(id);
-    return j ? `${datos.dorsales?.[id] ? `#${datos.dorsales[id]} ` : ''}${j.nombre} ${j.apellidos.split(' ')[0]}` : String(id);
+    return j ? `${datos.dorsales?.[id] ? `#${datos.dorsales[id]} ` : ''}${nombreCartaDe(j)}` : String(id);
   };
   const distintivos = new Map([...bajas].map((id) => [id, <DistintivoBaja key={id} baja={detalleBaja.get(id)} />]));
 

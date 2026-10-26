@@ -66,7 +66,7 @@ pnpm install
 cp .env.example .env            # ajusta AUTH_SECRET
 docker compose up -d            # PostgreSQL 16 y buzón de correo de pruebas (http://localhost:8025)
 pnpm db:migrate
-pnpm seed --file data/core.json # catálogo Core (300 jugadores ficticios)
+pnpm seed # catálogo: Core (300 cartas ficticias), 75 cartas de prueba y 3 colecciones
 pnpm dev                        # API en :3000 y web en http://localhost:5173
 ```
 

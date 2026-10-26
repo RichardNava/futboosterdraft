@@ -2,6 +2,14 @@
  * Cliente HTTP: envía la cookie de sesión y traduce el formato de error común
  * `{ error: { codigo, mensaje, detalles } }` a `ErrorApi`.
  */
+import type {
+  RespuestaCambiarActiva,
+  RespuestaColeccion,
+  RespuestaDesfragmentar,
+  RespuestaMovimientos,
+  RespuestaTienda,
+  ResumenCompra,
+} from '@fbd/protocol';
 
 export class ErrorApi extends Error {
   constructor(
@@ -87,4 +95,40 @@ export function simularResto(partidaId: string): Promise<{ ok: true; campeon: { 
 /** Pantalla de derrota o de campeón ya vista (spec 003, FR-041). */
 export function marcarPantallaVista(partidaId: string, pantalla: 'derrota' | 'campeon'): Promise<{ ok: true }> {
   return api(`/api/partidas/${partidaId}/pantalla-vista`, { metodo: 'POST', cuerpo: { pantalla } });
+}
+
+// ---------- Colección, fragmentos y tienda (spec 006, contracts/http-api.md) ----------
+
+export function obtenerColeccion(): Promise<RespuestaColeccion> {
+  return api('/api/coleccion');
+}
+
+export function cambiarActiva(jugadorId: number, activa: boolean): Promise<RespuestaCambiarActiva> {
+  return api(`/api/coleccion/cartas/${jugadorId}`, { metodo: 'PUT', cuerpo: { activa } });
+}
+
+export function desfragmentar(jugadorId: number): Promise<RespuestaDesfragmentar> {
+  return api(`/api/coleccion/cartas/${jugadorId}/desfragmentar`, { metodo: 'POST' });
+}
+
+/** Historial del más reciente al más antiguo; `antes` pide la página siguiente (FR-018). */
+export function obtenerMovimientos(antes?: string): Promise<RespuestaMovimientos> {
+  return api(`/api/fragmentos/movimientos${antes ? `?antes=${encodeURIComponent(antes)}` : ''}`);
+}
+
+export function obtenerTienda(): Promise<RespuestaTienda> {
+  return api('/api/tienda');
+}
+
+/** Las compras se repiten con el mismo `idCompra` (lo genera quien llama): el servidor no cobra dos veces (FR-032). */
+export function comprarSobre(idCompra: string, moneda: 'eur' | 'fragmentos'): Promise<ResumenCompra> {
+  return api('/api/tienda/sobre/comprar', { cuerpo: { idCompra, moneda } });
+}
+
+export function comprarColeccion(coleccionId: string, idCompra: string): Promise<ResumenCompra> {
+  return api(`/api/tienda/colecciones/${coleccionId}/comprar`, { cuerpo: { idCompra } });
+}
+
+export function comprarFragmentos(paqueteId: string, idCompra: string): Promise<ResumenCompra> {
+  return api(`/api/tienda/fragmentos/${paqueteId}/comprar`, { cuerpo: { idCompra } });
 }

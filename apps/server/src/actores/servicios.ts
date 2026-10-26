@@ -1,6 +1,7 @@
 /**
  * Dependencias compartidas por los controladores de partida.
  */
+import type { ServicioEconomia } from '../economia/servicio';
 import type { BaseDatos } from '../persistencia/db';
 import type { Catalogo } from '../persistencia/repos/catalogo';
 import type { RepoDraft } from '../persistencia/repos/draft';
@@ -26,6 +27,8 @@ export interface ServiciosPartida {
   repoVisionados: RepoVisionados;
   repoPerfiles: RepoPerfiles;
   catalogo: Catalogo;
+  /** Colección propia, fragmentos y recompensas (spec 006). */
+  economia: ServicioEconomia;
   reloj: Reloj;
   temporizadores: Temporizadores;
   difusor: Difusor & { estaConectado(partidaId: string, participanteId: string): boolean };

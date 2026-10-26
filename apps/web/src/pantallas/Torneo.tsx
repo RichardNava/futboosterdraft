@@ -74,6 +74,7 @@ interface VistaTorneo {
   miEliminacion?: { fase: string; etiqueta: string } | null;
   puedeSimularResto?: boolean;
   pantallas?: { derrotaVista: boolean; campeonVisto: boolean };
+  recompensaFragmentos?: number | null;
 }
 
 interface FilaGoleador {
@@ -187,7 +188,14 @@ export function Torneo() {
     );
   }
   if (vista.campeon && (verCampeon || !pantallas.campeonVisto)) {
-    return <PantallaCampeon partidaId={partidaId!} campeon={vista.campeon.nombre} onVolverAlMenu={() => navegar('/')} />;
+    return (
+      <PantallaCampeon
+        partidaId={partidaId!}
+        campeon={vista.campeon.nombre}
+        recompensaFragmentos={vista.recompensaFragmentos ?? null}
+        onVolverAlMenu={() => navegar('/')}
+      />
+    );
   }
   const miPartido = actual?.partidos.find((p) => p.local?.id === yo || p.visitante?.id === yo);
   // Partidos propios entre humanos ya jugados que aún no ha visto (de cualquier jornada; spec 002, FR-030).

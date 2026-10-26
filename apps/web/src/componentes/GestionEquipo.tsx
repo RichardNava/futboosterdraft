@@ -1,3 +1,4 @@
+import { nombreCartaDe } from './CartaJugador';
 import { FORMACIONES, FORMACIONES_IDS, parametrosActuales, validarTactica, type FormacionId, type Lanzadores, type Posicion, type Tactica } from '@fbd/domain';
 import { useCallback, useMemo, useState } from 'react';
 import { BarraPrincipal } from './BarraPrincipal';
@@ -138,7 +139,7 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
   const titulares = titularesDe(borrador.campo).map((t) => jugadores.get(t.jugadorId)!).filter(Boolean);
   const nombre = (id: number) => {
     const j = jugadores.get(id);
-    return j ? `${dorsales?.[id] ? `#${dorsales[id]} ` : ''}${j.nombre} ${j.apellidos.split(' ')[0]}` : String(id);
+    return j ? `${dorsales?.[id] ? `#${dorsales[id]} ` : ''}${nombreCartaDe(j)}` : String(id);
   };
   const distintivos = new Map<number, React.ReactNode>();
   for (const [id, n] of estado.amarillas)

@@ -158,3 +158,18 @@ for (const ancho of [1280, 360]) {
     expect(malos).toEqual([]);
   });
 }
+
+test('presentación (spec 006, SC-009): bandera y fondo en cada demarcación, sin imágenes rotas; la GOAT con imagen propia', async ({ page }) => {
+  await abrirCartas(page);
+  const presentacion = page.locator('[data-prueba="presentacion"]');
+  await expect(presentacion.locator('.carta.completa')).toHaveCount(5);
+  await expect(presentacion.locator('.carta-bandera')).toHaveCount(5);
+  await expect(presentacion.locator('.carta-fondo-accion')).toHaveCount(5);
+  await expect(presentacion.locator('img.carta-fondo-accion[src="/cartas/propias/goat-prueba.png"]')).toHaveCount(1);
+  await page.waitForLoadState('networkidle');
+  const rotas = await page.$$eval('img', (imgs) => imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.src));
+  expect(rotas).toEqual([]);
+  // La compacta solo lleva la bandera, sin escudo.
+  await expect(page.locator('.carta.compacta .carta-escudo')).toHaveCount(0);
+  await expect(page.locator('.carta.compacta .carta-bandera').first()).toBeVisible();
+});

@@ -31,7 +31,7 @@ describe('Partida', () => {
     expect(c.plazoJornadaHoras).toBe(24);
     expect(c.tiempos).toEqual({ busquedaS: 180, turnoDraftS: 45, descansoS: 120 });
     expect(c).not.toHaveProperty('ritmo');
-    expect(c.colecciones).toEqual(['Core']);
+    expect(c.colecciones).toEqual(['core']);
   });
 
   it('invitado: sin plazas humanas libres (FR-000)', () => {

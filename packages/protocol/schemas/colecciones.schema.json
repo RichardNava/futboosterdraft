@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://futboosterdraft/schemas/colecciones.schema.json",
+  "title": "Colecciones del catálogo",
+  "description": "Formato de data/colecciones.json (spec 006, data-model §1.2). Cada colección lista los id de sus cartas, solos (versión 'normal') o como { id, version }. Las reglas cruzadas (cartas existentes, una sola básica 'core' con DISTRIBUCION_CORE, ninguna carta huérfana) se validan en packages/domain (validarCatalogo).",
+  "type": "object",
+  "required": ["version", "colecciones"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "colecciones": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/coleccion" } }
+  },
+  "$defs": {
+    "idCarta": { "type": "integer", "minimum": 1 },
+    "coleccion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nombre", "descripcion", "tipo", "cartas"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "nombre": { "type": "string", "minLength": 1 },
+        "descripcion": { "type": "string", "minLength": 1 },
+        "tipo": { "enum": ["basica", "pago"] },
+        "precio_centimos": { "type": "integer", "minimum": 1 },
+        "destacadas": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/idCarta" } },
+        "cartas": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              { "$ref": "#/$defs/idCarta" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "version"],
+                "properties": { "id": { "$ref": "#/$defs/idCarta" }, "version": { "enum": ["normal"] } }
+              }
+            ]
+          }
+        }
+      },
+      "allOf": [
+        { "if": { "properties": { "tipo": { "const": "basica" } } }, "then": { "not": { "required": ["precio_centimos"] } } },
+        { "if": { "properties": { "tipo": { "const": "pago" } } }, "then": { "required": ["precio_centimos"] } }
+      ]
+    }
+  }
+}

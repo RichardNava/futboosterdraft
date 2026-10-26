@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { EstadoVacio } from '../componentes/EstadoVacio';
 import { useEffect, useState } from 'react';
 import { equipacionesAleatorias, NOMBRE_MAX, normalizarNombre, parametrosActuales, semillaDesdeTexto, type Equipaciones } from '@fbd/domain';
@@ -10,6 +10,7 @@ import { mostrarAviso } from '../estado/avisos';
 import { useSesion } from '../estado/sesion';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
+import { Dialogo } from '../componentes/Dialogo';
 
 interface PerfilVista {
   nombreEquipo: string | null;
@@ -90,6 +91,7 @@ export function Perfil() {
         </p>
       </div>
       <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
+      <EliminarCuenta />
       <BarraPrincipal
         principal={{
           etiqueta: 'Guardar',
@@ -101,5 +103,47 @@ export function Perfil() {
         }}
       />
     </main>
+  );
+}
+
+/** Eliminar la cuenta, con confirmación: borra la colección, los fragmentos y las partidas creadas, y cierra la sesión. */
+function EliminarCuenta() {
+  const navegar = useNavigate();
+  const [confirmando, setConfirmando] = useState(false);
+  const [borrando, setBorrando] = useState(false);
+  const eliminar = async () => {
+    setBorrando(true);
+    try {
+      await api('/api/cuenta', { metodo: 'DELETE' });
+      useSesion.setState({ usuario: null });
+      mostrarAviso('exito', 'Cuenta eliminada');
+      navegar('/');
+    } catch (e) {
+      mostrarAviso('error', e instanceof ErrorApi ? e.message : 'No se ha podido eliminar la cuenta');
+      setBorrando(false);
+    }
+  };
+  return (
+    <section className="perfil-eliminar" aria-labelledby="titulo-eliminar-cuenta">
+      <h2 id="titulo-eliminar-cuenta">Eliminar la cuenta</h2>
+      <p className="nota">Se borran tu colección, tus fragmentos, tus compras y las partidas que has creado. No se puede deshacer.</p>
+      <button type="button" className="peligro" onClick={() => setConfirmando(true)}>
+        Eliminar la cuenta
+      </button>
+      {confirmando && (
+        <Dialogo etiquetadoPor="titulo-confirmar-eliminar" alEscape={() => setConfirmando(false)}>
+          <h2 id="titulo-confirmar-eliminar">¿Eliminar la cuenta?</h2>
+          <p>Perderás tu colección, tus fragmentos y tus partidas. En las partidas de otros, un NPC ocupará tu plaza.</p>
+          <div className="acciones">
+            <button type="button" className="secundario" onClick={() => setConfirmando(false)} autoFocus>
+              Cancelar
+            </button>
+            <button type="button" className="peligro" onClick={() => void eliminar()} disabled={borrando}>
+              Eliminar definitivamente
+            </button>
+          </div>
+        </Dialogo>
+      )}
+    </section>
   );
 }

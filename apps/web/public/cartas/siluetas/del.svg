@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Silueta de la carta (spec 006, R7): se pinta como máscara CSS con el color del nivel; el emblema es un hueco. -->
+  <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+    <path d="M50 8c10.5 0 17 7.6 17 18.5 0 12.4-7.4 22-17 22s-17-9.6-17-22C33 15.6 39.5 8 50 8z" fill="#fff"/>
+    <path d="M43 44h14l1.5 12h-17z" fill="#fff"/>
+    <path d="M8 100c0-21 9-33 24-38.5l10-3.5 8 9 8-9 10 3.5C83 67 92 79 92 100z" fill="#fff"/>
+    <path d="M42 58l8 9 8-9" fill="none" stroke="#000" stroke-width="2.6" stroke-linejoin="round" opacity="0.75"/>
+    <path d="M22 100V80M78 100V80" stroke="#000" stroke-width="1.6" opacity="0.3"/>
+    <path d="M50 72l3.6 7.6 8.2 1-6 5.7 1.6 8.2L50 90.4l-7.4 4.1 1.6-8.2-6-5.7 8.2-1z" fill="#000" opacity="0.9"/>
+  </mask>
+  <rect width="100" height="100" fill="#000" mask="url(#m)"/>
+</svg>

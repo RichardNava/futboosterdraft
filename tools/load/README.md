@@ -19,7 +19,7 @@ liga de 8 completa, con preparaciones y descansos de 5 s. Al final, k6 comprueba
 Con el sistema levantado **con reloj real** (sin `--fake-clock`, para que venzan los plazos cortos):
 
 ```bash
-docker compose up -d db && pnpm db:migrate && pnpm seed --file data/core.json
+docker compose up -d db && pnpm db:migrate && pnpm seed
 pnpm --filter @fbd/server exec tsx src/main.ts
 
 # con k6 instalado

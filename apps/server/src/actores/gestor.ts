@@ -15,10 +15,10 @@ import {
   type NivelNPC,
 } from '@fbd/domain';
 import type { CrearPartida } from '@fbd/protocol';
-import { inArray } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import type { UsuarioSesion } from '../auth/auth';
 import { errores } from '../http/errores';
-import { usuarios } from '../persistencia/esquema/index';
+import { participantes, partidas, usuarios } from '../persistencia/esquema/index';
 import type { FilaPartida } from '../persistencia/repos/partidas';
 import { reprogramarTurnos } from './draft';
 import { enPartido } from './partidoRapido';
@@ -119,10 +119,12 @@ export class GestorPartidas {
       throw errores.regla(problemas[0]!.codigo, problemas[0]!.mensaje, { problemas });
     }
 
-    const { db, repoPartidas } = this.servicios;
+    const { db, repoPartidas, economia } = this.servicios;
+    // Foto de la colección activa del anfitrión registrado (spec 006, FR-014); un invitado juega con Core (FR-015).
+    const poolCartas = usuario.tipo === 'registrado' ? await economia.poolActivo(usuario.id) : null;
     const semilla = randomBytes(16).toString('hex');
     const partidaId = await db.transaction(async (tx) => {
-      const partida = await repoPartidas.crear({ anfitrionId: usuario.id, config, semilla, ahora: this.servicios.reloj.ahora() }, tx);
+      const partida = await repoPartidas.crear({ anfitrionId: usuario.id, config, semilla, poolCartas, ahora: this.servicios.reloj.ahora() }, tx);
       // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
       const identidad = await identidadInicial(this.servicios, usuario, []);
       await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones);
@@ -211,6 +213,25 @@ export class GestorPartidas {
       if (c.partida.anfitrionId !== usuario.id) continue;
       await c.ejecutar((ctx) => abandonarPartidaInvitado(c, ctx));
       this.quitar(c.id);
+    }
+  }
+
+  /**
+   * Elimina una cuenta registrada: desaparecen las partidas que creó y, en las ajenas, un NPC ocupa su plaza. Su
+   * colección, fragmentos, compras y perfil se borran en cascada con el usuario. Los controladores en memoria de
+   * esas partidas se descartan para que se reconstruyan desde la base de datos.
+   */
+  async eliminarCuenta(usuarioId: string): Promise<void> {
+    await this.servicios.db.transaction(async (tx) => {
+      await tx.delete(partidas).where(eq(partidas.anfitrionId, usuarioId));
+      await tx
+        .update(participantes)
+        .set({ tipo: 'npc', usuarioId: null, nivelNPC: 'intermedio', controladoPorNPC: true })
+        .where(eq(participantes.usuarioId, usuarioId));
+      await tx.delete(usuarios).where(eq(usuarios.id, usuarioId));
+    });
+    for (const c of [...this.controladores.values()]) {
+      if (c.partida.anfitrionId === usuarioId || c.participantes.some((p) => p.usuarioId === usuarioId)) this.quitar(c.id);
     }
   }
 

@@ -119,7 +119,7 @@ function principal(): void {
   const i = args.indexOf('--fichero');
   const ruta = resolve(process.env.INIT_CWD ?? process.cwd(), i >= 0 ? args[i + 1]! : 'data/core.json');
   const texto = readFileSync(ruta, 'utf-8');
-  const fichero = JSON.parse(texto) as { coleccion: string; version: string; jugadores: Jugador[] };
+  const fichero = JSON.parse(texto) as { version: string; jugadores: Jugador[] };
   const jugadores = asignarRasgos(fichero.jugadores);
   const errores = validarColeccion(jugadores);
   if (errores.length) {

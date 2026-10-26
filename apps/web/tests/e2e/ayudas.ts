@@ -82,3 +82,12 @@ export async function jugarHastaCaer(page: Page, id: string): Promise<VistaTorne
   }
   throw new Error('No se llegó al final');
 }
+
+/** Registra un usuario nuevo (la cookie queda en el contexto de la página). */
+export async function registrar(page: Page): Promise<void> {
+  await page.goto('/');
+  const r = await page.request.post('/api/auth/registro', {
+    data: { email: `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@pruebas.test`, password: 'contraseña-segura', apodo: 'Coleccionista' },
+  });
+  expect(r.status()).toBe(200);
+}

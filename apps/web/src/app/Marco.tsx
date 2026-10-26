@@ -11,11 +11,26 @@ import { Dialogo } from '../componentes/Dialogo';
 import { Insignia } from '../componentes/Insignia';
 import { useAvisos } from '../estado/avisos';
 import { Escudo } from '../componentes/arte/Escudo';
+import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
+import { useSaldo } from '../estado/saldo';
 
-/** Capa de atmósfera del estadio (spec 004, FR-041): focos, grano y las líneas de cal del campo en perspectiva. */
-function Ambiente() {
+const FONDOS_PANTALLA = 5;
+/** Fondo de cada vista, sorteado la primera vez que se visita y fijo durante la sesión. */
+const fondoDeVista = new Map<string, string>();
+
+/** Foto de fondo de la ruta: la de duelos es fija; el resto, una de las `background_<n>` al azar por vista. */
+function fondoPantalla(ruta: string): string {
+  const vista = /^\/partidas\/[^/]+\/([^/]+)/.exec(ruta)?.[1] ?? ruta.split('/')[1] ?? '';
+  if (vista === 'duelos') return '/fondos/duelo_bg.webp';
+  if (!fondoDeVista.has(vista)) fondoDeVista.set(vista, `/fondos/background_${Math.floor(Math.random() * FONDOS_PANTALLA) + 1}.webp`);
+  return fondoDeVista.get(vista)!;
+}
+
+/** Capa de atmósfera del estadio (spec 004, FR-041): foto de fondo, focos, grano y las líneas de cal en perspectiva. */
+function Ambiente({ ruta }: { ruta: string }) {
   return (
     <div className="ambiente" aria-hidden="true">
+      <div className="ambiente-foto" style={{ backgroundImage: `url("${fondoPantalla(ruta)}")` }} />
       <svg className="ambiente-cal" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet">
         <rect x="20" y="20" width="960" height="600" />
         <path d="M500 20v600" />
@@ -81,6 +96,18 @@ export function Marco() {
   // Conexión perdida con la partida: insignia de advertencia en la barra (spec 004, FR-023).
   const sinConexion = useAvisos((s) => s.avisos.some((a) => a.id === 'conexion'));
   useEffect(prepararDesbloqueo, []);
+  // Saldo de fragmentos en la barra, solo para registrados; se vuelve a pedir en cada cambio de pantalla.
+  const saldo = useSaldo((s) => s.saldo);
+  const esRegistrado = usuario?.tipo === 'registrado';
+  useEffect(() => {
+    if (!esRegistrado) {
+      useSaldo.setState({ saldo: null });
+      return;
+    }
+    api<{ saldo: number }>('/api/fragmentos/saldo')
+      .then((r) => useSaldo.setState({ saldo: r.saldo }))
+      .catch(() => undefined);
+  }, [esRegistrado, usuario?.id, ubicacion.pathname]);
   const [abandonando, setAbandonando] = useState(false);
   const salida = useRef<Salida>(null);
   const bloqueo = useBlocker(({ currentLocation, nextLocation }) => {
@@ -119,7 +146,15 @@ export function Marco() {
   const cuenta: Enlace = usuario
     ? { a: usuario.tipo === 'registrado' ? '/perfil' : '/cuenta', texto: 'Mi perfil', icono: 'perfil' }
     : { a: '/?acceso=entrar', texto: 'Iniciar sesión', icono: 'perfil' };
-  const enlaces = [...ENLACES, cuenta];
+  // Colección y tienda, solo para registrados (spec 006, FR-025, FR-034).
+  const registrado: Enlace[] =
+    usuario?.tipo === 'registrado'
+      ? [
+          { a: '/coleccion', texto: 'Colección', icono: 'cartas' },
+          { a: '/tienda', texto: 'Tienda', icono: 'tienda' },
+        ]
+      : [];
+  const enlaces = [...ENLACES, ...registrado, cuenta];
   const textoSonido = sonido ? 'Silenciar los sonidos' : 'Activar los sonidos';
   const interruptorSonido = (conTexto: boolean) => (
     <button
@@ -146,7 +181,7 @@ export function Marco() {
 
   return (
     <>
-      <Ambiente />
+      <Ambiente ruta={ubicacion.pathname} />
       <nav className={compacta ? 'barra-navegacion compacta' : 'barra-navegacion'} aria-label="Navegación principal">
         <Link to="/" className="marca">
           <Escudo className="escudo" tamano={compacta ? 24 : 32} />
@@ -167,6 +202,12 @@ export function Marco() {
               <ul className="enlaces-navegacion">{listaEnlaces(false)}</ul>
               {interruptorSonido(false)}
             </div>
+            {esRegistrado && saldo !== null && (
+              <Link to="/tienda#fragmentos" className="saldo-navegacion" aria-label={`Fragmentos: ${formatoFragmentos.format(saldo)}. Comprar fragmentos`} title="Comprar fragmentos">
+                <Icono nombre="cristal" tamano={18} />
+                {formatoFragmentos.format(saldo)}
+              </Link>
+            )}
             <MenuNavegacion enlaces={listaEnlaces(false)} sonido={interruptorSonido(true)} />
           </>
         )}

@@ -269,8 +269,87 @@
   justify-self: center;
   width: 70%;
   max-height: clamp(48px, 34cqi, 96px);
+  aspect-ratio: 1;
+  object-fit: contain;
   color: var(--carta-marco);
   filter: drop-shadow(0 6px 8px rgb(0 0 0 / 28%));
+}
+
+/*
+ * Spec 006 (R7; FR-045 a FR-048): la imagen superior y el fondo de acción en SVG se pintan como máscara con el color
+ * del nivel; una máscara que no carga no pinta nada (sin icono roto).
+ */
+.carta-silueta.mascara,
+.carta-fondo-accion.mascara {
+  display: block;
+  background: currentColor;
+  -webkit-mask: var(--carta-mascara) center / contain no-repeat;
+  mask: var(--carta-mascara) center / contain no-repeat;
+}
+
+/* Fondo de acción: detrás de todo el contenido, al 25 % y sin captar eventos (FR-045). */
+.carta-fondo-accion {
+  position: absolute;
+  /* Medidas explícitas: un <img> con `inset` tomaría su ancho intrínseco y desbordaría la carta. */
+  top: 12%;
+  left: 8%;
+  z-index: -1;
+  width: 90%;
+  height: 76%;
+  /* Las fotos son recortes del jugador sobre transparente: enteras dentro del hueco, sin cortarle brazos ni piernas. */
+  object-fit: contain;
+  /* Posicionado desde abajo: centrada, el retrato de la cabecera le tapaba la cabeza. */
+  object-position: center 80%;
+  opacity: 0.25;
+  color: var(--carta-texto);
+  pointer-events: none;
+}
+
+/* Las fotos llegan hasta el pie de la carta para que, pegadas abajo, ocupen todo el alto y no queden cortas. */
+img.carta-fondo-accion {
+  height: 88%;
+}
+
+/*
+ * Bandera y escudo bajo la media (FR-043, FR-044), en la fila de la demarcación: así la cabecera no crece y las cartas
+ * más densas siguen cabiendo en su proporción a 360 px.
+ */
+.carta.completa .carta-cifras:has(.carta-procedencia) {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-items: center;
+  column-gap: clamp(2px, 1.6cqi, 4px);
+}
+
+.carta.completa .carta-cifras:has(.carta-procedencia) .carta-media {
+  grid-column: 1 / -1;
+}
+
+.carta-procedencia {
+  display: flex;
+  align-items: center;
+  gap: clamp(2px, 1.6cqi, 4px);
+}
+
+.carta-procedencia img,
+.carta-bandera {
+  display: block;
+  height: clamp(8px, 6cqi, 14px);
+  width: auto;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 25%);
+}
+
+.carta-procedencia .carta-escudo {
+  box-shadow: none;
+}
+
+.carta-bandera-codigo {
+  font-size: clamp(0.55rem, 5cqi, 0.75rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--carta-texto-suave);
 }
 
 .carta-nombre {
@@ -546,8 +625,9 @@
 
 .carta.compacta .carta-cuerpo {
   display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas: 'media nombre' 'media posiciones';
+  /* Spec 006 (US6, escenario 5): en la compacta, solo la bandera, junto al nombre. */
+  grid-template-columns: auto auto 1fr;
+  grid-template-areas: 'media bandera nombre' 'media posiciones posiciones';
   align-items: center;
   column-gap: 8px;
   row-gap: 2px;
@@ -579,6 +659,17 @@
   font-size: 1.3rem;
   font-weight: 800;
   text-align: center;
+}
+
+.carta.compacta .carta-bandera,
+.carta.compacta .carta-bandera-codigo {
+  grid-area: bandera;
+  height: 12px;
+}
+
+.carta.compacta .carta-bandera-codigo {
+  height: auto;
+  color: var(--color-texto-suave);
 }
 
 .carta.compacta .carta-nombre {

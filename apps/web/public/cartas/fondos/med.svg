@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140">
+  <!-- Fondo de acción de la carta (spec 006, R7; FR-045, FR-046): pictograma propio, sin derechos de terceros. -->
+  <g fill="none" stroke="#000" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 42L50 80"/><path d="M50 80L42 120M50 80L70 106"/><path d="M50 52L30 70M50 52L72 62"/>
+  </g>
+  <circle cx="80" cy="110" r="7" fill="#000"/>
+  <circle cx="50" cy="28" r="9" fill="#000"/><g fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" opacity="0.7"><path d="M88 104h8"/><path d="M86 112h10"/><path d="M88 120h6"/></g>
+</svg>

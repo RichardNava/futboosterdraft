@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit -p .",
     "generar-core": "tsx src/generarCore.ts",
     "generar-escenarios": "tsx src/generarEscenarios.ts",
-    "asignar-rasgos": "tsx src/asignarRasgos.ts"
+    "asignar-rasgos": "tsx src/asignarRasgos.ts",
+    "migrar-cartas-006": "tsx src/migrarCartas006.ts",
+    "generar-colecciones-prueba": "tsx src/generarColeccionesPrueba.ts"
   },
   "dependencies": {
     "@fbd/domain": "workspace:*",

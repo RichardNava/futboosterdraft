@@ -7,6 +7,10 @@ import type { CartaResumen } from '../componentes/CartaJugador';
 export const CARTAS_MUESTRA: CartaResumen[] = [
   {
     id: 244,
+    nombreCarta: 'Otto Urirvia',
+    nacionalidad: 'SEN',
+    imagen: '/cartas/siluetas/del.svg',
+    imagenBg: '/cartas/fondos/del.svg',
     nombre: 'Otto',
     apellidos: 'Urirvia Delirmos',
     demarcacion: 'DEL',
@@ -19,6 +23,10 @@ export const CARTAS_MUESTRA: CartaResumen[] = [
   },
   {
     id: 178,
+    nombreCarta: 'Ugo Maramos',
+    nacionalidad: 'JPN',
+    imagen: '/cartas/siluetas/med.svg',
+    imagenBg: '/cartas/fondos/med.svg',
     nombre: 'Ugo',
     apellidos: 'Maramos Bararda',
     demarcacion: 'MED',
@@ -31,6 +39,10 @@ export const CARTAS_MUESTRA: CartaResumen[] = [
   },
   {
     id: 231,
+    nombreCarta: 'Callum Palango',
+    nacionalidad: 'BEL',
+    imagen: '/cartas/siluetas/med.svg',
+    imagenBg: '/cartas/fondos/med.svg',
     nombre: 'Callum',
     apellidos: 'Palango Quinego',
     demarcacion: 'MED',
@@ -43,6 +55,10 @@ export const CARTAS_MUESTRA: CartaResumen[] = [
   },
   {
     id: 282,
+    nombreCarta: 'Joel Baromar',
+    nacionalidad: 'MEX',
+    imagen: '/cartas/siluetas/del.svg',
+    imagenBg: '/cartas/fondos/del.svg',
     nombre: 'Joel',
     apellidos: 'Baromar Barilral',
     demarcacion: 'DEL',

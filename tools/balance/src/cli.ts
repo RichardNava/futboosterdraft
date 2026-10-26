@@ -121,6 +121,7 @@ export async function grupos(): Promise<GrupoComprobaciones[]> {
   const { gruposDisciplina } = await import('./checks/disciplina');
   const { gruposDuelos } = await import('./checks/duelos');
   const { gruposImpacto } = await import('./checks/impacto');
+  const { gruposColecciones } = await import('./checks/colecciones');
   return [
     ...gruposPartido003(),
     ...gruposPartido(),
@@ -134,6 +135,7 @@ export async function grupos(): Promise<GrupoComprobaciones[]> {
     ...gruposDisciplina(),
     ...gruposDuelos(),
     ...gruposImpacto(),
+    ...gruposColecciones(),
   ];
 }
 

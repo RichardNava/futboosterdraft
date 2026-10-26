@@ -207,7 +207,8 @@ describe('draft (US1)', () => {
     await peticion(srv.url, `/api/partidas/${r.cuerpo.id}/iniciar`, { metodo: 'POST', cookie: anfitrion.cookie });
     const inicio = srv.reloj.ahora();
     const c = await srv.gestor.obtenerOError(r.cuerpo.id);
-    for (let i = 0; i < 30; i++) {
+    // Holgura para runners lentos: si el turno aún no se ha resuelto, la vuelta solo avanza 1 ms.
+    for (let i = 0; i < 200; i++) {
       // Hasta el plazo del turno abierto (45 s, o 53 s en el primero de cada ronda).
       srv.reloj.avanzar(Math.max(1, (c.mesas[0]?.mesa.venceEn ?? srv.reloj.ahora()) - srv.reloj.ahora() + 1));
       await new Promise((res) => setTimeout(res, 150));

@@ -82,7 +82,7 @@ export function configPorDefecto(): ConfigPartida {
     npc: [],
     dificultad: 'normal',
     tiempos: { ...TIEMPOS_POR_DEFECTO },
-    colecciones: ['Core'],
+    colecciones: ['core'],
   };
 }
 

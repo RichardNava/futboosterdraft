@@ -119,7 +119,11 @@ describe('partido rápido (US3)', () => {
     await ws.esperar('partido.pausa_decision', { desde });
     const yo = inicio.local.id === (await ws.esperar('estado')).vista.partida.miParticipanteId ? 'local' : 'visitante';
     const mia = inicio.alineaciones[yo];
-    const sale = mia.titulares.find((t: any) => t.casillaId !== 'POR').jugador.id;
+    // Un titular sin eventos en la primera parte: uno expulsado o lesionado ya no está en el campo.
+    const conEvento = new Set(
+      ws.recibidos.slice(desde).flatMap((m) => (m.t === 'partido.tramo' ? m.eventos.flatMap((e: any) => e.jugadores.map((j: any) => j.jugadorId)) : [])),
+    );
+    const sale = mia.titulares.find((t: any) => t.casillaId !== 'POR' && !conEvento.has(t.jugador.id)).jugador.id;
     const entra = mia.suplentes[0].id;
     const ack = await ws.enviarYEsperarAck({ t: 'partido.decision', partidoId: inicio.partidoId, tipo: 'sustitucion', datos: { sale, entra } });
     expect(ack.ok, JSON.stringify(ack)).toBe(true);

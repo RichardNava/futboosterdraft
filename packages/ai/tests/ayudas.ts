@@ -35,7 +35,9 @@ export function jugador(posicion: Posicion, valor = 80, virtudes: Virtud[] = [],
     nivel,
     virtudes,
     defectos: [],
-    coleccion: 'Core',
+    nombre_carta: 'Prueba',
+    imagen: '/cartas/siluetas/med.svg',
+    imagen_bg: '/cartas/fondos/med.svg',
   } as Jugador;
   j.media = calcularMedia(j);
   return j;

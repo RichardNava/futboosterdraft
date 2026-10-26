@@ -30,6 +30,7 @@ import {
   ETIQUETA_FASE,
   humanosEnCompeticion,
   jornadaActual,
+  PARAMETROS_ECONOMIA,
   registrarResultado,
   soloUnHumano,
   transicion,
@@ -385,6 +386,11 @@ export async function marcarPantallaVista(c: ControladorPartida, participanteId:
 async function terminarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
   await c.servicios.repoPartidas.actualizarEstado(c.id, 'terminada');
   c.partida = { ...c.partida, estado: transicion(c.partida.estado as 'en_torneo', 'terminar_torneo') };
+  // Recompensa del campeón (spec 006, R14; FR-019): solo humanos registrados; idempotente por partida.
+  const campeon = c.participante(c.torneo!.campeon!);
+  if (campeon?.tipo === 'humano' && campeon.usuarioId) {
+    await c.servicios.economia.recompensarTorneo(campeon.usuarioId, c.id, PARAMETROS_ECONOMIA.recompensaTorneo);
+  }
   // A quien aún tiene partidos o duelos sin ver no se le nombra al campeón: lo verá al terminar de verlos.
   for (const p of c.participantes) {
     const sinVer = p.tipo === 'humano' && (await pendientesDe(c, p.id)).length > 0;
@@ -466,6 +472,7 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
       miEliminacion: null,
       puedeSimularResto: false,
       pantallas,
+      recompensaFragmentos: null,
     };
   }
   const filasJornadas = await c.servicios.repoTorneo.jornadas(c.id);
@@ -485,8 +492,11 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
   // Eliminación propia (spec 003, FR-039): no se revela hasta que ha visto el partido que lo eliminó.
   const eliminacion = participanteId ? eliminacionVista(t, participanteId, partidos, oculto) : null;
   const miEliminacion = eliminacion ? { fase: eliminacion.fase, etiqueta: ETIQUETA_FASE[eliminacion.fase] } : null;
+  // Fragmentos del campeón registrado (spec 006, R14), leídos del movimiento guardado.
+  const recompensaFragmentos = yo?.usuarioId && t.campeon === participanteId ? await c.servicios.economia.recompensaDe(yo.usuarioId, c.id) : null;
   return {
     miEliminacion,
+    recompensaFragmentos,
     puedeSimularResto:
       miEliminacion !== null && !t.campeon && c.partida.estado === 'en_torneo' && !(await hayHumanosEnCompeticionVisibles(c, { partidos, excepto: participanteId })),
     pantallas,

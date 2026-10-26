@@ -9,3 +9,5 @@ export * from './http/partidas';
 export * from './http/alineacion';
 export * from './http/partidos';
 export * from './http/perfil';
+export * from './http/coleccion';
+export * from './http/tienda';

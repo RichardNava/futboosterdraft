@@ -3,9 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
-import { RingDuelo } from '../componentes/arte/RingDuelo';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
-import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
+import { CartaJugador, type CartaResumen, nombreCartaDe } from '../componentes/CartaJugador';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Icono } from '../componentes/Icono';
 import { NombreRecortado } from '../componentes/NombreRecortado';
@@ -207,7 +206,7 @@ export function Duelos() {
   const etiqueta = (casillaId: string) => FORMACIONES[r.formacion].casillas.find((c) => c.id === casillaId)?.etiqueta ?? casillaId;
   const nombre = (id: number) => {
     const c = datos.cartas[id];
-    return c ? `${c.nombre} ${c.apellidos.split(' ')[0]}` : String(id);
+    return c ? nombreCartaDe(c) : String(id);
   };
   const actual = ahora.terminado ? null : r.duelos[ahora.indice]!;
 
@@ -227,7 +226,6 @@ export function Duelos() {
 
       {actual ? (
         <section className="duelo-escenario" aria-label={`Duelo ${ahora.indice + 1} de ${n}: ${etiqueta(actual.casillaId)}`}>
-          <RingDuelo className="duelo-ring" />
           <header className="duelo-titulo">
             <p className="duelo-puesto">
               {etiqueta(actual.casillaId)} · {ahora.indice + 1}/{n}

@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Recorridos de principio a fin. Necesitan PostgreSQL con el catálogo cargado:
- *   docker compose up -d db && pnpm db:migrate && pnpm seed --file data/core.json
+ *   docker compose up -d db && pnpm db:migrate && pnpm seed
  * Playwright aplica las migraciones pendientes y arranca el servidor (con reloj simulado) y la web si no
  * están ya en marcha.
  */
