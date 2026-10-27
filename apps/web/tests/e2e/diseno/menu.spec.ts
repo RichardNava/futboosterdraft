@@ -56,3 +56,13 @@ test('a 1366 px no hay botón «Menú»: los enlaces están en la barra', async 
   await expect(barra.getByRole('link', { name: 'Inicio' })).toHaveAttribute('aria-current', 'page');
   await expect(barra.getByRole('link', { name: 'Mis partidas' })).toBeVisible();
 });
+
+test('spec 007 (FR-001 a FR-003): la barra, el menú y el favicon usan el logo oficial', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Jugar como invitado' }).click();
+  const barra = page.getByRole('navigation', { name: 'Navegación principal' });
+  await expect(barra.getByRole('link', { name: 'Fútboosterdraft' }).locator('img.escudo')).toHaveAttribute('src', '/marca/logo.svg');
+  await barra.getByRole('button', { name: 'Menú' }).click();
+  await expect(page.getByRole('dialog', { name: 'Menú' }).locator('img.escudo')).toHaveAttribute('src', '/marca/logo.svg');
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', '/marca/logo.svg');
+});

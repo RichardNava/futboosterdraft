@@ -8,7 +8,7 @@ import { CartaJugador, type CartaResumen, nombreCartaDe } from '../componentes/C
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Icono } from '../componentes/Icono';
 import { NombreRecortado } from '../componentes/NombreRecortado';
-import { instante, marcadorEn, puntos, valorContado, type Instante, type Velocidad } from '../componentes/secuenciaDuelos';
+import { instante, marcadorEn, puntos, ruletaEn, valorContado, valorRuleta, type Instante, type Velocidad } from '../componentes/secuenciaDuelos';
 import { reproducir } from '../sonido/sonido';
 
 interface LadoDuelo {
@@ -97,7 +97,8 @@ function animarChoque(el: HTMLElement, velocidad: Velocidad): void {
   });
 }
 
-function Desglose({ lado, i, estadoForma }: { lado: LadoDuelo; i: Instante; estadoForma: boolean }) {
+/** `forma`: el valor que enseña la fila «Estado de forma» (el de la ruleta mientras gira), o `null` si aún no se ve. */
+function Desglose({ lado, i, forma }: { lado: LadoDuelo; i: Instante; forma: number | null }) {
   const fila = (etiqueta: string, valor: number, signo: '' | '+' | '−') => (
     <div>
       <dt>{etiqueta}</dt>
@@ -114,7 +115,7 @@ function Desglose({ lado, i, estadoForma }: { lado: LadoDuelo; i: Instante; esta
       {lado.penalizacion > 0 && fila('Posición', lado.penalizacion, '−')}
       {lado.bonusVirtudes > 0 && fila('Virtudes', lado.bonusVirtudes, '+')}
       {lado.malusDefectos > 0 && fila('Defectos', lado.malusDefectos, '−')}
-      {estadoForma && i.fase === 'resultado' && fila('Estado de forma', lado.forma, lado.forma < 0 ? '−' : '+')}
+      {forma !== null && fila('Estado de forma', forma, forma < 0 ? '−' : '+')}
       <div className="duelo-total">
         <dt>Puntuación</dt>
         <dd>{puntos(valorContado(i.fase === 'resultado' ? lado.puntuacion : lado.puntuacion - lado.forma, i))}</dd>
@@ -158,6 +159,12 @@ export function Duelos() {
 
   const n = datos?.duelos.duelos.length ?? 0;
   const ahora = instante(saltado ? Number.MAX_SAFE_INTEGER : tiempo, n, 1, reducido);
+  // Ruleta del estado de forma (spec 007, FR-012): el reloj ya avanza a la velocidad elegida, así que va a ×1. Con
+  // movimiento reducido, `instante` no tiene fase de resultado en curso y no gira.
+  const ruleta = ruletaEn(ahora, 1);
+  const girando = datos?.duelos.estadoForma === true && ruleta.girando;
+  // Mientras gira, la puntuación total, el veredicto, el realce del ganador y el marcador esperan.
+  const visible: Instante = girando ? { ...ahora, fase: 'recuento', progreso: 1 } : ahora;
 
   // Reloj de la animación: el tiempo avanza a la velocidad elegida.
   useEffect(() => {
@@ -181,6 +188,12 @@ export function Duelos() {
     if (choque.current) animarChoque(choque.current, velocidad);
   }, [ahora.indice, ahora.fase, reducido, saltado, datos]);
 
+  // El sonido de la ruleta empieza con el giro y se corta al pararse, al cambiar de duelo, al saltar o al salir.
+  useEffect(() => {
+    if (!girando) return;
+    return reproducir('ruletaForma');
+  }, [girando, ahora.indice]);
+
   // El visionado se marca al terminar o al saltar (contracts/http-api.md).
   useEffect(() => {
     if (!ahora.terminado || visto.current) return;
@@ -201,7 +214,7 @@ export function Duelos() {
   const r = datos.duelos;
   const marcador = marcadorEn(
     r.duelos.map((d) => d.ganador),
-    ahora,
+    visible,
   );
   const etiqueta = (casillaId: string) => FORMACIONES[r.formacion].casillas.find((c) => c.id === casillaId)?.etiqueta ?? casillaId;
   const nombre = (id: number) => {
@@ -240,9 +253,13 @@ export function Duelos() {
           </header>
           <div className="duelo-pareja">
             {(['local', 'visitante'] as const).map((lado) => (
-              <div key={lado} className={`duelo-lado ${lado}`} style={estiloCarta(lado, ahora, actual.ganador, reducido)}>
+              <div key={lado} className={`duelo-lado ${lado}`} style={estiloCarta(lado, visible, actual.ganador, reducido)}>
                 <div className="duelo-carta">{datos.cartas[actual[lado].jugadorId] && <CartaJugador jugador={datos.cartas[actual[lado].jugadorId]!} />}</div>
-                <Desglose lado={actual[lado]} i={ahora} estadoForma={r.estadoForma} />
+                <Desglose
+                  lado={actual[lado]}
+                  i={visible}
+                  forma={!r.estadoForma || ahora.fase !== 'resultado' ? null : girando ? valorRuleta(actual[lado].forma, ruleta.progreso, ahora.indice * 2 + (lado === 'local' ? 0 : 1)) : actual[lado].forma}
+                />
               </div>
             ))}
             <div ref={destello} className="duelo-destello" aria-hidden="true" />
@@ -257,7 +274,7 @@ export function Duelos() {
                 </span>
               ))}
             </div>
-            {ahora.fase === 'resultado' && (
+            {visible.fase === 'resultado' && (
               <p className="duelo-veredicto" role="status">
                 {actual.ganador === 'nulo' ? 'Empate' : `Gana ${nombre(actual[actual.ganador].jugadorId)}`}
               </p>

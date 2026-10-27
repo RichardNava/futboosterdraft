@@ -14,7 +14,7 @@ import { Escudo } from '../componentes/arte/Escudo';
 import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
 import { useSaldo } from '../estado/saldo';
 
-const FONDOS_PANTALLA = 5;
+const FONDOS_PANTALLA = 11;
 /** Fondo de cada vista, sorteado la primera vez que se visita y fijo durante la sesión. */
 const fondoDeVista = new Map<string, string>();
 

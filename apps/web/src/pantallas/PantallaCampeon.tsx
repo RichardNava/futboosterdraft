@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { marcarPantallaVista } from '../api/cliente';
+import { reproducir } from '../sonido/sonido';
 import { useSesion } from '../estado/sesion';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Trofeo } from '../componentes/arte/Trofeo';
@@ -23,6 +24,14 @@ export function PantallaCampeon({ partidaId, campeon, recompensaFragmentos, onVo
   useEffect(() => {
     void marcarPantallaVista(partidaId, 'campeon').catch(() => undefined);
   }, [partidaId]);
+
+  // Suena una vez por visita (spec 007, FR-013): la referencia evita el doble montaje de StrictMode.
+  const sonado = useRef(false);
+  useEffect(() => {
+    if (sonado.current) return;
+    sonado.current = true;
+    reproducir('aplausos');
+  }, []);
 
   return (
     <main className="pantalla pantalla-final campeon-torneo">

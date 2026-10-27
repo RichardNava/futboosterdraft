@@ -17,6 +17,9 @@ test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Jornada 1' })).toBeVisible();
   await expect(page.getByText('Tu partido:')).toBeVisible();
   await expect(page.getByRole('tab', { name: 'Clasificación' })).toHaveAttribute('aria-selected', 'true');
+  // En liga siguen las tablas de goleadores y asistentes (spec 007, FR-016).
+  await expect(page.getByRole('tab', { name: 'Máximos goleadores' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Máximos asistentes' })).toBeVisible();
   await expect(page.locator('.clasificacion tbody tr')).toHaveCount(4);
 
   // Se juega el torneo como el único humano (spec 002, research R9): abre su partido, deja que venza el

@@ -155,8 +155,13 @@ export function Torneo() {
   const pestanas: { id: Pestana; texto: string }[] = [
     ...(vista.modo !== 'playoff' ? [{ id: 'clasificacion' as const, texto: 'Clasificación' }] : []),
     ...(vista.cuadro ? [{ id: 'cuadro' as const, texto: 'Cuadro' }] : []),
-    { id: 'goleadores', texto: 'Máximos goleadores' },
-    { id: 'asistentes', texto: 'Máximos asistentes' },
+    // En duelos no hay goles ni asistencias (spec 007, FR-016).
+    ...(vista.modo !== 'duelos'
+      ? [
+          { id: 'goleadores' as const, texto: 'Máximos goleadores' },
+          { id: 'asistentes' as const, texto: 'Máximos asistentes' },
+        ]
+      : []),
     { id: 'calendario', texto: 'Calendario' },
   ];
   const activa = pestana ?? (vista.fase === 'eliminatoria' && vista.cuadro ? 'cuadro' : pestanas[0]!.id);

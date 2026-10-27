@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { marcarPantallaVista } from '../api/cliente';
+import { reproducir } from '../sonido/sonido';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { Estadio } from '../componentes/arte/Estadio';
 
@@ -28,6 +29,14 @@ export function PantallaDerrota({ partidaId, equipo, fase, puedeSimularResto, to
   useEffect(() => {
     void marcarPantallaVista(partidaId, 'derrota').catch(() => undefined);
   }, [partidaId]);
+
+  // Suena una vez por visita (spec 007, FR-013): la referencia evita el doble montaje de StrictMode.
+  const sonado = useRef(false);
+  useEffect(() => {
+    if (sonado.current) return;
+    sonado.current = true;
+    reproducir('trompetas');
+  }, []);
 
   const volver: AccionBarra = { etiqueta: 'Volver al menú', onClick: onVolverAlMenu };
   const principal: AccionBarra = torneoTerminado

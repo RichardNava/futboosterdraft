@@ -1,6 +1,18 @@
 /** Secuencia de la animación de los duelos (spec 005, T077; FR-067, SC-009). */
 import { describe, expect, it } from 'vitest';
-import { DURACION_FASE, duracionDuelo, FUNDIDO_REDUCIDO_MS, instante, marcadorEn, puntos, valorContado } from '../../src/componentes/secuenciaDuelos';
+import {
+  DURACION_FASE,
+  DURACION_RULETA_MS,
+  duracionDuelo,
+  FUNDIDO_REDUCIDO_MS,
+  instante,
+  marcadorEn,
+  puntos,
+  RANGO_RULETA,
+  ruletaEn,
+  valorContado,
+  valorRuleta,
+} from '../../src/componentes/secuenciaDuelos';
 
 describe('secuencia de duelos', () => {
   it('un duelo dura unos 2,5 s a ×1 y la mitad a ×2; el cruce completo, menos de 30 s', () => {
@@ -47,5 +59,47 @@ describe('secuencia de duelos', () => {
     expect(puntos(8123)).toBe('81,23');
     expect(puntos(-150)).toBe('−1,50');
     expect(puntos(7)).toBe('0,07');
+  });
+});
+
+/** Ruleta del estado de forma (spec 007, FR-012; research R9). */
+describe('ruleta del estado de forma', () => {
+  const inicioResultado = DURACION_FASE.entrada + DURACION_FASE.choque + DURACION_FASE.recuento;
+
+  for (const velocidad of [1, 2] as const) {
+    it(`a ×${velocidad} gira al empezar el resultado y se detiene a los ${DURACION_RULETA_MS / velocidad} ms`, () => {
+      const en = (ms: number) => ruletaEn(instante(inicioResultado / velocidad + ms, 11, velocidad), velocidad);
+      expect(en(1).girando).toBe(true);
+      expect(en(DURACION_RULETA_MS / velocidad - 5).girando).toBe(true);
+      expect(en(DURACION_RULETA_MS / velocidad + 1)).toEqual({ girando: false, progreso: 1 });
+      expect(ruletaEn(instante(inicioResultado / velocidad - 10, 11, velocidad), velocidad).girando).toBe(false);
+    });
+  }
+
+  it('no gira con movimiento reducido ni al terminar', () => {
+    expect(ruletaEn(instante(FUNDIDO_REDUCIDO_MS + 1, 11, 1, true), 1).girando).toBe(false);
+    expect(ruletaEn(instante(Number.MAX_SAFE_INTEGER, 11, 1), 1).girando).toBe(false);
+  });
+
+  it('con el progreso completo muestra exactamente el valor final', () => {
+    for (const final of [-200, -37, 0, 1, 150, 200, 450]) for (const semilla of [0, 3, 21]) expect(valorRuleta(final, 1, semilla)).toBe(final);
+  });
+
+  it('mientras gira, el valor queda dentro del rango posible de la forma', () => {
+    for (let k = 0; k < 100; k++) {
+      const v = valorRuleta(150, k / 100, 7);
+      expect(Math.abs(v)).toBeLessThanOrEqual(RANGO_RULETA);
+      expect(Number.isInteger(v)).toBe(true);
+    }
+    expect(Math.abs(valorRuleta(450, 0.5, 7))).toBeLessThanOrEqual(450);
+  });
+
+  it('es determinista con la misma semilla y cambia cada vez menos a medida que avanza', () => {
+    const serie = (semilla: number) => Array.from({ length: 200 }, (_, k) => valorRuleta(80, k / 200, semilla));
+    expect(serie(5)).toEqual(serie(5));
+    expect(serie(5)).not.toEqual(serie(6));
+    const cambios = (a: number[]) => a.slice(1).filter((v, k) => v !== a[k]).length;
+    const s = serie(5);
+    expect(cambios(s.slice(0, 100))).toBeGreaterThan(cambios(s.slice(100)));
   });
 });
