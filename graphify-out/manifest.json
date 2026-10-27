@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/Marco.tsx": {
-    "mtime": 1793084428.4337459,
-    "seen": 1793088076.7119122,
-    "ast_hash": "290bb8a07fe65e331f68433f31345ac2",
+    "mtime": 1793142230.9018657,
+    "seen": 1793142631.8411386,
+    "ast_hash": "55771d101d5a014b63582d97f3bebefb",
     "semantic_hash": ""
   },
   "apps/web/src/app/Rutas.tsx": {
@@ -726,9 +726,9 @@
     "semantic_hash": "4bea0cbd65a062331631adddae64911e"
   },
   "apps/web/src/componentes/AperturaSobre.tsx": {
-    "mtime": 1792625757.566858,
-    "seen": 1792645202.6954932,
-    "ast_hash": "35df8bdc80da2ccac5ac96f3a4ae85f3",
+    "mtime": 1793142075.7682912,
+    "seen": 1793142631.8422894,
+    "ast_hash": "4ebfc7c10546488a91b571564c7e84fd",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/AvisoDorsales.tsx": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaJugador.tsx": {
-    "mtime": 1793055174.945704,
-    "seen": 1793088076.7139301,
-    "ast_hash": "cde070d7aa6d29959c87e915e30a4f33",
+    "mtime": 1793142132.8709743,
+    "seen": 1793142631.8439903,
+    "ast_hash": "848bd2bab33013d18383d8bb6ef4a45b",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/DistintivoBaja.tsx": {
@@ -858,9 +858,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Inicio.tsx": {
-    "mtime": 1793055174.9557467,
-    "seen": 1793088076.7195897,
-    "ast_hash": "5aa9c96234d5b30645ddc377daaaccfb",
+    "mtime": 1793142085.9284117,
+    "seen": 1793142631.855326,
+    "ast_hash": "db7f751ee047981a9db8d6e855de8121",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/MisPartidas.tsx": {
@@ -912,15 +912,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Torneo.tsx": {
-    "mtime": 1793084438.7773921,
-    "seen": 1793088076.7204394,
-    "ast_hash": "01105692737ae9d1a6f9e07253bc3cd7",
+    "mtime": 1793142108.25133,
+    "seen": 1793142631.8579788,
+    "ast_hash": "1768f2e71efde0ab798c3fbd809e3414",
     "semantic_hash": ""
   },
   "apps/web/src/sonido/sonido.ts": {
-    "mtime": 1793084654.7321937,
-    "seen": 1793088076.720444,
-    "ast_hash": "6292e191c1d36c698d6e46f9b818ce3f",
+    "mtime": 1793142073.6120584,
+    "seen": 1793142631.8581998,
+    "ast_hash": "338e6b0e269ee98c491c8131fe555bf9",
     "semantic_hash": ""
   },
   "apps/web/src/textos/niveles.ts": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/navegacion.spec.ts": {
-    "mtime": 1792484980.7864385,
-    "seen": 1792485016.6196907,
-    "ast_hash": "0eb410fbc6451b9c8a7700c718b25944",
+    "mtime": 1793142276.9631205,
+    "seen": 1793142631.8659918,
+    "ast_hash": "ad565938da4c389e360ba91f529b6a72",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/partido-2d.spec.ts": {
@@ -2514,8 +2514,8 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/torneo-final.spec.ts": {
-    "mtime": 1792592850.8160238,
-    "seen": 1792645202.6992884,
+    "mtime": 1793141751.4956512,
+    "seen": 1793142631.866857,
     "ast_hash": "b80ed9ac9541cc5bdad7d41bd41494e9",
     "semantic_hash": ""
   },
@@ -2964,9 +2964,9 @@
     "semantic_hash": ""
   },
   "docs/diseno/DESIGN.md": {
-    "mtime": 1793087667.495833,
-    "seen": 1793088076.756941,
-    "ast_hash": "9a236e47c65ebd830706c55b3ec52331",
+    "mtime": 1793142563.281716,
+    "seen": 1793142631.961831,
+    "ast_hash": "df95f804218eeb4e2669a762c6aeaad9",
     "semantic_hash": ""
   },
   "specs/004-mejoras-visuales-diseno/checklists/requirements.md": {
@@ -3156,8 +3156,8 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/duelos.spec.ts": {
-    "mtime": 1793084843.9331987,
-    "seen": 1793088076.7234175,
+    "mtime": 1793141751.4936526,
+    "seen": 1793142631.8650954,
     "ast_hash": "815c3e30dee31f82366cb322ef92234e",
     "semantic_hash": ""
   },
@@ -4836,9 +4836,9 @@
     "semantic_hash": ""
   },
   "specs/007-retoques-visuales/tasks.md": {
-    "mtime": 1793087688.4368577,
-    "seen": 1793088076.7655241,
-    "ast_hash": "d077fd35b4db48c53807b935e22b7521",
+    "mtime": 1793142027.4022107,
+    "seen": 1793142631.979972,
+    "ast_hash": "2a6923b0db9b7b7d697d0ed808e25c2e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/marcos/epico.svg": {
@@ -5037,6 +5037,24 @@
     "mtime": 1793084614.9300025,
     "seen": 1793088076.7656686,
     "ast_hash": "f80b1cc8ba122f396d11ac15bd213968",
+    "semantic_hash": ""
+  },
+  "apps/web/tests/e2e/zz-captura.spec.ts": {
+    "mtime": 1793142188.2284808,
+    "seen": 1793142631.8670774,
+    "ast_hash": "30a0d01e529dcfbbc1e01c62f0c7a665",
+    "semantic_hash": ""
+  },
+  "apps/web/tests/e2e/zz-portada.spec.ts": {
+    "mtime": 1793142532.4924548,
+    "seen": 1793142631.8670812,
+    "ast_hash": "d5a6455317cec12c9b608f722bb7e216",
+    "semantic_hash": ""
+  },
+  "apps/web/vite.diag.config.ts": {
+    "mtime": 1793141583.187588,
+    "seen": 1793142631.870945,
+    "ast_hash": "03416fe7fdbcb14e33f20e910566f6e3",
     "semantic_hash": ""
   }
 }

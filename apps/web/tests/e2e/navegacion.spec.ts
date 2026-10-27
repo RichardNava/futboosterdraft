@@ -76,3 +76,44 @@ test('draft con otro humano: «¿Abandonar la partida?» al salir; cancelar se q
   await b.getByRole('button', { name: 'Confirmar elección' }).click();
   await expect(tituloB).toContainText('Turno 2 de 8', { timeout: 5000 });
 });
+
+test('«Abandonar» en la barra: en cualquier momento de la partida, un NPC ocupa la plaza (spec 007, segunda ronda)', async ({ browser }) => {
+  test.setTimeout(120_000);
+  const a = await (await browser.newContext()).newPage();
+  const b = await (await browser.newContext()).newPage();
+  await registrar(a);
+  await registrar(b);
+  const r = await a.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, plazasHumanas: 2 } });
+  const { id } = (await r.json()) as { id: string };
+  expect((await b.request.post(`/api/partidas/${id}/unirse`)).ok()).toBe(true);
+  // En la sala aún no se juega: no hay botón.
+  await a.goto(`/partidas/${id}/sala`);
+  await expect(a.getByRole('heading', { name: 'Sala' })).toBeVisible();
+  await expect(barra(a).getByRole('button', { name: 'Abandonar la partida' })).toHaveCount(0);
+  await a.request.post(`/api/partidas/${id}/iniciar`);
+  await a.goto(`/partidas/${id}/draft`);
+  await b.goto(`/partidas/${id}/draft`);
+  await expect(a.getByRole('heading', { level: 1 })).toContainText('Turno 1 de 8');
+
+  // Cancelar se queda en el draft.
+  await barra(a).getByRole('button', { name: 'Abandonar la partida' }).click();
+  const modal = a.getByRole('dialog', { name: '¿Abandonar la partida?' });
+  await modal.getByRole('button', { name: 'Seguir en el draft' }).click();
+  await expect(modal).toBeHidden();
+  await expect(a).toHaveURL(new RegExp(`/partidas/${id}/draft`));
+
+  // Abandonar: al inicio, sin volver a preguntar, y la plaza la juega un NPC.
+  await barra(a).getByRole('button', { name: 'Abandonar la partida' }).click();
+  await modal.getByRole('button', { name: 'Abandonar', exact: true }).click();
+  await expect(a).toHaveURL(/\/$/);
+  await expect(modal).toHaveCount(0);
+  const tituloB = b.getByRole('heading', { level: 1 });
+  await b.locator('.rejilla-cartas .carta-cuerpo[role="button"]').first().click();
+  await b.getByRole('button', { name: 'Confirmar elección' }).click();
+  await expect(tituloB).toContainText('Turno 2 de 8', { timeout: 5000 });
+
+  // Al volver a la partida, ya no puede abandonarla otra vez.
+  await a.goto(`/partidas/${id}/draft`);
+  await expect(a.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(barra(a).getByRole('button', { name: 'Abandonar la partida' })).toHaveCount(0);
+});

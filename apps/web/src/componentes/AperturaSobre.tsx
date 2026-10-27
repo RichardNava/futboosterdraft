@@ -106,7 +106,7 @@ export function AperturaSobre({ cartas, onTerminar }: Props) {
     };
     const marcar = (i: number, e: EstadoCarta) => setEstados((prev) => prev.map((v, j) => (j === i ? e : v)));
 
-    reproducir('apertura');
+    const pararApertura = reproducir('apertura');
     t.push(
       setTimeout(() => {
         const [x, y] = centroDe(sobre.current);
@@ -138,6 +138,8 @@ export function AperturaSobre({ cartas, onTerminar }: Props) {
     t.push(setTimeout(() => setFase('fundido'), fundido));
     t.push(setTimeout(acabar, total));
     return () => {
+      // En el doble montaje de StrictMode, la apertura sonaba dos veces.
+      pararApertura();
       t.forEach(clearTimeout);
       particulas?.detener();
     };

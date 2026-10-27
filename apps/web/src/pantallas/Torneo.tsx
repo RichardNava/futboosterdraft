@@ -382,7 +382,7 @@ export function Torneo() {
 }
 
 /**
- * Máximos goleadores o asistentes (FR-039 a FR-042): Pos, Jugador (dorsal y nombre), Equipo, Goles o
+ * Máximos goleadores o asistentes (FR-039 a FR-042): Pos, Jugador (solo el nombre), Equipo, Goles o
  * Asistencias y PJ; 10 filas y «Ver todos».
  */
 function TablaGoleadores({ cual, filas, partidaId, yo, pendientes }: { cual: 'goleadores' | 'asistentes'; filas: FilaGoleador[]; partidaId: string; yo: string | null; pendientes: number }) {
@@ -413,7 +413,7 @@ function TablaGoleadores({ cual, filas, partidaId, yo, pendientes }: { cual: 'go
             <tr key={`${f.equipo.id}-${f.jugador.id}`} className={f.equipo.id === yo ? 'propia fila-propia' : undefined}>
               <td>{f.posicion}</td>
               <th scope="row">
-                {f.jugador.dorsal !== undefined && <span className="dorsal-tabla">{f.jugador.dorsal}</span>} {f.jugador.nombre} {f.jugador.apellidos}
+                {f.jugador.nombre} {f.jugador.apellidos}
               </th>
               <td className="col-texto">
                 <NombreRecortado texto={f.equipo.nombre} />

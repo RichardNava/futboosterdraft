@@ -76,16 +76,22 @@
  */
 .carta.completa {
   --carta-hueco-x: 9cqi;
-  --carta-hueco-y: 7cqi;
+  /* Arriba, margen para que la media y el retrato no toquen el filo ni el adorno central del marco. */
+  --carta-hueco-y: 10cqi;
+  /* Abajo, por encima del chaflán del marco. */
+  --carta-hueco-abajo: 12cqi;
   display: flex;
   flex-direction: column;
   aspect-ratio: 2 / 3;
   max-width: 300px;
   width: 100%;
-  /* El color de reserva solo pinta el interior: si el marco no carga, la carta se lee igual sin un recuadro detrás. */
+  /*
+   * El color de reserva solo pinta el interior: si el marco no carga, la carta se lee igual sin un recuadro detrás. Más
+   * pequeño que el interior del marco: a 88 % × 90 %, sus esquinas asomaban por fuera del chaflán.
+   */
   background:
     var(--carta-marco-img) center / 100% 100% no-repeat,
-    linear-gradient(var(--carta-superficie), var(--carta-superficie)) center / 88% 90% no-repeat;
+    linear-gradient(var(--carta-superficie), var(--carta-superficie)) center / 84% 86% no-repeat;
   color: var(--carta-texto);
   /* Legible sobre los brillos y focos del estadio del marco (FR-007). */
   text-shadow: 0 1px 2px rgb(0 0 0 / 70%);
@@ -94,11 +100,9 @@
   isolation: isolate;
 }
 
-/* Carta elegida: contorno lima por fuera, que no tapa el marco. */
+/* Carta elegida: luz lima con la silueta del marco (un `outline` es rectangular y asomaba por los chaflanes). */
 .carta.completa.seleccionada {
-  outline: 3px solid #b7ff2c;
-  outline-offset: 2px;
-  filter: drop-shadow(0 0 14px rgb(183 255 44 / 55%));
+  filter: drop-shadow(0 0 2px #b7ff2c) drop-shadow(0 0 3px #b7ff2c) drop-shadow(0 0 14px rgb(183 255 44 / 60%));
 }
 
 .carta-apellidos .nombre-recortado {
@@ -158,9 +162,17 @@
   gap: clamp(2px, 1.5cqi, 5px);
 }
 
-/* Virtudes y, debajo, defectos (spec 005, FR-020 a FR-022), en el sitio que reservaba la carta antes de los defectos. */
+/*
+ * Virtudes y, debajo, defectos (spec 005, FR-020 a FR-022), en el sitio que reservaba la carta antes de los defectos.
+ * Más estrechos que el resto del contenido, y más aún en la fila de abajo, donde el marco se achaflana.
+ */
 .carta.completa > .carta-rasgos {
-  padding: 0 var(--carta-hueco-x) var(--carta-hueco-y);
+  padding: 0 calc(var(--carta-hueco-x) + 3cqi) var(--carta-hueco-abajo);
+}
+
+.carta.completa .carta-defectos,
+.carta.completa .carta-rasgos:not(.densa) .carta-virtudes > span:nth-child(4) {
+  margin-inline: 4cqi;
 }
 
 .carta-cuerpo {
@@ -193,16 +205,21 @@
   line-height: 1.2;
 }
 
+/* Ámbar que pasa a dorado al acercarse a 100 (`--carta-media-oro`, de 0 % a 100 %, lo pone `CartaJugador`). */
 .carta-media {
   font-family: var(--carta-letra);
-  font-size: clamp(1.5rem, 15cqi, 2.8rem);
+  font-size: clamp(1.6rem, 17cqi, 3rem);
   font-weight: 800;
+  color: color-mix(in oklab, #ffe066 var(--carta-media-oro, 0%), #ff9f1c);
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 80%),
+    0 0 12px rgb(255 170 30 / 45%);
   /* El alto de la fuente (ascendente + descendente) es 1,2 em: con menos, la cifra desborda su caja. */
   line-height: 1.2;
 }
 
 .carta-demarcacion {
-  font-size: clamp(0.65rem, 6cqi, 0.95rem);
+  font-size: clamp(0.65rem, 5.4cqi, 0.95rem);
   font-weight: 800;
   color: var(--carta-texto-suave);
 }
@@ -303,11 +320,14 @@ img.carta-fondo-accion {
   overflow-wrap: anywhere;
 }
 
-/* Hallazgo H1: el nombre reserva siempre dos líneas de apellidos, para que todas las cartas midan lo mismo. */
+/*
+ * Hallazgo H1: el nombre reserva siempre dos líneas de apellidos, para que todas las cartas midan lo mismo. Pegados
+ * abajo, junto al nombre completo: centrados en las dos líneas, uno de una sola línea quedaba lejos de él.
+ */
 .carta.completa .carta-apellidos {
   min-height: 2.2em;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 
@@ -318,7 +338,7 @@ img.carta-fondo-accion {
 
 .carta-apellidos {
   font-family: var(--carta-letra);
-  font-size: clamp(0.9rem, 8.5cqi, 1.4rem);
+  font-size: clamp(1rem, 9.7cqi, 1.7rem);
   font-weight: 800;
   letter-spacing: 0.01em;
 }
@@ -337,7 +357,12 @@ img.carta-fondo-accion {
 /* Una línea de posiciones reservada (H1): como mucho tres, siempre caben. */
 .carta.completa .carta-posiciones {
   flex-wrap: nowrap;
-  min-height: calc(clamp(0.68rem, 6.2cqi, 0.92rem) * 1.5);
+  min-height: calc(clamp(0.68rem, 5.3cqi, 0.92rem) * 1.5);
+}
+
+/* Los valores en `cqi` de la carta completa llegan a su tope a 280 px: por debajo, en la misma proporción que ahí. */
+.carta.completa .carta-posicion {
+  font-size: clamp(0.68rem, 5.3cqi, 0.92rem);
 }
 
 .carta-posicion {
@@ -366,25 +391,29 @@ img.carta-fondo-accion {
   margin: 0;
 }
 
+/* Abreviatura y valor juntos, centrados en su columna. */
 .carta-stat {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: baseline;
-  gap: 2px;
+  gap: 0.3em;
   border-bottom: 1px solid var(--carta-linea);
   line-height: 1.15;
 }
 
-/* FR-009: abreviatura a ≥ 1rem y valor en negrita a 1,25 veces la abreviatura. */
+/*
+ * Stats y rasgos de la carta completa en `cqi`, con las proporciones de la de 280 px (1,15 rem, 1,45 rem y 1 rem): con
+ * letra fija, por debajo de ese ancho no cabían en 2 : 3 y los stats pisaban los rasgos.
+ */
 .carta.completa .carta-stat dt {
-  font-size: 1rem;
+  font-size: 6.6cqi;
   font-weight: 600;
   color: var(--carta-texto-suave);
 }
 
 .carta.completa .carta-stat dd {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 8.3cqi;
   font-weight: 800;
 }
 
@@ -395,8 +424,9 @@ img.carta-fondo-accion {
  * `--escala-rasgos`; el alto de la zona sale de su propia letra, que no cambia, así que la carta no crece.
  */
 .carta-rasgos {
-  --alto-virtud: calc(1.5em + 2px);
-  --hueco-virtud: 3px;
+  /* En `cqi` (2 px y 3 px a 280 px): crecen y menguan con la carta, como la letra. */
+  --alto-virtud: calc(1.5em + 0.7cqi);
+  --hueco-virtud: 1.1cqi;
   box-sizing: content-box;
   display: flex;
   flex-direction: column;
@@ -538,31 +568,8 @@ img.carta-fondo-accion {
   font-weight: 700;
 }
 
-/* En móvil (360 px), ≥ 14 px (FR-009). */
-@media (max-width: 480px) {
-  .carta.completa .carta-stat dt,
-  .carta.completa .carta-rasgos {
-    font-size: 0.875rem;
-  }
-
-  .carta.completa .carta-stat dd {
-    font-size: 1.1rem;
-  }
-}
-
-/*
- * Por debajo de 230 px (draft escalado, colecciones densas…), la letra de stats y rasgos sale del ancho de la carta para
- * que todo quepa en 2 : 3 (spec 007, FR-006b). Las rejillas de cartas no bajan de ese ancho.
- */
-@container (max-width: 229px) {
-  .carta.completa .carta-stat dt,
-  .carta.completa .carta-rasgos {
-    font-size: 6.2cqi;
-  }
-
-  .carta.completa .carta-stat dd {
-    font-size: 7.8cqi;
-  }
+.carta.completa .carta-rasgos {
+  font-size: 5.7cqi;
 }
 
 /* ---------- Carta compacta (listas largas): fila de vidrio con la luz del nivel ---------- */
@@ -576,9 +583,9 @@ img.carta-fondo-accion {
 
 .carta.compacta .carta-cuerpo {
   display: grid;
-  /* Spec 006 (US6, escenario 5): en la compacta, solo la bandera, junto al nombre. */
-  grid-template-columns: auto auto 1fr;
-  grid-template-areas: 'media bandera nombre' 'media posiciones posiciones';
+  /* Spec 006 (US6, escenario 5): en la compacta, solo la bandera, junto al nombre; el dorsal, en su columna detrás. */
+  grid-template-columns: auto auto 1fr auto;
+  grid-template-areas: 'media bandera nombre dorsal' 'media posiciones posiciones posiciones';
   align-items: center;
   column-gap: 8px;
   row-gap: 2px;
@@ -646,8 +653,8 @@ img.carta-fondo-accion {
 }
 
 .carta.compacta .carta-dorsal {
-  top: 6px;
-  right: 36px;
+  position: static;
+  grid-area: dorsal;
   color: rgb(255 255 255 / 80%);
 }
 
@@ -1001,7 +1008,7 @@ img.carta-fondo-accion {
   }
 }
 
-/* Sobre recién abierto (SobreArte `rasgado`): sin el sellado superior, con un borde irregular. */
+/* Sobre recién abierto (SobreArte `rasgado`, en «Draft terminado»): sin el sellado superior y con dientes hondos, para que se lea como abierto. */
 .sobre-arte.rasgado {
-  clip-path: polygon(0% 11.0%, 7% 9.8%, 11% 11.2%, 18.5% 9.4%, 24.5% 10.8%, 31.5% 9.0%, 39% 10.6%, 45% 9.2%, 52% 11.0%, 59% 9.6%, 65.5% 10.8%, 73% 9.2%, 79% 10.6%, 85.5% 9.4%, 93% 11.0%, 100% 9.8%, 100% 100%, 0 100%);
+  clip-path: polygon(0% 16%, 5% 9%, 9% 19%, 14% 11%, 19% 22%, 25% 12%, 30% 18%, 36% 8%, 42% 20%, 48% 13%, 53% 21%, 59% 10%, 65% 19%, 70% 12%, 76% 22%, 82% 9%, 87% 18%, 93% 11%, 100% 17%, 100% 100%, 0 100%);
 }

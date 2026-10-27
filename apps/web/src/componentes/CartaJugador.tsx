@@ -103,7 +103,7 @@ export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick,
     >
       {!compacta && <ImagenCarta key={fondoDe(jugador)} tipo="fondo" ruta={fondoDe(jugador)} generica={generica('fondos', jugador)} />}
       <div className="carta-cuerpo" {...interactivo}>
-        {compacta ? <ContenidoCompacto jugador={jugador} /> : <ContenidoCompleto jugador={jugador} />}
+        {compacta ? <ContenidoCompacto jugador={jugador} dorsal={dorsal} /> : <ContenidoCompleto jugador={jugador} />}
       </div>
       {/* Siempre en la carta completa, aunque estén vacías: reservan el sitio de los rasgos y todas miden lo mismo (H1, 005/FR-022). */}
       {!compacta && (
@@ -112,7 +112,7 @@ export function CartaJugador({ jugador, compacta, seleccionada, dorsal, onClick,
           <Rasgos tipo="defecto" ids={jugador.defectos} onClick={onClick} onDobleClick={onClick ? onDobleClick : undefined} />
         </ZonaRasgos>
       )}
-      {dorsal !== undefined && <span className="carta-dorsal">#{dorsal}</span>}
+      {dorsal !== undefined && !compacta && <span className="carta-dorsal">#{dorsal}</span>}
       {onVerFicha && (
         <button type="button" className="carta-ficha" onClick={onVerFicha} aria-label={`Ver carta de ${jugador.nombre} ${jugador.apellidos}`}>
           i
@@ -134,12 +134,31 @@ function Posiciones({ posiciones }: { posiciones: string[] }) {
   );
 }
 
-function ContenidoCompacto({ jugador }: { jugador: CartaResumen }) {
+/**
+ * Cuánto tira la media del ámbar al dorado: 0 % hasta 65 y 100 % en 99 (spec 007, segunda ronda). Va en
+ * `--carta-media-oro`, que mezcla los dos colores en `cartas.css`.
+ */
+function oroMedia(media: number): string {
+  return `${Math.round(Math.min(1, Math.max(0, (media - 65) / 34)) * 100)}%`;
+}
+
+function Media({ media, etiqueta }: { media: number; etiqueta?: boolean }) {
+  const valor = Math.round(media);
+  return (
+    <span className="carta-media" aria-label={etiqueta ? `Media ${valor}` : undefined} style={{ '--carta-media-oro': oroMedia(media) } as CSSProperties}>
+      {valor}
+    </span>
+  );
+}
+
+function ContenidoCompacto({ jugador, dorsal }: { jugador: CartaResumen; dorsal?: number }) {
   return (
     <>
-      <span className="carta-media">{Math.round(jugador.media)}</span>
+      <Media media={jugador.media} />
       {jugador.nacionalidad && <Bandera key={jugador.nacionalidad} codigo={jugador.nacionalidad} />}
       <NombreRecortado texto={nombreCartaDe(jugador)} className="carta-nombre" />
+      {/* En su propia columna, detrás del nombre: así nunca lo pisa (banquillo). */}
+      {dorsal !== undefined && <span className="carta-dorsal">#{dorsal}</span>}
       <Posiciones posiciones={jugador.posicion} />
     </>
   );
@@ -180,9 +199,7 @@ function ContenidoCompleto({ jugador }: { jugador: CartaResumen }) {
     <>
       <div className="carta-cabecera">
         <div className="carta-cifras">
-          <span className="carta-media" aria-label={`Media ${Math.round(jugador.media)}`}>
-            {Math.round(jugador.media)}
-          </span>
+          <Media media={jugador.media} etiqueta />
           <span className="carta-demarcacion">{jugador.demarcacion}</span>
           {jugador.nacionalidad && (
             <span className="carta-procedencia">

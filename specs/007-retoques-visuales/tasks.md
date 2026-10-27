@@ -223,6 +223,41 @@ rasgado (FR-017 a FR-020; research R4).
 
 ---
 
+## Phase 10: Segunda ronda (bugs y mejoras tras probar la spec)
+
+**Purpose**: corregir lo que se vio al probar la primera ronda. Diagnóstico del sonido: con el flujo completo en Chromium
+(apertura, duelos, derrota y campeón), los nueve efectos llegan a `start()` con el contexto en `running`. Lo que falla
+en una sesión real es lo siguiente:
+- el volumen está desequilibrado (sonoridad efectiva con la ganancia: volteo y reparto ≈ −33 LUFS, ruleta ≈ −40,
+  entrada ≈ −46, frente a −19 de los aplausos);
+- un fallo de carga se queda en caché para siempre;
+- un efecto pedido con el contexto suspendido se pierde, y el desbloqueo solo escucha el primer gesto;
+- la primera ruleta se corta antes de terminar de cargarse;
+- la apertura suena dos veces en StrictMode.
+
+- [X] T054 [US6] Portada (`Inicio.tsx`) con el sobre entero, sin `rasgado`; en «Draft terminado», rasgado más marcado (`.sobre-arte.rasgado` en `cartas.css`).
+- [X] T055 [P] Lanzadores en fila: penaltis, faltas y córners uno al lado del otro, y la tanda en otra fila (`.lanzadores` en `base.css`).
+- [X] T056 [P] Banquillo (carta compacta): el dorsal va en su propia columna de la rejilla, detrás del nombre, y nunca lo pisa (`CartaJugador.tsx`, `cartas.css`).
+- [X] T057 [P] [US5] Máximos goleadores y asistentes: solo el nombre del jugador, sin dorsal (`Torneo.tsx`).
+- [X] T058 [US2] `sonido.ts`:
+  - precargar los nueve efectos al crear el contexto;
+  - no guardar en caché una carga fallida;
+  - reanudar el contexto si está suspendido y escuchar todos los gestos, no solo el primero;
+  - reequilibrar `BASE` con la sonoridad medida (EBU R128).
+
+  En `AperturaSobre.tsx`, detener la apertura al desmontar (doble montaje).
+- [X] T059 [US1] Carta completa:
+  - rasgos más estrechos, y más aún en la fila de abajo, donde el marco se achaflana;
+  - apellidos más grandes y más pegados al nombre completo;
+  - stats más grandes, con la abreviatura junto al valor;
+  - cabecera (media, demarcación, bandera y retrato) más abajo, con margen respecto al marco.
+- [X] T060 [US1] Esquinas que asomaban tras el marco: el color de reserva queda dentro del interior del marco y la carta elegida usa `drop-shadow` (sigue el chaflán) en lugar de `outline` (rectangular).
+- [X] T061 [US1] Media en ámbar que pasa a dorado al acercarse a 100 (`--carta-media-oro` calculado en `CartaJugador.tsx`, color en `cartas.css`).
+- [X] T062 Botón «Abandonar» en la barra de navegación mientras se juega una partida (draft o torneo) en la que sigues activo: confirma con el diálogo existente, llama a `POST /api/partidas/:id/abandonar` (un NPC ocupa la plaza) y vuelve al inicio (`Marco.tsx`, e2e en `navegacion.spec.ts`).
+- [X] T063 Validar: `pnpm typecheck`, `pnpm lint`, pruebas unitarias de web y e2e afectados; capturas de `/_pruebas/cartas`; `graphify update .`.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Dependencias entre fases

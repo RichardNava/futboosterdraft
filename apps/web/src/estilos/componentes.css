@@ -1209,6 +1209,21 @@ span.error {
   margin-left: 0;
 }
 
+/* «Abandonar» la partida que se está jugando: junto a la marca, en el color de error; en móvil estrecho, solo el icono. */
+.boton-abandonar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--espacio-1);
+  color: var(--color-error);
+}
+
+@media (max-width: 479.98px) {
+  .boton-abandonar > span {
+    display: none;
+  }
+}
+
 /* En móvil estrecho caben marca, saldo y «Menú»: menos hueco y el nombre se parte en su <wbr>. */
 @media (max-width: 479.98px) {
   .barra-navegacion:has(.saldo-navegacion) {

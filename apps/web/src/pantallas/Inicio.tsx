@@ -206,7 +206,7 @@ function EscenaPortada() {
           </div>
         ))}
       </div>
-      <SobreArte className="portada-sobre" rasgado />
+      <SobreArte className="portada-sobre" />
     </div>
   );
 }
