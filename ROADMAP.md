@@ -1,6 +1,6 @@
 # Roadmap de Fútboosterdraft
 
-**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-28 · **Constitución**: 1.1.1
+**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 · **Constitución**: 1.1.1
 
 Este documento es la *spec de specs* del proyecto: agrupa las especificaciones de `specs/` en iniciativas de
 producto, fija su orden y dice cuándo se da por cerrada cada una. No sustituye a las specs: cada iniciativa remite
@@ -44,6 +44,9 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | sin spec | P3 | Idea | INI-12 |
+| [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007 | P1 | Parcial | INI-03, INI-04, INI-08 |
+
+Los ids siguen el orden en que se registran, no el de prioridad: INI-15 se añadió al aparecer la spec 007.
 
 ## Dependencias
 
@@ -63,6 +66,9 @@ graph LR
   INI12 --> INI14[INI-14 Cosméticos y premium]
   INI05 --> INI13[INI-13 Modos adicionales]
   INI09 --> INI13
+  INI03 --> INI15[INI-15 Retoques visuales y sonoros]
+  INI04 --> INI15
+  INI08 --> INI15
 ```
 
 **Camino crítico a la beta**: INI-05 → INI-06 → INI-07 → INI-10, con INI-09 en paralelo (es barata y desbloquea
@@ -282,6 +288,31 @@ INI-10 e INI-13).
 - **Dependencias**: INI-12.
 - **Criterios de cierre**: no se definen hasta que exista una spec aprobada; debe respetar el Principio VII.
 
+## INI-15 Retoques visuales y sonoros
+
+- **Objetivo**: pulir la presentación antes de la beta: marca, cartas, sobre y sonido.
+- **Alcance**: 007 US1–US6: cartas con marcos y fondos por rareza (Superclase, Épica, Legendaria, GOAT), sonidos más
+  suaves (−20 %) y cuatro momentos sonoros nuevos (choque y ruleta de forma en los duelos, campeón, derrota), logo
+  oficial en SVG, seis fondos de página nuevos, sin tablas de goleadores en el modo Duelos y nuevo sobre con su
+  animación. Los recursos de origen están en `temp/`, que debe desaparecer al cerrar la spec (FR-021).
+- **Specs**: [007](specs/007-retoques-visuales/spec.md).
+- **Prioridad / estado**: P1 · **Parcial**. 61 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
+- **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
+  (rarezas y presentación de la carta de la 006).
+- **Evidencia**: sin `checklists/validacion.md`. Sin cerrar:
+  - **007/SC-007 no se cumple**: `temp/` sigue versionado en `main` (12 ficheros, comprobado el 2026-10-29). T050
+    está abierta, pero T051, que comprueba `test ! -d temp`, está marcada como hecha.
+  - T052: `pnpm typecheck`, `pnpm lint`, `pnpm test` y `pnpm e2e` completos. T063 solo cubrió unitarias de web y las e2e afectadas.
+  - 007/SC-004 (ningún efecto agudo o molesto en una escucha de prueba) y SC-003 (carga no más lenta) necesitan
+    una comprobación con personas; entran en la sesión común de INI-01 a INI-03.
+  - Trazabilidad: el botón «Abandonar» en la barra de navegación (T062) se implementó en la segunda ronda sin
+    requisito en la spec 007; hay que añadirlo a su `spec.md` o a la de la funcionalidad de abandono (Principio X).
+- **Criterios de cierre**:
+  1. `temp/` eliminado del repositorio (T050) y T051 repetida en verde.
+  2. T052 en verde y registrada en `specs/007-retoques-visuales/checklists/validacion.md`.
+  3. SC-001 a SC-008 comprobados en esa validación.
+  4. «Abandonar» recogido como requisito con su criterio de aceptación.
+
 ---
 
 ## Decisiones tomadas en esta propuesta
@@ -312,3 +343,6 @@ INI-10 e INI-13).
 | Licencia de los escudos | `docs/despliegue.md` | INI-08, INI-10 |
 | Tests intermitentes: `torneo-asincrono` con la máquina cargada; `torneo.spec.ts` y la regla de 10 minutos sin conexión con el reloj simulado | 002, 003 y 004 `validacion.md` | INI-07 |
 | Tareas hechas sin marcar: T036 (003), T144 (001) | `tasks.md` | INI-05, INI-01 |
+| `temp/` sigue versionado (007/SC-007) y T051 marcada pese a ello | `specs/007-retoques-visuales/tasks.md` | INI-15 |
+| Batería completa tras la 007 (T052) | `pnpm typecheck`, `lint`, `test`, `e2e` | INI-15 |
+| Escucha de prueba de los sonidos (007/SC-004) | sesión con personas | INI-15 |
