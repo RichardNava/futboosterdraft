@@ -64,6 +64,34 @@ export function valorContado(final: number, i: Instante): number {
   return final;
 }
 
+/** Duración de la ruleta del estado de forma a ×1 (spec 007, FR-012): ocupa el principio de la fase de resultado. */
+export const DURACION_RULETA_MS = 800;
+/** Amplitud de la forma con los parámetros neutros (± 2,00 puntos); la ruleta gira dentro de ella. */
+export const RANGO_RULETA = 200;
+/** Saltos de la ruleta hasta pararse (los mismos tics que su sonido). */
+const SALTOS_RULETA = 12;
+
+/** ¿Gira la ruleta en este instante?, y su progreso (0..1). Sin estado de forma en el cruce, la pantalla no la usa. */
+export function ruletaEn(i: Instante, velocidad: Velocidad): { girando: boolean; progreso: number } {
+  if (i.fase !== 'resultado' || i.terminado) return { girando: false, progreso: i.fase === 'resultado' ? 1 : 0 };
+  const tiempoFase = (i.progreso * DURACION_FASE.resultado) / velocidad;
+  const progreso = Math.min(1, tiempoFase / (DURACION_RULETA_MS / velocidad));
+  return { girando: progreso < 1, progreso };
+}
+
+/**
+ * Valor que enseña la ruleta: salta entre valores al azar (deterministas por `semilla`) cada vez más despacio
+ * (desaceleración `1 − (1 − p)³`) y con el progreso completo se para en `final`, el que calculó el servidor.
+ */
+export function valorRuleta(final: number, progreso: number, semilla: number): number {
+  if (progreso >= 1) return final;
+  const salto = Math.floor(SALTOS_RULETA * (1 - (1 - Math.max(0, progreso)) ** 3));
+  const rango = Math.max(RANGO_RULETA, Math.abs(final));
+  let h = Math.imul(semilla + 1, 2654435761) ^ Math.imul(salto + 1, 1597334677);
+  h = Math.imul(h ^ (h >>> 15), 2246822519) >>> 0;
+  return (h % (2 * rango + 1)) - rango;
+}
+
 /** Centésimas a puntos con dos decimales y coma: 8123 → «81,23». */
 export function puntos(centesimas: number): string {
   const signo = centesimas < 0 ? '−' : '';

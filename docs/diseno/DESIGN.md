@@ -182,6 +182,25 @@ las únicas excepciones a «un solo color cromático»:
   señal.
 - Los contrastes los comprueba `apps/web/tests/unit/tokens.test.ts`.
 
+### Cartas, sobre y logo en Fútboosterdraft (spec 007)
+
+- **Carta completa**: proporción fija **2 : 3**; nunca crece ni estira su marco. Su fondo es el marco ilustrado de su
+  nivel (`public/cartas/marcos/<nivel>.svg`, por `--carta-marco-img`) y el contenido va dentro de su área interior
+  (`--carta-hueco-x`, `--carta-hueco-y` arriba y `--carta-hueco-abajo`). Los cuatro interiores son oscuros: el texto
+  es blanco con sombra en todos los niveles. La foto de la demarcación va al 35 % y se funde hacia abajo. Los rasgos
+  son más estrechos que el resto, y más aún en la fila de abajo, donde el marco se achaflana.
+- **Media**: ámbar `#ff9f1c` que pasa a dorado `#ffe066` entre 65 y 99 (`--carta-media-oro`), con un halo cálido.
+- **Color del nivel** (`--carta-marco`): plata `#b9c2cc` (Superclase), violeta `#a879ff` (Épica), oro `#e0a82e`
+  (Legendaria) y rubí `#ff3d6e` (GOAT). Es el borde de la carta compacta, que usa el mismo marco como textura bajo un
+  velo oscuro.
+- **Anchos**: las rejillas no bajan de 230 px por carta (la letra de portátil cabe en 2 : 3) y en móvil van a una
+  columna. Por debajo de 230 px, la letra de stats y rasgos sale del ancho de la carta.
+- **Selección**: luz lima con `drop-shadow`, que sigue la silueta achaflanada del marco (un `outline` es rectangular).
+- **Sobre**: `public/cartas/sobre.svg` en un `<img>` (`SobreArte`), con `--proporcion-sobre: 600 / 957`: tiene el
+  ancho de las cartas y es algo más alto. El sobre abierto (`rasgado`, solo en «Draft terminado») es un `clip-path` de
+  dientes hondos; en la portada, el sobre va entero.
+- **Logo**: `public/marca/logo.svg` en un `<img>` (`Escudo`), también como favicon.
+
 ## Surfaces
 
 | Level | Name | Value | Purpose |

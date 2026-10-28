@@ -1,180 +1,133 @@
 /*
  * Cartas de jugador (002/US1; FR-001 a FR-005, research R16; spec 003, US7: FR-008 a FR-010, research R20;
- * spec 004, FR-043: acabados premium por nivel).
+ * spec 004, FR-043; spec 007, FR-004 a FR-007, research R2 y R3).
  *
- * Diseño propio (sin elementos de EA SPORTS FC): escudo con las esquinas superiores achaflanadas, franja diagonal
- * del color del nivel y textura de grano. Barlow Condensed (OFL) para la media, el nombre y los stats. En la carta
- * completa, los stats y las virtudes se leen a ≥ 16 px en portátil y ≥ 14 px a 360 px (FR-009).
+ * La carta completa se compone sobre el marco ilustrado de su nivel (`/cartas/marcos/<nivel>.svg`), con proporción fija
+ * 2 : 3 para no deformarlo (FR-006b). Los cuatro marcos tienen el interior oscuro, así que el texto es claro en todos.
+ * Barlow Condensed (OFL) para la media, el nombre y los stats. En la carta completa, los stats y las virtudes se leen a
+ * ≥ 16 px en portátil y ≥ 14 px a 360 px (FR-009).
  *
- * La carta completa tiene proporción de carta (≈ 5:7) y se lee igual de 160 a 280 px de ancho: los tamaños
- * salen del ancho de la propia carta (container queries, unidades cqi) con `clamp()`. Si el contenido no cabe
- * en la proporción, la carta crece en alto en lugar de recortar (SC-002). En el draft, la rejilla entera se escala
- * para caber sin desplazarse (spec 004, FR-046).
+ * Los tamaños salen del ancho de la propia carta (container queries, unidades cqi) con `clamp()`, así que se lee igual
+ * de 160 a 280 px de ancho. En el draft, la rejilla entera se escala para caber sin desplazarse (spec 004, FR-046).
  *
- * Acabados (spec 004, FR-043): plata cepillada, violeta nocturno, oro pulido y holográfico oscuro. El texto tiene un
- * contraste de al menos 4,5:1 sobre cualquier punto de su cara. Sus degradados y efectos son parte del objeto de
- * juego y pueden usar colores literales.
+ * Los colores de los marcos y sus efectos son parte del objeto de juego y pueden usar colores literales.
  */
 
 .carta {
-  /* Plata (Superclase): metal cepillado claro con texto oscuro. */
-  --carta-texto: #12171d;
-  --carta-texto-suave: #37414d;
-  --carta-superficie: #eef2f6;
-  --carta-marco: #8592a2;
-  --carta-fondo:
-    repeating-linear-gradient(90deg, rgb(255 255 255 / 12%) 0 1px, transparent 1px 3px),
-    linear-gradient(160deg, #f7f9fb 0%, #d7dee6 38%, #b3becb 68%, #e9edf2 100%);
+  /* Plata (Superclase). */
+  --carta-marco-img: url(/cartas/marcos/superclase.svg);
+  --carta-texto: #ffffff;
+  --carta-texto-suave: #d9e0e8;
+  /* Fondo de reserva si el marco no carga: el tono del interior del marco. */
+  --carta-superficie: #1f252d;
+  --carta-marco: #b9c2cc;
   --carta-franja: #3f4a58;
   --carta-franja-texto: #ffffff;
-  --carta-chip: rgb(255 255 255 / 70%);
-  --carta-linea: rgb(0 0 0 / 14%);
-  --carta-halo: rgb(255 255 255 / 75%);
-  --carta-brillo: rgb(255 255 255 / 60%);
+  --carta-chip: rgb(255 255 255 / 10%);
+  --carta-linea: rgb(255 255 255 / 16%);
+  --carta-brillo: rgb(255 255 255 / 30%);
   --carta-luz: rgb(210 222 235 / 40%);
   --carta-letra: var(--letra-cartel);
   position: relative;
   container-type: inline-size;
 }
 
-/* Violeta (Épico): cara oscura con luz violeta, texto claro. */
+/* Violeta (Épico). */
 .carta.nivel-epico {
-  --carta-texto: #ffffff;
+  --carta-marco-img: url(/cartas/marcos/epico.svg);
   --carta-texto-suave: #dccbff;
-  --carta-superficie: #2a1450;
+  --carta-superficie: #1d1236;
   --carta-marco: #a879ff;
-  --carta-fondo:
-    radial-gradient(circle at 72% 18%, rgb(160 110 255 / 55%), transparent 52%),
-    radial-gradient(circle at 10% 95%, rgb(110 60 210 / 45%), transparent 50%),
-    linear-gradient(160deg, #3d1f74 0%, #26104c 52%, #150728 100%);
   --carta-franja: #c7a2ff;
   --carta-franja-texto: #1b0838;
-  --carta-chip: rgb(255 255 255 / 10%);
-  --carta-linea: rgb(255 255 255 / 16%);
-  --carta-halo: rgb(168 121 255 / 55%);
-  --carta-brillo: rgb(220 200 255 / 40%);
+  --carta-brillo: rgb(220 200 255 / 30%);
   --carta-luz: rgb(168 121 255 / 45%);
 }
 
-/* Oro (Legendario): oro pulido con texto marrón muy oscuro. */
+/* Oro (Legendario). */
 .carta.nivel-legendario {
-  --carta-texto: #241700;
-  --carta-texto-suave: #4a3204;
-  --carta-superficie: #fff4cf;
-  --carta-marco: #b8860b;
-  --carta-fondo:
-    radial-gradient(circle at 75% 15%, rgb(255 250 225 / 85%), transparent 45%),
-    linear-gradient(160deg, #fff3c8 0%, #f2d272 34%, #dcae3e 66%, #f7df92 100%);
-  --carta-franja: #5f3d02;
-  --carta-franja-texto: #fff4cf;
-  --carta-chip: rgb(255 248 225 / 70%);
-  --carta-linea: rgb(60 35 0 / 20%);
-  --carta-halo: rgb(255 248 220 / 85%);
-  --carta-brillo: rgb(255 255 255 / 70%);
+  --carta-marco-img: url(/cartas/marcos/legendario.svg);
+  --carta-texto-suave: #f6dfa4;
+  --carta-superficie: #221a0a;
+  --carta-marco: #e0a82e;
+  --carta-franja: #e0a82e;
+  --carta-franja-texto: #241700;
+  --carta-brillo: rgb(255 240 200 / 35%);
   --carta-luz: rgb(243 197 82 / 45%);
 }
 
-/* Holográfico oscuro (GOAT): negro con foil iridiscente que gira, texto claro. */
+/* Rubí (GOAT). */
 .carta.nivel-goat {
-  --carta-texto: #ffffff;
-  --carta-texto-suave: #ffd6ea;
-  --carta-superficie: #1a0f1d;
-  --carta-marco: #ff6fae;
-  --carta-fondo:
-    conic-gradient(from var(--carta-giro, 0deg) at 50% 40%, rgb(255 111 174 / 30%), rgb(124 247 212 / 24%), rgb(255 241 201 / 22%), rgb(199 162 255 / 30%), rgb(255 111 174 / 30%)),
-    radial-gradient(circle at 50% 30%, #2c1630 0%, #120a15 70%);
-  --carta-franja: #ff8cc1;
+  --carta-marco-img: url(/cartas/marcos/goat.svg);
+  --carta-texto-suave: #ffd0dc;
+  --carta-superficie: #24070f;
+  --carta-marco: #ff3d6e;
+  --carta-franja: #ff8cab;
   --carta-franja-texto: #2a0716;
-  --carta-chip: rgb(255 255 255 / 10%);
-  --carta-linea: rgb(255 255 255 / 18%);
-  --carta-halo: rgb(255 140 193 / 55%);
-  --carta-brillo: rgb(255 255 255 / 45%);
-  --carta-luz: rgb(255 111 174 / 45%);
+  --carta-brillo: rgb(255 200 215 / 30%);
+  --carta-luz: rgb(255 61 110 / 45%);
 }
 
 /* ---------- Carta completa ---------- */
 
+/*
+ * Área interior del marco: el contenido y la foto quedan dentro del filo metálico y de sus adornos. Son variables en
+ * `cqi` que usan los hijos (la carta no puede medirse a sí misma con container queries).
+ */
 .carta.completa {
+  --carta-hueco-x: 9cqi;
+  /* Arriba, margen para que la media y el retrato no toquen el filo ni el adorno central del marco. */
+  --carta-hueco-y: 10cqi;
+  /* Abajo, por encima del chaflán del marco. */
+  --carta-hueco-abajo: 12cqi;
   display: flex;
   flex-direction: column;
-  aspect-ratio: 5 / 7;
+  aspect-ratio: 2 / 3;
   max-width: 300px;
   width: 100%;
-  border: clamp(3px, 2.4cqi, 6px) solid var(--carta-marco);
-  /* Escudo: esquinas superiores achaflanadas y base ligeramente redondeada. */
-  border-radius: 0 0 clamp(10px, 6cqi, 18px) clamp(10px, 6cqi, 18px);
-  clip-path: polygon(9% 0, 91% 0, 100% 6.5%, 100% 100%, 0 100%, 0 6.5%);
-  /* Grano (dos tramas finas) sobre la cara del nivel, con un filo de luz por dentro del marco. */
+  /*
+   * El color de reserva solo pinta el interior: si el marco no carga, la carta se lee igual sin un recuadro detrás. Más
+   * pequeño que el interior del marco: a 88 % × 90 %, sus esquinas asomaban por fuera del chaflán.
+   */
   background:
-    repeating-linear-gradient(45deg, rgb(0 0 0 / 3%) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(-45deg, rgb(255 255 255 / 5%) 0 1px, transparent 1px 4px),
-    var(--carta-fondo);
+    var(--carta-marco-img) center / 100% 100% no-repeat,
+    linear-gradient(var(--carta-superficie), var(--carta-superficie)) center / 84% 86% no-repeat;
   color: var(--carta-texto);
-  box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 35%),
-    inset 0 -40px 50px -40px rgb(0 0 0 / 40%);
-  /* Sin overflow: hidden, para que la proporción ceda y la carta crezca si el contenido no cabe. */
+  /* Legible sobre los brillos y focos del estadio del marco (FR-007). */
+  text-shadow: 0 1px 2px rgb(0 0 0 / 70%);
+  /* La proporción no cede: el marco no puede estirarse (FR-006b). */
+  overflow: hidden;
   isolation: isolate;
 }
 
-/* Halo detrás de la silueta y franja diagonal del color del nivel, detrás del contenido. */
-.carta.completa::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(ellipse 55% 34% at 70% 14%, var(--carta-halo), transparent 70%),
-    linear-gradient(135deg, transparent 58%, var(--carta-franja) 58% 63%, transparent 63% 66%, var(--carta-franja) 66% 67.5%, transparent 67.5%);
-  opacity: 0.32;
-  pointer-events: none;
-}
-
-/* Carta elegida: un marco lima con luz por dentro (el recorte del escudo taparía un contorno exterior). */
+/* Carta elegida: luz lima con la silueta del marco (un `outline` es rectangular y asomaba por los chaflanes). */
 .carta.completa.seleccionada {
-  box-shadow:
-    inset 0 0 0 4px #b7ff2c,
-    inset 0 0 30px 2px rgb(183 255 44 / 45%);
+  filter: drop-shadow(0 0 2px #b7ff2c) drop-shadow(0 0 3px #b7ff2c) drop-shadow(0 0 14px rgb(183 255 44 / 60%));
 }
 
 .carta-apellidos .nombre-recortado {
   text-align: center;
 }
 
-/* Brillo del Legendario. */
-.carta.nivel-legendario.completa::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(115deg, transparent 35%, var(--carta-brillo) 50%, transparent 65%);
-  background-size: 250% 100%;
-  animation: carta-brillo 4s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@property --carta-giro {
-  syntax: '<angle>';
-  inherits: true;
-  initial-value: 0deg;
-}
-
-/* Holografía del GOAT: la cara gira y un barrido iridiscente cruza por encima. */
-.carta.nivel-goat.completa {
-  animation: carta-holo 8s linear infinite;
-}
-
+/* Brillo que cruza los marcos Legendario y GOAT. */
+.carta.nivel-legendario.completa::before,
 .carta.nivel-goat.completa::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 20%) 45%, rgb(124 247 212 / 18%) 50%, rgb(255 111 174 / 18%) 55%, transparent 70%);
+  background: linear-gradient(115deg, transparent 35%, var(--carta-brillo) 50%, transparent 65%);
   background-size: 250% 100%;
   mix-blend-mode: screen;
-  animation: carta-brillo 5s ease-in-out infinite;
+  /* Solo sobre el propio marco, no sobre las esquinas transparentes de su caja. */
+  -webkit-mask: var(--carta-marco-img) center / 100% 100% no-repeat;
+  mask: var(--carta-marco-img) center / 100% 100% no-repeat;
+  animation: carta-brillo 4s ease-in-out infinite;
   pointer-events: none;
+}
+
+.carta.nivel-goat.completa::before {
+  animation-duration: 5s;
 }
 
 @keyframes carta-brillo {
@@ -187,15 +140,8 @@
   }
 }
 
-@keyframes carta-holo {
-  to {
-    --carta-giro: 360deg;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .carta.nivel-legendario.completa::before,
-  .carta.nivel-goat.completa,
   .carta.nivel-goat.completa::before {
     animation: none;
   }
@@ -205,20 +151,28 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* min-height (no height): si el contenido no cabe en la proporción, la carta crece. */
   min-height: 100%;
 }
 
 /* Carta completa: el cuerpo ocupa el alto que dejan los rasgos, que van debajo, fuera del botón de la carta. */
 .carta.completa > .carta-cuerpo {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   min-height: 0;
-  padding-bottom: clamp(3px, 2.2cqi, 6px);
+  padding: var(--carta-hueco-y) var(--carta-hueco-x) clamp(2px, 1cqi, 4px);
+  gap: clamp(2px, 1.5cqi, 5px);
 }
 
-/* Virtudes y, debajo, defectos (spec 005, FR-020 a FR-022), en el sitio que reservaba la carta antes de los defectos. */
+/*
+ * Virtudes y, debajo, defectos (spec 005, FR-020 a FR-022), en el sitio que reservaba la carta antes de los defectos.
+ * Más estrechos que el resto del contenido, y más aún en la fila de abajo, donde el marco se achaflana.
+ */
 .carta.completa > .carta-rasgos {
-  padding: 0 clamp(6px, 4.5cqi, 12px) clamp(6px, 4.5cqi, 12px);
+  padding: 0 calc(var(--carta-hueco-x) + 3cqi) var(--carta-hueco-abajo);
+}
+
+.carta.completa .carta-defectos,
+.carta.completa .carta-rasgos:not(.densa) .carta-virtudes > span:nth-child(4) {
+  margin-inline: 4cqi;
 }
 
 .carta-cuerpo {
@@ -251,16 +205,21 @@
   line-height: 1.2;
 }
 
+/* Ámbar que pasa a dorado al acercarse a 100 (`--carta-media-oro`, de 0 % a 100 %, lo pone `CartaJugador`). */
 .carta-media {
   font-family: var(--carta-letra);
-  font-size: clamp(1.8rem, 19cqi, 3.4rem);
+  font-size: clamp(1.6rem, 17cqi, 3rem);
   font-weight: 800;
+  color: color-mix(in oklab, #ffe066 var(--carta-media-oro, 0%), #ff9f1c);
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 80%),
+    0 0 12px rgb(255 170 30 / 45%);
   /* El alto de la fuente (ascendente + descendente) es 1,2 em: con menos, la cifra desborda su caja. */
   line-height: 1.2;
 }
 
 .carta-demarcacion {
-  font-size: clamp(0.65rem, 6cqi, 0.95rem);
+  font-size: clamp(0.65rem, 5.4cqi, 0.95rem);
   font-weight: 800;
   color: var(--carta-texto-suave);
 }
@@ -268,7 +227,7 @@
 .carta-silueta {
   justify-self: center;
   width: 70%;
-  max-height: clamp(48px, 34cqi, 96px);
+  max-height: clamp(40px, 24cqi, 76px);
   aspect-ratio: 1;
   object-fit: contain;
   color: var(--carta-marco);
@@ -291,23 +250,24 @@
 .carta-fondo-accion {
   position: absolute;
   /* Medidas explícitas: un <img> con `inset` tomaría su ancho intrínseco y desbordaría la carta. */
-  top: 12%;
-  left: 8%;
+  top: var(--carta-hueco-y);
+  left: var(--carta-hueco-x);
   z-index: -1;
-  width: 90%;
-  height: 76%;
+  width: calc(100% - 2 * var(--carta-hueco-x));
+  height: calc(100% - 2 * var(--carta-hueco-y));
   /* Las fotos son recortes del jugador sobre transparente: enteras dentro del hueco, sin cortarle brazos ni piernas. */
   object-fit: contain;
   /* Posicionado desde abajo: centrada, el retrato de la cabecera le tapaba la cabeza. */
-  object-position: center 80%;
-  opacity: 0.25;
+  object-position: center bottom;
+  opacity: 0.35;
   color: var(--carta-texto);
   pointer-events: none;
 }
 
-/* Las fotos llegan hasta el pie de la carta para que, pegadas abajo, ocupen todo el alto y no queden cortas. */
+/* La foto se funde hacia abajo para que se distinga del estadio del marco (spec 007, clarificación 1). */
 img.carta-fondo-accion {
-  height: 88%;
+  -webkit-mask: linear-gradient(#000 45%, transparent 95%);
+  mask: linear-gradient(#000 45%, transparent 95%);
 }
 
 /*
@@ -360,22 +320,25 @@ img.carta-fondo-accion {
   overflow-wrap: anywhere;
 }
 
-/* Hallazgo H1: el nombre reserva siempre dos líneas de apellidos, para que todas las cartas midan lo mismo. */
+/*
+ * Hallazgo H1: el nombre reserva siempre dos líneas de apellidos, para que todas las cartas midan lo mismo. Pegados
+ * abajo, junto al nombre completo: centrados en las dos líneas, uno de una sola línea quedaba lejos de él.
+ */
 .carta.completa .carta-apellidos {
   min-height: 2.2em;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 
 .carta-nombre-pila {
-  font-size: clamp(0.65rem, 6cqi, 0.9rem);
+  font-size: clamp(0.6rem, 5.5cqi, 0.85rem);
   color: var(--carta-texto-suave);
 }
 
 .carta-apellidos {
   font-family: var(--carta-letra);
-  font-size: clamp(1rem, 9.5cqi, 1.5rem);
+  font-size: clamp(1rem, 9.7cqi, 1.7rem);
   font-weight: 800;
   letter-spacing: 0.01em;
 }
@@ -394,7 +357,12 @@ img.carta-fondo-accion {
 /* Una línea de posiciones reservada (H1): como mucho tres, siempre caben. */
 .carta.completa .carta-posiciones {
   flex-wrap: nowrap;
-  min-height: calc(clamp(0.68rem, 6.2cqi, 0.92rem) * 1.5);
+  min-height: calc(clamp(0.68rem, 5.3cqi, 0.92rem) * 1.5);
+}
+
+/* Los valores en `cqi` de la carta completa llegan a su tope a 280 px: por debajo, en la misma proporción que ahí. */
+.carta.completa .carta-posicion {
+  font-size: clamp(0.68rem, 5.3cqi, 0.92rem);
 }
 
 .carta-posicion {
@@ -419,29 +387,33 @@ img.carta-fondo-accion {
   display: grid;
   font-family: var(--carta-letra);
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(2px, 1.5cqi, 4px) clamp(4px, 3cqi, 8px);
+  gap: clamp(2px, 1.5cqi, 4px) clamp(3px, 2.5cqi, 8px);
   margin: 0;
 }
 
+/* Abreviatura y valor juntos, centrados en su columna. */
 .carta-stat {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: baseline;
-  gap: 2px;
+  gap: 0.3em;
   border-bottom: 1px solid var(--carta-linea);
-  line-height: 1.25;
+  line-height: 1.15;
 }
 
-/* FR-009: abreviatura a ≥ 1rem y valor en negrita a 1,25 veces la abreviatura. */
+/*
+ * Stats y rasgos de la carta completa en `cqi`, con las proporciones de la de 280 px (1,15 rem, 1,45 rem y 1 rem): con
+ * letra fija, por debajo de ese ancho no cabían en 2 : 3 y los stats pisaban los rasgos.
+ */
 .carta.completa .carta-stat dt {
-  font-size: 1rem;
+  font-size: 6.6cqi;
   font-weight: 600;
   color: var(--carta-texto-suave);
 }
 
 .carta.completa .carta-stat dd {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 8.3cqi;
   font-weight: 800;
 }
 
@@ -452,8 +424,9 @@ img.carta-fondo-accion {
  * `--escala-rasgos`; el alto de la zona sale de su propia letra, que no cambia, así que la carta no crece.
  */
 .carta-rasgos {
-  --alto-virtud: calc(1.5em + 2px);
-  --hueco-virtud: 3px;
+  /* En `cqi` (2 px y 3 px a 280 px): crecen y menguan con la carta, como la letra. */
+  --alto-virtud: calc(1.5em + 0.7cqi);
+  --hueco-virtud: 1.1cqi;
   box-sizing: content-box;
   display: flex;
   flex-direction: column;
@@ -572,8 +545,8 @@ img.carta-fondo-accion {
 
 .carta-dorsal {
   position: absolute;
-  top: clamp(6px, 4.5cqi, 12px);
-  right: clamp(30px, 18cqi, 40px);
+  top: var(--carta-hueco-y, clamp(6px, 4.5cqi, 12px));
+  right: calc(var(--carta-hueco-x, 0px) + clamp(30px, 18cqi, 40px));
   font-size: clamp(0.65rem, 5.5cqi, 0.9rem);
   font-weight: 800;
   color: var(--carta-texto-suave);
@@ -581,8 +554,8 @@ img.carta-fondo-accion {
 
 .carta-ficha {
   position: absolute;
-  top: clamp(4px, 3cqi, 8px);
-  right: clamp(4px, 3cqi, 8px);
+  top: var(--carta-hueco-y, clamp(4px, 3cqi, 8px));
+  right: var(--carta-hueco-x, clamp(4px, 3cqi, 8px));
   z-index: 2;
   width: 26px;
   height: 26px;
@@ -595,23 +568,8 @@ img.carta-fondo-accion {
   font-weight: 700;
 }
 
-/* Cartas completas estrechas: dos columnas de stats para que los números quepan a su tamaño. */
-@container (max-width: 230px) {
-  .carta-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* En móvil (360 px), ≥ 14 px (FR-009). */
-@media (max-width: 480px) {
-  .carta.completa .carta-stat dt,
-  .carta.completa .carta-rasgos {
-    font-size: 0.875rem;
-  }
-
-  .carta.completa .carta-stat dd {
-    font-size: 1.1rem;
-  }
+.carta.completa .carta-rasgos {
+  font-size: 5.7cqi;
 }
 
 /* ---------- Carta compacta (listas largas): fila de vidrio con la luz del nivel ---------- */
@@ -625,18 +583,23 @@ img.carta-fondo-accion {
 
 .carta.compacta .carta-cuerpo {
   display: grid;
-  /* Spec 006 (US6, escenario 5): en la compacta, solo la bandera, junto al nombre. */
-  grid-template-columns: auto auto 1fr;
-  grid-template-areas: 'media bandera nombre' 'media posiciones posiciones';
+  /* Spec 006 (US6, escenario 5): en la compacta, solo la bandera, junto al nombre; el dorsal, en su columna detrás. */
+  grid-template-columns: auto auto 1fr auto;
+  grid-template-areas: 'media bandera nombre dorsal' 'media posiciones posiciones posiciones';
   align-items: center;
   column-gap: 8px;
   row-gap: 2px;
   width: 100%;
   padding: 6px 36px 6px 10px;
   border-radius: var(--radio);
-  background: linear-gradient(90deg, var(--carta-luz), transparent 40%), var(--color-panel);
-  color: var(--color-texto);
-  border: 1px solid var(--borde-vidrio);
+  /* El mismo marco del nivel como textura, con un velo que mantiene la legibilidad (spec 007, research R3). */
+  background:
+    linear-gradient(rgb(0 0 0 / 55%), rgb(0 0 0 / 35%)),
+    var(--carta-marco-img) center top / cover no-repeat,
+    var(--carta-superficie);
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 70%);
+  border: 1px solid var(--carta-marco);
   border-left: 4px solid var(--carta-marco);
   text-align: left;
   transition: border-color var(--duracion-corta) var(--curva-salida);
@@ -669,7 +632,7 @@ img.carta-fondo-accion {
 
 .carta.compacta .carta-bandera-codigo {
   height: auto;
-  color: var(--color-texto-suave);
+  color: rgb(255 255 255 / 80%);
 }
 
 .carta.compacta .carta-nombre {
@@ -690,9 +653,9 @@ img.carta-fondo-accion {
 }
 
 .carta.compacta .carta-dorsal {
-  top: 6px;
-  right: 36px;
-  color: var(--color-texto-suave);
+  position: static;
+  grid-area: dorsal;
+  color: rgb(255 255 255 / 80%);
 }
 
 .carta.compacta .carta-ficha {
@@ -704,14 +667,17 @@ img.carta-fondo-accion {
 
 .rejilla-cartas {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  /* 230 px: el ancho mínimo al que la carta 2 : 3 cabe con la letra de portátil (spec 007, FR-006b; FR-009). */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
   gap: 12px;
   justify-items: center;
 }
 
+/* En móvil, una columna: a 2 : 3, una carta de 160 px no cabe con la letra legible (spec 007, FR-006b). */
 @media (max-width: 420px) {
   .rejilla-cartas {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 260px);
+    justify-content: center;
     gap: 8px;
   }
 }
@@ -768,7 +734,8 @@ img.carta-fondo-accion {
   position: absolute;
   inset: 0;
   z-index: 3;
-  clip-path: polygon(9% 0, 91% 0, 100% 6.5%, 100% 100%, 0 100%, 0 6.5%);
+  /* Silueta achaflanada de los marcos (spec 007). */
+  clip-path: polygon(7% 0, 93% 0, 100% 5%, 100% 95%, 93% 100%, 7% 100%, 0 95%, 0 5%);
   background: radial-gradient(circle at var(--reflejo-x, 50%) var(--reflejo-y, 0%), rgb(255 255 255 / 38%), rgb(255 255 255 / 6%) 30%, transparent 55%);
   mix-blend-mode: overlay;
   opacity: 0;
@@ -867,7 +834,7 @@ img.carta-fondo-accion {
     sobre-rasga 0.3s ease-in 1.1s forwards;
 }
 
-.sobre-cerrado svg {
+.sobre-cerrado img {
   display: block;
   width: 100%;
   height: 100%;
@@ -969,8 +936,8 @@ img.carta-fondo-accion {
   display: grid;
   place-items: center;
   border: 3px solid #b7ff2c;
-  border-radius: 0 0 14px 14px;
-  clip-path: polygon(9% 0, 91% 0, 100% 6.5%, 100% 100%, 0 100%, 0 6.5%);
+  /* Silueta achaflanada de los marcos (spec 007). */
+  clip-path: polygon(7% 0, 93% 0, 100% 5%, 100% 95%, 93% 100%, 7% 100%, 0 95%, 0 5%);
   background:
     radial-gradient(circle at 50% 45%, rgb(183 255 44 / 22%), transparent 45%),
     repeating-linear-gradient(45deg, rgb(183 255 44 / 9%) 0 2px, transparent 2px 12px),
@@ -978,7 +945,7 @@ img.carta-fondo-accion {
     linear-gradient(160deg, #1f5a3d, #0a1f15 60%, #05110b);
 }
 
-.apertura-carta-dorso svg {
+.apertura-carta-dorso img {
   width: 42%;
   height: auto;
   filter: drop-shadow(0 6px 12px rgb(0 0 0 / 60%));
@@ -1041,47 +1008,7 @@ img.carta-fondo-accion {
   }
 }
 
-/* Reflejo del foil del sobre ilustrado (SobreArte). */
-.sobre-arte-holo {
-  mix-blend-mode: screen;
-  animation: sobre-holo 4.5s ease-in-out infinite;
-}
-
-@keyframes sobre-holo {
-  0%,
-  100% {
-    transform: translateX(-90px);
-  }
-  50% {
-    transform: translateX(90px);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sobre-arte-holo {
-    animation: none;
-  }
-}
-
-.sobre-arte-banda {
-  fill: #07140e;
-  font-family: var(--letra-cartel);
-  font-size: 20px;
-  font-style: italic;
-  font-weight: 800;
-}
-
-.sobre-arte-nombre {
-  fill: #eef5f0;
-  font-family: var(--letra-cartel);
-  font-size: 23px;
-  font-style: italic;
-  font-weight: 800;
-}
-
-.sobre-arte-sub {
-  fill: #a3bdb0;
-  font-family: var(--letra-texto);
-  font-size: 11px;
-  font-weight: 500;
+/* Sobre recién abierto (SobreArte `rasgado`, en «Draft terminado»): sin el sellado superior y con dientes hondos, para que se lea como abierto. */
+.sobre-arte.rasgado {
+  clip-path: polygon(0% 16%, 5% 9%, 9% 19%, 14% 11%, 19% 22%, 25% 12%, 30% 18%, 36% 8%, 42% 20%, 48% 13%, 53% 21%, 59% 10%, 65% 19%, 70% 12%, 76% 22%, 82% 9%, 87% 18%, 93% 11%, 100% 17%, 100% 100%, 0 100%);
 }

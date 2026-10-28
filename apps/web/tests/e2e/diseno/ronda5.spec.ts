@@ -89,20 +89,22 @@ test('FR-058: las filas de máximos goleadores y asistentes van debajo de los en
 
 test('FR-059: el sobre tiene las dimensiones de las cartas', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
-  // Portada: mismo ancho y proporción parecida a las cartas del abanico (sin el giro, por eso con `offset*`).
+  // Portada: mismo ancho que las cartas del abanico (sin el giro, por eso con `offset*`) y la proporción del sobre
+  // oficial, algo más alto que ellas (spec 007, FR-020).
   await page.goto('/');
   const sobre = page.locator('.portada-sobre');
   await expect(sobre).toBeVisible();
   const portada = await page.evaluate(() => {
-    const s = document.querySelector<SVGSVGElement>('.portada-sobre')!;
+    const s = document.querySelector<HTMLImageElement>('.portada-sobre')!;
     const c = document.querySelector<HTMLElement>('.portada-carta')!;
     return { sobre: { width: s.clientWidth, height: s.clientHeight }, carta: { width: c.offsetWidth, height: c.offsetHeight } };
   });
   expect(Math.abs(portada.sobre.width - portada.carta.width) / portada.carta.width).toBeLessThan(0.1);
-  expect(proporcion(portada.sobre)).toBeLessThan(0.6);
+  expect(Math.abs(proporcion(portada.sobre) - 600 / 957)).toBeLessThan(0.02);
+  expect(portada.sobre.height).toBeGreaterThanOrEqual(portada.carta.height);
   await capturar(page, 'sobre-portada');
 
-  // Apertura: el sobre cerrado mide lo mismo que las cartas que salen de él.
+  // Apertura: el sobre cerrado tiene el ancho de las cartas que salen de él y es al menos tan alto como ellas.
   await page.getByRole('button', { name: 'Jugar como invitado' }).click();
   await page.getByRole('button', { name: 'Crear partida' }).click();
   await page.getByRole('button', { name: 'Empezar' }).click();
@@ -110,5 +112,5 @@ test('FR-059: el sobre tiene las dimensiones de las cartas', async ({ page }) =>
   await page.locator('.apertura-carta').first().waitFor({ state: 'visible', timeout: 20_000 });
   const carta = await page.locator('.apertura-carta').first().evaluate((c) => ({ width: (c as HTMLElement).offsetWidth, height: (c as HTMLElement).offsetHeight }));
   expect(Math.abs(cerrado!.width - carta.width)).toBeLessThan(4);
-  expect(Math.abs(proporcion(cerrado) - proporcion(carta))).toBeLessThan(0.05);
+  expect(cerrado!.height).toBeGreaterThanOrEqual(carta.height - 1);
 });

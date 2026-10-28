@@ -183,8 +183,8 @@
   --boton-principal-alto: 48px;
   --barra-principal-alto: 72px;
   --barra-navegacion-alto: 60px;
-  /* Proporción del sobre: la de las cartas completas tal como se ven (no su `aspect-ratio` mínimo de 5 : 7). */
-  --proporcion-sobre: 200 / 376;
+  /* Proporción del sobre oficial (`public/cartas/sobre.svg`; spec 007, FR-020). */
+  --proporcion-sobre: 600 / 957;
   --objetivo-tactil: 44px;
   --ancho-lectura: 72ch;
   --ancho-pantalla: 1240px;

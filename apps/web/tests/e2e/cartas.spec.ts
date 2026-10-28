@@ -88,6 +88,19 @@ test('los cuatro niveles tienen un acabado distinto (FR-002)', async ({ page }) 
   expect(marcos.size).toBe(4);
 });
 
+test('spec 007 (FR-004, FR-006b): la carta completa mide 2 : 3 y su fondo es el marco de su nivel', async ({ page }) => {
+  await abrirCartas(page);
+  for (const nivel of ['superclase', 'epico', 'legendario', 'goat']) {
+    const carta = page.locator(`.carta.completa.nivel-${nivel}`).first();
+    const { ancho, alto, fondo } = await carta.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return { ancho: r.width, alto: r.height, fondo: getComputedStyle(el).backgroundImage };
+    });
+    expect(Math.abs(ancho / alto - 2 / 3)).toBeLessThan(0.02);
+    expect(fondo).toContain(`/cartas/marcos/${nivel}.svg`);
+  }
+});
+
 /** Spec 003, US7 (FR-008 a FR-010; SC-012; T077): tamaños de letra legibles y acabado por nivel. */
 for (const [ancho, minimo] of [
   [1366, 16],

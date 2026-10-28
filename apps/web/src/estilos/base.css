@@ -1274,18 +1274,39 @@ html {
   gap: var(--espacio-3);
 }
 
+/* Penaltis, faltas y córners en una fila (texto encima de cada selector); la tanda, en otra fila debajo. */
 .lanzadores {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
   gap: var(--espacio-3);
-  max-width: 560px;
 }
 
-.lanzadores > label,
+.lanzadores > h2,
+.lanzadores > fieldset {
+  grid-column: 1 / -1;
+}
+
+.lanzadores > label {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-2);
+}
+
+.lanzadores fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: var(--espacio-2) var(--espacio-3);
+}
+
 .lanzadores fieldset label {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--espacio-2);
+}
+
+.lanzadores select {
+  width: 100%;
+  min-width: 0;
 }
 
 .rejilla-dorsales {

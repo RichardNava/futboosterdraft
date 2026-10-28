@@ -1,15 +1,40 @@
 Efectos de sonido de Fútboosterdraft
 ====================================
 
-Los tres efectos de esta carpeta son obra original del proyecto, sintetizados por programa (ruido
-filtrado y osciladores; sin muestras de terceros). La apertura del sobre se sintetiza en el navegador
-(apps/web/src/sonido/sonido.ts) y no tiene fichero:
+Todos los efectos de esta carpeta proceden de grabaciones con licencia CC0 1.0 Universal (dominio
+público). https://creativecommons.org/publicdomain/zero/1.0/deed.es
 
-- reparto.wav     — reparto de una carta (0,08 s)
-- volteo.wav      — volteo de una carta (0,12 s)
-- revelacion.wav  — revelación de una carta Legendaria o GOAT (0,6 s)
+Cambios comunes a todos: recorte al momento útil, mezcla a mono, remuestreo a 22.050 Hz, paso bajo a
+6 kHz, fundido de salida, normalización del pico a −3 dBFS y codificación MP3 CBR a 48 kbps.
 
-Formato: WAV PCM de 8 bits, mono, 22.050 Hz (unos 25 kB en total).
-
-Licencia: CC0 1.0 Universal (dominio público).
-https://creativecommons.org/publicdomain/zero/1.0/deed.es
+- apertura.mp3      — rasgado del sobre.
+                      Kenney Vleugels (Kenney.nl), «Casino Audio», cards-pack-open-1.ogg.
+                      https://kenney.nl/assets/casino-audio — CC0 1.0. Recorte 0–0,8 s.
+- reparto.mp3       — sale una carta del sobre.
+                      Kenney Vleugels (Kenney.nl), «Casino Audio», card-slide-3.ogg.
+                      https://kenney.nl/assets/casino-audio — CC0 1.0. Recorte 0–0,6 s.
+- volteo.mp3        — se gira una carta.
+                      Kenney Vleugels (Kenney.nl), «Casino Audio», card-place-1.ogg.
+                      https://kenney.nl/assets/casino-audio — CC0 1.0. Recorte 0–0,6 s.
+- revelacion.mp3    — revelación de una carta Legendaria o GOAT.
+                      Kinoton, «Deep Whoosh #6» (Freesound #558826).
+                      https://freesound.org/people/Kinoton/sounds/558826/ — CC0 1.0. Recorte 0,35–1,15 s,
+                      fundido de entrada de 50 ms.
+- entradaDuelo.mp3  — entran las cartas de un duelo.
+                      Kenney Vleugels (Kenney.nl), «Casino Audio», card-shove-1.ogg.
+                      https://kenney.nl/assets/casino-audio — CC0 1.0. Recorte 0–0,7 s.
+- choqueDuelo.mp3   — chocan las cartas de un duelo.
+                      Kenney Vleugels (Kenney.nl), «Impact Sounds», impactSoft_heavy_000.ogg.
+                      https://kenney.nl/assets/impact-sounds — CC0 1.0. Recorte 0–0,5 s.
+- ruletaForma.mp3   — gira la ruleta del estado de forma (≈ 0,8 s).
+                      Kenney Vleugels (Kenney.nl), «Interface Sounds», tick_001.ogg.
+                      https://kenney.nl/assets/interface-sounds — CC0 1.0. Trece copias del tic encadenadas
+                      con huecos crecientes (se frena) y volumen decreciente.
+- aplausos.mp3      — pantalla de campeón.
+                      Bansemer, «Large crowd applause.wav» (Freesound #160493).
+                      https://freesound.org/people/Bansemer/sounds/160493/ — CC0 1.0. Recorte 0–3 s,
+                      fundido de entrada de 150 ms y de salida de 800 ms.
+- trompetas.mp3     — pantalla de derrota.
+                      kirbydx, «wah wah sad trombone.wav» (Freesound #175409).
+                      https://freesound.org/people/kirbydx/sounds/175409/ — CC0 1.0. Recorte 0,2–4,6 s y
+                      tempo ×1,7 sin cambiar el tono (≈ 2,6 s).

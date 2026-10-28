@@ -71,9 +71,19 @@ test('torneo de duelos de 4: once bloqueado, duelos animados, salto al resultado
 
   // 7. «Ver duelos» muestra la animación; «Saltar al resultado» lleva al resumen; el cuadro avanza.
   await page.goto(`/partidas/${id}/torneo`);
+  // Spec 007 (FR-016): en duelos no hay tablas de goleadores ni de asistentes.
+  await expect(page.getByRole('tab', { name: 'Calendario' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Máximos goleadores' })).toHaveCount(0);
+  await expect(page.getByRole('tab', { name: 'Máximos asistentes' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Ver duelos' }).first().click();
   await expect(page.locator('.duelos-marcador')).toBeVisible();
   await expect(page.locator('.duelo-escenario .carta')).toHaveCount(2);
+  // Spec 007 (FR-012): la ruleta del estado de forma se para en su valor; entonces llegan el veredicto y el total.
+  await expect(page.locator('.duelo-veredicto')).toBeVisible();
+  for (const lado of ['local', 'visitante']) {
+    await expect(page.locator(`.duelo-lado.${lado} .duelo-desglose div`, { hasText: 'Estado de forma' }).locator('dd')).toHaveText(/^[+−]\d+,\d{2}$/);
+    await expect(page.locator(`.duelo-lado.${lado} .duelo-total dd`)).toHaveText(/^−?\d+,\d{2}$/);
+  }
   await expect(page.getByRole('button', { name: '×2' })).toBeVisible();
   await page.getByRole('button', { name: 'Saltar al resultado' }).click();
   await expect(page.getByRole('region', { name: 'Resumen de los duelos' }).locator('tbody tr')).toHaveCount(11);

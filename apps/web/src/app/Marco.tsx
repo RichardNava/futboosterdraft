@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, Outlet, useBlocker, useLocation } from 'react-router';
+import { Link, NavLink, Outlet, useBlocker, useLocation, useNavigate } from 'react-router';
 import { api } from '../api/cliente';
 import { RegionAvisos } from '../componentes/Aviso';
 import { Icono, type NombreIcono } from '../componentes/Icono';
@@ -14,7 +14,7 @@ import { Escudo } from '../componentes/arte/Escudo';
 import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
 import { useSaldo } from '../estado/saldo';
 
-const FONDOS_PANTALLA = 5;
+const FONDOS_PANTALLA = 11;
 /** Fondo de cada vista, sorteado la primera vez que se visita y fijo durante la sesión. */
 const fondoDeVista = new Map<string, string>();
 
@@ -84,7 +84,8 @@ const ENLACES: Enlace[] = [
  * `aria-current="page"` y subrayado lima. Por debajo de 720 px, los enlaces pasan al `MenuNavegacion`; en el
  * partido 2D, la barra se reduce a iconos en una franja de 40 px. Debajo, la región de avisos emergentes.
  * Al salir de una partida desde la barra (o con «atrás»): en un draft con otros humanos pregunta
- * «¿Abandonar la partida?»; en una partida en solitario la pausa (`partida.pausar`) antes de salir.
+ * «¿Abandonar la partida?»; en una partida en solitario la pausa (`partida.pausar`) antes de salir. Mientras se juega
+ * una partida (draft o torneo) en la que sigues activo, «Abandonar» abre ese mismo diálogo en cualquier momento.
  */
 export function Marco() {
   const { usuario } = useSesion();
@@ -109,6 +110,15 @@ export function Marco() {
       .catch(() => undefined);
   }, [esRegistrado, usuario?.id, ubicacion.pathname]);
   const [abandonando, setAbandonando] = useState(false);
+  const navegar = useNavigate();
+  const activa = usePartidaActiva();
+  const partidaVista = partidaDeRuta(ubicacion.pathname);
+  // Solo quien sigue jugando la partida que está viendo: si ya la juega un NPC por él, no hay nada que abandonar.
+  const puedeAbandonar =
+    partidaVista !== null &&
+    activa.partidaId === partidaVista &&
+    (activa.fase === 'draft' || activa.fase === 'torneo') &&
+    humanosActivos(activa.participantes).some((p) => p.id === activa.miParticipanteId);
   const salida = useRef<Salida>(null);
   const bloqueo = useBlocker(({ currentLocation, nextLocation }) => {
     salida.current = salidaDe(currentLocation.pathname, nextLocation.pathname);
@@ -140,6 +150,11 @@ export function Marco() {
       setAbandonando(false);
       setModal(false);
       if (bloqueo.state === 'blocked') bloqueo.proceed();
+      else {
+        // Desde el botón: se olvida la partida para que salir al inicio no vuelva a preguntar ni a pausar.
+        usePartidaActiva.getState().actualizar({ partidaId: null });
+        void navegar('/');
+      }
     }
   };
 
@@ -191,6 +206,12 @@ export function Marco() {
           </span>
         </Link>
         {sinConexion && <Insignia texto="Sin conexión" tipo="advertencia" />}
+        {puedeAbandonar && (
+          <button type="button" className="texto boton-abandonar" aria-label="Abandonar la partida" title="Abandonar la partida" onClick={() => setModal(true)}>
+            <Icono nombre="cerrar" tamano={18} />
+            {!compacta && <span>Abandonar</span>}
+          </button>
+        )}
         {compacta ? (
           <>
             <ul className="enlaces-navegacion">{listaEnlaces(true)}</ul>
@@ -223,7 +244,7 @@ export function Marco() {
           <p>Si sales ahora, abandonarás la partida y un NPC ocupará tu plaza</p>
           <div className="acciones">
             <button type="button" className="secundario" onClick={seguir} autoFocus>
-              Seguir en el draft
+              {activa.fase === 'draft' ? 'Seguir en el draft' : 'Seguir jugando'}
             </button>
             <button type="button" className="peligro" onClick={() => void abandonar()} disabled={abandonando}>
               Abandonar
