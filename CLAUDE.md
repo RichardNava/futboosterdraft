@@ -3,7 +3,7 @@
 Juego de fútbol manager online basado en un draft de sobres de cartas de jugadores.
 
 - Principios del proyecto: [.specify/memory/constitution.md](.specify/memory/constitution.md)
-- Especificación y plan en curso: [specs/007-retoques-visuales/](specs/007-retoques-visuales/)
+- Especificación y plan en curso: [specs/008-datos-reales-core/](specs/008-datos-reales-core/)
 - Datos del catálogo: `data/core.json` y `data/cartas-prueba.json` (cartas) y `data/colecciones.json` (pertenencia); `pnpm seed` los carga todos
 - Guía de estilos visuales (referencia de la spec 004): [docs/diseno/DESIGN.md](docs/diseno/DESIGN.md)
 - Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)
