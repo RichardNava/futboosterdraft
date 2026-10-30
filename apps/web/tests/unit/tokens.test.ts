@@ -26,7 +26,7 @@ describe('tokens.css', () => {
     'color-error',
     'color-advertencia',
     'nivel-superclase',
-    'nivel-epico',
+    'nivel-crack',
     'nivel-legendario',
     'nivel-goat',
   ];

@@ -24,15 +24,8 @@ describe('cartaEnVersion', () => {
     expect(carta.defectos).toEqual(['Chupon', 'Estrellita']);
   });
 
-  it('para las 300 cartas de Core, la versión 1 es exactamente la carta de la spec 004 (T050)', () => {
-    const antes = new Map(leer('../fixtures/core-004.json').map((j) => [j.id, j]));
-    const ahora = leer('../../../../data/core.json');
-    expect(ahora).toHaveLength(300);
-    // La spec 006 solo cambia la presentación (nombre_carta, imágenes, GBR → ENG/SCO/WAL/NIR) y quita `coleccion`.
-    for (const j of ahora) {
-      const { coleccion: _c, ...antigua } = antes.get(j.id)! as Jugador & { coleccion?: string };
-      const { nombre_carta, imagen, imagen_bg, nacionalidad, historia } = j;
-      expect(cartaEnVersion(j, 1)).toEqual({ ...antigua, defectos: [], nombre_carta, imagen, imagen_bg, nacionalidad, historia });
-    }
+  // La spec 008 sustituye todas las cartas ficticias de la spec 004 por jugadores reales (R13).
+  it('Core son exactamente los jugadores reales de data/core-real.json', () => {
+    expect(leer('../../../../data/core.json')).toEqual(leer('../../../../data/core-real.json'));
   });
 });

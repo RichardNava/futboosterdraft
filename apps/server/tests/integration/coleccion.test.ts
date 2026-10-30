@@ -1,7 +1,6 @@
 /**
  * Colección propia, colección activa y desfragmentar (spec 006, US1, US2 y US3; T032, T044, T055).
  */
-import { DISTRIBUCION_CORE } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
@@ -78,8 +77,8 @@ describe('colección (spec 006)', () => {
       const r = await cambiar(u.cookie, 1, false);
       expect(r.estado).toBe(422);
       expect(r.cuerpo.error.codigo).toBe('MINIMO_ACTIVO');
-      expect(r.cuerpo.error.detalles).toEqual({ demarcacion: 'POR', nivel: 'Superclase', minimo: DISTRIBUCION_CORE.POR.Superclase, activas: 14 });
-      expect(r.cuerpo.error.mensaje).toBe('Mínimo de POR Superclase: 14; tienes 14 activas');
+      expect(r.cuerpo.error.detalles).toEqual({ demarcacion: 'POR', nivel: 'Superclase', minimo: 13, activas: 13 });
+      expect(r.cuerpo.error.mensaje).toBe('Mínimo de POR Superclase: 13; tienes 13 activas');
     });
 
     it('con cartas de sobra se desactiva y se reactiva; el mismo valor dos veces no cambia nada', async () => {
@@ -120,7 +119,7 @@ describe('colección (spec 006)', () => {
       const u = await crearRegistradoConColeccion(srv);
       const catalogo: any[] = (await peticion(srv.url, '/api/catalogo/jugadores')).cuerpo.filter((c: any) => c.id > 300);
       const una = (nivel: string) => catalogo.find((c) => c.nivel === nivel).id as number;
-      const ids = [una('Superclase'), una('Epico'), una('Legendario'), una('GOAT')];
+      const ids = [una('Superclase'), una('Crack'), una('Legendario'), una('GOAT')];
       await darCartas(bd.db, u.id, ids);
       const valores = [];
       for (const id of ids) {

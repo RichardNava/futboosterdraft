@@ -394,12 +394,17 @@ export class ServicioEconomia {
     return recuentoPorDemarcacionYNivel(filas.filter((f) => f.activa).map((f) => this.catalogo.jugador(f.jugadorId)));
   }
 
+  /** Mínimo por demarcación × nivel: el recuento de la propia Core, que siempre genera mesas de 8 (spec 008). */
+  private minimosCore() {
+    return recuentoPorDemarcacionYNivel(this.catalogo.cartasDe('core').map((id) => this.catalogo.jugador(id)));
+  }
+
   private minimo(filas: readonly FilaCarta[]): EstadoMinimo {
-    return estadoMinimo(this.recuentoActivas(filas));
+    return estadoMinimo(this.recuentoActivas(filas), this.minimosCore());
   }
 
   private exigirMinimo(filas: readonly FilaCarta[], jugadorId: number): void {
-    const r = comprobarMinimoActivo(this.recuentoActivas(filas), this.catalogo.jugador(jugadorId));
+    const r = comprobarMinimoActivo(this.recuentoActivas(filas), this.catalogo.jugador(jugadorId), this.minimosCore());
     if (!r.ok) {
       const { ok: _ok, ...detalles } = r;
       throw errores.regla('MINIMO_ACTIVO', this.textoMinimo(detalles), { ...detalles });
@@ -407,8 +412,7 @@ export class ServicioEconomia {
   }
 
   private textoMinimo(d: { demarcacion: string; nivel: Nivel; minimo: number; activas: number }): string {
-    const nivel = d.nivel === 'Epico' ? 'Épico' : d.nivel;
-    return `Mínimo de ${d.demarcacion} ${nivel}: ${d.minimo}; tienes ${d.activas} activas`;
+    return `Mínimo de ${d.demarcacion} ${d.nivel}: ${d.minimo}; tienes ${d.activas} activas`;
   }
 
   private coleccionesDePago() {

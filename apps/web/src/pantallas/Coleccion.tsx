@@ -141,8 +141,9 @@ export function Coleccion() {
 
   // Mínimo calculado en el cliente solo para explicar el interruptor; el servidor decide.
   const recuento = useMemo(() => recuentoPorDemarcacionYNivel((datos?.cartas ?? []).filter((c) => c.activa)), [datos]);
+  const minimos = useMemo(() => recuentoPorDemarcacionYNivel((datos?.cartas ?? []).filter((c) => c.esCore)), [datos]);
   const motivoMinimo = (c: CartaPoseida): string | null => {
-    const r = comprobarMinimoActivo(recuento, c);
+    const r = comprobarMinimoActivo(recuento, c, minimos);
     return r.ok ? null : textoMinimo(r);
   };
   const nombresColecciones = useMemo(() => new Map((datos?.colecciones ?? []).map((c) => [c.id, c.nombre])), [datos]);

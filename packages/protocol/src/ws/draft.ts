@@ -16,7 +16,7 @@ export const JugadorResumen = z.object({
   demarcacion: z.enum(['POR', 'DEF', 'MED', 'DEL']),
   posicion: z.array(z.string()),
   media: z.number(),
-  nivel: z.enum(['Superclase', 'Epico', 'Legendario', 'GOAT']),
+  nivel: z.enum(['Superclase', 'Crack', 'Legendario', 'GOAT']),
   virtudes: z.array(z.string()),
   /** Spec 005: defectos de la carta (0 a 2). */
   defectos: z.array(z.string()),

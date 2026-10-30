@@ -112,7 +112,7 @@ export const jugadores = pgTable(
   },
   (t) => [
     check('jugadores_demarcacion_ck', sql`${t.demarcacion} in ('POR','DEF','MED','DEL')`),
-    check('jugadores_nivel_ck', sql`${t.nivel} in ('Superclase','Epico','Legendario','GOAT')`),
+    check('jugadores_nivel_ck', sql`${t.nivel} in ('Superclase','Crack','Legendario','GOAT')`),
     check('jugadores_altura_ck', sql`${t.altura} between 150 and 215`),
   ],
 );

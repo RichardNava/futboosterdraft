@@ -18,6 +18,6 @@ describe('parámetros de economía (R9; FR-024)', () => {
   });
 
   it('valor por nivel', () => {
-    expect(['Superclase', 'Epico', 'Legendario', 'GOAT'].map((n) => valorDesfragmentar(n as 'GOAT'))).toEqual([25, 50, 75, 100]);
+    expect(['Superclase', 'Crack', 'Legendario', 'GOAT'].map((n) => valorDesfragmentar(n as 'GOAT'))).toEqual([25, 50, 75, 100]);
   });
 });

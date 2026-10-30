@@ -8,7 +8,7 @@ import { PAREJAS_INCOMPATIBLES, RASGOS, rasgo, REPARTO_DEFECTOS, type Definicion
 import { DEFECTOS, MAX_DEFECTOS, MAX_VIRTUDES, NIVELES, TODAS_LAS_VIRTUDES, type Rasgo } from './tipos';
 
 const AMBITO: Record<DefinicionRasgo['ambito'], string> = { generico: 'Genérico', POR: 'Portero', DEF: 'Defensa', MED: 'Centrocampista', DEL: 'Delantero' };
-const NIVEL: Record<(typeof NIVELES)[number], string> = { Superclase: 'Superclase', Epico: 'Épico', Legendario: 'Legendario', GOAT: 'GOAT' };
+const NIVEL: Record<(typeof NIVELES)[number], string> = { Superclase: 'Superclase', Crack: 'Crack', Legendario: 'Legendario', GOAT: 'GOAT' };
 
 /** Texto de una celda de tabla Markdown (sin barras ni saltos de línea). */
 const celda = (s: string) => s.replace(/\|/g, '\\|').replace(/\n/g, ' ');

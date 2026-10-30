@@ -29,7 +29,7 @@ describe('generarSobreTienda (R13; FR-029)', () => {
         expect(dem.MED).toBe(3);
         expect(dem.DEL).toBe(2);
         expect(niv.Superclase).toBe(4);
-        expect(niv.Epico).toBe(2);
+        expect(niv.Crack).toBe(2);
         expect((niv.Legendario ?? 0) + (niv.GOAT ?? 0)).toBe(2);
       }),
       { numRuns: 200 },
@@ -44,30 +44,30 @@ describe('generarSobreTienda (R13; FR-029)', () => {
   const carta = (id: number, demarcacion: Demarcacion, nivel: Nivel) => ({ id, demarcacion, nivel });
 
   it('sin Superclase de MED usa otro Superclase; sin Superclase, el nivel inferior no existe y usa el superior', () => {
-    // Solo Épicos y un GOAT: las casillas Superclase se cubren con Épico (el superior más cercano).
+    // Solo Cracks y un GOAT: las casillas Superclase se cubren con Crack (el superior más cercano).
     const pool = [
-      ...Array.from({ length: 10 }, (_, i) => carta(i + 1, (['POR', 'DEF', 'MED', 'DEL'] as const)[i % 4]!, 'Epico')),
+      ...Array.from({ length: 10 }, (_, i) => carta(i + 1, (['POR', 'DEF', 'MED', 'DEL'] as const)[i % 4]!, 'Crack')),
       carta(20, 'DEL', 'GOAT'),
     ];
     const ids = generarSobreTienda(pool, semillaDesdeTexto('x'), PARAMETROS_V3);
     expect(new Set(ids).size).toBe(8);
     const niveles = ids.map((id) => pool.find((c) => c.id === id)!.nivel);
-    expect(niveles.filter((n) => n === 'Epico').length).toBeGreaterThanOrEqual(7);
+    expect(niveles.filter((n) => n === 'Crack').length).toBeGreaterThanOrEqual(7);
   });
 
   it('sin la combinación pedida prefiere el mismo nivel en otra demarcación antes que bajar de nivel', () => {
-    // Ningún MED Superclase, pero sí otros Superclase de sobra; y ningún Épico de ninguna demarcación salvo DEF.
+    // Ningún MED Superclase, pero sí otros Superclase de sobra; y ningún Crack de ninguna demarcación salvo DEF.
     const pool = [
       ...Array.from({ length: 6 }, (_, i) => carta(100 + i, 'DEF', 'Superclase')),
       ...Array.from({ length: 6 }, (_, i) => carta(200 + i, 'DEL', 'Superclase')),
-      ...Array.from({ length: 3 }, (_, i) => carta(300 + i, 'DEF', 'Epico')),
+      ...Array.from({ length: 3 }, (_, i) => carta(300 + i, 'DEF', 'Crack')),
       ...Array.from({ length: 3 }, (_, i) => carta(400 + i, 'MED', 'Legendario')),
       carta(500, 'DEL', 'GOAT'),
     ];
     const ids = generarSobreTienda(pool, semillaDesdeTexto('y'), PARAMETROS_V3);
     const niveles = ids.map((id) => pool.find((c) => c.id === id)!.nivel);
     expect(niveles.filter((n) => n === 'Superclase')).toHaveLength(4);
-    expect(niveles.filter((n) => n === 'Epico')).toHaveLength(2);
+    expect(niveles.filter((n) => n === 'Crack')).toHaveLength(2);
   });
 
   it('con menos de 8 cartas lanza ErrorPoolInsuficiente', () => {

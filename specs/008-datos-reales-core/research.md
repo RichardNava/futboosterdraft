@@ -15,7 +15,7 @@
   - El esquema `player-data.schema.json` repite el enumerado de nacionalidades. `selecciones.test` exige que coincida
     con `SELECCIONES`.
 - **Core ficticia** (`data/core.json`, versión `1.0.0`): ids agrupados por demarcación y nivel. Después del 250 solo
-  quedan delanteros: DEL Superclase 251–262, Épico 263–277, Legendario 278–292 y GOAT 293–300. Al sustituir 1–250, las
+  quedan delanteros: DEL Superclase 251–262, Crack 263–277, Legendario 278–292 y GOAT 293–300. Al sustituir 1–250, las
   50 ficticias restantes son todas DEL.
 - **Seed**: `cargarCatalogo` hace *upsert* por id. `informeColecciones` ya compara Core con `DISTRIBUCION_CORE` y avisa.
 - **Selecciones**: hay 23 códigos (ISO alfa-3, más ENG, SCO, WAL y NIR). Las banderas son de `flag-icons` (MIT), en
@@ -87,7 +87,7 @@
     - **GOAT**: Balón de Oro, sus finalistas habituales o referentes mundiales de su puesto en su época. Media
       ≥ 88; Messi, Cristiano Ronaldo y Neymar, en 93–97.
     - **Legendario**: titulares de élite en grandes clubes o selecciones. Media 83–89,9.
-    - **Épico**: titulares sólidos de primera división europea o internacionales habituales. Media 78–84,9.
+    - **Crack**: titulares sólidos de primera división europea o internacionales habituales. Media 78–84,9.
     - **Superclase**: el resto. Media 70–79,9.
   - **Stats**: se reparten según el perfil (FR-009) y se ajustan para que la media caiga en la banda del nivel. La
     media se guarda como el promedio exacto (decimales permitidos, como en `core.json`). En las zonas donde dos bandas

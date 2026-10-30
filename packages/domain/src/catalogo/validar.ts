@@ -1,8 +1,8 @@
 /**
  * Validación del catálogo de jugadores (FR-016 a FR-024; spec 005, FR-011, FR-013, FR-040). El seed rechaza el
- * fichero entero si cualquier jugador incumple una regla. Los avisos de colección (`avisosColeccion`) no lo rechazan.
+ * fichero entero si cualquier jugador incumple una regla. Los avisos de colección (`avisosColeccion`) y el reparto de
+ * Core frente a `DISTRIBUCION_CORE` (spec 008, R8) no lo rechazan.
  */
-import { DISTRIBUCION_CORE, recuentoPorDemarcacionYNivel } from './coleccionCore';
 import { PAREJAS_INCOMPATIBLES, REPARTO_DEFECTOS } from './rasgos';
 import { esSeleccion } from './selecciones';
 import {
@@ -352,14 +352,9 @@ export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcaci
   }
 
   const basicas = normalizadas.filter((c) => c.tipo === 'basica');
+  // El reparto de Core frente a DISTRIBUCION_CORE solo avisa (informe del seed), no rechaza (spec 008, R8).
   if (basicas.length !== 1 || basicas[0]!.id !== 'core') {
     error(undefined, 'Debe haber exactamente una colección básica, con id "core"');
-  } else {
-    const recuento = recuentoPorDemarcacionYNivel(basicas[0]!.cartas.map((c) => porId.get(c.id)!));
-    const fuera = (Object.keys(DISTRIBUCION_CORE) as (keyof typeof DISTRIBUCION_CORE)[]).flatMap((d) =>
-      NIVELES.filter((n) => recuento[d][n] !== DISTRIBUCION_CORE[d][n]).map((n) => `${d} ${n}: ${recuento[d][n]}/${DISTRIBUCION_CORE[d][n]}`),
-    );
-    if (fuera.length) error('core', `Core no cumple DISTRIBUCION_CORE: ${fuera.join(', ')}`);
   }
 
   for (const c of cartas) {

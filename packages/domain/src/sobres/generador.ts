@@ -2,7 +2,7 @@
  * Generación de los sobres de una mesa (FR-011, FR-014; research R16).
  *
  * Se genera la mesa completa al empezar el draft: 3 sobres por participante. Cada sobre tiene cupos
- * fijos de demarcación (1 "POR o DEF", 2 DEF, 3 MED, 2 DEL) y de nivel (4 Superclase, 2 Épico,
+ * fijos de demarcación (1 "POR o DEF", 2 DEF, 3 MED, 2 DEL) y de nivel (4 Superclase, 2 Crack,
  * 1 Legendario y 1 carta alta Legendario/GOAT). El cruce demarcación × nivel se sortea, restringido a
  * las combinaciones que aún tienen cartas, y ninguna carta se repite en la mesa.
  */
@@ -42,7 +42,7 @@ export function generarSobre(rng: Rng, p: ParametrosEquilibrado): PlanSobre {
     huecoPorDef,
     alta,
     demarcaciones: [huecoPorDef, 'DEF', 'DEF', 'MED', 'MED', 'MED', 'DEL', 'DEL'],
-    niveles: ['Superclase', 'Superclase', 'Superclase', 'Superclase', 'Epico', 'Epico', 'Legendario', alta],
+    niveles: ['Superclase', 'Superclase', 'Superclase', 'Superclase', 'Crack', 'Crack', 'Legendario', alta],
   };
 }
 

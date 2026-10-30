@@ -33,13 +33,13 @@ export const POSICIONES_POR_DEMARCACION: Readonly<Record<Demarcacion, readonly P
   DEL: ['DC', 'SD', 'EI', 'ED'],
 };
 
-export const NIVELES = ['Superclase', 'Epico', 'Legendario', 'GOAT'] as const;
+export const NIVELES = ['Superclase', 'Crack', 'Legendario', 'GOAT'] as const;
 export type Nivel = (typeof NIVELES)[number];
 
 /** Máximo de virtudes por nivel (FR-021). */
 export const MAX_VIRTUDES: Readonly<Record<Nivel, number>> = {
   Superclase: 1,
-  Epico: 2,
+  Crack: 2,
   Legendario: 3,
   GOAT: 4,
 };

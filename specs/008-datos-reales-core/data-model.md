@@ -18,7 +18,7 @@ No hay entidades nuevas en la base de datos ni en el protocolo. La ficha usa la 
 | `historia` | 2–3 frases en español con sus clubes, títulos y rasgos. | FR-012 |
 | `stats` | Las 6 claves de `CLAVES_STATS[demarcacion]`, enteros 1–99, de su prime. | FR-009 |
 | `media` | El promedio exacto de los stats, dentro de la banda del `nivel`. | FR-010 |
-| `nivel` | `Superclase` (70–79,9), `Epico` (78–84,9), `Legendario` (83–89,9) o `GOAT` (≥ 88). | FR-010 |
+| `nivel` | `Superclase` (70–79,9), `Crack` (78–84,9), `Legendario` (83–89,9) o `GOAT` (≥ 88). | FR-010 |
 | `virtudes` | Hasta `MAX_VIRTUDES[nivel]`, solo las permitidas por `virtudesPermitidas`. | FR-011 |
 | `defectos` | 0–2, compatibles (`PAREJAS_INCOMPATIBLES`). | FR-011 |
 | `imagen` | `/cartas/retratos/<slug>.webp`. | FR-013 |

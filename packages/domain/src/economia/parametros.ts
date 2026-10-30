@@ -21,7 +21,7 @@ export interface ParametrosEconomia {
 
 export const PARAMETROS_ECONOMIA: Readonly<ParametrosEconomia> = {
   recompensaTorneo: 10,
-  desfragmentar: { Superclase: 25, Epico: 50, Legendario: 75, GOAT: 100 },
+  desfragmentar: { Superclase: 25, Crack: 50, Legendario: 75, GOAT: 100 },
   precioSobreFragmentos: 1000,
   precioSobreCentimos: 99,
   paquetesFragmentos: [
@@ -35,11 +35,11 @@ export function valorDesfragmentar(nivel: Nivel, p: Readonly<ParametrosEconomia>
   return p.desfragmentar[nivel];
 }
 
-/** Fragmentos esperados al desfragmentar un sobre entero: 4 Superclase, 2 Épico, 1 Legendario y la carta alta. */
+/** Fragmentos esperados al desfragmentar un sobre entero: 4 Superclase, 2 Crack, 1 Legendario y la carta alta. */
 export function valorEsperadoSobre(p: Readonly<ParametrosEconomia>, equilibrado: ParametrosEquilibrado): number {
   const d = p.desfragmentar;
   const goat = equilibrado.sobres.probGoatEnAlta;
-  return 4 * d.Superclase + 2 * d.Epico + d.Legendario + (1 - goat) * d.Legendario + goat * d.GOAT;
+  return 4 * d.Superclase + 2 * d.Crack + d.Legendario + (1 - goat) * d.Legendario + goat * d.GOAT;
 }
 
 /** Comprar un sobre y desfragmentarlo nunca puede dar más fragmentos de los que cuesta (FR-024). */

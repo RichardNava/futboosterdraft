@@ -23,7 +23,7 @@ describe('generarCore', () => {
   it('las medias caen en el rango de su nivel', () => {
     const rangos: Record<Nivel, [number, number]> = {
       Superclase: [70, 80],
-      Epico: [78, 85],
+      Crack: [78, 85],
       Legendario: [83, 90],
       GOAT: [88, 95],
     };

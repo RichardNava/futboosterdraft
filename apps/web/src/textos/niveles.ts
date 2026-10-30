@@ -3,7 +3,7 @@ import type { Nivel } from '@fbd/domain';
 /** Etiquetas con tilde para la interfaz: en el código y en los datos los valores no llevan tildes. */
 export const ETIQUETA_NIVEL: Readonly<Record<Nivel, string>> = {
   Superclase: 'Superclase',
-  Epico: 'Épico',
+  Crack: 'Crack',
   Legendario: 'Legendario',
   GOAT: 'GOAT',
 };

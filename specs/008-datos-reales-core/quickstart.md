@@ -60,6 +60,6 @@ Comprueba también que Messi, Cristiano Ronaldo y Neymar son GOAT y están entre
 
 ## 6. Sumario (US3; SC-006)
 
-- Cuenta a mano una celda, por ejemplo los DEF Épico de `core-real.json`, y compárala con la tabla del sumario.
+- Cuenta a mano una celda, por ejemplo los DEF Crack de `core-real.json`, y compárala con la tabla del sumario.
 - Comprueba que los huecos menos los excesos suman 50.
 - Lee solo la lista de necesidades: debe bastar para elegir los 50 jugadores que faltan.

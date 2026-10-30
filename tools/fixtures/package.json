@@ -12,7 +12,8 @@
     "generar-escenarios": "tsx src/generarEscenarios.ts",
     "asignar-rasgos": "tsx src/asignarRasgos.ts",
     "migrar-cartas-006": "tsx src/migrarCartas006.ts",
-    "generar-colecciones-prueba": "tsx src/generarColeccionesPrueba.ts"
+    "generar-colecciones-prueba": "tsx src/generarColeccionesPrueba.ts",
+    "core-real": "tsx src/coreReal.ts"
   },
   "dependencies": {
     "@fbd/domain": "workspace:*",

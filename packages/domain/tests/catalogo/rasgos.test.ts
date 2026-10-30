@@ -54,7 +54,7 @@ describe('tabla de rasgos', () => {
   it('el reparto de defectos crece con el nivel', () => {
     expect(REPARTO_DEFECTOS).toEqual({
       Superclase: { conDefecto: 0.15, conDos: 0 },
-      Epico: { conDefecto: 0.25, conDos: 0.2 },
+      Crack: { conDefecto: 0.25, conDos: 0.2 },
       Legendario: { conDefecto: 0.35, conDos: 0.3 },
       GOAT: { conDefecto: 0.5, conDos: 0.4 },
     });

@@ -31,7 +31,7 @@ function catalogo() {
   return { porId: new Map(cartas.map((j) => [j.id, j])), core: ids('basica'), pago: ids('pago') };
 }
 
-/** Cupos de un sobre del draft: 3 POR/DEF (≤ 1 POR), 3 MED, 2 DEL; 4 Superclase, 2 Épico, 2 Legendario/GOAT (≥ 1 Legendario). */
+/** Cupos de un sobre del draft: 3 POR/DEF (≤ 1 POR), 3 MED, 2 DEL; 4 Superclase, 2 Crack, 2 Legendario/GOAT (≥ 1 Legendario). */
 function cumpleCupos(cartas: readonly Jugador[]): boolean {
   const n = (f: (j: Jugador) => boolean) => cartas.filter(f).length;
   return (
@@ -46,7 +46,7 @@ function cumpleCupos(cartas: readonly Jugador[]): boolean {
 
 const cumpleNiveles = (cartas: readonly Jugador[]) => {
   const n = (nivel: string) => cartas.filter((j) => j.nivel === nivel).length;
-  return n('Superclase') === 4 && n('Epico') === 2 && n('Legendario') >= 1 && n('Legendario') + n('GOAT') === 2;
+  return n('Superclase') === 4 && n('Crack') === 2 && n('Legendario') >= 1 && n('Legendario') + n('GOAT') === 2;
 };
 
 export function comprobarSC003(mesas: number, semilla: number): Comprobacion {
@@ -55,12 +55,13 @@ export function comprobarSC003(mesas: number, semilla: number): Comprobacion {
   let fuera = 0;
   let sinCupos = 0;
   let tamanos = 0;
+  const minimos = recuentoPorDemarcacionYNivel(core.map((id) => porId.get(id)!));
   for (let m = 0; m < mesas; m++) {
     const rng = new Rng(derivarSemilla(semillaDesdeTexto(`colecciones:${semilla}`), `mesa:${m}`));
     // Colección activa: Core más cartas de pago al azar; después se desactivan al azar las que el mínimo permite.
     let activas = [...core, ...pago.filter(() => rng.probabilidad(500))].map((id) => porId.get(id)!);
     for (const j of rng.barajar([...activas])) {
-      if (rng.probabilidad(500) && comprobarMinimoActivo(recuentoPorDemarcacionYNivel(activas), j).ok) activas = activas.filter((x) => x !== j);
+      if (rng.probabilidad(500) && comprobarMinimoActivo(recuentoPorDemarcacionYNivel(activas), j, minimos).ok) activas = activas.filter((x) => x !== j);
     }
     tamanos += activas.length;
     const enPool = new Set(activas.map((j) => j.id));

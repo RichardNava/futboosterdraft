@@ -291,7 +291,7 @@ INI-10 e INI-13).
 ## INI-15 Retoques visuales y sonoros
 
 - **Objetivo**: pulir la presentación antes de la beta: marca, cartas, sobre y sonido.
-- **Alcance**: 007 US1–US6: cartas con marcos y fondos por rareza (Superclase, Épica, Legendaria, GOAT), sonidos más
+- **Alcance**: 007 US1–US6: cartas con marcos y fondos por rareza (Superclase, Crack, Legendaria, GOAT), sonidos más
   suaves (−20 %) y cuatro momentos sonoros nuevos (choque y ruleta de forma en los duelos, campeón, derrota), logo
   oficial en SVG, seis fondos de página nuevos, sin tablas de goleadores en el modo Duelos y nuevo sobre con su
   animación. Los recursos de origen están en `temp/`, que debe desaparecer al cerrar la spec (FR-021).

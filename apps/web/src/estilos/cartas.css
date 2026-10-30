@@ -32,9 +32,9 @@
   container-type: inline-size;
 }
 
-/* Violeta (Épico). */
-.carta.nivel-epico {
-  --carta-marco-img: url(/cartas/marcos/epico.svg);
+/* Violeta (Crack). */
+.carta.nivel-crack {
+  --carta-marco-img: url(/cartas/marcos/crack.svg);
   --carta-texto-suave: #dccbff;
   --carta-superficie: #1d1236;
   --carta-marco: #a879ff;
@@ -232,6 +232,11 @@
   object-fit: contain;
   color: var(--carta-marco);
   filter: drop-shadow(0 6px 8px rgb(0 0 0 / 28%));
+}
+
+/* Retratos reales (spec 008, R3): proporción vertical del retrato, sin deformar. */
+.carta-silueta:not(.mascara) {
+  aspect-ratio: 139 / 181;
 }
 
 /*
@@ -700,7 +705,7 @@ img.carta-fondo-accion {
   filter: drop-shadow(0 26px 26px rgb(0 0 0 / 65%)) drop-shadow(0 0 22px var(--carta-luz-hueco, rgb(255 255 255 / 12%)));
 }
 
-.carta-hueco[data-nivel='Epico'] {
+.carta-hueco[data-nivel='Crack'] {
   --carta-luz-hueco: rgb(168 121 255 / 40%);
 }
 

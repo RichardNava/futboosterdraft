@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { DISTRIBUCION_CORE, recuentoPorDemarcacionYNivel } from '../../src/catalogo/coleccionCore';
+import { recuentoPorDemarcacionYNivel } from '../../src/catalogo/coleccionCore';
 import { DEMARCACIONES, NIVELES, type Jugador } from '../../src/catalogo/tipos';
 import { validarCatalogo, validarColeccion } from '../../src/catalogo/validar';
 
@@ -22,10 +22,9 @@ describe('datos de la spec 006 (FR-005, FR-006)', () => {
     expect(errores).toEqual([]);
   });
 
-  it('core tiene 300 cartas con DISTRIBUCION_CORE; all-stars 45 y top-argentinos 42', () => {
-    const porId = new Map(cartas.map((c) => [c.id, c]));
+  // Desde la spec 008 el reparto de Core frente a DISTRIBUCION_CORE solo avisa (R8).
+  it('core tiene 300 cartas; all-stars 45 y top-argentinos 42', () => {
     expect(ids('core').size).toBe(300);
-    expect(recuentoPorDemarcacionYNivel([...ids('core')].map((id) => porId.get(id)!))).toEqual(DISTRIBUCION_CORE);
     expect(ids('all-stars').size).toBe(45);
     expect(ids('top-argentinos').size).toBe(42);
   });

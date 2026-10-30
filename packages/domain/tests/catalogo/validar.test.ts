@@ -36,7 +36,7 @@ const defensa: Jugador = {
   stats: { velocidad: 80, tecnica: 70, tackling: 80, anticipacion: 75, marcaje: 75, liderazgo: 70 },
   media: 75,
   virtudes: ['Infranqueable', 'BoxToBox'], // BoxToBox permitido por ser carrilero (FR-023)
-  nivel: 'Epico',
+  nivel: 'Crack',
 };
 const medio: Jugador = {
   ...base,
@@ -93,10 +93,10 @@ describe('validarJugador', () => {
     ['stat fuera de rango', { ...medio, stats: { ...medio.stats, pase: 100 } }, 'stats_rango'],
     ['stat no entero', { ...medio, stats: { ...medio.stats, pase: 80.5 } }, 'stats_rango'],
     ['media incorrecta', { ...medio, media: 80 }, 'media'],
-    ['nivel desconocido', { ...medio, nivel: 'Épico' }, 'nivel'],
+    ['nivel desconocido', { ...medio, nivel: 'Epico' }, 'nivel'],
     ['virtudes repetidas', { ...delantero, virtudes: ['Matador', 'Matador'] }, 'virtudes_repetidas'],
     ['demasiadas virtudes (Superclase)', { ...portero, virtudes: ['Parapenalties', 'Santo'] }, 'virtudes_maximo'],
-    ['demasiadas virtudes (Épico)', { ...defensa, virtudes: ['Infranqueable', 'Jerarquia', 'Volador'] }, 'virtudes_maximo'],
+    ['demasiadas virtudes (Crack)', { ...defensa, virtudes: ['Infranqueable', 'Jerarquia', 'Volador'] }, 'virtudes_maximo'],
     ['virtud desconocida', { ...delantero, virtudes: ['Volar'] }, 'virtud_desconocida'],
     ['virtud de otra demarcación', { ...medio, virtudes: ['Matador'] }, 'virtud_no_permitida'],
     ['virtud de MED en defensa no carrilero', { ...defensa, posicion: ['DCI'] }, 'virtud_no_permitida'],
@@ -120,8 +120,8 @@ describe('validarJugador', () => {
     );
   });
 
-  it('el valor "Épico" con tilde no es válido en los datos: se escribe "Epico"', () => {
-    expect(reglas({ ...defensa, nivel: 'Épico' })).toContain('nivel');
+  it('el antiguo valor "Epico" ya no es válido: el nivel se llama "Crack"', () => {
+    expect(reglas({ ...defensa, nivel: 'Epico' })).toContain('nivel');
   });
 });
 
@@ -145,12 +145,12 @@ describe('avisosColeccion (reparto de defectos)', () => {
     Array.from({ length: n }, (_, i) => ({ ...delantero, id: 1000 + i, nivel, virtudes: [], defectos: i < conDefecto ? ['Torpe'] : [] }));
 
   it('sin aviso si la proporción crece con el nivel y se acerca a REPARTO_DEFECTOS', () => {
-    const coleccion = [...cartas('Superclase', 20, 3), ...cartas('Epico', 20, 5), ...cartas('Legendario', 20, 7), ...cartas('GOAT', 20, 10)];
+    const coleccion = [...cartas('Superclase', 20, 3), ...cartas('Crack', 20, 5), ...cartas('Legendario', 20, 7), ...cartas('GOAT', 20, 10)];
     expect(avisosColeccion(coleccion)).toEqual([]);
   });
 
   it('avisa si un nivel alto tiene menos cartas con defectos que uno bajo', () => {
-    const coleccion = [...cartas('Superclase', 20, 6), ...cartas('Epico', 20, 1)];
+    const coleccion = [...cartas('Superclase', 20, 6), ...cartas('Crack', 20, 1)];
     expect(avisosColeccion(coleccion).map((a) => a.regla)).toContain('reparto_defectos');
   });
 });
@@ -163,8 +163,9 @@ describe('data/core.json con rasgos (spec 005, T050; SC-008)', () => {
     expect(Math.max(...core.map((j) => j.defectos.length))).toBeLessThanOrEqual(2);
   });
 
-  it('la proporción de cartas con defectos crece con el nivel y se ajusta al reparto', () => {
-    expect(avisosColeccion(core)).toEqual([]);
+  // Con los datos reales (spec 008) la cercanía a REPARTO_DEFECTOS la informa el sumario (FR-011); la tendencia se exige.
+  it('la proporción de cartas con defectos crece con el nivel', () => {
+    expect(avisosColeccion(core).filter((a) => a.mensaje.startsWith('Hay menos cartas con defectos'))).toEqual([]);
   });
 });
 
@@ -198,8 +199,11 @@ describe('validarCatalogo (spec 006, data-model §1.2)', () => {
     ['destacadas fuera de cartas', [colCore, { ...pago, destacadas: [2] }], /destacadas/],
     ['id repetido', [colCore, pago, { ...pago }], /repetido/],
     ['id con mayúsculas', [colCore, { ...pago, id: 'All-Stars' }], /kebab-case/],
-    ['Core sin la distribución', [{ ...colCore, cartas: core.slice(1).map((c) => c.id) }, { ...pago, cartas: [1, 301] }], /DISTRIBUCION_CORE/],
   ])('rechaza: %s', (_t, colecciones, mensaje) => {
     expect(mensajes(colecciones)).toMatch(mensaje);
+  });
+
+  it('acepta una Core que no cumple DISTRIBUCION_CORE (spec 008, R8)', () => {
+    expect(validarCatalogo(cartas, [{ ...colCore, cartas: core.slice(1).map((c) => c.id) }, { ...pago, cartas: [1, 301] }]).errores).toEqual([]);
   });
 });

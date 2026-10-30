@@ -16,12 +16,12 @@ que faltan para llegar a 300 se elegirán en una fase posterior, guiada por el s
 
 Términos usados en esta spec:
 
-- **Rareza** = **nivel** de la carta: Superclase, Épico, Legendario y GOAT.
+- **Rareza** = **nivel** de la carta: Superclase, Crack, Legendario y GOAT.
 - **Demarcación**: POR, DEF, MED o DEL. **Posición**: las 16 casillas del campo (POR, LI, LD, DCI, DCD, CI, CD, MD,
   MC, MII, MID, MCO, DC, SD, EI, ED).
 - **Reparto objetivo de Core**: la distribución de 300 cartas por demarcación y nivel ya fijada en el juego:
 
-  | Demarcación | Superclase | Épico | Legendario | GOAT | Total |
+  | Demarcación | Superclase | Crack | Legendario | GOAT | Total |
   |-------------|-----------:|------:|-----------:|-----:|------:|
   | POR         | 14         | 8     | 7          | 3    | 32    |
   | DEF         | 44         | 22    | 22         | 12   | 100   |
@@ -30,7 +30,7 @@ Términos usados en esta spec:
   | **Total**   | **132**    | **67**| **66**     | **35**| **300** |
 
 - **Bandas de media por nivel** (las del catálogo actual, que el motor y el equilibrado ya asumen): Superclase
-  70–79,9; Épico 78–84,9; Legendario 83–89,9; GOAT 88 o más.
+  70–79,9; Crack 78–84,9; Legendario 83–89,9; GOAT 88 o más.
 
 ## Clarifications
 
@@ -129,7 +129,7 @@ da la misma cifra y el mismo hueco respecto del reparto objetivo.
 3. **Given** un nivel de una demarcación con más cartas de las del objetivo, **When** se lee el sumario, **Then** lo
    señala como exceso y propone qué jugadores, de los más cercanos al límite de la banda, se podrían recolocar.
 4. **Given** el sumario, **When** se lee la lista final, **Then** hay una lista corta y priorizada de necesidades
-   («faltan 3 GOAT DEF, preferiblemente centrales», «faltan 2 porteros Épicos»…) que permite elegir los 50 sin hacer
+   («faltan 3 GOAT DEF, preferiblemente centrales», «faltan 2 porteros Cracks»…) que permite elegir los 50 sin hacer
    cuentas.
 
 ---

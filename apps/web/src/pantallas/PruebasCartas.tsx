@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api/cliente';
 import { CartaJugador } from '../componentes/CartaJugador';
 
-const NIVELES: Nivel[] = ['Superclase', 'Epico', 'Legendario', 'GOAT'];
+const NIVELES: Nivel[] = ['Superclase', 'Crack', 'Legendario', 'GOAT'];
 
 /**
  * Solo en desarrollo (`/_pruebas/cartas`): todas las cartas de la colección Core, para la prueba de

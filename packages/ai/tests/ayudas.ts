@@ -19,7 +19,7 @@ let id = 1;
 export function jugador(posicion: Posicion, valor = 80, virtudes: Virtud[] = [], otras: Posicion[] = []): Jugador {
   const demarcacion = DEM[posicion];
   const stats = Object.fromEntries(CLAVES_STATS[demarcacion].map((c) => [c, valor])) as unknown as Jugador['stats'];
-  const nivel: Nivel = valor >= 88 ? 'GOAT' : valor >= 83 ? 'Legendario' : valor >= 78 ? 'Epico' : 'Superclase';
+  const nivel: Nivel = valor >= 88 ? 'GOAT' : valor >= 83 ? 'Legendario' : valor >= 78 ? 'Crack' : 'Superclase';
   const j: Jugador = {
     id: id++,
     nombre: 'Prueba',

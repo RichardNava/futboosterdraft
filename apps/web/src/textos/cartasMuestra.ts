@@ -32,7 +32,7 @@ export const CARTAS_MUESTRA: CartaResumen[] = [
     demarcacion: 'MED',
     posicion: ['MCO', 'SD'],
     media: 84.83,
-    nivel: 'Epico',
+    nivel: 'Crack',
     virtudes: ['JugadorEntreLineas'],
     defectos: [],
     stats: { velocidad: 78, tecnica: 91, pase: 84, posicionamiento: 78, vision: 93, disparo: 85 },

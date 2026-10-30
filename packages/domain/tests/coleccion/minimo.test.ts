@@ -30,14 +30,14 @@ describe('mínimo de la colección activa (R11; SC-004)', () => {
   });
 
   it('el rechazo informa de la combinación, el mínimo y las activas', () => {
-    expect(comprobarMinimoActivo(recuentoPorDemarcacionYNivel(coleccion(0)), { demarcacion: 'DEF', nivel: 'Epico' })).toEqual({
+    expect(comprobarMinimoActivo(recuentoPorDemarcacionYNivel(coleccion(0)), { demarcacion: 'DEF', nivel: 'Crack' })).toEqual({
       ok: false,
       demarcacion: 'DEF',
-      nivel: 'Epico',
+      nivel: 'Crack',
       minimo: 22,
       activas: 22,
     });
-    expect(comprobarMinimoActivo(recuentoPorDemarcacionYNivel(coleccion(1)), { demarcacion: 'DEF', nivel: 'Epico' })).toEqual({ ok: true });
+    expect(comprobarMinimoActivo(recuentoPorDemarcacionYNivel(coleccion(1)), { demarcacion: 'DEF', nivel: 'Crack' })).toEqual({ ok: true });
   });
 
   it('estadoMinimo lista las combinaciones por debajo', () => {
@@ -46,5 +46,14 @@ describe('mínimo de la colección activa (R11; SC-004)', () => {
       cumple: false,
       incumplidas: [{ demarcacion: 'POR', nivel: 'GOAT', minimo: 3, activas: 0 }],
     });
+  });
+
+  it('con otros mínimos (el recuento de la Core real, spec 008) se aplican esos', () => {
+    const activas = recuentoPorDemarcacionYNivel(coleccion(0));
+    const minimos = { ...activas, POR: { ...activas.POR, Superclase: 13 } };
+    expect(comprobarMinimoActivo(activas, { demarcacion: 'POR', nivel: 'Superclase' }, minimos)).toEqual({ ok: true });
+    expect(estadoMinimo({ ...activas, POR: { ...activas.POR, Superclase: 12 } }, minimos).incumplidas).toEqual([
+      { demarcacion: 'POR', nivel: 'Superclase', minimo: 13, activas: 12 },
+    ]);
   });
 });

@@ -11,7 +11,7 @@
     "jugadores": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/jugador" } }
   },
   "$defs": {
-    "nacionalidad": { "enum": ["ARG", "BEL", "BRA", "CHL", "COL", "DEU", "ENG", "ESP", "FRA", "HRV", "ITA", "JPN", "MAR", "MEX", "NGA", "NIR", "NLD", "PRT", "SCO", "SEN", "URY", "USA", "WAL"] },
+    "nacionalidad": { "enum": ["ARG", "BEL", "BRA", "CAN", "CHE", "CHL", "CIV", "CMR", "COD", "COL", "DEU", "DNK", "DZA", "ECU", "EGY", "ENG", "ESP", "FRA", "GEO", "GHA", "GMB", "GRC", "HRV", "HUN", "IRL", "ITA", "JPN", "MAR", "MEX", "MLI", "NGA", "NIR", "NLD", "NOR", "POL", "PRT", "RUS", "SCO", "SEN", "SRB", "SVK", "SVN", "SWE", "TUR", "UKR", "URY", "USA", "UZB", "WAL"] },
     "rutaImagen": { "type": "string", "pattern": "^/cartas/[a-z0-9/_-]+\\.(svg|png|webp|jpg)$" },
     "stat": { "type": "integer", "minimum": 1, "maximum": 99 },
     "posicion": { "enum": ["POR", "LI", "LD", "DCI", "DCD", "CI", "CD", "MD", "MC", "MII", "MID", "MCO", "DC", "SD", "EI", "ED"] },
@@ -72,13 +72,13 @@
         "media": { "type": "number", "minimum": 1, "maximum": 99 },
         "virtudes": { "type": "array", "uniqueItems": true, "maxItems": 4, "items": { "type": "string" } },
         "defectos": { "type": "array", "uniqueItems": true, "minItems": 0, "maxItems": 2, "items": { "$ref": "#/$defs/defecto" } },
-        "nivel": { "enum": ["Superclase", "Epico", "Legendario", "GOAT"] },
+        "nivel": { "enum": ["Superclase", "Crack", "Legendario", "GOAT"] },
         "imagen": { "$ref": "#/$defs/rutaImagen" },
         "imagen_bg": { "$ref": "#/$defs/rutaImagen" }
       },
       "allOf": [
         { "if": { "properties": { "nivel": { "const": "Superclase" } } }, "then": { "properties": { "virtudes": { "maxItems": 1 } } } },
-        { "if": { "properties": { "nivel": { "const": "Epico" } } }, "then": { "properties": { "virtudes": { "maxItems": 2 } } } },
+        { "if": { "properties": { "nivel": { "const": "Crack" } } }, "then": { "properties": { "virtudes": { "maxItems": 2 } } } },
         { "if": { "properties": { "nivel": { "const": "Legendario" } } }, "then": { "properties": { "virtudes": { "maxItems": 3 } } } },
         {
           "if": { "properties": { "demarcacion": { "const": "POR" } } },

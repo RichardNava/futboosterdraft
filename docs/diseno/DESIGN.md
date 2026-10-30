@@ -190,7 +190,7 @@ las únicas excepciones a «un solo color cromático»:
   es blanco con sombra en todos los niveles. La foto de la demarcación va al 35 % y se funde hacia abajo. Los rasgos
   son más estrechos que el resto, y más aún en la fila de abajo, donde el marco se achaflana.
 - **Media**: ámbar `#ff9f1c` que pasa a dorado `#ffe066` entre 65 y 99 (`--carta-media-oro`), con un halo cálido.
-- **Color del nivel** (`--carta-marco`): plata `#b9c2cc` (Superclase), violeta `#a879ff` (Épica), oro `#e0a82e`
+- **Color del nivel** (`--carta-marco`): plata `#b9c2cc` (Superclase), violeta `#a879ff` (Crack), oro `#e0a82e`
   (Legendaria) y rubí `#ff3d6e` (GOAT). Es el borde de la carta compacta, que usa el mismo marco como textura bajo un
   velo oscuro.
 - **Anchos**: las rejillas no bajan de 230 px por carta (la letra de portátil cabe en 2 : 3) y en móvil van a una

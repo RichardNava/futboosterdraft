@@ -11,8 +11,8 @@ modo Duelo de jugadores usan estas definiciones.
 - Una **virtud** es un rasgo que beneficia al jugador o a su equipo. Las genéricas las puede tener cualquier jugador;
   las de una demarcación, solo los de esa demarcación (y las de centrocampista, también los defensas carrileros).
 - Un **defecto** es un rasgo que le perjudica. Todos son genéricos. Una carta tiene como máximo 2 defectos.
-- Máximo de virtudes por nivel: Superclase 1, Épico 2, Legendario 3, GOAT 4.
-- Proporción de cartas con defectos por nivel (y, entre ellas, con dos): Superclase 15 % (0 %), Épico 25 % (20 %), Legendario 35 % (30 %), GOAT 50 % (40 %).
+- Máximo de virtudes por nivel: Superclase 1, Crack 2, Legendario 3, GOAT 4.
+- Proporción de cartas con defectos por nivel (y, entre ellas, con dos): Superclase 15 % (0 %), Crack 25 % (20 %), Legendario 35 % (30 %), GOAT 50 % (40 %).
 
 ## Cómo se lee el impacto
 

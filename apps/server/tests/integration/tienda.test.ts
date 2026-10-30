@@ -133,7 +133,7 @@ describe('tienda (spec 006)', () => {
       const idCompra = randomUUID();
       const r = await comprarColeccion(u, 'top-argentinos', idCompra);
       expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
-      // Las 3 de Core (Superclase, Épico y GOAT) ya las tiene: 25 + 50 + 100.
+      // Las 3 de Core (Superclase, Crack y GOAT) ya las tiene: 25 + 50 + 100.
       expect(r.cuerpo.fragmentos).toBe(175);
       expect(r.cuerpo.duplicados.map((d: any) => d.fragmentos).sort((a: number, b: number) => a - b)).toEqual([25, 50, 100]);
       expect(r.cuerpo.cartas).toHaveLength(39);
@@ -202,7 +202,7 @@ describe('tienda (spec 006)', () => {
         expect((await cartasDe(u)).find((c) => c.jugador_id === 301)).toMatchObject({ via: 'coleccion', activa: true });
         const sv = await saldoYSuma(bd.db, v.id);
         expect(sv.saldo).toBe(sv.suma);
-        expect(sv.saldo).toBe(175 + ({ Superclase: 25, Epico: 50, Legendario: 75, GOAT: 100 } as Record<string, number>)[await nivelDe(301)]!);
+        expect(sv.saldo).toBe(175 + ({ Superclase: 25, Crack: 50, Legendario: 75, GOAT: 100 } as Record<string, number>)[await nivelDe(301)]!);
       } finally {
         await cargarCatalogo(bd.db, lote.jugadores, lote.colecciones);
       }

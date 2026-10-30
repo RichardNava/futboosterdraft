@@ -50,8 +50,8 @@ export function generarColeccionesPrueba(core: readonly Jugador[], semilla = 'fu
   const allStars = nuevas(301, 42);
   const argentinos = nuevas(343, 33, 'ARG');
 
-  // Core en Top Argentinos: un Superclase, un Épico y un GOAT argentinos (los duplicados dan 25 + 50 + 100).
-  const coreArg = (['Superclase', 'Epico', 'GOAT'] as const).map((nivel) => {
+  // Core en Top Argentinos: un Superclase, un Crack y un GOAT argentinos (los duplicados dan 25 + 50 + 100).
+  const coreArg = (['Superclase', 'Crack', 'GOAT'] as const).map((nivel) => {
     const c = core.find((j) => j.nacionalidad === 'ARG' && j.nivel === nivel);
     if (!c) throw new Error(`Core no tiene ningún ARG ${nivel}`);
     return c.id;

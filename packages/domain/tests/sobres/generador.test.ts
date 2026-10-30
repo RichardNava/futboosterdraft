@@ -17,7 +17,7 @@ const porId = new Map(core.map((j) => [j.id, j]));
 
 function composicion(cartas: number[]) {
   const dem: Record<string, number> = { POR: 0, DEF: 0, MED: 0, DEL: 0 };
-  const niv: Record<string, number> = { Superclase: 0, Epico: 0, Legendario: 0, GOAT: 0 };
+  const niv: Record<string, number> = { Superclase: 0, Crack: 0, Legendario: 0, GOAT: 0 };
   for (const id of cartas) {
     const j = porId.get(id)!;
     dem[j.demarcacion]! += 1;
@@ -27,7 +27,7 @@ function composicion(cartas: number[]) {
 }
 
 describe('generarMesa (FR-011, FR-014)', () => {
-  it('cada sobre: 1 "POR o DEF", 2 DEF, 3 MED, 2 DEL; 4 Superclase, 2 Épico, 1 Legendario y 1 alta', () => {
+  it('cada sobre: 1 "POR o DEF", 2 DEF, 3 MED, 2 DEL; 4 Superclase, 2 Crack, 1 Legendario y 1 alta', () => {
     fc.assert(
       fc.property(fc.integer({ min: 4, max: 8 }), fc.string({ minLength: 1, maxLength: 12 }), (n, texto) => {
         const sobres = generarMesa(core, n, semillaDesdeTexto(texto), PARAMETROS_V3);
@@ -40,7 +40,7 @@ describe('generarMesa (FR-011, FR-014)', () => {
           expect(dem.MED).toBe(3);
           expect(dem.DEL).toBe(2);
           expect(niv.Superclase).toBe(4);
-          expect(niv.Epico).toBe(2);
+          expect(niv.Crack).toBe(2);
           expect(niv.Legendario! + niv.GOAT!).toBe(2);
           expect(niv.GOAT).toBeLessThanOrEqual(1);
         }

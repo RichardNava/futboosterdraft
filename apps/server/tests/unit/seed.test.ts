@@ -17,15 +17,17 @@ describe('seed: validación del catálogo', () => {
   });
 
   it('rechaza el fichero entero si un jugador incumple una regla', () => {
-    const roto = { ...core, jugadores: core.jugadores.map((j, i) => (i === 5 ? { ...j, nivel: 'Épico' } : j)) };
+    const roto = { ...core, jugadores: core.jugadores.map((j, i) => (i === 5 ? { ...j, nivel: 'Epico' } : j)) };
     const r = validarFicheroCatalogo(roto);
     expect(r.errores.length).toBeGreaterThan(0);
     expect(r.errores.some((e) => e.regla === 'nivel' || e.regla.startsWith('esquema:'))).toBe(true);
   });
 
-  it('el informe compara con la tabla de 300 y no avisa con core.json', () => {
-    const informe = informeDistribucion(validarFicheroCatalogo(core).jugadores);
-    expect(informe).toContain('14/14');
+  it('el informe compara con la tabla de 300 y no avisa con el core.json real, aunque no la cumpla exactamente (spec 008, R8)', () => {
+    const r = validarFicheroCatalogo(core);
+    expect(r.errores).toEqual([]);
+    const informe = informeDistribucion(r.jugadores);
+    expect(informe).toContain('/14');
     expect(informe).not.toContain('AVISO');
   });
 });

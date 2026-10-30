@@ -5,13 +5,14 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 - Principios del proyecto: [.specify/memory/constitution.md](.specify/memory/constitution.md)
 - Especificación y plan en curso: [specs/008-datos-reales-core/](specs/008-datos-reales-core/)
 - Datos del catálogo: `data/core.json` y `data/cartas-prueba.json` (cartas) y `data/colecciones.json` (pertenencia); `pnpm seed` los carga todos
+- Las 300 cartas de Core son jugadores reales: su fuente es `data/core-real.json`, que se copia en `data/core.json` (y regenera `specs/008-datos-reales-core/sumario.md`) con `pnpm --filter @fbd/fixtures core-real`
 - Guía de estilos visuales (referencia de la spec 004): [docs/diseno/DESIGN.md](docs/diseno/DESIGN.md)
 - Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)
 
 ## Convenciones
 
 - **Gestor de paquetes: pnpm, sin excepciones.** Usa `pnpm install`, `pnpm add`, `pnpm -r`, `pnpm --filter <paquete>` y `pnpm dlx` en lugar de `npx`. No uses npm, yarn ni bun, y no generes `package-lock.json` ni `yarn.lock`. Las dependencias internas del monorepo se declaran con `workspace:*`.
-- **Sin tildes en el código**: identificadores, valores enumerados y datos van en español sin tildes (p. ej. `Epico`, `Capitania`, `posicion`). Las tildes solo aparecen en los textos que se muestran en la interfaz (p. ej. la etiqueta "Épico").
+- **Sin tildes en el código**: identificadores, valores enumerados y datos van en español sin tildes (p. ej. `Capitania`, `posicion`, `Superclase`). Las tildes solo aparecen en los textos que se muestran en la interfaz (p. ej. la etiqueta "Capitanía").
 - Documentación y especificaciones en español.
 - **Los agentes no ejecutan `git commit` ni `git push`** (constitución, "Flujo de trabajo de desarrollo"). Cuando convenga confirmar o publicar cambios, sugiérelo al final de la respuesta con el comando exacto listo para copiar; la persona decide si lo ejecuta. Sí puedes usar `git status`, `git diff`, `git log` y demás operaciones de solo lectura.
 

@@ -80,7 +80,7 @@ test('pulsar una virtud abre su descripción (FR-004)', async ({ page }) => {
 test('los cuatro niveles tienen un acabado distinto (FR-002)', async ({ page }) => {
   await abrirCartas(page);
   const marcos = new Set<string>();
-  for (const nivel of ['Superclase', 'Epico', 'Legendario', 'GOAT']) {
+  for (const nivel of ['Superclase', 'Crack', 'Legendario', 'GOAT']) {
     const carta = page.locator(`.carta.completa[data-nivel="${nivel}"]`).first();
     await expect(carta).toBeVisible();
     marcos.add(await carta.evaluate((el) => getComputedStyle(el).borderTopColor + getComputedStyle(el).backgroundImage));
@@ -90,7 +90,7 @@ test('los cuatro niveles tienen un acabado distinto (FR-002)', async ({ page }) 
 
 test('spec 007 (FR-004, FR-006b): la carta completa mide 2 : 3 y su fondo es el marco de su nivel', async ({ page }) => {
   await abrirCartas(page);
-  for (const nivel of ['superclase', 'epico', 'legendario', 'goat']) {
+  for (const nivel of ['superclase', 'crack', 'legendario', 'goat']) {
     const carta = page.locator(`.carta.completa.nivel-${nivel}`).first();
     const { ancho, alto, fondo } = await carta.evaluate((el) => {
       const r = el.getBoundingClientRect();
@@ -136,7 +136,7 @@ test('un GOAT con 4 virtudes no desborda la carta (scrollHeight ≤ clientHeight
   await abrirCartas(page);
   const goat = page.locator('.carta.completa[data-nivel="GOAT"][data-virtudes="4"]').first();
   expect(await goat.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
-  for (const clase of ['nivel-superclase', 'nivel-epico', 'nivel-legendario', 'nivel-goat']) await expect(page.locator(`.carta.completa.${clase}`).first()).toBeVisible();
+  for (const clase of ['nivel-superclase', 'nivel-crack', 'nivel-legendario', 'nivel-goat']) await expect(page.locator(`.carta.completa.${clase}`).first()).toBeVisible();
 });
 
 test('con movimiento reducido no hay animación de brillo', async ({ page }) => {

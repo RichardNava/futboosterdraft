@@ -555,7 +555,7 @@ export const impacto = (id: Rasgo): number => rasgo(id).impacto;
  */
 export const REPARTO_DEFECTOS: Readonly<Record<Nivel, { conDefecto: number; conDos: number }>> = {
   Superclase: { conDefecto: 0.15, conDos: 0 },
-  Epico: { conDefecto: 0.25, conDos: 0.2 },
+  Crack: { conDefecto: 0.25, conDos: 0.2 },
   Legendario: { conDefecto: 0.35, conDos: 0.3 },
   GOAT: { conDefecto: 0.5, conDos: 0.4 },
 };

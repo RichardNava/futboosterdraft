@@ -17,7 +17,7 @@ async function composicionDelSobre(page: Page) {
     MED: cuenta(demarcaciones, 'MED'),
     DEL: cuenta(demarcaciones, 'DEL'),
     Superclase: cuenta(niveles, 'Superclase'),
-    Epico: cuenta(niveles, 'Epico'),
+    Crack: cuenta(niveles, 'Crack'),
     altas: cuenta(niveles, 'Legendario') + cuenta(niveles, 'GOAT'),
   };
 }
@@ -44,7 +44,7 @@ test('un invitado completa el draft contra 3 NPC', async ({ page }) => {
   expect(c.MED).toBe(3);
   expect(c.DEL).toBe(2);
   expect(c.Superclase).toBe(4);
-  expect(c.Epico).toBe(2);
+  expect(c.Crack).toBe(2);
   expect(c.altas).toBe(2);
 
   // Dejar vencer el turno (45 s más los 8 s de margen de la apertura del sobre, spec 003): se elige la de mayor media.

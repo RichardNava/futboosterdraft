@@ -36,7 +36,7 @@ export { DISTRIBUCION_CORE } from '@fbd/domain';
 /** Rango de media objetivo por nivel. */
 const MEDIA_POR_NIVEL: Readonly<Record<Nivel, [number, number]>> = {
   Superclase: [70, 79],
-  Epico: [78, 84],
+  Crack: [78, 84],
   Legendario: [83, 89],
   GOAT: [88, 94],
 };
@@ -147,7 +147,7 @@ const ALTURA: Readonly<Record<Demarcacion, [number, number]>> = {
 };
 const NIVELES_TEXTO: Readonly<Record<Nivel, string>> = {
   Superclase: 'un fijo en cualquier once',
-  Epico: 'una figura de su generación',
+  Crack: 'una figura de su generación',
   Legendario: 'una leyenda en activo',
   GOAT: 'uno de los mejores de todos los tiempos',
 };
@@ -267,7 +267,7 @@ export function generarCore(semillaTexto = 'futboosterdraft-core-v1'): Jugador[]
   const jugadores: Jugador[] = [];
   const nombresUsados = new Set<string>();
   for (const demarcacion of ['POR', 'DEF', 'MED', 'DEL'] as const) {
-    for (const nivel of ['Superclase', 'Epico', 'Legendario', 'GOAT'] as const) {
+    for (const nivel of ['Superclase', 'Crack', 'Legendario', 'GOAT'] as const) {
       for (let n = 0; n < DISTRIBUCION_CORE[demarcacion][nivel]; n++) {
         jugadores.push(generarJugador(rng, { id: jugadores.length + 1, demarcacion, nivel, nombresUsados }));
       }

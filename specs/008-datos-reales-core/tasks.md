@@ -31,14 +31,14 @@ description: "Tareas de la spec 008: datos reales de la colección Core (fase 0.
 
 **Purpose**: fijar la tabla de nombres antes de producir nada.
 
-- [ ] T001 Crear `specs/008-datos-reales-core/dudas.md` con el encabezado y la tabla vacía
+- [X] T001 Crear `specs/008-datos-reales-core/dudas.md` con el encabezado y la tabla vacía
   `id | jugador | campo | valor propuesto | motivo`.
   - Motivos válidos: `sin confirmar`, `homonimo`, `doble nacionalidad`, `demarcacion cambiante`,
     `nivel en el limite`, `retrato`, `escudo`.
   - Añadir ya la fila de `escudo` de R10: SC-008 solo se cumple en la parte de la bandera mientras
     `ESCUDOS_ACTIVOS = false`.
   - Añadir las tres filas de `retrato` sin transparencia: Erling Haaland, Lamine Yamal y Manuel Neuer.
-- [ ] T002 Escribir en el scratchpad del agente, fuera del repositorio, la función de *slug* de R2. La comparten el
+- [X] T002 Escribir en el scratchpad del agente, fuera del repositorio, la función de *slug* de R2. La comparten el
   script de retratos (T010) y la redacción de fichas (T013 a T017). El algoritmo es:
   1. NFKD y quitar las marcas diacríticas;
   2. sustituir `ø→o`, `æ→ae`, `ß→ss`, `đ→d`, `ł→l`, `ı→i`;
@@ -55,25 +55,25 @@ description: "Tareas de la spec 008: datos reales de la colección Core (fase 0.
 
 **Purpose**: que el catálogo acepte un Core que no cuadra con la tabla, y que existan todas las selecciones de los 250.
 
-- [ ] T003 En `packages/domain/src/catalogo/validar.ts`, `validarCatalogo`: quitar el error
+- [X] T003 En `packages/domain/src/catalogo/validar.ts`, `validarCatalogo`: quitar el error
   `Core no cumple DISTRIBUCION_CORE` (R8). Mantener el resto de comprobaciones de colección, incluida la de una única
   colección básica `core`. Quitar los imports que queden sin uso (`DISTRIBUCION_CORE`, `recuentoPorDemarcacionYNivel`)
   y actualizar el comentario de cabecera.
-- [ ] T004 Ajustar `packages/domain/tests/catalogo/validar.test.ts`: la prueba que espere ese error pasa a esperar que
+- [X] T004 Ajustar `packages/domain/tests/catalogo/validar.test.ts`: la prueba que espere ese error pasa a esperar que
   no haya error (Core válido aunque no cuadre).
-- [ ] T005 Hacer una pasada por los 250 nombres de `retratos/` y decidir la selección absoluta de cada uno (R9, edge
+- [X] T005 Hacer una pasada por los 250 nombres de `retratos/` y decidir la selección absoluta de cada uno (R9, edge
   case de doble nacionalidad). Si duda, consultar fuentes públicas en la web. Guardar el resultado en el scratchpad
   (`nacionalidades.tsv`: archivo → código alfa-3) y anotar en `dudas.md` los casos de doble nacionalidad o sin debut.
-- [ ] T006 Añadir a `packages/domain/src/catalogo/selecciones.ts` cada código de `nacionalidades.tsv` que no esté:
+- [X] T006 Añadir a `packages/domain/src/catalogo/selecciones.ts` cada código de `nacionalidades.tsv` que no esté:
   - ISO 3166-1 alfa-3, salvo ENG, SCO, WAL y NIR, que se mantienen; Irlanda es `IRL`;
   - nombre en español con tildes (p. ej. `NOR: { nombre: 'Noruega' }`);
   - en orden alfabético por código.
-- [ ] T007 [P] Añadir los mismos códigos, en el mismo orden, al enumerado `$defs.nacionalidad.enum` de
+- [X] T007 [P] Añadir los mismos códigos, en el mismo orden, al enumerado `$defs.nacionalidad.enum` de
   `packages/protocol/schemas/player-data.schema.json`.
-- [ ] T008 [P] Por cada código nuevo, copiar la bandera `flags/4x3/<alfa-2>.svg` de `flag-icons` (la misma fuente MIT;
+- [X] T008 [P] Por cada código nuevo, copiar la bandera `flags/4x3/<alfa-2>.svg` de `flag-icons` (la misma fuente MIT;
   descargarla del paquete con versión fija, p. ej. `https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/4x3/no.svg`) a
   `apps/web/public/banderas/<ALFA3>.svg`. No tocar `apps/web/public/banderas/LICENSE`.
-- [ ] T009 Ejecutar `pnpm test -- selecciones` (`packages/domain/tests/catalogo/selecciones.test.ts`): el esquema debe
+- [X] T009 Ejecutar `pnpm test -- selecciones` (`packages/domain/tests/catalogo/selecciones.test.ts`): el esquema debe
   ser igual a `SELECCIONES`. Comprobar a mano que hay un `.svg` en `apps/web/public/banderas/` por cada código.
 
 **Checkpoint**: el dominio acepta las nacionalidades de los 250 y no rechaza Core por el reparto.
@@ -90,7 +90,7 @@ de integración (contrato §1). Las dos historias se pueden probar por separado.
 **Independent Test**: [quickstart.md](./quickstart.md) §1, más una carta con retrato en la ruta de pruebas de cartas,
 en tamaño normal y ampliado.
 
-- [ ] T010 [US2] Escribir y ejecutar en el scratchpad un script de Python + Pillow de un solo uso (R1, R2). No se
+- [X] T010 [US2] Escribir y ejecutar en el scratchpad un script de Python + Pillow de un solo uso (R1, R2). No se
   versiona y debe hacer lo siguiente:
   - Leer cada fichero de `retratos/` sin modificarlo (FR-004).
   - Guardarlo como `apps/web/public/cartas/retratos/<slug>.webp`, usando `slugs.tsv`, con estas opciones:
@@ -101,7 +101,7 @@ en tamaño normal y ampliado.
     - que hay 250 ficheros;
     - el peso total frente al de `retratos/` (≤ 50 %, SC-005);
     - que cada retrato pesa ≤ 25 KB.
-- [ ] T011 [US2] En `apps/web/src/estilos/cartas.css`, después de `.carta-silueta`, añadir
+- [X] T011 [US2] En `apps/web/src/estilos/cartas.css`, después de `.carta-silueta`, añadir
   `.carta-silueta:not(.mascara) { aspect-ratio: 139 / 181; }` (R3). Mantener `object-fit: contain` y el `max-height`
   existente. La máscara SVG no cambia.
 - [ ] T012 [US2] Comprobar el resultado en `pnpm dev`, en la ruta de pruebas de cartas (`apps/web/src/pantallas/PruebasCartas.tsx`,
@@ -130,7 +130,7 @@ banda (SC-003) y una muestra de 20 revisada contra fuentes públicas (SC-002).
 - `stats`: exactamente las 6 claves de `CLAVES_STATS[demarcacion]`, enteros 1–99, de su prime.
 - `media`: el promedio exacto de los stats, dentro de la banda del nivel:
   - Superclase 70–79,9;
-  - Épico 78–84,9;
+  - Crack 78–84,9;
   - Legendario 83–89,9;
   - GOAT ≥ 88. Messi, Cristiano Ronaldo y Neymar son GOAT, entre 93 y 97.
 - **Nivel**: se decide primero, por el prime. Los jóvenes, por su mejor rendimiento demostrado, y la historia lo
@@ -146,16 +146,16 @@ banda (SC-003) y una muestra de 20 revisada contra fuentes públicas (SC-002).
 Mientras se redactan los lotes, el `id` es provisional: el número de orden alfabético del archivo (1–250). T018 asigna
 los definitivos.
 
-- [ ] T013 [US1] Lote 1: archivos 1–50 de `retratos/` en orden alfabético (de «Aaron Ramsey» a «Dean Huijsen»). Escribir
+- [X] T013 [US1] Lote 1: archivos 1–50 de `retratos/` en orden alfabético (de «Aaron Ramsey» a «Dean Huijsen»). Escribir
   sus fichas en `data/core-real.json` (`{ "version": "1.0.0", "jugadores": [...] }`) y validar el lote con
   `validarColeccion` desde un script `tsx` del scratchpad. Corregir hasta tener 0 errores.
-- [ ] T014 [US1] Lote 2: archivos 51–100 (de «Declan Rice» a «Jan Paul van Hecke»). Añadirlos a `data/core-real.json`,
+- [X] T014 [US1] Lote 2: archivos 51–100 (de «Declan Rice» a «Jan Paul van Hecke»). Añadirlos a `data/core-real.json`,
   validar el fichero entero y anotar las dudas.
-- [ ] T015 [US1] Lote 3: archivos 101–150 (de «Jarell Quansah» a «Marc Bernal»). Igual que T014.
-- [ ] T016 [US1] Lote 4: archivos 151–200 (de «Marc Cucurella» a «Pedro Porro»). Igual que T014.
-- [ ] T017 [US1] Lote 5: archivos 201–250 (de «Petar Sučić» a «Ángel Di María»). Igual que T014, y comprobar que hay
+- [X] T015 [US1] Lote 3: archivos 101–150 (de «Jarell Quansah» a «Marc Bernal»). Igual que T014.
+- [X] T016 [US1] Lote 4: archivos 151–200 (de «Marc Cucurella» a «Pedro Porro»). Igual que T014.
+- [X] T017 [US1] Lote 5: archivos 201–250 (de «Petar Sučić» a «Ángel Di María»). Igual que T014, y comprobar que hay
   exactamente una ficha por retrato (US1-1).
-- [ ] T018 [US1] Repaso de coherencia de todo `data/core-real.json`, antes de los ids definitivos:
+- [X] T018 [US1] Repaso de coherencia de todo `data/core-real.json`, antes de los ids definitivos:
   - los GOAT son los referentes mundiales;
   - nadie claramente inferior tiene más media que un GOAT;
   - las medias caen dentro de su banda (SC-003).
@@ -163,7 +163,7 @@ los definitivos.
   Después, asignar los ids definitivos 1–250 por demarcación (POR, DEF, MED, DEL), luego por nivel (de Superclase a
   GOAT) y luego por `nombre_carta` (R7), y actualizar los ids de `dudas.md`. Esta renumeración solo se hace una vez:
   las ediciones posteriores de la persona conservan los ids.
-- [ ] T019 [US1] Crear `tools/fixtures/src/coreReal.ts` y añadir el script
+- [X] T019 [US1] Crear `tools/fixtures/src/coreReal.ts` y añadir el script
   `"core-real": "tsx src/coreReal.ts"` a `tools/fixtures/package.json` (contrato §2, R7). Debe hacer lo siguiente:
   1. leer `data/core-real.json`, validarlo con el esquema (como en `apps/server/src/persistencia/seed.ts`) y con
      `validarColeccion`;
@@ -175,12 +175,12 @@ los definitivos.
 
   Escribir con el mismo formato JSON que `tools/fixtures/src/asignarRasgos.ts`. Si hay algún error, imprimir
   `[id] regla: mensaje`, salir con código 1 y no escribir nada. Debe ser idempotente.
-- [ ] T020 [US1] Ejecutar `pnpm --filter @fbd/fixtures core-real` y comprobar:
+- [X] T020 [US1] Ejecutar `pnpm --filter @fbd/fixtures core-real` y comprobar:
   - que `data/core.json` tiene 300 cartas, `version` `2.0.0` y las 1–250 iguales a `core-real.json`;
   - que `data/colecciones.json` no cambia.
 
   Probar el error de quickstart §2 y deshacerlo.
-- [ ] T021 [US1] Ejecutar `pnpm test` y ajustar solo las pruebas que fijan datos de cartas ficticias 1–250 (R13, SC-007).
+- [X] T021 [US1] Ejecutar `pnpm test` y ajustar solo las pruebas que fijan datos de cartas ficticias 1–250 (R13, SC-007).
   - Candidatas:
     - `packages/domain/tests/catalogo/versionCatalogo.test.ts`: acotar la comparación con `fixtures/core-004.json` a
       los ids 251–300;
@@ -209,7 +209,7 @@ los definitivos.
 **Independent Test**: [quickstart.md](./quickstart.md) §6. Un recuento a mano coincide con el del sumario, y huecos −
 excesos = 50.
 
-- [ ] T023 [US3] En `tools/fixtures/src/coreReal.ts`, añadir y exportar la función pura
+- [X] T023 [US3] En `tools/fixtures/src/coreReal.ts`, añadir y exportar la función pura
   `sumarioCore(jugadores, distribucion)` (data-model §5, R11). Devuelve:
   - `tabla[demarcacion][nivel] = { actual, objetivo, diferencia }`, con `Σ huecos − Σ excesos = 300 − 250`;
   - `posiciones[pos] = { principal, secundaria, cobertura, pocaCobertura }` para las 16 de `POSICIONES`:
@@ -224,13 +224,13 @@ excesos = 50.
     posición preferida es la de menor cobertura de la demarcación.
 
   Reutilizar `recuentoPorDemarcacionYNivel` y `DISTRIBUCION_CORE`.
-- [ ] T024 [P] [US3] Crear `tools/fixtures/tests/sumarioCore.test.ts` con una colección pequeña construida a mano.
+- [X] T024 [P] [US3] Crear `tools/fixtures/tests/sumarioCore.test.ts` con una colección pequeña construida a mano.
   Debe comprobar:
   - las cifras de una celda;
   - la cuenta huecos − excesos;
   - una posición marcada como de poca cobertura;
   - el orden de las necesidades.
-- [ ] T025 [US3] Hacer que `core-real`, tras fusionar, escriba `specs/008-datos-reales-core/sumario.md` con las secciones:
+- [X] T025 [US3] Hacer que `core-real`, tras fusionar, escriba `specs/008-datos-reales-core/sumario.md` con las secciones:
   1. tabla demarcación × nivel;
   2. las 16 posiciones;
   3. nacionalidades;
@@ -247,11 +247,11 @@ excesos = 50.
 
 ## Phase 6: Polish & Cross-Cutting
 
-- [ ] T026 [P] Ejecutar `pnpm typecheck`, `pnpm lint` y `pnpm test`: todo en verde, o fallos explicados en el informe.
-- [ ] T027 [P] Añadir a `CLAUDE.md`, en «Datos del catálogo», que `data/core-real.json` es la fuente de las cartas
+- [X] T026 [P] Ejecutar `pnpm typecheck`, `pnpm lint` y `pnpm test`: todo en verde, o fallos explicados en el informe.
+- [X] T027 [P] Añadir a `CLAUDE.md`, en «Datos del catálogo», que `data/core-real.json` es la fuente de las cartas
   1–250 y que se fusiona con `pnpm --filter @fbd/fixtures core-real`.
-- [ ] T028 Ejecutar `graphify update .`.
-- [ ] T029 Revisar `dudas.md` para que tenga los ids definitivos y esté ordenado por id. Hacer el informe final a la
+- [X] T028 Ejecutar `graphify update .`.
+- [X] T029 Revisar `dudas.md` para que tenga los ids definitivos y esté ordenado por id. Hacer el informe final a la
   persona con:
   - los resultados de SC-001 a SC-008, incluida la desviación de SC-008 por los escudos (R10);
   - el peso de los retratos;
