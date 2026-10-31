@@ -1071,6 +1071,9 @@ html {
 }
 
 .campo-unico {
+  /* Spec 008: el campo cabe entero en la ventana al bajar hasta él; solo reserva la barra de acciones fija (~7rem). */
+  width: clamp(260px, calc((100dvh - 10rem) * 64 / 100), 100%);
+  justify-self: center;
   touch-action: none;
   user-select: none;
 }
@@ -1121,20 +1124,38 @@ html {
 
 .ficha-equipo > .chapa {
   grid-area: chapa;
-  width: 34px;
-  height: 34px;
-  margin-top: -17px;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
   font-family: var(--letra-cartel);
   font-size: 1rem;
   font-style: var(--inclinacion-cartel);
   font-weight: 800;
   box-shadow: var(--sombra-boton);
+  overflow: hidden;
 }
 
+.ficha-equipo > .chapa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  pointer-events: none;
+}
+
+/* Nombre de la carta entero: si no cabe, en dos líneas, nunca recortado (spec 008). */
 .ficha-equipo-nombre {
   grid-area: nombre;
-  max-width: 9ch;
+  max-width: 11ch;
   font-weight: 600;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.ficha-equipo-dorsal {
+  margin-left: 0.3em;
+  color: var(--color-oro);
+  font-weight: 800;
 }
 
 .ficha-equipo-posicion {
@@ -2026,6 +2047,23 @@ html {
   flex: none;
   width: 10px;
   height: 10px;
+}
+
+/* Quien lleva el balón, en grande en la barra de abajo (spec 008). */
+.poseedor-2d {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.poseedor-2d .chapa {
+  width: 18px;
+  height: 18px;
 }
 
 .velocidades {

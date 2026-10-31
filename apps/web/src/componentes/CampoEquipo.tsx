@@ -1,11 +1,10 @@
 import { ANCHO_CAMPO, LARGO_CAMPO, statsEfectivos, type Jugador, type ParametrosEquilibrado, type ResultadoColocacion } from '@fbd/domain';
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent as EventoPuntero, type ReactNode } from 'react';
 import type { CartaResumen } from './CartaJugador';
-import { CartaJugador } from './CartaJugador';
+import { CartaJugador, nombreCartaDe } from './CartaJugador';
 import type { DestinoSoltar, EstadoCampo } from './campoEquipoEstado';
 import { VistaCarta } from './VistaCarta';
 import { contornoSobreLienzo } from './colores';
-import { NombreRecortado } from './NombreRecortado';
 import { MediaEquipo, mediaEquipo } from './MediaEquipo';
 
 /** A partir de este desplazamiento (px) un gesto es un arrastre y no un clic. */
@@ -205,10 +204,14 @@ export function CampoEquipo(props: Props) {
           onKeyDown={alTeclado(jugadorId)}
         >
           <span className={contornoSobreLienzo(colores.principal) ? 'chapa con-contorno' : 'chapa'} style={{ background: colores.principal, color: colores.secundario }}>
-            {dorsales?.[jugadorId] ?? ''}
+            {/* Spec 008: el retrato identifica mejor al jugador; sin él (cartas antiguas), el dorsal. */}
+            {j.imagen?.startsWith('/cartas/retratos/') ? <img src={j.imagen} alt="" draggable={false} /> : (dorsales?.[jugadorId] ?? '')}
           </span>
           <span className="ficha-equipo-posicion">{posicion}</span>
-          <NombreRecortado texto={j.apellidos.split(' ')[0] ?? j.nombre} className="ficha-equipo-nombre" />
+          <span className="ficha-equipo-nombre">
+            {nombreCartaDe(j)}
+            {dorsales?.[jugadorId] !== undefined && <span className="ficha-equipo-dorsal">{dorsales[jugadorId]}</span>}
+          </span>
           <span className="ficha-equipo-media">
             {Math.round(ef.media)}
             {penal > 0 && <span className="badge-fuera"> −{penal} %</span>}
@@ -272,7 +275,7 @@ export function CampoEquipo(props: Props) {
       </div>
       {arrastre?.movido && (
         <span className="ficha-fantasma" style={{ left: arrastre.actual.x, top: arrastre.actual.y }} aria-hidden="true">
-          {dorsales?.[arrastre.jugadorId] ?? jugadores.get(arrastre.jugadorId)?.apellidos.split(' ')[0]}
+          {dorsales?.[arrastre.jugadorId] ?? (jugadores.has(arrastre.jugadorId) && nombreCartaDe(jugadores.get(arrastre.jugadorId)!))}
         </span>
       )}
     </div>

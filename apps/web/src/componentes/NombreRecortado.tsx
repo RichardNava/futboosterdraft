@@ -69,6 +69,18 @@ const TOLERANCIA_PX = 10;
 const VISIBLE_TRAS_TOQUE_MS = 2500;
 const CONTROL = 'a, button, [role="button"], [role="tab"], summary, [tabindex]:not([tabindex="-1"]):not(.tabla-desplazable)';
 
+/** Coloca una etiqueta emergente (`position: fixed`) bajo `ancla` o, si no cabe, encima, sin salirse de la ventana. */
+export function colocarJunto(pop: HTMLElement, ancla: Element): void {
+  const r = ancla.getBoundingClientRect();
+  const margen = 8;
+  const ancho = pop.offsetWidth;
+  const alto = pop.offsetHeight;
+  const izquierda = Math.min(Math.max(margen, r.left), window.innerWidth - ancho - margen);
+  const arriba = r.bottom + 4 + alto > window.innerHeight - margen ? r.top - alto - 4 : r.bottom + 4;
+  pop.style.left = `${izquierda}px`;
+  pop.style.top = `${Math.max(margen, arriba)}px`;
+}
+
 interface Props {
   texto: string;
   /** Elemento que se pinta (por defecto, `span`). */
@@ -113,14 +125,7 @@ export function NombreRecortado({ texto, como: Elemento = 'span', lineas = 1, cl
     } catch {
       return;
     }
-    const r = el.getBoundingClientRect();
-    const margen = 8;
-    const ancho = pop.offsetWidth;
-    const alto = pop.offsetHeight;
-    const izquierda = Math.min(Math.max(margen, r.left), window.innerWidth - ancho - margen);
-    const arriba = r.bottom + 4 + alto > window.innerHeight - margen ? r.top - alto - 4 : r.bottom + 4;
-    pop.style.left = `${izquierda}px`;
-    pop.style.top = `${Math.max(margen, arriba)}px`;
+    colocarJunto(pop, el);
   };
   const ocultar = () => {
     window.clearTimeout(temporizador.current);

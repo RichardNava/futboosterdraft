@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CartaResumen } from './CartaJugador';
+import { nombreCartaDe, type CartaResumen } from './CartaJugador';
 import { Aviso } from './Aviso';
 import { Icono } from './Icono';
 
@@ -10,7 +10,7 @@ interface Props {
   asignar: (jugadorId: number, dorsal: number) => Promise<void>;
 }
 
-const apellido = (j: CartaResumen) => j.apellidos.split(' ')[0] ?? j.nombre;
+const apellido = (j: CartaResumen) => nombreCartaDe(j);
 
 /**
  * Dorsales de la plantilla (FR-035 a FR-037): cada jugador puede llevar cualquier número del 1 al 99. Si el

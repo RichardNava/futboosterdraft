@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import { firmaPatron } from '@fbd/domain';
+import { nombreCartaDe } from '../componentes/CartaJugador';
 import type { Inicio, Marcador } from '../pantallas/PartidoRapido';
 import { posicionesEn, type Fotograma } from './interpolacion';
 import { ANCHO, dibujar, LARGO, leerColoresInterfaz, type JugadorDibujo, type Lanzamiento } from './renderizador';
@@ -70,7 +71,7 @@ export function jugadoresDe(inicio: Inicio): Map<number, JugadorDibujo> {
   for (const lado of ['local', 'visitante'] as const) {
     const a = inicio.alineaciones[lado];
     for (const j of [...a.titulares.map((t) => t.jugador), ...a.suplentes]) {
-      mapa.set(j.id, { lado, dorsal: inicio.dorsales[j.id] ?? null, nombre: j.apellidos.split(' ')[0] ?? j.nombre });
+      mapa.set(j.id, { lado, dorsal: inicio.dorsales[j.id] ?? null, nombre: nombreCartaDe(j) });
     }
   }
   return mapa;

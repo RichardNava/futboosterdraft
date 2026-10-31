@@ -231,7 +231,8 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
 
   const radio = Math.max(7, 15 * e);
   const tamDorsal = Math.max(8, radio * 0.95);
-  const tamNombre = Math.max(8, 11 * e);
+  // Spec 008: el nombre se lee con el zoom al 100 % (antes 11 * e, unos 10 px).
+  const tamNombre = Math.max(11, 16 * e);
   const chapa = (id: number, x: number, y: number, vx: number, vy: number) => {
     const j = escena.jugadores.get(id);
     if (!j) return;

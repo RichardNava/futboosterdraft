@@ -3534,9 +3534,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/economia/servicio.ts": {
-    "mtime": 1793320547.6123266,
-    "seen": 1793321352.2370741,
-    "ast_hash": "9fc0731b53ff7da07f6cf942d801b7f0",
+    "mtime": 1793321944.4558518,
+    "seen": 1793322967.5144763,
+    "ast_hash": "f99552646457c6b95494709c42215f94",
     "semantic_hash": ""
   },
   "apps/server/src/http/coleccion.ts": {
@@ -3564,9 +3564,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/coleccion.test.ts": {
-    "mtime": 1793320534.7915986,
-    "seen": 1793321352.2451994,
-    "ast_hash": "92efc5e9a0636337fb28b0f9cb398732",
+    "mtime": 1793321983.4192848,
+    "seen": 1793322967.5229282,
+    "ast_hash": "ae80baf9f84a270cbd60c16f2a3bf2fa",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/migracion-0011.test.ts": {
@@ -3618,9 +3618,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Coleccion.tsx": {
-    "mtime": 1793055174.9537356,
-    "seen": 1793088076.7192667,
-    "ast_hash": "37b9c7b88652e3323ea60b9986abe563",
+    "mtime": 1793321952.046056,
+    "seen": 1793322967.5376863,
+    "ast_hash": "46c30bf5221bff9568d60cbaa7990bfd",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Tienda.tsx": {
@@ -3666,9 +3666,9 @@
     "semantic_hash": ""
   },
   "data/colecciones.json": {
-    "mtime": 1793055174.9674237,
-    "seen": 1793088076.7265182,
-    "ast_hash": "f6b9538adb53773f7f8c44318fae985d",
+    "mtime": 1793322652.0346017,
+    "seen": 1793322967.5485444,
+    "ast_hash": "8cb2d58cb4d3aad06139275cac0542d1",
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/selecciones.ts": {
@@ -3678,9 +3678,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/coleccion/minimo.ts": {
-    "mtime": 1793055175.4909277,
-    "seen": 1793088076.7307558,
-    "ast_hash": "d318c07601d2705ca36fdfe1395663b6",
+    "mtime": 1793321934.1538317,
+    "seen": 1793322967.5536077,
+    "ast_hash": "e46032b499b06ff5e31840f2862a6caf",
     "semantic_hash": ""
   },
   "packages/domain/src/economia/parametros.ts": {
@@ -3708,9 +3708,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/coleccion/minimo.test.ts": {
-    "mtime": 1793320534.9291687,
-    "seen": 1793321352.278809,
-    "ast_hash": "dd1f126c26ebe46fa18d8f3e758d014a",
+    "mtime": 1793322021.4947376,
+    "seen": 1793322967.5593214,
+    "ast_hash": "80cb182f368cae61d524ae7001275cef",
     "semantic_hash": ""
   },
   "packages/domain/tests/economia/parametros.test.ts": {
@@ -3744,9 +3744,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/colecciones.ts": {
-    "mtime": 1793320534.2240095,
-    "seen": 1793321352.2946768,
-    "ast_hash": "ac86d23d0082b823678d31ab0b0c8d55",
+    "mtime": 1793321958.6790016,
+    "seen": 1793322967.5755424,
+    "ast_hash": "cd5d410113806acca4eaf95ef98e873b",
     "semantic_hash": ""
   },
   "tools/fixtures/src/generarColeccionesPrueba.ts": {

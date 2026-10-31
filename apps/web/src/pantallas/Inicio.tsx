@@ -193,14 +193,15 @@ export function Inicio() {
 
 /**
  * Composición de la portada (spec 004, FR-045): el sobre recién abierto con cuatro cartas reales en abanico, una por
- * nivel, bajo los focos del estadio. Decorativa e inerte: no recibe el foco ni la lee el lector de pantalla.
+ * nivel y al azar entre las mejores de cada uno, bajo los focos del estadio. Decorativa e inerte: no recibe el foco ni la lee el lector de pantalla.
  */
 function EscenaPortada() {
+  const [cartas] = useState(() => CARTAS_MUESTRA.map((grupo) => grupo[Math.floor(Math.random() * grupo.length)]!));
   return (
     <div className="portada-escena" aria-hidden="true" inert>
       <Estadio className="portada-estadio" />
       <div className="portada-abanico">
-        {CARTAS_MUESTRA.map((c, i) => (
+        {cartas.map((c, i) => (
           <div key={c.id} className="portada-carta" style={{ '--i': i } as CSSProperties}>
             <CartaJugador jugador={c} />
           </div>

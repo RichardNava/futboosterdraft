@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { coloresDe } from '../componentes/colores';
 import { useParams } from 'react-router';
 import { jugadoresDe, Lienzo2D, type Superposicion } from '../campo2d/Lienzo2D';
+import type { JugadorDibujo } from '../campo2d/renderizador';
 import { RelojReproduccion, VELOCIDADES, type EstadoReloj, type Velocidad } from '../campo2d/relojReproduccion';
 import { datosVacios, incorporarTramo, type TramoRecibido } from '../campo2d/tramos';
 import { AvisoDorsales } from '../componentes/AvisoDorsales';
@@ -165,7 +166,7 @@ export function Partido2D() {
   const superposicion = useRef<Superposicion>({ marcador, minuto, aviso });
   superposicion.current = { marcador, minuto, aviso: estadoReloj === 'cargando' && tramos.length === 0 ? null : aviso };
 
-  const jugadores = useMemo(() => (inicio ? jugadoresDe(inicio) : new Map()), [inicio]);
+  const jugadores = useMemo(() => (inicio ? jugadoresDe(inicio) : new Map<number, JugadorDibujo>()), [inicio]);
 
   if (!inicio) return <PantallaCargando forma="campo" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} />;
 
@@ -176,6 +177,10 @@ export function Partido2D() {
     return j ? `${j.dorsal ? `${j.dorsal}. ` : ''}${j.nombre}` : String(id);
   };
   const enPausa = estadoReloj === 'descanso' || estadoReloj === 'pre_prorroga';
+  // Spec 008: quien lleva el balón en el tick que se ve (el de la última acción; tras un pase logrado, el receptor).
+  const ultima = estadoReloj === 'reproduciendo' ? datos.current.acciones.findLast((a) => a.inicioTick <= tick) : undefined;
+  const idPoseedor = ultima && (tick > ultima.finTick && ultima.exito && ultima.a !== undefined ? ultima.a : ultima.de);
+  const poseedor = idPoseedor === undefined ? undefined : jugadores.get(idPoseedor);
 
   const elegirVelocidad = (v: Velocidad) => {
     reloj.velocidad = v;
@@ -347,7 +352,20 @@ export function Partido2D() {
         </div>
       </div>
 
-      <BarraPrincipal principal={principal} principalIzquierda={principalIzquierda} secundarios={secundarios} />
+      <BarraPrincipal
+        principal={principal}
+        principalIzquierda={principalIzquierda}
+        secundarios={secundarios}
+        estado={
+          poseedor &&
+          idPoseedor !== undefined && (
+            <span className="poseedor-2d" aria-hidden="true">
+              <Chapa color={coloresDe(inicio.equipaciones[poseedor.lado]).principal} />
+              {nombre(idPoseedor)}
+            </span>
+          )
+        }
+      />
     </main>
   );
 }

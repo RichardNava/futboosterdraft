@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { nombreCartaDe } from './CartaJugador';
 import { mostrarAviso } from '../estado/avisos';
 import type { Inicio } from '../pantallas/PartidoRapido';
 
@@ -10,7 +11,7 @@ export function textoDorsalesNuevos(inicio: Inicio, miId: string | null): string
   const mios = new Map([...a.titulares.map((t) => t.jugador), ...a.suplentes].map((j) => [j.id, j]));
   const nuevos = inicio.dorsalesAsignados.filter((d) => mios.has(d.jugadorId));
   if (!nuevos.length) return null;
-  return `Dorsales nuevos: ${nuevos.map((d) => `${mios.get(d.jugadorId)!.apellidos.split(' ')[0]} lleva el ${d.dorsal}`).join(', ')}.`;
+  return `Dorsales nuevos: ${nuevos.map((d) => `${nombreCartaDe(mios.get(d.jugadorId)!)} lleva el ${d.dorsal}`).join(', ')}.`;
 }
 
 /**

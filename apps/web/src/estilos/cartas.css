@@ -240,6 +240,22 @@
 }
 
 /*
+ * Spec 008: media, demarcación y bandera un 10 % más grandes y el retrato un 20 %. Con `scale` desde arriba crecen
+ * hacia abajo sin mover nada: el resto de la carta sigue donde estaba.
+ */
+.carta-cabecera > .carta-cifras {
+  scale: 1.1;
+  transform-origin: top center;
+  translate: 3cqi 0; 
+}
+
+.carta-cabecera > .carta-silueta {
+  scale: 1.2;
+  transform-origin: top center;
+  translate: 12cqi 0; 
+}
+
+/*
  * Spec 006 (R7; FR-045 a FR-048): la imagen superior y el fondo de acción en SVG se pintan como máscara con el color
  * del nivel; una máscara que no carga no pinta nada (sin icono roto).
  */
@@ -263,7 +279,7 @@
   /* Las fotos son recortes del jugador sobre transparente: enteras dentro del hueco, sin cortarle brazos ni piernas. */
   object-fit: contain;
   /* Posicionado desde abajo: centrada, el retrato de la cabecera le tapaba la cabeza. */
-  object-position: center bottom;
+  object-position: center 130%;
   opacity: 0.35;
   color: var(--carta-texto);
   pointer-events: none;
@@ -323,6 +339,7 @@ img.carta-fondo-accion {
   text-align: center;
   line-height: 1.1;
   overflow-wrap: anywhere;
+  margin-top: -6cqi;
 }
 
 /*
@@ -343,7 +360,7 @@ img.carta-fondo-accion {
 
 .carta-apellidos {
   font-family: var(--carta-letra);
-  font-size: clamp(1rem, 9.7cqi, 1.7rem);
+  font-size: clamp(1.4rem, 9.7cqi, 1.7rem);
   font-weight: 800;
   letter-spacing: 0.01em;
 }
@@ -532,7 +549,12 @@ img.carta-fondo-accion {
   height: 0.8em;
 }
 
+/* Fija y junto a su rasgo (`colocarJunto`); sin recibir el puntero, para no quitárselo al rasgo y parpadear. */
 .carta-descripcion[popover] {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  pointer-events: none;
   max-width: min(320px, calc(100vw - 32px));
   padding: var(--espacio-3) var(--espacio-4);
   border: 1px solid var(--borde-vidrio-fuerte);

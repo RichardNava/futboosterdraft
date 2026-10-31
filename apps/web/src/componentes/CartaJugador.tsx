@@ -4,7 +4,7 @@ import { useTextosRasgos } from '../estado/catalogo';
 import { ABREVIATURA_STAT, ETIQUETA_NIVEL } from '../textos/niveles';
 import { nombreSeleccion, rutaBandera, rutaEscudo } from '../textos/selecciones';
 import { Icono } from './Icono';
-import { NombreRecortado } from './NombreRecortado';
+import { colocarJunto, NombreRecortado } from './NombreRecortado';
 
 /** Datos de una carta (coincide con `JugadorResumen` del protocolo). */
 export interface CartaResumen {
@@ -334,7 +334,14 @@ function Rasgos({ tipo, ids, onClick, onDobleClick }: { tipo: 'virtud' | 'defect
             {tipo === 'defecto' && <Icono nombre="defecto" className="carta-defecto-icono" />}
             {textos?.[s]?.nombre ?? s}
           </button>
-          <div id={id(s)} popover="auto" className="carta-descripcion" role="tooltip">
+          {/* Junto a su rasgo: centrada en la ventana tapaba el rasgo en la ficha ampliada y parpadeaba (spec 008). */}
+          <div
+            id={id(s)}
+            popover="auto"
+            className="carta-descripcion"
+            role="tooltip"
+            onToggle={(e) => e.newState === 'open' && colocarJunto(e.currentTarget, e.currentTarget.previousElementSibling ?? e.currentTarget)}
+          >
             <strong>
               {ETIQUETA_TIPO[tipo]} · {textos?.[s]?.nombre ?? s}
             </strong>

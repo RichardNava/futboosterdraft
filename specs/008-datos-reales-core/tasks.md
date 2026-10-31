@@ -263,6 +263,31 @@ excesos = 50.
 
 ---
 
+## Phase 7: Segunda ronda (correcciones tras probar la spec)
+
+**Purpose**: corregir lo que se vio al probar con los jugadores reales. Causa común de los nombres erróneos: la
+formación, el 2D y los avisos de dorsales usaban el primer apellido (`apellidos.split(' ')[0]`), así que «De Paul»
+salía como «De» y Rúben Dias («dos Santos Gato Alves Dias») como «dos». Causa del parpadeo: el popover del rasgo no
+tenía posición y se centraba en la ventana; en la ficha ampliada tapaba el propio rasgo, el puntero «salía» del rasgo,
+se ocultaba, volvía a entrar y se mostraba en bucle.
+
+- [X] T030 Portada: las cartas de muestra son las cuatro de media más alta de cada nivel de Core y se saca una al azar
+  por nivel (`textos/cartasMuestra.ts`, `Inicio.tsx`).
+- [X] T031 [P] Simulador 2D: nombre de los jugadores más grande (`16 * e`, mínimo 11 px; `renderizador.ts`) y, en la
+  barra de abajo, en grande, quién lleva el balón en cada momento (`Partido2D.tsx`, `.poseedor-2d`).
+- [X] T032 Nombres: `nombreCartaDe` en lugar del primer apellido en la formación, el 2D, el aviso y el editor de
+  dorsales (`CampoEquipo.tsx`, `Lienzo2D.tsx`, `AvisoDorsales.tsx`, `EditorDorsales.tsx`).
+- [X] T033 Campo de formación: se ajusta al alto de la ventana sin escalar las fichas; el nombre va entero (en dos
+  líneas si no cabe), la chapa lleva el retrato y el dorsal va junto al nombre en dorado (`CampoEquipo.tsx`,
+  `base.css`).
+- [X] T034 [P] Ayuda de virtudes y defectos: el popover se coloca junto a su rasgo (`colocarJunto`, compartido con
+  `NombreRecortado`) y no recibe el puntero (`CartaJugador.tsx`, `cartas.css`).
+- [X] T035 [P] Carta completa: media, demarcación y bandera un 10 % más grandes y retrato un 20 %, con `scale` desde
+  arriba para que crezcan hacia abajo sin mover el resto (`cartas.css`).
+- [X] T036 Validar: `pnpm typecheck`, `pnpm lint`, `pnpm test`; `graphify update .`.
+
+---
+
 ## Dependencies & Execution Order
 
 - **Setup (T001–T002)** → **Foundational (T003–T009)** → US2 y US1.

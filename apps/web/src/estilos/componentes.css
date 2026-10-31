@@ -1047,6 +1047,7 @@ span.error {
   line-clamp: 2;
   white-space: normal;
   overflow-wrap: anywhere;
+/* font-size: 1.40rem;*/
 }
 
 .etiqueta-nombre[popover] {
