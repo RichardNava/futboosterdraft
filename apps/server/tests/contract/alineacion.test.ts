@@ -106,7 +106,11 @@ describe('contrato HTTP de alineación (US2)', () => {
     );
     const r = await peticion(srv.url, `${ruta}/alineacion/previsualizar`, { cookie: anfitrion.cookie, cuerpo: { ...alineacion, titulares: cambiada } });
     expect(r.estado).toBe(200);
-    expect(r.cuerpo.previsualizacion.titulares.find((c: any) => c.casillaId === 'POR')).toMatchObject({ fueraDePosicion: true, penalizacion: 0.6 });
+    const por = r.cuerpo.previsualizacion.titulares.find((c: any) => c.casillaId === 'POR');
+    expect(por.fueraDePosicion).toBe(true);
+    // 60 % base; Versátil o Inflexible (jugadores reales del draft) lo mueven unos puntos.
+    expect(por.penalizacion).toBeGreaterThan(0.5);
+    expect(por.penalizacion).toBeLessThan(0.7);
     const despues = (await peticion(srv.url, `${ruta}/alineacion`, { cookie: anfitrion.cookie })).cuerpo;
     expect(despues.version).toBe(version);
   });

@@ -124,7 +124,8 @@ describe('partido rápido (US3)', () => {
       ws.recibidos.slice(desde).flatMap((m) => (m.t === 'partido.tramo' ? m.eventos.flatMap((e: any) => e.jugadores.map((j: any) => j.jugadorId)) : [])),
     );
     const sale = mia.titulares.find((t: any) => t.casillaId !== 'POR' && !conEvento.has(t.jugador.id)).jugador.id;
-    const entra = mia.suplentes[0].id;
+    // Un suplente que no haya entrado ya en una sustitución automática (lesión) de la primera parte.
+    const entra = mia.suplentes.find((s: any) => !conEvento.has(s.id)).id;
     const ack = await ws.enviarYEsperarAck({ t: 'partido.decision', partidoId: inicio.partidoId, tipo: 'sustitucion', datos: { sale, entra } });
     expect(ack.ok, JSON.stringify(ack)).toBe(true);
     await ws.enviarYEsperarAck({ t: 'partido.seguir', partidoId: inicio.partidoId });
