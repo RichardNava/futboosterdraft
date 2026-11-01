@@ -195,7 +195,12 @@ INI-10 e INI-13).
   [003](specs/003-mejoras-ux-simulacion/tasks.md) T128.
 - **Prioridad / estado**: P0 · **Parcial**. En la 001 no se cumplió (entrega del sobre p95 1,99 s frente a < 1 s,
   «Seguir» → final p95 6,2 s frente a < 3 s). Desde la 002 el guion no se ha vuelto a ejecutar con el protocolo
-  nuevo, y su resultado de la 002 apunta a un fallo del guion, no del servidor.
+  nuevo, y su resultado de la 002 apunta a un fallo del guion, no del servidor. **2026-10-31**: guion rehecho con un
+  VU por humano (T153 y T128 marcadas, criterio 1 cumplido). En la prueba de humo (2 partidas, una máquina) todo
+  cumple salvo `apertura_ms` (p95 11,1 s frente a < 3 s): abrir partidos entre humanos a la vez se encola en la
+  partida. **2026-11-01**: la causa era esperar el SMTP de los avisos dentro de la partida (arreglado). Con 10
+  partidas `apertura_ms` queda en p95 8,7 s: el motor (150–400 ms por partido entre humanos) corre en el hilo
+  principal. Ver [003/validacion.md](specs/003-mejoras-ux-simulacion/checklists/validacion.md).
 - **Criterios de cierre**:
   1. Guion actualizado al protocolo vigente (T153 y T128 marcadas; son la misma tarea).
   2. 001/SC-017 cumplido, con servidor, base de datos y generador de carga en máquinas separadas, y resultado registrado.

@@ -41,7 +41,8 @@ export class ServicioAvisos {
       .values({ usuarioId: a.usuarioId, tipo: a.tipo, partidaId: a.partidaId, partidoId: a.partidoId ?? null, texto: a.texto, creadoEn: ahora })
       .returning({ id: avisos.id });
     this.enVivo({ ...a, id: fila!.id });
-    await this.enviarCorreo(fila!.id, a).catch((err: unknown) => this.logger.warn({ err, usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
+    // Sin esperar: se llama dentro de la cola de la partida, y esperar al SMTP la frenaba ~1 s por humano (INI-07).
+    void this.enviarCorreo(fila!.id, a).catch((err: unknown) => this.logger.warn({ err, usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
   }
 
   private async enviarCorreo(avisoId: string, a: NuevoAviso): Promise<void> {

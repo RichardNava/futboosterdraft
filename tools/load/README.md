@@ -3,9 +3,10 @@
 Scripts de [k6](https://k6.io/) para verificar el criterio SC-017: 100 partidas simultáneas, con unos
 800 participantes conectados entre drafts y jornadas de torneo.
 
-`beta-100.js` simula cada partida con sus humanos conectados por WebSocket. Por defecto lanza 100
-partidas: 90 de 8 humanos registrados y 10 de un invitado contra 7 NPC. Cada partida juega el draft y una
-liga de 8 completa, con preparaciones y descansos de 5 s. Al final, k6 comprueba los umbrales:
+`beta-100.js` simula cada humano con su propio usuario virtual (VU) y su WebSocket, como un navegador. Por
+defecto lanza 100 partidas: 90 de 8 humanos registrados y 10 de un invitado contra 7 NPC (730 VU). `setup()`
+registra a los usuarios y crea y llena las partidas; después cada partida juega el draft y una liga de 8
+completa, con descansos de 5 s. Al final, k6 comprueba los umbrales:
 
 | Métrica | Umbral | Criterio |
 |---|---|---|
@@ -31,6 +32,11 @@ docker run --rm -i --add-host=host.docker.internal:host-gateway \
   -v "$PWD/tools/load:/scripts" grafana/k6:0.54.0 run /scripts/beta-100.js
 ```
 
+Para SC-017 el servidor, la base de datos y k6 deben ir en **máquinas separadas** (en una sola, k6 con 730
+WebSocket compite por la CPU con el servidor y falsea la medida). En ese caso `BASE_URL` apunta al servidor y
+`ORIGIN` a su `PUBLIC_URL`.
+
 Variables: `BASE_URL` (por defecto `http://localhost:3000`), `ORIGIN` (debe coincidir con `PUBLIC_URL`
 del servidor; por defecto `http://localhost:5173`), `PARTIDAS` (100), `PARTIDAS_NPC` (10 % de las
-partidas) y `LIMITE_PARTIDA_S` (1200: si una partida tarda más, cuenta como bloqueada).
+partidas), `LIMITE_PARTIDA_S` (1200: si una partida tarda más, cuenta como bloqueada) y `APERTURA_MAX_S` (0: cada
+humano abre su partido tras un retraso al azar de hasta esos segundos; con 0 todos abren a la vez, el peor caso).

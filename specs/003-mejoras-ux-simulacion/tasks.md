@@ -828,7 +828,7 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
   - **002**: FR-007, FR-008 y SC-017 (8 s), FR-025a, FR-026 (pantalla de resultado), FR-034 y US7 (colocación en el campo de la alineación).
 - [X] T126 [P] Proponer la enmienda PATCH v1.0.5 de `.specify/memory/constitution.md` (con `/speckit-constitution`) que añada a "Decisiones resueltas" la referencia a `specs/003-mejoras-ux-simulacion/`: FR-036 a FR-038 para los niveles de los NPC, FR-045 a FR-047 para las equipaciones y FR-032 para el tipo de simulación. La aclaración del Principio IX sobre el informe de `balance` ya está aprobada en la v1.0.4 (2026-10-19).
 - [X] T127 [P] Aplicar el límite de peticiones de `apps/server/src/http/limitador.ts` a `nombre-equipo`, `perfil`, `simular-resto`, `pantalla-vista` y `partido.decisiones`. Ampliar la auditoría de visibilidad: `partido.inicio` no expone la alineación ampliada del rival.
-- [ ] T128 [P] Actualizar la prueba de carga `tools/load/beta-100.js`: `abrir` con `{ modalidad }`, crear partidas sin `tipoSimulacion` y `partido.decisiones`. Volver a medir 001/SC-017 con el motor 3.0.0.
+- [X] T128 [P] Actualizar la prueba de carga `tools/load/beta-100.js`: `abrir` con `{ modalidad }`, crear partidas sin `tipoSimulacion` y `partido.decisiones`. Volver a medir 001/SC-017 con el motor 3.0.0.
 - [X] T129 [P] Revisión de accesibilidad en `apps/web/src/`:
   - `aria-disabled` y `aria-describedby` de la barra principal;
   - alternativa de teclado en `CampoEquipo` y `GestionEquipo`;

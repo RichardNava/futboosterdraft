@@ -1,12 +1,14 @@
 /**
- * Prueba de carga de la beta (T139; SC-017): 100 partidas simultáneas, unos 800 participantes
- * conectados por WebSocket, con drafts y jornadas de torneo a la vez.
+ * Prueba de carga de la beta (T139; SC-017; rehecha en 002/T153 y 003/T128): 100 partidas simultáneas, unos
+ * 730 humanos conectados por WebSocket, con drafts y jornadas de torneo a la vez.
  *
- * Cada usuario virtual (VU) de k6 es una partida: registra a sus humanos, crea una liga de 8, abre un
- * WebSocket por humano y juega el draft y el torneo completos respondiendo al instante: eligen la
- * primera carta, abren su partido de cada jornada («Comenzar partido» o «Ver partido», spec 002) y
- * pulsan «Seguir» en cada descanso. Los torneos son siempre asíncronos (spec 002, FR-030): un partido
- * entre humanos se resuelve al abrirlo el primero. Las últimas `PARTIDAS_NPC` partidas son de un
+ * Cada usuario virtual (VU) de k6 es **un humano**, como un navegador: así una petición HTTP síncrona solo frena a
+ * su propio humano, no a los 8 de la partida (el fallo del guion en la 002). `setup()` registra a todos los usuarios,
+ * crea las partidas de liga de 8 y las llena; después cada VU abre su WebSocket y juega el draft y el torneo
+ * respondiendo al instante: elige la primera carta, abre su partido de cada jornada con la modalidad rápida
+ * (spec 003, FR-032) y pulsa «Seguir» en cada descanso tras un lote de decisiones (FR-027). El anfitrión inicia el
+ * draft cuando ve a todos los humanos conectados en la sala. Los torneos son siempre asíncronos (spec 002,
+ * FR-030): un partido entre humanos se resuelve al abrirlo el primero. Las últimas `PARTIDAS_NPC` partidas son de un
  * invitado contra 7 NPC, que pide «Siguiente jornada» al cerrarse cada una.
  *
  * Comprueba (umbrales al final del informe de k6):
@@ -14,9 +16,9 @@
  *   (todos eligen al instante, así que mide la resolución del turno y la difusión).
  * - SC-009 sigue cumpliéndose: `descanso_ms` (inicio → descanso) y `final_ms` («Seguir» → final), p95 < 3 s.
  * - `apertura_ms` p95 < 3 s: respuesta de `POST /api/partidos/:id/abrir` (incluye resolver un partido
- *   entre humanos de una vez con el motor de la spec 002).
+ *   entre humanos de una vez).
  * - `jornada_npc_ms` p95 < 10 s: desde que empiezan los partidos de una jornada hasta que se cierra.
- * - Ningún bloqueo: las 100 partidas terminan (`partidas_terminadas`) y no hay errores.
+ * - Ningún bloqueo: las 100 partidas terminan (`partidas_terminadas`, la cuenta el anfitrión) y no hay errores.
  *
  * Uso (ver README.md): con el servidor en marcha,
  *   k6 run tools/load/beta-100.js
@@ -24,7 +26,7 @@
  */
 /* global __ENV, __VU -- variables globales de k6 */
 import http from 'k6/http';
-import { check } from 'k6';
+import { check, fail } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
 import { setTimeout, clearTimeout } from 'k6/timers';
 import { WebSocket } from 'k6/experimental/websockets';
@@ -35,8 +37,13 @@ const ORIGEN = __ENV.ORIGIN || 'http://localhost:5173';
 const PARTIDAS = Number(__ENV.PARTIDAS || 100);
 const PARTIDAS_NPC = Number(__ENV.PARTIDAS_NPC || Math.max(1, Math.round(PARTIDAS / 10)));
 const HUMANOS = 8;
+const TOTAL_HUMANOS = (PARTIDAS - PARTIDAS_NPC) * HUMANOS + PARTIDAS_NPC;
 /** Tiempo máximo para terminar una partida: si se pasa, cuenta como bloqueo. */
 const LIMITE_PARTIDA_MS = Number(__ENV.LIMITE_PARTIDA_S || 1200) * 1000;
+/** Retraso máximo (al azar) antes de abrir cada partido; 0 = todos a la vez, el peor caso. */
+const APERTURA_MAX_MS = Number(__ENV.APERTURA_MAX_S || 0) * 1000;
+/** Peticiones simultáneas en `setup()` (registro y creación). */
+const LOTE = 50;
 /** Descansos cortos para que el torneo dure minutos, no horas (ya no hay tiempo de preparación, spec 002). */
 const TIEMPOS = { turnoDraftS: 45, descansoS: 5 };
 
@@ -50,10 +57,11 @@ const bloqueadas = new Counter('partidas_bloqueadas');
 const erroresWs = new Counter('errores_ws');
 
 export const options = {
+  setupTimeout: '10m',
   scenarios: {
-    partidas: {
+    humanos: {
       executor: 'per-vu-iterations',
-      vus: PARTIDAS,
+      vus: TOTAL_HUMANOS,
       iterations: 1,
       maxDuration: '40m',
       gracefulStop: '1m',
@@ -79,29 +87,70 @@ const cookieDe = (res) =>
   Object.entries(res.cookies)
     .map(([nombre, valores]) => `${nombre}=${valores[0].value}`)
     .join('; ');
+/** Un almacén de cookies vacío por petición: la sesión va siempre en la cabecera `cookie` explícita. */
+const peticion = (ruta, cuerpo, cookie) => ({
+  method: 'POST',
+  url: `${BASE}${ruta}`,
+  body: cuerpo === undefined ? null : JSON.stringify(cuerpo),
+  params: { headers: cabeceras(cookie, cuerpo !== undefined), jar: new http.CookieJar() },
+});
+const post = (cookie, ruta, cuerpo) => {
+  const p = peticion(ruta, cuerpo, cookie);
+  return http.post(p.url, p.body, p.params);
+};
 
-/** Cada usuario lleva su propio almacén de cookies: un VU maneja varios usuarios. */
-function crearUsuario(invitado) {
-  const jar = new http.CookieJar();
-  const res = invitado
-    ? http.post(`${BASE}/api/auth/invitado`, null, { headers: cabeceras(undefined, false), jar })
-    : http.post(
-        `${BASE}/api/auth/registro`,
-        JSON.stringify({ email: `${uuid()}@carga.test`, password: 'contraseña-de-carga', apodo: `C${hex(8)}` }),
-        { headers: cabeceras(), jar },
-      );
-  check(res, { 'usuario creado': (r) => r.status === 200 });
-  return { cookie: cookieDe(res), jar };
+/** `http.batch` en lotes de `LOTE` para no abrir cientos de conexiones de golpe. */
+function enLotes(peticiones) {
+  const respuestas = [];
+  for (let i = 0; i < peticiones.length; i += LOTE) respuestas.push(...http.batch(peticiones.slice(i, i + LOTE)));
+  return respuestas;
 }
 
-const post = (u, ruta, cuerpo) =>
-  http.post(`${BASE}${ruta}`, cuerpo === undefined ? null : JSON.stringify(cuerpo), { headers: cabeceras(u.cookie, cuerpo !== undefined), jar: u.jar });
+/** Registra a los usuarios y crea y llena las partidas. Devuelve un humano por VU, en orden. */
+export function setup() {
+  const conNPC = (p) => p >= PARTIDAS - PARTIDAS_NPC;
+  const altas = [];
+  for (let p = 0; p < PARTIDAS; p++) {
+    for (let h = 0; h < (conNPC(p) ? 1 : HUMANOS); h++) {
+      altas.push({ partida: p, anfitrion: h === 0, conNPC: conNPC(p) });
+    }
+  }
+  const usuarios = enLotes(
+    altas.map((a) =>
+      a.conNPC
+        ? peticion('/api/auth/invitado')
+        : peticion('/api/auth/registro', { email: `${uuid()}@carga.test`, password: 'contraseña-de-carga', apodo: `C${hex(8)}` }),
+    ),
+  );
+  usuarios.forEach((r, i) => {
+    if (!check(r, { 'usuario creado': (x) => x.status === 200 })) fail(`registro ${i}: ${r.status} ${r.body}`);
+    altas[i].cookie = cookieDe(r);
+  });
 
-/** Conecta un humano y juega por él; resuelve cuando el torneo tiene campeón. */
-function jugar(partidaId, u, opciones) {
+  const anfitriones = altas.filter((a) => a.anfitrion);
+  const creadas = enLotes(
+    anfitriones.map((a) =>
+      peticion('/api/partidas', { modo: 'liga', numParticipantes: 8, ...(a.conNPC ? {} : { plazasHumanas: HUMANOS }), tiempos: TIEMPOS }, a.cookie),
+    ),
+  );
+  const ids = creadas.map((r, p) => {
+    if (!check(r, { 'partida creada': (x) => x.status === 201 })) fail(`crear partida ${p}: ${r.status} ${r.body}`);
+    return r.json('id');
+  });
+  for (const a of altas) a.partidaId = ids[a.partida];
+
+  const invitados = altas.filter((a) => !a.anfitrion);
+  enLotes(invitados.map((a) => peticion(`/api/partidas/${a.partidaId}/unirse`, undefined, a.cookie))).forEach((r) => {
+    if (!check(r, { 'unido a la partida': (x) => x.status === 200 })) fail(`unirse: ${r.status} ${r.body}`);
+  });
+  return altas;
+}
+
+/** Conecta al humano de este VU y juega por él; resuelve cuando el torneo tiene campeón. */
+function jugar({ partidaId, cookie, anfitrion, conNPC }) {
   return new Promise((resolve) => {
-    const ws = new WebSocket(`${WS}/ws?partidaId=${partidaId}`, null, { headers: { cookie: u.cookie, origin: ORIGEN } });
-    let yo = null;
+    const ws = new WebSocket(`${WS}/ws?partidaId=${partidaId}`, null, { headers: { cookie, origin: ORIGEN } });
+    let iniciada = false;
     let eligioEn = null;
     const inicios = new Map();
     const seguidos = new Map();
@@ -114,21 +163,34 @@ function jugar(partidaId, u, opciones) {
     const cerrar = (ok) => {
       if (terminado) return;
       terminado = true;
+      clearTimeout(limite);
       ws.close();
       resolve(ok);
     };
+    // Si la partida no termina a tiempo, cuenta como bloqueo (una vez por partida: lo cuenta el anfitrión).
+    const limite = setTimeout(() => {
+      if (anfitrion) bloqueadas.add(1);
+      cerrar(false);
+    }, LIMITE_PARTIDA_MS);
 
-    ws.onopen = () => opciones.alConectar();
-    ws.onerror = () => {
+    ws.onerror = (e) => {
       erroresWs.add(1);
+      console.warn(`error de WebSocket en ${partidaId}: ${e.error}`);
       cerrar(false);
     };
     ws.onmessage = (evento) => {
       const m = JSON.parse(evento.data);
       const ahora = Date.now();
       switch (m.t) {
-        case 'estado':
-          yo = m.vista?.partida?.miParticipanteId ?? yo;
+        case 'sala.actualizada':
+          // El anfitrión empieza el draft cuando están todos los humanos conectados.
+          if (anfitrion && !iniciada && m.participantes.filter((p) => p.tipo === 'humano').every((p) => p.conectado)) {
+            const plazas = m.participantes.filter((p) => p.tipo === 'humano').length;
+            if (plazas === (conNPC ? 1 : HUMANOS)) {
+              iniciada = true;
+              check(post(cookie, `/api/partidas/${partidaId}/iniciar`), { 'draft iniciado': (r) => r.status === 200 });
+            }
+          }
           break;
         case 'draft.turno':
           if (eligioEn !== null) entregaSobre.add(ahora - eligioEn);
@@ -142,13 +204,18 @@ function jugar(partidaId, u, opciones) {
           // «Comenzar partido» (rival NPC) o «Ver partido» (rival humano): ya no hay temporizador de preparación.
           if (!abiertos.has(m.partidoId)) {
             abiertos.add(m.partidoId);
-            // Spec 003 (FR-032): la modalidad se elige al abrir cada partido.
-            const r = post(u, `/api/partidos/${m.partidoId}/abrir`, { modalidad: 'rapida' });
-            apertura.add(r.timings.duration);
-            if (r.status !== 200) {
-              erroresWs.add(1, { codigo: `abrir_${r.status}` });
-              console.warn(`abrir ${m.partidoId} en ${partidaId}: ${r.status} ${r.body}`);
-            }
+            const abrir = () => {
+              if (terminado) return;
+              const r = post(cookie, `/api/partidos/${m.partidoId}/abrir`, { modalidad: 'rapida' });
+              apertura.add(r.timings.duration);
+              if (r.status !== 200) {
+                erroresWs.add(1, { codigo: `abrir_${r.status}` });
+                console.warn(`abrir ${m.partidoId} en ${partidaId}: ${r.status} ${r.body}`);
+              }
+            };
+            // Con `APERTURA_MAX_S`, cada humano tarda un tiempo al azar en abrir, como en un torneo asíncrono real.
+            if (APERTURA_MAX_MS > 0) setTimeout(abrir, Math.random() * APERTURA_MAX_MS);
+            else abrir();
           }
           break;
         case 'partido.inicio':
@@ -179,18 +246,19 @@ function jugar(partidaId, u, opciones) {
           const cerradas = (m.jornadas || []).filter((j) => j.estado === 'cerrada').length;
           if (cerradas > jornadasCerradas) {
             jornadasCerradas = cerradas;
-            if (opciones.medirJornadas && jornadaAbierta !== null) jornadaNPC.add(ahora - jornadaAbierta);
+            if (conNPC && jornadaAbierta !== null) jornadaNPC.add(ahora - jornadaAbierta);
             jornadaAbierta = null;
           }
           if (m.campeon) {
             cerrar(true);
             break;
           }
-          // Con un solo humano la siguiente jornada se abre a mano (spec 002, research R9).
+          // Con un solo humano la siguiente jornada se abre a mano (spec 002, research R9). `jornadaActual` es la
+          // primera sin cerrar: se pide cuando sigue pendiente tras cerrarse otra.
           const actual = (m.jornadas || []).find((j) => j.numero === m.jornadaActual);
-          if (m.siguienteJornada === 'manual' && actual?.estado === 'cerrada' && pedidaSiguiente < cerradas) {
+          if (m.siguienteJornada === 'manual' && actual?.estado === 'pendiente' && pedidaSiguiente < cerradas) {
             pedidaSiguiente = cerradas;
-            post(u, `/api/partidas/${partidaId}/siguiente-jornada`);
+            post(cookie, `/api/partidas/${partidaId}/siguiente-jornada`);
           }
           break;
         }
@@ -207,48 +275,11 @@ function jugar(partidaId, u, opciones) {
           break;
       }
     };
-    opciones.registrarCierre(() => cerrar(false));
   });
 }
 
-export default async function () {
-  const conNPC = __VU > PARTIDAS - PARTIDAS_NPC;
-  const usuarios = Array.from({ length: conNPC ? 1 : HUMANOS }, () => crearUsuario(conNPC));
-  const [anfitrion, ...otros] = usuarios;
-
-  const creada = post(anfitrion, '/api/partidas', {
-    modo: 'liga',
-    numParticipantes: 8,
-    ...(conNPC ? {} : { plazasHumanas: HUMANOS }),
-    tiempos: TIEMPOS,
-  });
-  if (!check(creada, { 'partida creada': (r) => r.status === 201 })) return;
-  const partidaId = creada.json('id');
-  for (const u of otros) check(post(u, `/api/partidas/${partidaId}/unirse`), { 'unido a la partida': (r) => r.status === 200 });
-
-  // Se conectan todos antes de empezar el draft.
-  let conectados = 0;
-  let alConectarTodos;
-  const todosConectados = new Promise((r) => (alConectarTodos = r));
-  const cierres = [];
-  const opciones = (i) => ({
-    medirJornadas: conNPC && i === 0,
-    alConectar: () => {
-      conectados++;
-      if (conectados === usuarios.length) alConectarTodos();
-    },
-    registrarCierre: (f) => cierres.push(f),
-  });
-  const partidas = usuarios.map((u, i) => jugar(partidaId, u, opciones(i)));
-  await todosConectados;
-  check(post(anfitrion, `/api/partidas/${partidaId}/iniciar`), { 'draft iniciado': (r) => r.status === 200 });
-
-  // Si la partida no termina a tiempo, cuenta como bloqueo.
-  const limite = setTimeout(() => {
-    bloqueadas.add(1);
-    for (const f of cierres) f();
-  }, LIMITE_PARTIDA_MS);
-  const resultados = await Promise.all(partidas);
-  clearTimeout(limite);
-  if (resultados.every(Boolean)) terminadas.add(1);
+export default async function (humanos) {
+  const humano = humanos[__VU - 1];
+  const ok = await jugar(humano);
+  if (ok && humano.anfitrion) terminadas.add(1);
 }
