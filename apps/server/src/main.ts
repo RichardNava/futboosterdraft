@@ -6,6 +6,7 @@ import './entorno';
 import { conectar, urlBaseDatos } from './persistencia/db';
 import { aplicarMigraciones } from './persistencia/migrar';
 import { RelojFalso, RelojReal } from './programador/reloj';
+import { hilosConfigurados } from './simulacion/grupo';
 import { crearServidor } from './servidor';
 
 async function principal(): Promise<void> {
@@ -19,16 +20,22 @@ async function principal(): Promise<void> {
   const conexion = conectar(urlBaseDatos());
   // Las migraciones pendientes se aplican al arrancar (MIGRAR_AL_ARRANCAR=false lo desactiva).
   if (process.env.MIGRAR_AL_ARRANCAR !== 'false') await aplicarMigraciones(conexion.db);
+  // Hilos de simulación (spec 009, FR-007): por defecto, núcleos − 1; 0 simula en el hilo principal.
+  const { hilos, aviso } = hilosConfigurados(process.env.HILOS_SIMULACION);
   const servidor = await crearServidor({
     db: conexion.db,
     reloj: relojFalso ? new RelojFalso(Date.now()) : new RelojReal(),
     secreto,
     urlPublica: process.env.PUBLIC_URL ?? 'http://localhost:5173',
     smtpUrl: process.env.SMTP_URL,
+    hilosSimulacion: hilos,
     // Con el reloj simulado (desarrollo y pruebas e2e), los recorridos automáticos consultan en bucle:
     // no se limitan las peticiones por sesión.
     ...(relojFalso ? { limites: { http: { capacidad: 10_000, porSegundo: 10_000 }, ws: { capacidad: 10_000, porSegundo: 10_000 } } } : {}),
   });
+
+  if (aviso) servidor.logger.warn({ hilos }, aviso);
+  else servidor.logger.info({ hilos }, 'Hilos de simulación');
 
   const cerrar = async () => {
     await servidor.app.close();

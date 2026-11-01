@@ -15,6 +15,7 @@ import type { Logger } from '../observabilidad/logger';
 import type { Metricas } from '../observabilidad/metricas';
 import type { Reloj } from '../programador/reloj';
 import type { Temporizadores } from '../programador/temporizadores';
+import type { Calculo } from '../simulacion/grupo';
 import type { Difusor } from './actor';
 
 export interface ServiciosPartida {
@@ -34,4 +35,6 @@ export interface ServiciosPartida {
   difusor: Difusor & { estaConectado(partidaId: string, participanteId: string): boolean };
   logger: Logger;
   metricas: Metricas;
+  /** Cálculos del motor y de la IA, en hilos de trabajo o en proceso (spec 009). */
+  calculo: Calculo;
 }

@@ -10,14 +10,24 @@
  *   guardan en una caché en memoria de los últimos partidos pedidos.
  * - Mientras un humano no lo ha visto, su visionado está `pendiente` y no se le revela el resultado.
  */
-import { resolverResto } from '@fbd/ai';
 import { parametrosActuales, parametrosPorVersion, VERSION_MAYOR_SOPORTADA, versionMayor, type ModoSimulacion } from '@fbd/domain';
-import { aplicarDecision, avanzar, crearPartido, minutoMostrable, ordenJugadores, type DecisionRegistrada, type EntradaPartido, type EstadoMotor } from '@fbd/engine';
+import { crearPartido, ordenJugadores, type EstadoMotor } from '@fbd/engine';
 import { errores } from '../http/errores';
 import type { FilaPartido } from '../persistencia/repos/partidos';
+import type { Tramos } from '../simulacion/funciones';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
-import { equipacionesDelPartido, equipoParaMotor, esHumano, reconstruirMotor, resumenAlineaciones, type EntradaGuardada, type PartidoEnCurso } from './partidoRapido';
+import {
+  dorsalesParaPartido,
+  equipacionesDelPartido,
+  esHumano,
+  prepararPartido,
+  reconstruirMotor,
+  registrarCalculoFallido,
+  resumenAlineaciones,
+  type EntradaGuardada,
+  type PartidoEnCurso,
+} from './partidoRapido';
 
 /** Los dos lados del partido los controlan humanos (sin abandonos). */
 export function entreHumanos(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): boolean {
@@ -34,26 +44,26 @@ export async function resolverPartidoEntreHumanos(
   partidoId: string,
   opciones: { resolucion: 'apertura' | 'plazo'; abiertoPorId?: string },
 ): Promise<void> {
-  const { repoPartidos, repoVisionados, reloj, metricas } = c.servicios;
+  const { repoPartidos, repoVisionados, reloj, metricas, calculo } = c.servicios;
   const fila = await repoPartidos.obtener(partidoId);
   if (!fila || fila.estado !== 'programado') return;
-  const parametros = parametrosActuales();
-  const local = await equipoParaMotor(c, fila.localId, fila.visitanteId, fila.semilla);
-  const visitante = await equipoParaMotor(c, fila.visitanteId, fila.localId, fila.semilla);
+  // Quien lo abre espera al resultado; al vencer el plazo, no espera nadie (FR-012).
+  const prioridad = opciones.resolucion === 'apertura' ? 'humano' : 'npc';
+  // Se calcula antes de guardar o anunciar nada: si falla, el partido sigue programado (FR-008).
+  const { alineaciones, entrada, r } = await (async () => {
+    const preparado = await prepararPartido(c, fila, prioridad);
+    const nivel = preparado.entrada.parametros.asincrono.nivelDecisiones;
+    return { ...preparado, r: await calculo.ejecutar('resolverResto', [preparado.motor, { local: nivel, visitante: nivel }, fila.semilla], prioridad) };
+  })().catch((err: unknown) => {
+    registrarCalculoFallido(c, fila, err);
+    throw err;
+  });
+  const local = await dorsalesParaPartido(c, fila.localId, alineaciones.local);
+  const visitante = await dorsalesParaPartido(c, fila.visitanteId, alineaciones.visitante);
   // Nadie lo ve empezar: los dorsales nuevos se avisan en la bandeja (FR-038).
-  for (const [pid, r] of [[fila.localId, local], [fila.visitanteId, visitante]] as const) if (r.asignados.length) await c.alAsignarDorsales?.(pid, r.asignados);
-  const entrada: EntradaPartido = {
-    version: parametros.version,
-    parametros,
-    semilla: fila.semilla,
-    eliminatoria: fila.eliminatoria,
-    local: local.equipo,
-    visitante: visitante.equipo,
-  };
-  const nivel = parametros.asincrono.nivelDecisiones;
-  const r = resolverResto(crearPartido(entrada), { local: nivel, visitante: nivel }, fila.semilla);
+  for (const [pid, d] of [[fila.localId, local], [fila.visitanteId, visitante]] as const) if (d.asignados.length) await c.alAsignarDorsales?.(pid, d.asignados);
   const ultimo = r.tramos[r.tramos.length - 1]!;
-  const { parametros: _p, ...guardada } = entrada;
+  const { parametros, ...guardada } = entrada;
   const ahora = reloj.ahora();
   await repoPartidos.actualizar(fila.id, {
     entrada: guardada satisfies EntradaGuardada,
@@ -99,7 +109,8 @@ export async function terminarPartidoEntreHumanosEnJuego(c: ControladorPartida, 
   const motor = reconstruirMotor(fila);
   if (!motor) return;
   const nivel = parametrosActuales().asincrono.nivelDecisiones;
-  const r = resolverResto(motor, { local: nivel, visitante: nivel }, fila.semilla);
+  // `reconstruirMotor` se queda en el hilo principal (research R9); el resto del partido no.
+  const r = await c.servicios.calculo.ejecutar('resolverResto', [motor, { local: nivel, visitante: nivel }, fila.semilla], 'npc');
   const ultimo = r.tramos[r.tramos.length - 1];
   const eventos = [...((fila.eventos as EstadoMotor['eventos']) ?? []), ...r.eventos];
   const ahora = reloj.ahora();
@@ -143,31 +154,7 @@ class CacheReproducciones<T> {
   }
 }
 
-type Tramos = { desdeTick: number; hastaTick: number; fase: string; minuto: string; eventos: unknown[]; marcador: unknown; acciones: unknown[]; fotogramas?: unknown[] }[];
 export const cacheReproducciones = new CacheReproducciones<Tramos>(32);
-
-/** Vuelve a jugar el partido guardado con sus decisiones registradas (FR-040). */
-function rehacer(fila: FilaPartido, conFotogramas: boolean): Tramos {
-  const guardada = fila.entrada as EntradaGuardada;
-  let estado: EstadoMotor = crearPartido({ ...guardada, parametros: parametrosPorVersion(fila.versionParametros) });
-  for (const d of fila.decisiones as DecisionRegistrada[]) aplicarDecision(estado, d);
-  const tramos: Tramos = [];
-  for (let i = 0; i < 5000 && estado.fase !== 'finalizado'; i++) {
-    const r = avanzar(estado, conFotogramas ? 'interrupcion' : 'parte', { fotogramas: conFotogramas });
-    estado = r.estado;
-    tramos.push({
-      desdeTick: r.desdeTick,
-      hastaTick: r.hastaTick,
-      fase: r.fase,
-      minuto: minutoMostrable(r.estado.reloj),
-      eventos: r.eventos.filter((e) => e.relevante),
-      marcador: r.marcador,
-      acciones: r.acciones,
-      ...(r.fotogramas ? { fotogramas: r.fotogramas } : {}),
-    });
-  }
-  return tramos;
-}
 
 /**
  * `GET /api/partidos/:id/reproduccion`: el partido entero para uno de sus participantes. Es idéntico para
@@ -183,7 +170,9 @@ export async function reproduccion(c: ControladorPartida, fila: FilaPartido, mod
   const clave = `${fila.id}:${modalidad}`;
   let tramos = cacheReproducciones.obtener(clave);
   if (!tramos) {
-    tramos = rehacer(fila, conFotogramas);
+    // Se repite el partido con su semilla y sus decisiones (`rehacer`, FR-040); solo viaja lo que hace falta.
+    const { entrada, versionParametros, decisiones } = fila;
+    tramos = await c.servicios.calculo.ejecutar('rehacer', [{ entrada, versionParametros, decisiones }, conFotogramas], 'humano');
     cacheReproducciones.guardar(clave, tramos);
   }
   const guardada = fila.entrada as EntradaGuardada;

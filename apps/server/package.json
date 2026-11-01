@@ -12,6 +12,7 @@
     "build": "tsup",
     "start": "node dist/main.js",
     "test:integration": "vitest run --config vitest.config.ts",
+    "test:integration:hilos": "vitest run --config vitest.config.ts --mode hilos",
     "seed": "tsx src/persistencia/seed.ts",
     "db:migrate": "tsx src/persistencia/migrar.ts",
     "db:generate": "drizzle-kit generate"

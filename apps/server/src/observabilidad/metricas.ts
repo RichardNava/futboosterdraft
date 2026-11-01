@@ -6,6 +6,12 @@ export interface Metricas {
   turnoDraftResolucionMs: Histogram;
   partidosSimuladosTotal: Counter;
   desconexionesTotal: Counter;
+  /** Hilos de simulación (spec 009, FR-009). */
+  hilosSimulacion: Gauge;
+  calculosEnEspera: Gauge<'prioridad'>;
+  calculoDuracionMs: Histogram<'funcion'>;
+  calculosFallidosTotal: Counter<'motivo'>;
+  calculoReintentosTotal: Counter;
 }
 
 export function crearMetricas(): Metricas {
@@ -32,6 +38,35 @@ export function crearMetricas(): Metricas {
     desconexionesTotal: new Counter({
       name: 'desconexiones_total',
       help: 'Conexiones WebSocket cerradas',
+      registers: [registro],
+    }),
+    hilosSimulacion: new Gauge({
+      name: 'hilos_simulacion',
+      help: 'Hilos de trabajo que simulan partidos (0 = en proceso)',
+      registers: [registro],
+    }),
+    calculosEnEspera: new Gauge({
+      name: 'calculos_en_espera',
+      help: 'Cálculos en cola esperando un hilo libre',
+      labelNames: ['prioridad'],
+      registers: [registro],
+    }),
+    calculoDuracionMs: new Histogram({
+      name: 'calculo_duracion_ms',
+      help: 'Duración de cada cálculo en un hilo, desde que lo empieza',
+      labelNames: ['funcion'],
+      buckets: [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10_000, 20_000],
+      registers: [registro],
+    }),
+    calculosFallidosTotal: new Counter({
+      name: 'calculos_fallidos_total',
+      help: 'Cálculos fallidos: caída del hilo o tiempo agotado tras los reintentos, o error en la función',
+      labelNames: ['motivo'],
+      registers: [registro],
+    }),
+    calculoReintentosTotal: new Counter({
+      name: 'calculo_reintentos_total',
+      help: 'Cálculos repetidos en un hilo nuevo tras una caída o un tiempo agotado',
       registers: [registro],
     }),
   };

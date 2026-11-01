@@ -7,8 +7,9 @@
  *   reanuda al instante (FR-012), o vence el tiempo (`descansoS`). En directo solo hay un humano por
  *   partido: los partidos entre humanos se resuelven sin ellos (spec 002, FR-030).
  * - NPC contra NPC: `avanzar('final')` sin pausas.
+ * - Lo que simula el motor o la IA se calcula en `servicios.calculo` (spec 009): en un hilo de trabajo o en proceso.
  */
-import { decidirAlineacion, decidirNPCEnPausa, jugarHastaElFinal, resolverResto, type NivelesPartido } from '@fbd/ai';
+import { decidirNPCEnPausa, type NivelesPartido } from '@fbd/ai';
 import {
   asignarDorsalesIniciales,
   completarDorsales,
@@ -25,6 +26,7 @@ import {
   type ModoSimulacion,
   type Dorsales,
   type Equipaciones,
+  type Jugador,
   type NivelNPC,
 } from '@fbd/domain';
 import {
@@ -42,6 +44,7 @@ import {
   type ResultadoTramo,
 } from '@fbd/engine';
 import type { FilaPartido } from '../persistencia/repos/partidos';
+import { ErrorCalculo, type Prioridad } from '../simulacion/grupo';
 import type { ContextoComando } from './actor';
 import { alineacionVigente, bajasActivas, plantillaDe } from './equipo';
 import type { ControladorPartida } from './partida';
@@ -83,35 +86,92 @@ export function nivelesDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localI
   return niveles;
 }
 
+type AlineacionDe = { alineacion: Alineacion; plantilla: Jugador[] };
+
 /**
  * Alineación con la que juega un participante: la de su nivel si lo controla un NPC (T128), que mira la
  * plantilla del rival (visible tras el draft, FR-054a); si no, la vigente o la automática (FR-031).
  */
-async function alineacionParaPartido(c: ControladorPartida, participanteId: string, rivalId: string, semilla: string) {
+async function alineacionParaPartido(c: ControladorPartida, participanteId: string, rivalId: string, semilla: string, prioridad: Prioridad): Promise<AlineacionDe> {
   const nivel = nivelNPCDe(c, participanteId);
   if (!nivel) return alineacionVigente(c, participanteId);
   const plantilla = await plantillaDe(c, participanteId);
   const rival = await plantillaDe(c, rivalId);
-  const alineacion: Alineacion = decidirAlineacion(
-    nivel,
-    plantilla,
-    bajasActivas(c, participanteId),
-    rival,
-    derivarSemilla(semilla, `npc-alineacion:${participanteId}`),
-    { parametros: parametrosActuales() },
+  const alineacion = await c.servicios.calculo.ejecutar(
+    'decidirAlineacion',
+    [nivel, plantilla, bajasActivas(c, participanteId), rival, derivarSemilla(semilla, `npc-alineacion:${participanteId}`), { parametros: parametrosActuales() }],
+    prioridad,
   );
   return { alineacion, plantilla };
 }
 
+/** Lo que se calcula de un partido antes de guardar nada (spec 009, research R6). */
+export interface PartidoCalculado {
+  alineaciones: { local: AlineacionDe; visitante: AlineacionDe };
+  entrada: EntradaPartido;
+  motor: EstadoMotor;
+  /** El partido entero, si se juega sin pausas. */
+  final?: ResultadoTramo;
+}
+
+/** Alineaciones y estado inicial del motor; no guarda ni anuncia nada. */
+export async function prepararPartido(c: ControladorPartida, fila: FilaPartido, prioridad: Prioridad): Promise<PartidoCalculado> {
+  const parametros = parametrosActuales();
+  const [local, visitante] = await Promise.all([
+    alineacionParaPartido(c, fila.localId, fila.visitanteId, fila.semilla, prioridad),
+    alineacionParaPartido(c, fila.visitanteId, fila.localId, fila.semilla, prioridad),
+  ]);
+  const entrada: EntradaPartido = {
+    version: parametros.version,
+    parametros,
+    semilla: fila.semilla,
+    eliminatoria: fila.eliminatoria,
+    local: equipoDesde(fila.localId, local),
+    visitante: equipoDesde(fila.visitanteId, visitante),
+  };
+  return { alineaciones: { local, visitante }, entrada, motor: crearPartido(entrada) };
+}
+
+/** Con algún humano y sin vencer el plazo, se juega en directo; si no, de una vez y sin pausas (FR-056a). */
+const enDirecto = (c: ControladorPartida, fila: FilaPartido, automatico?: boolean) => !automatico && [fila.localId, fila.visitanteId].some((pid) => esHumano(c, pid));
+
+/** Como `prepararPartido` y, si se juega sin pausas, también el partido entero. */
+export async function calcularPartido(c: ControladorPartida, fila: FilaPartido, opciones: { automatico?: boolean } = {}): Promise<PartidoCalculado> {
+  const directo = enDirecto(c, fila, opciones.automatico);
+  const preparado = await prepararPartido(c, fila, directo ? 'humano' : 'npc');
+  if (directo) return preparado;
+  return { ...preparado, final: await c.servicios.calculo.ejecutar('jugarHastaElFinal', [preparado.motor, nivelesDe(c, fila), fila.semilla], 'npc') };
+}
+
+/** Registra un cálculo de partido fallido con lo necesario para repetirlo (FR-008). */
+export function registrarCalculoFallido(c: ControladorPartida, fila: Pick<FilaPartido, 'id' | 'semilla'>, err: unknown): void {
+  const motivo = err instanceof ErrorCalculo ? err.motivo : 'error';
+  c.servicios.logger.error({ err, partidaId: c.id, partidoId: fila.id, semilla: fila.semilla, motivo }, 'Cálculo de partido fallido');
+}
+
 /** Equipo para el motor a partir de la alineación con la que juega el participante. */
-export async function equipoParaMotor(
+function equipoDesde(participanteId: string, { alineacion, plantilla }: AlineacionDe): EquipoPartido {
+  const porId = new Map(plantilla.map((j) => [j.id, j]));
+  return {
+    participanteId,
+    formacion: alineacion.formacion,
+    // Con colocación libre, cada titular juega desde su punto (FR-034; research R13).
+    titulares: alineacion.titulares.map((t) => {
+      const punto = alineacion.colocacion?.find((c) => c.jugadorId === t.jugadorId);
+      return { casillaId: t.casillaId, jugador: porId.get(t.jugadorId)!, ...(punto ? { ancla: { x: punto.x, y: punto.y } } : {}) };
+    }),
+    suplentes: alineacion.suplentes.map((id) => porId.get(id)!),
+    tactica: alineacion.tactica,
+    lanzadores: alineacion.lanzadores,
+  };
+}
+
+/** Dorsales con los que juega el participante: los iniciales si aún no tiene y uno para cada convocado sin dorsal. */
+export async function dorsalesParaPartido(
   c: ControladorPartida,
   participanteId: string,
-  rivalId: string,
-  semilla: string,
-): Promise<{ equipo: EquipoPartido; dorsales: Dorsales; asignados: { jugadorId: number; dorsal: number }[] }> {
-  const { alineacion, plantilla } = await alineacionParaPartido(c, participanteId, rivalId, semilla);
-  const porId = new Map(plantilla.map((j) => [j.id, j]));
+  { alineacion, plantilla }: AlineacionDe,
+): Promise<{ dorsales: Dorsales; asignados: { jugadorId: number; dorsal: number }[] }> {
   let dorsales = await c.servicios.repoEquipo.dorsales(participanteId);
   if (!dorsales) {
     dorsales = asignarDorsalesIniciales(
@@ -130,22 +190,7 @@ export async function equipoParaMotor(
     dorsales = completados.dorsales;
     await c.servicios.repoEquipo.guardarDorsales(participanteId, dorsales);
   }
-  return {
-    dorsales,
-    asignados: completados.asignados,
-    equipo: {
-      participanteId,
-      formacion: alineacion.formacion,
-      // Con colocación libre, cada titular juega desde su punto (FR-034; research R13).
-      titulares: alineacion.titulares.map((t) => {
-        const punto = alineacion.colocacion?.find((c) => c.jugadorId === t.jugadorId);
-        return { casillaId: t.casillaId, jugador: porId.get(t.jugadorId)!, ...(punto ? { ancla: { x: punto.x, y: punto.y } } : {}) };
-      }),
-      suplentes: alineacion.suplentes.map((id) => porId.get(id)!),
-      tactica: alineacion.tactica,
-      lanzadores: alineacion.lanzadores,
-    },
-  };
+  return { dorsales, asignados: completados.asignados };
 }
 
 function equipacionesDe(c: ControladorPartida, pid: string): Equipaciones {
@@ -186,22 +231,20 @@ export async function iniciarPartido(
   c: ControladorPartida,
   ctx: ContextoComando,
   fila: FilaPartido,
-  opciones: { automatico?: boolean } = {},
+  /** `calculado`: lo ya calculado con `calcularPartido` (las jornadas NPC calculan primero y guardan después). */
+  opciones: { automatico?: boolean; calculado?: PartidoCalculado } = {},
 ): Promise<void> {
   const { reloj, repoPartidos, metricas } = c.servicios;
-  const parametros = parametrosActuales();
-  const local = await equipoParaMotor(c, fila.localId, fila.visitanteId, fila.semilla);
-  const visitante = await equipoParaMotor(c, fila.visitanteId, fila.localId, fila.semilla);
-  const entrada: EntradaPartido = {
-    version: parametros.version,
-    parametros,
-    semilla: fila.semilla,
-    eliminatoria: fila.eliminatoria,
-    local: local.equipo,
-    visitante: visitante.equipo,
-  };
-  const motor = crearPartido(entrada);
-  const { parametros: _p, ...guardada } = entrada;
+  // Todo lo que se calcula va antes de guardar nada: si falla, el partido sigue programado (FR-008).
+  const { alineaciones, entrada, motor, final } =
+    opciones.calculado ??
+    (await calcularPartido(c, fila, opciones).catch((err: unknown) => {
+      registrarCalculoFallido(c, fila, err);
+      throw err;
+    }));
+  const local = await dorsalesParaPartido(c, fila.localId, alineaciones.local);
+  const visitante = await dorsalesParaPartido(c, fila.visitanteId, alineaciones.visitante);
+  const { parametros, ...guardada } = entrada;
   await repoPartidos.actualizar(fila.id, {
     entrada: guardada satisfies EntradaGuardada,
     estado: 'primera_parte',
@@ -234,20 +277,25 @@ export async function iniciarPartido(
     for (const [pid, r] of [[fila.localId, local], [fila.visitanteId, visitante]] as const) if (r.asignados.length) await c.alAsignarDorsales?.(pid, r.asignados);
   }
 
-  // Sin humanos, o resuelto al vencer el plazo de la jornada: de una vez y sin pausas (FR-056a).
-  const conHumanos = [fila.localId, fila.visitanteId].some((pid) => esHumano(c, pid));
-  if (conHumanos && !opciones.automatico && modalidadDe(c, fila) === '2d') {
+  const directo = enDirecto(c, fila, opciones.automatico);
+  if (directo && modalidadDe(c, fila) === '2d') {
     // 2D: con el búfer de anticipación, al ritmo de la reproducción del humano (research R6).
     p.dosD = crearEstado2D();
     await avanzar2D(c, ctx, p);
     return;
   }
-  await jugarTramo(c, ctx, p, conHumanos && !opciones.automatico ? 'parte' : 'final');
+  await jugarTramo(c, ctx, p, directo ? 'parte' : 'final', final);
 }
 
-async function jugarTramo(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, modo: 'parte' | 'final'): Promise<void> {
-  // Sin pausas, los NPC deciden igualmente en el descanso y antes de la prórroga.
-  const r = modo === 'final' ? jugarHastaElFinal(p.motor, nivelesDe(c, p.fila), p.fila.semilla) : avanzar(p.motor, modo);
+async function jugarTramo(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, modo: 'parte' | 'final', calculado?: ResultadoTramo): Promise<void> {
+  const { calculo } = c.servicios;
+  // Sin pausas, los NPC deciden igualmente en el descanso y antes de la prórroga. `p.motor` solo cambia al
+  // registrar el resultado: si el cálculo falla, el partido sigue donde estaba.
+  const r =
+    calculado ??
+    (modo === 'final'
+      ? await calculo.ejecutar('jugarHastaElFinal', [p.motor, nivelesDe(c, p.fila), p.fila.semilla], 'npc')
+      : await calculo.ejecutar('avanzar', [p.motor, modo], 'humano'));
   await registrarTramo(c, ctx, p, r);
 
   if (r.fase === 'descanso' || r.fase === 'pre_prorroga') {
@@ -443,11 +491,11 @@ export async function procesarFinalizar(c: ControladorPartida, ctx: ContextoComa
     return fallo('PARTIDO_NO_ENCONTRADO', 'No juegas ese partido');
   }
   if (p.fila.estado === 'finalizado') return { ok: true };
+  // Se calcula antes de cerrar la ventana: si falla, el partido sigue como estaba y se puede volver a pedir.
+  const tramos = await c.servicios.calculo.ejecutar('resolverRestoPorTramos', [p.motor, nivelesDe(c, p.fila), p.fila.semilla], 'humano');
   c.servicios.temporizadores.cancelar(c.clave(`pausa:${p.fila.id}`));
   p.pausa = null;
   p.listos.clear();
-  const tramos: ResultadoTramo[] = [];
-  resolverResto(p.motor, nivelesDe(c, p.fila), p.fila.semilla, (t) => tramos.push(t));
   for (const t of tramos) await registrarTramo(c, ctx, p, t);
   await terminarPartido(c, ctx, p);
   return { ok: true };

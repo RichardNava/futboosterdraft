@@ -30,6 +30,7 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 | `SMTP_URL` | No | — | Servidor de correo para los avisos del modo asíncrono (FR-056b), p. ej. `smtps://usuario:clave@smtp.example:465`. Sin él, los avisos solo aparecen en la aplicación. |
 | `LOG_LEVEL` | No | `info` | Nivel de los logs (pino, JSON en la salida estándar). |
 | `MIGRAR_AL_ARRANCAR` | No | (activado) | `false` desactiva las migraciones al arrancar. |
+| `HILOS_SIMULACION` | No | núcleos − 1 (mínimo 1) | Hilos de trabajo que simulan los partidos (spec 009). `0` simula en el hilo principal, como antes de la spec 009: úsalo como interruptor de emergencia si los hilos dan problemas. Un valor no válido usa el de por defecto y avisa en el log. Ver «Hilos de simulación». |
 | `DB_POOL_MAX` | No | `25` | Conexiones simultáneas a PostgreSQL. Cada partida escribe desde su actor; con 10 conexiones, la carga de beta hacía esperar a los comandos. |
 | `NODE_ENV` | — | `production` en la imagen | Activa las cookies `Secure` y el servido de la web. No lo cambies. |
 | `CARPETA_MIGRACIONES`, `CARPETA_WEB` | — | ya fijadas en la imagen | Rutas de las migraciones y de la web dentro del contenedor. |
@@ -86,6 +87,21 @@ partidos jugados con los parámetros 2.x** (research R2): se rechazan con `Versi
 `pnpm --filter @fbd/engine bench` mide el coste por partido (con y sin fotogramas). Úsalo para dimensionar
 el servidor: cada partido en directo y cada «Finalizar partido» simulan con este motor.
 
+### Hilos de simulación
+
+Desde la spec 009, los partidos (y la alineación de los NPC) se calculan en un grupo de hilos de trabajo, no en el
+hilo que atiende HTTP y WebSocket. El tamaño lo fija `HILOS_SIMULACION`; sin ella, el servidor usa los núcleos que
+ve Node (`os.availableParallelism()`) menos uno. Al arrancar lo registra en el log (`Hilos de simulación`, con
+`hilos`).
+
+- **Contenedores con cuota de CPU** (`--cpus`, límites de Kubernetes): Node puede ver todos los núcleos de la
+  máquina y no la cuota. Fija `HILOS_SIMULACION` explícitamente a la cuota menos uno.
+- Cada hilo carga el motor y la IA: cuenta con unas decenas de MB más de memoria por hilo.
+- Si un hilo cae o un cálculo pasa de 20 s, se sustituye el hilo y el cálculo se repite (hasta 2 veces). Si aun así
+  falla, el partido no se guarda: sigue programado y se reintenta (se registra un `error` con partida, partido y
+  semilla).
+- `HILOS_SIMULACION=0` vuelve al cálculo en el hilo principal sin cambiar ningún resultado.
+
 ### Proxy inverso
 
 El proxy debe dejar pasar la mejora de conexión a WebSocket en `/ws`. Además, conviene que el tiempo de inactividad sea de al menos 60 s, porque el cliente envía un `ping` cada 25 s. Por ejemplo, en nginx:
@@ -130,6 +146,10 @@ Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas
   - `turno_draft_resolucion_ms`: tiempo de resolución de cada turno de draft. Con carga de beta debe quedar por debajo de 1 s en el p95 (SC-017).
   - `partidos_simulados_total`.
   - `desconexiones_total`: cierres de WebSocket.
+  - Hilos de simulación (spec 009): `hilos_simulacion` (tamaño del grupo; 0 = en el hilo principal),
+    `calculos_en_espera{prioridad}` (cola `humano` o `npc`; si crece y no baja, faltan hilos),
+    `calculo_duracion_ms{funcion}`, `calculos_fallidos_total{motivo}` (`caida`, `tiempo` o `error`) y
+    `calculo_reintentos_total`.
 
   No expongas `/metrics` a Internet: limítalo en el proxy a la red interna.
 

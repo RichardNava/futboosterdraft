@@ -13,7 +13,6 @@
  * - Sin informes de reproducción el búfer no crece: el partido queda en pausa sin coste. Al volver, la
  *   vista `estado` trae los tramos simulados y el último tick informado.
  */
-import { avanzar } from '@fbd/engine';
 import type { Velocidad2D } from '@fbd/protocol';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
@@ -55,7 +54,8 @@ export async function avanzar2D(c: ControladorPartida, ctx: ContextoComando, p: 
   while (p.fila.estado !== 'finalizado' && !p.pausa && c.partidosEnCurso.get(p.fila.id) === p) {
     const hasta = d.ultimoTickInformado + anticipacion;
     if (p.motor.tick >= hasta) return;
-    const r = avanzar(p.motor, 'ticks', { hastaTick: hasta, fotogramas: true });
+    // El actor no atiende otro comando mientras tanto: los trozos de un partido van siempre en orden.
+    const r = await c.servicios.calculo.ejecutar('avanzar', [p.motor, 'ticks', { hastaTick: hasta, fotogramas: true }], 'humano');
     const tramo = await registrarTramo(c, ctx, p, r);
     d.tramos.push(tramo as Tramo2D);
     if (r.fase === 'finalizado') {

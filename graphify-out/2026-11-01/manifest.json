@@ -1260,9 +1260,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/index.ts": {
-    "mtime": 1792757964.2072861,
-    "seen": 1792758030.9282465,
-    "ast_hash": "e5213836b9d9af2ea9266c7a537e3e59",
+    "mtime": 1793527620.4323657,
+    "seen": 1793543274.8741477,
+    "ast_hash": "6ae9b9c4d7455d7dedc3ca4cb4b27ca3",
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/v1.json": {
@@ -1398,9 +1398,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/parametros/parametros.test.ts": {
-    "mtime": 1792757964.2127805,
-    "seen": 1792758030.9304492,
-    "ast_hash": "b0f50d990194999d1eca23e7a60f594e",
+    "mtime": 1793537762.7736423,
+    "seen": 1793543274.8792033,
+    "ast_hash": "8b6aa47fbf1c54d1c3f592a94a66ae94",
     "semantic_hash": ""
   },
   "packages/domain/tests/partida/partida.test.ts": {
@@ -1812,15 +1812,15 @@
     "semantic_hash": "be4eb586072cf6adcc6f96c0d1644177"
   },
   "tools/balance/src/checks/npc.ts": {
-    "mtime": 1793496110.6293118,
-    "seen": 1793497129.5708427,
-    "ast_hash": "aa495593b255943105c3dbec11fdd421",
+    "mtime": 1793528793.786668,
+    "seen": 1793543274.8929,
+    "ast_hash": "cbbd49b83176481b8278fc99e39f47de",
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido.ts": {
-    "mtime": 1792757964.244905,
-    "seen": 1792758030.9375663,
-    "ast_hash": "de923a1f6955aee1511f6e5bf13819a2",
+    "mtime": 1793534560.0000062,
+    "seen": 1793543274.892902,
+    "ast_hash": "4653c0aacf40db00440d0ae7ad5451a9",
     "semantic_hash": ""
   },
   "tools/balance/src/cli.ts": {
@@ -1854,33 +1854,33 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/fixtures/escenarios/empate-eliminatoria.json": {
-    "mtime": 1792484980.952498,
-    "seen": 1792485016.632229,
-    "ast_hash": "f51e8b49c465b3975410d29d8992267e",
+    "mtime": 1793537775.6056342,
+    "seen": 1793543274.8947208,
+    "ast_hash": "543939ccd26af484bc289d669253c943",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-grave.json": {
-    "mtime": 1792484980.9534984,
-    "seen": 1792485016.6322315,
-    "ast_hash": "7816229a52a162f272bb2bdc2fc49aba",
+    "mtime": 1793537775.604853,
+    "seen": 1793543274.8947232,
+    "ast_hash": "ae777bfdc1eb9e95794361cbe03c0193",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-larga.json": {
-    "mtime": 1792484980.9534984,
-    "seen": 1792485016.6322331,
-    "ast_hash": "4c1b71a4c3ee156ec6bf4e33232f99bb",
+    "mtime": 1793537775.6056342,
+    "seen": 1793543274.8947248,
+    "ast_hash": "fcb6846e9138e6f789a6424ce0e73537",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/roja.json": {
-    "mtime": 1792484980.9534984,
-    "seen": 1792485016.632235,
-    "ast_hash": "8c461fd839e1209912a3d2b836fcbc46",
+    "mtime": 1793537775.604634,
+    "seen": 1793543274.8947265,
+    "ast_hash": "e4c6e61964cde503c7a1ef723ac3d2eb",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/tres-amarillas.json": {
-    "mtime": 1792484980.9544983,
-    "seen": 1792485016.6322365,
-    "ast_hash": "17de967b66747e9a8b084b57c9d083d0",
+    "mtime": 1793537775.604853,
+    "seen": 1793543274.8947282,
+    "ast_hash": "92541f8d84146c2224d7ba683b56b365",
     "semantic_hash": ""
   },
   "tools/fixtures/package.json": {
@@ -1932,9 +1932,9 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/load/beta-100.js": {
-    "mtime": 1793488698.2157583,
-    "seen": 1793488919.401065,
-    "ast_hash": "99106f81f2f2b42732ca49aae9567b34",
+    "mtime": 1793521043.5923162,
+    "seen": 1793543274.8963902,
+    "ast_hash": "6f0d3629fc1e3032786020c9f7d1f9c1",
     "semantic_hash": ""
   },
   "tsconfig.base.json": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": "08b983757611230f35f1eb6b3b485507"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1793055174.8606944,
-    "seen": 1793088076.7560549,
-    "ast_hash": "aaeba24543be31a07280cfca782fab71",
+    "mtime": 1793542854.1043067,
+    "seen": 1793543274.9124236,
+    "ast_hash": "d4ec49dd695446411ea40d2afbb4db41",
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
@@ -2226,9 +2226,9 @@
     "semantic_hash": ""
   },
   "specs/002-mejoras-mvp/spec.md": {
-    "mtime": 1792757964.2329042,
-    "seen": 1792758030.9444997,
-    "ast_hash": "518fd4d108080bb435d8d44951e9a8b1",
+    "mtime": 1793534575.569867,
+    "seen": 1793543274.917076,
+    "ast_hash": "c2d008d0ce8c40b8724eb3078b7cd44d",
     "semantic_hash": ""
   },
   "specs/002-mejoras-mvp/tasks.md": {
@@ -2238,9 +2238,9 @@
     "semantic_hash": ""
   },
   "tools/load/README.md": {
-    "mtime": 1793487944.031486,
-    "seen": 1793488919.4562387,
-    "ast_hash": "e7ec825fa47c4510ef35f8147f1a09aa",
+    "mtime": 1793522871.8060737,
+    "seen": 1793543274.9250295,
+    "ast_hash": "a748065ae22734b9746ab53e1cdc0b63",
     "semantic_hash": ""
   },
   ".claude/settings.json": {
@@ -2304,15 +2304,15 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/spec.md": {
-    "mtime": 1792757964.237076,
-    "seen": 1792758030.9453871,
-    "ast_hash": "cb25ab0af97f9298e828ab7957bead20",
+    "mtime": 1793529373.1462023,
+    "seen": 1793543274.9188023,
+    "ast_hash": "294476de43b2dcdb0ba71eda475b682a",
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/tasks.md": {
-    "mtime": 1793488884.306961,
-    "seen": 1793488919.4474616,
-    "ast_hash": "9b039e71ed327c5818881dcd41278144",
+    "mtime": 1793542904.5053854,
+    "seen": 1793543274.9188044,
+    "ast_hash": "e32b060cdf042cbd15ef24d24051e699",
     "semantic_hash": ""
   },
   "apps/server/src/actores/identidad.ts": {
@@ -2658,9 +2658,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/receptor.test.ts": {
-    "mtime": 1792484980.9275002,
-    "seen": 1792485016.6301875,
-    "ast_hash": "2f44676c73d477dcfc556c1f890a9363",
+    "mtime": 1793529308.3809328,
+    "seen": 1793543274.888794,
+    "ast_hash": "13ee10fb0cca11d7c85503d746e1f46f",
     "semantic_hash": ""
   },
   "packages/engine/tests/tiroDistancia.test.ts": {
@@ -2676,15 +2676,15 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido003.ts": {
-    "mtime": 1793496716.170632,
-    "seen": 1793497129.571109,
-    "ast_hash": "26efbeb2309b86cf9914ebd8df37d9bd",
+    "mtime": 1793528850.0094378,
+    "seen": 1793543274.8929036,
+    "ast_hash": "45506ea22e9828fd882e108affe1f05d",
     "semantic_hash": ""
   },
   "tools/balance/src/core.ts": {
-    "mtime": 1792757964.2459047,
-    "seen": 1792758030.9375744,
-    "ast_hash": "e3ba00b5036b1b70b7b567b9ea2b120f",
+    "mtime": 1793528813.7363708,
+    "seen": 1793543274.8930366,
+    "ast_hash": "af80674ae695aa5944d0003cfe995fbb",
     "semantic_hash": ""
   },
   "tools/balance/src/diagnostico.ts": {
@@ -2736,9 +2736,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md": {
-    "mtime": 1792757964.2339063,
-    "seen": 1792758030.9445033,
-    "ast_hash": "765d19d2db3b1b159a60b1cff42c6d9d",
+    "mtime": 1793542895.187631,
+    "seen": 1793543274.9172025,
+    "ast_hash": "30edad84d44d8b05316d95f93852e86f",
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/linea-base.md": {
@@ -2766,9 +2766,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/validacion.md": {
-    "mtime": 1793497107.5345452,
-    "seen": 1793497129.6073272,
-    "ast_hash": "f53e0b114b6d42f91f682dc18a27e821",
+    "mtime": 1793522871.8291087,
+    "seen": 1793543274.917653,
+    "ast_hash": "2a79ec5bddbf49ce68d5d9a5d5230870",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/dificultad.spec.ts": {
@@ -3396,15 +3396,15 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/impacto.ts": {
-    "mtime": 1793496779.884366,
-    "seen": 1793497129.5708377,
-    "ast_hash": "b32ed958a31b4be883e40547e45a7263",
+    "mtime": 1793528890.1698577,
+    "seen": 1793543274.8928978,
+    "ast_hash": "7bd72861bd9bd4eda1672fc2f6f47b38",
     "semantic_hash": ""
   },
   "tools/balance/src/checks/rasgos.ts": {
-    "mtime": 1792757964.2459047,
-    "seen": 1792758030.9375703,
-    "ast_hash": "3d5c7c0d325382f67a840a4621f9e98b",
+    "mtime": 1793527628.8504648,
+    "seen": 1793543274.8929052,
+    "ast_hash": "0d4904704852699fca63b74c2a195262",
     "semantic_hash": ""
   },
   "tools/fixtures/src/asignarRasgos.ts": {
@@ -3444,9 +3444,9 @@
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/contracts/rasgos.md": {
-    "mtime": 1792757964.2409055,
-    "seen": 1792758030.946403,
-    "ast_hash": "c3b6f5cbe00a9eb5cc1e2a4ac6b4ea36",
+    "mtime": 1793542935.8503542,
+    "seen": 1793543274.9206028,
+    "ast_hash": "825f9ae3223caa2d8c94437645987b70",
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/contracts/realtime-protocol.md": {
@@ -3486,15 +3486,15 @@
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/research.md": {
-    "mtime": 1792757964.2429054,
-    "seen": 1792758030.946416,
-    "ast_hash": "ae96ae2d93796ed56750061b9134edc4",
+    "mtime": 1793529388.0261502,
+    "seen": 1793543274.921355,
+    "ast_hash": "391504c20404331613e80b8d4fd487ed",
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/spec.md": {
-    "mtime": 1792757964.2439065,
-    "seen": 1792758030.9464173,
-    "ast_hash": "9bb9764e46a6da14515aa52191d02dbb",
+    "mtime": 1793529382.5155396,
+    "seen": 1793543274.9213574,
+    "ast_hash": "1060314f6e95de65869b84baf2fa6d12",
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/tasks.md": {
@@ -3510,9 +3510,9 @@
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/checklists/validacion.md": {
-    "mtime": 1792757964.240144,
-    "seen": 1792758030.946396,
-    "ast_hash": "6263b630eeee49a4e1be94540ed898e1",
+    "mtime": 1793542928.9402092,
+    "seen": 1793543274.9202135,
+    "ast_hash": "982d5309024ac5ce6fbfff1e635a6c56",
     "semantic_hash": ""
   },
   "apps/server/tests/unit/pasesOcultos.test.ts": {
@@ -4980,9 +4980,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1793497107.5349944,
-    "seen": 1793497129.6012092,
-    "ast_hash": "6c6a34ef14044ea512c9ec6951871adf",
+    "mtime": 1793542920.9972708,
+    "seen": 1793543274.913536,
+    "ast_hash": "01a47fc107e0afd5f5b86b69d672a7a2",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -7005,6 +7005,12 @@
     "mtime": 1793320619.2536519,
     "seen": 1793321352.3836946,
     "ast_hash": "9724700b6262510100cfb8e7518b3869",
+    "semantic_hash": ""
+  },
+  "packages/domain/src/parametros/v5.json": {
+    "mtime": 1793537762.772878,
+    "seen": 1793543274.874704,
+    "ast_hash": "d005d8ea122fe9d5c387bf858e3d3adb",
     "semantic_hash": ""
   }
 }

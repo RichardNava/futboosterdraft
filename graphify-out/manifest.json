@@ -156,10 +156,10 @@
     "semantic_hash": ""
   },
   "apps/server/package.json": {
-    "mtime": 1792362216.064394,
-    "seen": 1792367528.4333844,
-    "ast_hash": "0c4713c5c42af50aaf14619dfaa6baa5",
-    "semantic_hash": "0c4713c5c42af50aaf14619dfaa6baa5"
+    "mtime": 1793563068.1062326,
+    "seen": 1793563195.4997544,
+    "ast_hash": "d0c726bbd965031afaeff0c21c98bf03",
+    "semantic_hash": ""
   },
   "apps/server/src/actores/actor.ts": {
     "mtime": 1792153826.3975363,
@@ -204,21 +204,21 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/partido2d.ts": {
-    "mtime": 1792362216.06604,
-    "seen": 1792367528.4333978,
-    "ast_hash": "c1be3781e091578bfe4daac1957f2fac",
-    "semantic_hash": "c1be3781e091578bfe4daac1957f2fac"
+    "mtime": 1793563068.107077,
+    "seen": 1793563195.501251,
+    "ast_hash": "36732231c621f541c44d49d0261a95f5",
+    "semantic_hash": ""
   },
   "apps/server/src/actores/partidoEntreHumanos.ts": {
-    "mtime": 1793496220.3245535,
-    "seen": 1793497129.4679017,
-    "ast_hash": "1377d4b3addbbd8a18119e1b28db221d",
+    "mtime": 1793563068.107077,
+    "seen": 1793563195.5012543,
+    "ast_hash": "9a2cdd828285d6154848fe4a454597d1",
     "semantic_hash": ""
   },
   "apps/server/src/actores/partidoRapido.ts": {
-    "mtime": 1792757964.1203916,
-    "seen": 1792758030.9010322,
-    "ast_hash": "cec33708216206195fe8f4000c91a7e8",
+    "mtime": 1793563068.108101,
+    "seen": 1793563195.5012565,
+    "ast_hash": "d9ad2c4ff325cf570c46c9fb6d060029",
     "semantic_hash": ""
   },
   "apps/server/src/actores/pausa.ts": {
@@ -228,9 +228,9 @@
     "semantic_hash": "fb456f9a0d0dea69d1bf22f774a1b103"
   },
   "apps/server/src/actores/preparacion.ts": {
-    "mtime": 1792757964.1203916,
-    "seen": 1792758030.9011786,
-    "ast_hash": "2d1267315efe3343f5807b9f32614bb6",
+    "mtime": 1793563068.108101,
+    "seen": 1793563195.5014095,
+    "ast_hash": "7e83a40cdf4733becf8ffbefcb833266",
     "semantic_hash": ""
   },
   "apps/server/src/actores/sala.ts": {
@@ -240,15 +240,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/servicios.ts": {
-    "mtime": 1793055174.8676994,
-    "seen": 1793088076.6983764,
-    "ast_hash": "0ab502f4912bb85b412f281804285a50",
+    "mtime": 1793563068.109074,
+    "seen": 1793563195.5015602,
+    "ast_hash": "d13a656f2102501bfd86e27af4de9126",
     "semantic_hash": ""
   },
   "apps/server/src/actores/torneo.ts": {
-    "mtime": 1793055174.8676994,
-    "seen": 1793088076.69838,
-    "ast_hash": "0135b1c2f42a2473b5ca5337fef36c5e",
+    "mtime": 1793563068.109074,
+    "seen": 1793563195.501563,
+    "ast_hash": "921a8311f851fa5845b3fc77e681381e",
     "semantic_hash": ""
   },
   "apps/server/src/actores/vistas.ts": {
@@ -330,10 +330,10 @@
     "semantic_hash": ""
   },
   "apps/server/src/main.ts": {
-    "mtime": 1792153826.4031146,
-    "seen": 1792327978.0273893,
-    "ast_hash": "fcd64e6c6adbb1f5f29f6b96ac29e164",
-    "semantic_hash": "fcd64e6c6adbb1f5f29f6b96ac29e164"
+    "mtime": 1793563068.110074,
+    "seen": 1793563195.5042765,
+    "ast_hash": "edd9ec4ccedf602678d167f194c4051b",
+    "semantic_hash": ""
   },
   "apps/server/src/observabilidad/logger.ts": {
     "mtime": 1792153826.4041142,
@@ -342,10 +342,10 @@
     "semantic_hash": "eae610d85ec4c18013e31e8c5c937294"
   },
   "apps/server/src/observabilidad/metricas.ts": {
-    "mtime": 1792153826.4041142,
-    "seen": 1792327978.027395,
-    "ast_hash": "9e8f3b4c0403d6fe056566136aa027c7",
-    "semantic_hash": "9e8f3b4c0403d6fe056566136aa027c7"
+    "mtime": 1793563068.110074,
+    "seen": 1793563195.5044346,
+    "ast_hash": "adc850d515ec0b16b38359831de7e18a",
+    "semantic_hash": ""
   },
   "apps/server/src/observabilidad/rutas.ts": {
     "mtime": 1792153826.4041142,
@@ -468,9 +468,9 @@
     "semantic_hash": "cde9297a5932d62e2c5198c2fd696fe0"
   },
   "apps/server/src/servidor.ts": {
-    "mtime": 1793055174.8747935,
-    "seen": 1793088076.7051768,
-    "ast_hash": "35d09e8a38c761f6163358c7689ff349",
+    "mtime": 1793563068.110074,
+    "seen": 1793563195.5079057,
+    "ast_hash": "1d8427aecba2aa34f462a0d11795dfc1",
     "semantic_hash": ""
   },
   "apps/server/src/ws/pasarela.ts": {
@@ -498,10 +498,10 @@
     "semantic_hash": ""
   },
   "apps/server/tests/helpers/app.ts": {
-    "mtime": 1792153826.4091375,
-    "seen": 1792327978.0274706,
-    "ast_hash": "47fcbc376000fcb85666ae5aee74f780",
-    "semantic_hash": "47fcbc376000fcb85666ae5aee74f780"
+    "mtime": 1793563068.1110725,
+    "seen": 1793563195.5087237,
+    "ast_hash": "a77701292ea6b691586beecf73ec2f2a",
+    "semantic_hash": ""
   },
   "apps/server/tests/helpers/bd.ts": {
     "mtime": 1793055174.876793,
@@ -654,16 +654,16 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "apps/server/tsup.config.ts": {
-    "mtime": 1792153826.4131477,
-    "seen": 1792327978.0275512,
-    "ast_hash": "6326bfc41347fca226a37975cb9a45aa",
-    "semantic_hash": "6326bfc41347fca226a37975cb9a45aa"
+    "mtime": 1793563068.1110725,
+    "seen": 1793563195.5153801,
+    "ast_hash": "5bab3d8c1921649919521554bc74bfee",
+    "semantic_hash": ""
   },
   "apps/server/vitest.config.ts": {
-    "mtime": 1792153826.4141579,
-    "seen": 1792327978.0275543,
-    "ast_hash": "e840aae5b354d5f5786a6fe59148a957",
-    "semantic_hash": "e840aae5b354d5f5786a6fe59148a957"
+    "mtime": 1793563068.1110725,
+    "seen": 1793563195.5153828,
+    "ast_hash": "321220e7023650e9d2142e2dccc0c5d7",
+    "semantic_hash": ""
   },
   "apps/web/package.json": {
     "mtime": 1792592850.7633944,
@@ -2058,9 +2058,9 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1793321321.514621,
-    "seen": 1793321352.3264244,
-    "ast_hash": "04e6138a6e3c798884458f167bf1334b",
+    "mtime": 1793558844.6376593,
+    "seen": 1793563195.6240075,
+    "ast_hash": "1cb48fcd6fca134e6c1979152ceb5682",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2082,9 +2082,9 @@
     "semantic_hash": "5d9adb618448c82498a1711504f10c9e"
   },
   "docs/despliegue.md": {
-    "mtime": 1793055174.9698737,
-    "seen": 1793088076.7569387,
-    "ast_hash": "00097b315e56b2363889ed3a200bdfb6",
+    "mtime": 1793563068.112076,
+    "seen": 1793563195.624628,
+    "ast_hash": "69ca73b25c12693e27cf0bad7d6204a6",
     "semantic_hash": ""
   },
   "pnpm-workspace.yaml": {
@@ -7011,6 +7011,96 @@
     "mtime": 1793537762.772878,
     "seen": 1793543274.874704,
     "ast_hash": "d005d8ea122fe9d5c387bf858e3d3adb",
+    "semantic_hash": ""
+  },
+  "apps/server/src/simulacion/funciones.ts": {
+    "mtime": 1793563068.1482122,
+    "seen": 1793563195.5079093,
+    "ast_hash": "7a4c1f6eec799f87d8d0b9cb8c39c4db",
+    "semantic_hash": ""
+  },
+  "apps/server/src/simulacion/grupo.ts": {
+    "mtime": 1793563068.1482122,
+    "seen": 1793563195.5079122,
+    "ast_hash": "3bc7972dc8d5aff7f54215653a81cbe7",
+    "semantic_hash": ""
+  },
+  "apps/server/src/simulacion/hilo.ts": {
+    "mtime": 1793563068.1492147,
+    "seen": 1793563195.5079143,
+    "ast_hash": "44aea10bc5a5b4bf3cc4e293aaf525f5",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/fixtures/hiloPrueba.ts": {
+    "mtime": 1793563068.1492147,
+    "seen": 1793563195.50872,
+    "ast_hash": "3c254bc139e92c0570bbda1dc89e76ec",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/calculo-fallos.test.ts": {
+    "mtime": 1793563068.1492147,
+    "seen": 1793563195.5104425,
+    "ast_hash": "8879cada0381aaf1fa345f5a22911534",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/unit/calculoEquivalencia.test.ts": {
+    "mtime": 1793563068.1502137,
+    "seen": 1793563195.5143256,
+    "ast_hash": "cafad74ae239d3e4c4a662be9c7fad70",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/unit/grupoHilos.test.ts": {
+    "mtime": 1793563068.1502137,
+    "seen": 1793563195.5143282,
+    "ast_hash": "053b8af29c95e6f9ca3ddf67285926cc",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/checklists/requirements.md": {
+    "mtime": 1793555681.8802779,
+    "seen": 1793563195.6397927,
+    "ast_hash": "0b2a8d9d96d6f3aaa8b4b27fed00d526",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/contracts/calculo.md": {
+    "mtime": 1793558838.1751764,
+    "seen": 1793563195.6397953,
+    "ast_hash": "99715904406137efb3eab1893bce2552",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/data-model.md": {
+    "mtime": 1793558776.3846974,
+    "seen": 1793563195.6397977,
+    "ast_hash": "3bf8df0cc4544ea0653f38bc42b1e4a0",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/plan.md": {
+    "mtime": 1793558839.9284844,
+    "seen": 1793563195.6397998,
+    "ast_hash": "9248a1c2c81b9e5791262984b554fca1",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/quickstart.md": {
+    "mtime": 1793558839.0349145,
+    "seen": 1793563195.6398017,
+    "ast_hash": "dff4af4d5790c1d8b25dd7404bcb49af",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/research.md": {
+    "mtime": 1793558775.4652398,
+    "seen": 1793563195.639804,
+    "ast_hash": "718d50829c7d2ad20f287a25a6ac12c6",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/spec.md": {
+    "mtime": 1793558057.5404584,
+    "seen": 1793563195.6398056,
+    "ast_hash": "108e8948d703354c92ce2d5d190865c8",
+    "semantic_hash": ""
+  },
+  "specs/009-simulacion-hilos-trabajo/tasks.md": {
+    "mtime": 1793563068.1130736,
+    "seen": 1793563195.6398072,
+    "ast_hash": "5754092c85d3bb1d3be986fd71e8423a",
     "semantic_hash": ""
   }
 }

@@ -37,6 +37,7 @@ import { RepoPartidas } from './persistencia/repos/partidas';
 import { RelojFalso, type Reloj } from './programador/reloj';
 import { Temporizadores } from './programador/temporizadores';
 import { Pasarela } from './ws/pasarela';
+import { crearCalculo } from './simulacion/grupo';
 import type { OpcionesLimitador } from './http/limitador';
 
 export interface ConfigServidor {
@@ -52,6 +53,8 @@ export interface ConfigServidor {
   smtpUrl?: string;
   /** Límites de peticiones HTTP y mensajes WebSocket por sesión (por defecto, los de `http/limitador.ts`). */
   limites?: { http?: OpcionesLimitador; ws?: OpcionesLimitador };
+  /** Hilos de simulación (spec 009); 0, el valor por defecto, simula en el hilo principal. */
+  hilosSimulacion?: number;
 }
 
 export interface Servidor {
@@ -73,6 +76,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   const catalogo = config.catalogo ?? (await Catalogo.cargar(config.db));
   const temporizadores = new Temporizadores(config.reloj);
   const economia = new ServicioEconomia(config.db, catalogo);
+  const calculo = crearCalculo(config.hilosSimulacion ?? 0, { metricas, logger });
 
   // El gestor se crea después de la autenticación y la pasarela, que lo usan a través de esta referencia.
   const ref: { gestor?: GestorPartidas } = {};
@@ -115,6 +119,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     difusor: pasarela,
     logger,
     metricas,
+    calculo,
   });
   ref.gestor = gestor;
   const avisos = new ServicioAvisos(config.db, config.reloj, logger, config.smtpUrl, config.urlPublica, (aviso) => {
@@ -220,6 +225,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   app.addHook('onClose', async () => {
     temporizadores.cancelarTodos();
     gestor.cerrarTodo();
+    await calculo.cerrar();
   });
 
   return { app, db: config.db, auth, reloj: config.reloj, logger, metricas, pasarela, gestor, temporizadores };

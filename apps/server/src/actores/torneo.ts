@@ -44,7 +44,7 @@ import { resueltoAutomaticamente } from '../persistencia/repos/partidos';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
 import { entreHumanos, resolverPartidoEntreHumanos, terminarPartidoEntreHumanosEnJuego } from './partidoEntreHumanos';
-import { esHumano, forzarFinal, iniciarPartido, nivelNPCDe, type PartidoEnCurso } from './partidoRapido';
+import { esHumano, forzarFinal, iniciarPartido, nivelNPCDe, sinHumanos, type PartidoEnCurso } from './partidoRapido';
 import { cartasDelCruce, resolverCrucesDuelos } from './duelos';
 import { crearPartidosJornada, emitirPreparacion, resolverPartidosSinHumanos } from './preparacion';
 import type { ResultadoCruce } from '@fbd/domain';
@@ -200,15 +200,20 @@ async function vencerJornada(c: ControladorPartida, ctx: ContextoComando, numero
     return;
   }
   for (const cruce of [...c.jornada.cruces]) {
-    const enCurso = c.partidosEnCurso.get(cruce.partidoId);
-    if (enCurso) {
-      await forzarFinal(c, ctx, enCurso);
-      continue;
+    // Un partido cuyo cálculo falla no impide resolver los demás (spec 009, FR-008).
+    try {
+      const enCurso = c.partidosEnCurso.get(cruce.partidoId);
+      if (enCurso) {
+        await forzarFinal(c, ctx, enCurso);
+        continue;
+      }
+      const fila = await c.servicios.repoPartidos.obtener(cruce.partidoId);
+      if (fila?.estado !== 'programado') continue;
+      if (entreHumanos(c, fila)) await resolverPartidoEntreHumanos(c, ctx, fila.id, { resolucion: 'plazo' });
+      else await iniciarPartido(c, ctx, fila, { automatico: true });
+    } catch (err) {
+      c.servicios.logger.error({ err, partidaId: c.id, partidoId: cruce.partidoId }, 'No se pudo resolver el partido al vencer el plazo');
     }
-    const fila = await c.servicios.repoPartidos.obtener(cruce.partidoId);
-    if (fila?.estado !== 'programado') continue;
-    if (entreHumanos(c, fila)) await resolverPartidoEntreHumanos(c, ctx, fila.id, { resolucion: 'plazo' });
-    else await iniciarPartido(c, ctx, fila, { automatico: true });
   }
 }
 
@@ -329,7 +334,11 @@ async function despuesDePartido(c: ControladorPartida, ctx: ContextoComando, dep
     c.servicios.temporizadores.cancelar(c.clave(`aviso-plazo:${numero}`));
   }
   await emitirTorneo(c, ctx);
-  if (!cerrada) return;
+  if (!cerrada) {
+    // Un partido NPC cuyo cálculo falló se reintenta al terminar otro de la jornada (spec 009, research R6).
+    if (c.partida.modo !== 'duelos') await resolverPartidosSinHumanos(c, ctx);
+    return;
+  }
   if (torneo.campeon) {
     await terminarTorneo(c, ctx, deps);
     return;
@@ -361,8 +370,9 @@ export async function simularResto(c: ControladorPartida, ctx: ContextoComando, 
     for (let guarda = 0; guarda < 200 && !c.torneo!.campeon; guarda++) {
       const j = jornadaActual(c.torneo!);
       if (!j) break;
-      if (j.estado === 'abierta') await resolverPartidosSinHumanos(c, ctx);
-      else await abrirSiguienteJornada(c, ctx, deps);
+      if (j.estado !== 'abierta') await abrirSiguienteJornada(c, ctx, deps);
+      // Un partido que no se puede calcular fallaría igual en cada vuelta (spec 009, research R6).
+      else if ((await resolverPartidosSinHumanos(c, ctx)) > 0) throw new Error(`No se pudo simular la jornada ${j.numero}: hay partidos sin calcular`);
     }
   } finally {
     silenciosas.delete(c);
@@ -433,9 +443,12 @@ export async function reprogramarTorneo(c: ControladorPartida, deps: Dependencia
   };
   if (venceEn !== null) programarPlazos(c, deps, j.numero, venceEn);
   const enJuego = partidos.filter((x) => x.estado !== 'programado' && x.estado !== 'finalizado' && entreHumanos(c, x));
-  if (enJuego.length) {
+  // Partidos NPC cuyo cálculo falló antes del reinicio (spec 009, research R6).
+  const npcPendientes = c.partida.modo !== 'duelos' && partidos.some((x) => x.estado === 'programado' && sinHumanos(c, x));
+  if (enJuego.length || npcPendientes) {
     await c.ejecutar(async (ctx) => {
       for (const x of enJuego) await terminarPartidoEntreHumanosEnJuego(c, ctx, x.id);
+      if (npcPendientes) await resolverPartidosSinHumanos(c, ctx);
     });
   }
 }

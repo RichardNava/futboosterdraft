@@ -6,9 +6,10 @@
  * partido» o «Ver partido» (`POST /api/partidos/:id/abrir`), o se resuelve solo al vencer el plazo.
  */
 import { derivarSemilla, parametrosActuales, type Emparejamiento, type ModoSimulacion } from '@fbd/domain';
+import type { FilaPartido } from '../persistencia/repos/partidos';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
-import { iniciarPartido, sinHumanos } from './partidoRapido';
+import { calcularPartido, iniciarPartido, registrarCalculoFallido, sinHumanos } from './partidoRapido';
 
 export interface OpcionesJornada {
   eliminatoria?: boolean;
@@ -59,12 +60,38 @@ export async function programarJornada(
   await resolverPartidosSinHumanos(c, ctx);
 }
 
-/** Los partidos de la jornada sin ningún humano (NPC contra NPC) se resuelven al abrirla (research R9). */
-export async function resolverPartidosSinHumanos(c: ControladorPartida, ctx: ContextoComando): Promise<void> {
+/** Partidos NPC que se están resolviendo: el final de uno de ellos no vuelve a lanzar los demás. */
+const enCalculo = new WeakMap<ControladorPartida, Set<string>>();
+
+/**
+ * Los partidos de la jornada sin ningún humano (NPC contra NPC) se resuelven al abrirla (research R9), en dos
+ * fases (spec 009, research R6): se calculan todos a la vez y después se guardan y anuncian uno tras otro en el
+ * orden de los cruces, como antes. Uno que falla no guarda nada: sigue programado y se reintenta al terminar otro
+ * partido de la jornada, al reiniciar o al vencer el plazo. Devuelve cuántos fallaron.
+ */
+export async function resolverPartidosSinHumanos(c: ControladorPartida, ctx: ContextoComando): Promise<number> {
+  const marcados = enCalculo.get(c) ?? new Set<string>();
+  enCalculo.set(c, marcados);
+  const filas: FilaPartido[] = [];
   for (const cruce of c.jornada?.cruces ?? []) {
-    if (!sinHumanos(c, { localId: cruce.local, visitanteId: cruce.visitante })) continue;
+    if (marcados.has(cruce.partidoId) || !sinHumanos(c, { localId: cruce.local, visitanteId: cruce.visitante })) continue;
     const fila = await c.servicios.repoPartidos.obtener(cruce.partidoId);
-    if (fila?.estado === 'programado') await iniciarPartido(c, ctx, fila);
+    if (fila?.estado === 'programado') filas.push(fila);
+  }
+  for (const fila of filas) marcados.add(fila.id);
+  try {
+    const calculos = await Promise.allSettled(filas.map((fila) => calcularPartido(c, fila)));
+    let fallidos = 0;
+    for (const [i, fila] of filas.entries()) {
+      const r = calculos[i]!;
+      if (r.status === 'rejected') {
+        fallidos++;
+        registrarCalculoFallido(c, fila, r.reason);
+      } else await iniciarPartido(c, ctx, fila, { calculado: r.value });
+    }
+    return fallidos;
+  } finally {
+    for (const fila of filas) marcados.delete(fila.id);
   }
 }
 
