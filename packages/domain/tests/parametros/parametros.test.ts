@@ -5,6 +5,7 @@ import {
   PARAMETROS_V2,
   PARAMETROS_V3,
   PARAMETROS_V4,
+  PARAMETROS_V5,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -95,9 +96,7 @@ describe('parámetros de equilibrado 3.0.0 (spec 003, T004)', () => {
 });
 
 describe('parámetros de equilibrado 4.0.0 (spec 005, T031, T032)', () => {
-  it('los partidos nuevos usan la versión 4.0.0 y la 3.x se sigue reproduciendo', () => {
-    expect(parametrosActuales()).toBe(PARAMETROS_V4);
-    expect(parametrosActuales().version).toBe('4.0.0');
+  it('la 4.0.0 y la 3.x se siguen reproduciendo', () => {
     expect(parametrosPorVersion('4.0.0')).toBe(PARAMETROS_V4);
     expect(VERSION_MAYOR_SOPORTADA).toBe(3);
   });
@@ -143,5 +142,38 @@ describe('parámetros de equilibrado 4.0.0 (spec 005, T031, T032)', () => {
     expect(p.virtudes.revulsivo).toBe(0.05);
     expect(p.virtudes.versatil).toBe(0.05);
     expect(typeof p.disciplina.factorFaltaArea).toBe('number');
+  });
+});
+
+describe('parámetros de equilibrado 5.0.0 (INI-05)', () => {
+  it('los partidos nuevos usan la versión 5.0.0', () => {
+    expect(parametrosActuales()).toBe(PARAMETROS_V5);
+    expect(parametrosPorVersion('5.0.0')).toBe(PARAMETROS_V5);
+  });
+
+  it('solo cambian los factores de stat, la atracción del pasador, el control del pase y las faltas en el área', () => {
+    const { decision, acciones, pases, disciplina, tiro, version, ...resto } = PARAMETROS_V5;
+    const { decision: d4, acciones: a4, pases: p4, disciplina: di4, tiro: t4, version: v4, ...resto4 } = PARAMETROS_V4;
+    expect(resto).toEqual(resto4);
+    // Más faltas en el área y menos tiros de falta directa: penaltis Core 0,29 y sintética 0,41 por partido (±20 % de 0,35) y falta directa 9,5 % de los goles.
+    expect({ ...disciplina, factorFaltaArea: 0 }).toEqual({ ...di4, factorFaltaArea: 0 });
+    expect([disciplina.factorFaltaArea, di4.factorFaltaArea]).toEqual([0.6, 0.53]);
+    expect({ ...tiro, faltaDirectaTiro: { ...tiro.faltaDirectaTiro, probabilidad: 0 } }).toEqual({ ...t4, faltaDirectaTiro: { ...t4.faltaDirectaTiro, probabilidad: 0 } });
+    expect([tiro.faltaDirectaTiro.probabilidad, t4.faltaDirectaTiro.probabilidad]).toEqual([0.72, 0.8]);
+    expect({ ...decision, factores: {} }).toEqual({ ...d4, factores: {} });
+    expect({ ...acciones, atraccionPasador: 0, controlPaseTicks: 0, controlPorStat: 0 }).toEqual({ ...a4, atraccionPasador: 0, controlPaseTicks: 0, controlPorStat: 0 });
+    expect({ ...pases, atraccionPasadorAcotada: [] }).toEqual({ ...p4, atraccionPasadorAcotada: [] });
+    expect([version, v4]).toEqual(['5.0.0', '4.0.0']);
+  });
+
+  it('un 80 decide igual que con la 4.0.0 y ningún factor de stat se satura antes de 99', () => {
+    for (const [nombre, f] of Object.entries(PARAMETROS_V5.decision.factores)) {
+      const f4 = PARAMETROS_V4.decision.factores[nombre as keyof typeof PARAMETROS_V4.decision.factores];
+      expect(Math.min(f.max, 1 + f.k)).toBe(Math.min(f4.max, 1 + f4.k));
+      expect(1 + (f.k * 29) / 10).toBeLessThanOrEqual(f.max + 1e-9);
+    }
+    const a = PARAMETROS_V5.acciones;
+    expect(2 ** ((a.atraccionPasador * (99 - a.statPaseReferencia)) / 10)).toBeLessThanOrEqual(PARAMETROS_V5.pases.atraccionPasadorAcotada[1]);
+    expect(a.controlPaseTicks - (a.controlPorStat * (90 - a.statPaseReferencia)) / 10).toBeGreaterThanOrEqual(0);
   });
 });

@@ -34,6 +34,10 @@
 - Q: ¿Se puede «Finalizar partido» en la simulación rápida? → A: Sí, en cualquier momento, no solo en el descanso.
 - Los demás puntos de la revisión (definiciones, magnitudes y criterios de medida) se aprobaron con los valores propuestos, y están en los requisitos y criterios de abajo.
 
+### Session 2026-11-01 (calibración del motor, INI-05)
+
+- Q: SC-007 pide 10 centros y 3 contraataques, y el motor se queda cerca pero no llega en ninguna calibración: ¿se sigue calibrando? → A: No. Se hizo una ronda acotada de cambios de modelo (parámetros 5.0.0) y se mantuvieron centros 9,4–10,1 y contraataques 2,5–2,9 por partido (rondas 7 a 14 de `specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md`). Subirlos rompía otros SC estadísticos (003/SC-006 y SC-007), que mandan. Los mínimos pasan a 9 centros y 2 contraataques; el resto de SC-007 no cambia.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Cartas de jugador vistosas y legibles (Priority: P1)
@@ -492,8 +496,8 @@ Al cerrar esta spec DEBEN actualizarse en la 001:
 - **SC-005**: A velocidad fija, la duración real de cada minuto de juego en 2D varía como máximo un ±10 % respecto a la media del partido, sin contar las pausas anunciadas. Se comprueba con una prueba automática que registra el reloj de juego durante la reproducción a x2, x4 y x8 (a x8 un minuto dura menos de 1 s y no se puede cronometrar a mano).
 - **SC-006**: Un partido completo, incluido el descuento, dura 4 minutos a x2, 2 minutos a x4 y 1 minuto a x8, y cada parte la mitad, con un margen de ±5 % y sin contar las pausas anunciadas. Se comprueba con la misma prueba automática que SC-005.
 - **SC-007**: En partidos 2D entre equipos equilibrados (media de equipo con una diferencia de ±2 como máximo) y con la táctica por defecto, las estadísticas muestran de media, entre los dos equipos:
-  - al menos 150 pases completados, 10 centros y 15 tiros;
-  - al menos 30 conducciones, 3 paredes, 5 cambios de orientación y 3 contraataques;
+  - al menos 150 pases completados, 9 centros y 15 tiros;
+  - al menos 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques (centros y contraataques revisados el 2026-11-01, ver Clarifications);
   - al menos el 30 % de las posesiones (FR-024) con 3 o más pases seguidos.
 - **SC-007a**: En la revisión visual de 3 partidos completos a x2, no aparece ningún caso de jugador que se teletransporte, tiemble o atraviese a otro, ni de balón que se mueva sin una acción que lo explique. En el 100 % de las fases defensivas observadas, como mucho dos jugadores del mismo equipo van a la vez al balón, salvo en una presión coordinada. Además, la prueba automática de cinemática del motor (velocidades y aceleraciones máximas, separación, balón solo dentro de una acción y número de presionadores) pasa en 50 partidos con semilla.
 - **SC-008**: En series de 1.000 partidos, un equipo cuyos centrocampistas titulares tienen 10 puntos más en el stat de pase completa al menos un 10 % más de pases (en número absoluto) que el mismo equipo sin esa mejora.

@@ -1,7 +1,6 @@
 /**
  * Receptor por tipo de pase, distancia y dirección reales (spec 003, research R3; FR-016, FR-017; T011).
  */
-import { parametrosActuales } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { callejonSinSalida, factorPasador, pesosReceptor, receptorDePase } from '../src/acciones/receptor';
 import type { EstadoMotor, JugadorEnPartido } from '../src/index';
@@ -76,7 +75,8 @@ describe('receptor del pase (T011)', () => {
       j.jugador = { ...j.jugador, stats: { ...j.jugador.stats, pase } as typeof j.jugador.stats };
       return factorPasador(e, e.equipos.local, j);
     };
-    const [min, max] = parametrosActuales().pases.atraccionPasadorAcotada;
+    // Los partidos de prueba usan los parámetros 3.0.0 (en la 5.0.0 el techo ya no se alcanza con stats de carta).
+    const [min, max] = partido('acotada').parametros.pases.atraccionPasadorAcotada;
     expect(conPase(99)).toBeCloseTo(max, 6);
     expect(conPase(30)).toBeCloseTo(min, 6);
     expect(conPase(70)).toBeCloseTo(1, 6);

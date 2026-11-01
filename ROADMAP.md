@@ -34,7 +34,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-02](#ini-02-experiencia-de-juego-y-ritmo) | Experiencia de juego y ritmo | 002, 003 | P1 | Implementada, sin validar | INI-01 |
 | [INI-03](#ini-03-identidad-visual-y-accesibilidad) | Identidad visual y accesibilidad | 004 | P1 | Implementada, sin validar | INI-02 |
 | [INI-04](#ini-04-virtudes-defectos-y-modo-duelo) | Virtudes, defectos y modo Duelo | 005 | P1 | Implementada, sin validar | INI-01 |
-| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005 | P0 | Parcial | INI-04 |
+| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005 | P0 | Hecho | INI-04 |
 | [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor | 001, 002 | P1 | Parcial | INI-05 |
 | [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003 | P0 | Parcial | INI-06 |
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
@@ -142,10 +142,11 @@ INI-10 e INI-13).
   validación pasa.
 - **Evidencia**: [005/checklists/validacion.md](specs/005-virtudes-defectos/checklists/validacion.md): unitarias,
   equivalencia, integración, SC-004, SC-005, SC-010 y SC-011 en verde con n = 1.000. Sin cerrar:
-  - 005/FR-051 en las virtudes: ρ = 0,54 con n = 1.000 y 0,45 con n = 500 (objetivo ≥ 0,6). Se trabaja en INI-05.
+  - 005/FR-051 en virtudes y defectos: cumplido en INI-05 (2026-11-01) con la comprobación por pares y el criterio
+    nuevo 005/SC-013 (los stats pesan más que cualquier virtud).
   - La propuesta de constitución 1.2.0 (vocabulario «virtudes y defectos», modo Duelo) no está aplicada: INI-09.
-- **Criterios de cierre**: FR-051 cumplido en virtudes y defectos (lo cierra INI-05) y constitución 1.2.0 aplicada
-  (lo cierra INI-09).
+- **Criterios de cierre**: ~~FR-051 cumplido en virtudes y defectos~~ (cerrado por INI-05) y constitución 1.2.0
+  aplicada (lo cierra INI-09).
 
 ## INI-05 Calibración del motor y de los NPC
 
@@ -155,14 +156,20 @@ INI-10 e INI-13).
   comprobaciones que no se pueden medir con el tamaño de muestra actual.
 - **Specs**: [003](specs/003-mejoras-ux-simulacion/spec.md) (T033, T034; [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md),
   [calibracion-npc.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-npc.md)), [005](specs/005-virtudes-defectos/spec.md) (FR-051, research R2).
-- **Prioridad / estado**: P0 · **Parcial**.
+- **Prioridad / estado**: P0 · **Hecho** (2026-11-01, parámetros 5.0.0).
 - **Evidencia**:
   - NPC: 003/SC-010, SC-010a y SC-010b cumplidos en la ronda 4. **Hecho.**
-  - Motor: calibración marcada como **abierta**. El CI pasa a `--pendientes` siete comprobaciones
-    ([ci.yml](.github/workflows/ci.yml)): 002/SC-007a, 002/SC-008, 003/SC-009, SC-006a, 003/SC-006, 005/SC-011 y
-    005/FR-051. Además falla 003/SC-001c (goles por torneo Core), cuyo criterio no es alcanzable con 28 partidos por torneo.
-  - T036 (regenerar escenarios de `tools/fixtures`) está resuelta por el commit `29bf61e` y sus 12 pruebas pasan
-    (comprobado el 2026-10-28), pero sigue sin marcar.
+  - Motor: ronda 14 de [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md), estado
+    **cerrada**. `pnpm balance --n 1000 --serie todas` pasa 49 de 49 con las semillas 1 y 2. El CI ejecuta `--n 1000` sin
+    `--pendientes`. T033, T034 y T036 marcadas.
+  - Decisiones: 003/SC-001c relativo al pool (spec 003), FR-051 por pares y 005/SC-013 (spec 005), 002/SC-007a con 9
+    centros y 2 contraataques (spec 002).
+  - *Histórico (antes de INI-05):*
+    - Motor: calibración marcada como **abierta**. El CI pasa a `--pendientes` siete comprobaciones
+      ([ci.yml](.github/workflows/ci.yml)): 002/SC-007a, 002/SC-008, 003/SC-009, SC-006a, 003/SC-006, 005/SC-011 y
+      005/FR-051. Además falla 003/SC-001c (goles por torneo Core), cuyo criterio no es alcanzable con 28 partidos por torneo.
+    - T036 (regenerar escenarios de `tools/fixtures`) está resuelta por el commit `29bf61e` y sus 12 pruebas pasan
+      (comprobado el 2026-10-28), pero sigue sin marcar.
 - **Criterios de cierre**:
   1. Decisión registrada sobre los criterios no medibles (003/SC-001c, regate de 003/SC-006): reformularlos en su
      spec o aceptar el fallo documentado.

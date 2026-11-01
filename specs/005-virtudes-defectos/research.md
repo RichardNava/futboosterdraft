@@ -471,7 +471,7 @@ del draft.
     métrica asociada y la compara con la magnitud objetivo ±20 % (SC-004). De acero, Fair player y De cristal se comprueban
     al 100 % (SC-005);
   - **`impacto`**: dentro de cada tipo, mide la diferencia de goles esperada por el rasgo y comprueba que el orden de los
-    impactos sea coherente con lo medido (correlación de Spearman ≥ 0,6; FR-051);
+    impactos sea coherente con lo medido (correlación de Spearman ≥ 0,6; FR-051). *Sustituido el 2026-11-01 (INI-05): ningún par de rasgos con una diferencia de efecto de más de 4 errores estándar puede tener los impactos al revés; la ρ se informa como referencia (spec, sesión de ese día)*;
   - **`disciplina`**: R2 (SC-011);
   - **`duelos`**: R9 (SC-010).
 - **E2E**:

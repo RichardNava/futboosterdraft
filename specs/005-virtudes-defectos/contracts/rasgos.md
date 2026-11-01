@@ -117,6 +117,11 @@ tamaño de casi todas las diferencias entre ellas, y cinco virtudes (Versátil, 
 Infranqueable, Todocampista) no actúan en la serie sintética (efecto 0): ordenar por esa medida sería ajustar al ruido.
 Queda pendiente una medición con más partidos o con escenarios propios para esas virtudes.
 
+*Actualizado el 2026-11-01 (INI-05)*: FR-051 ya no se mide con Spearman ≥ 0,6. `pnpm balance` lo comprueba por pares:
+falla si un rasgo con un efecto claramente mayor que otro (más de 4 errores estándar en la diferencia de goles,
+Bonferroni sobre los pares) tiene menos impacto. La ρ se informa solo como referencia. Ver la Session 2026-11-01 de la
+spec.
+
 ## Incompatibilidades (simétricas)
 
 | Rasgo | Incompatible con |

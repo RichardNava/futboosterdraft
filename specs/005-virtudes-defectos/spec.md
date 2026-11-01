@@ -65,6 +65,16 @@ Esta especificación:
   Lo elige el anfitrión antes del draft con la opción «Estado de forma». Desactivada: gana siempre la mayor
   puntuación efectiva. Activada: cada jugador suma una variación aleatoria de ±2 puntos por duelo (FR-064a).
 
+### Session 2026-11-01 (calibración del motor, INI-05)
+
+- Q: ¿Qué pesa más en el partido, los stats o los rasgos? → A: Los stats. Las virtudes y defectos son
+  modificadores que matizan la experiencia: +5 de media en un equipo debe pesar más en la diferencia de goles que
+  cualquier virtud sola (SC-013).
+- Q: ¿Cuándo es un efecto «claramente mayor» que otro (FR-051)? → A: Cuando la diferencia de goles medida supera
+  4 errores estándar (corrección de Bonferroni para el 5 % sobre los 741 pares de virtudes). Con efectos de
+  centésimas de gol, el orden entre rasgos de efecto parecido es ruido y no cuenta; sustituye a la correlación de
+  Spearman ≥ 0,6 de research R13, que oscilaba entre 0,22 y 0,58 según la semilla.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Las habilidades se llaman «virtudes» en todo el juego (Priority: P1)
@@ -613,6 +623,8 @@ sus campos completos, y buscar en el resto de la documentación definiciones dup
   criterios vigentes salgan de su rango.
 - **SC-012**: Un participante que juega un torneo de liga completo con 8 participantes ve al menos una
   expulsión, una lesión y un penalti en sus partidos en al menos el 90 % de los torneos de comprobación.
+- **SC-013**: Los stats mandan: en el informe de equilibrado, +5 puntos de media en todos los titulares de un equipo
+  producen más diferencia de goles a su favor que cualquier virtud sola en uno de sus jugadores.
 
 ## Assumptions
 

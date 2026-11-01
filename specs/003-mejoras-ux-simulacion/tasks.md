@@ -231,7 +231,7 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
   - **SC-007**: tabla de umbrales por virtud con efecto. Lanzador de faltas, ≥ 30 % más goles de falta directa; el resto, diferencia significativa (`mayorSignificativo`);
   - **SC-009**: repetir 001/SC-004 (equipo +5 gana ≥ 60 %) y comprobar que siguen pasando los SC de la 002 de `checks/partido.ts` y `checks/colocacion.ts`.
 - [X] T032a [US1] Crear `tools/balance/src/informe.ts` (Principio IX, verificable por una persona no técnica): en cada ejecución, `pnpm balance` genera `tools/balance/salida/informe.html` con una fila por comprobación (id, descripción en español, objetivo, valor medido y resultado ✅/❌), y en la cabecera la fecha, la semilla, `n` y la serie. HTML estático, sin dependencias. `cli.ts` lo genera siempre e imprime su ruta. Ampliar `tools/balance/tests/checks003.test.ts` (T018): el informe contiene una fila por comprobación ejecutada.
-- [ ] T033 [US1] Calibrar `packages/domain/src/parametros/v3.json` siguiendo el orden de research R8:
+- [X] T033 [US1] Calibrar `packages/domain/src/parametros/v3.json` siguiendo el orden de research R8:
   1. receptor y pases;
   2. conducción;
   3. stats y virtudes;
@@ -240,9 +240,12 @@ description: "Lista de tareas de las mejoras de interfaz, simulación y experien
   6. `acciones.puerta.*` y `acciones.gol.*` para la media.
 
   Tras cada paso, `pnpm balance --n 1000 --serie todas`. Anotar los valores y los resultados de cada paso en `specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md`. **Criterio de salida**: pasan todas las comprobaciones `003/SC-001` a `003/SC-009` y las de las specs 001 y 002.
-- [ ] T034 [US1] Actualizar los valores literales de `v3.json` que cambien en T033 en `packages/domain/tests/parametros/parametros.test.ts` (T004) y en la tabla de [data-model.md](./data-model.md) §1.
+  *Cerrada el 2026-11-01 (INI-05) con los parámetros 5.0.0, no con la 3.0.0: ver la ronda 14 de calibracion-motor.md.*
+- [X] T034 [US1] Actualizar los valores literales de `v3.json` que cambien en T033 en `packages/domain/tests/parametros/parametros.test.ts` (T004) y en la tabla de [data-model.md](./data-model.md) §1.
+  *Los valores de la 3.0.0 no cambian (se siguen reproduciendo); los nuevos están en `v5.json` y sus pruebas, en `parametros.test.ts` («parámetros de equilibrado 5.0.0»).*
 - [X] T035 [P] [US1] En `apps/web/src/componentes/ResumenEventos.tsx`, mostrar el tipo de cada gol con `datos.tipo`: «jugada» (normal, lejano y manoAMano), «de cabeza», «de falta», «de penalti» o «en propia puerta» (con el nombre del defensor y «(p. p.)»). Si `datos.distancia` existe, añadir la distancia: «(23 m)».
-- [ ] T036 [US1] Regenerar los escenarios de `tools/fixtures` con `pnpm --filter @fbd/fixtures generar-escenarios` (o el script equivalente de `tools/fixtures/src/generarEscenarios.ts`), para que `cumpleEscenario` pase con el motor 3.0.0. Actualizar las pruebas del motor que dependían de resultados concretos (lista de T010).
+- [X] T036 [US1] Regenerar los escenarios de `tools/fixtures` con `pnpm --filter @fbd/fixtures generar-escenarios` (o el script equivalente de `tools/fixtures/src/generarEscenarios.ts`), para que `cumpleEscenario` pase con el motor 3.0.0. Actualizar las pruebas del motor que dependían de resultados concretos (lista de T010).
+  *Regenerados con la 5.0.0 el 2026-11-01.*
 - [X] T037 [US1] Añadir a `packages/engine/bench/partido.bench.ts` el caso `metricas: true` (≤ 30 ms) y comprobar que el partido sin fotogramas sigue ≤ 25 ms y con fotogramas ≤ 40 ms.
 
 **Checkpoint**: `pnpm test`, `pnpm test:equivalence`, `pnpm balance --n 1000 --serie todas` y `bench` pasan. Escenario A revisado, salvo la encuesta de SC-008, que va en la Fase 14.

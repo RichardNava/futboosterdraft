@@ -36,7 +36,7 @@
 
 - Q: ¿Qué hace «Gestionar equipo» en un partido entre dos humanos, que se resuelve con decisiones automáticas (002/FR-030)? → A: Nada: la gestión durante el partido solo existe contra un NPC. En los partidos entre humanos no aparece el botón y el descanso solo ofrece «Seguir» (FR-027 y FR-031).
 - Q: ¿Hasta cuándo se puede cambiar el nombre del equipo? → A: Hasta que se abre el primer partido del torneo (FR-042).
-- Q: ¿Cómo se comprueba la media de goles por torneo? → A: La media de las series y la de la serie de torneos Core están entre 2,6 y 3,4, y al menos el 90 % de los torneos individuales también (SC-001).
+- Q: ¿Cómo se comprueba la media de goles por torneo? → A: La media de las series y la de la serie de torneos Core están entre 2,6 y 3,4, y al menos el 90 % de los torneos individuales también (SC-001). *(Sustituido el 2026-11-01 por un criterio que no depende del pool, ver la sesión de ese día.)*
 - Q: ¿Cómo comprueba una persona no técnica los SC estadísticos (Principio IX)? → A: La herramienta de equilibrado genera un informe HTML legible con cada SC, su objetivo y su resultado, y la constitución lo aclara en su próxima enmienda.
 - Q: En la 2D contra un NPC, ¿qué botón es el principal? → A: Depende del estado: en juego, «Finalizar partido»; en el descanso y antes de la prórroga, «Gestionar equipo». *(Sustituido el 2026-10-20: en el descanso, «Gestionar equipo» y «Seguir» con la misma importancia, FR-006a.)*
 - Q: ¿Qué opciones tiene el único humano eliminado? → A: «Simular resto del torneo» como principal y «Volver al menú» como secundario (US10, escenario 3).
@@ -62,6 +62,11 @@
 - Q: En el descanso contra un NPC, ¿«Gestionar equipo» es el único botón principal? → A: No: «Gestionar equipo» y «Seguir» tienen la misma importancia, con «Seguir» a la derecha (FR-006a, FR-027).
 - Q: Dificultad de los NPC → A: se suman 100 milésimas a la probabilidad de error de cada familia, y la partida tendrá un nivel de dificultad (Fácil, Normal por defecto, Difícil) que reparte los niveles de los NPC de relleno (validacion.md, H13 y H14). Se especifica en FR-038a.
 - Q: ¿Cómo reparte cada nivel de dificultad los NPC de relleno? → A: «Fácil», amateur e intermedio a partes iguales; «Normal», amateur, intermedio o avanzado al azar (como hasta ahora); «Difícil», intermedio y avanzado a partes iguales. Nunca PRO, que solo se elige al añadir NPC a mano (FR-038a).
+
+### Session 2026-11-01 (calibración del motor, INI-05)
+
+- Q: ¿Cómo se comprueba la media de goles de la serie Core si el pool de cartas cambia con cada colección? → A: Con un criterio que no depende del pool (SC-001, sustituye a la respuesta del 2026-10-18). Entre equipos igual de buenos los stats se anulan (el motor resuelve cada duelo por la diferencia), así que **sin rasgos** la serie Core da 2,6–3,4 goles con cualquier pool. Las virtudes y defectos suman de forma absoluta: **con rasgos**, el techo sube 0,35 goles por cada rasgo neto (virtudes − defectos) por jugador del pool. Un pool con jugadores con más ventajas puede dar más goles, pero en proporción.
+- Q: ¿Por qué ya no se pide que el 90 % de los torneos tenga su media en 2,6–3,4? → A: Porque no es alcanzable con ningún pool: la variedad de los drafts hace que los torneos de 56 partidos varíen unos ±0,5 goles entre sí (con el Core antiguo sin rasgos y una media de 3,02, solo 6 de 11 torneos quedaban en el rango). Se pide que el 90 % quede a ±1,0 de la media de la serie, que detecta drafts anómalos (calibracion-motor.md, ronda 14).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -431,7 +436,7 @@ Los requisitos de este bloque afectan al motor compartido y, por tanto, a las do
 
 Salvo que se diga otra cosa, las series de partidos se juegan entre equipos equilibrados (media de equipo con una diferencia de ±2 como máximo), con la táctica por defecto, y se miden con la herramienta de equilibrado del proyecto, igual que en la 002.
 
-- **SC-001**: La media de goles por partido de las series de 1.000 partidos, y la de la serie de torneos completos con plantillas Core, está entre 2,6 y 3,4; además, al menos el 90 % de los torneos individuales de esa serie tiene su media en ese rango. No hay límite por partido: en las series aparecen tanto 0-0 como partidos de 6 o más goles, y ningún resultado concreto, contado con orden local-visitante (por ejemplo, 1-2, distinto de 2-1), supera el 20 % de los partidos.
+- **SC-001**: La media de goles por partido de las series de 1.000 partidos está entre 2,6 y 3,4. En la serie de torneos completos con plantillas Core: con los rasgos quitados, la media está entre 2,6 y 3,4; con rasgos, entre 2,6 y 3,4 + 0,35 × (virtudes − defectos por jugador del pool); y al menos el 90 % de los torneos tiene su media a ±1,0 de la de la serie. No hay límite por partido: en las series aparecen tanto 0-0 como partidos de 6 o más goles, y ningún resultado concreto, contado con orden local-visitante (por ejemplo, 1-2, distinto de 2-1), supera el 20 % de los partidos.
 - **SC-002**: En series de 1.000 partidos, alrededor del 25 % de los goles se marcan desde fuera del área (entre el 22 % y el 28 %), y el resto desde dentro; la mayoría de los de fuera del área se marcan desde las inmediaciones del área (a 25 metros o menos de la portería), y como máximo el 0,5 % desde el propio campo del que tira.
 - **SC-003**: En series de 1.000 partidos, de todos los goles: entre el 6 % y el 12 % son de penalti (sin contar las tandas), entre el 10 % y el 18 % son de cabeza, entre el 5 % y el 10 % son de falta directa y entre el 1 % y el 3 % son en propia puerta.
 - **SC-004**: En series de 1.000 partidos, los pases largos (más de 35 metros) son como máximo el 15 % de los pases, y cada equipo hace de media como máximo 0,5 pases largos por partido desde el último tercio del campo rival hacia su propio campo.

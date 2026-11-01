@@ -51,7 +51,7 @@ const NIVELES: readonly NivelNPC[] = ['PRO', 'avanzado', 'intermedio', 'amateur'
 const RUTA_CORE = fileURLToPath(new URL('../../../../data/core.json', import.meta.url));
 
 let catalogo: Jugador[] | null = null;
-function core(): Jugador[] {
+export function core(): Jugador[] {
   catalogo ??= (JSON.parse(readFileSync(RUTA_CORE, 'utf-8')) as { jugadores: Jugador[] }).jugadores;
   return catalogo;
 }
@@ -154,9 +154,13 @@ export function relojSimulado(msPorConsulta = 25): () => number {
 }
 
 /** Draft de una mesa en la que cada participante elige con su propia función. */
-export function draftMesa(semilla: string, participantes: string[], elegirCartaDe: (pid: string, sobre: Jugador[], parcial: Jugador[], ronda: number, turno: number) => number): Record<string, Jugador[]> {
+export function draftMesa(
+  semilla: string,
+  participantes: string[],
+  elegirCartaDe: (pid: string, sobre: Jugador[], parcial: Jugador[], ronda: number, turno: number) => number,
+  pool: Jugador[] = core(),
+): Record<string, Jugador[]> {
   const p = parametrosActuales();
-  const pool = core();
   const porId = new Map(pool.map((j) => [j.id, j]));
   const sobres = generarMesa(pool, participantes.length, derivarSemilla(semilla, 'mesa'), p);
   let mesa = crearMesa({

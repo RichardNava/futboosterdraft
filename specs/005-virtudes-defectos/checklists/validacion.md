@@ -49,6 +49,13 @@ La primera pasada completa dio 81 de 85. Las 4 que fallaban, ya corregidas y rep
 
 ## Pendiente o con observaciones
 
+> **2026-11-01 (INI-05)**: resuelto con los parámetros 5.0.0. 003/SC-001c pasa con el criterio relativo al pool,
+> FR-051 se comprueba por pares (ningún par incoherente en virtudes ni defectos), el criterio nuevo SC-013 (los stats
+> pesan más que cualquier virtud) se cumple, y 005/SC-011 y SC-011b pasan con las dos semillas (penaltis 0,41 y
+> 0,28–0,29, los dos al límite). El CI pasa a `--n 1000` sin `--pendientes`. Ver la ronda 14 de
+> [calibracion-motor.md](../../003-mejoras-ux-simulacion/checklists/calibracion-motor.md). Lo que sigue es el estado
+> anterior.
+
 - **003/SC-001c** (goles de la serie Core): falla con 3,47 goles por partido, pero también con los parámetros 3.0.0
   sobre el Core y los NPC actuales (3,50). No lo causan las frecuencias nuevas; ver research R2.
 - **FR-051 en las virtudes**: ρ = 0,54 (< 0,6). Ver [contracts/rasgos.md](../contracts/rasgos.md); hace falta una

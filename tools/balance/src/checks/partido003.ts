@@ -2,10 +2,11 @@
  * Comprobaciones de la spec 003 (research R25; T032): 003/SC-001 a 003/SC-007. 003/SC-009 la compone `cli.ts`
  * con el resultado de las comprobaciones de las specs 001 y 002. Todas con semillas fijas.
  */
-import { CASILLA_CENTRAL, calcularMedia, FORMACIONES, proponerLanzadores, type FormacionId, type Jugador, type Virtud } from '@fbd/domain';
+import { CASILLA_CENTRAL, calcularMedia, FORMACIONES, parametrosActuales, proponerLanzadores, type FormacionId, type Jugador, type Virtud } from '@fbd/domain';
 import type { EquipoPartido, MetricasJugador } from '@fbd/engine';
 import type { GrupoComprobaciones } from '../cli';
 import { serieCore } from '../core';
+import { core as poolCore } from './npc';
 import { clonar, equipoSintetico } from '../equipos';
 import { mayorSignificativo, media, serie, type ResultadoSerie } from '../series';
 import type { Comprobacion } from './partido';
@@ -74,28 +75,55 @@ function dispersion(r: ResultadoSerie) {
 }
 
 export function comprobarSC001(n: number, semilla: number, conCore: boolean): Comprobacion[] {
-  const fila = (id: string, nombre: string, r: ResultadoSerie, extra = { ok: true, detalle: '' }): Comprobacion => {
+  const fila = (id: string, nombre: string, r: ResultadoSerie): Comprobacion => {
     const d = dispersion(r);
-    const ok = d.media >= 2.6 && d.media <= 3.4 && d.ceros > 0 && d.seis > 0 && d.cuota <= 0.2 && extra.ok;
+    const ok = d.media >= 2.6 && d.media <= 3.4 && d.ceros > 0 && d.seis > 0 && d.cuota <= 0.2;
     return {
       id,
       descripcion: `${nombre}: media de 2,6–3,4 goles, hay 0-0 y partidos de ≥ 6 goles, ningún resultado > 20 %`,
       ok,
-      detalle: `${d.media.toFixed(2)} goles por partido; ${d.ceros} 0-0 y ${d.seis} partidos de ≥ 6 goles en ${r.n}; más frecuente ${d.masFrecuente} (${pct(d.cuota)})${extra.detalle}`,
+      detalle: `${d.media.toFixed(2)} goles por partido; ${d.ceros} 0-0 y ${d.seis} partidos de ≥ 6 goles en ${r.n}; más frecuente ${d.masFrecuente} (${pct(d.cuota)})`,
     };
   };
   const salida = [fila('003/SC-001', 'Serie sintética', serieBase(n, semilla))];
-  if (conCore) {
-    const c = core(n, semilla);
-    const enRango = c.porTorneo.filter((m) => m >= 2.6 && m <= 3.4).length / Math.max(1, c.porTorneo.length);
-    salida.push(
-      fila('003/SC-001c', 'Serie Core', c.serie, {
-        ok: enRango >= 0.9,
-        detalle: `; ${pct(enRango)} de ${c.porTorneo.length} torneos con su media en 2,6–3,4 (≥ 90 %)`,
-      }),
-    );
-  }
+  if (conCore) salida.push(comprobarSC001c(n, semilla));
   return salida;
+}
+
+/** Goles por partido que puede añadir cada rasgo neto (virtudes − defectos) por jugador del pool (003/SC-001c). */
+export const GOLES_POR_RASGO_NETO = 0.35;
+
+/**
+ * 003/SC-001c, independiente del pool: sin rasgos, la serie Core da 2,6–3,4 goles (los stats se anulan entre equipos
+ * igual de buenos); con rasgos, el techo sube `GOLES_POR_RASGO_NETO` por cada rasgo neto por jugador; y ≥ 90 % de los
+ * torneos queda a ±1,0 de la media de la serie (la variedad de los drafts da ±0,5 entre torneos).
+ */
+function comprobarSC001c(n: number, semilla: number): Comprobacion {
+  const pool = poolCore();
+  const netos = pool.reduce((a, j) => a + j.virtudes.length - j.defectos.length, 0) / pool.length;
+  const techo = 3.4 + GOLES_POR_RASGO_NETO * netos;
+  const c = core(n, semilla);
+  const conRasgos = dispersion(c.serie);
+  const sinRasgos = dispersion(serieCore(n, semilla, parametrosActuales(), pool.map((j) => ({ ...j, virtudes: [], defectos: [] }))).serie).media;
+  const cerca = c.porTorneo.filter((m) => Math.abs(m - conRasgos.media) <= 1).length / Math.max(1, c.porTorneo.length);
+  const ok =
+    sinRasgos >= 2.6 &&
+    sinRasgos <= 3.4 &&
+    conRasgos.media >= 2.6 &&
+    conRasgos.media <= techo &&
+    conRasgos.ceros > 0 &&
+    conRasgos.seis > 0 &&
+    conRasgos.cuota <= 0.2 &&
+    cerca >= 0.9;
+  return {
+    id: '003/SC-001c',
+    descripcion: `Serie Core: sin rasgos 2,6–3,4 goles; con rasgos 2,6 a 3,4 + ${GOLES_POR_RASGO_NETO} por rasgo neto por jugador; hay 0-0 y partidos de ≥ 6 goles, ningún resultado > 20 %; ≥ 90 % de torneos a ±1,0 de la media`,
+    ok,
+    detalle:
+      `sin rasgos ${sinRasgos.toFixed(2)} · con rasgos ${conRasgos.media.toFixed(2)} (techo ${techo.toFixed(2)} con ${netos.toFixed(2)} rasgos netos por jugador); ` +
+      `${conRasgos.ceros} 0-0 y ${conRasgos.seis} partidos de ≥ 6 goles en ${c.serie.n}; más frecuente ${conRasgos.masFrecuente} (${pct(conRasgos.cuota)}); ` +
+      `${pct(cerca)} de ${c.porTorneo.length} torneos a ±1,0 de la media`,
+  };
 }
 
 function reparto(r: ResultadoSerie) {
@@ -198,7 +226,8 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
   const { base, rival } = equipos003();
   const sin = serieBase(n, semilla);
   const casos: { nombre: string; casilla: string; stats: Record<string, number>; medidas: [string, Medida, number][] }[] = [
-    { nombre: 'regate', casilla: 'EI', stats: { regate: 15 }, medidas: [['regates', (m) => m.regates, 0.25]] },
+    // Regates y conducciones, como pide la spec: solo los regates son ~0,3 por partido y su error con 1.000 partidos es de ±10 puntos.
+    { nombre: 'regate', casilla: 'EI', stats: { regate: 15 }, medidas: [['regates y conducciones', (m) => m.regates + m.conducciones, 0.25]] },
     // En un centrocampista: el delantero centro ya concentra más de la mitad de los tiros de su equipo.
     { nombre: 'tiro', casilla: 'MC-2', stats: { disparo: 15 }, medidas: [['tiros', (m) => m.tirosArea + m.tirosFrontal + m.tirosLejos, 0.25]] },
     { nombre: 'defensa', casilla: 'DCI', stats: { tackling: 15, anticipacion: 15, marcaje: 15 }, medidas: [['acciones defensivas', (m) => m.intercepciones + m.entradasGanadas + m.recuperaciones, 0.2]] },

@@ -125,7 +125,7 @@ export function comprobarSC015(n: number, semilla: number): Comprobacion {
 
 /**
  * 002/SC-007: entre equipos equilibrados con la táctica por defecto, de media entre los dos equipos, las
- * estadísticas de un partido de fútbol de verdad.
+ * estadísticas de un partido de fútbol de verdad (centros y contraataques revisados en INI-05, 2026-11-01).
  */
 export function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   const base = equipoSintetico({ semilla: 'sc007-2d' });
@@ -141,19 +141,19 @@ export function comprobarSC007Partido2D(n: number, semilla: number): Comprobacio
   }
   const umbrales: [Campo, string, number][] = [
     ['pasesCompletados', 'pases completados', 150],
-    ['centros', 'centros', 10],
+    ['centros', 'centros', 9],
     ['tiros', 'tiros', 15],
     ['conducciones', 'conducciones', 30],
     ['paredes', 'paredes', 3],
     ['cambiosOrientacion', 'cambios de orientación', 5],
-    ['contraataques', 'contraataques', 3],
+    ['contraataques', 'contraataques', 2],
   ];
   const valores = umbrales.map(([campo, nombre, minimo]) => ({ nombre, minimo, valor: ambos(campo) }));
   const proporcion = posesiones ? largas / posesiones : 0;
   return [
     {
       id: '002/SC-007a',
-      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 150 pases completados, 10 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 3 contraataques',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 150 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques',
       ok: valores.every((v) => v.valor >= v.minimo),
       detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
     },

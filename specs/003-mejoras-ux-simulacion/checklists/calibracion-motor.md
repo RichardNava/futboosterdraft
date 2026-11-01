@@ -6,7 +6,8 @@ informe legible `tools/balance/salida/informe.html` (Principio IX).
 
 **Criterio de salida**: pasan todas las comprobaciones `003/SC-001` a `003/SC-009` y las de las specs 001 y 002.
 
-**Estado**: **abierta**. La calibración no ha alcanzado el criterio de salida; ver "Pendiente" al final.
+**Estado**: **cerrada** (2026-11-01, ronda 14, parámetros 5.0.0). `pnpm balance --n 1000 --serie todas` pasa las 49
+comprobaciones con las semillas 1 y 2.
 
 ## Línea base (motor 2.0.0, `c8a1627`)
 
@@ -137,7 +138,7 @@ Se vuelve exactamente a la ronda 7 (peso del centro 3,6 / 2,6), la mejor medida:
 Estos cuatro fallos quedan pendientes de una decisión: revisar sus criterios o seguir calibrando con cambios de
 modelo (no de parámetros).
 
-## Pendiente
+## Pendiente *(resuelto en la ronda 14)*
 
 - **003/SC-001c (≥ 90 % de torneos Core con la media en 2,6–3,4)**: con 28 partidos por torneo, la desviación de
   la media por muestreo ya es de unos 0,23 goles; con una media de torneos de unos 3,3, el criterio pide una
@@ -188,3 +189,66 @@ pasan SC-004 y SC-023, y fallan otra vez las comprobaciones de un solo jugador (
 
 Siguen pendientes solo los cuatro de antes: 003/SC-001c (3,31 goles; 66,7 % de torneos en rango), 002/SC-007a (centros
 9,8 y contraataques 2,8), 002/SC-008 (+4,6 %) y 003/SC-009 (compuesto).
+
+## Ronda 14: parámetros 5.0.0 y criterios revisados (INI-05, 2026-11-01)
+
+**Diagnóstico** (línea base con los parámetros 4.0.0, `--serie todas`, n = 1.000: 41 de 48 con cada semilla):
+
+- **003/SC-001c**: el exceso de goles de la serie Core no viene de los stats sino de los rasgos. Sin rasgos, el
+  catálogo real da 3,27–3,41 goles; con rasgos suma 0,45–0,58, repartidos entre todas las virtudes (ninguna es la
+  causa). Los rasgos suman goles en absoluto, mientras que los stats se compensan entre equipos parecidos. Calibrar
+  contra un catálogo concreto no vale: el pool cambia con cada colección nueva.
+- **Stats saturados**: los factores de stat de la decisión llegaban a su máximo hacia 80–87, la atracción del
+  pasador (2^(1,3·(pase − 70)/10), con techo 1,8) se saturaba en 76,5, y el tiempo de control del pase llegaba a 0 con
+  pase 85. Por encima de esos valores, un jugador mejor no decidía mejor. Eso explica 002/SC-008 (+5 % con +10 de
+  pase), los pases que rompen líneas de 003/SC-006 (+13 %) y que +5 de media pesara poco frente a las virtudes.
+- **005/FR-051**: la ρ de Spearman entre 39 virtudes oscila entre semillas (0,35–0,58), porque la mayoría de los
+  efectos son menores que su error. No mide el orden de los rasgos, sino ruido.
+- **Regate de 003/SC-006**: medía unos 0,3 regates por partido de un solo jugador (±10 puntos de error).
+
+**Decisiones** (de la persona responsable, 2026-11-01):
+
+1. 003/SC-001c pasa a ser relativo al pool: sin rasgos, 2,6–3,4; con rasgos, de 2,6 a 3,4 + 0,35 × (virtudes −
+   defectos por jugador); ≥ 90 % de torneos a ±1,0 de la media de la serie (spec 003, Clarifications 2026-11-01).
+2. Los stats deben pesar más que los rasgos: criterio nuevo **005/SC-013** (+5 de media en los titulares pesa más que
+   cualquier virtud sola), y FR-051 se comprueba por pares, con un error de 4 errores estándar (Bonferroni); la ρ queda
+   como referencia (spec 005, Clarifications 2026-11-01).
+3. El regate de 003/SC-006 se mide como en la spec: regates y conducciones.
+4. «Mixto»: una ronda acotada de cambios de modelo; lo que no cierre se reformula con el valor medido. 002/SC-007a
+   baja a 9 centros y 2 contraataques (spec 002, Clarifications 2026-11-01).
+
+**Parámetros 5.0.0** (`packages/domain/src/parametros/v5.json`; la 4.0.0 se sigue reproduciendo):
+
+| Parámetro | 4.0.0 | 5.0.0 | Motivo |
+|---|---|---|---|
+| `decision.factores.*.max` (pase, regate, remate, visión, físico) | 3 · 1,8 · 1,4 · 1,6 · 1,5 (saturaban en 80–87) | 4,5 · 2,2 · 1,65 · 1,75 · 1,6 | Sin saturar hasta 99; un 80 decide igual que antes. |
+| `acciones.atraccionPasador` | 1,3 | 1,2 | Con el techo nuevo, el pasador bueno atrae más balón sin saturar. |
+| `pases.atraccionPasadorAcotada` | [0,7, 1,8] | [0,7, 11,5] | |
+| `acciones.controlPaseTicks` / `controlPorStat` | 6 / 4 (0 con pase 85) | 10 / 5 | El buen pasador controla antes, sin llegar a 0. |
+| `disciplina.factorFaltaArea` | 0,53 | 0,60 | Penaltis de la Core 0,27 → 0,29 sin pasar de 0,42 en la sintética. |
+| `tiro.faltaDirectaTiro.probabilidad` | 0,8 | 0,72 | Falta directa 10,3 % → 9,5 % de los goles. |
+
+**Resultado** (`pnpm balance --n 1000 --serie todas`): **49 de 49 con la semilla 1 (5.035 s) y con la semilla 2
+(5.016 s)**.
+
+| Comprobación | Semilla 1 | Semilla 2 |
+|---|---|---|
+| 003/SC-001 | 2,80 goles | 2,80 |
+| 003/SC-001c | sin rasgos 3,28 · con rasgos 3,87 (techo 3,98) · 94,4 % de torneos | 3,30 · 3,72 · 100 % |
+| 003/SC-003 | penalti 8,9 % · cabeza 14,3 % · falta directa 9,5 % · p. p. 2,1 % | igual |
+| 003/SC-006 | regate +29 % · pase (rompe líneas) +40 % · defensa +42 % | +25 % · +42 % · +41 % |
+| SC-004 (+5 de media) | mejor 72,5 % · peor 11,6 % | 70,5 % · 12,7 % |
+| 002/SC-007a | centros 9,5 · contraataques 2,5 (mínimos nuevos 9 y 2) | igual |
+| 002/SC-008 | +10,7 % | +10,6 % |
+| 005/SC-011 / SC-011b | penaltis 0,41 / 0,29 | 0,41 / 0,28 |
+| 005/FR-051 | ningún par incoherente (ρ 0,46) | ninguno (ρ 0,18) |
+| 005/SC-013 | +5 de media +1,87 goles · mejor virtud +0,48 | +1,58 · +0,25 |
+
+**CI**: con n = 500 fallan por ruido las comprobaciones de un solo jugador (003/SC-007 Matador y Desbordante,
+005/SC-004 Agresivo y Torpe), que con n = 1.000 pasan con las dos semillas. El paso de CI pasa a `--n 1000` y sin
+`--pendientes`.
+
+**Quedan al límite** (sin margen para más ajustes de parámetros): los penaltis de la sintética (0,41, máximo 0,42) y
+de la Core (0,28–0,29, mínimo 0,28) a la vez, por el desequilibrio entre las dos series (research R2 de la spec 005);
+y el regate de 003/SC-006 con la semilla 2 (+25 %, objetivo +25 %).
+

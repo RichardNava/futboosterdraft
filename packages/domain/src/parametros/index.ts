@@ -9,6 +9,7 @@ import v1 from './v1.json';
 import v2 from './v2.json';
 import v3 from './v3.json';
 import v4 from './v4.json';
+import v5 from './v5.json';
 
 export type GravedadLesion = 'leve' | 'media' | 'grave' | 'larga';
 
@@ -403,9 +404,13 @@ export const PARAMETROS_V3: ParametrosEquilibrado = v3 as ParametrosEquilibrado;
 /** Parámetros 4.0.0 de la spec 005: defectos, virtudes nuevas, duelos y frecuencias de disciplina y lesiones. */
 export const PARAMETROS_V4: ParametrosEquilibrado = v4 as ParametrosEquilibrado;
 
+/** Parámetros 5.0.0 (INI-05): factores de stat sin saturar hasta 99; un 80 decide igual que con la 4.0.0. */
+export const PARAMETROS_V5: ParametrosEquilibrado = v5 as ParametrosEquilibrado;
+
 const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V3.version]: PARAMETROS_V3,
   [PARAMETROS_V4.version]: PARAMETROS_V4,
+  [PARAMETROS_V5.version]: PARAMETROS_V5,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -423,7 +428,7 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V4;
+  return PARAMETROS_V5;
 }
 
 /** Versión mayor mínima que el motor actual puede simular (las 3.x y 4.x se reproducen). */

@@ -1,7 +1,7 @@
 {
   "nombre": "lesion-larga",
   "descripcion": "Un jugador sufre una lesión de larga duración (5 partidos; muy poco probable).",
-  "version": "3.0.0",
+  "version": "5.0.0",
   "local": {
     "participanteId": "local",
     "jugadores": [
@@ -50,10 +50,10 @@
   },
   "eliminatoria": false,
   "semillas": [
-    "8d98e4c5a2322d3e9b5dac224bbb1c2d"
+    "61be6958990209c9456a7e8eb1a1e7c4"
   ],
   "esperado": {
-    "jugadorId": 138,
+    "jugadorId": 136,
     "lado": "local"
   }
 }

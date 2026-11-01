@@ -7,9 +7,9 @@
  * Devuelve un `ResultadoSerie` agregado por partido (A = local, B = visitante) y la media de goles de cada torneo.
  */
 import { decidirAlineacion, elegirCarta, equipoDesdeAlineacion, jugarHastaElFinal } from '@fbd/ai';
-import { calendarioLiga, derivarSemilla, parametrosActuales, type Alineacion, type ParametrosEquilibrado } from '@fbd/domain';
+import { calendarioLiga, derivarSemilla, parametrosActuales, type Alineacion, type Jugador, type ParametrosEquilibrado } from '@fbd/domain';
 import { crearPartido } from '@fbd/engine';
-import { draftMesa } from './checks/npc';
+import { core, draftMesa } from './checks/npc';
 import type { ResultadoSerie } from './series';
 
 export interface ResultadoCore {
@@ -20,8 +20,8 @@ export interface ResultadoCore {
 
 const PARTIDOS_POR_TORNEO = 56;
 
-/** Juega torneos Core hasta sumar al menos `n` partidos. */
-export function serieCore(n: number, semilla: number, p: ParametrosEquilibrado = parametrosActuales()): ResultadoCore {
+/** Juega torneos Core hasta sumar al menos `n` partidos (con `pool`, sobre otro catálogo, p. ej. sin rasgos). */
+export function serieCore(n: number, semilla: number, p: ParametrosEquilibrado = parametrosActuales(), pool: Jugador[] = core()): ResultadoCore {
   const r: ResultadoSerie = {
     n: 0,
     victoriasA: 0,
@@ -46,6 +46,7 @@ export function serieCore(n: number, semilla: number, p: ParametrosEquilibrado =
     const raiz = `core:${semilla}:${t}`;
     const equipos = draftMesa(raiz, participantes, (pid, sobre, parcial, ronda, turno) =>
       elegirCarta('avanzado', sobre, parcial, ronda, turno, derivarSemilla(raiz, `${pid}:${ronda}:${turno}`), { participantes: participantes.length, parametros: p }),
+      pool,
     );
     const alineaciones = new Map<string, Alineacion>();
     const alineacion = (pid: string, rival: string) => {

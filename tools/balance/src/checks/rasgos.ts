@@ -9,7 +9,7 @@
  * serie tenga potencia estadística: lo que se comprueba es el multiplicador del rasgo, no la frecuencia base (esa la
  * mide `disciplina`, SC-011).
  */
-import { casilla, PARAMETROS_V4, penalizacionPorPosicion, type Defecto, type ParametrosEquilibrado, type Rasgo, type Virtud } from '@fbd/domain';
+import { casilla, parametrosActuales, penalizacionPorPosicion, type Defecto, type ParametrosEquilibrado, type Rasgo, type Virtud } from '@fbd/domain';
 import {
   bonusProvocador,
   minutoDeJuego,
@@ -25,7 +25,7 @@ import type { GrupoComprobaciones } from '../cli';
 import type { Comprobacion } from './partido';
 
 type Lado = 'local' | 'visitante';
-const P = PARAMETROS_V4;
+const P = parametrosActuales();
 const TOLERANCIA = 0.2;
 
 /** Copia de unos parámetros con cambios. */
