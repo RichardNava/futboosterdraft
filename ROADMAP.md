@@ -36,7 +36,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-04](#ini-04-virtudes-defectos-y-modo-duelo) | Virtudes, defectos y modo Duelo | 005 | P1 | Implementada, sin validar | INI-01 |
 | [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005 | P0 | Hecho | INI-04 |
 | [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor | 001, 002 | P1 | Parcial | INI-05 |
-| [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009 | P0 | Parcial | INI-06 |
+| [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009, 010 | P0 | Parcial | INI-06 |
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
 | [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Hecho | — |
 | [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-08, INI-09 |
@@ -72,7 +72,7 @@ graph LR
 ```
 
 **Camino crítico a la beta**: INI-07 → INI-10. INI-05 e INI-09 están hechas; la carga de INI-07 ya no la limita el
-motor (spec 009), sino la apertura de partidos y la entrega de sobres (spec 010, por escribir).
+motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010](specs/010-latencia-apertura-sobres/spec.md), en especificación).
 
 ---
 
@@ -200,7 +200,8 @@ motor (spec 009), sino la apertura de partidos y la entrega de sobres (spec 010,
   parecido al de producción.
 - **Specs**: [001](specs/001-draft-manager-mvp/spec.md) SC-017 y SC-009; [002](specs/002-mejoras-mvp/tasks.md) T153;
   [003](specs/003-mejoras-ux-simulacion/tasks.md) T128; [009](specs/009-simulacion-hilos-trabajo/spec.md) (simulación
-  en hilos de trabajo; T036 aplazada hasta tener tres máquinas).
+  en hilos de trabajo; T036 aplazada hasta tener tres máquinas); [010](specs/010-latencia-apertura-sobres/spec.md)
+  (latencia de apertura de partidos y de entrega de sobres, en especificación).
 - **Prioridad / estado**: P0 · **Parcial**. En la 001 no se cumplió (entrega del sobre p95 1,99 s frente a < 1 s,
   «Seguir» → final p95 6,2 s frente a < 3 s). Desde la 002 el guion no se ha vuelto a ejecutar con el protocolo
   nuevo, y su resultado de la 002 apunta a un fallo del guion, no del servidor. **2026-10-31**: guion rehecho con un

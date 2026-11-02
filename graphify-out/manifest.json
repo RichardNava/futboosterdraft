@@ -2016,9 +2016,9 @@
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
-    "mtime": 1793055174.8616917,
-    "seen": 1793088076.756057,
-    "ast_hash": "ae0a46b908875633e012142b894b9d02",
+    "mtime": 1793585132.6546867,
+    "seen": 1793585250.662481,
+    "ast_hash": "e30e7762d5790ce7f0227b93bc2a0bbe",
     "semantic_hash": ""
   },
   ".specify/templates/checklist-template.md": {
@@ -2058,15 +2058,15 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1793558844.6376593,
-    "seen": 1793563195.6240075,
-    "ast_hash": "1cb48fcd6fca134e6c1979152ceb5682",
+    "mtime": 1793585210.8684373,
+    "seen": 1793585250.6633039,
+    "ast_hash": "ead3f9982f648cebe6aff76e696f18a6",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793055174.8636909,
-    "seen": 1793088076.7568128,
-    "ast_hash": "7070dcefcac342544ad611255635c547",
+    "mtime": 1793585177.6620235,
+    "seen": 1793585250.6633065,
+    "ast_hash": "72be80df2d15b377358c0568ada11d25",
     "semantic_hash": ""
   },
   "apps/web/index.html": {
@@ -2148,9 +2148,9 @@
     "semantic_hash": ""
   },
   "specs/001-draft-manager-mvp/spec.md": {
-    "mtime": 1792757964.2279034,
-    "seen": 1792758030.9438696,
-    "ast_hash": "55b6b705aa3e71dce57b10c8edcbf5ce",
+    "mtime": 1793585145.612771,
+    "seen": 1793585250.6654513,
+    "ast_hash": "df5c7bd73de07ea35ca02a25b7aa747e",
     "semantic_hash": ""
   },
   "specs/001-draft-manager-mvp/tasks.md": {
@@ -2226,9 +2226,9 @@
     "semantic_hash": ""
   },
   "specs/002-mejoras-mvp/spec.md": {
-    "mtime": 1793534575.569867,
-    "seen": 1793543274.917076,
-    "ast_hash": "c2d008d0ce8c40b8724eb3078b7cd44d",
+    "mtime": 1793585145.5418298,
+    "seen": 1793585250.667068,
+    "ast_hash": "cb8918c93e90e9cea0142accfe6363f6",
     "semantic_hash": ""
   },
   "specs/002-mejoras-mvp/tasks.md": {
@@ -2304,9 +2304,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/spec.md": {
-    "mtime": 1793529373.1462023,
-    "seen": 1793543274.9188023,
-    "ast_hash": "294476de43b2dcdb0ba71eda475b682a",
+    "mtime": 1793585145.4719608,
+    "seen": 1793585250.668889,
+    "ast_hash": "f685af7872568c413f1250074ae18b06",
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/tasks.md": {
@@ -2748,9 +2748,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/propuesta-constitucion-1.0.5.md": {
-    "mtime": 1792484980.9404984,
-    "seen": 1792485016.6388319,
-    "ast_hash": "d892671f0f6637e843dd27e5bf15ec9e",
+    "mtime": 1793585145.0479293,
+    "seen": 1793585250.6686144,
+    "ast_hash": "edf89b7e9a9af62ab11ff23eeee3a12c",
     "semantic_hash": ""
   },
   "packages/engine/tests/saqueCentro.test.ts": {
@@ -2766,9 +2766,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/validacion.md": {
-    "mtime": 1793522871.8291087,
-    "seen": 1793543274.917653,
-    "ast_hash": "2a79ec5bddbf49ce68d5d9a5d5230870",
+    "mtime": 1793584515.6740744,
+    "seen": 1793585250.6677597,
+    "ast_hash": "125a578a0be095eb024f82ed12ecc31c",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/dificultad.spec.ts": {
@@ -3018,9 +3018,9 @@
     "semantic_hash": ""
   },
   "specs/004-mejoras-visuales-diseno/spec.md": {
-    "mtime": 1792757964.2382193,
-    "seen": 1792758030.9463897,
-    "ast_hash": "49d2a0e4cd3a61ced3855fc54aa329aa",
+    "mtime": 1793585145.402288,
+    "seen": 1793585250.67021,
+    "ast_hash": "7dac3207a2d4807cd57cc51e6e8085d3",
     "semantic_hash": ""
   },
   "specs/004-mejoras-visuales-diseno/tasks.md": {
@@ -3474,9 +3474,9 @@
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/propuesta-constitucion-1.2.0.md": {
-    "mtime": 1792757964.2419035,
-    "seen": 1792758030.9464123,
-    "ast_hash": "b39630becc4d4f8ad73db8b45fb2c450",
+    "mtime": 1793585145.1497893,
+    "seen": 1793585250.6717145,
+    "ast_hash": "f9c74e0030d3acbab82aa35c24937d45",
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/quickstart.md": {
@@ -3492,9 +3492,9 @@
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/spec.md": {
-    "mtime": 1793529382.5155396,
-    "seen": 1793543274.9213574,
-    "ast_hash": "1060314f6e95de65869b84baf2fa6d12",
+    "mtime": 1793585145.3316956,
+    "seen": 1793585250.671974,
+    "ast_hash": "bc0737687f55d758fdc16a3c2396ea8a",
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/tasks.md": {
@@ -4182,9 +4182,9 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/spec.md": {
-    "mtime": 1793055175.560276,
-    "seen": 1793088076.7655096,
-    "ast_hash": "317169d79223339dadf081e6dc3fc28c",
+    "mtime": 1793585145.2611487,
+    "seen": 1793585250.6732292,
+    "ast_hash": "02136d3e4f687ea1311d5d366452ade4",
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/tasks.md": {
@@ -4830,15 +4830,15 @@
     "semantic_hash": ""
   },
   "specs/007-retoques-visuales/spec.md": {
-    "mtime": 1793229469.9446332,
-    "seen": 1793234683.8626676,
-    "ast_hash": "6dbbfcfc87edccaf5c79c03e770945f6",
+    "mtime": 1793585145.1985931,
+    "seen": 1793585250.6742318,
+    "ast_hash": "e8ba06288b43917efaa434cd02930350",
     "semantic_hash": ""
   },
   "specs/007-retoques-visuales/tasks.md": {
-    "mtime": 1793229469.9456317,
-    "seen": 1793234683.8626697,
-    "ast_hash": "235d0e9c199e4fa1dd58738674b8d03a",
+    "mtime": 1793585150.6550727,
+    "seen": 1793585250.6742349,
+    "ast_hash": "0fe71179b094775c2149b563baa2cfd3",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/marcos/goat.svg": {
@@ -4980,9 +4980,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1793542920.9972708,
-    "seen": 1793543274.913536,
-    "ast_hash": "01a47fc107e0afd5f5b86b69d672a7a2",
+    "mtime": 1793585229.850877,
+    "seen": 1793585250.6633093,
+    "ast_hash": "99b7385c08f0876edd384fd4979a0321",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -5028,9 +5028,9 @@
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/spec.md": {
-    "mtime": 1793320533.9686038,
-    "seen": 1793321352.3388941,
-    "ast_hash": "c77ddb0aaf86f925ed83bb3978e9ee17",
+    "mtime": 1793585145.754119,
+    "seen": 1793585250.6752117,
+    "ast_hash": "733a52c2e72133afd0fd6d94300ed3c9",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/sumario.md": {
@@ -7092,15 +7092,15 @@
     "semantic_hash": ""
   },
   "specs/009-simulacion-hilos-trabajo/spec.md": {
-    "mtime": 1793558057.5404584,
-    "seen": 1793563195.6398056,
-    "ast_hash": "108e8948d703354c92ce2d5d190865c8",
+    "mtime": 1793585145.6844802,
+    "seen": 1793585250.6763403,
+    "ast_hash": "2de9f6114a55b4014241b550e4fc281a",
     "semantic_hash": ""
   },
   "specs/009-simulacion-hilos-trabajo/tasks.md": {
-    "mtime": 1793563068.1130736,
-    "seen": 1793563195.6398072,
-    "ast_hash": "5754092c85d3bb1d3be986fd71e8423a",
+    "mtime": 1793584773.4042876,
+    "seen": 1793585250.6763425,
+    "ast_hash": "6931d25861bd1b7300443efc411beaf7",
     "semantic_hash": ""
   }
 }
