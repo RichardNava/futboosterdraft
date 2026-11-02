@@ -207,7 +207,12 @@ INI-10 e INI-13).
   cumple salvo `apertura_ms` (p95 11,1 s frente a < 3 s): abrir partidos entre humanos a la vez se encola en la
   partida. **2026-11-01**: la causa era esperar el SMTP de los avisos dentro de la partida (arreglado). Con 10
   partidas `apertura_ms` queda en p95 8,7 s: el motor (150–400 ms por partido entre humanos) corre en el hilo
-  principal. Ver [003/validacion.md](specs/003-mejoras-ux-simulacion/checklists/validacion.md).
+  principal. Ver [003/validacion.md](specs/003-mejoras-ux-simulacion/checklists/validacion.md). **2026-11-02**: con
+  la simulación en hilos de trabajo ([009](specs/009-simulacion-hilos-trabajo/spec.md)), 100 partidas (730 humanos,
+  todos abren a la vez) en dos máquinas por Wi-Fi: las 100 terminan, 0 errores y ninguna apertura cortada (antes el
+  22 %); `final_ms` p95 1,06 s y `jornada_npc_ms` p95 3,41 s cumplen, pero `entrega_sobre_ms` (p95 2,39 s) y
+  `apertura_ms` (p95 42 s) no. Las colas de cálculo se quedan vacías: el límite ya no es el motor sino el hilo
+  principal y la cola de cada partida. Sin cumplir aún el criterio 2: faltan tres máquinas y red por cable.
 - **Criterios de cierre**:
   1. Guion actualizado al protocolo vigente (T153 y T128 marcadas; son la misma tarea).
   2. 001/SC-017 cumplido, con servidor, base de datos y generador de carga en máquinas separadas, y resultado registrado.
