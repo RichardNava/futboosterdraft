@@ -17,7 +17,7 @@ export interface ServidorPruebas extends Servidor {
 export async function iniciarServidorPruebas(
   bd: BdPruebas,
   inicio = Date.UTC(2026, 9, 15, 10),
-  opciones: { smtpUrl?: string; hilosSimulacion?: number } = {},
+  opciones: { smtpUrl?: string; hilosSimulacion?: number; medirFases?: boolean } = {},
 ): Promise<ServidorPruebas> {
   const reloj = new RelojFalso(inicio);
   const servidor = await crearServidor({
@@ -27,6 +27,7 @@ export async function iniciarServidorPruebas(
     urlPublica: 'http://localhost:5173',
     logger: pino({ level: process.env.LOG_PRUEBAS ?? 'silent' }),
     ...(opciones.smtpUrl ? { smtpUrl: opciones.smtpUrl } : {}),
+    ...(opciones.medirFases === undefined ? {} : { medirFases: opciones.medirFases }),
     // `test:integration:hilos` repite la suite con el cálculo en hilos de trabajo (spec 009).
     hilosSimulacion: opciones.hilosSimulacion ?? Number(process.env.HILOS_SIMULACION_PRUEBAS ?? 0),
     // Las pruebas consultan el estado en bucle: los límites por sesión se prueban aparte (tests/unit).

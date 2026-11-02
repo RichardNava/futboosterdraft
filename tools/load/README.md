@@ -40,3 +40,8 @@ Variables: `BASE_URL` (por defecto `http://localhost:3000`), `ORIGIN` (debe coin
 del servidor; por defecto `http://localhost:5173`), `PARTIDAS` (100), `PARTIDAS_NPC` (10 % de las
 partidas), `LIMITE_PARTIDA_S` (1200: si una partida tarda más, cuenta como bloqueada) y `APERTURA_MAX_S` (0: cada
 humano abre su partido tras un retraso al azar de hasta esos segundos; con 0 todos abren a la vez, el peor caso).
+
+Desglose por fases (spec 010): con `-e METRICAS_URL=http://localhost:3000/metrics`, al terminar el guion lee
+`/metrics` del servidor e imprime las líneas `operacion_fase_ms` y `operacion_consultas` (mediana y p95 por fase de
+`apertura`, `entrega_sobre` y `eleccion`). Los cuantiles se acumulan desde que arranca el servidor: hay que
+reiniciarlo entre escenarios. No cambia umbrales ni métricas del guion.

@@ -23,6 +23,8 @@
  * Uso (ver README.md): con el servidor en marcha,
  *   k6 run tools/load/beta-100.js
  *   k6 run -e PARTIDAS=10 -e BASE_URL=http://localhost:3000 tools/load/beta-100.js
+ * Con `-e METRICAS_URL=http://localhost:3000/metrics`, al terminar imprime el desglose por fases del servidor
+ * (spec 010, research R12).
  */
 /* global __ENV, __VU -- variables globales de k6 */
 import http from 'k6/http';
@@ -42,6 +44,8 @@ const TOTAL_HUMANOS = (PARTIDAS - PARTIDAS_NPC) * HUMANOS + PARTIDAS_NPC;
 const LIMITE_PARTIDA_MS = Number(__ENV.LIMITE_PARTIDA_S || 1200) * 1000;
 /** Retraso máximo (al azar) antes de abrir cada partido; 0 = todos a la vez, el peor caso. */
 const APERTURA_MAX_MS = Number(__ENV.APERTURA_MAX_S || 0) * 1000;
+/** `/metrics` del servidor: si se indica, `teardown()` imprime el desglose por fases (spec 010). */
+const METRICAS_URL = __ENV.METRICAS_URL;
 /** Peticiones simultáneas en `setup()` (registro y creación). */
 const LOTE = 50;
 /** Descansos cortos para que el torneo dure minutos, no horas (ya no hay tiempo de preparación, spec 002). */
@@ -107,6 +111,14 @@ function enLotes(peticiones) {
 }
 
 /** Registra a los usuarios y crea y llena las partidas. Devuelve un humano por VU, en orden. */
+/** Desglose por fases acumulado desde el arranque del servidor (reiniciarlo entre escenarios). */
+export function teardown() {
+  if (!METRICAS_URL) return;
+  const r = http.get(METRICAS_URL);
+  const lineas = String(r.body || '').split('\n').filter((l) => l.startsWith('operacion_fase_ms') || l.startsWith('operacion_consultas'));
+  console.log(`Desglose por fases (${METRICAS_URL}):\n${lineas.join('\n')}`);
+}
+
 export function setup() {
   const conNPC = (p) => p >= PARTIDAS - PARTIDAS_NPC;
   const altas = [];

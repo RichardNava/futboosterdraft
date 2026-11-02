@@ -9,6 +9,7 @@
  */
 import { availableParallelism } from 'node:os';
 import { Worker } from 'node:worker_threads';
+import { fase } from '../observabilidad/desglose';
 import type { Logger } from '../observabilidad/logger';
 import type { Metricas } from '../observabilidad/metricas';
 import { FUNCIONES, type Funciones, type NombreCalculo } from './funciones';
@@ -61,13 +62,14 @@ export function crearCalculo(hilos: number, opciones: OpcionesCalculo = {}): Cal
   if (hilos > 0) return new GrupoHilos(hilos, opciones);
   return {
     hilos: 0,
-    ejecutar: (nombre, args) => {
-      try {
-        return Promise.resolve((FUNCIONES[nombre] as (...a: unknown[]) => never)(...args));
-      } catch (e) {
-        return Promise.reject(e);
-      }
-    },
+    ejecutar: (nombre, args) =>
+      fase('calculo', () => {
+        try {
+          return Promise.resolve((FUNCIONES[nombre] as (...a: unknown[]) => never)(...args));
+        } catch (e) {
+          return Promise.reject(e);
+        }
+      }),
     cerrar: async () => {},
   };
 }
@@ -113,10 +115,11 @@ export class GrupoHilos implements Calculo {
 
   ejecutar<N extends NombreCalculo>(nombre: N, args: Parameters<Funciones[N]>, prioridad: Prioridad): Promise<ReturnType<Funciones[N]>> {
     if (this.cerrado) return Promise.reject(new ErrorCalculo(nombre, 'cerrado', 0));
-    return new Promise((resolver, rechazar) => {
+    // Incluye la espera de un hilo libre (spec 010, research R2).
+    return fase('calculo', () => new Promise((resolver, rechazar) => {
       this.colas[prioridad].push({ id: this.siguienteId++, nombre, args, prioridad, intentos: 0, resolver: resolver as (v: unknown) => void, rechazar });
       this.repartir();
-    });
+    }));
   }
 
   async cerrar(): Promise<void> {

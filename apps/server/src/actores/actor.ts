@@ -8,6 +8,7 @@
  * falla, sus mensajes se descartan. Un comando puede adelantar el envío de lo ya guardado con
  * `ctx.publicar()`.
  */
+import { fase } from '../observabilidad/desglose';
 
 /** Destinatario de un mensaje: todos los participantes conectados de la partida, o uno concreto. */
 export type Destino = { tipo: 'todos' } | { tipo: 'participante'; participanteId: string };
@@ -48,7 +49,8 @@ export class ActorPartida {
   ejecutar<T>(comando: (ctx: ContextoComando) => Promise<T> | T): Promise<T> {
     if (this.cerrado) return Promise.reject(new Error(`El actor de la partida ${this.partidaId} está cerrado`));
     this.pendientes++;
-    const resultado = this.cola.then(async () => {
+    // La espera hasta que empieza el comando es la fase `cola` de quien lo encoló (spec 010).
+    const resultado = fase('cola', () => this.cola).then(async () => {
       const salida: MensajeSaliente[] = [];
       const ctx: ContextoComando = {
         partidaId: this.partidaId,

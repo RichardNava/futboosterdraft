@@ -1,4 +1,4 @@
-import { Counter, Gauge, Histogram, Registry, collectDefaultMetrics } from 'prom-client';
+import { Counter, Gauge, Histogram, Registry, Summary, collectDefaultMetrics } from 'prom-client';
 
 export interface Metricas {
   registro: Registry;
@@ -12,6 +12,9 @@ export interface Metricas {
   calculoDuracionMs: Histogram<'funcion'>;
   calculosFallidosTotal: Counter<'motivo'>;
   calculoReintentosTotal: Counter;
+  /** Desglose por fases de cada operación (spec 010, FR-002). */
+  operacionFaseMs: Summary<'operacion' | 'fase'>;
+  operacionConsultas: Summary<'operacion'>;
 }
 
 export function crearMetricas(): Metricas {
@@ -67,6 +70,21 @@ export function crearMetricas(): Metricas {
     calculoReintentosTotal: new Counter({
       name: 'calculo_reintentos_total',
       help: 'Cálculos repetidos en un hilo nuevo tras una caída o un tiempo agotado',
+      registers: [registro],
+    }),
+    // Cuantiles acumulados desde el arranque: cada escenario de carga reinicia el servidor (research R12).
+    operacionFaseMs: new Summary({
+      name: 'operacion_fase_ms',
+      help: 'Tiempo de cada fase de una operación (apertura, entrega de sobre, elección)',
+      labelNames: ['operacion', 'fase'],
+      percentiles: [0.5, 0.95],
+      registers: [registro],
+    }),
+    operacionConsultas: new Summary({
+      name: 'operacion_consultas',
+      help: 'Consultas a PostgreSQL hechas por cada operación',
+      labelNames: ['operacion'],
+      percentiles: [0.5, 0.95],
       registers: [registro],
     }),
   };

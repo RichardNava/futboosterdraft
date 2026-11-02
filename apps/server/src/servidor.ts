@@ -21,6 +21,7 @@ import { registrarRutasPartidas } from './http/partidas';
 import { registrarRutasPartidos } from './http/partidos';
 import { crearLogger, type Logger } from './observabilidad/logger';
 import { crearMetricas, type Metricas } from './observabilidad/metricas';
+import { configurarDesglose } from './observabilidad/desglose';
 import type { BaseDatos } from './persistencia/db';
 import { AlmacenPeticionesBD, type AlmacenPeticiones } from './persistencia/peticiones';
 import { Catalogo } from './persistencia/repos/catalogo';
@@ -55,6 +56,8 @@ export interface ConfigServidor {
   limites?: { http?: OpcionesLimitador; ws?: OpcionesLimitador };
   /** Hilos de simulación (spec 009); 0, el valor por defecto, simula en el hilo principal. */
   hilosSimulacion?: number;
+  /** Desglose por fases de aperturas y elecciones de draft (spec 010, FR-003); por defecto, activado. */
+  medirFases?: boolean;
 }
 
 export interface Servidor {
@@ -72,6 +75,7 @@ export interface Servidor {
 export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   const logger = config.logger ?? crearLogger();
   const metricas = crearMetricas();
+  configurarDesglose({ activo: config.medirFases ?? true, metricas });
   const peticiones = config.peticiones ?? new AlmacenPeticionesBD(config.db);
   const catalogo = config.catalogo ?? (await Catalogo.cargar(config.db));
   const temporizadores = new Temporizadores(config.reloj);
@@ -134,6 +138,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   pasarela.registrarManejador('draft.elegir', {
     esquema: MsgDraftElegir,
     conAck: true,
+    operacion: 'eleccion',
     manejar: async (ctx, msg) => {
       const c = await gestor.obtenerOError(ctx.partidaId);
       return c.ejecutar((cmd) => procesarEleccion(c, cmd, ctx.participanteId, msg));

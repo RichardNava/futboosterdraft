@@ -40,7 +40,7 @@ Los tests existentes **no cambian sus expectativas** (FR-015), en particular «d
 
 **Purpose**: la configuración `MEDIR_FASES` llega del entorno al servidor (FR-003).
 
-- [ ] T001 Añadir `medirFases?: boolean` a `ConfigServidor` en `apps/server/src/servidor.ts` (por defecto `true`) y
+- [X] T001 Añadir `medirFases?: boolean` a `ConfigServidor` en `apps/server/src/servidor.ts` (por defecto `true`) y
   leer `MEDIR_FASES` en `apps/server/src/main.ts` (`process.env.MEDIR_FASES !== '0'`, activado por defecto en todos los
   entornos, también producción). En los tests, `crearServidor` sin `medirFases` también mide (contrato, «Configuración»).
 
@@ -53,17 +53,17 @@ vacías en `/metrics`.
 
 **⚠️ CRITICAL**: US1 instrumenta con este módulo; US2 lo usa para comprobar SC-005.
 
-- [ ] T002 Añadir a `apps/server/src/observabilidad/metricas.ts` dos `Summary` de prom-client registrados en el mismo
+- [X] T002 Añadir a `apps/server/src/observabilidad/metricas.ts` dos `Summary` de prom-client registrados en el mismo
   `Registry`: `operacion_fase_ms` con etiquetas `operacion` ∈ {`apertura`, `entrega_sobre`, `eleccion`} y `fase` ∈
   {`cola`, `calculo`, `bd`, `serializacion`, `difusion`, `resto`, `total`}, y `operacion_consultas` con etiqueta
   `operacion`; `percentiles: [0.5, 0.95]`, acumulados desde el arranque (sin `maxAgeSeconds`). Añadirlos a la interfaz
   `Metricas` (`operacionFaseMs`, `operacionConsultas`). Las métricas existentes no cambian.
-- [ ] T003 [P] Escribir `apps/server/tests/unit/desglose.test.ts` (debe fallar hasta T004): `medir` observa las 7 fases
+- [X] T003 [P] Escribir `apps/server/tests/unit/desglose.test.ts` (debe fallar hasta T004): `medir` observa las 7 fases
   y las consultas; `fase` suma al desglose del contexto, también tras un `await`; dos `fase('calculo')` en paralelo con
   `Promise.all` suman el tiempo de reloj del conjunto, no la suma de ambas; `resto = total − Σ fases` y nunca negativo;
   `renombrar('entrega_sobre')` cambia la etiqueta observada; fuera de `medir` o con la medición desactivada, `fase(fn)`
   solo devuelve `fn()` (mismo valor, mismo error, sin observaciones).
-- [ ] T004 Crear `apps/server/src/observabilidad/desglose.ts` con la API del contrato:
+- [X] T004 Crear `apps/server/src/observabilidad/desglose.ts` con la API del contrato:
   `medir<T>(operacion, fn)`, `fase<T>(fase, fn)` (síncrona o promesa), `renombrar(operacion)`, `contarConsulta()`, más
   `configurarDesglose({ activo, metricas })` que llama `crearServidor`. Estado por operación según data-model
   («Desglose de una operación»): `operacion`, `inicio = performance.now()`, `fases` por nombre, `consultas`. Las fases
@@ -87,7 +87,7 @@ p95 por fase de `apertura` y `entrega_sobre`, sin cambiar resultados ni métrica
 
 ### Tests for User Story 1
 
-- [ ] T005 [P] [US1] Escribir `apps/server/tests/integration/desglose.test.ts`: crear una partida con dos humanos en la
+- [X] T005 [P] [US1] Escribir `apps/server/tests/integration/desglose.test.ts`: crear una partida con dos humanos en la
   misma jornada (reutilizar los ayudantes de `torneo-asincrono.test.ts`), abrir su partido y comprobar en el registro de
   métricas que hay observaciones de `operacion_fase_ms{operacion="apertura"}` para las 7 fases, que `bd > 0`,
   `operacion_consultas > 0` y que `resto ≤ 0,1 × total` (FR-001). Cerrar un turno de draft y comprobar lo mismo para
@@ -95,29 +95,29 @@ p95 por fase de `apertura` y `entrega_sobre`, sin cambiar resultados ni métrica
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Fase `cola` en `apps/server/src/actores/actor.ts`: en `ActorPartida.ejecutar`, tomar `performance.now()`
+- [X] T006 [US1] Fase `cola` en `apps/server/src/actores/actor.ts`: en `ActorPartida.ejecutar`, tomar `performance.now()`
   al encolar y, al empezar el comando dentro del `.then`, sumar la espera con el desglose del contexto de quien encoló
   (el callback de `then` hereda el contexto de `AsyncLocalStorage` de quien lo registró; comprobarlo con T005). Sin
   cambiar el orden ni el manejo de errores de la cola.
-- [ ] T007 [P] [US1] Fase `calculo` en `apps/server/src/simulacion/grupo.ts`: envolver con `fase('calculo', …)` la
+- [X] T007 [P] [US1] Fase `calculo` en `apps/server/src/simulacion/grupo.ts`: envolver con `fase('calculo', …)` la
   promesa que devuelve `ejecutar` en los dos modos (hilos y en proceso), de modo que incluya la espera en el grupo
   de hilos (research R2).
-- [ ] T008 [P] [US1] Fase `bd` en `apps/server/src/persistencia/db.ts`: en `conectar`, envolver `pool.query` y
+- [X] T008 [P] [US1] Fase `bd` en `apps/server/src/persistencia/db.ts`: en `conectar`, envolver `pool.query` y
   `pool.connect` (espera de conexión libre incluida) con `fase('bd', …)` y `contarConsulta()`; envolver también
   `query` del cliente que devuelve `connect`, porque las transacciones de Drizzle usan ese cliente. Sin envolver dos
   veces la misma consulta. Comprobar `pnpm --filter @fbd/server test:integration` sin cambios.
-- [ ] T009 [P] [US1] Fases `serializacion` y `difusion` en `apps/server/src/ws/pasarela.ts`: el `JSON.stringify` de
+- [X] T009 [P] [US1] Fases `serializacion` y `difusion` en `apps/server/src/ws/pasarela.ts`: el `JSON.stringify` de
   `Pasarela.enviar` dentro de `fase('serializacion', …)` y el bucle de `socket.send` dentro de `fase('difusion', …)`.
   Mismo número de serializaciones que hoy.
-- [ ] T010 [US1] Medir la apertura en `apps/server/src/http/partidos.ts`: el manejador de `POST /api/partidos/:id/abrir`
+- [X] T010 [US1] Medir la apertura en `apps/server/src/http/partidos.ts`: el manejador de `POST /api/partidos/:id/abrir`
   entero dentro de `medir('apertura', …)`, para todos los tipos de partido. La respuesta HTTP no cambia.
-- [ ] T011 [US1] Medir la elección de draft: el manejo del mensaje `draft.elegir` (en `apps/server/src/ws/pasarela.ts`
+- [X] T011 [US1] Medir la elección de draft: el manejo del mensaje `draft.elegir` (en `apps/server/src/ws/pasarela.ts`
   o donde se despache, según `graphify query "draft.elegir"`) dentro de `medir('eleccion', …)`, incluido el `ack`; y en
   `apps/server/src/actores/draft.ts`, llamar `renombrar('entrega_sobre')` cuando la elección cierra el turno de su mesa
   (antes de `resolver`/`abrirTurno`). `turno_draft_resolucion_ms` no cambia.
 - [ ] T012 [US1] Pasar T005 en los dos modos (`test:integration` y `test:integration:hilos`). Si `resto` > 10 %,
   buscar la fase sin instrumentar antes de seguir.
-- [ ] T013 [P] [US1] `teardown()` opcional en `tools/load/beta-100.js` (research R12): si `__ENV.METRICAS_URL` existe,
+- [X] T013 [P] [US1] `teardown()` opcional en `tools/load/beta-100.js` (research R12): si `__ENV.METRICAS_URL` existe,
   `http.get` de esa URL e imprimir solo las líneas que empiezan por `operacion_fase_ms` y `operacion_consultas`. No
   cambiar umbrales, métricas ni escenarios (FR-016). Documentar `-e METRICAS_URL=…` en `tools/load/README.md`.
 
@@ -270,7 +270,7 @@ orden de mensajes.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T033 [P] Documentar `MEDIR_FASES` (por defecto `1`, `0` lo desactiva) y las dos métricas nuevas en
+- [X] T033 [P] Documentar `MEDIR_FASES` (por defecto `1`, `0` lo desactiva) y las dos métricas nuevas en
   `docs/despliegue.md`.
 - [ ] T034 Comprobar que `MEDIR_FASES=0` no deja observaciones en `/metrics` y no cambia resultados (quickstart §2).
 - [ ] T035 Regresión completa (quickstart §1): `pnpm test:equivalence`, `pnpm test`,

@@ -29,6 +29,7 @@ import {
 import type { ContextoComando } from './actor';
 import { alineacionAutomatica, dorsalesIniciales } from './equipo';
 import type { ControladorPartida } from './partida';
+import { fase, renombrar } from '../observabilidad/desglose';
 
 /** Crea las mesas (1, o 2 de 8 en el playoff de 16) a partir de los participantes ya sentados. */
 export async function iniciarDraft(c: ControladorPartida, ctx: ContextoComando, asientos: string[][]): Promise<void> {
@@ -87,7 +88,9 @@ export async function abrirTurno(c: ControladorPartida, ctx: ContextoComando, in
   for (const pid of m.mesa.participantes) {
     const p = c.participante(pid);
     if (p?.tipo !== 'npc' && !p?.controladoPorNPC) continue;
-    m.mesa = elegir(m.mesa, pid, eleccionNPC(c, m.mesa, m.semilla, pid, (p.nivelNPC as NivelNPC | null) ?? 'intermedio'), ahora, 'npc');
+    // La IA del NPC calcula en el hilo principal: es la fase `calculo` del desglose (spec 010).
+    const jugadorId = fase('calculo', () => eleccionNPC(c, m.mesa, m.semilla, pid, (p.nivelNPC as NivelNPC | null) ?? 'intermedio'));
+    m.mesa = elegir(m.mesa, pid, jugadorId, ahora, 'npc');
   }
   await c.servicios.repoDraft.guardarElecciones(m.id, m.mesa.elecciones.slice(antes), ahora);
 
@@ -171,7 +174,11 @@ export async function procesarEleccion(
     throw e;
   }
   emitirProgreso(c, ctx, m.mesa);
-  if (todosEligieron(m.mesa)) await resolver(c, ctx, m.indice);
+  if (todosEligieron(m.mesa)) {
+    // Esta elección cierra el turno: en el desglose por fases es una entrega de sobre (spec 010).
+    renombrar('entrega_sobre');
+    await resolver(c, ctx, m.indice);
+  }
   return { ok: true };
 }
 

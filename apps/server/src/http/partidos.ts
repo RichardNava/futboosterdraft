@@ -18,6 +18,7 @@ import { crearHooksSesion } from '../auth/rutas';
 import { resueltoAutomaticamente, type FilaPartido } from '../persistencia/repos/partidos';
 import { ConsultaReproduccion, CuerpoAbrir } from '@fbd/protocol';
 import { errores } from './errores';
+import { medir } from '../observabilidad/desglose';
 
 export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor: GestorPartidas): void {
   const { requiereSesion } = crearHooksSesion(auth);
@@ -61,13 +62,15 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
     // Sin cuerpo (clientes antiguos), la rápida; con cuerpo, una modalidad válida (spec 003, FR-032).
     const cuerpo = req.body === undefined || req.body === null ? { modalidad: 'rapida' as const } : CuerpoAbrir.safeParse(req.body).data;
     if (!cuerpo) throw errores.regla('MODALIDAD_INVALIDA', 'La modalidad debe ser «rapida» o «2d»');
-    const { fila, c, participanteId } = await partidoDelUsuario(req, true);
-    const r = await c.ejecutar((ctx) => abrirPartido(c, ctx, participanteId, fila.id, cuerpo.modalidad));
-    if ('error' in r) {
-      if (r.error === 'JORNADA_NO_ABIERTA') throw errores.conflicto(r.error, 'Ese partido no es de la jornada abierta');
-      throw errores.noEncontrado(r.error, 'No juegas ese partido');
-    }
-    return r;
+    return medir('apertura', async () => {
+      const { fila, c, participanteId } = await partidoDelUsuario(req, true);
+      const r = await c.ejecutar((ctx) => abrirPartido(c, ctx, participanteId, fila.id, cuerpo.modalidad));
+      if ('error' in r) {
+        if (r.error === 'JORNADA_NO_ABIERTA') throw errores.conflicto(r.error, 'Ese partido no es de la jornada abierta');
+        throw errores.noEncontrado(r.error, 'No juegas ese partido');
+      }
+      return r;
+    });
   });
 
   app.get<{ Params: { id: string }; Querystring: { modalidad?: string } }>('/api/partidos/:id/reproduccion', { preHandler: requiereSesion }, async (req) => {

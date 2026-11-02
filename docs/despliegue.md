@@ -31,6 +31,7 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 | `LOG_LEVEL` | No | `info` | Nivel de los logs (pino, JSON en la salida estándar). |
 | `MIGRAR_AL_ARRANCAR` | No | (activado) | `false` desactiva las migraciones al arrancar. |
 | `HILOS_SIMULACION` | No | núcleos − 1 (mínimo 1) | Hilos de trabajo que simulan los partidos (spec 009). `0` simula en el hilo principal, como antes de la spec 009: úsalo como interruptor de emergencia si los hilos dan problemas. Un valor no válido usa el de por defecto y avisa en el log. Ver «Hilos de simulación». |
+| `MEDIR_FASES` | No | `1` | Desglose por fases de las aperturas de partido y las elecciones de draft (spec 010): publica `operacion_fase_ms` y `operacion_consultas` en `/metrics`. Solo lee el reloj y no cambia resultados. `0` lo desactiva. |
 | `DB_POOL_MAX` | No | `25` | Conexiones simultáneas a PostgreSQL. Cada partida escribe desde su actor; con 10 conexiones, la carga de beta hacía esperar a los comandos. |
 | `NODE_ENV` | — | `production` en la imagen | Activa las cookies `Secure` y el servido de la web. No lo cambies. |
 | `CARPETA_MIGRACIONES`, `CARPETA_WEB` | — | ya fijadas en la imagen | Rutas de las migraciones y de la web dentro del contenedor. |
@@ -150,6 +151,11 @@ Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas
     `calculos_en_espera{prioridad}` (cola `humano` o `npc`; si crece y no baja, faltan hilos),
     `calculo_duracion_ms{funcion}`, `calculos_fallidos_total{motivo}` (`caida`, `tiempo` o `error`) y
     `calculo_reintentos_total`.
+  - Desglose por fases (spec 010; se apaga con `MEDIR_FASES=0`): `operacion_fase_ms{operacion,fase}`, con
+    `operacion` = `apertura`, `entrega_sobre` (elección que cierra el turno) o `eleccion`, y `fase` = `cola`
+    (espera en la cola de la partida), `calculo`, `bd`, `serializacion`, `difusion`, `resto` (lo no atribuido) y
+    `total`; y `operacion_consultas{operacion}` (consultas a PostgreSQL por operación). Son `Summary` con la mediana y
+    el p95 acumulados desde el arranque.
 
   No expongas `/metrics` a Internet: limítalo en el proxy a la red interna.
 

@@ -14,6 +14,7 @@ import type { Difusor, MensajeSaliente } from '../actores/actor';
 import type { Auth, UsuarioSesion } from '../auth/auth';
 import { usuarioDeLaPeticion } from '../auth/rutas';
 import type { Logger } from '../observabilidad/logger';
+import { fase, medir, type Operacion } from '../observabilidad/desglose';
 import type { Metricas } from '../observabilidad/metricas';
 import type { AlmacenPeticiones } from '../persistencia/peticiones';
 import type { Reloj } from '../programador/reloj';
@@ -32,6 +33,8 @@ export interface Manejador<T> {
   /** `true` si el mensaje cambia estado: lleva requestId, se deduplica y se responde con ack. */
   conAck: boolean;
   manejar(ctx: ContextoConexion, mensaje: T): Promise<ResultadoComando | void>;
+  /** Operación del desglose por fases (spec 010) que abarca el mensaje entero, `ack` incluido. */
+  operacion?: Operacion;
 }
 
 export interface OpcionesPasarela {
@@ -76,12 +79,14 @@ export class Pasarela implements Difusor {
   enviar(partidaId: string, salida: MensajeSaliente): void {
     const porParticipante = this.conexiones.get(partidaId);
     if (!porParticipante) return;
-    const texto = JSON.stringify(salida.mensaje);
-    if (salida.destino.tipo === 'todos') {
-      for (const sockets of porParticipante.values()) for (const s of sockets) this.enviarTexto(s, texto);
-    } else {
-      for (const s of porParticipante.get(salida.destino.participanteId) ?? []) this.enviarTexto(s, texto);
-    }
+    const texto = fase('serializacion', () => JSON.stringify(salida.mensaje));
+    fase('difusion', () => {
+      if (salida.destino.tipo === 'todos') {
+        for (const sockets of porParticipante.values()) for (const s of sockets) this.enviarTexto(s, texto);
+      } else {
+        for (const s of porParticipante.get(salida.destino.participanteId) ?? []) this.enviarTexto(s, texto);
+      }
+    });
   }
 
   estaConectado(partidaId: string, participanteId: string): boolean {
@@ -148,7 +153,11 @@ export class Pasarela implements Difusor {
 
     const manejador = this.manejadores.get(base.data.t);
     if (!manejador) return this.error(socket, 'TIPO_DESCONOCIDO', `Tipo de mensaje desconocido: ${base.data.t}`);
+    if (manejador.operacion) return medir(manejador.operacion, () => this.despachar(ctx, socket, crudo, manejador));
+    return this.despachar(ctx, socket, crudo, manejador);
+  }
 
+  private async despachar(ctx: ContextoConexion, socket: WebSocket, crudo: unknown, manejador: Manejador<unknown>): Promise<void> {
     let requestId: string | undefined;
     if (manejador.conAck) {
       const r = ConRequestId.safeParse(crudo);

@@ -29,6 +29,8 @@ async function principal(): Promise<void> {
     urlPublica: process.env.PUBLIC_URL ?? 'http://localhost:5173',
     smtpUrl: process.env.SMTP_URL,
     hilosSimulacion: hilos,
+    // Desglose por fases (spec 010, FR-003): activado en todos los entornos; MEDIR_FASES=0 lo apaga.
+    medirFases: process.env.MEDIR_FASES !== '0',
     // Con el reloj simulado (desarrollo y pruebas e2e), los recorridos automáticos consultan en bucle:
     // no se limitan las peticiones por sesión.
     ...(relojFalso ? { limites: { http: { capacidad: 10_000, porSegundo: 10_000 }, ws: { capacidad: 10_000, porSegundo: 10_000 } } } : {}),
