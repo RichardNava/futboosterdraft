@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-29
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-11)
 
 **Input**: User description: "Spec 8 — Create Real Data phase 0.1. Sin rama: se trabaja en main y al acabar se hace push a origin/main. 0) Adaptar retratos: en `retratos/` hay 250 retratos de los futbolistas de la colección Core; modificarlos, comprimirlos y adaptarlos para usarlos en las cartas y reubicarlos en /public o donde sea mejor. 1) JSON de datos reales de la colección Core: un JSON con la información real de cada jugador de `retratos/` (el nombre de archivo es el nombre real del jugador), lo más preciso y completo posible; la persona lo revisará y editará después. Mismo formato que el JSON actual. Las stats reflejan el prime del jugador, no su estado actual (p. ej. Messi, Cristiano Ronaldo y Neymar son GOAT y están entre las mayores medias). 2) Sumario para la fase 0.1: faltan 50 jugadores para completar los 300 de Core; informar de las posiciones/demarcaciones y rarezas de los 250 para decidir qué 50 añadir (p. ej. «necesitamos 7 porteros», «necesitamos 3 laterales derechos», «tenemos 30 GOAT, necesitamos 5 más»). Los 50 restantes se tratan en una fase posterior."
 

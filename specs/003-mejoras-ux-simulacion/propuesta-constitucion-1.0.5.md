@@ -1,6 +1,6 @@
 # Propuesta de enmienda PATCH 1.0.5 de la constitución (T126)
 
-**Estado**: propuesta, pendiente de aprobación. Se aplica con `/speckit-constitution`; esta tarea solo la redacta.
+**Estado**: aplicada el 2026-11-02 en la constitución 1.2.0, junto con la propuesta 1.2.0 de la spec 005 (ROADMAP INI-09).
 
 **Tipo**: PATCH (1.0.4 → 1.0.5). Solo añade referencias a "Decisiones resueltas"; ningún principio se añade,
 elimina ni redefine. Cierra el TODO del Sync Impact Report de la 1.0.4.

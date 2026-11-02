@@ -1,6 +1,6 @@
 # Roadmap de Fútboosterdraft
 
-**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 · **Constitución**: 1.1.1
+**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 (actualizado el 2026-11-02) · **Constitución**: 1.2.0
 
 Este documento es la *spec de specs* del proyecto: agrupa las especificaciones de `specs/` en iniciativas de
 producto, fija su orden y dice cuándo se da por cerrada cada una. No sustituye a las specs: cada iniciativa remite
@@ -36,11 +36,11 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-04](#ini-04-virtudes-defectos-y-modo-duelo) | Virtudes, defectos y modo Duelo | 005 | P1 | Implementada, sin validar | INI-01 |
 | [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005 | P0 | Hecho | INI-04 |
 | [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor | 001, 002 | P1 | Parcial | INI-05 |
-| [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003 | P0 | Parcial | INI-06 |
+| [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009 | P0 | Parcial | INI-06 |
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
-| [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Pendiente | — |
+| [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Hecho | — |
 | [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-08, INI-09 |
-| [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | sin spec (sigue a 006) | P1 | Pendiente | INI-08, INI-05 |
+| [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1) | P1 | Parcial | INI-08, INI-05 |
 | [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | sin spec | P3 | Idea | INI-12 |
@@ -71,8 +71,8 @@ graph LR
   INI08 --> INI15
 ```
 
-**Camino crítico a la beta**: INI-05 → INI-06 → INI-07 → INI-10, con INI-09 en paralelo (es barata y desbloquea
-INI-10 e INI-13).
+**Camino crítico a la beta**: INI-07 → INI-10. INI-05 e INI-09 están hechas; la carga de INI-07 ya no la limita el
+motor (spec 009), sino la apertura de partidos y la entrega de sobres (spec 010, por escribir).
 
 ---
 
@@ -144,9 +144,9 @@ INI-10 e INI-13).
   equivalencia, integración, SC-004, SC-005, SC-010 y SC-011 en verde con n = 1.000. Sin cerrar:
   - 005/FR-051 en virtudes y defectos: cumplido en INI-05 (2026-11-01) con la comprobación por pares y el criterio
     nuevo 005/SC-013 (los stats pesan más que cualquier virtud).
-  - La propuesta de constitución 1.2.0 (vocabulario «virtudes y defectos», modo Duelo) no está aplicada: INI-09.
-- **Criterios de cierre**: ~~FR-051 cumplido en virtudes y defectos~~ (cerrado por INI-05) y constitución 1.2.0
-  aplicada (lo cierra INI-09).
+  - Constitución 1.2.0 (vocabulario «virtudes y defectos», modo Duelo): aplicada en INI-09 (2026-11-02).
+- **Criterios de cierre**: ~~FR-051 cumplido en virtudes y defectos~~ (cerrado por INI-05) y ~~constitución 1.2.0
+  aplicada~~ (cerrado por INI-09). Queda la validación con personas.
 
 ## INI-05 Calibración del motor y de los NPC
 
@@ -199,7 +199,8 @@ INI-10 e INI-13).
 - **Alcance**: rehacer `tools/load/beta-100.js` con el protocolo actual (un VU por humano) y medir en un entorno
   parecido al de producción.
 - **Specs**: [001](specs/001-draft-manager-mvp/spec.md) SC-017 y SC-009; [002](specs/002-mejoras-mvp/tasks.md) T153;
-  [003](specs/003-mejoras-ux-simulacion/tasks.md) T128.
+  [003](specs/003-mejoras-ux-simulacion/tasks.md) T128; [009](specs/009-simulacion-hilos-trabajo/spec.md) (simulación
+  en hilos de trabajo; T036 aplazada hasta tener tres máquinas).
 - **Prioridad / estado**: P0 · **Parcial**. En la 001 no se cumplió (entrega del sobre p95 1,99 s frente a < 1 s,
   «Seguir» → final p95 6,2 s frente a < 3 s). Desde la 002 el guion no se ha vuelto a ejecutar con el protocolo
   nuevo, y su resultado de la 002 apunta a un fallo del guion, no del servidor. **2026-10-31**: guion rehecho con un
@@ -249,9 +250,13 @@ INI-10 e INI-13).
   - Actualizar el README: el estado dice «MVP implementado», la tabla de documentación solo enlaza la 001 y la de
     `tools/balance` se queda en la 003.
   - Cambiar `**Status**: Draft` de las specs según este roadmap y añadir este documento al `CLAUDE.md`.
-- **Prioridad / estado**: P0 · **Pendiente**. Es barata y quita contradicciones que confunden a quien lea la constitución.
-- **Criterios de cierre**: constitución ≥ 1.2.0 sin TODOs en el Sync Impact Report; README con el estado de este
-  roadmap; ninguna spec con estado `Draft` si está implementada.
+- **Prioridad / estado**: P0 · **Hecho** (2026-11-02).
+- **Evidencia**: constitución 1.2.0 con las dos propuestas rebasadas sobre la 1.1.1 (marcadas como aplicadas) y sin
+  TODOs; modo Duelo en "Decisiones resueltas"; README con el estado de este roadmap, enlaces a las specs 002–009 y
+  `tools/balance` al día; las nueve specs pasan de `Draft` a «Implementada, sin validar» con su iniciativa; este
+  documento enlazado desde `CLAUDE.md` y con las specs 008 y 009 en su tabla.
+- **Criterios de cierre**: ~~constitución ≥ 1.2.0 sin TODOs en el Sync Impact Report; README con el estado de este
+  roadmap; ninguna spec con estado `Draft` si está implementada~~ (cumplidos).
 
 ## INI-10 Preparación para producción
 
@@ -260,7 +265,7 @@ INI-10 e INI-13).
   real; copias de seguridad y restauración probadas; registros y métricas mínimos para diagnosticar partidas
   bloqueadas; revisión de seguridad de autenticación y de la tienda; textos legales (privacidad, condiciones);
   resolución de los riesgos que bloquean producción (escudos).
-- **Specs**: ninguna. **Requiere spec nueva** (p. ej. `007-beta-produccion`).
+- **Specs**: ninguna. **Requiere spec nueva** (p. ej. `011-beta-produccion`; la 010 se reserva para la latencia de INI-07).
 - **Prioridad / estado**: P0 · **Pendiente**.
 - **Dependencias**: INI-07 (la carga debe aguantar), INI-08 (escudos), INI-09.
 - **Criterios de cierre**: los criterios de éxito de su spec, como mínimo: despliegue reproducible desde la imagen
@@ -273,8 +278,12 @@ INI-10 e INI-13).
 - **Alcance propuesto**: contenido de Core y de las primeras colecciones de pago (40–50 cartas cada una); imágenes
   propias de GOAT y Legendarias; historias de las cartas; validación de equilibrio del nuevo pool con `pnpm balance --serie core`;
   política de derechos de imagen y nombres de jugadores reales, si se usan.
-- **Specs**: ninguna (la base es [006](specs/006-preparacion-bd-cartas/spec.md) FR-001 a FR-012). **Requiere spec nueva**.
-- **Prioridad / estado**: P1 · **Pendiente**.
+- **Specs**: [008](specs/008-datos-reales-core/spec.md) (fase 0.1: las 300 cartas de Core son jugadores reales, con
+  retratos; fuente `data/core-real.json`). La base es [006](specs/006-preparacion-bd-cartas/spec.md) FR-001 a FR-012. Las
+  colecciones de pago, las historias y la política de derechos **requieren spec nueva**.
+- **Prioridad / estado**: P1 · **Parcial**. 008: T012 y T022 (comprobaciones manuales en `pnpm dev`) abiertas.
+  Con nombres y retratos de futbolistas reales, la política de derechos de imagen es ya un riesgo para producción
+  (INI-10), no solo para el catálogo definitivo.
 - **Dependencias**: INI-08 (modelo de colecciones) e INI-05 (el equilibrio del catálogo se mide con el motor ya calibrado).
 - **Criterios de cierre**: los de su spec, como mínimo: `pnpm seed` carga el catálogo nuevo; validación del catálogo
   en verde; serie Core dentro de los criterios estadísticos; derechos de todo el contenido revisados.
@@ -313,19 +322,18 @@ INI-10 e INI-13).
   oficial en SVG, seis fondos de página nuevos, sin tablas de goleadores en el modo Duelos y nuevo sobre con su
   animación. Los recursos de origen están en `temp/`, que debe desaparecer al cerrar la spec (FR-021).
 - **Specs**: [007](specs/007-retoques-visuales/spec.md).
-- **Prioridad / estado**: P1 · **Parcial**. 61 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
+- **Prioridad / estado**: P1 · **Parcial**. 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
 - **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
   (rarezas y presentación de la carta de la 006).
 - **Evidencia**: sin `checklists/validacion.md`. Sin cerrar:
-  - **007/SC-007 no se cumple**: `temp/` sigue versionado en `main` (12 ficheros, comprobado el 2026-10-29). T050
-    está abierta, pero T051, que comprueba `test ! -d temp`, está marcada como hecha.
+  - ~~007/SC-007~~: `temp/` se borró en el commit `368a990`; T050 marcada el 2026-11-02 y `test ! -d temp` en verde.
   - T052: `pnpm typecheck`, `pnpm lint`, `pnpm test` y `pnpm e2e` completos. T063 solo cubrió unitarias de web y las e2e afectadas.
   - 007/SC-004 (ningún efecto agudo o molesto en una escucha de prueba) y SC-003 (carga no más lenta) necesitan
     una comprobación con personas; entran en la sesión común de INI-01 a INI-03.
   - Trazabilidad: el botón «Abandonar» en la barra de navegación (T062) se implementó en la segunda ronda sin
     requisito en la spec 007; hay que añadirlo a su `spec.md` o a la de la funcionalidad de abandono (Principio X).
 - **Criterios de cierre**:
-  1. `temp/` eliminado del repositorio (T050) y T051 repetida en verde.
+  1. ~~`temp/` eliminado del repositorio (T050) y T051 repetida en verde~~ (cumplido).
   2. T052 en verde y registrada en `specs/007-retoques-visuales/checklists/validacion.md`.
   3. SC-001 a SC-008 comprobados en esa validación.
   4. «Abandonar» recogido como requisito con su criterio de aceptación.
@@ -360,6 +368,5 @@ INI-10 e INI-13).
 | Licencia de los escudos | `docs/despliegue.md` | INI-08, INI-10 |
 | Tests intermitentes: `torneo-asincrono` con la máquina cargada; `torneo.spec.ts` y la regla de 10 minutos sin conexión con el reloj simulado | 002, 003 y 004 `validacion.md` | INI-07 |
 | Tareas hechas sin marcar: T036 (003), T144 (001) | `tasks.md` | INI-05, INI-01 |
-| `temp/` sigue versionado (007/SC-007) y T051 marcada pese a ello | `specs/007-retoques-visuales/tasks.md` | INI-15 |
 | Batería completa tras la 007 (T052) | `pnpm typecheck`, `lint`, `test`, `e2e` | INI-15 |
 | Escucha de prueba de los sonidos (007/SC-004) | sesión con personas | INI-15 |

@@ -1,6 +1,6 @@
 # Propuesta de modificación de la constitución: 1.1.0 → 1.2.0
 
-**Spec**: [spec.md](./spec.md) · **Research**: [R14](./research.md) · **Estado**: pendiente de revisión
+**Spec**: [spec.md](./spec.md) · **Research**: [R14](./research.md) · **Estado**: aplicada el 2026-11-02 (constitución 1.2.0, ROADMAP INI-09)
 
 Esta propuesta no modifica `.specify/memory/constitution.md`. La persona que mantiene el proyecto la revisa y, si la
 aprueba, la aplica con `/speckit-constitution`.

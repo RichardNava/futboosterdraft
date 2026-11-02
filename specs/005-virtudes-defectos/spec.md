@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-21
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-04)
 
 **Input**: User description: "Spec 5 — Virtudes, defectos y nuevo modo de juego. 0) Renombrar «specials» a «virtudes» en toda la aplicación, sin convivencia de ambos términos. 1) Añadir defectos (Agresivo, Impulsivo, Frágil, Fatigado, Polémico, Indisciplinado, Canchero, Rebelde, Torpe, Provocador, De cristal, Estrellita, Chupón, Inflexible, Mal defensor), representados como las virtudes pero con recuadro rojo. 2) Añadir las virtudes De acero, Versátil, Fair player y Revulsivo. 3) Documento de referencia único de virtudes y defectos con un valor de impacto entre 0 y 1 (virtudes: más impacto positivo, más próximo a 1; defectos: más impacto negativo, más próximo a 0); 3.2) todo atributo nuevo debe documentarse, implementarse y probarse. 4) Nuevo modo «Duelo de jugadores»: formación común elegida por el anfitrión antes del draft (4-3-3 por defecto), draft habitual, solo alineación inicial, eliminatorias resueltas por duelos individuales posición por posición con animación de cartas enfrentadas; puntuación efectiva = media + impacto de virtudes y defectos; gana quien gane más duelos; icono de dos caras enfrentadas. 5) Aumentar la frecuencia de penaltis, lesiones y tarjetas para acercarla a la realidad; en la clarificación se mostrarán los valores actuales para elegir el aumento."
 

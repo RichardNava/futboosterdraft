@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-15
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-01)
 
 **Input**: User description: "Booster draft de tres sobres de ocho cartas con selección simultánea; modelo de jugadores (demarcación, posiciones, stats, virtudes, niveles, colecciones); formaciones y opciones tácticas; simulación rápida y simulación 2D; modos de juego liga, playoff y mixto; algoritmo de simulación complejo; jugadores NPC con cuatro niveles de IA."
 

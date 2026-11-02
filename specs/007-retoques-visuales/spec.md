@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-27
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-15)
 
 **Input**: User description: "Spec 7 — Retoques visuales: sustituir el logo (navbar, favicon…) por el nuevo logo oficial en SVG; rehacer el diseño de las cartas sobre los nuevos marcos y fondos por rareza (Superclase, Épica, Legendaria, GOAT); añadir seis imágenes de fondo nuevas al reparto aleatorio de páginas, optimizadas; sustituir los sonidos estridentes por otros más suaves, bajar el volumen un 20 % y añadir sonidos de choque y ruleta del estado de forma en los duelos, aplausos en la pantalla de campeón y trompetas decaídas en la de derrota; ocultar «Máximos goleadores» y «Máximos asistentes» en el modo Duelos de jugadores. Los recursos están en `temp/`, que se elimina al terminar." Ampliación: "La imagen sobre_futbol_verde_2.png va a ser nuestro nuevo sobre, al que hay que añadirle la animación y sustituirlo en todos los lugares donde mostramos el sobre."
 

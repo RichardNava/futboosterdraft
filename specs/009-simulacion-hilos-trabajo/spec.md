@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-01
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-07)
 
 **Input**: User description: "Spec 9 — Cambio de arquitectura (Hilos de trabajo). Simulación de partidos fuera del hilo principal del servidor (INI-07 del ROADMAP, criterio 001/SC-017). Objetivo: que la simulación de partidos se ejecute en un grupo de hilos de trabajo para que el hilo principal siga atendiendo HTTP y WebSocket y que el servidor aproveche varios núcleos; cumplir 001/SC-017 en una máquina de 4–8 núcleos, medido con `beta-100.js` con servidor, base de datos y k6 en máquinas separadas. Restricciones: resultados idénticos con las mismas semillas (`pnpm test:equivalence` en verde sin cambios); se mantienen las garantías del actor (comandos de una partida serializados, dos aperturas simultáneas resuelven el partido una sola vez); persistencia y difusión siguen en el hilo principal y al hilo de trabajo solo va el cálculo puro del motor y la IA; tamaño del grupo configurable con un valor por defecto según los núcleos; si un hilo de trabajo falla, no se pierde el partido ni se bloquea la partida. Fuera de alcance: optimizar el motor (INI-06) y repartir partidas entre varios procesos o máquinas."
 

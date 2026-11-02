@@ -1,14 +1,19 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 → 1.1.1 (PATCH: «Colecciones adicionales a "Core"» pasa de «Decisiones aún
-  pendientes» a «Decisiones resueltas», con la referencia a `specs/006-preparacion-bd-cartas/`; ningún
-  principio cambia)
-- Principios modificados: ninguno
+- Version change: 1.1.1 → 1.2.0 (MINOR: «habilidades especiales» pasa a «virtudes y defectos»; el
+  Principio V aclara que el motor único resuelve los partidos y que el modo Duelo de jugadores usa una
+  función de dominio; se añaden decisiones resueltas de las specs 003 y 005). Aplica, rebasadas sobre la
+  1.1.1, las propuestas `specs/003-mejoras-ux-simulacion/propuesta-constitucion-1.0.5.md` (T126) y
+  `specs/005-virtudes-defectos/propuesta-constitucion-1.2.0.md` (T102); ROADMAP INI-09
+- Principios modificados: I, III, IV, V y IX (vocabulario y alcance; sin cambio de sentido). El
+  Principio IV añade que cada virtud y cada defecto tiene prueba de unidad y comprobación estadística
+- Secciones modificadas: Visión y propósito, Decisiones resueltas, Decisiones aún pendientes
 - Secciones añadidas: ninguna
 - Secciones eliminadas: ninguna
+- Decisiones resueltas: + niveles de los NPC, equipaciones y tipo de simulación (spec 003);
+  + virtudes y defectos, + modo Duelo de jugadores (spec 005)
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
-- TODOs pendientes: añadir a "Decisiones resueltas" la referencia a `specs/003-mejoras-ux-simulacion/`
-  al cerrar esa spec (tasks.md T126)
+- TODOs pendientes: ninguno
 -->
 # Fútboosterdraft Constitution
 
@@ -22,7 +27,7 @@ inicial, asigna posiciones y formación, define una táctica y compite en torneo
 participantes o contra rivales controlados por la inteligencia artificial.
 
 Los partidos se resuelven mediante un motor de simulación que tiene en cuenta las características
-individuales de los jugadores, sus habilidades especiales, la alineación, las posiciones, la táctica
+individuales de los jugadores, sus virtudes y defectos, la alineación, las posiciones, la táctica
 y las circunstancias del encuentro.
 
 El juego ofrece dos formas de visualizar los partidos:
@@ -39,7 +44,7 @@ mismas condiciones.
 ### I. La estrategia debe ser determinante
 
 - El resultado de los partidos DEBE depender de la calidad de la plantilla, la selección de
-  jugadores, sus posiciones, las habilidades especiales, la formación, la táctica y las decisiones
+  jugadores, sus posiciones, sus virtudes y defectos, la formación, la táctica y las decisiones
   del participante.
 - La aleatoriedad PUEDE introducir variabilidad propia del fútbol, pero NO DEBE sustituir a la
   estrategia ni hacer irrelevantes las decisiones del usuario.
@@ -70,7 +75,7 @@ Las entidades y reglas del juego DEBEN representarse mediante modelos de dominio
 coherentes que incluyan, como mínimo:
 
 - Jugadores y sus atributos; demarcaciones y posiciones.
-- Estadísticas, habilidades especiales y niveles o categorías de los jugadores.
+- Estadísticas, virtudes, defectos y niveles o categorías de los jugadores.
 - Plantillas, alineaciones, formaciones y tácticas.
 - Reglas de elegibilidad para ocupar una posición.
 - Partidos, acciones y resultados.
@@ -88,11 +93,12 @@ El motor DEBE combinar las características de los jugadores con las decisiones 
 contexto del partido para determinar acciones y resultado. Su diseño DEBE contemplar, entre otros:
 
 - Estadísticas individuales según la posición y compatibilidad jugador-posición.
-- Habilidades especiales e interacciones entre jugadores.
+- Virtudes, defectos e interacciones entre jugadores.
 - Formaciones, distribución en el campo y sistemas defensivos y ofensivos.
 - Desarrollo temporal del encuentro.
 - Sustituciones y cambios tácticos cuando estén permitidos.
 - Aleatoriedad controlada y reglas para resolver situaciones equivalentes.
+- Cada virtud y cada defecto tiene una prueba de unidad y una comprobación estadística de su efecto.
 
 La lógica de simulación DEBE estar separada de su representación visual y DEBE poder probarse sin
 depender de la interfaz gráfica. Con las mismas condiciones iniciales y las mismas decisiones, las
@@ -111,6 +117,9 @@ dos modalidades DEBEN reflejar el mismo desarrollo subyacente del partido.
   interacciones expresamente permitidas.
 - Si la modalidad 2D reproduce el encuentro a partir de eventos calculados previamente, DEBE
   conservar la coherencia temporal y espacial necesaria para representarlos.
+- El motor único resuelve los **partidos**. Un modo de juego que resuelve los cruces sin jugar un
+  partido (el modo Duelo de jugadores) usa una función de dominio propia, pura y determinista, y NO
+  constituye un segundo motor de partidos.
 
 ### VI. La integridad multijugador es obligatoria
 
@@ -167,7 +176,7 @@ relacionados. Las decisiones técnicas concretas se documentan en la fase de pla
 - Las funcionalidades relevantes DEBEN acompañarse de pruebas adecuadas a su impacto y complejidad.
 - Se priorizan pruebas automatizadas para: reglas y límites del draft; selección simultánea y
   circulación de sobres; cálculo de plantillas y validación de posiciones; aplicación de
-  estadísticas y habilidades especiales; resolución de acciones del partido; coherencia entre las
+  estadísticas, virtudes y defectos; resolución de acciones del partido; coherencia entre las
   dos modalidades de simulación; integridad de los resultados competitivos; y gestión de errores,
   desconexiones y operaciones duplicadas.
 - Todo cambio en las reglas del dominio DEBE incluir la actualización de pruebas y documentación.
@@ -216,11 +225,13 @@ Resueltas para el MVP en `specs/001-draft-manager-mvp/`:
 - **Turno simultáneo**: resolución, límites de tiempo, elección automática, duplicados,
   desconexiones y reconexiones → `spec.md` (FR-007 a FR-010, FR-062, Edge Cases) y
   `contracts/realtime-protocol.md`.
-- **Jugadores y motor**: atributos, estadísticas, habilidades especiales y niveles → `spec.md`
+- **Jugadores y motor**: atributos, estadísticas, virtudes, defectos y niveles (referencia única:
+  `docs/juego/virtudes-y-defectos.md`) → `spec.md`
   (FR-016 a FR-024, FR-037). Las fórmulas y magnitudes concretas del motor están en los parámetros de
   equilibrado versionados (`research.md` R7 y R8).
 - **Posiciones, formaciones y tácticas**: elegibilidad posicional, formaciones, tácticas,
-  dorsales y equipaciones → `spec.md` (FR-025 a FR-031b, Assumptions).
+  dorsales y equipaciones → `spec.md` (FR-025 a FR-031b, Assumptions). Las equipaciones las
+  actualiza `specs/003-mejoras-ux-simulacion/spec.md` (FR-045 a FR-047).
 - **Torneos**: formato de torneos, clasificaciones, ritmo en directo o asíncrono, sanciones y
   lesiones → `spec.md` (FR-041 a FR-043, FR-051 a FR-056c). El ritmo lo actualiza
   `specs/002-mejoras-mvp/spec.md` (FR-030): los torneos son siempre asíncronos y, con un solo humano,
@@ -229,6 +240,25 @@ Resueltas para el MVP en `specs/001-draft-manager-mvp/`:
   `spec.md` (FR-011, FR-014, Assumptions).
 - **Tecnología**: pila tecnológica, persistencia y protocolo cliente-servidor → `plan.md` y
   `research.md`.
+
+Actualizadas en `specs/003-mejoras-ux-simulacion/`:
+
+- **Niveles de los NPC**: la dificultad sale solo de la calidad de las decisiones; los niveles bajos
+  cometen errores creíbles y el PRO toma alguna decisión dudosa, sin ventajas en el motor → `spec.md`
+  (FR-036 a FR-038). Las probabilidades y costes de los errores están en los parámetros de equilibrado
+  versionados (`npc.errores`).
+- **Equipaciones**: diseño (lisa, rayas, franjas, banda o mitades) y de 1 a 3 colores, con una regla de
+  parecido que mira todos los colores → `spec.md` (FR-045 a FR-047). Sustituye a la parte de
+  equipaciones de 001/FR-031b.
+- **Tipo de simulación**: se elige en cada partido, no al crear la partida, y se recuerda por
+  participante y en la cuenta → `spec.md` (FR-032). Sustituye a esa parte de 001/FR-001.
+
+Resueltas en `specs/005-virtudes-defectos/`:
+
+- **Virtudes y defectos**: la tabla única de rasgos del dominio y el documento generado
+  `docs/juego/virtudes-y-defectos.md` → `spec.md` (FR-050 a FR-055).
+- **Modo Duelo de jugadores**: un modo de torneo con el cuadro del playoff en el que cada cruce se decide
+  por duelos individuales en una formación común fijada por el anfitrión → `spec.md` (FR-060 a FR-069).
 
 Resuelta en `specs/006-preparacion-bd-cartas/`:
 
@@ -243,7 +273,7 @@ Resuelta en `specs/006-preparacion-bd-cartas/`:
 Lo siguiente NO está aprobado como requisito y DEBE concretarse en una especificación propia antes de
 implementarse:
 
-- Modos de juego adicionales a liga, playoff y mixto.
+- Modos de juego adicionales a liga, playoff, mixto y Duelo de jugadores.
 
 ## Flujo de trabajo de desarrollo
 
@@ -285,4 +315,4 @@ persona, que revisa los cambios antes de confirmarlos.
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.1.1 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-10-25
+**Version**: 1.2.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-02

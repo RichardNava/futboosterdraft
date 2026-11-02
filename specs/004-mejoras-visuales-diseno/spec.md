@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-20
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-03)
 
 **Input**: User description: "Spec 4 — Mejoras visuales y de diseño (GUI + UX): realizar mejoras de diseño y estilos para que la página quede de manera profesional, atractiva y moderna, con el criterio más adecuado para que la experiencia de usuario sea óptima. Seguir la guía de estilos DESIGN.md (moverla a otro directorio si conviene). Usar la skill frontend-design."
 

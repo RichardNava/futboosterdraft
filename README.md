@@ -7,10 +7,10 @@ formación, once inicial y táctica, y compite en un torneo contra otros partici
 controlados por la IA. Un motor de simulación resuelve los partidos a partir de los atributos de los
 jugadores, sus virtudes y defectos y las decisiones tácticas.
 
-> **Estado del proyecto:** MVP implementado (las 6 historias de usuario del
-> [plan](specs/001-draft-manager-mvp/plan.md)): draft, preparación del equipo, partidos en simulación
-> rápida y 2D, torneos en directo y asíncronos, y NPC de cuatro niveles. Está en validación antes de la
-> beta.
+> **Estado del proyecto:** preparación de la beta. Las specs 001 a 009 están implementadas y en `main`;
+> la mayoría falta validarlas con personas o en un entorno real. El motor está calibrado (parámetros
+> 5.0.0). Lo que aún bloquea la beta es la carga con 100 partidas (apertura de partidos y entrega de
+> sobres) y la preparación para producción. El estado de cada iniciativa está en el [ROADMAP](ROADMAP.md).
 
 ## Cómo se juega
 
@@ -22,19 +22,26 @@ jugadores, sus virtudes y defectos y las decisiones tácticas.
 3. **Partido**: dos formas de verlo, con el mismo motor:
    - **Simulación rápida**: resumen al descanso, cambios y resultado final.
    - **Simulación 2D**: vista "de chapas" en tiempo real, con velocidades de x2 a x32 y cambios en vivo.
-4. **Torneo**: liga (4–8 participantes, ida y vuelta), playoff (4, 8 o 16) o mixto (liga de 8 más semifinales y final).
-   - Puede jugarse **en directo** o de forma **asíncrona**, con un plazo por jornada.
+4. **Torneo**: liga (4–8 participantes, ida y vuelta), playoff (4, 8 o 16), mixto (liga de 8 más semifinales y final) o **Duelo de jugadores** (cuadro de playoff en el que cada cruce se decide por duelos individuales).
+   - Los torneos son **asíncronos**, con un plazo por jornada (sin plazos si solo hay un humano).
    - Las tarjetas y las lesiones tienen consecuencias en los partidos siguientes.
 
 Las plazas libres se rellenan con **NPC** de cuatro niveles: amateur, intermedio, avanzado y PRO.
 También se puede jugar como **invitado**, sin cuenta, contra la IA.
+
+Cada participante tiene su **colección** (la Core, de 300 futbolistas reales, y las que añada) y elige la activa
+con la que se forman los sobres. Ganar torneos y desfragmentar cartas da fragmentos, que se gastan en la
+**tienda** (sobres, colecciones y fragmentos; el pago es simulado por ahora).
 
 ## Documentación
 
 | Documento | Contenido |
 |-----------|-----------|
 | [Constitución](.specify/memory/constitution.md) | Principios que rigen el diseño del juego y del código |
+| [Roadmap](ROADMAP.md) | Iniciativas de producto, su prioridad, su estado y cuándo se dan por cerradas |
 | [Especificación del MVP](specs/001-draft-manager-mvp/spec.md) | Historias de usuario, requisitos funcionales y criterios de éxito |
+| Specs posteriores | [002](specs/002-mejoras-mvp/spec.md) mejoras del MVP · [003](specs/003-mejoras-ux-simulacion/spec.md) UX y simulación · [004](specs/004-mejoras-visuales-diseno/spec.md) diseño visual · [005](specs/005-virtudes-defectos/spec.md) virtudes, defectos y Duelo · [006](specs/006-preparacion-bd-cartas/spec.md) colecciones y tienda · [007](specs/007-retoques-visuales/spec.md) retoques visuales y sonoros · [008](specs/008-datos-reales-core/spec.md) datos reales de Core · [009](specs/009-simulacion-hilos-trabajo/spec.md) simulación en hilos de trabajo |
+| [Guía de estilos](docs/diseno/DESIGN.md) | Sistema de diseño visual de la interfaz |
 | [Plan técnico](specs/001-draft-manager-mvp/plan.md) | Arquitectura, pila tecnológica y estructura del repositorio |
 | [Decisiones técnicas](specs/001-draft-manager-mvp/research.md) | Cada decisión con su razón y las alternativas descartadas |
 | [Modelo de datos](specs/001-draft-manager-mvp/data-model.md) | Entidades, validaciones y estados |
@@ -66,7 +73,7 @@ pnpm install
 cp .env.example .env            # ajusta AUTH_SECRET
 docker compose up -d            # PostgreSQL 16 y buzón de correo de pruebas (http://localhost:8025)
 pnpm db:migrate
-pnpm seed # catálogo: Core (300 cartas ficticias), 75 cartas de prueba y 3 colecciones
+pnpm seed                       # catálogo: Core (300 jugadores reales), 75 cartas de prueba y colecciones
 pnpm dev                        # API en :3000 y web en http://localhost:5173
 ```
 
@@ -82,10 +89,10 @@ de turno, preparación y jornada sin esperar.
 | `packages/engine` | Motor de simulación de partidos (rápida y 2D, mismo motor) |
 | `packages/ai` | NPC: evaluador común y niveles amateur, intermedio, avanzado y PRO |
 | `packages/protocol` | Contratos HTTP y WebSocket (Zod) y esquema del catálogo |
-| `apps/server` | Fastify + WebSocket, actor por partida, PostgreSQL (Drizzle), autenticación |
+| `apps/server` | Fastify + WebSocket, actor por partida, partidos simulados en hilos de trabajo, PostgreSQL (Drizzle), autenticación |
 | `apps/web` | React + Vite; Canvas 2D para el partido |
-| `tools/balance` | Equilibrado por simulación masiva (spec 001: SC-004, SC-006, SC-007, SC-010, SC-015; spec 002: SC-007, SC-008, SC-011, SC-018; spec 003: SC-001 a SC-010) |
-| `tools/fixtures` | Generador del catálogo Core y semillas de escenarios de prueba |
+| `tools/balance` | Equilibrado por simulación masiva: los criterios estadísticos de las specs 001 a 005 (`pnpm balance --solo <spec>/` filtra por spec) |
+| `tools/fixtures` | Catálogo Core (`core-real`: copia `data/core-real.json` en `data/core.json`) y semillas de escenarios de prueba |
 | `tools/load` | Prueba de carga con k6 (SC-017) |
 
 ### Pruebas
@@ -105,8 +112,7 @@ de turno, preparación y jornada sin esperar.
 | `pnpm balance --torneos 100 --pro-vs-amateur` | Niveles de NPC (SC-010; tarda unos 10 minutos) |
 | `k6 run tools/load/beta-100.js` | Carga de beta: 100 partidas simultáneas (ver [tools/load](tools/load/README.md)) |
 
-Los quickstarts de la [spec 001](specs/001-draft-manager-mvp/quickstart.md), de la
-[spec 002](specs/002-mejoras-mvp/quickstart.md) y de la [spec 003](specs/003-mejoras-ux-simulacion/quickstart.md) detallan los escenarios de validación manual, y [docs/despliegue.md](docs/despliegue.md) cómo construir la imagen Docker y desplegarla.
+Los `quickstart.md` de cada spec (por ejemplo, el de la [001](specs/001-draft-manager-mvp/quickstart.md)) detallan los escenarios de validación manual, y [docs/despliegue.md](docs/despliegue.md) cómo construir la imagen Docker y desplegarla.
 
 ### Flujo de trabajo
 

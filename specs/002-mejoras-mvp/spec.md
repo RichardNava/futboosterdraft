@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-16
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-02)
 
 **Input**: User description: "Spec 2 - Mejoras en el MVP: diseño de las cartas; efecto de apertura de sobre; botón «Siguiente»; navbar; simulación 2D (homogeneidad, realismo, velocidades, finalización anticipada y evaluación de la viabilidad del modelo síncrono); posiciones menos estrictas y posicionamiento libre; dorsales; tablas de máximos goleadores y asistentes."
 

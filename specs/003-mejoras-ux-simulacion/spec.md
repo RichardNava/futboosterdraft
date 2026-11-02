@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-18
 
-**Status**: Draft
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-02, INI-05)
 
 **Input**: User description: "Spec 3 — Mejoras de interfaz, simulación y experiencia de juego: interfaz «Formación» (colocación en el campo de la alineación y vista ampliada de las cartas al pasar el cursor); diseño de las cartas; efectos de apertura de los sobres; botones importantes más visibles y siempre accesibles; simulación 2D (realismo, media de goles, variedad de goles, peso de stats y virtudes, finalización anticipada a una pantalla de resultado y gestión visual del equipo en el descanso); elección del modo de simulación antes de cada partido; menor dificultad de los NPC; feedback de derrota y de campeón; nombre del equipo para todos y equipaciones con rayas, franjas y varios colores."
 

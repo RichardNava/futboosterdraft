@@ -216,7 +216,7 @@ rasgado (FR-017 a FR-020; research R4).
 ## Phase 9: Polish & Cross-Cutting Concerns
 
 - [X] T049 [P] Actualizar `docs/diseno/DESIGN.md` en las secciones de la carta, el sobre y el logo: proporción 2 : 3, marcos por nivel y su `--carta-marco`, texto claro, sobre en `<img>` y nueva `--proporcion-sobre`.
-- [ ] T050 Borrar el directorio `temp/` de la raíz del repositorio (FR-021, SC-007) cuando T003–T006 y T022 estén terminadas y revisadas.
+- [X] T050 Borrar el directorio `temp/` de la raíz del repositorio (FR-021, SC-007) cuando T003–T006 y T022 estén terminadas y revisadas. **Hecho** en el commit `368a990` (2026-10-29).
 - [X] T051 Ejecutar las comprobaciones de recursos de quickstart.md: tamaños de fondos, marcos, sobre y logo; `du -cb apps/web/public/sonidos/*.mp3 | tail -1` ≤ 307200; `test ! -d temp`; `grep -rn "temp/" apps/web/src apps/web/index.html apps/web/tests` sin resultados; `grep -rln "favicon.svg\|\.wav" apps/web/src apps/web/index.html` sin resultados.
 - [ ] T052 Ejecutar `pnpm typecheck`, `pnpm lint` (incluye `lint:tokens`), `pnpm test` y `pnpm e2e`, y dejar todo en verde.
 - [X] T053 Ejecutar `graphify update .` desde la raíz del repositorio para actualizar el grafo tras los cambios de código.
