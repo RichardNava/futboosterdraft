@@ -259,6 +259,9 @@ dos modos (tests de integración de directo); `final_ms` p95 < 3 s en `beta-100.
   separadas (las proporciona la persona; si aún no están, dejar la tarea abierta y anotar solo la referencia de T021).
   Registrar los p95, partidas terminadas, errores y uso de CPU por núcleo en
   `specs/003-mejoras-ux-simulacion/checklists/validacion.md` (fila «Carga») y en `ROADMAP.md` INI-07 (FR-011).
+  **Aplazada (2026-11-02)**: medición parcial con dos máquinas por Wi-Fi ya registrada (100 partidas terminan sin
+  errores; fallan `entrega_sobre_ms` y `apertura_ms`). Queda repetirla con tres máquinas y red por cable cuando haya
+  una tercera disponible.
 - [X] T037 `graphify update .` tras los cambios de código.
 
 ---
