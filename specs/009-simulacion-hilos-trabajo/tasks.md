@@ -170,7 +170,7 @@ partidas abriendo a la vez da `apertura_ms` p95 < 3 s y `entrega_sobre_ms` p95 <
 - [X] T020 [US1] Validar US1: `pnpm --filter @fbd/server test:integration` y `pnpm --filter @fbd/server
   test:integration:hilos` en verde sin cambiar expectativas, en particular `apps/server/tests/integration/
   torneo-asincrono.test.ts` «dos aperturas simultáneas».
-- [ ] T021 [US1] Medir SC-003 en la máquina de desarrollo con el servidor arrancado con hilos por defecto:
+- [X] T021 [US1] Medir SC-003 en la máquina de desarrollo con el servidor arrancado con hilos por defecto:
   `k6 run -e PARTIDAS=10 -e APERTURA_MAX_S=0 tools/load/beta-100.js`; anotar `apertura_ms` p95 y `entrega_sobre_ms`
   p95 en `specs/003-mejoras-ux-simulacion/checklists/validacion.md` (fila «Carga», referencia de una máquina).
 
