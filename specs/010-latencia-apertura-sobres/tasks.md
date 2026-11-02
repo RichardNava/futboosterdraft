@@ -123,7 +123,7 @@ p95 por fase de `apertura` y `entrega_sobre`, sin cambiar resultados ni métrica
 
 ### Diagnóstico (FR-004, SC-004) — puerta de US2 y US3
 
-- [ ] T014 [US1] Medir en el entorno de referencia (servidor, PostgreSQL y k6 en una máquina, sin Docker Desktop),
+- [X] T014 [US1] Medir en el entorno de referencia (servidor, PostgreSQL y k6 en una máquina, sin Docker Desktop),
   reiniciando el servidor entre escenarios: `k6 run -e PARTIDAS=10 -e APERTURA_MAX_S=0 -e METRICAS_URL=… tools/load/beta-100.js`
   y lo mismo con `PARTIDAS=100`, y con `PARTIDAS=1` para la latencia de un viaje (`bd / consultas` con carga baja).
   Guardar las salidas en `specs/010-latencia-apertura-sobres/mediciones/` (quickstart §3).
