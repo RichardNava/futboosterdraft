@@ -162,8 +162,6 @@ export function setup() {
 function jugar({ partidaId, cookie, anfitrion, conNPC }) {
   return new Promise((resolve) => {
     let ws;
-    let abierto = false;
-    let reintentos = 0;
     let iniciada = false;
     let eligioEn = null;
     const inicios = new Map();
@@ -188,11 +186,6 @@ function jugar({ partidaId, cookie, anfitrion, conNPC }) {
     }, LIMITE_PARTIDA_MS);
 
     const alError = (e) => {
-      // Windows rechaza conexiones cuando llegan cientos a la vez (cola de listen llena): se reintenta antes de abrir.
-      if (!abierto && reintentos++ < 5) {
-        setTimeout(conectar, 500 + Math.random() * 1500);
-        return;
-      }
       erroresWs.add(1);
       console.warn(`error de WebSocket en ${partidaId}: ${e.error}`);
       cerrar(false);
@@ -294,17 +287,12 @@ function jugar({ partidaId, cookie, anfitrion, conNPC }) {
           break;
       }
     };
-    const conectar = () => {
-      if (terminado) return;
+    // Un turno fijo por VU (1 conexión cada 4 ms, las 730 en ~3 s): todas a la vez desbordan la cola de listen de Windows.
+    setTimeout(() => {
       ws = new WebSocket(`${WS}/ws?partidaId=${partidaId}`, null, { headers: { cookie, origin: ORIGEN } });
-      ws.onopen = () => {
-        abierto = true;
-      };
       ws.onerror = alError;
       ws.onmessage = alMensaje;
-    };
-    // Repartir en 3 s las 730 conexiones del arranque: todas a la vez desbordan la cola de listen de Windows.
-    setTimeout(conectar, Math.random() * 3000);
+    }, (__VU - 1) * 4);
   });
 }
 
