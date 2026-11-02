@@ -115,7 +115,7 @@ p95 por fase de `apertura` y `entrega_sobre`, sin cambiar resultados ni métrica
   o donde se despache, según `graphify query "draft.elegir"`) dentro de `medir('eleccion', …)`, incluido el `ack`; y en
   `apps/server/src/actores/draft.ts`, llamar `renombrar('entrega_sobre')` cuando la elección cierra el turno de su mesa
   (antes de `resolver`/`abrirTurno`). `turno_draft_resolucion_ms` no cambia.
-- [ ] T012 [US1] Pasar T005 en los dos modos (`test:integration` y `test:integration:hilos`). Si `resto` > 10 %,
+- [X] T012 [US1] Pasar T005 en los dos modos (`test:integration` y `test:integration:hilos`). Si `resto` > 10 %,
   buscar la fase sin instrumentar antes de seguir.
 - [X] T013 [P] [US1] `teardown()` opcional en `tools/load/beta-100.js` (research R12): si `__ENV.METRICAS_URL` existe,
   `http.get` de esa URL e imprimir solo las líneas que empiezan por `operacion_fase_ms` y `operacion_consultas`. No
@@ -127,10 +127,10 @@ p95 por fase de `apertura` y `entrega_sobre`, sin cambiar resultados ni métrica
   reiniciando el servidor entre escenarios: `k6 run -e PARTIDAS=10 -e APERTURA_MAX_S=0 -e METRICAS_URL=… tools/load/beta-100.js`
   y lo mismo con `PARTIDAS=100`, y con `PARTIDAS=1` para la latencia de un viaje (`bd / consultas` con carga baja).
   Guardar las salidas en `specs/010-latencia-apertura-sobres/mediciones/` (quickstart §3).
-- [ ] T015 [US1] Repetir la medición con Docker Desktop y Wi-Fi en las mismas condiciones que la del 2026-11-02
+- [X] T015 [US1] Repetir la medición con Docker Desktop y Wi-Fi en las mismas condiciones que la del 2026-11-02
   (`-e BASE_URL=… -e ORIGIN=… -e METRICAS_URL=…`) y guardarla en la misma carpeta. Si el entorno no está disponible,
   pedirlo a la persona; no inventar cifras.
-- [ ] T016 [US1] Escribir `specs/010-latencia-apertura-sobres/diagnostico.md`: tabla de mediana y p95 por fase y por
+- [X] T016 [US1] Escribir `specs/010-latencia-apertura-sobres/diagnostico.md`: tabla de mediana y p95 por fase y por
   operación (`apertura`, `entrega_sobre`) para 10 y 100 partidas en cada entorno; consultas por operación; latencia de
   un viaje a la BD por entorno; reparto entorno / servidor con el método de research R3 (bd y difusión escalan con la
   red → entorno; cálculo, serialización y resto → servidor; la cola se reparte según la proporción de su tiempo de

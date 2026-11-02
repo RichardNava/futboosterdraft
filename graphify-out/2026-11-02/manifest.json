@@ -162,15 +162,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/actor.ts": {
-    "mtime": 1792153826.3975363,
-    "seen": 1792327978.0273006,
-    "ast_hash": "99aca52055e5ed342e0faa25fbb23ee9",
-    "semantic_hash": "99aca52055e5ed342e0faa25fbb23ee9"
+    "mtime": 1793589350.779001,
+    "seen": 1793590320.2025359,
+    "ast_hash": "57d110205e178bf6bd1651f4419da547",
+    "semantic_hash": ""
   },
   "apps/server/src/actores/draft.ts": {
-    "mtime": 1793055174.8656962,
-    "seen": 1793088076.695506,
-    "ast_hash": "c0cc24f8b57f19ed3bdd23c494b75263",
+    "mtime": 1793589586.7601674,
+    "seen": 1793590320.202539,
+    "ast_hash": "e847a199d061db00d7a25ec1d8bb90bc",
     "semantic_hash": ""
   },
   "apps/server/src/actores/equipo.ts": {
@@ -318,9 +318,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/http/partidos.ts": {
-    "mtime": 1793496220.3248253,
-    "seen": 1793497129.472891,
-    "ast_hash": "9721c8c6c1905614eb1f29fbcb6c2cf0",
+    "mtime": 1793589350.7810004,
+    "seen": 1793590320.2071588,
+    "ast_hash": "d313816c7bb5833a87fb293fe7eae9d3",
     "semantic_hash": ""
   },
   "apps/server/src/http/torneo.ts": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/main.ts": {
-    "mtime": 1793563068.110074,
-    "seen": 1793563195.5042765,
-    "ast_hash": "edd9ec4ccedf602678d167f194c4051b",
+    "mtime": 1793589283.8279688,
+    "seen": 1793590320.2077887,
+    "ast_hash": "47ae059a3043bd53a554477b2667d03a",
     "semantic_hash": ""
   },
   "apps/server/src/observabilidad/logger.ts": {
@@ -342,9 +342,9 @@
     "semantic_hash": "eae610d85ec4c18013e31e8c5c937294"
   },
   "apps/server/src/observabilidad/metricas.ts": {
-    "mtime": 1793563068.110074,
-    "seen": 1793563195.5044346,
-    "ast_hash": "adc850d515ec0b16b38359831de7e18a",
+    "mtime": 1793589283.8289707,
+    "seen": 1793590320.2079542,
+    "ast_hash": "41f2898b374418e1a6d3f9741d0bab8f",
     "semantic_hash": ""
   },
   "apps/server/src/observabilidad/rutas.ts": {
@@ -354,10 +354,10 @@
     "semantic_hash": "4ed27d1245a0a661fbf55c44a15df4cd"
   },
   "apps/server/src/persistencia/db.ts": {
-    "mtime": 1792153826.4041142,
-    "seen": 1792327978.0274007,
-    "ast_hash": "508b58df1d8a4de3dd4e24c04390d52e",
-    "semantic_hash": "508b58df1d8a4de3dd4e24c04390d52e"
+    "mtime": 1793589363.5978773,
+    "seen": 1793590320.2081187,
+    "ast_hash": "d604579959175f5fa7252e5ecf29bb84",
+    "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/base.ts": {
     "mtime": 1793320534.7083094,
@@ -468,16 +468,16 @@
     "semantic_hash": "cde9297a5932d62e2c5198c2fd696fe0"
   },
   "apps/server/src/servidor.ts": {
-    "mtime": 1793563068.110074,
-    "seen": 1793563195.5079057,
-    "ast_hash": "1d8427aecba2aa34f462a0d11795dfc1",
+    "mtime": 1793589350.7800002,
+    "seen": 1793590320.2114232,
+    "ast_hash": "96c8c52dc577561439b74e5e76c1c50e",
     "semantic_hash": ""
   },
   "apps/server/src/ws/pasarela.ts": {
-    "mtime": 1792153826.408113,
-    "seen": 1792327978.0274587,
-    "ast_hash": "49d070d05f0f735f913a6ffa37267088",
-    "semantic_hash": "49d070d05f0f735f913a6ffa37267088"
+    "mtime": 1793589350.7800002,
+    "seen": 1793590320.2117505,
+    "ast_hash": "d905a42097bfd1e87fc87aa4913899fa",
+    "semantic_hash": ""
   },
   "apps/server/tests/contract/alineacion.test.ts": {
     "mtime": 1793482879.680769,
@@ -498,9 +498,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/helpers/app.ts": {
-    "mtime": 1793563068.1110725,
-    "seen": 1793563195.5087237,
-    "ast_hash": "a77701292ea6b691586beecf73ec2f2a",
+    "mtime": 1793589418.376868,
+    "seen": 1793590320.2125242,
+    "ast_hash": "5736f288513324d3f12dd3d451476b14",
     "semantic_hash": ""
   },
   "apps/server/tests/helpers/bd.ts": {
@@ -1932,9 +1932,9 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/load/beta-100.js": {
-    "mtime": 1793521043.5923162,
-    "seen": 1793543274.8963902,
-    "ast_hash": "6f0d3629fc1e3032786020c9f7d1f9c1",
+    "mtime": 1793589716.794623,
+    "seen": 1793590320.2821987,
+    "ast_hash": "be4849889b0470c154f213fd9b9d2af7",
     "semantic_hash": ""
   },
   "tsconfig.base.json": {
@@ -2058,9 +2058,9 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1793585210.8684373,
-    "seen": 1793585250.6633039,
-    "ast_hash": "ead3f9982f648cebe6aff76e696f18a6",
+    "mtime": 1793588535.8822494,
+    "seen": 1793590320.3040717,
+    "ast_hash": "84a1649e2ec16ea43eec861b524bc625",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2082,9 +2082,9 @@
     "semantic_hash": "5d9adb618448c82498a1711504f10c9e"
   },
   "docs/despliegue.md": {
-    "mtime": 1793563068.112076,
-    "seen": 1793563195.624628,
-    "ast_hash": "69ca73b25c12693e27cf0bad7d6204a6",
+    "mtime": 1793589731.2274902,
+    "seen": 1793590320.3044672,
+    "ast_hash": "27ab4ea0b589ce507a9fc947305ee366",
     "semantic_hash": ""
   },
   "pnpm-workspace.yaml": {
@@ -2238,9 +2238,9 @@
     "semantic_hash": ""
   },
   "tools/load/README.md": {
-    "mtime": 1793522871.8060737,
-    "seen": 1793543274.9250295,
-    "ast_hash": "a748065ae22734b9746ab53e1cdc0b63",
+    "mtime": 1793589706.6050828,
+    "seen": 1793590320.3234332,
+    "ast_hash": "02f536d1da84aa3925380586ebd7732a",
     "semantic_hash": ""
   },
   ".claude/settings.json": {
@@ -4980,9 +4980,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1793585229.850877,
-    "seen": 1793585250.6633093,
-    "ast_hash": "99b7385c08f0876edd384fd4979a0321",
+    "mtime": 1793587590.8125584,
+    "seen": 1793590320.3042035,
+    "ast_hash": "d009841a0ace525d8a8ce5e8207f2e6b",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -7020,9 +7020,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/simulacion/grupo.ts": {
-    "mtime": 1793563068.1482122,
-    "seen": 1793563195.5079122,
-    "ast_hash": "3bc7972dc8d5aff7f54215653a81cbe7",
+    "mtime": 1793589363.5969183,
+    "seen": 1793590320.2115943,
+    "ast_hash": "e7a2be92026ccc874c48e17370f8264c",
     "semantic_hash": ""
   },
   "apps/server/src/simulacion/hilo.ts": {
@@ -7101,6 +7101,72 @@
     "mtime": 1793584773.4042876,
     "seen": 1793585250.6763425,
     "ast_hash": "6931d25861bd1b7300443efc411beaf7",
+    "semantic_hash": ""
+  },
+  "apps/server/src/observabilidad/desglose.ts": {
+    "mtime": 1793589320.8483078,
+    "seen": 1793590320.2077918,
+    "ast_hash": "a9a19e3219d50f3db81b15582aa4371f",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/desglose.test.ts": {
+    "mtime": 1793589662.2957346,
+    "seen": 1793590320.2144287,
+    "ast_hash": "ca39d821663abca5cb99a372c36beb53",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/unit/desglose.test.ts": {
+    "mtime": 1793589299.0989807,
+    "seen": 1793590320.2184837,
+    "ast_hash": "bbafd3457337e54e16351aea85085221",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/checklists/requirements.md": {
+    "mtime": 1793587585.490369,
+    "seen": 1793590320.3234158,
+    "ast_hash": "e1413ccf95b8eff6ccbd0c66093691c1",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/contracts/desglose.md": {
+    "mtime": 1793588463.2121763,
+    "seen": 1793590320.3234186,
+    "ast_hash": "0ffb7a9d34818221e329579b7dadc2ea",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/data-model.md": {
+    "mtime": 1793588462.3750126,
+    "seen": 1793590320.3234208,
+    "ast_hash": "47190e7b15986478717bea70fa029d10",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/plan.md": {
+    "mtime": 1793588535.0093086,
+    "seen": 1793590320.3234227,
+    "ast_hash": "57381b5b97020ffd17fd9b4319d70ece",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/quickstart.md": {
+    "mtime": 1793588526.0361283,
+    "seen": 1793590320.3234246,
+    "ast_hash": "0731427d85d8a572c7063dc39b7431a8",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/research.md": {
+    "mtime": 1793588461.4962869,
+    "seen": 1793590320.3234262,
+    "ast_hash": "5bfb563ab15a6367da57f9ff7ec7ba77",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/spec.md": {
+    "mtime": 1793588173.5041428,
+    "seen": 1793590320.3234282,
+    "ast_hash": "0a136ae8974d07ca5501ede3204d13f8",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/tasks.md": {
+    "mtime": 1793590297.679959,
+    "seen": 1793590320.32343,
+    "ast_hash": "738dba7b618ad88651a68deed7a49835",
     "semantic_hash": ""
   }
 }

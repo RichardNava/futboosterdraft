@@ -2238,9 +2238,9 @@
     "semantic_hash": ""
   },
   "tools/load/README.md": {
-    "mtime": 1793589706.6050828,
-    "seen": 1793590320.3234332,
-    "ast_hash": "02f536d1da84aa3925380586ebd7732a",
+    "mtime": 1793613796.7076936,
+    "seen": 1793623256.508436,
+    "ast_hash": "8186332baea248efb76b675840aae4d6",
     "semantic_hash": ""
   },
   ".claude/settings.json": {
@@ -7110,9 +7110,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/desglose.test.ts": {
-    "mtime": 1793589662.2957346,
-    "seen": 1793590320.2144287,
-    "ast_hash": "ca39d821663abca5cb99a372c36beb53",
+    "mtime": 1793623054.8353796,
+    "seen": 1793623256.4205394,
+    "ast_hash": "53c20348dd65383e25f87cb846a7fc39",
     "semantic_hash": ""
   },
   "apps/server/tests/unit/desglose.test.ts": {
@@ -7164,9 +7164,33 @@
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/tasks.md": {
-    "mtime": 1793590297.679959,
-    "seen": 1793590320.32343,
-    "ast_hash": "738dba7b618ad88651a68deed7a49835",
+    "mtime": 1793623229.1629453,
+    "seen": 1793623256.5084336,
+    "ast_hash": "8730da7470daf309bc22b545c6d7fa73",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/diagnostico.md": {
+    "mtime": 1793623227.7187529,
+    "seen": 1793623256.5079386,
+    "ast_hash": "df35a43debf20f58e7829afbe9cfc1a7",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/ref-1.md": {
+    "mtime": 1793622202.5679524,
+    "seen": 1793623256.5079408,
+    "ast_hash": "646e0c3e00e5fe5b9d40430af0cc4b37",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/ref-10.md": {
+    "mtime": 1793622141.7461338,
+    "seen": 1793623256.507943,
+    "ast_hash": "1653a94ed630bd21dca895c3ccd1fb44",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/ref-100.md": {
+    "mtime": 1793622176.1080258,
+    "seen": 1793623256.507945,
+    "ast_hash": "4359ed9fee8522853f178a169cf818fd",
     "semantic_hash": ""
   }
 }
