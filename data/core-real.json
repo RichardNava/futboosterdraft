@@ -164,16 +164,16 @@
       "posicion": [
         "POR"
       ],
-      "historia": "Portero de la cantera del Espanyol, figura del equipo en su vuelta a Primera. En 2025 fichó por el Barcelona. Reflejos y paradas de mérito en el uno contra uno.",
+      "historia": "Portero de la cantera del Espanyol, figura del equipo en su vuelta a Primera. En 2025 fichó por el Barcelona y gano la liga siendo el zamora. Reflejos y paradas de mérito en el uno contra uno.",
       "stats": {
-        "agilidad": 88,
+        "agilidad": 90,
         "colocacion": 86,
-        "distribucion": 84,
+        "distribucion": 86,
         "aereo": 83,
-        "defensa": 85,
+        "defensa": 87,
         "liderazgo": 78
       },
-      "media": 84,
+      "media": 85,
       "virtudes": [
         "Santo",
         "OneToOne",
@@ -326,20 +326,20 @@
       ],
       "historia": "Portero suizo formado en el Hoffenheim que pasó por el Augsburgo y el Stuttgart. En el Borussia Dortmund jugó la final de la Liga de Campeones de 2024 y es uno de los mejores de la Bundesliga.",
       "stats": {
-        "agilidad": 87,
-        "colocacion": 84,
-        "distribucion": 82,
-        "aereo": 82,
-        "defensa": 86,
+        "agilidad": 85,
+        "colocacion": 83,
+        "distribucion": 81,
+        "aereo": 81,
+        "defensa": 85,
         "liderazgo": 79
       },
-      "media": 83.33,
+      "media": 82.33,
       "virtudes": [
         "OneToOne",
         "Santo"
       ],
       "defectos": [],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/gregor-kobel.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
@@ -420,13 +420,13 @@
       "historia": "Portero belga formado en el Genk que ganó LaLiga de 2014 con el Atlético de Madrid y la Premier League con el Chelsea. En el Real Madrid fue el mejor jugador de la final de la Liga de Campeones de 2022. Premio Yashin en 2022.",
       "stats": {
         "agilidad": 92,
-        "colocacion": 92,
-        "distribucion": 78,
-        "aereo": 94,
+        "colocacion": 95,
+        "distribucion": 79,
+        "aereo": 96,
         "defensa": 95,
-        "liderazgo": 86
+        "liderazgo": 89
       },
-      "media": 89.5,
+      "media": 91,
       "virtudes": [
         "Santo",
         "OneToOne",
@@ -452,24 +452,23 @@
       ],
       "historia": "Portero que pasó años de suplente en el Arsenal antes de triunfar en el Aston Villa. Campeón del Mundo en 2022, con el Guante de Oro y la parada decisiva en la final, y de dos Copas América. Ganó dos premios Yashin.",
       "stats": {
-        "agilidad": 89,
-        "colocacion": 88,
-        "distribucion": 80,
-        "aereo": 88,
-        "defensa": 90,
-        "liderazgo": 94
+        "agilidad": 86,
+        "colocacion": 86,
+        "distribucion": 84,
+        "aereo": 84,
+        "defensa": 86,
+        "liderazgo": 82
       },
-      "media": 88.17,
+      "media": 84.67,
       "virtudes": [
         "Parapenalties",
         "Santo",
-        "Carismatico",
-        "Intimidante"
+        "Carismatico"
       ],
       "defectos": [
         "Provocador"
       ],
-      "nivel": "GOAT",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/emiliano-martinez.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
@@ -770,23 +769,25 @@
       "posicion": [
         "DCD",
         "DCI",
-        "LD"
+        "LD",
+        "MD"
       ],
       "historia": "Central formado en La Masia y en el Manchester City. Tras una gran temporada cedido en el Girona volvió al Barcelona, con el que ganó LaLiga. Inteligente con el balón y polivalente.",
       "stats": {
-        "velocidad": 70,
+        "velocidad": 76,
         "tecnica": 84,
-        "tackling": 76,
+        "tackling": 79,
         "anticipacion": 82,
         "marcaje": 76,
-        "liderazgo": 76
+        "liderazgo": 79
       },
-      "media": 77.33,
+      "media": 79.33,
       "virtudes": [
-        "Libero"
+        "Libero",
+        "Versatil"
       ],
       "defectos": [],
-      "nivel": "Superclase",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/eric-garcia.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -1694,20 +1695,19 @@
       ],
       "historia": "Central formado en el 1. FC Colonia que se curtió en el Aarhus danés. En el Inter ganó la Serie A de 2024. Internacional con Alemania.",
       "stats": {
-        "velocidad": 80,
+        "velocidad": 78,
         "tecnica": 76,
         "tackling": 82,
         "anticipacion": 78,
-        "marcaje": 80,
-        "liderazgo": 74
+        "marcaje": 78,
+        "liderazgo": 72
       },
-      "media": 78.33,
+      "media": 77.33,
       "virtudes": [
-        "Volador",
-        "Potente"
+        "Volador"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "Superclase",
       "imagen": "/cartas/retratos/yann-bisseck.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -1758,22 +1758,23 @@
         "DCD",
         "DCI"
       ],
-      "historia": "Central de La Masia que debutó con el Barcelona con 16 años y se hizo titular indiscutible. Campeón de LaLiga y de la Copa del Rey en 2025, ya es internacional con España. Se le valora por su mejor rendimiento hasta hoy.",
+      "historia": "Central de La Masia que debutó con el Barcelona con 16 años y se hizo titular indiscutible. Campeón de dos LaLiga y de una Copa del Rey. Campeón y mejor jugador joven del mundial 2026.",
       "stats": {
-        "velocidad": 72,
-        "tecnica": 84,
-        "tackling": 80,
+        "velocidad": 78,
+        "tecnica": 87,
+        "tackling": 84,
         "anticipacion": 86,
-        "marcaje": 80,
-        "liderazgo": 76
+        "marcaje": 83,
+        "liderazgo": 78
       },
-      "media": 79.67,
+      "media": 82.67,
       "virtudes": [
         "Libero",
-        "Jerarquia"
+        "Jerarquia",
+        "Elegante"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/pau-cubarsi.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -1790,24 +1791,25 @@
         "LI",
         "CI"
       ],
-      "historia": "Lateral zurdo formado en La Masia que despuntó en el Eibar, el Getafe y el Brighton. En el Chelsea ganó la Conference League y el Mundial de Clubes de 2025. Campeón de la Eurocopa 2024 con España.",
+      "historia": "Lateral zurdo formado en La Masia que despuntó en el Eibar, el Getafe y el Brighton. En el Chelsea ganó la Conference League y el Mundial de Clubes de 2025. Campeón de la Eurocopa 2024 y del mundial con 2026 con España.",
       "stats": {
-        "velocidad": 80,
-        "tecnica": 80,
-        "tackling": 82,
-        "anticipacion": 80,
-        "marcaje": 80,
-        "liderazgo": 76
+        "velocidad": 82,
+        "tecnica": 83,
+        "tackling": 83,
+        "anticipacion": 87,
+        "marcaje": 84,
+        "liderazgo": 77
       },
-      "media": 79.67,
+      "media": 82.67,
       "virtudes": [
         "Incansable",
-        "FortalezaMental"
+        "FortalezaMental",
+        "Intimidante"
       ],
       "defectos": [
         "Provocador"
       ],
-      "nivel": "Crack",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/marc-cucurella.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -1826,14 +1828,14 @@
       ],
       "historia": "Carrilero zurdo de la cantera del Inter, campeón de la Serie A en 2021 y 2024 y finalista de dos Ligas de Campeones. Internacional con Italia. Su zurda vale goles y asistencias.",
       "stats": {
-        "velocidad": 80,
+        "velocidad": 84,
         "tecnica": 88,
-        "tackling": 76,
+        "tackling": 79,
         "anticipacion": 80,
-        "marcaje": 74,
-        "liderazgo": 76
+        "marcaje": 76,
+        "liderazgo": 78
       },
-      "media": 79,
+      "media": 80.83,
       "virtudes": [
         "LanzadorFaltas",
         "Llegador"
@@ -1922,14 +1924,14 @@
       ],
       "historia": "Central nacido en Ámsterdam y criado en Málaga que pasó por la Juventus, la Roma y el Bournemouth. En 2025 fichó por el Real Madrid y debutó con España. Destaca por su salida de balón.",
       "stats": {
-        "velocidad": 74,
-        "tecnica": 85,
+        "velocidad": 77,
+        "tecnica": 88,
         "tackling": 80,
         "anticipacion": 81,
         "marcaje": 78,
         "liderazgo": 72
       },
-      "media": 78.33,
+      "media": 79.33,
       "virtudes": [
         "Libero",
         "Elegante"
@@ -2082,20 +2084,21 @@
       ],
       "historia": "Central zurdo ecuatoriano surgido de Independiente del Valle que pasó por el Amberes y el Eintracht de Fráncfort. En el PSG fue titular en la Liga de Campeones de 2025.",
       "stats": {
-        "velocidad": 84,
-        "tecnica": 78,
-        "tackling": 84,
-        "anticipacion": 82,
-        "marcaje": 84,
-        "liderazgo": 76
+        "velocidad": 87,
+        "tecnica": 79,
+        "tackling": 87,
+        "anticipacion": 88,
+        "marcaje": 87,
+        "liderazgo": 79
       },
-      "media": 81.33,
+      "media": 84.5,
       "virtudes": [
         "MuroDefensivo",
-        "Potente"
+        "Potente",
+        "Intimidante"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/willian-pacho.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -2112,16 +2115,16 @@
         "LD",
         "CD"
       ],
-      "historia": "Lateral derecho formado en el Girona que creció en el Valladolid y en el Sporting de Portugal, campeón de liga. En el Tottenham ganó la Liga Europa de 2025. Internacional con España.",
+      "historia": "Lateral derecho formado en el Girona que creció en el Valladolid y en el Sporting de Portugal, campeón de liga. En el Tottenham ganó la Liga Europa de 2025. Campeón del mundo 2026 con España con gran desempeño.",
       "stats": {
-        "velocidad": 84,
-        "tecnica": 84,
-        "tackling": 76,
+        "velocidad": 87,
+        "tecnica": 86,
+        "tackling": 79,
         "anticipacion": 78,
-        "marcaje": 74,
-        "liderazgo": 72
+        "marcaje": 78,
+        "liderazgo": 75
       },
-      "media": 78,
+      "media": 80.5,
       "virtudes": [
         "Llegador",
         "LanzadorFaltas"
@@ -2249,12 +2252,12 @@
       "stats": {
         "velocidad": 98,
         "tecnica": 86,
-        "tackling": 80,
+        "tackling": 82,
         "anticipacion": 80,
         "marcaje": 77,
         "liderazgo": 79
       },
-      "media": 83.33,
+      "media": 83.67,
       "virtudes": [
         "Llegador",
         "Potente",
@@ -2351,13 +2354,13 @@
       "historia": "Lateral derecho de la cantera del Real Madrid tras un año en el Leverkusen. Ha ganado seis Ligas de Campeones y marcó en la final de 2024. Campeón de la Eurocopa 2024 y de la Liga de Naciones con España.",
       "stats": {
         "velocidad": 84,
-        "tecnica": 82,
+        "tecnica": 84,
         "tackling": 87,
-        "anticipacion": 86,
-        "marcaje": 85,
-        "liderazgo": 88
+        "anticipacion": 88,
+        "marcaje": 89,
+        "liderazgo": 89
       },
-      "media": 85.33,
+      "media": 86.67,
       "virtudes": [
         "Capitania",
         "FortalezaMental",
@@ -2419,14 +2422,14 @@
       ],
       "historia": "Defensor zurdo del Dinamo de Zagreb que creció en el RB Leipzig. Bronce en el Mundial 2022 con Croacia. En el Manchester City ganó la Premier League jugando de central y de lateral.",
       "stats": {
-        "velocidad": 84,
-        "tecnica": 84,
-        "tackling": 86,
-        "anticipacion": 84,
-        "marcaje": 85,
-        "liderazgo": 78
+        "velocidad": 85,
+        "tecnica": 85,
+        "tackling": 87,
+        "anticipacion": 85,
+        "marcaje": 86,
+        "liderazgo": 79
       },
-      "media": 83.5,
+      "media": 84.5,
       "virtudes": [
         "Versatil",
         "Potente",
@@ -2454,19 +2457,20 @@
       "stats": {
         "velocidad": 96,
         "tecnica": 88,
-        "tackling": 82,
-        "anticipacion": 86,
-        "marcaje": 80,
-        "liderazgo": 82
+        "tackling": 85,
+        "anticipacion": 87,
+        "marcaje": 84,
+        "liderazgo": 86
       },
-      "media": 85.67,
+      "media": 87.67,
       "virtudes": [
         "Incansable",
         "Llegador",
-        "Potente"
+        "Potente",
+        "Motivador"
       ],
       "defectos": [],
-      "nivel": "Legendario",
+      "nivel": "GOAT",
       "imagen": "/cartas/retratos/achraf-hakimi.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -2551,19 +2555,20 @@
       "stats": {
         "velocidad": 92,
         "tecnica": 86,
-        "tackling": 84,
-        "anticipacion": 82,
-        "marcaje": 80,
-        "liderazgo": 76
+        "tackling": 90,
+        "anticipacion": 88,
+        "marcaje": 88,
+        "liderazgo": 83
       },
-      "media": 83.33,
+      "media": 87.83,
       "virtudes": [
         "Infranqueable",
         "Llegador",
-        "Potente"
+        "Potente",
+        "Incansable"
       ],
-      "defectos": [],
-      "nivel": "Legendario",
+      "defectos": ["Canchero"],
+      "nivel": "GOAT",
       "imagen": "/cartas/retratos/nuno-mendes.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -2583,22 +2588,21 @@
       "historia": "Lateral derecho de la cantera del Chelsea, campeón de la Liga de Campeones de 2021, del que es capitán. Ganó la Conference League y el Mundial de Clubes de 2025. Las lesiones han marcado su carrera.",
       "stats": {
         "velocidad": 84,
-        "tecnica": 86,
-        "tackling": 84,
-        "anticipacion": 82,
-        "marcaje": 80,
+        "tecnica": 85,
+        "tackling": 81,
+        "anticipacion": 81,
+        "marcaje": 79,
         "liderazgo": 82
       },
-      "media": 83,
+      "media": 82,
       "virtudes": [
         "LanzadorFaltas",
-        "Capitania",
         "Potente"
       ],
       "defectos": [
         "DeCristal"
       ],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/reece-james.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -2644,25 +2648,27 @@
       "altura": 192,
       "demarcacion": "DEF",
       "posicion": [
-        "DCD"
+        "DCD",
+        "DCI"
       ],
       "historia": "Central formado en el Saint-Étienne que el Arsenal cedió al Niza y al Olympique de Marsella. A su vuelta se convirtió en uno de los mejores centrales del mundo. Subcampeón del Mundo con Francia en 2022.",
       "stats": {
         "velocidad": 86,
-        "tecnica": 84,
+        "tecnica": 85,
         "tackling": 88,
-        "anticipacion": 88,
-        "marcaje": 88,
-        "liderazgo": 82
+        "anticipacion": 93,
+        "marcaje": 92,
+        "liderazgo": 83
       },
-      "media": 86,
+      "media": 87.83,
       "virtudes": [
         "Elegante",
         "MuroDefensivo",
-        "Infranqueable"
+        "Infranqueable",
+        "Libero"
       ],
       "defectos": [],
-      "nivel": "Legendario",
+      "nivel": "GOAT",
       "imagen": "/cartas/retratos/william-saliba.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -2681,14 +2687,14 @@
       ],
       "historia": "Central que pasó por el Salzburgo y el RB Leipzig antes de llegar al Bayern de Múnich, con el que ha ganado varias Bundesligas. Subcampeón del Mundo con Francia en 2022. Potente, aunque a veces precipitado.",
       "stats": {
-        "velocidad": 88,
+        "velocidad": 86,
         "tecnica": 78,
-        "tackling": 86,
+        "tackling": 84,
         "anticipacion": 82,
         "marcaje": 84,
         "liderazgo": 80
       },
-      "media": 83,
+      "media": 82.33,
       "virtudes": [
         "Potente",
         "Robusto"
@@ -2696,7 +2702,7 @@
       "defectos": [
         "Impulsivo"
       ],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/dayot-upamecano.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -2997,18 +3003,19 @@
       "demarcacion": "MED",
       "posicion": [
         "MD",
-        "MC"
+        "MC",
+        "MII"
       ],
       "historia": "Mediocentro precoz de la cantera del Lille, titular en la Ligue 1 y en la Liga de Campeones con apenas 17 años. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
-        "velocidad": 72,
-        "tecnica": 76,
-        "pase": 74,
-        "posicionamiento": 74,
-        "vision": 70,
-        "disparo": 62
+        "velocidad": 75,
+        "tecnica": 79,
+        "pase": 77,
+        "posicionamiento": 76,
+        "vision": 79,
+        "disparo": 68
       },
-      "media": 71.33,
+      "media": 76.33,
       "virtudes": [
         "RecuperadorTrasPerdida"
       ],
@@ -3914,7 +3921,7 @@
         "JugadorEntreLineas"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/rayan-cherki.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
@@ -3933,14 +3940,14 @@
       ],
       "historia": "Centrocampista formado en Racing que pasó por el Valencia y fue figura del Udinese. En el Atlético de Madrid fue fijo antes de marcharse al Inter Miami. Campeón del Mundo y de dos Copas América con Argentina.",
       "stats": {
-        "velocidad": 78,
-        "tecnica": 84,
-        "pase": 86,
-        "posicionamiento": 82,
-        "vision": 84,
-        "disparo": 78
+        "velocidad": 76,
+        "tecnica": 81,
+        "pase": 82,
+        "posicionamiento": 81,
+        "vision": 81,
+        "disparo": 75
       },
-      "media": 82,
+      "media": 79.33,
       "virtudes": [
         "Incansable",
         "Motivador"
@@ -3967,14 +3974,14 @@
       ],
       "historia": "Centrocampista de la cantera del Newcastle que despegó en el Nottingham Forest. Su temporada 2024-25 le llevó a debutar con Inglaterra. Recorrido y llegada de área a área.",
       "stats": {
-        "velocidad": 76,
-        "tecnica": 82,
-        "pase": 82,
-        "posicionamiento": 80,
-        "vision": 80,
+        "velocidad": 79,
+        "tecnica": 85,
+        "pase": 85,
+        "posicionamiento": 81,
+        "vision": 82,
         "disparo": 72
       },
-      "media": 78.67,
+      "media": 80.67,
       "virtudes": [
         "BoxToBox",
         "Incansable"
@@ -4000,19 +4007,18 @@
       "historia": "Mediapunta que se hizo profesional en el QPR tras ser descartado por varias canteras. Su gol dio al Crystal Palace la FA Cup de 2025 y ese verano fichó por el Arsenal. Regate elegante y gran disparo.",
       "stats": {
         "velocidad": 80,
-        "tecnica": 90,
-        "pase": 82,
-        "posicionamiento": 74,
-        "vision": 84,
-        "disparo": 86
+        "tecnica": 86,
+        "pase": 80,
+        "posicionamiento": 70,
+        "vision": 82,
+        "disparo": 80
       },
-      "media": 82.67,
+      "media": 79.67,
       "virtudes": [
-        "Filigranas",
         "LanzadorFaltas"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "Superclase",
       "imagen": "/cartas/retratos/eberechi-eze.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
@@ -4027,24 +4033,26 @@
       "demarcacion": "MED",
       "posicion": [
         "MCO",
-        "MC"
+        "MC",
+        "MID"
       ],
       "historia": "Centrocampista onubense de La Masia, cedido en el Linares antes de debutar con el Barcelona. Ganó el oro olímpico en París 2024 con tres goles y LaLiga con el Barça. Llega al área con mucho gol.",
       "stats": {
-        "velocidad": 78,
-        "tecnica": 82,
-        "pase": 78,
-        "posicionamiento": 78,
-        "vision": 78,
-        "disparo": 82
+        "velocidad": 83,
+        "tecnica": 86,
+        "pase": 82,
+        "posicionamiento": 83,
+        "vision": 82,
+        "disparo": 88
       },
-      "media": 79.33,
+      "media": 84,
       "virtudes": [
         "Llegador",
-        "Presionador"
+        "Presionador",
+        "JugadorEntreLineas"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/fermin-lopez.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
@@ -4189,7 +4197,8 @@
       "posicion": [
         "MID",
         "MC",
-        "MCO"
+        "MCO",
+        "LD"
       ],
       "historia": "Formado en el Real Madrid, con el que ganó la Liga de Campeones, se reinventó en el Atlético de Madrid. Fue clave en LaLiga de 2021 con goles y asistencias. Juega de interior, de extremo o de lateral.",
       "stats": {
@@ -4290,14 +4299,14 @@
       ],
       "historia": "Mediapunta zurdo nacido en Tenerife y formado en el Real Madrid. En el Como de Cesc Fàbregas se convirtió en una de las figuras de la Serie A. Internacional con Argentina.",
       "stats": {
-        "velocidad": 76,
+        "velocidad": 79,
         "tecnica": 86,
-        "pase": 82,
-        "posicionamiento": 72,
+        "pase": 83,
+        "posicionamiento": 74,
         "vision": 84,
         "disparo": 82
       },
-      "media": 80.33,
+      "media": 81.33,
       "virtudes": [
         "JugadorEntreLineas",
         "LanzadorFaltas"
@@ -4615,27 +4624,27 @@
       "demarcacion": "MED",
       "posicion": [
         "MCO",
-        "MII"
+        "MII",
+        "EI"
       ],
       "historia": "Formado en La Masia, se hizo futbolista en el Dinamo de Zagreb y el RB Leipzig. Máximo goleador y campeón de la Eurocopa 2024 con España, volvió al Barcelona, con el que ganó LaLiga. Las lesiones le han frenado a menudo.",
       "stats": {
         "velocidad": 78,
         "tecnica": 90,
-        "pase": 86,
-        "posicionamiento": 80,
-        "vision": 88,
-        "disparo": 84
+        "pase": 82,
+        "posicionamiento": 78,
+        "vision": 84,
+        "disparo": 82
       },
-      "media": 84.33,
+      "media": 82.33,
       "virtudes": [
         "JugadorEntreLineas",
-        "Llegador",
-        "Elegante"
+        "Llegador"
       ],
       "defectos": [
         "Fragil"
       ],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/dani-olmo.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
@@ -5020,7 +5029,8 @@
       "posicion": [
         "MC",
         "MID",
-        "MD"
+        "MD",
+        "LD"
       ],
       "historia": "Centrocampista uruguayo surgido de Peñarol. En el Real Madrid ha ganado dos Ligas de Campeones y varias Ligas. Recorrido inagotable y disparo potente desde fuera del área.",
       "stats": {
@@ -5137,7 +5147,7 @@
         "RecuperadorTrasPerdida"
       ],
       "defectos": [],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/martin-zubimendi.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
@@ -5189,14 +5199,14 @@
       ],
       "historia": "Centrocampista que debutó con 16 años en el Birmingham y ganó la Copa de Alemania con el Dortmund. En su primer año en el Real Madrid ganó LaLiga y la Liga de Campeones de 2024, además del Trofeo Kopa. Finalista de la Eurocopa con Inglaterra.",
       "stats": {
-        "velocidad": 84,
-        "tecnica": 90,
-        "pase": 86,
+        "velocidad": 86,
+        "tecnica": 91,
+        "pase": 87,
         "posicionamiento": 89,
         "vision": 88,
-        "disparo": 91
+        "disparo": 93
       },
-      "media": 88,
+      "media": 89,
       "virtudes": [
         "Llegador",
         "Aura",
@@ -5225,14 +5235,14 @@
       ],
       "historia": "Mediocentro formado en el Villarreal que pasó por el Atlético de Madrid. Con el Manchester City ganó cuatro Premier League y marcó el gol de la final de la Liga de Campeones de 2023. Mejor jugador de la Eurocopa 2024 y Balón de Oro en 2024.",
       "stats": {
-        "velocidad": 73,
+        "velocidad": 75,
         "tecnica": 91,
         "pase": 93,
         "posicionamiento": 97,
         "vision": 90,
         "disparo": 86
       },
-      "media": 88.33,
+      "media": 88.67,
       "virtudes": [
         "PrimerToque",
         "FortalezaMental",
@@ -6143,20 +6153,21 @@
       ],
       "historia": "Atacante formado en el Rennes que fichó por el PSG en 2024. Marcó dos goles y dio una asistencia en la final de la Liga de Campeones de 2025. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
-        "velocidad": 86,
-        "regate": 90,
-        "finalizacion": 78,
-        "desmarque": 78,
+        "velocidad": 88,
+        "regate": 91,
+        "finalizacion": 82,
+        "desmarque": 82,
         "creatividad": 86,
-        "agresividad": 70
+        "agresividad": 74
       },
-      "media": 81.33,
+      "media": 83.83,
       "virtudes": [
         "Desbordante",
-        "Filigranas"
+        "Filigranas",
+        "Potente"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/desire-doue.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
@@ -6379,7 +6390,6 @@
         "Desbordante"
       ],
       "defectos": [
-        "Provocador"
       ],
       "nivel": "Crack",
       "imagen": "/cartas/retratos/anthony-gordon.webp",
@@ -7166,21 +7176,20 @@
       ],
       "historia": "Delantero sueco que se hizo goleador en el Coventry City. En el Sporting de Portugal ganó dos ligas y marcó más de 50 goles en la temporada 2024-25. En 2025 fichó por el Arsenal.",
       "stats": {
-        "velocidad": 86,
-        "regate": 82,
-        "finalizacion": 90,
+        "velocidad": 82,
+        "regate": 77,
+        "finalizacion": 92,
         "desmarque": 86,
-        "creatividad": 74,
-        "agresividad": 92
+        "creatividad": 73,
+        "agresividad": 90
       },
-      "media": 85,
+      "media": 83.33,
       "virtudes": [
-        "Matador",
-        "Potente",
+        "Matador",        
         "Robusto"
       ],
       "defectos": [],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/viktor-gyokeres.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
@@ -7392,18 +7401,18 @@
       "altura": 184,
       "demarcacion": "DEL",
       "posicion": [
-        "ED"
+        "ED","MCO"
       ],
       "historia": "Extremo zurdo formado en el Reading que brilló en el Crystal Palace. En el Bayern de Múnich se convirtió en uno de los mejores asistentes de Europa. Plata olímpica en París 2024 con Francia.",
       "stats": {
-        "velocidad": 84,
-        "regate": 90,
+        "velocidad": 86,
+        "regate": 93,
         "finalizacion": 82,
-        "desmarque": 80,
-        "creatividad": 90,
-        "agresividad": 72
+        "desmarque": 82,
+        "creatividad": 93,
+        "agresividad": 78
       },
-      "media": 83,
+      "media": 85.67,
       "virtudes": [
         "GuanteEnElPie",
         "Filigranas",
@@ -7496,14 +7505,14 @@
       ],
       "historia": "Extremo de la cantera del Arsenal y su gran referente ofensivo. Finalista de las Eurocopas 2020 y 2024 con Inglaterra. Regate, gol y asistencias desde la banda derecha.",
       "stats": {
-        "velocidad": 88,
+        "velocidad": 86,
         "regate": 90,
-        "finalizacion": 84,
-        "desmarque": 86,
-        "creatividad": 88,
-        "agresividad": 74
+        "finalizacion": 82,
+        "desmarque": 83,
+        "creatividad": 86,
+        "agresividad": 73
       },
-      "media": 85,
+      "media": 83.33,
       "virtudes": [
         "Desbordante",
         "GuanteEnElPie",
@@ -7739,14 +7748,14 @@
       ],
       "historia": "Extremo zurdo de La Masia que con 16 años fue campeón y mejor jugador joven de la Eurocopa 2024. Con el Barcelona ganó LaLiga y dos Trofeos Kopa, y fue segundo en el Balón de Oro de 2025. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
-        "velocidad": 90,
-        "regate": 97,
+        "velocidad": 92,
+        "regate": 98,
         "finalizacion": 86,
-        "desmarque": 86,
-        "creatividad": 96,
-        "agresividad": 73
+        "desmarque": 87,
+        "creatividad": 98,
+        "agresividad": 79
       },
-      "media": 88,
+      "media": 90,
       "virtudes": [
         "Desbordante",
         "GuanteEnElPie",
@@ -7880,14 +7889,14 @@
       ],
       "historia": "Ocho veces Balón de Oro y máximo goleador de la historia del Barcelona, con el que ganó cuatro Ligas de Campeones. Campeón del Mundo en 2022 y de dos Copas América con Argentina. Después jugó en el PSG y el Inter Miami.",
       "stats": {
-        "velocidad": 94,
+        "velocidad": 96,
         "regate": 99,
-        "finalizacion": 98,
+        "finalizacion": 99,
         "desmarque": 96,
         "creatividad": 99,
-        "agresividad": 88
+        "agresividad": 91
       },
-      "media": 95.67,
+      "media": 96.67,
       "virtudes": [
         "GuanteEnElPie",
         "Filigranas",
@@ -7987,14 +7996,14 @@
       ],
       "historia": "Extremo formado en el Flamengo que llegó al Real Madrid con 18 años. Marcó en las finales de la Liga de Campeones de 2022 y 2024, ambas ganadas, y fue elegido mejor jugador del mundo por la FIFA en 2024.",
       "stats": {
-        "velocidad": 96,
+        "velocidad": 94,
         "regate": 95,
-        "finalizacion": 88,
-        "desmarque": 90,
-        "creatividad": 88,
-        "agresividad": 82
+        "finalizacion": 84,
+        "desmarque": 89,
+        "creatividad": 87,
+        "agresividad": 81
       },
-      "media": 89.83,
+      "media": 88.33,
       "virtudes": [
         "Desbordante",
         "Filigranas",
@@ -8002,7 +8011,8 @@
         "FortalezaMental"
       ],
       "defectos": [
-        "Provocador"
+        "Provocador",
+        "Polemico"
       ],
       "nivel": "GOAT",
       "imagen": "/cartas/retratos/vinicius-junior.webp",
@@ -8284,20 +8294,21 @@
       ],
       "historia": "Portero formado en el Internacional de Porto Alegre que pasó por la Roma. En el Liverpool ganó la Liga de Campeones de 2019 y dos Premier League. Premio Yashin en 2019, año en que ganó la Copa América con Brasil.",
       "stats": {
-        "agilidad": 86,
-        "colocacion": 86,
-        "distribucion": 84,
-        "aereo": 84,
-        "defensa": 86,
-        "liderazgo": 82
+        "agilidad": 89,
+        "colocacion": 88,
+        "distribucion": 80,
+        "aereo": 88,
+        "defensa": 90,
+        "liderazgo": 94
       },
-      "media": 84.67,
+      "media": 88.17,
       "virtudes": [
         "OneToOne",
-        "FortalezaMental"
+        "FortalezaMental",
+        "Santo"
       ],
       "defectos": [],
-      "nivel": "Crack",
+      "nivel": "GOAT",
       "imagen": "/cartas/retratos/alisson.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
@@ -8720,17 +8731,17 @@
       "stats": {
         "velocidad": 82,
         "tecnica": 82,
-        "tackling": 84,
-        "anticipacion": 86,
-        "marcaje": 84,
-        "liderazgo": 80
+        "tackling": 83,
+        "anticipacion": 85,
+        "marcaje": 83,
+        "liderazgo": 79
       },
-      "media": 83,
+      "media": 82.33,
       "virtudes": [
         "Versatil"
       ],
       "defectos": [],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/josip-stanisic.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -8749,14 +8760,14 @@
       ],
       "historia": "Central uruguayo formado en el Boston River que llegó al filial del Barcelona en 2018. En el primer equipo ha ganado dos LaLiga y es uno de sus capitanes. Internacional con Uruguay.",
       "stats": {
-        "velocidad": 90,
+        "velocidad": 92,
         "tecnica": 78,
-        "tackling": 92,
-        "anticipacion": 88,
-        "marcaje": 92,
-        "liderazgo": 88
+        "tackling": 87,
+        "anticipacion": 86,
+        "marcaje": 87,
+        "liderazgo": 86
       },
-      "media": 88,
+      "media": 86,
       "virtudes": [
         "Potente",
         "Infranqueable",
@@ -8785,19 +8796,19 @@
       "stats": {
         "velocidad": 78,
         "tecnica": 84,
-        "tackling": 92,
+        "tackling": 85,
         "anticipacion": 90,
-        "marcaje": 92,
-        "liderazgo": 92
+        "marcaje": 89,
+        "liderazgo": 87
       },
-      "media": 88,
+      "media": 85.5,
       "virtudes": [
         "Capitania",
         "Jerarquia",
         "Volador"
       ],
       "defectos": [],
-      "nivel": "GOAT",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/matthijs-de-ligt.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -8827,7 +8838,8 @@
       "virtudes": [
         "Capitania",
         "Jerarquia",
-        "Versatil"
+        "Versatil",
+        "Carismatico"
       ],
       "defectos": [],
       "nivel": "GOAT",
@@ -8914,27 +8926,28 @@
       "demarcacion": "DEF",
       "posicion": [
         "DCD",
-        "MD"
+        "DCI",
+        "MD",
+        "MC"
       ],
       "historia": "Central formado en el Barnsley que pasó por el Everton. En el Manchester City ganó seis Premier League y la Liga de Campeones de 2023, en la que alternó el puesto de central con el de mediocentro. Finalista de dos Eurocopas con Inglaterra.",
       "stats": {
         "velocidad": 80,
-        "tecnica": 92,
-        "tackling": 90,
-        "anticipacion": 92,
-        "marcaje": 90,
+        "tecnica": 90,
+        "tackling": 86,
+        "anticipacion": 90,
+        "marcaje": 86,
         "liderazgo": 84
       },
-      "media": 88,
+      "media": 86,
       "virtudes": [
         "Libero",
-        "Elegante",
         "Versatil"
       ],
       "defectos": [
         "Fragil"
       ],
-      "nivel": "GOAT",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/john-stones.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -9048,18 +9061,19 @@
       "historia": "Centrocampista formado en el Willem II que explotó en el Ajax, semifinalista de la Liga de Campeones de 2019. En el Barcelona ha ganado varias LaLiga. Internacional con Países Bajos.",
       "stats": {
         "velocidad": 80,
-        "tecnica": 86,
-        "pase": 86,
-        "posicionamiento": 80,
-        "vision": 82,
-        "disparo": 64
+        "tecnica": 90,
+        "pase": 82,
+        "posicionamiento": 86,
+        "vision": 84,
+        "disparo": 74
       },
-      "media": 79.67,
+      "media": 82.67,
       "virtudes": [
-        "Elegante"
+        "Elegante",
+        "PrimerToque"
       ],
       "defectos": [],
-      "nivel": "Superclase",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/frenkie-de-jong.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },

@@ -11,10 +11,10 @@ decidir el diseño de US2 y US3 (ver «Decisión»), porque el tiempo que domina
 
 | Entorno | Servidor | PostgreSQL | k6 | Mediciones |
 |---------|----------|------------|----|------------|
-| Docker Desktop y Wi-Fi (T015) | Windows, Node, hilos por defecto | `docker compose` (Docker Desktop) | misma máquina | [ref-1](mediciones/ref-1.md), [ref-10](mediciones/ref-10.md), [ref-100](mediciones/ref-100.md) |
+| Docker Desktop y Wi-Fi (T015) | Windows, Node, hilos por defecto | `docker compose` (Docker Desktop) | misma máquina | [docker-1](mediciones/docker-1.md), [docker-10](mediciones/docker-10.md), [docker-100](mediciones/docker-100.md) |
 | Referencia (T014) | sin Docker Desktop | nativo o WSL2 | misma máquina | pendiente |
 
-Los tres ficheros se llaman `ref-*`, pero son del entorno con Docker Desktop. Como todo corre en la misma máquina,
+Como todo corre en la misma máquina,
 el tráfico va por loopback y el Wi-Fi no interviene. Lo que añade latencia de red es el reenvío de puertos de Docker
 Desktop. El servidor se reinició entre escenarios (los cuantiles se acumulan desde el arranque).
 
