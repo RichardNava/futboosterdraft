@@ -62,6 +62,21 @@ describe('ActorPartida', () => {
     expect(difusor.enviados.map((s) => s.mensaje.t)).toEqual(['guardado', 'despues']);
   });
 
+  it('secuencia cuenta los comandos encolados, también los que fallan, y no cambia al terminarlos (spec 010)', async () => {
+    const actor = new ActorPartida('p1', difusorDePrueba());
+    expect(actor.secuencia).toBe(0);
+    const a = actor.ejecutar(() => pausa(10));
+    expect(actor.secuencia).toBe(1);
+    const b = actor.ejecutar(() => {
+      throw new Error('falla');
+    });
+    expect(actor.secuencia).toBe(2);
+    await a;
+    await expect(b).rejects.toThrow('falla');
+    await actor.drenar();
+    expect(actor.secuencia).toBe(2);
+  });
+
   it('no acepta comandos tras cerrarse', async () => {
     const actor = new ActorPartida('p1', difusorDePrueba());
     actor.cerrar();

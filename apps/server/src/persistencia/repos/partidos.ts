@@ -43,12 +43,12 @@ export class RepoPartidos {
    * Fija la modalidad de un participante en un partido solo si aún no la tiene (FR-035: no cambia después).
    * Devuelve la modalidad que queda.
    */
-  async fijarModalidad(partidoId: string, participanteId: string, modalidad: ModoSimulacion): Promise<ModoSimulacion> {
-    await this.db
+  async fijarModalidad(partidoId: string, participanteId: string, modalidad: ModoSimulacion, ejecutor: Ejecutor = this.db): Promise<ModoSimulacion> {
+    await ejecutor
       .update(partidos)
       .set({ modalidades: sql`${partidos.modalidades} || jsonb_build_object(${participanteId}::text, ${modalidad}::text)` })
       .where(and(eq(partidos.id, partidoId), sql`not (${partidos.modalidades} ? ${participanteId}::text)`));
-    const [fila] = await this.db.select({ m: partidos.modalidades }).from(partidos).where(eq(partidos.id, partidoId)).limit(1);
+    const [fila] = await ejecutor.select({ m: partidos.modalidades }).from(partidos).where(eq(partidos.id, partidoId)).limit(1);
     return ((fila?.m as Record<string, ModoSimulacion> | undefined) ?? {})[participanteId] ?? modalidad;
   }
 

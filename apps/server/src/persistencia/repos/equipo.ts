@@ -2,7 +2,7 @@
  * Repositorio de equipo: alineaciones versionadas, dorsales y equipaciones.
  */
 import type { Alineacion, Dorsales, Equipaciones } from '@fbd/domain';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, inArray } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
 import { alineaciones, participantes, plantillas } from '../esquema/index';
 
@@ -63,6 +63,18 @@ export class RepoEquipo {
   async dorsales(participanteId: string, ejecutor: Ejecutor = this.db): Promise<Dorsales | null> {
     const fila = (await ejecutor.select({ d: plantillas.dorsales }).from(plantillas).where(eq(plantillas.participanteId, participanteId)).limit(1))[0];
     return (fila?.d as Dorsales | null | undefined) ?? null;
+  }
+
+  /** Dorsales de varios participantes en una consulta (vista del torneo de todos los humanos, spec 010 R7). */
+  async dorsalesDeVarios(participanteIds: readonly string[]): Promise<Map<string, Dorsales | null>> {
+    const resultado = new Map<string, Dorsales | null>(participanteIds.map((id) => [id, null]));
+    if (participanteIds.length === 0) return resultado;
+    const filas = await this.db
+      .select({ participanteId: plantillas.participanteId, d: plantillas.dorsales })
+      .from(plantillas)
+      .where(inArray(plantillas.participanteId, [...participanteIds]));
+    for (const f of filas) resultado.set(f.participanteId, (f.d as Dorsales | null) ?? null);
+    return resultado;
   }
 
   async guardarDorsales(participanteId: string, dorsales: Dorsales, ejecutor: Ejecutor = this.db): Promise<void> {

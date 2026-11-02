@@ -75,6 +75,37 @@ export function renombrar(operacion: Operacion): void {
   if (d) d.operacion = operacion;
 }
 
+/** Desglose del contexto actual, para atribuirle trabajo que se hace en otro contexto (grupo de aperturas). */
+export type DesgloseActual = Desglose | undefined;
+export function actual(): DesgloseActual {
+  return almacen?.getStore();
+}
+
+/** Suma `ms` a una fase de un desglose capturado con `actual()` (p. ej. la cola de quien se unió a un grupo). */
+export function sumar(d: DesgloseActual, nombre: Fase, ms: number): void {
+  if (d) d.fases[nombre].ms += ms;
+}
+
+/**
+ * Ejecuta `fn` y suma también a cada desglose de `otros` lo que `fn` añade al desglose actual (fases y
+ * consultas): el trabajo de un grupo de aperturas cuenta para todas las que lo esperan (spec 010, US2).
+ */
+export async function compartido<T>(otros: readonly DesgloseActual[], fn: () => Promise<T>): Promise<T> {
+  const d = almacen?.getStore();
+  const destinos = otros.filter((o): o is Desglose => !!o && o !== d);
+  if (!d || !destinos.length) return fn();
+  const antes = FASES.map((f) => d.fases[f].ms);
+  const consultas = d.consultas;
+  try {
+    return await fn();
+  } finally {
+    FASES.forEach((f, i) => {
+      for (const o of destinos) o.fases[f].ms += d.fases[f].ms - antes[i]!;
+    });
+    for (const o of destinos) o.consultas += d.consultas - consultas;
+  }
+}
+
 export function contarConsulta(): void {
   const d = almacen?.getStore();
   if (d) d.consultas++;

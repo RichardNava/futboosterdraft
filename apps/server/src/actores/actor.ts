@@ -39,6 +39,7 @@ export class ActorPartida {
   private cola: Promise<unknown> = Promise.resolve();
   private pendientes = 0;
   private cerrado = false;
+  private encolados = 0;
 
   constructor(
     readonly partidaId: string,
@@ -49,6 +50,7 @@ export class ActorPartida {
   ejecutar<T>(comando: (ctx: ContextoComando) => Promise<T> | T): Promise<T> {
     if (this.cerrado) return Promise.reject(new Error(`El actor de la partida ${this.partidaId} está cerrado`));
     this.pendientes++;
+    this.encolados++;
     // La espera hasta que empieza el comando es la fase `cola` de quien lo encoló (spec 010).
     const resultado = fase('cola', () => this.cola).then(async () => {
       const salida: MensajeSaliente[] = [];
@@ -85,6 +87,11 @@ export class ActorPartida {
 
   get estaCerrado(): boolean {
     return this.cerrado;
+  }
+
+  /** Comandos encolados hasta ahora: un grupo de aperturas solo admite más si no ha llegado otro comando (spec 010, R4). */
+  get secuencia(): number {
+    return this.encolados;
   }
 }
 

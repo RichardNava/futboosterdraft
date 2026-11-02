@@ -6,15 +6,18 @@ import { and, eq, inArray } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
 import { partidos, visionados } from '../esquema/index';
 
+type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
+type Ejecutor = BaseDatos | Tx;
+
 export type EstadoVisionado = 'pendiente' | 'visto' | 'revelado';
 
 export class RepoVisionados {
   constructor(private readonly db: BaseDatos) {}
 
   /** Se crean `pendiente` al resolverse el partido. Si ya existían, no cambian. */
-  async crearPendientes(partidoId: string, participanteIds: readonly string[], ahora: number): Promise<void> {
+  async crearPendientes(partidoId: string, participanteIds: readonly string[], ahora: number, ejecutor: Ejecutor = this.db): Promise<void> {
     if (participanteIds.length === 0) return;
-    await this.db
+    await ejecutor
       .insert(visionados)
       .values(participanteIds.map((participanteId) => ({ partidoId, participanteId, estado: 'pendiente', actualizadoEn: new Date(ahora) })))
       .onConflictDoNothing();

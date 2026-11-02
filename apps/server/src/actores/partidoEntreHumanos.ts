@@ -10,11 +10,13 @@
  *   guardan en una caché en memoria de los últimos partidos pedidos.
  * - Mientras un humano no lo ha visto, su visionado está `pendiente` y no se le revela el resultado.
  */
-import { parametrosActuales, parametrosPorVersion, VERSION_MAYOR_SOPORTADA, versionMayor, type ModoSimulacion } from '@fbd/domain';
+import { parametrosActuales, parametrosPorVersion, VERSION_MAYOR_SOPORTADA, versionMayor, type EstadoTorneo, type ModoSimulacion } from '@fbd/domain';
 import { crearPartido, ordenJugadores, type EstadoMotor } from '@fbd/engine';
 import { errores } from '../http/errores';
+import type { Ejecutor } from '../persistencia/db';
 import type { FilaPartido } from '../persistencia/repos/partidos';
 import type { Tramos } from '../simulacion/funciones';
+import type { Prioridad } from '../simulacion/grupo';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
 import {
@@ -26,8 +28,10 @@ import {
   registrarCalculoFallido,
   resumenAlineaciones,
   type EntradaGuardada,
+  type PartidoCalculado,
   type PartidoEnCurso,
 } from './partidoRapido';
+import { anotarResultado } from './torneo';
 
 /** Los dos lados del partido los controlan humanos (sin abandonos). */
 export function entreHumanos(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): boolean {
@@ -37,6 +41,7 @@ export function entreHumanos(c: ControladorPartida, fila: Pick<FilaPartido, 'loc
 /**
  * Resuelve el partido si sigue programado (research R8): fija las alineaciones vigentes, simula el partido
  * entero con `resolverResto`, lo guarda, crea los visionados pendientes y registra el resultado en el torneo.
+ * Son los tres pasos que el grupo de aperturas hace con varios partidos a la vez (spec 010, `aperturas.ts`).
  */
 export async function resolverPartidoEntreHumanos(
   c: ControladorPartida,
@@ -44,43 +49,79 @@ export async function resolverPartidoEntreHumanos(
   partidoId: string,
   opciones: { resolucion: 'apertura' | 'plazo'; abiertoPorId?: string },
 ): Promise<void> {
-  const { repoPartidos, repoVisionados, reloj, metricas, calculo } = c.servicios;
+  const { repoPartidos, repoTorneo, db } = c.servicios;
   const fila = await repoPartidos.obtener(partidoId);
   if (!fila || fila.estado !== 'programado') return;
   // Quien lo abre espera al resultado; al vencer el plazo, no espera nadie (FR-012).
   const prioridad = opciones.resolucion === 'apertura' ? 'humano' : 'npc';
   // Se calcula antes de guardar o anunciar nada: si falla, el partido sigue programado (FR-008).
-  const { alineaciones, entrada, r } = await (async () => {
-    const preparado = await prepararPartido(c, fila, prioridad);
-    const nivel = preparado.entrada.parametros.asincrono.nivelDecisiones;
-    return { ...preparado, r: await calculo.ejecutar('resolverResto', [preparado.motor, { local: nivel, visitante: nivel }, fila.semilla], prioridad) };
+  const { preparado, r } = await (async () => {
+    const preparado = await prepararEntreHumanos(c, fila, prioridad);
+    return { preparado, r: await calcularEntreHumanos(c, fila, preparado, prioridad) };
   })().catch((err: unknown) => {
     registrarCalculoFallido(c, fila, err);
     throw err;
   });
-  const local = await dorsalesParaPartido(c, fila.localId, alineaciones.local);
-  const visitante = await dorsalesParaPartido(c, fila.visitanteId, alineaciones.visitante);
+  const aplicado = await db.transaction(async (tx) => {
+    const a = await aplicarEntreHumanos(c, fila, preparado, r, c.torneo, tx, opciones);
+    if (a.torneo && a.torneo !== c.torneo) await repoTorneo.guardar(c.id, a.torneo, tx);
+    return a;
+  });
+  await confirmarEntreHumanos(c, ctx, [aplicado]);
+}
+
+/** Alineaciones y estado inicial del motor (solo lecturas). */
+export function prepararEntreHumanos(c: ControladorPartida, fila: FilaPartido, prioridad: Prioridad): Promise<PartidoCalculado> {
+  return prepararPartido(c, fila, prioridad);
+}
+
+/** El partido entero con decisiones automáticas del mismo nivel para los dos (sin E/S). */
+export function calcularEntreHumanos(c: ControladorPartida, fila: FilaPartido, preparado: PartidoCalculado, prioridad: Prioridad) {
+  const nivel = preparado.entrada.parametros.asincrono.nivelDecisiones;
+  return c.servicios.calculo.ejecutar('resolverResto', [preparado.motor, { local: nivel, visitante: nivel }, fila.semilla], prioridad);
+}
+
+export type AplicadoEntreHumanos = Awaited<ReturnType<typeof aplicarEntreHumanos>>;
+
+/**
+ * Guarda con `ejecutor` los dorsales, el partido finalizado y los visionados pendientes, y anota el resultado en
+ * `torneo` (sin guardarlo ni cambiar `c.torneo`). Los avisos de dorsales se devuelven sin enviar: van tras el commit.
+ */
+export async function aplicarEntreHumanos(
+  c: ControladorPartida,
+  fila: FilaPartido,
+  { alineaciones, entrada }: PartidoCalculado,
+  r: Awaited<ReturnType<typeof calcularEntreHumanos>>,
+  torneo: EstadoTorneo | null,
+  ejecutor: Ejecutor,
+  opciones: { resolucion: 'apertura' | 'plazo'; abiertoPorId?: string },
+) {
+  const { repoPartidos, repoVisionados, reloj } = c.servicios;
+  const local = await dorsalesParaPartido(c, fila.localId, alineaciones.local, ejecutor);
+  const visitante = await dorsalesParaPartido(c, fila.visitanteId, alineaciones.visitante, ejecutor);
   // Nadie lo ve empezar: los dorsales nuevos se avisan en la bandeja (FR-038).
-  for (const [pid, d] of [[fila.localId, local], [fila.visitanteId, visitante]] as const) if (d.asignados.length) await c.alAsignarDorsales?.(pid, d.asignados);
+  const avisos = ([[fila.localId, local.asignados], [fila.visitanteId, visitante.asignados]] as const).filter(([, a]) => a.length);
   const ultimo = r.tramos[r.tramos.length - 1]!;
   const { parametros, ...guardada } = entrada;
   const ahora = reloj.ahora();
-  await repoPartidos.actualizar(fila.id, {
-    entrada: guardada satisfies EntradaGuardada,
-    estado: 'finalizado',
-    versionParametros: parametros.version,
-    iniciadoEn: new Date(ahora),
-    finalizadoEn: new Date(ahora),
-    eventos: r.eventos,
-    decisiones: r.estado.decisiones,
-    marcador: ultimo.marcador,
-    estadisticas: ultimo.estadisticas,
-    resolucion: opciones.resolucion,
-    abiertoPorId: opciones.abiertoPorId ?? null,
-  });
-  await repoVisionados.crearPendientes(fila.id, [fila.localId, fila.visitanteId], ahora);
-  metricas.partidosSimuladosTotal.inc();
-
+  await repoPartidos.actualizar(
+    fila.id,
+    {
+      entrada: guardada satisfies EntradaGuardada,
+      estado: 'finalizado',
+      versionParametros: parametros.version,
+      iniciadoEn: new Date(ahora),
+      finalizadoEn: new Date(ahora),
+      eventos: r.eventos,
+      decisiones: r.estado.decisiones,
+      marcador: ultimo.marcador,
+      estadisticas: ultimo.estadisticas,
+      resolucion: opciones.resolucion,
+      abiertoPorId: opciones.abiertoPorId ?? null,
+    },
+    ejecutor,
+  );
+  await repoVisionados.crearPendientes(fila.id, [fila.localId, fila.visitanteId], ahora, ejecutor);
   const p: PartidoEnCurso = {
     fila: { ...fila, estado: 'finalizado', entrada: guardada },
     motor: r.estado,
@@ -91,11 +132,22 @@ export async function resolverPartidoEntreHumanos(
     listos: new Set(),
     dosD: null,
   };
-  // Igual que al terminar un partido en directo, pero sin anunciar el resultado a nadie: cada humano lo
-  // descubre al verlo (`torneo.actualizado` ya va filtrado por participante).
-  await c.alTerminarPartido?.(ctx, p);
+  return { p, avisos, torneo: torneo && (anotarResultado(c, torneo, p)?.torneo ?? torneo) };
+}
+
+/**
+ * Tras el commit de uno o varios partidos aplicados en orden: el torneo en memoria, los avisos de dorsales y, una
+ * sola vez, lo que sigue al final de un partido (FR-013). Igual que al terminar un partido en directo, pero sin
+ * anunciar el resultado a nadie: cada humano lo descubre al verlo (`torneo.actualizado` va filtrado por participante).
+ */
+export async function confirmarEntreHumanos(c: ControladorPartida, ctx: ContextoComando, aplicados: readonly AplicadoEntreHumanos[]): Promise<void> {
+  const ultimo = aplicados.at(-1);
+  if (!ultimo) return;
+  if (ultimo.torneo) c.torneo = ultimo.torneo;
+  c.servicios.metricas.partidosSimuladosTotal.inc(aplicados.length);
+  for (const a of aplicados) for (const [pid, asignados] of a.avisos) await c.alAsignarDorsales?.(pid, asignados);
   ctx.publicar();
-  await c.trasTerminarPartido?.(ctx, p);
+  await c.trasTerminarPartido?.(ctx, ultimo.p);
 }
 
 /**

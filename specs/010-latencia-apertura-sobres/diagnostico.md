@@ -169,7 +169,45 @@ La medición del 2026-11-02 (100 partidas por Wi-Fi, sin desglose: mediana 25 s 
 
 ## Tras US2
 
-Pendiente (T027).
+**Medido solo con Docker Desktop** ([docker-10-us2](mediciones/docker-10-us2.md), 2026-11-03, mismo equipo y
+condiciones que [docker-10](mediciones/docker-10.md)). La medición en el entorno de referencia sigue pendiente (T027):
+ese equipo no estaba disponible.
+
+### Apertura con 10 partidas (Docker Desktop; mediana / p95, ms)
+
+| Fase | Antes (D 10) | Tras US2 |
+|------|-------------:|---------:|
+| cola | 2062 / 3848 | **429 / 648** |
+| cálculo | 120 / 290 | 257 / 1031 |
+| bd | 94 / 1115 | 912 / 1122 |
+| serialización | 0,5 / 2,4 | 0,1 / 2,6 |
+| difusión | 0,3 / 2,8 | 0,8 / 2,9 |
+| resto | 4,1 / 66 | 41 / 62 |
+| **total** | **2393 / 3977** | **1686 / 2631** |
+| k6 `apertura_ms` | 2430 / 4000 | **1720 / 2720** |
+
+- **`apertura_ms` p95 pasa de 4,0 s a 2,72 s: por debajo de 3 s (SC-002) en este entorno.** Mediana −29 %, p95 −32 %.
+- La cola baja un 79 % en la mediana: las aperturas de una partida ya no se esperan una a una.
+- Cálculo y bd suben por apertura porque ahora **cada apertura de un grupo cuenta el trabajo entero del grupo**
+  (`compartido` en `desglose.ts`): el cálculo en paralelo de varios partidos y su transacción. No es trabajo de más,
+  sino el mismo repartido entre quienes lo esperan. Por lo mismo, **las consultas por apertura no son comparables con
+  las de antes**: mediana 102, p95 121, media 94 (antes 14 / 324 / 96). Cada una suma las del grupo, así que el total
+  real de consultas es menor que la suma, pero no se puede separar con estas métricas.
+- `resto` / total: 2,5 % en la mediana y 2,3 % en el p95 (FR-001 se sigue cumpliendo). Sube a ~41 ms porque las
+  aperturas que se unen a un grupo cuentan como `resto` lo que pasa entre el commit y su respuesta.
+
+### Entrega de sobre con 10 partidas (Docker Desktop)
+
+Sin cambios apreciables, como se esperaba (US2 no toca el draft): total 120 / 230 ms (antes 117 / 205), k6
+`entrega_sobre_ms` 120 / 215 ms (antes 115 / 188), ~6,2 consultas de mediana (antes 6). Esto lo aborda US3 (T029).
+
+### Umbrales (k6, 10 partidas, Docker Desktop)
+
+Todos en verde: `apertura_ms` p95 2,72 s < 3 s, `entrega_sobre_ms` p95 215 ms < 1 s, 0 `errores_ws`, 0 partidas
+bloqueadas, 10 terminadas.
+
+**Pendiente:** repetir en el entorno de referencia (`referencia-10`) para cerrar T027, y con 100 partidas para ver el
+efecto sobre la saturación del pool, que es donde R7 debería notarse más.
 
 ## Tras US3
 

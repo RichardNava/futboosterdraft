@@ -40,7 +40,8 @@ import {
 } from '@fbd/domain';
 import type { EventoPartido } from '@fbd/engine';
 import type { ServicioAvisos, TipoAviso } from '../avisos/servicio';
-import { resueltoAutomaticamente } from '../persistencia/repos/partidos';
+import type { Ejecutor } from '../persistencia/db';
+import { resueltoAutomaticamente, type FilaPartido } from '../persistencia/repos/partidos';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
 import { entreHumanos, resolverPartidoEntreHumanos, terminarPartidoEntreHumanosEnJuego } from './partidoEntreHumanos';
@@ -123,14 +124,17 @@ function eliminacionVista(t: EstadoTorneo, participanteId: string, partidos: rea
  * ¿Queda algún humano activo que, desde su vista, sigue en competición? Quien aún no ha visto el partido que
  * lo eliminó cuenta como en competición: «Simular resto del torneo» no le adelanta el final (FR-039, FR-041b).
  */
-async function hayHumanosEnCompeticionVisibles(c: ControladorPartida, opciones: { partidos?: readonly ResumenPartido[]; excepto?: string } = {}): Promise<boolean> {
+async function hayHumanosEnCompeticionVisibles(
+  c: ControladorPartida,
+  opciones: { partidos?: readonly ResumenPartido[]; pendientes?: ReadonlyMap<string, string[]>; excepto?: string } = {},
+): Promise<boolean> {
   const t = c.torneo;
   if (!t || t.campeon) return false;
   if (hayHumanosEnCompeticion(c)) return true;
   const lista = opciones.partidos ?? (await c.servicios.repoPartidos.resumenesDePartida(c.id));
   for (const h of humanosActivos(c)) {
     if (h === opciones.excepto) continue;
-    if (!eliminacionVista(t, h, lista, new Set(await pendientesDe(c, h)))) return true;
+    if (!eliminacionVista(t, h, lista, new Set(opciones.pendientes?.get(h) ?? (await pendientesDe(c, h))))) return true;
   }
   return false;
 }
@@ -233,44 +237,60 @@ export async function abrirPartido(
   partidoId: string,
   pedida: ModoSimulacion = 'rapida',
 ): Promise<ResultadoAbrir> {
-  const { repoPartidos, repoPartidas, repoPerfiles, reloj } = c.servicios;
+  const { repoPartidos } = c.servicios;
   const fila = await repoPartidos.obtener(partidoId);
-  if (!fila || fila.partidaId !== c.id || (fila.localId !== participanteId && fila.visitanteId !== participanteId)) {
-    return { error: 'PARTIDO_NO_ENCONTRADO' };
-  }
+  const error = errorAlAbrir(c, fila, participanteId);
+  if (error) return { error };
   // Cruce de duelos (spec 005): se resuelve ya si falta (fijando el once de quien lo abre) y se entrega para la animación.
-  if (fila.tipo === 'duelos') {
-    if (fila.estado === 'programado') {
-      if (!c.jornada?.cruces.some((x) => x.partidoId === partidoId)) return { error: 'JORNADA_NO_ABIERTA' };
-      await c.resolverDuelos?.(ctx, { forzar: true, soloPartido: fila.id });
-    }
+  if (fila!.tipo === 'duelos') {
+    if (fila!.estado === 'programado') await c.resolverDuelos?.(ctx, { forzar: true, soloPartido: partidoId });
     const resuelta = await repoPartidos.obtener(partidoId);
     const duelos = resuelta?.duelos as ResultadoCruce | null;
     if (!resuelta || !duelos) return { error: 'JORNADA_NO_ABIERTA' };
     return { modo: 'duelos', duelos, cartas: cartasDelCruce(c, duelos) };
   }
-  const rival = fila.localId === participanteId ? fila.visitanteId : fila.localId;
+  const f = fila!;
+  const rival = f.localId === participanteId ? f.visitanteId : f.localId;
   const contraHumano = esHumano(c, rival) && esHumano(c, participanteId);
-  if (fila.estado === 'programado' && !c.jornada?.cruces.some((x) => x.partidoId === partidoId)) return { error: 'JORNADA_NO_ABIERTA' };
-  // La modalidad se fija en el primer `abrir` y ya no cambia (FR-035); se recuerda en el participante y, si es un
-  // usuario registrado, en su perfil (FR-032).
-  const modalidad = await repoPartidos.fijarModalidad(fila.id, participanteId, pedida);
-  fila.modalidades = { ...((fila.modalidades as Record<string, ModoSimulacion> | null) ?? {}), [participanteId]: modalidad };
-  await repoPartidas.fijarUltimaModalidad(participanteId, modalidad);
-  const participante = c.participante(participanteId);
-  if (participante) participante.ultimaModalidad = modalidad;
-  if (participante?.usuarioId) await repoPerfiles.fijarUltimaModalidad(participante.usuarioId, modalidad, reloj.ahora());
-  const enCurso = c.partidosEnCurso.get(fila.id);
-  if (enCurso) enCurso.fila.modalidades = fila.modalidades;
+  const modalidad = await fijarModalidad(c, f.id, participanteId, pedida);
+  recordarModalidad(c, participanteId, modalidad);
+  f.modalidades = { ...((f.modalidades as Record<string, ModoSimulacion> | null) ?? {}), [participanteId]: modalidad };
+  const enCurso = c.partidosEnCurso.get(f.id);
+  if (enCurso) enCurso.fila.modalidades = f.modalidades;
 
-  if (fila.estado === 'finalizado') return { modo: 'reproduccion', modalidad };
-  if (fila.estado !== 'programado') return { modo: 'directo', modalidad };
+  if (f.estado === 'finalizado') return { modo: 'reproduccion', modalidad };
+  if (f.estado !== 'programado') return { modo: 'directo', modalidad };
   if (contraHumano) {
-    await resolverPartidoEntreHumanos(c, ctx, fila.id, { resolucion: 'apertura', abiertoPorId: participanteId });
+    await resolverPartidoEntreHumanos(c, ctx, f.id, { resolucion: 'apertura', abiertoPorId: participanteId });
     return { modo: 'reproduccion', modalidad };
   }
-  await iniciarPartido(c, ctx, fila);
+  await iniciarPartido(c, ctx, f);
   return { modo: 'directo', modalidad };
+}
+
+/** Comprobaciones de `abrirPartido` sobre la fila leída; también las usa el grupo de aperturas (spec 010). */
+export function errorAlAbrir(c: ControladorPartida, fila: FilaPartido | undefined, participanteId: string): 'PARTIDO_NO_ENCONTRADO' | 'JORNADA_NO_ABIERTA' | null {
+  if (!fila || fila.partidaId !== c.id || (fila.localId !== participanteId && fila.visitanteId !== participanteId)) return 'PARTIDO_NO_ENCONTRADO';
+  if (fila.estado === 'programado' && !c.jornada?.cruces.some((x) => x.partidoId === fila.id)) return 'JORNADA_NO_ABIERTA';
+  return null;
+}
+
+/**
+ * La modalidad se fija en el primer `abrir` y ya no cambia (FR-035); se recuerda en el participante y, si es un
+ * usuario registrado, en su perfil (FR-032). Devuelve la que queda. Solo escribe: la memoria la cambia `recordarModalidad`.
+ */
+export async function fijarModalidad(c: ControladorPartida, partidoId: string, participanteId: string, pedida: ModoSimulacion, ejecutor?: Ejecutor): Promise<ModoSimulacion> {
+  const { repoPartidos, repoPartidas, repoPerfiles, reloj } = c.servicios;
+  const modalidad = await repoPartidos.fijarModalidad(partidoId, participanteId, pedida, ejecutor);
+  await repoPartidas.fijarUltimaModalidad(participanteId, modalidad, ejecutor);
+  const usuarioId = c.participante(participanteId)?.usuarioId;
+  if (usuarioId) await repoPerfiles.fijarUltimaModalidad(usuarioId, modalidad, reloj.ahora(), ejecutor);
+  return modalidad;
+}
+
+export function recordarModalidad(c: ControladorPartida, participanteId: string, modalidad: ModoSimulacion): void {
+  const participante = c.participante(participanteId);
+  if (participante) participante.ultimaModalidad = modalidad;
 }
 
 export type ResultadoSiguienteJornada = { ok: true } | { error: 'JORNADA_ABIERTA' | 'TORNEO_TERMINADO' | 'HAY_VARIOS_HUMANOS' };
@@ -299,11 +319,21 @@ function titularesIniciales(p: PartidoEnCurso): { titulares?: { local: number[];
 
 /** Registra el resultado de un partido terminado (antes de anunciar el final) y devuelve las bajas nuevas. */
 async function registrarPartido(c: ControladorPartida, _ctx: ContextoComando, p: PartidoEnCurso): Promise<Baja[]> {
-  if (!c.torneo || !c.jornada) return [];
+  if (!c.torneo) return [];
+  const r = anotarResultado(c, c.torneo, p);
+  if (!r) return [];
+  c.torneo = r.torneo;
+  await c.servicios.repoTorneo.guardar(c.id, r.torneo);
+  return r.bajasNuevas;
+}
+
+/** El torneo con el resultado de un partido de la jornada abierta (sin guardar ni cambiar `c.torneo`); null si no es de ella. */
+export function anotarResultado(c: ControladorPartida, t: EstadoTorneo, p: PartidoEnCurso): { torneo: EstadoTorneo; bajasNuevas: Baja[] } | null {
+  if (!c.jornada) return null;
   const indice = c.jornada.cruces.findIndex((x) => x.partidoId === p.fila.id);
-  if (indice < 0) return [];
+  if (indice < 0) return null;
   const marcador = p.ultimo?.marcador ?? p.motor.marcador;
-  const { torneo, bajasNuevas } = registrarResultado(c.torneo, {
+  return registrarResultado(t, {
     jornada: c.jornada.numero,
     indice,
     local: p.fila.localId,
@@ -315,9 +345,6 @@ async function registrarPartido(c: ControladorPartida, _ctx: ContextoComando, p:
     eventos: p.eventos as EventoPartido[],
     ...titularesIniciales(p),
   });
-  c.torneo = torneo;
-  await c.servicios.repoTorneo.guardar(c.id, torneo);
-  return bajasNuevas;
 }
 
 /** Tras anunciar el final de un partido: actualización, cierre de jornada y lo que venga después. */
@@ -460,16 +487,40 @@ async function pendientesDe(c: ControladorPartida, participanteId: string | unde
 }
 
 /**
+ * Lo que comparten las vistas del torneo de todos los humanos, cargado una vez por emisión (spec 010, R7): de
+ * cientos de consultas por `torneo.actualizado` a cuatro o cinco.
+ */
+export async function datosComunesTorneo(c: ControladorPartida) {
+  const t = c.torneo;
+  if (!t) return null;
+  const { repoTorneo, repoPartidos, repoVisionados, repoEquipo, economia } = c.servicios;
+  const campeon = t.campeon ? c.participante(t.campeon) : undefined;
+  return {
+    filasJornadas: await repoTorneo.jornadas(c.id),
+    partidos: await repoPartidos.resumenesDePartida(c.id),
+    pendientesPorParticipante: await repoVisionados.pendientesDeVarios(c.humanos().map((p) => p.id), c.id),
+    dorsalesPorParticipante: await repoEquipo.dorsalesDeVarios(c.participantes.map((p) => p.id)),
+    // Fragmentos del campeón registrado (spec 006, R14), leídos del movimiento guardado.
+    recompensa: campeon?.usuarioId ? await economia.recompensaDe(campeon.usuarioId, c.id) : null,
+  };
+}
+
+/** Vista del torneo para un participante; cada emisión de `torneo.actualizado` usa `construirVistaTorneo`. */
+export async function vistaTorneo(c: ControladorPartida, participanteId?: string) {
+  return construirVistaTorneo(c, await datosComunesTorneo(c), participanteId);
+}
+
+/**
  * Vista del torneo para un participante (FR-054; spec 002, FR-030): jornadas con resultados,
  * clasificación o cuadro, y campeón. Sus partidos "pendientes de ver" aparecen sin marcador y no cuentan
- * en la clasificación ni en el cuadro.
+ * en la clasificación ni en el cuadro. Sin E/S: todo sale de `datos`.
  */
-export async function vistaTorneo(c: ControladorPartida, participanteId?: string) {
+export async function construirVistaTorneo(c: ControladorPartida, datos: Awaited<ReturnType<typeof datosComunesTorneo>>, participanteId?: string) {
   const t = c.torneo;
   const siguiente = soloUnHumano(c.participantes) ? ('manual' as const) : ('automatica' as const);
   const yo = participanteId ? c.participante(participanteId) : undefined;
   const pantallas = { derrotaVista: !!yo?.derrotaVistaEn, campeonVisto: !!yo?.campeonVistoEn };
-  if (!t) {
+  if (!t || !datos) {
     return {
       modo: c.partida.modo,
       fase: null,
@@ -488,9 +539,8 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
       recompensaFragmentos: null,
     };
   }
-  const filasJornadas = await c.servicios.repoTorneo.jornadas(c.id);
-  const partidos = await c.servicios.repoPartidos.resumenesDePartida(c.id);
-  const pendientes = await pendientesDe(c, participanteId);
+  const { filasJornadas, partidos, pendientesPorParticipante, dorsalesPorParticipante } = datos;
+  const pendientes = participanteId ? (pendientesPorParticipante.get(participanteId) ?? (await pendientesDe(c, participanteId))) : [];
   const oculto = new Set(pendientes);
   // Cada NPC muestra su nivel en el torneo (T129); también el que sustituye a un humano que abandona.
   const ref = (pid?: string) => (pid ? { id: pid, nombre: nombre(c, pid), nivelNPC: nivelNPCDe(c, pid) } : null);
@@ -505,13 +555,12 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
   // Eliminación propia (spec 003, FR-039): no se revela hasta que ha visto el partido que lo eliminó.
   const eliminacion = participanteId ? eliminacionVista(t, participanteId, partidos, oculto) : null;
   const miEliminacion = eliminacion ? { fase: eliminacion.fase, etiqueta: ETIQUETA_FASE[eliminacion.fase] } : null;
-  // Fragmentos del campeón registrado (spec 006, R14), leídos del movimiento guardado.
-  const recompensaFragmentos = yo?.usuarioId && t.campeon === participanteId ? await c.servicios.economia.recompensaDe(yo.usuarioId, c.id) : null;
+  const recompensaFragmentos = yo?.usuarioId && t.campeon === participanteId ? datos.recompensa : null;
   return {
     miEliminacion,
     recompensaFragmentos,
     puedeSimularResto:
-      miEliminacion !== null && !t.campeon && c.partida.estado === 'en_torneo' && !(await hayHumanosEnCompeticionVisibles(c, { partidos, excepto: participanteId })),
+      miEliminacion !== null && !t.campeon && c.partida.estado === 'en_torneo' && !(await hayHumanosEnCompeticionVisibles(c, { partidos, pendientes: pendientesPorParticipante, excepto: participanteId })),
     pantallas,
     modo: t.modo,
     fase: t.fase,
@@ -570,8 +619,8 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
     pendientesDeVer: pendientes,
     siguienteJornada: siguiente,
     // Máximos goleadores y asistentes (FR-039 a FR-042): sin los partidos que aún no ha visto.
-    goleadores: await filasTabla(c, tablaGoleadores(t, { excluirPartidos: pendientes }), 10),
-    asistentes: await filasTabla(c, tablaAsistentes(t, { excluirPartidos: pendientes }), 10),
+    goleadores: await filasTabla(c, tablaGoleadores(t, { excluirPartidos: pendientes }), 10, dorsalesPorParticipante),
+    asistentes: await filasTabla(c, tablaAsistentes(t, { excluirPartidos: pendientes }), 10, dorsalesPorParticipante),
   };
 }
 
@@ -579,11 +628,11 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
  * Filas de una tabla de goleadores o asistentes para la vista, con el desempate final por nombre y apellidos
  * (FR-042) y las `limite` primeras (todas si es `null`).
  */
-export async function filasTabla(c: ControladorPartida, filas: FilaTabla[], limite: number | null) {
+export async function filasTabla(c: ControladorPartida, filas: FilaTabla[], limite: number | null, cargados?: ReadonlyMap<string, Record<number, number> | null>) {
   const { repoEquipo } = c.servicios;
   const catalogo = c.catalogo;
   const dorsales = new Map<string, Record<number, number> | null>();
-  for (const pid of new Set(filas.map((f) => f.participanteId))) dorsales.set(pid, await repoEquipo.dorsales(pid));
+  for (const pid of new Set(filas.map((f) => f.participanteId))) dorsales.set(pid, cargados?.has(pid) ? cargados.get(pid)! : await repoEquipo.dorsales(pid));
   const conNombre = filas
     .map((f) => ({ f, j: catalogo.resumen(f.jugadorId) }))
     .sort((a, b) => b.f.total - a.f.total || a.f.partidosJugados - b.f.partidosJugados || `${a.j.nombre} ${a.j.apellidos}`.localeCompare(`${b.j.nombre} ${b.j.apellidos}`, 'es'));
@@ -628,10 +677,10 @@ export function pasesOcultos(cuadro: NonNullable<EstadoTorneo['cuadro']>, cruces
 /** `torneo.actualizado` a cada humano con su propia vista (research R8). */
 export async function emitirTorneo(c: ControladorPartida, ctx: ContextoComando, soloA?: string): Promise<void> {
   if (silenciosas.has(c)) return;
-  for (const p of c.humanos()) {
-    if (soloA && p.id !== soloA) continue;
-    ctx.emitirA(p.id, { t: 'torneo.actualizado', ...(await vistaTorneo(c, p.id)) });
-  }
+  const destinatarios = c.humanos().filter((p) => !soloA || p.id === soloA);
+  if (!destinatarios.length) return;
+  const datos = await datosComunesTorneo(c);
+  for (const p of destinatarios) ctx.emitirA(p.id, { t: 'torneo.actualizado', ...(await construirVistaTorneo(c, datos, p.id)) });
 }
 
 /** Un humano abandona el torneo: su plaza pasa a un NPC intermedio (Edge Cases). */

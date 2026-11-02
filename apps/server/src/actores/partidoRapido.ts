@@ -43,6 +43,7 @@ import {
   type EventoPartido,
   type ResultadoTramo,
 } from '@fbd/engine';
+import type { Ejecutor } from '../persistencia/db';
 import type { FilaPartido } from '../persistencia/repos/partidos';
 import { ErrorCalculo, type Prioridad } from '../simulacion/grupo';
 import type { ContextoComando } from './actor';
@@ -171,8 +172,9 @@ export async function dorsalesParaPartido(
   c: ControladorPartida,
   participanteId: string,
   { alineacion, plantilla }: AlineacionDe,
+  ejecutor?: Ejecutor,
 ): Promise<{ dorsales: Dorsales; asignados: { jugadorId: number; dorsal: number }[] }> {
-  let dorsales = await c.servicios.repoEquipo.dorsales(participanteId);
+  let dorsales = await c.servicios.repoEquipo.dorsales(participanteId, ejecutor);
   if (!dorsales) {
     dorsales = asignarDorsalesIniciales(
       plantilla.map((j) => j.id),
@@ -181,14 +183,14 @@ export async function dorsalesParaPartido(
       derivarSemilla(c.partida.semilla, `dorsales:${participanteId}`),
       posicionesColocadas(alineacion.formacion, alineacion.titulares, alineacion.colocacion, parametrosActuales()),
     );
-    await c.servicios.repoEquipo.guardarDorsales(participanteId, dorsales);
+    await c.servicios.repoEquipo.guardarDorsales(participanteId, dorsales, ejecutor);
   }
   // Al empezar, cada convocado sin dorsal recibe el libre más bajo (FR-038).
   const convocados = [...alineacion.titulares.map((t) => t.jugadorId), ...alineacion.suplentes];
   const completados = completarDorsales(dorsales, convocados);
   if (completados.asignados.length) {
     dorsales = completados.dorsales;
-    await c.servicios.repoEquipo.guardarDorsales(participanteId, dorsales);
+    await c.servicios.repoEquipo.guardarDorsales(participanteId, dorsales, ejecutor);
   }
   return { dorsales, asignados: completados.asignados };
 }

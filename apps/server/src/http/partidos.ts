@@ -9,7 +9,8 @@ import type { EventoPartido } from '@fbd/engine';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
 import type { ControladorPartida } from '../actores/partida';
-import { reproduccion } from '../actores/partidoEntreHumanos';
+import { abrirEntreHumanos } from '../actores/aperturas';
+import { entreHumanos, reproduccion } from '../actores/partidoEntreHumanos';
 import { equipacionesDelPartido, resumenAlineaciones } from '../actores/partidoRapido';
 import { vistaCruce } from '../actores/duelos';
 import { abrirPartido, emitirTorneo } from '../actores/torneo';
@@ -64,7 +65,11 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
     if (!cuerpo) throw errores.regla('MODALIDAD_INVALIDA', 'La modalidad debe ser «rapida» o «2d»');
     return medir('apertura', async () => {
       const { fila, c, participanteId } = await partidoDelUsuario(req, true);
-      const r = await c.ejecutar((ctx) => abrirPartido(c, ctx, participanteId, fila.id, cuerpo.modalidad));
+      // Entre humanos y programado: al grupo de aperturas de la partida (spec 010, US2); si no, como siempre.
+      const r =
+        fila.tipo === 'futbol' && fila.estado === 'programado' && entreHumanos(c, fila)
+          ? await abrirEntreHumanos(c, participanteId, fila.id, cuerpo.modalidad)
+          : await c.ejecutar((ctx) => abrirPartido(c, ctx, participanteId, fila.id, cuerpo.modalidad));
       if ('error' in r) {
         if (r.error === 'JORNADA_NO_ABIERTA') throw errores.conflicto(r.error, 'Ese partido no es de la jornada abierta');
         throw errores.noEncontrado(r.error, 'No juegas ese partido');

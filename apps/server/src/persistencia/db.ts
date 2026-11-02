@@ -4,6 +4,8 @@ import { contarConsulta, fase } from '../observabilidad/desglose';
 import * as esquema from './esquema/index';
 
 export type BaseDatos = NodePgDatabase<typeof esquema>;
+/** La base de datos o una transacción abierta: lo que aceptan los métodos de escritura de los repositorios. */
+export type Ejecutor = BaseDatos | Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 
 export interface ConexionBD {
   db: BaseDatos;

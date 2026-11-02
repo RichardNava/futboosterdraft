@@ -152,9 +152,9 @@ datos comunes una vez.
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Ampliar `apps/server/tests/unit/actor.test.ts`: `secuencia` empieza en 0, sube 1 en cada
+- [X] T017 [P] [US2] Ampliar `apps/server/tests/unit/actor.test.ts`: `secuencia` empieza en 0, sube 1 en cada
   `ejecutar()` (también si el comando falla) y no cambia al terminar comandos.
-- [ ] T018 [P] [US2] Escribir `apps/server/tests/integration/aperturas-grupo.test.ts` (debe fallar hasta T025), con una
+- [X] T018 [P] [US2] Escribir `apps/server/tests/integration/aperturas-grupo.test.ts` (debe fallar hasta T025), con una
   partida de 8 humanos en una jornada de 4 partidos entre humanos:
   - **8 a la vez**: los 8 abren con `Promise.all`; cada partido queda `finalizado` una sola vez y cada humano recibe
     `{ modo: 'reproduccion', modalidad }` con su modalidad;
@@ -178,14 +178,14 @@ datos comunes una vez.
 
 ### Implementation for User Story 2
 
-- [ ] T019 [P] [US2] Añadir el parámetro `ejecutor: Ejecutor = this.db` (mismo patrón que `repoPartidos.actualizar`) a
+- [X] T019 [P] [US2] Añadir el parámetro `ejecutor: Ejecutor = this.db` (mismo patrón que `repoPartidos.actualizar`) a
   los métodos de escritura que usa la apertura entre humanos y aún no lo aceptan, en
   `apps/server/src/persistencia/repos/{visionados,equipo,partidos,partidas,perfiles,torneo}.ts`: fijar modalidad del
   partido, última modalidad del participante y del perfil, guardar partido finalizado, crear visionados, guardar
   dorsales y guardar torneo. Sin cambiar las consultas.
-- [ ] T020 [US2] `get secuencia(): number` en `ActorPartida` (`apps/server/src/actores/actor.ts`): contador que sube en
+- [X] T020 [US2] `get secuencia(): number` en `ActorPartida` (`apps/server/src/actores/actor.ts`): contador que sube en
   cada `ejecutar()` antes de encadenar el comando (contrato, «API interna: buzón de aperturas»). T017 en verde.
-- [ ] T021 [US2] Dividir `resolverPartidoEntreHumanos` en `apps/server/src/actores/partidoEntreHumanos.ts` en tres
+- [X] T021 [US2] Dividir `resolverPartidoEntreHumanos` en `apps/server/src/actores/partidoEntreHumanos.ts` en tres
   pasos exportados, sin cambiar el cálculo ni su orden interno: `prepararEntreHumanos` (relee la fila y prepara
   alineaciones; solo lecturas), `calcularEntreHumanos` (`calculo.ejecutar` con prioridad `humano`; sin E/S) y
   `aplicarEntreHumanos(c, preparado, calculado, torneo, ejecutor)` (dorsales, partido finalizado, visionados y
@@ -194,7 +194,7 @@ datos comunes una vez.
   `db.transaction` y enviar después los avisos y `despuesDePartido`, así que el camino actual sigue igual. Extraer de
   `abrirPartido` (`apps/server/src/actores/torneo.ts`) las validaciones y la fijación de modalidad para reutilizarlas
   en el grupo (con `ejecutor`). Comprobar `torneo-asincrono.test.ts` y `dorsales.test.ts` sin cambios.
-- [ ] T022 [US2] Crear `apps/server/src/actores/aperturas.ts` con `abrirEntreHumanos(c, participanteId, partidoId,
+- [X] T022 [US2] Crear `apps/server/src/actores/aperturas.ts` con `abrirEntreHumanos(c, participanteId, partidoId,
   modalidad): Promise<ResultadoAbrir>` (contrato) y el buzón por partida (data-model, «Grupo de aperturas»):
   - **unirse**: si hay un grupo `abierto` y `actor.secuencia === grupo.secuencia`, añadir la apertura; si no, crear un
     grupo, encolar **un** comando con `c.ejecutar` y guardar `grupo.secuencia = actor.secuencia`; sin esperas
@@ -211,15 +211,15 @@ datos comunes una vez.
     llamar `despuesDePartido` **una vez** (FR-013); resolver las esperas. Si la transacción falla, la memoria queda
     como estaba y todas las esperas reciben el error (R5);
   - **apagado**: los grupos no empezados fallan como los comandos de un actor cerrado (R11).
-- [ ] T023 [US2] En `apps/server/src/http/partidos.ts`, para la fila ya leída de tipo `futbol`, `programado` y
+- [X] T023 [US2] En `apps/server/src/http/partidos.ts`, para la fila ya leída de tipo `futbol`, `programado` y
   `entreHumanos(c, fila)`, llamar `abrirEntreHumanos`; en otro caso, `c.ejecutar(abrirPartido)` como hoy. Misma
   traducción a HTTP de `{ modo, modalidad }` y `{ error }` (FR-015).
-- [ ] T024 [US2] Pasar T018 y toda la integración en los dos modos (`pnpm --filter @fbd/server test:integration` y
+- [X] T024 [US2] Pasar T018 y toda la integración en los dos modos (`pnpm --filter @fbd/server test:integration` y
   `test:integration:hilos`); `pnpm test:equivalence` sin cambios (FR-014).
-- [ ] T025 [P] [US2] Consultas por partida para R7: en `apps/server/src/persistencia/repos/visionados.ts`, los
+- [X] T025 [P] [US2] Consultas por partida para R7: en `apps/server/src/persistencia/repos/visionados.ts`, los
   pendientes de **todos** los participantes de una partida en una consulta (agrupados por participante); en
   `apps/server/src/persistencia/repos/equipo.ts`, los dorsales de una lista de participantes en una consulta.
-- [ ] T026 [US2] En `apps/server/src/actores/torneo.ts`, dividir `vistaTorneo` en `datosComunesTorneo(c)` (data-model,
+- [X] T026 [US2] En `apps/server/src/actores/torneo.ts`, dividir `vistaTorneo` en `datosComunesTorneo(c)` (data-model,
   «Datos comunes de una emisión»: `filasJornadas`, `partidos`, `pendientesPorParticipante`, `dorsalesPorParticipante`,
   `recompensa` solo del campeón) y `construirVistaTorneo(datos, participanteId)` sin E/S. `emitirTorneo` carga los
   datos una vez por emisión; `GET` del torneo de un participante usa el mismo camino con un destinatario. Cada
