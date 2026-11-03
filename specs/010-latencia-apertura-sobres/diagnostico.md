@@ -464,4 +464,34 @@ Con 100 partidas agotan el tiempo de k6 10 peticiones `POST …/siguiente-jornad
 - Con 10 partidas mejora todo un poco y se cumplen todos los umbrales, como antes.
 - Lo siguiente, si se sigue con 100 partidas, es saber cuánta CPU queda libre en el equipo B durante la prueba: si
   está al 100 %, el límite es el equipo y no el código; si no, se puede probar con más hilos (`HILOS_SIMULACION`).
+  Medido en «Uso de CPU con 100 partidas».
+
+### Uso de CPU con 100 partidas
+
+Se repitió la prueba de 100 partidas con el mismo código, apuntando el uso de CPU cada ~3 s
+([referencia-100-cpu](mediciones/referencia-100-cpu.md)). El equipo B tiene 8 núcleos lógicos; por defecto el servidor
+usa 7 hilos de simulación.
+
+| Uso de CPU (media de 12:30:08 a 12:33:28, 70 muestras, la parte con carga) | |
+|---|---:|
+| total del equipo | 94 % (57 de 70 muestras ≥ 90 %) |
+| `node` (servidor e hilos de simulación) | 5,6 núcleos |
+| `postgres` | 0,6 núcleos |
+| `k6` | 0,6 núcleos |
+
+| k6, 100 partidas | Tras recortar | Repetición |
+|---|---:|---:|
+| `apertura_ms` mediana / p95 | 12,25 / 14,43 s | 12,58 / 15,93 s |
+| `entrega_sobre_ms` mediana / p95 | 814 ms / 1,67 s | 863 ms / 1,49 s |
+| `final_ms` p95 | 3,63 s | 3,44 s |
+| consultas por apertura, media | 41,0 | 41,0 |
+
+- **El equipo B está saturado de CPU durante la prueba, y casi toda la usa el servidor.** Más hilos de simulación no
+  ayudarían: no queda CPU libre para ellos.
+- Sacar PostgreSQL y k6 a otras máquinas (T036) liberaría ~1,2 núcleos, un 20 % más para el servidor. No basta para
+  bajar la apertura de ~15 s a menos de 3 s si el cálculo escala con la CPU; eso es una suposición, no se ha medido.
+- **Con 100 partidas en una máquina de 8 núcleos, el límite es el coste de simular los partidos**, no la base de datos.
+  Para cumplir los umbrales hace falta más CPU o simular más barato.
+- **De una ejecución a otra, el p95 varía un 10 %** (apertura 14,4 → 15,9 s; entrega 1,67 → 1,49 s). Las diferencias
+  del p95 de la entrega entre «Tras US3» y «Tras recortar el grupo» (1,76 → 1,67 s) están dentro de esa variación.
 
