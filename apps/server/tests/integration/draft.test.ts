@@ -198,6 +198,40 @@ describe('draft (US1)', () => {
     await ws2.cerrar();
   });
 
+  it('quien reconecta a mitad de la entrega del sobre recibe el turno ya resuelto, el mismo de draft.turno (spec 010, T031)', async () => {
+    const { invitado, partida } = await partidaInvitado();
+    const { ws, turno } = await iniciarConCliente(invitado, partida.id);
+    const c = await srv.gestor.obtenerOError(partida.id);
+    const hasta = async (cond: () => boolean) => {
+      for (let i = 0; i < 500 && !cond(); i++) await new Promise((r) => setTimeout(r, 10));
+      expect(cond()).toBe(true);
+    };
+    // Retiene la cola del actor para que la elección que cierra el turno y la instantánea de la reconexión
+    // queden encoladas a la vez, en ese orden.
+    let soltar!: () => void;
+    const retenido = c.ejecutar(() => new Promise<void>((r) => (soltar = r)));
+    const s0 = c.actor.secuencia;
+    const desde = ws.recibidos.length;
+    const elegida = turno.sobre.cartas[0].id;
+    ws.enviar({ t: 'draft.elegir', ronda: 1, turno: 1, jugadorId: elegida });
+    await hasta(() => c.actor.secuencia > s0);
+    const ws2 = await ClienteWs.conectar(srv.urlWs, partida.id, invitado.cookie);
+    await hasta(() => c.actor.secuencia > s0 + 1);
+    soltar();
+    await retenido;
+
+    const nuevo = await siguienteTurno(ws, desde);
+    const estado = await ws2.esperar('estado');
+    expect(estado.vista.draft.turno).toBe(2);
+    expect(estado.vista.draft.turno).toBe(nuevo.turno);
+    expect(estado.vista.draft.venceEn).toBe(nuevo.venceEn);
+    expect(estado.vista.draft.sobre).toEqual(nuevo.sobre);
+    expect(estado.vista.draft.misElecciones).toEqual(nuevo.misElecciones);
+    expect(estado.vista.draft.misElecciones.map((j: any) => j.id)).toEqual([elegida]);
+    await ws2.cerrar();
+    await ws.cerrar();
+  });
+
   it('un humano desconectado recibe autoelecciones y el draft de 8 termina en 20 min o menos (SC-001, SC-011)', async () => {
     const anfitrion = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', {

@@ -123,11 +123,15 @@ describe('desglose por fases (spec 010, US1)', () => {
       expect(ack.ok, JSON.stringify(ack)).toBe(true);
       turno = await ws.esperar('draft.turno', { desde: despues });
     }
-    // Sin carga, una entrega dura ~10 ms y su resto (~1,2 ms de huecos del bucle de eventos, con el cliente de la
-    // prueba en el mismo proceso) ronda el 12 %. FR-001 se evalúa con la carga (diagnostico.md: ≤ 2 % con 10 y 100
-    // partidas); aquí solo se vigila que no aparezca una fase grande sin medir. El p95 de 8 elecciones es casi la
-    // peor muestra (ruido), así que solo se acota la mediana.
-    await comprobarDesglose(s.metricas, 'entrega_sobre', PICKS, { 0.5: 0.15 });
+    // Sin carga, una entrega dura ~7,5 ms (desde T029) y su resto (~1,2 ms de huecos del bucle de eventos, con el
+    // cliente de la prueba en el mismo proceso) ronda el 16 %. FR-001 se evalúa con la carga (diagnostico.md: ≤ 2 %
+    // con 10 y 100 partidas); aquí solo se vigila que no aparezca una fase grande sin medir. El p95 de 8 elecciones
+    // es casi la peor muestra (ruido), así que solo se acota la mediana.
+    await comprobarDesglose(s.metricas, 'entrega_sobre', PICKS, { 0.5: 0.25 });
+    // Cierre de turno en una transacción (T029, R9): deduplicación, BEGIN, elecciones (la del humano y las de los NPC
+    // en una consulta), mesa, COMMIT y ack. Antes, 7 de media (57 en estas 8 elecciones).
+    const q = await consultas(s.metricas, 'entrega_sobre');
+    expect(q.suma / q.n).toBe(6);
     expect(await desglose(s.metricas, 'eleccion')).toEqual({});
     await ws.cerrar();
   });

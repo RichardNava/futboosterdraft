@@ -61,10 +61,14 @@ export class RepoDraft {
     await this.db.update(mesas).set({ venceEn: new Date(venceEn), pausadaEn: null, restanteMs: null }).where(eq(mesas.id, mesaId));
   }
 
-  async guardarElecciones(mesaId: string, nuevas: Eleccion[], ahora: number, ejecutor: Ejecutor = this.db): Promise<void> {
+  /** Guarda en una sola consulta las elecciones de un paso del draft, cada una con su hora (spec 010, R9). */
+  async guardarElecciones(
+    nuevas: { mesaId: string; eleccion: Eleccion; registradaEn: number }[],
+    ejecutor: Ejecutor = this.db,
+  ): Promise<void> {
     if (nuevas.length === 0) return;
     await ejecutor.insert(elecciones).values(
-      nuevas.map((e) => ({
+      nuevas.map(({ mesaId, eleccion: e, registradaEn }) => ({
         mesaId,
         ronda: e.ronda,
         turno: e.turno,
@@ -72,7 +76,7 @@ export class RepoDraft {
         sobreId: e.sobreId,
         jugadorId: e.jugadorId,
         origen: e.origen,
-        registradaEn: new Date(ahora),
+        registradaEn: new Date(registradaEn),
       })),
     );
   }

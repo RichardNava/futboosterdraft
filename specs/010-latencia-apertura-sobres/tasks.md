@@ -243,24 +243,33 @@ orden de mensajes.
 
 ### Tests for User Story 3
 
-- [ ] T028 [P] [US3] Escribir `apps/server/tests/unit/pasarela.test.ts` (FR-011, R8): un mensaje de destino `todos` con
+- [X] T028 [P] [US3] Escribir `apps/server/tests/unit/pasarela.test.ts` (FR-011, R8): un mensaje de destino `todos` con
   N sockets falsos se serializa una vez (espía sobre `JSON.stringify` o contador en el desglose) y todos reciben la
   misma cadena; los mensajes por participante se serializan uno por destinatario.
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Solo si `diagnostico.md` lo prioriza (R9, candidato principal): en `apps/server/src/actores/draft.ts`,
+- [X] T029 [US3] Solo si `diagnostico.md` lo prioriza (R9, candidato principal): en `apps/server/src/actores/draft.ts`,
   calcular primero con las funciones puras del dominio (`elegir`, `resolverTurno`, `eleccionNPC`) en el mismo orden de
   hoy y guardar en **una** `db.transaction` la elección que cierra el turno, las elecciones automáticas, la mesa
   resuelta, las elecciones NPC del turno nuevo y el margen de animación; enviar `draft.progreso`,
   `draft.eleccion_auto` y `draft.turno` después del commit, con el mismo contenido y orden. Añadir `ejecutor` a los
   métodos de `apps/server/src/persistencia/repos/draft.ts` que lo necesiten. Si el diagnóstico no lo prioriza, marcar
   la tarea como descartada con la referencia a `diagnostico.md`.
-- [ ] T030 [US3] Solo si el desglose señala el `ack` (R9, segundo candidato): enviar el `ack` de `draft.elegir` sin
+- [X] T030 [US3] Solo si el desglose señala el `ack` (R9, segundo candidato): enviar el `ack` de `draft.elegir` sin
   esperar a guardar la petición de deduplicación cuando el sobre ya salió, manteniendo la idempotencia de la petición
   (constitución, Principio VI). Si no, marcar como descartada con la referencia.
-- [ ] T031 [US3] Pasar `draft.test.ts` en los dos modos y `pnpm e2e` (draft) sin cambios; reconexión a mitad de entrega
+  **Descartada**: el `ack` guarda la deduplicación después de que salga el sobre y no retrasa `entrega_sobre_ms`
+  ([diagnostico.md](diagnostico.md), «Decisión», segundo candidato).
+- [X] T031 [US3] Pasar `draft.test.ts` en los dos modos y `pnpm e2e` (draft) sin cambios; reconexión a mitad de entrega
   recibe el estado del draft igual que hoy (acceptance 3).
+  Hecho el 2026-11-03: `draft.test.ts` con un test nuevo de reconexión a mitad de entrega, integración completa en los
+  dos modos, `pnpm test:equivalence` y los e2e `draft-solo` y `draft-varios`, todo en verde.
+  `desglose.test.ts` comprueba ahora 6 consultas por entrega (antes 57 en 8 elecciones, 7,1 de media). Su cota
+  del `resto` sube al 25 % de la mediana: la entrega dura ~7,5 ms sin carga y el resto sigue en ~1,2 ms. Fallos que
+  ya estaban (se reproducen igual con el código de HEAD): `cartaEnVersion` (`data/core.json` ≠
+  `data/core-real.json`) y, en e2e, `partido-rapido`, `dorsales`, `torneo`, `cartas` y `coleccion`. Dependen de la
+  semilla y del nombre de carta.
 - [ ] T032 [US3] Medir con `k6 run -e PARTIDAS=100 -e METRICAS_URL=…` en el entorno de referencia y anotar en
   `diagnostico.md` (sección «Tras US3») y en `mediciones/` el p95 de `entrega_sobre_ms` y sus consultas.
 

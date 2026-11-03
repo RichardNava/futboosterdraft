@@ -4,6 +4,9 @@
  * - Genera los sobres de cada mesa al empezar y los persiste.
  * - Abre cada turno: los NPC eligen al instante; a cada humano se le envía su propio sobre.
  * - Procesa las elecciones (validadas por el dominio) y las persiste antes de anunciarlas.
+ * - Cada paso (una elección, un vencimiento) se calcula entero con el dominio y se guarda en una sola transacción
+ *   (spec 010, R9): la elección que cierra el turno, las automáticas, la mesa resuelta y las elecciones NPC del
+ *   turno nuevo. El actor retiene los mensajes hasta que el comando termina, así que salen después del commit.
  * - `draft.progreso` nunca revela qué carta se eligió.
  * - Al vencer el plazo, elige automáticamente por quien falte y se lo comunica (`draft.eleccion_auto`).
  * - Al terminar todas las mesas, guarda las plantillas y pasa la partida a `en_torneo`.
@@ -23,6 +26,7 @@ import {
   todosEligieron,
   transicion,
   vistaParticipante,
+  type Eleccion,
   type Mesa,
   type NivelNPC,
 } from '@fbd/domain';
@@ -30,6 +34,51 @@ import type { ContextoComando } from './actor';
 import { alineacionAutomatica, dorsalesIniciales } from './equipo';
 import type { ControladorPartida } from './partida';
 import { fase, renombrar } from '../observabilidad/desglose';
+import type { Ejecutor } from '../persistencia/db';
+
+/** Lo que deja un paso del draft, para guardarlo de una vez (spec 010, R9). */
+interface Escrituras {
+  elecciones: { mesaId: string; eleccion: Eleccion; registradaEn: number }[];
+  /** Último estado de cada mesa cambiada: el turno resuelto y el margen de animación van en una sola escritura. */
+  mesas: Map<string, Mesa>;
+  /** Inicio de la primera resolución de turno del paso, para `turnoDraftResolucionMs`. */
+  inicioResolucion?: number;
+}
+
+/**
+ * Ejecuta un paso del draft: `paso` calcula sin tocar la base de datos (cambia las mesas en memoria, anota qué
+ * guardar y emite) y devuelve si el draft ha terminado. Después se guarda todo y, si toca, se cierra el draft.
+ */
+async function aplicar(c: ControladorPartida, ctx: ContextoComando, paso: (w: Escrituras) => boolean): Promise<void> {
+  const previas = c.mesas.map((m) => m.mesa);
+  const w: Escrituras = { elecciones: [], mesas: new Map() };
+  let terminado: boolean;
+  try {
+    terminado = paso(w);
+    await guardar(c, w);
+  } catch (e) {
+    // Lo que no se ha guardado tampoco queda en memoria; los mensajes retenidos se descartan con el comando.
+    c.mesas.forEach((m, i) => (m.mesa = previas[i]!));
+    throw e;
+  }
+  if (terminado) await terminarDraft(c, ctx);
+  if (w.inicioResolucion !== undefined) c.servicios.metricas.turnoDraftResolucionMs.observe(Date.now() - w.inicioResolucion);
+}
+
+async function guardar(c: ControladorPartida, w: Escrituras): Promise<void> {
+  const { db, repoDraft } = c.servicios;
+  const escribir = async (e: Ejecutor) => {
+    await repoDraft.guardarElecciones(w.elecciones, e);
+    for (const [id, mesa] of w.mesas) await repoDraft.actualizarMesa(id, mesa, e);
+  };
+  // Sin mesas que actualizar es una sola consulta (una elección que no cierra el turno): no hace falta transacción.
+  if (w.mesas.size === 0) await escribir(db);
+  else await db.transaction(escribir);
+}
+
+function anotarElecciones(w: Escrituras, m: { id: string; mesa: Mesa }, desde: number, registradaEn: number): void {
+  for (const eleccion of m.mesa.elecciones.slice(desde)) w.elecciones.push({ mesaId: m.id, eleccion, registradaEn });
+}
 
 /** Crea las mesas (1, o 2 de 8 en el playoff de 16) a partir de los participantes ya sentados. */
 export async function iniciarDraft(c: ControladorPartida, ctx: ContextoComando, asientos: string[][]): Promise<void> {
@@ -70,13 +119,13 @@ export async function iniciarDraft(c: ControladorPartida, ctx: ContextoComando, 
     if (m) p.asiento = m.mesa.participantes.indexOf(p.id);
   }
 
-  for (const m of c.mesas) await abrirTurno(c, ctx, m.indice);
+  await aplicar(c, ctx, (w) => c.mesas.map((m) => abrirTurno(c, ctx, m.indice, w)).includes(true));
 }
 
-/** Abre el turno actual de una mesa: elecciones NPC, envío de sobres y temporizador. */
-export async function abrirTurno(c: ControladorPartida, ctx: ContextoComando, indice: number): Promise<void> {
+/** Abre el turno actual de una mesa: elecciones NPC, envío de sobres y temporizador. Devuelve si el draft ha terminado. */
+function abrirTurno(c: ControladorPartida, ctx: ContextoComando, indice: number, w: Escrituras): boolean {
   const m = c.mesas.find((x) => x.indice === indice);
-  if (!m || m.mesa.estado !== 'en_turno') return;
+  if (!m || m.mesa.estado !== 'en_turno') return false;
   // Los NPC eligen al abrirse el turno: nunca después de su vencimiento. Entre que se calcula el vencimiento y este
   // punto hay esperas a la base de datos; si mientras tanto el reloj ha avanzado más que la duración del turno (bajo
   // mucha carga o con el reloj simulado), elegir con la hora actual lanzaría TURNO_CERRADO y el draft se quedaría
@@ -92,18 +141,15 @@ export async function abrirTurno(c: ControladorPartida, ctx: ContextoComando, in
     const jugadorId = fase('calculo', () => eleccionNPC(c, m.mesa, m.semilla, pid, (p.nivelNPC as NivelNPC | null) ?? 'intermedio'));
     m.mesa = elegir(m.mesa, pid, jugadorId, ahora, 'npc');
   }
-  await c.servicios.repoDraft.guardarElecciones(m.id, m.mesa.elecciones.slice(antes), ahora);
+  anotarElecciones(w, m, antes, ahora);
 
-  if (todosEligieron(m.mesa)) {
-    await resolver(c, ctx, indice);
-    return;
-  }
+  if (todosEligieron(m.mesa)) return resolver(c, ctx, indice, w);
   // El turno 1 de cada ronda abre el sobre propio: animación de apertura y su margen de tiempo, que no resta
   // tiempo de elección (FR-006 a FR-008; research R17). Solo en este primer envío, nunca al reconectar.
   const animacion = m.mesa.turno === 1;
   if (animacion) {
     m.mesa = { ...m.mesa, venceEn: m.mesa.venceEn + parametrosActuales().draft.margenAnimacionS * 1000 };
-    await c.servicios.repoDraft.actualizarMesa(m.id, m.mesa);
+    w.mesas.set(m.id, m.mesa);
   }
   for (const pid of m.mesa.participantes) {
     const p = c.participante(pid);
@@ -111,6 +157,7 @@ export async function abrirTurno(c: ControladorPartida, ctx: ContextoComando, in
   }
   emitirProgreso(c, ctx, m.mesa);
   programarTurno(c, indice);
+  return false;
 }
 
 /** Programa el vencimiento del turno abierto de una mesa (al abrirlo, al reanudarlo o al rehidratar). */
@@ -165,20 +212,23 @@ export async function procesarEleccion(
   if (m.mesa.estado !== 'en_turno' || datos.ronda !== m.mesa.ronda || datos.turno !== m.mesa.turno) {
     return { ok: false, error: { codigo: 'TURNO_CERRADO', mensaje: 'El turno ya está cerrado' } };
   }
+  let nueva: Mesa;
   try {
-    const nueva = elegir(m.mesa, participanteId, datos.jugadorId, ahora, 'manual');
-    await c.servicios.repoDraft.guardarElecciones(m.id, nueva.elecciones.slice(m.mesa.elecciones.length), ahora);
-    m.mesa = nueva;
+    nueva = elegir(m.mesa, participanteId, datos.jugadorId, ahora, 'manual');
   } catch (e) {
     if (e instanceof ErrorDraft) return { ok: false, error: { codigo: e.codigo, mensaje: e.message } };
     throw e;
   }
-  emitirProgreso(c, ctx, m.mesa);
-  if (todosEligieron(m.mesa)) {
+  await aplicar(c, ctx, (w) => {
+    const antes = m.mesa.elecciones.length;
+    m.mesa = nueva;
+    anotarElecciones(w, m, antes, ahora);
+    emitirProgreso(c, ctx, m.mesa);
+    if (!todosEligieron(m.mesa)) return false;
     // Esta elección cierra el turno: en el desglose por fases es una entrega de sobre (spec 010).
     renombrar('entrega_sobre');
-    await resolver(c, ctx, m.indice);
-  }
+    return resolver(c, ctx, m.indice, w);
+  });
   return { ok: true };
 }
 
@@ -190,14 +240,16 @@ export async function abandonarDraft(c: ControladorPartida, ctx: ContextoComando
   const m = c.mesaDe(participanteId);
   if (!m || m.mesa.estado !== 'en_turno') return;
   const yaEligio = m.mesa.elecciones.some((e) => e.participanteId === participanteId && e.ronda === m.mesa.ronda && e.turno === m.mesa.turno);
-  if (!yaEligio) {
-    const ahora = Math.min(c.servicios.reloj.ahora(), m.mesa.venceEn);
-    const antes = m.mesa.elecciones.length;
-    m.mesa = elegir(m.mesa, participanteId, eleccionNPC(c, m.mesa, m.semilla, participanteId, 'intermedio'), ahora, 'npc');
-    await c.servicios.repoDraft.guardarElecciones(m.id, m.mesa.elecciones.slice(antes), ahora);
-  }
-  emitirProgreso(c, ctx, m.mesa);
-  if (todosEligieron(m.mesa)) await resolver(c, ctx, m.indice);
+  await aplicar(c, ctx, (w) => {
+    if (!yaEligio) {
+      const ahora = Math.min(c.servicios.reloj.ahora(), m.mesa.venceEn);
+      const antes = m.mesa.elecciones.length;
+      m.mesa = elegir(m.mesa, participanteId, eleccionNPC(c, m.mesa, m.semilla, participanteId, 'intermedio'), ahora, 'npc');
+      anotarElecciones(w, m, antes, ahora);
+    }
+    emitirProgreso(c, ctx, m.mesa);
+    return todosEligieron(m.mesa) && resolver(c, ctx, m.indice, w);
+  });
 }
 
 /** Vencimiento del plazo de un turno. */
@@ -205,26 +257,23 @@ export async function vencerTurno(c: ControladorPartida, ctx: ContextoComando, i
   const m = c.mesas.find((x) => x.indice === indice);
   // Una mesa pausada (research R10) no vence: el turno sigue al reanudarse.
   if (!m || m.pausa || m.mesa.estado !== 'en_turno' || c.servicios.reloj.ahora() <= m.mesa.venceEn) return;
-  await resolver(c, ctx, indice);
+  await aplicar(c, ctx, (w) => resolver(c, ctx, indice, w));
 }
 
-async function resolver(c: ControladorPartida, ctx: ContextoComando, indice: number): Promise<void> {
+/** Resuelve el turno de una mesa y abre el siguiente. Devuelve si el draft ha terminado (todas las mesas). */
+function resolver(c: ControladorPartida, ctx: ContextoComando, indice: number, w: Escrituras): boolean {
   const m = c.mesas.find((x) => x.indice === indice)!;
-  const { reloj, repoDraft, db, metricas, temporizadores } = c.servicios;
+  const { reloj, temporizadores } = c.servicios;
   const catalogo = c.catalogo;
   const ahora = reloj.ahora();
-  const inicio = Date.now();
+  w.inicioResolucion ??= Date.now();
   temporizadores.cancelar(c.clave(`turno:${indice}`));
 
   const antes = m.mesa.elecciones.length;
-  const anterior = m.mesa;
-  const nueva = resolverTurno(anterior, ahora);
-  const automaticas = nueva.elecciones.slice(antes);
-  await db.transaction(async (tx) => {
-    await repoDraft.guardarElecciones(m.id, automaticas, ahora, tx);
-    await repoDraft.actualizarMesa(m.id, nueva, tx);
-  });
-  m.mesa = nueva;
+  m.mesa = resolverTurno(m.mesa, ahora);
+  const automaticas = m.mesa.elecciones.slice(antes);
+  anotarElecciones(w, m, antes, ahora);
+  w.mesas.set(m.id, m.mesa);
 
   for (const e of automaticas) {
     if (c.participante(e.participanteId)?.tipo !== 'humano') continue;
@@ -236,12 +285,8 @@ async function resolver(c: ControladorPartida, ctx: ContextoComando, indice: num
     });
   }
 
-  if (nueva.estado === 'terminada') {
-    if (c.mesas.every((x) => x.mesa.estado === 'terminada')) await terminarDraft(c, ctx);
-  } else {
-    await abrirTurno(c, ctx, indice);
-  }
-  metricas.turnoDraftResolucionMs.observe(Date.now() - inicio);
+  if (m.mesa.estado === 'terminada') return c.mesas.every((x) => x.mesa.estado === 'terminada');
+  return abrirTurno(c, ctx, indice, w);
 }
 
 async function terminarDraft(c: ControladorPartida, ctx: ContextoComando): Promise<void> {

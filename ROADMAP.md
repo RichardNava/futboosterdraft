@@ -285,6 +285,14 @@ motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010
 - **Prioridad / estado**: P1 · **Parcial**. 008: T012 y T022 (comprobaciones manuales en `pnpm dev`) abiertas.
   Con nombres y retratos de futbolistas reales, la política de derechos de imagen es ya un riesgo para producción
   (INI-10), no solo para el catálogo definitivo.
+- **Pendiente: una sola fuente para la colección Core.** El contenido de Core está en `data/core-real.json`. Hoy
+  `data/core.json` es una copia que genera `pnpm --filter @fbd/fixtures core-real`, y la leen unos 20 ficheros:
+  el seed, los tests de domain, ai y balance, `tools/fixtures` y `apps/web/src/textos/cartasMuestra.ts`. La copia
+  se desincronizó tras el commit `1d26e84` y desde entonces fallan `versionCatalogo.test.ts` («Core son exactamente
+  los jugadores reales…») y, probablemente, algunos e2e (`cartas`, `coleccion`, `partido-rapido`, `dorsales`).
+  **Se hará** retirando `data/core.json` y haciendo que todo lea `data/core-real.json`. Habrá que actualizar
+  CLAUDE.md, el script `core-real` y `specs/008-datos-reales-core/sumario.md`. No se arreglará regenerando la copia.
+  Detectado el 2026-11-03 durante la spec 010 (T031).
 - **Dependencias**: INI-08 (modelo de colecciones) e INI-05 (el equilibrio del catálogo se mide con el motor ya calibrado).
 - **Criterios de cierre**: los de su spec, como mínimo: `pnpm seed` carga el catálogo nuevo; validación del catálogo
   en verde; serie Core dentro de los criterios estadísticos; derechos de todo el contenido revisados.
