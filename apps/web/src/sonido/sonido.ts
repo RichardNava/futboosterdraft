@@ -1,6 +1,7 @@
 /**
  * Sonido de la aplicación (002/FR-010, research R17; spec 003, FR-014; spec 007, FR-010 a FR-015, research R5 a R7):
- * Web Audio API con nueve efectos cortos, todos grabaciones CC0 en MP3 (`public/sonidos/LICENCIA`). El contexto de
+ * Web Audio API con efectos cortos CC0 (`public/sonidos/LICENCIA`): grabaciones en MP3 y sintetizados en WAV
+ * (`tools/sonidos/generar.py`). Qué suena con cada acción: `docs/juego/sonidos.md`. El contexto de
  * audio se desbloquea con la primera interacción del usuario y la preferencia se guarda en
  * `localStorage['fbd.sonido']` (`'activado'` por defecto o `'silenciado'`), con lecturas y escrituras en
  * `try/catch` (modo privado, almacenamiento bloqueado).
@@ -14,14 +15,21 @@ export type Efecto =
   | 'revelacion'
   | 'entradaDuelo'
   | 'choqueDuelo'
-  | 'ruletaForma'
+  | 'calculoDuelo'
   | 'aplausos'
-  | 'trompetas';
+  | 'trompetas'
+  | 'goat'
+  | 'hoverCarta'
+  | 'seleccionCarta';
+
+/** Los sintetizados van en WAV; el resto, en MP3. */
+const WAV: ReadonlySet<Efecto> = new Set(['calculoDuelo', 'goat', 'hoverCarta', 'seleccionCarta']);
 
 /**
  * Ganancia de cada fichero, calculada con su sonoridad medida (EBU R128, LUFS) para que, ya con `FACTOR_VOLUMEN`,
- * quede en su objetivo: −28 apertura y volteo, −30 reparto, −27 revelación, −32 entrada, −29 choque, −31 ruleta y
- * −22 aplausos y trompetas. Los duelos suenan once veces seguidas, así que su entrada y su ruleta van algo más bajas.
+ * quede en su objetivo: −28 apertura y volteo, −30 reparto, −27 revelación, −32 entrada, −29 choque y −22 aplausos y
+ * trompetas. Los duelos suenan once veces seguidas, así que su entrada y su cálculo van algo más bajos. Los
+ * sintetizados (sin medir) van ajustados de oído: el paso por las cartas y la elección, muy suaves.
  */
 const BASE: Record<Efecto, number> = {
   apertura: 0.75, // −23,5 LUFS
@@ -30,13 +38,16 @@ const BASE: Record<Efecto, number> = {
   revelacion: 0.53, // −19,5
   entradaDuelo: 0.72, // −27,2
   choqueDuelo: 0.53, // −21,5
-  ruletaForma: 0.68, // −25,7
+  calculoDuelo: 0.3,
   aplausos: 0.34, // −10,7
   trompetas: 0.75, // −17,6
+  goat: 0.5,
+  hoverCarta: 0.12,
+  seleccionCarta: 0.22,
 };
 
-/** Todos los efectos, un 20 % más bajos que antes de la spec 007 (FR-011). */
-export const FACTOR_VOLUMEN = 0.8;
+/** Volumen general: un 20 % más bajo en la spec 007 (FR-011) y otro poco más en noviembre de 2026 (0,8 → 0,65). */
+export const FACTOR_VOLUMEN = 0.65;
 
 export const GANANCIA = Object.fromEntries(Object.entries(BASE).map(([e, g]) => [e, g * FACTOR_VOLUMEN])) as Record<Efecto, number>;
 
@@ -117,7 +128,7 @@ function cargar(efecto: Efecto): Promise<AudioBuffer | null> {
   if (!b) {
     const c = obtenerContexto();
     b = c
-      ? fetch(`/sonidos/${efecto}.mp3`)
+      ? fetch(`/sonidos/${efecto}.${WAV.has(efecto) ? 'wav' : 'mp3'}`)
           .then((r) => r.arrayBuffer())
           .then((datos) => c.decodeAudioData(datos))
           .catch(() => {
@@ -136,10 +147,10 @@ const nada = () => {};
 /**
  * Reproduce un efecto si el sonido está activado (sin errores si el navegador no tiene audio). Si el contexto está
  * suspendido, intenta reanudarlo; si no arranca en 300 ms, el efecto se descarta (no se acumulan para más tarde).
- * Devuelve una función que lo detiene si aún suena (la ruleta del estado de forma se corta al saltar); si no sonaba,
- * no hace nada.
+ * Devuelve una función que lo detiene si aún suena (el cálculo de un duelo se corta al saltar); si no sonaba, no hace
+ * nada. `velocidad` acelera la reproducción (los duelos a ×2).
  */
-export function reproducir(efecto: Efecto): () => void {
+export function reproducir(efecto: Efecto, velocidad = 1): () => void {
   if (!activado) return nada;
   const c = obtenerContexto();
   if (!c) return nada;
@@ -150,6 +161,7 @@ export function reproducir(efecto: Efecto): () => void {
     if (!b || !activado || detenido || c.state !== 'running') return;
     fuente = c.createBufferSource();
     fuente.buffer = b;
+    fuente.playbackRate.value = velocidad;
     const ganancia = c.createGain();
     ganancia.gain.value = GANANCIA[efecto];
     fuente.connect(ganancia).connect(c.destination);

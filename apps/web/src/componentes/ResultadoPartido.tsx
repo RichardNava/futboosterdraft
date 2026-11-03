@@ -44,7 +44,7 @@ export function ResultadoPartido({ partidaId, local, visitante, marcador, evento
       <div className="resultado-cuerpo">
         <section aria-label="Resumen del partido" data-testid="resultado-eventos">
           <h2>Resumen del partido</h2>
-          <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} />
+          <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} colores={{ local: local.color, visitante: visitante.color }} />
         </section>
 
         {estadisticas !== null && estadisticas !== undefined && (

@@ -726,9 +726,9 @@
     "semantic_hash": "4bea0cbd65a062331631adddae64911e"
   },
   "apps/web/src/componentes/AperturaSobre.tsx": {
-    "mtime": 1793229469.6306064,
-    "seen": 1793234683.7919998,
-    "ast_hash": "775e114957b16acf4c78e46fc4c7ee14",
+    "mtime": 1793742828.951038,
+    "seen": 1793742911.4836366,
+    "ast_hash": "d2f1c88c730a9f251aa586ecd89ff13c",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/AvisoDorsales.tsx": {
@@ -792,9 +792,9 @@
     "semantic_hash": "000d705f974e6d9d7c1d33f45944c095"
   },
   "apps/web/src/componentes/ResumenEventos.tsx": {
-    "mtime": 1792757964.1295137,
-    "seen": 1792758030.915421,
-    "ast_hash": "00c6d593c2821a84e59831ad953ae3e7",
+    "mtime": 1793742742.6276743,
+    "seen": 1793742911.4876573,
+    "ast_hash": "8201479bd833de0913b3f9482e3b46ff",
     "semantic_hash": ""
   },
   "apps/web/src/conexion/activa.ts": {
@@ -852,9 +852,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Draft.tsx": {
-    "mtime": 1792757964.1333928,
-    "seen": 1792758030.9184687,
-    "ast_hash": "e04121b20a4f94b4f1fd6adc8357f1fd",
+    "mtime": 1793742828.9520411,
+    "seen": 1793742911.4911,
+    "ast_hash": "0fb5f9c678958865e69118714dc3533f",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Inicio.tsx": {
@@ -876,15 +876,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido2D.tsx": {
-    "mtime": 1793399385.0023005,
-    "seen": 1793399719.1523285,
-    "ast_hash": "bfed6024a39922bdfc8417be636aa4d3",
+    "mtime": 1793742742.628677,
+    "seen": 1793742911.4917197,
+    "ast_hash": "f0dbf2593941aaee3926c9c458d0f5aa",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PartidoRapido.tsx": {
-    "mtime": 1793055174.9567351,
-    "seen": 1793088076.7200117,
-    "ast_hash": "55393ea5fc482047b15d98d49d5299e8",
+    "mtime": 1793742742.628677,
+    "seen": 1793742911.4917216,
+    "ast_hash": "2557e2653bec70f688ab7bca72ac74b0",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Plantillas.tsx": {
@@ -900,9 +900,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/ReproduccionPartido.tsx": {
-    "mtime": 1792592850.808263,
-    "seen": 1792645202.6971962,
-    "ast_hash": "6c5f4a74703b7c5135c99334e3d67d0c",
+    "mtime": 1793742742.6296759,
+    "seen": 1793742911.4921062,
+    "ast_hash": "ba320d4f94b8e8db2e7452d488007f2f",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Sala.tsx": {
@@ -912,15 +912,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Torneo.tsx": {
-    "mtime": 1793229469.649652,
-    "seen": 1793234683.8019466,
-    "ast_hash": "1768f2e71efde0ab798c3fbd809e3414",
+    "mtime": 1793742742.6296759,
+    "seen": 1793742911.4923556,
+    "ast_hash": "13e6c4dc8345986f4e2f209c08d3c2e2",
     "semantic_hash": ""
   },
   "apps/web/src/sonido/sonido.ts": {
-    "mtime": 1793229469.6506891,
-    "seen": 1793234683.8020997,
-    "ast_hash": "338e6b0e269ee98c491c8131fe555bf9",
+    "mtime": 1793742828.9506452,
+    "seen": 1793742911.4924853,
+    "ast_hash": "328ec3332def6206e22a401c5e1bf2cd",
     "semantic_hash": ""
   },
   "apps/web/src/textos/niveles.ts": {
@@ -2052,9 +2052,9 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1793714056.3531299,
-    "seen": 1793714147.4696524,
-    "ast_hash": "6aa2860f5c1e9031259468c44e1627a0",
+    "mtime": 1793742860.734951,
+    "seen": 1793742911.545447,
+    "ast_hash": "f627b9eba5d4cba30132c0b8872acad6",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2424,9 +2424,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ResultadoPartido.tsx": {
-    "mtime": 1792592850.7859254,
-    "seen": 1792645202.6960878,
-    "ast_hash": "5edf8a021a077055609979efaee780df",
+    "mtime": 1793742742.6276743,
+    "seen": 1793742911.4876544,
+    "ast_hash": "7178f55b847566f372a7cfc122daba8a",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/SelectorModo.tsx": {
@@ -3024,9 +3024,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaMesa.tsx": {
-    "mtime": 1792592850.778918,
-    "seen": 1792645202.6958938,
-    "ast_hash": "8b20d424f13e9476ca39f5dd69c68b22",
+    "mtime": 1793742828.9520411,
+    "seen": 1793742911.4849567,
+    "ast_hash": "c9a2b545d7119a5c643c729af5863e1a",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/arte/Escudo.tsx": {
@@ -3138,9 +3138,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Duelos.tsx": {
-    "mtime": 1793731078.9034173,
-    "seen": 1793736041.501696,
-    "ast_hash": "7ef6d333d1b91bc34426117d6cd6677b",
+    "mtime": 1793742828.951038,
+    "seen": 1793742911.4911022,
+    "ast_hash": "10dac9330e5e17d2e97158634ae2c375",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/defectos.spec.ts": {
@@ -4935,12 +4935,6 @@
     "mtime": 1793229469.623607,
     "seen": 1793234683.870819,
     "ast_hash": "8f22eeec31141d15531ef5911c5b6f62",
-    "semantic_hash": ""
-  },
-  "apps/web/public/sonidos/ruletaForma.mp3": {
-    "mtime": 1793229469.6246066,
-    "seen": 1793234683.8708208,
-    "ast_hash": "60dc97dd8e17b959de99d70885dffe7b",
     "semantic_hash": ""
   },
   "apps/web/public/sonidos/trompetas.mp3": {
@@ -7275,6 +7269,42 @@
     "mtime": 1793731116.6354916,
     "seen": 1793736041.5213428,
     "ast_hash": "a5273e0d7e3cef09965f03756b820fc1",
+    "semantic_hash": ""
+  },
+  "tools/sonidos/generar.py": {
+    "mtime": 1793742806.0459645,
+    "seen": 1793742911.5293474,
+    "ast_hash": "91b53bc069f4cbf1ec0110f560e041a7",
+    "semantic_hash": ""
+  },
+  "docs/juego/sonidos.md": {
+    "mtime": 1793742856.1882584,
+    "seen": 1793742911.5461361,
+    "ast_hash": "ac7d5d813d0e37392ff4ddc268ff06ce",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/calculoDuelo.wav": {
+    "mtime": 1793742806.609452,
+    "seen": 1793742911.613339,
+    "ast_hash": "d7b3684a666ee4fcb0448bfe04ccf956",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/goat.wav": {
+    "mtime": 1793742806.3229496,
+    "seen": 1793742911.6136105,
+    "ast_hash": "982a0bbed07c2577f8b0783e29816bad",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/hoverCarta.wav": {
+    "mtime": 1793742806.3021994,
+    "seen": 1793742911.6136127,
+    "ast_hash": "71177888aaee2f0e85d6d67002c073a2",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/seleccionCarta.wav": {
+    "mtime": 1793742806.3111017,
+    "seen": 1793742911.613873,
+    "ast_hash": "cd86d55211b1b30c1518c46794cc6ae0",
     "semantic_hash": ""
   }
 }

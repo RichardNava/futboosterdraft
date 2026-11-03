@@ -227,7 +227,9 @@ export function PartidoRapido() {
       <div className="resultado-cuerpo">
         <section aria-label="Resumen de eventos">
           <h2>Lo más destacado</h2>
-          <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} />
+          <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo}
+            colores={{ local: coloresDe(inicio.equipaciones.local).principal, visitante: coloresDe(inicio.equipaciones.visitante).principal }}
+          />
         </section>
 
         {estadisticas !== null && (

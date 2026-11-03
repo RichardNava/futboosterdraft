@@ -1,4 +1,5 @@
 import { useRef, type PointerEvent } from 'react';
+import { reproducir } from '../sonido/sonido';
 import { CartaJugador, type CartaResumen } from './CartaJugador';
 
 interface Props {
@@ -40,6 +41,7 @@ export function CartaMesa({ jugador, seleccionada, onClick, onDobleClick, onVerF
       ref={hueco}
       className={['carta-hueco', seleccionada ? 'elegida' : '', onClick ? 'elegible' : ''].filter(Boolean).join(' ')}
       data-nivel={jugador.nivel}
+      onPointerEnter={(e) => e.pointerType === 'mouse' && onClick && reproducir('hoverCarta')}
       onPointerMove={mover}
       onPointerLeave={salir}
     >

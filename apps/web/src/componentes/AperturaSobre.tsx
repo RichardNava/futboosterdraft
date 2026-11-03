@@ -128,7 +128,7 @@ export function AperturaSobre({ cartas, onTerminar }: Props) {
           reproducir('volteo');
           const c = cartas[i];
           if (c && especial(c)) {
-            reproducir('revelacion');
+            reproducir(c.nivel === 'GOAT' ? 'goat' : 'revelacion');
             const [x, y] = centroDe(cartasDom.current[i]);
             particulas?.emitir(x, y, COLOR_PARTICULAS[c.nivel] ?? '#ffd700', 50);
           }

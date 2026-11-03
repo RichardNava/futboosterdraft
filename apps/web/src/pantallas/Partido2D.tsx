@@ -347,7 +347,9 @@ export function Partido2D() {
 
           <section aria-label="Eventos del partido">
             <h2>Lo que ha pasado</h2>
-            <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo} />
+            <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo}
+              colores={{ local: coloresDe(inicio.equipaciones.local).principal, visitante: coloresDe(inicio.equipaciones.visitante).principal }}
+            />
           </section>
         </div>
       </div>

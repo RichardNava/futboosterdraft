@@ -16,7 +16,7 @@ Cambios comunes a todos: recorte al momento útil, mezcla a mono, remuestreo a 2
 - volteo.mp3        — se gira una carta.
                       Kenney Vleugels (Kenney.nl), «Casino Audio», card-place-1.ogg.
                       https://kenney.nl/assets/casino-audio — CC0 1.0. Recorte 0–0,6 s.
-- revelacion.mp3    — revelación de una carta Legendaria o GOAT.
+- revelacion.mp3    — revelación de una carta Legendaria.
                       Kinoton, «Deep Whoosh #6» (Freesound #558826).
                       https://freesound.org/people/Kinoton/sounds/558826/ — CC0 1.0. Recorte 0,35–1,15 s,
                       fundido de entrada de 50 ms.
@@ -26,10 +26,6 @@ Cambios comunes a todos: recorte al momento útil, mezcla a mono, remuestreo a 2
 - choqueDuelo.mp3   — chocan las cartas de un duelo.
                       Kenney Vleugels (Kenney.nl), «Impact Sounds», impactSoft_heavy_000.ogg.
                       https://kenney.nl/assets/impact-sounds — CC0 1.0. Recorte 0–0,5 s.
-- ruletaForma.mp3   — gira la ruleta del estado de forma (≈ 0,8 s).
-                      Kenney Vleugels (Kenney.nl), «Interface Sounds», tick_001.ogg.
-                      https://kenney.nl/assets/interface-sounds — CC0 1.0. Trece copias del tic encadenadas
-                      con huecos crecientes (se frena) y volumen decreciente.
 - aplausos.mp3      — pantalla de campeón.
                       Bansemer, «Large crowd applause.wav» (Freesound #160493).
                       https://freesound.org/people/Bansemer/sounds/160493/ — CC0 1.0. Recorte 0–3 s,
@@ -38,3 +34,11 @@ Cambios comunes a todos: recorte al momento útil, mezcla a mono, remuestreo a 2
                       kirbydx, «wah wah sad trombone.wav» (Freesound #175409).
                       https://freesound.org/people/kirbydx/sounds/175409/ — CC0 1.0. Recorte 0,2–4,6 s y
                       tempo ×1,7 sin cambiar el tono (≈ 2,6 s).
+
+Sintetizados (obra propia, CC0 1.0), WAV mono de 16 bits a 22.050 Hz con el pico a −3 dBFS.
+Se regeneran con `python tools/sonidos/generar.py` (necesita numpy):
+
+- calculoDuelo.wav  — cálculo de un duelo: tics rápidos del recuento y ruleta del estado de forma (≈ 1,4 s).
+- goat.wav          — revelación de una carta GOAT: golpe grave, arpegio y acorde brillante (≈ 1,9 s).
+- hoverCarta.wav    — el cursor pasa por una carta del draft (≈ 0,09 s).
+- seleccionCarta.wav — se elige una carta del draft (≈ 0,3 s).

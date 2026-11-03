@@ -241,124 +241,131 @@ export function Torneo() {
           <BandejaAvisos actualizar={avisosNuevos} />
         </nav>
       </header>
-      {preparacion && vista.modo !== 'duelos' && <TarjetaPreparacion preparacion={preparacion} />}
+      {/* En pantallas anchas, la jornada a la izquierda y las tablas a la derecha: todo a la vista sin desplazarse. */}
+      <div className="torneo-cuerpo">
+        <div className="torneo-resumen">
+          {preparacion && vista.modo !== 'duelos' && <TarjetaPreparacion preparacion={preparacion} />}
 
-      {vista.campeon && (
-        <div className="campeon" role="status">
-          <Icono nombre="trofeo" etiqueta="Trofeo" tamano={28} />
-          <p>
-            Campeón: <strong>{vista.campeon.nombre}</strong>
-            {vista.campeon.id === yo && ' — ¡enhorabuena!'}
-          </p>
-        </div>
-      )}
-
-      {finJornada && (
-        <Aviso tipo="informacion">
-          <p>Jornada terminada.</p>
-        </Aviso>
-      )}
-
-      {pendientes.length > 0 ? (
-        <section aria-label="Partidos pendientes de ver" className="jornada-actual">
-          <h2>
-            Pendientes de ver <Insignia texto={pendientes.length === 1 ? '1 partido sin ver' : `${pendientes.length} partidos sin ver`} />
-          </h2>
-          <ul className="lista-partidos pendientes-de-ver">
-            {pendientes.map((p) => (
-              <li key={p.partidoId}>
-                <span>
-                  <strong>{p.local?.nombre}</strong> – <strong>{p.visitante?.nombre}</strong>
-                </span>
-                <PendienteDeVer partidaId={partidaId!} partido={p} onMostrar={(id) => void mostrarResultado(id)} />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : (
-        partida.conPlazos &&
-        actual?.partidos.some((p) => p.estado === 'finalizado') && (
-          <section aria-label="Partidos pendientes de ver" className="jornada-actual">
-            <EstadoVacio
-              mensaje="Has visto todos los partidos de esta jornada."
-              accion={
-                vista.modo !== 'playoff' && (
-                  <button type="button" className="secundario" onClick={() => setPestana('clasificacion')}>
-                    Ver clasificación
-                  </button>
-                )
-              }
-            />
-          </section>
-        )
-      )}
-
-      {actual && (
-        <section aria-label="Jornada actual" className="jornada-actual">
-          <h2>
-            {tituloJornada(actual)} <Insignia texto={actual.estado === 'cerrada' ? 'Jugada' : actual.estado === 'abierta' ? 'En juego' : 'Pendiente'} suave />
-          </h2>
-          {partida.conPlazos && actual.venceEn && (
-            <p className="nota">
-              Plazo: hasta el {new Date(actual.venceEn).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}
-              {restante !== null && ` (quedan ${Math.floor(restante / 3600)} h ${Math.floor((restante % 3600) / 60)} min)`}. Al vencer, los partidos pendientes se
-              simulan automáticamente.
-            </p>
-          )}
-          {miPartido && (
-            <div className="mi-partido">
-              <span>
-                Tu partido: <strong>{miPartido.local?.nombre}</strong> – <strong>{miPartido.visitante?.nombre}</strong>
-              </span>
-              {miPartido.estado !== 'programado' && miPartido.estado !== 'finalizado' && miPartido.partidoId && (
-                <Link className="boton secundario" to={`/partidas/${partidaId}/partido/${miPartido.partidoId}`}>
-                  Ir al partido
-                </Link>
-              )}
+          {vista.campeon && (
+            <div className="campeon" role="status">
+              <Icono nombre="trofeo" etiqueta="Trofeo" tamano={28} />
+              <p>
+                Campeón: <strong>{vista.campeon.nombre}</strong>
+                {vista.campeon.id === yo && ' — ¡enhorabuena!'}
+              </p>
             </div>
           )}
-          {!miPartido && actual.descansa?.id === yo && <p className="nota">Descansas en esta jornada.</p>}
-          {vista.siguienteJornada === 'automatica' && miPartido && miPartido.estado !== 'programado' && actual.partidos.some((p) => p.estado === 'programado') && (
+
+          {finJornada && (
+            <Aviso tipo="informacion">
+              <p>Jornada terminada.</p>
+            </Aviso>
+          )}
+
+          {pendientes.length > 0 ? (
+            <section aria-label="Partidos pendientes de ver" className="jornada-actual">
+              <h2>
+                Pendientes de ver <Insignia texto={pendientes.length === 1 ? '1 partido sin ver' : `${pendientes.length} partidos sin ver`} />
+              </h2>
+              <ul className="lista-partidos pendientes-de-ver">
+                {pendientes.map((p) => (
+                  <li key={p.partidoId}>
+                    <span>
+                      <strong>{p.local?.nombre}</strong> – <strong>{p.visitante?.nombre}</strong>
+                    </span>
+                    <PendienteDeVer partidaId={partidaId!} partido={p} onMostrar={(id) => void mostrarResultado(id)} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : (
+            partida.conPlazos &&
+            actual?.partidos.some((p) => p.estado === 'finalizado') && (
+              <section aria-label="Partidos pendientes de ver" className="jornada-actual">
+                <EstadoVacio
+                  mensaje="Has visto todos los partidos de esta jornada."
+                  accion={
+                    vista.modo !== 'playoff' && (
+                      <button type="button" className="secundario" onClick={() => setPestana('clasificacion')}>
+                        Ver clasificación
+                      </button>
+                    )
+                  }
+                />
+              </section>
+            )
+          )}
+
+          {actual && (
+            <section aria-label="Jornada actual" className="jornada-actual">
+              <h2>
+                {tituloJornada(actual)} <Insignia texto={actual.estado === 'cerrada' ? 'Jugada' : actual.estado === 'abierta' ? 'En juego' : 'Pendiente'} suave />
+              </h2>
+              {partida.conPlazos && actual.venceEn && (
+                <p className="nota">
+                  Plazo: hasta el {new Date(actual.venceEn).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}
+                  {restante !== null && ` (quedan ${Math.floor(restante / 3600)} h ${Math.floor((restante % 3600) / 60)} min)`}. Al vencer, los partidos pendientes se
+                  simulan automáticamente.
+                </p>
+              )}
+              {miPartido && (
+                <div className="mi-partido">
+                  <span>
+                    Tu partido: <strong>{miPartido.local?.nombre}</strong> – <strong>{miPartido.visitante?.nombre}</strong>
+                  </span>
+                  {miPartido.estado !== 'programado' && miPartido.estado !== 'finalizado' && miPartido.partidoId && (
+                    <Link className="boton secundario" to={`/partidas/${partidaId}/partido/${miPartido.partidoId}`}>
+                      Ir al partido
+                    </Link>
+                  )}
+                </div>
+              )}
+              {!miPartido && actual.descansa?.id === yo && <p className="nota">Descansas en esta jornada.</p>}
+              {vista.siguienteJornada === 'automatica' && miPartido && miPartido.estado !== 'programado' && actual.partidos.some((p) => p.estado === 'programado') && (
+                <p className="nota">
+                  Esperando a que se jueguen los demás partidos
+                  {actual.venceEn && ` (vence el ${new Date(actual.venceEn).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })})`}.
+                </p>
+              )}
+            </section>
+          )}
+        </div>
+
+        <div className="torneo-datos">
+          <div className="pestanas" role="tablist" aria-label="Datos del torneo" onKeyDown={alTeclaPestanas}>
+            {pestanas.map((p) => (
+              <button key={p.id} type="button" role="tab" aria-selected={activa === p.id} tabIndex={activa === p.id ? 0 : -1} onClick={() => setPestana(p.id)}>
+                {p.texto}
+              </button>
+            ))}
+          </div>
+
+          {activa === 'clasificacion' && <Clasificacion filas={vista.clasificacion} yo={yo} />}
+          {activa === 'clasificacion' && vista.pendientesDeVer.length > 0 && (
             <p className="nota">
-              Esperando a que se jueguen los demás partidos
-              {actual.venceEn && ` (vence el ${new Date(actual.venceEn).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })})`}.
+              No incluye {vista.pendientesDeVer.length === 1 ? '1 partido pendiente de ver' : `${vista.pendientesDeVer.length} partidos pendientes de ver`}.
             </p>
           )}
-        </section>
-      )}
+          {activa === 'cuadro' && vista.cuadro && <Cuadro cuadro={vista.cuadro} yo={yo} />}
+          {(activa === 'goleadores' || activa === 'asistentes') && (
+            <TablaGoleadores
+              key={activa}
+              cual={activa}
+              filas={(activa === 'goleadores' ? vista.goleadores : vista.asistentes) ?? []}
+              partidaId={partidaId!}
+              yo={yo}
+              pendientes={vista.pendientesDeVer.length}
+            />
+          )}
+          {activa === 'calendario' && <Calendario jornadas={vista.jornadas} partidaId={partidaId!} yo={yo} />}
 
-      <div className="pestanas" role="tablist" aria-label="Datos del torneo" onKeyDown={alTeclaPestanas}>
-        {pestanas.map((p) => (
-          <button key={p.id} type="button" role="tab" aria-selected={activa === p.id} tabIndex={activa === p.id ? 0 : -1} onClick={() => setPestana(p.id)}>
-            {p.texto}
-          </button>
-        ))}
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
       </div>
-
-      {activa === 'clasificacion' && <Clasificacion filas={vista.clasificacion} yo={yo} />}
-      {activa === 'clasificacion' && vista.pendientesDeVer.length > 0 && (
-        <p className="nota">
-          No incluye {vista.pendientesDeVer.length === 1 ? '1 partido pendiente de ver' : `${vista.pendientesDeVer.length} partidos pendientes de ver`}.
-        </p>
-      )}
-      {activa === 'cuadro' && vista.cuadro && <Cuadro cuadro={vista.cuadro} yo={yo} />}
-      {(activa === 'goleadores' || activa === 'asistentes') && (
-        <TablaGoleadores
-          key={activa}
-          cual={activa}
-          filas={(activa === 'goleadores' ? vista.goleadores : vista.asistentes) ?? []}
-          partidaId={partidaId!}
-          yo={yo}
-          pendientes={vista.pendientesDeVer.length}
-        />
-      )}
-      {activa === 'calendario' && <Calendario jornadas={vista.jornadas} partidaId={partidaId!} yo={yo} />}
-
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
       {/* La barra, hija directa de la pantalla para que `position: sticky` la mantenga a la vista (FR-006). */}
       {vista.campeon ? (
         <BotonAvanzar situacion="fin_torneo" onAvanzar={() => navegar('/')} />

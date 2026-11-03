@@ -193,11 +193,13 @@ export function Duelos() {
     if (choque.current) animarChoque(choque.current, velocidad);
   }, [ahora.indice, ahora.fase, reducido, saltado, datos]);
 
-  // El sonido de la ruleta empieza con el giro y se corta al pararse, al cambiar de duelo, al saltar o al salir.
+  // El sonido del cálculo suena durante el recuento y la ruleta del estado de forma (si la hay), a la velocidad elegida,
+  // y se corta al acabar, al saltar o al salir.
+  const calculando = !reducido && !saltado && (ahora.fase === 'recuento' || girando);
   useEffect(() => {
-    if (!girando) return;
-    return reproducir('ruletaForma');
-  }, [girando, ahora.indice]);
+    if (!calculando) return;
+    return reproducir('calculoDuelo', velocidad);
+  }, [calculando, ahora.indice]);
 
   // El visionado se marca al terminar o al saltar (contracts/http-api.md).
   useEffect(() => {

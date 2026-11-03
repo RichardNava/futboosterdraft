@@ -8,6 +8,7 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 - Datos del catálogo: `data/core-real.json` y `data/cartas-prueba.json` (cartas) y `data/colecciones.json` (pertenencia); `pnpm seed` los carga todos
 - Las 300 cartas de Core son jugadores reales y su única fuente es `data/core-real.json`; `pnpm --filter @fbd/fixtures core-real` lo valida y regenera `specs/008-datos-reales-core/sumario.md`
 - Guía de estilos visuales (referencia de la spec 004): [docs/diseno/DESIGN.md](docs/diseno/DESIGN.md)
+- Sonidos (acción → efecto, editable): [docs/juego/sonidos.md](docs/juego/sonidos.md)
 - Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)
 
 ## Convenciones

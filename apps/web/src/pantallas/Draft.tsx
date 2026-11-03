@@ -13,6 +13,7 @@ import { NombreRecortado } from '../componentes/NombreRecortado';
 import { ETIQUETA_DEMARCACION } from '../textos/niveles';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { CartaMesa } from '../componentes/CartaMesa';
+import { reproducir } from '../sonido/sonido';
 import { SobreArte } from '../componentes/arte/SobreArte';
 import { useEscalaRejilla } from '../componentes/useEscalaRejilla';
 
@@ -206,7 +207,14 @@ export function Draft() {
                 key={j.id}
                 jugador={j}
                 seleccionada={(confirmada ?? elegida) === j.id}
-                onClick={confirmada === null ? () => setElegida(j.id) : undefined}
+                onClick={
+                  confirmada === null
+                    ? () => {
+                        if (elegida !== j.id) reproducir('seleccionCarta');
+                        setElegida(j.id);
+                      }
+                    : undefined
+                }
                 onDobleClick={confirmada === null ? () => elegirYConfirmar(j.id) : undefined}
                 onVerFicha={() => setFicha(j)}
               />

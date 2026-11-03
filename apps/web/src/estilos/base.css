@@ -2334,8 +2334,17 @@ html {
 }
 
 .evento-equipo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
   color: var(--color-texto-suave);
   font-size: var(--texto-pequeno);
+}
+
+.evento-equipo .chapa {
+  width: 12px;
+  height: 12px;
+  border-width: 1px;
 }
 
 .evento-texto {
@@ -2599,6 +2608,32 @@ html {
   gap: var(--espacio-3);
 }
 
+/* Pantallas anchas: la jornada en una columna a la izquierda y las pestañas con sus tablas a la derecha. */
+.torneo-cuerpo {
+  margin-top: var(--espacio-6);
+}
+
+.torneo-resumen > :first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 1024px) {
+  .torneo-cuerpo {
+    display: grid;
+    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+    gap: var(--espacio-8);
+    align-items: start;
+  }
+
+  .torneo-cuerpo:has(> .torneo-resumen:empty) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .torneo-resumen > :last-child {
+    margin-bottom: 0;
+  }
+}
+
 /* Clasificación: tabla de vidrio con las posiciones en cartel. */
 .torneo .tabla-desplazable {
   padding: var(--espacio-2) var(--espacio-4) var(--espacio-4);
@@ -2635,6 +2670,7 @@ html {
 
 .ronda {
   display: grid;
+  flex: 1 1 200px;
   gap: var(--espacio-3);
   align-content: space-around;
   min-width: 200px;
