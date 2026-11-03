@@ -328,7 +328,7 @@ y `pnpm test:equivalence` siguen en verde sin tocar expectativas. Con 100 partid
   - e2e en verde (12/12): `apertura`, `avanzar-solo`, `duelos`, `finalizar`, `modo-partido`, `torneo-asincrono` y
     `torneo-final`. No se pasó `torneo.spec.ts`, que ya fallaba con HEAD (ver T031).
   - En `pnpm test` solo falla `cartaEnVersion`, ya conocido (ROADMAP INI-11).
-- [ ] T042 [US2] Medir con `k6 run -e PARTIDAS=10` y `-e PARTIDAS=100` (`-e APERTURA_MAX_S=0 -e METRICAS_URL=…`) en el
+- [X] T042 [US2] Medir con `k6 run -e PARTIDAS=10` y `-e PARTIDAS=100` (`-e APERTURA_MAX_S=0 -e METRICAS_URL=…`) en el
   entorno de referencia (equipo B, por cable), guardar en `mediciones/referencia-{10,100}-grupo.md` y anotar en
   `diagnostico.md` una sección «Tras recortar el grupo» comparando con «Tras US3».
 

@@ -404,4 +404,64 @@ Mismo test y mismo escenario: **de 115 a 39 consultas por grupo (−66 %)**, en 
 - **El total no es fijo:** puede salir 1 o 2 menos. El guardado del torneo en el grupo solo inserta bajas o
   amarillas si los partidos las producen, y los resultados dependen de la semilla aleatoria de la partida. En una
   ejecución salió 38. Lo mismo valía para las 115 de partida. El test comprueba «como mucho 39».
-- **Falta medir con carga (T042)** si esto baja la espera por el pool con 100 partidas.
+- Medido con carga en «Tras recortar el grupo» (T042).
+
+## Tras recortar el grupo
+
+Medido el 2026-11-03 en el entorno de referencia (equipo B, por cable; T042: [referencia-10-grupo](mediciones/referencia-10-grupo.md),
+[referencia-100-grupo](mediciones/referencia-100-grupo.md)), con los mismos comandos que «Tras US3». Es una ejecución
+por escenario.
+
+### Apertura en el entorno de referencia (mediana / p95, ms)
+
+| Fase | R 10 tras US3 | R 10 tras recortar | R 100 tras US3 | R 100 tras recortar |
+|------|--------------:|-------------------:|---------------:|--------------------:|
+| cola | 409 / 728 | 442 / 677 | 2547 / 6113 | 4766 / 6575 |
+| cálculo | 272 / 1069 | 313 / 843 | 393 / 5326 | **3966 / 6480** |
+| bd | 746 / 985 | **416 / 624** | 11 049 / 13 066 | **2362 / 8838** |
+| resto | 33 / 51 | 58 / 87 | 19 / 48 | 54 / 82 |
+| total | 1509 / 1860 | 1312 / 1634 | 14 315 / 16 068 | 12 136 / 13 840 |
+| k6 `apertura_ms` | 1590 / 1990 | **1400 / 1870** | 14 750 / 16 600 | **12 250 / 14 430** |
+| consultas, media (suma / n) | 87,1 | 39,6 | 94,2 | 41,0 |
+
+### Entrega de sobre en el entorno de referencia (mediana / p95, ms)
+
+| | R 10 tras US3 | R 10 tras recortar | R 100 tras US3 | R 100 tras recortar |
+|---|---:|---:|---:|---:|
+| cola | 54 / 75 | 44 / 71 | 648 / 1177 | 586 / 1274 |
+| bd | 48 / 163 | 39 / 197 | 376 / 1026 | 306 / 691 |
+| total | 106 / 194 | 86 / 224 | 1027 / 2422 | 894 / 2236 |
+| k6 `entrega_sobre_ms` | 107 / 171 | **88 / 163** | 932 / 1760 | **814 / 1670** |
+| consultas, media (suma / n) | 9,5 | 9,1 | 9,5 | 9,1 |
+
+### Umbrales en el entorno de referencia (k6)
+
+| Umbral | 10 partidas | 100 partidas |
+|--------|------------:|-------------:|
+| `apertura_ms` p95 < 3 s | ✓ 1,87 s (tras US3 1,99 s) | ✗ 14,43 s (tras US3 16,6 s) |
+| `entrega_sobre_ms` p95 < 1 s | ✓ 163 ms (tras US3 171 ms) | ✗ 1,67 s (tras US3 1,76 s) |
+| `final_ms` p95 < 3 s | ✓ 541 ms | ✗ 3,63 s (tras US3 2,15 s) |
+| resto (`errores_ws`, bloqueadas, terminadas, `jornada_npc_ms`, `descanso_ms`, fallos HTTP) | ✓ | ✓ |
+
+Con 100 partidas agotan el tiempo de k6 10 peticiones `POST …/siguiente-jornada` (tras US3 fueron 9): tasa de fallos
+0,08 %, dentro del umbral < 1 %.
+
+### Conclusión tras recortar el grupo
+
+- **Las consultas bajan con carga lo mismo que en el test:** de ~90 a ~40 por apertura (−55 %), en línea con las 39
+  por grupo del test. La entrega baja de 9,5 a 9,1 de media.
+- **La fase bd de la apertura cae mucho con 100 partidas: la mediana pasa de 11,0 s a 2,4 s.** El recorte quita la
+  espera por el pool que señalaban «Tras US2» y «Tras US3».
+- **Pero la apertura solo mejora un 15 % (k6 p95 16,6 → 14,4 s), porque el límite se ha movido al cálculo:** su
+  mediana sube de 0,4 s a 4,0 s y la cola de 2,5 s a 4,8 s. La fase cálculo incluye la espera de un hilo libre de
+  simulación (`GrupoHilos`, research R2). Antes la espera por el pool espaciaba las simulaciones; ahora llegan
+  juntas a los hilos. Es la lectura más probable de las cifras; no se ha medido el uso de CPU del equipo B.
+- **La entrega mejora poco y sigue sin cumplir con 100 partidas** (p95 1,76 → 1,67 s). Su fase bd baja (p95
+  1026 → 691 ms), pero la cola no (p95 1177 → 1274 ms); no se ha investigado por qué.
+- **`final_ms` deja de cumplir con 100 partidas** (p95 2,15 → 3,63 s), aunque su mediana baja de 959 a 204 ms. Lo
+  mismo pasa con `jornada_npc_ms` (mediana 1,89 → 0,23 s; p95 4,48 → 5,1 s, aún < 10 s). Las dos simulan partidos,
+  así que también esperan hilos; no se ha comprobado.
+- Con 10 partidas mejora todo un poco y se cumplen todos los umbrales, como antes.
+- Lo siguiente, si se sigue con 100 partidas, es saber cuánta CPU queda libre en el equipo B durante la prueba: si
+  está al 100 %, el límite es el equipo y no el código; si no, se puede probar con más hilos (`HILOS_SIMULACION`).
+
