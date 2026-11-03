@@ -4,7 +4,11 @@
 
 **Created**: 2026-11-02
 
-**Status**: Draft ([ROADMAP](../../ROADMAP.md) INI-07)
+**Status**: Implementada, sin validar ([ROADMAP](../../ROADMAP.md) INI-07). SC-002 y SC-004 a SC-006 comprobados en el
+entorno de referencia. SC-001 y SC-003 no cumplidos aún (T036 aplazada: falta el entorno de tres máquinas). En el
+entorno de referencia con 100 partidas, el límite es la CPU ([diagnostico.md](diagnostico.md)) y `final_ms` y
+`jornada_npc_ms` empeoran respecto a antes de la spec (p95 1,01 → 3,63 s y 2,7 → 5,1 s; ver
+[referencia-100](mediciones/referencia-100.md) y [referencia-100-grupo](mediciones/referencia-100-grupo.md))
 
 **Input**: User description: "Spec 010 — Latencia de apertura de partidos y de entrega de sobres (ROADMAP INI-07). Se
 trabaja en main, sin rama propia. Objetivo: cumplir `apertura_ms` p95 < 3 s y `entrega_sobre_ms` p95 < 1 s con 100

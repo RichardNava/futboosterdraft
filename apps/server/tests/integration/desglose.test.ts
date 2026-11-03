@@ -104,6 +104,7 @@ describe('desglose por fases (spec 010, US1)', () => {
     expect(r.cuerpo.modo).toBe('reproduccion');
     expect((await c.servicios.repoPartidos.obtener(partidoId))!.estado).toBe('finalizado');
     await comprobarDesglose(s.metricas, 'apertura', 1);
+    expect(await (await fetch(`${s.url}/metrics`)).text()).toMatch(/^operacion_(fase_ms|consultas)[{_ ]/m);
     await wa.cerrar();
   });
 
@@ -144,6 +145,9 @@ describe('desglose por fases (spec 010, US1)', () => {
     expect((await c.servicios.repoPartidos.obtener(partidoId))!.estado).toBe('finalizado');
     expect(await desglose(s.metricas, 'apertura')).toEqual({});
     expect((await consultas(s.metricas, 'apertura')).n).toBe(0);
+    // Lo mismo que quickstart §2 con curl: /metrics no tiene ninguna muestra de las dos métricas.
+    const texto = await (await fetch(`${s.url}/metrics`)).text();
+    expect(texto).not.toMatch(/^operacion_(fase_ms|consultas)[{_ ]/m);
     await wa.cerrar();
   });
 });

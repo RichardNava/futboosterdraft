@@ -338,17 +338,60 @@ y `pnpm test:equivalence` siguen en verde sin tocar expectativas. Con 100 partid
 
 - [X] T033 [P] Documentar `MEDIR_FASES` (por defecto `1`, `0` lo desactiva) y las dos métricas nuevas en
   `docs/despliegue.md`.
-- [ ] T034 Comprobar que `MEDIR_FASES=0` no deja observaciones en `/metrics` y no cambia resultados (quickstart §2).
-- [ ] T035 Regresión completa (quickstart §1): `pnpm test:equivalence`, `pnpm test`,
+- [X] T034 Comprobar que `MEDIR_FASES=0` no deja observaciones en `/metrics` y no cambia resultados (quickstart §2).
+  Hecho el 2026-11-03. Ya lo cubrían la unitaria «con la medición desactivada, medir y fase no observan nada» (devuelve
+  el mismo valor) y la de integración «con MEDIR_FASES=0 no observa nada y la apertura resuelve igual» (el partido se
+  abre en reproducción y queda finalizado). A esa se le añade leer `/metrics` por HTTP, como el `curl` de quickstart
+  §2: ninguna muestra de `operacion_fase_ms` ni `operacion_consultas`; y a «desglosa la apertura…», la comprobación
+  contraria, para que la primera no pase en vacío. `desglose.test.ts` de integración: 3/3.
+- [X] T035 Regresión completa (quickstart §1): `pnpm test:equivalence`, `pnpm test`,
   `pnpm --filter @fbd/server test:integration`, `pnpm --filter @fbd/server test:integration:hilos`, `pnpm e2e`. Todo en
   verde sin tocar expectativas.
+  Hecho el 2026-11-03, sin cambiar ninguna expectativa:
+  - `pnpm test:equivalence`: 32/32.
+  - Integración: 182/182 en proceso y 182/182 con hilos.
+  - `pnpm test`: 865/866. Falla `cartaEnVersion` («Core son exactamente los jugadores reales de
+    data/core-real.json»). Causa: el commit `1d26e84` («docs: update core-real», 2026-11-02) cambió
+    `data/core-real.json` sin regenerar `data/core.json` (ROADMAP INI-11). No es de la 010: ningún cambio de código
+    de la 010 toca `data/` ni `packages/domain`, que es todo lo que lee el test. **Arreglado después:** dos medias
+    editadas a mano no eran el promedio de sus stats y se corrigieron: Carvajal (75), de 86,67 a 86,83, y Bouaddi
+    (95), de 76,33 a 75,67. Después se regeneró `core.json` con `pnpm --filter @fbd/fixtures core-real`. `pnpm test`:
+    866/866.
+  - `pnpm e2e`: 89/95. Para separar la 010, los 5 ficheros que fallan se pasaron en un worktree temporal con el código
+    y los datos actuales, pero con `apps/server/src` de antes de la 010 (`b52982f`):
+    - `cartas.spec.ts`, «ninguna carta de la colección Core desborda» a 1280 y 360 px (2 tests): la cabecera
+      (`carta-cabecera`) desborda en cientos de cartas. **Falla igual sin la 010.** Causa: los nombres reales de
+      `core-real.json` son más largos que los del diseño (INI-11).
+    - `coleccion.spec.ts`, «300 cartas, búsqueda sin tildes…»: busca `VALOTAL` («Teo Valotal», una carta ficticia que
+      ya no está en Core) y no encuentra nada. **Falla igual sin la 010.** Causa: datos reales (INI-11).
+    - `partido-rapido.spec.ts`: espera «Entra Malick Thiaw» y el resumen dice «Entra 7. Thiaw». **Falla igual sin la
+      010.** Causa: el test arma el nombre con nombre y apellido; la interfaz muestra el apodo de `core-real.json`.
+    - `torneo.spec.ts`: el torneo no tiene campeón al terminar la espera del test. **Falla igual sin la 010** (ya
+      anotado en T031 y T041).
+    - `dorsales.spec.ts`: no encuentra la fila de «Daniel Olmo» (en otra ejecución, «Nicolás Paz»). Sin la 010
+      pasó, pero con el código actual falló dos veces, con jugadores distintos. Causa: la fila muestra nombre y
+      apodo («Nicolás Nico Paz») y el test busca nombre y primer apellido («Nicolás Paz»). Solo falla cuando el
+      jugador del 2, el 14 o el 20 tiene un apodo distinto de su apellido, y eso depende del draft al azar. Es
+      lo mismo que en `partido-rapido`, y la 010 no toca `apps/web` ni los nombres. Sin la 010 pasó porque el draft
+      salió así; no se repitió.
+  - Ningún fallo lo causa la 010. No se arregla ninguno aquí: son de los datos de Core (INI-11).
 - [ ] T036 SC-001 y SC-003 en tres máquinas por cable (servidor Linux sin Docker Desktop, PostgreSQL y k6 separados;
   quickstart §6). Si el entorno no está disponible, dejarla pendiente con la razón (como 009/T036); SC-001 queda «no
   cumplido aún», no «cumplido». Si un umbral no se alcanza, reformularlo en `specs/001-draft-manager-mvp/spec.md`
   (SC-017) con los datos, sin tocar los umbrales de `beta-100.js` ni del CI (FR-016).
-- [ ] T037 Registrar cada medición en `specs/003-mejoras-ux-simulacion/checklists/validacion.md` (fila «Carga») y en
+  **Aplazada (2026-11-03)**: no hay entorno de tres máquinas por cable. La persona decide no seguir midiendo 100
+  partidas en un solo equipo: el equipo B se satura de CPU (94 % de media, `node` 5,6 núcleos; diagnostico.md, «Uso
+  de CPU con 100 partidas»). SC-001 y SC-003 quedan **no cumplidos aún**. Los umbrales de `beta-100.js` y del CI no
+  se tocan (FR-016). 001/SC-017 no se reformula por ahora: FR-016 lo pide cuando un umbral no se alcanza en el
+  entorno de tres máquinas, que no se ha medido.
+- [X] T037 Registrar cada medición en `specs/003-mejoras-ux-simulacion/checklists/validacion.md` (fila «Carga») y en
   `ROADMAP.md` INI-07, y actualizar el estado de la spec en `spec.md` y `ROADMAP.md` (FR-017).
-- [ ] T038 `graphify update .` tras los cambios de código.
+  Hecho el 2026-11-03. Se registran `referencia-{10,100}-us2`, `-us3`, `-grupo` y `referencia-100-cpu`. Estado:
+  «Implementada, sin validar», con SC-001 y SC-003 no cumplidos aún. Al comparar con la medición de antes de la spec
+  (`referencia-100`), con 100 partidas `final_ms` p95 pasa de 1,01 s a 3,63 s y `jornada_npc_ms` p95 de 2,7 s a
+  5,1 s: en este entorno, SC-003 no se cumple. En ROADMAP INI-07 se añade como trabajo futuro «abaratar la
+  simulación del motor sin perder experiencia de juego».
+- [X] T038 `graphify update .` tras los cambios de código. Hecho el 2026-11-03: 7357 nodos y 17 537 aristas.
 
 ---
 

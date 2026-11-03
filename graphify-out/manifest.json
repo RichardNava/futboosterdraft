@@ -162,21 +162,21 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/actor.ts": {
-    "mtime": 1793589350.779001,
-    "seen": 1793590320.2025359,
-    "ast_hash": "57d110205e178bf6bd1651f4419da547",
+    "mtime": 1793658021.8193734,
+    "seen": 1793660810.9921052,
+    "ast_hash": "7bb8b458ff3d0523a984826a4ff87402",
     "semantic_hash": ""
   },
   "apps/server/src/actores/draft.ts": {
-    "mtime": 1793589586.7601674,
-    "seen": 1793590320.202539,
-    "ast_hash": "e847a199d061db00d7a25ec1d8bb90bc",
+    "mtime": 1793691928.339618,
+    "seen": 1793692082.478802,
+    "ast_hash": "a29bebcaa8312665d4f6492c2c199d2a",
     "semantic_hash": ""
   },
   "apps/server/src/actores/equipo.ts": {
-    "mtime": 1792757964.1195054,
-    "seen": 1792758030.9000082,
-    "ast_hash": "6dacac8e5b329d0ac52b12fd81321e96",
+    "mtime": 1793696918.3202577,
+    "seen": 1793698899.0037463,
+    "ast_hash": "2282f33e05691aec4bc5f9103079678b",
     "semantic_hash": ""
   },
   "apps/server/src/actores/gestor.ts": {
@@ -210,15 +210,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/partidoEntreHumanos.ts": {
-    "mtime": 1793563068.107077,
-    "seen": 1793563195.5012543,
-    "ast_hash": "9a2cdd828285d6154848fe4a454597d1",
+    "mtime": 1793696953.111186,
+    "seen": 1793698899.0046852,
+    "ast_hash": "3aaa689c8ebdbb8f1a95ee5ef77d3d08",
     "semantic_hash": ""
   },
   "apps/server/src/actores/partidoRapido.ts": {
-    "mtime": 1793563068.108101,
-    "seen": 1793563195.5012565,
-    "ast_hash": "d9ad2c4ff325cf570c46c9fb6d060029",
+    "mtime": 1793696937.6739483,
+    "seen": 1793698899.0046873,
+    "ast_hash": "ac31a40bf764497ef19b6ff507e10b30",
     "semantic_hash": ""
   },
   "apps/server/src/actores/pausa.ts": {
@@ -228,9 +228,9 @@
     "semantic_hash": "fb456f9a0d0dea69d1bf22f774a1b103"
   },
   "apps/server/src/actores/preparacion.ts": {
-    "mtime": 1793563068.108101,
-    "seen": 1793563195.5014095,
-    "ast_hash": "7e83a40cdf4733becf8ffbefcb833266",
+    "mtime": 1793697080.909569,
+    "seen": 1793698899.0048373,
+    "ast_hash": "977dfab2788a2c12281ae28d510e6091",
     "semantic_hash": ""
   },
   "apps/server/src/actores/sala.ts": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/torneo.ts": {
-    "mtime": 1793563068.109074,
-    "seen": 1793563195.501563,
-    "ast_hash": "921a8311f851fa5845b3fc77e681381e",
+    "mtime": 1793697083.459506,
+    "seen": 1793698899.0050993,
+    "ast_hash": "cc3138942bc1b41a8935629b941a7c3f",
     "semantic_hash": ""
   },
   "apps/server/src/actores/vistas.ts": {
@@ -270,9 +270,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/avisos/servicio.ts": {
-    "mtime": 1793496218.8882113,
-    "seen": 1793497129.4703863,
-    "ast_hash": "9684a9ae68d8fcb4e93278d43abcd29b",
+    "mtime": 1793697082.6068301,
+    "seen": 1793698899.0054853,
+    "ast_hash": "46a85fafc20f2239f5f383d7df676bc2",
     "semantic_hash": ""
   },
   "apps/server/src/entorno.ts": {
@@ -318,9 +318,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/http/partidos.ts": {
-    "mtime": 1793589350.7810004,
-    "seen": 1793590320.2071588,
-    "ast_hash": "d313816c7bb5833a87fb293fe7eae9d3",
+    "mtime": 1793658151.300462,
+    "seen": 1793660810.9960408,
+    "ast_hash": "70da43eb62f5a35fc2e868a80cb857a5",
     "semantic_hash": ""
   },
   "apps/server/src/http/torneo.ts": {
@@ -354,9 +354,9 @@
     "semantic_hash": "4ed27d1245a0a661fbf55c44a15df4cd"
   },
   "apps/server/src/persistencia/db.ts": {
-    "mtime": 1793589363.5978773,
-    "seen": 1793590320.2081187,
-    "ast_hash": "d604579959175f5fa7252e5ecf29bb84",
+    "mtime": 1793658033.507791,
+    "seen": 1793660810.9971666,
+    "ast_hash": "5e1259120bb507eb62351ed3c50f6a59",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/base.ts": {
@@ -414,40 +414,40 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/draft.ts": {
-    "mtime": 1792362216.074038,
-    "seen": 1792367066.039843,
-    "ast_hash": "5b508ac696ff6a6d0ec2124c5d2810c5",
-    "semantic_hash": "5b508ac696ff6a6d0ec2124c5d2810c5"
+    "mtime": 1793691928.358144,
+    "seen": 1793692082.4859781,
+    "ast_hash": "237b049e5b01504e5d80d337c0d53c30",
+    "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/equipo.ts": {
-    "mtime": 1792757964.1233923,
-    "seen": 1792758030.9043376,
-    "ast_hash": "464808b75ef89a421a117dd90fb592af",
+    "mtime": 1793696905.3838928,
+    "seen": 1793698899.00977,
+    "ast_hash": "a8e1736c725eec3ec0807fe6c3147864",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/partidas.ts": {
-    "mtime": 1793055174.8737946,
-    "seen": 1793088076.7038636,
-    "ast_hash": "26db9ea7670e8bb7183988743e188689",
+    "mtime": 1793695934.0224743,
+    "seen": 1793698899.0097733,
+    "ast_hash": "b82e9625d4869888e4f8d33c20379cb8",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/partidos.ts": {
-    "mtime": 1792757964.1243918,
-    "seen": 1792758030.904342,
-    "ast_hash": "472e5baba3ad8a132cf3e066bbd14943",
+    "mtime": 1793697080.0630295,
+    "seen": 1793698899.0097752,
+    "ast_hash": "192c900d0d4d10341540aab074b3e570",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/torneo.ts": {
-    "mtime": 1792153826.4071748,
-    "seen": 1792327978.0274408,
-    "ast_hash": "7abaf43d6e121d592f02fe26c1185cec",
-    "semantic_hash": "7abaf43d6e121d592f02fe26c1185cec"
+    "mtime": 1793696486.8643386,
+    "seen": 1793698899.00978,
+    "ast_hash": "797e3a76fe1b2e0518aa5c586a3423c2",
+    "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/visionados.ts": {
-    "mtime": 1792362216.075038,
-    "seen": 1792367528.4334748,
-    "ast_hash": "0a10666632a791aef7406aadb82a6eaf",
-    "semantic_hash": "0a10666632a791aef7406aadb82a6eaf"
+    "mtime": 1793658033.5072672,
+    "seen": 1793660810.9992807,
+    "ast_hash": "91a419189ba5927d22d1c72becb13eb0",
+    "semantic_hash": ""
   },
   "apps/server/src/persistencia/seed.ts": {
     "mtime": 1793055174.8747935,
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/draft.test.ts": {
-    "mtime": 1793055174.89459,
-    "seen": 1793088076.7081702,
-    "ast_hash": "b769bf35d6719122ec8ccb651fd714a1",
+    "mtime": 1793665096.7977743,
+    "seen": 1793669743.882139,
+    "ast_hash": "87fc053feedecf0642e263eb83eb901f",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/finalizar.test.ts": {
@@ -618,10 +618,10 @@
     "semantic_hash": ""
   },
   "apps/server/tests/unit/actor.test.ts": {
-    "mtime": 1792153826.4121456,
-    "seen": 1792327978.027533,
-    "ast_hash": "45df20f7f10daaf760d2f010b7f340f7",
-    "semantic_hash": "45df20f7f10daaf760d2f010b7f340f7"
+    "mtime": 1793658019.3543034,
+    "seen": 1793660811.0069132,
+    "ast_hash": "ad99258a85cc1cedd0b30da1ce33e162",
+    "semantic_hash": ""
   },
   "apps/server/tests/unit/app.test.ts": {
     "mtime": 1792757964.126392,
@@ -1932,9 +1932,9 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/load/beta-100.js": {
-    "mtime": 1793589716.794623,
-    "seen": 1793590320.2821987,
-    "ast_hash": "be4849889b0470c154f213fd9b9d2af7",
+    "mtime": 1793654654.5183587,
+    "seen": 1793660811.0662313,
+    "ast_hash": "d0f0895362a89b0b0fb4ce651b65fd1b",
     "semantic_hash": ""
   },
   "tsconfig.base.json": {
@@ -2334,9 +2334,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/perfiles.ts": {
-    "mtime": 1792484980.7373202,
-    "seen": 1792485016.6143215,
-    "ast_hash": "5b95452643d4bcd64601af06f511f5d8",
+    "mtime": 1793695978.316217,
+    "seen": 1793698899.009778,
+    "ast_hash": "dc19c43c8a897334c8581aa11e140b39",
     "semantic_hash": ""
   },
   "apps/server/tests/contract/perfil.test.ts": {
@@ -2766,9 +2766,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/validacion.md": {
-    "mtime": 1793584515.6740744,
-    "seen": 1793585250.6677597,
-    "ast_hash": "125a578a0be095eb024f82ed12ecc31c",
+    "mtime": 1793707353.386939,
+    "seen": 1793711136.5419624,
+    "ast_hash": "c16025efb714552b6a69799669bff6d7",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/dificultad.spec.ts": {
@@ -4962,9 +4962,9 @@
     "semantic_hash": ""
   },
   "data/core-real.json": {
-    "mtime": 1793481956.6962543,
-    "seen": 1793482930.0446208,
-    "ast_hash": "4ebacbde9249a2fedfd6235d4dea4cab",
+    "mtime": 1793641626.8635385,
+    "seen": 1793660811.0307915,
+    "ast_hash": "4ba24ab17c62efda9b2fe6bfe51db6f8",
     "semantic_hash": ""
   },
   "tools/fixtures/src/coreReal.ts": {
@@ -4980,9 +4980,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1793587590.8125584,
-    "seen": 1793590320.3042035,
-    "ast_hash": "d009841a0ace525d8a8ce5e8207f2e6b",
+    "mtime": 1793707357.397491,
+    "seen": 1793711136.5372264,
+    "ast_hash": "1cd073cdd21d34fb5b72b4986ac29ec2",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -7104,15 +7104,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/observabilidad/desglose.ts": {
-    "mtime": 1793589320.8483078,
-    "seen": 1793590320.2077918,
-    "ast_hash": "a9a19e3219d50f3db81b15582aa4371f",
+    "mtime": 1793658040.5366771,
+    "seen": 1793660810.9967325,
+    "ast_hash": "60b4c938e5769704ab1379c94619cf15",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/desglose.test.ts": {
-    "mtime": 1793623054.8353796,
-    "seen": 1793623256.4205394,
-    "ast_hash": "53c20348dd65383e25f87cb846a7fc39",
+    "mtime": 1793707215.890328,
+    "seen": 1793711136.4469147,
+    "ast_hash": "9f7acafde02c9db195d09a89cfeee00f",
     "semantic_hash": ""
   },
   "apps/server/tests/unit/desglose.test.ts": {
@@ -7152,45 +7152,129 @@
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/research.md": {
-    "mtime": 1793588461.4962869,
-    "seen": 1793590320.3234262,
-    "ast_hash": "5bfb563ab15a6367da57f9ff7ec7ba77",
+    "mtime": 1793695075.888505,
+    "seen": 1793695117.5533473,
+    "ast_hash": "35b8a8e4a057f8c7f7b5391a4e779ea9",
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/spec.md": {
-    "mtime": 1793588173.5041428,
-    "seen": 1793590320.3234282,
-    "ast_hash": "0a136ae8974d07ca5501ede3204d13f8",
+    "mtime": 1793707351.6936307,
+    "seen": 1793711136.5540435,
+    "ast_hash": "6cbfab4a3926006d05617abe86baee7d",
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/tasks.md": {
-    "mtime": 1793623229.1629453,
-    "seen": 1793623256.5084336,
-    "ast_hash": "8730da7470daf309bc22b545c6d7fa73",
+    "mtime": 1793711112.6651752,
+    "seen": 1793711136.5540457,
+    "ast_hash": "58cfd0b8990100ffc9d48d7348e3be6b",
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/diagnostico.md": {
-    "mtime": 1793623227.7187529,
-    "seen": 1793623256.5079386,
-    "ast_hash": "df35a43debf20f58e7829afbe9cfc1a7",
+    "mtime": 1793706102.6577907,
+    "seen": 1793711136.5521512,
+    "ast_hash": "d235a76da9c062c44412d6eaa6ccad96",
     "semantic_hash": ""
   },
-  "specs/010-latencia-apertura-sobres/mediciones/ref-1.md": {
+  "apps/server/src/actores/aperturas.ts": {
+    "mtime": 1793696969.167748,
+    "seen": 1793698899.003476,
+    "ast_hash": "b13743eedc84664fd2e4a26bf0e354c6",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/aperturas-grupo.test.ts": {
+    "mtime": 1793698463.25603,
+    "seen": 1793698899.013106,
+    "ast_hash": "2b4f22c0f7f4f38e7e3926c92589e49f",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/docker-1.md": {
     "mtime": 1793622202.5679524,
-    "seen": 1793623256.5079408,
+    "seen": 1793660811.099974,
     "ast_hash": "646e0c3e00e5fe5b9d40430af0cc4b37",
     "semantic_hash": ""
   },
-  "specs/010-latencia-apertura-sobres/mediciones/ref-10.md": {
+  "specs/010-latencia-apertura-sobres/mediciones/docker-10.md": {
     "mtime": 1793622141.7461338,
-    "seen": 1793623256.507943,
+    "seen": 1793660811.0999763,
     "ast_hash": "1653a94ed630bd21dca895c3ccd1fb44",
     "semantic_hash": ""
   },
-  "specs/010-latencia-apertura-sobres/mediciones/ref-100.md": {
-    "mtime": 1793622176.1080258,
-    "seen": 1793623256.507945,
-    "ast_hash": "4359ed9fee8522853f178a169cf818fd",
+  "specs/010-latencia-apertura-sobres/mediciones/docker-100.md": {
+    "mtime": 1793656869.1614718,
+    "seen": 1793660811.0999784,
+    "ast_hash": "ca68ee9f5743122a7bf8e5a4197e9aa9",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-1.md": {
+    "mtime": 1793645182.525049,
+    "seen": 1793660811.09998,
+    "ast_hash": "31cd7c952d90c610f44234cacad641f4",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-10.md": {
+    "mtime": 1793645542.2577162,
+    "seen": 1793660811.0999818,
+    "ast_hash": "f89bc580529faa2a724be833016f944c",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-100.md": {
+    "mtime": 1793655479.6797633,
+    "seen": 1793660811.099984,
+    "ast_hash": "a22a79fdc2a59f1c14fbeb7d3a0b0102",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/unit/pasarela.test.ts": {
+    "mtime": 1793664789.3694725,
+    "seen": 1793669743.8857443,
+    "ast_hash": "470b08d4d1cdc55d884f9907813357f7",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/docker-10-us2.md": {
+    "mtime": 1793662095.6310494,
+    "seen": 1793669743.966917,
+    "ast_hash": "54d5f4055da8a69baa31dcf01c290787",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-10-us2.md": {
+    "mtime": 1793664516.3173568,
+    "seen": 1793669743.9673095,
+    "ast_hash": "17d86eb81360fe6cc44d90bc99b5e09a",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-100-us2.md": {
+    "mtime": 1793664516.3286173,
+    "seen": 1793669743.9674358,
+    "ast_hash": "9679fd45d812f61ee8c5e170c5c230e7",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-10-us3.md": {
+    "mtime": 1793691991.035946,
+    "seen": 1793692082.5802097,
+    "ast_hash": "6e884c18c5edbd18ec25ad8369d90e07",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-100-us3.md": {
+    "mtime": 1793691991.0719535,
+    "seen": 1793692082.5804949,
+    "ast_hash": "b4243a93efa817e87756485e4d2e033a",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-10-grupo.md": {
+    "mtime": 1793704753.1192832,
+    "seen": 1793711136.5528142,
+    "ast_hash": "25cce9434714d04a9b931816fab8605e",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-100-cpu.md": {
+    "mtime": 1793706090.102697,
+    "seen": 1793711136.5532398,
+    "ast_hash": "a76c2a49f29a7b7e0b6d2a1ba0b4d42e",
+    "semantic_hash": ""
+  },
+  "specs/010-latencia-apertura-sobres/mediciones/referencia-100-grupo.md": {
+    "mtime": 1793704753.1456728,
+    "seen": 1793711136.553242,
+    "ast_hash": "67b234156b4a425ffa1b7b1c4b6abd8d",
     "semantic_hash": ""
   }
 }

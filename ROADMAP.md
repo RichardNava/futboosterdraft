@@ -72,7 +72,9 @@ graph LR
 ```
 
 **Camino crítico a la beta**: INI-07 → INI-10. INI-05 e INI-09 están hechas; la carga de INI-07 ya no la limita el
-motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010](specs/010-latencia-apertura-sobres/spec.md), en especificación).
+motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010](specs/010-latencia-apertura-sobres/spec.md),
+implementada, sin validar en tres máquinas). Con 100 partidas en un equipo de 8 núcleos, el límite medido es la CPU que
+cuesta simular los partidos.
 
 ---
 
@@ -201,7 +203,8 @@ motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010
 - **Specs**: [001](specs/001-draft-manager-mvp/spec.md) SC-017 y SC-009; [002](specs/002-mejoras-mvp/tasks.md) T153;
   [003](specs/003-mejoras-ux-simulacion/tasks.md) T128; [009](specs/009-simulacion-hilos-trabajo/spec.md) (simulación
   en hilos de trabajo; T036 aplazada hasta tener tres máquinas); [010](specs/010-latencia-apertura-sobres/spec.md)
-  (latencia de apertura de partidos y de entrega de sobres, en especificación).
+  (latencia de apertura de partidos y de entrega de sobres; implementada, sin validar: T036 aplazada hasta tener tres
+  máquinas).
 - **Prioridad / estado**: P0 · **Parcial**. En la 001 no se cumplió (entrega del sobre p95 1,99 s frente a < 1 s,
   «Seguir» → final p95 6,2 s frente a < 3 s). Desde la 002 el guion no se ha vuelto a ejecutar con el protocolo
   nuevo, y su resultado de la 002 apunta a un fallo del guion, no del servidor. **2026-10-31**: guion rehecho con un
@@ -215,6 +218,21 @@ motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010
   22 %); `final_ms` p95 1,06 s y `jornada_npc_ms` p95 3,41 s cumplen, pero `entrega_sobre_ms` (p95 2,39 s) y
   `apertura_ms` (p95 42 s) no. Las colas de cálculo se quedan vacías: el límite ya no es el motor sino el hilo
   principal y la cola de cada partida. Sin cumplir aún el criterio 2: faltan tres máquinas y red por cable.
+  **2026-11-03** ([spec 010](specs/010-latencia-apertura-sobres/spec.md), entorno de referencia: servidor, PostgreSQL
+  y k6 en un mismo equipo de 8 núcleos, por cable, sin Docker Desktop; ver
+  [diagnostico.md](specs/010-latencia-apertura-sobres/diagnostico.md)): aperturas de una partida resueltas en grupo
+  (US2), cierre de turno del draft en una transacción (US3) y consultas del grupo de aperturas de 115 a 39. Con 10
+  partidas se cumplen todos los umbrales (`apertura_ms` p95 de 2,93 s a 1,87 s; `entrega_sobre_ms` p95 163 ms). Con
+  100 partidas las 100 terminan, sin bloqueos ni errores de WebSocket, pero `apertura_ms` (p95 de 27,17 s a 14,43 s;
+  15,93 s al repetir), `entrega_sobre_ms` (p95 de 1,56 s a 1,67 s; 1,49 s al repetir) y `final_ms` (p95 de 1,01 s a
+  3,63 s; 3,44 s al repetir) no cumplen, y `jornada_npc_ms` cumple pero empeora (p95 de 2,7 s a 5,1 s). Durante esa prueba el equipo está al 94 % de CPU de media y `node` usa 5,6 núcleos:
+  el límite ya no es la base de datos sino el coste de simular los partidos. Sigue sin cumplir el criterio 2; la
+  medición en tres máquinas (010/T036) queda aplazada.
+- **Trabajo futuro**: abaratar la simulación del motor sin perder experiencia de juego. Motivo: con 100 partidas en un
+  equipo de 8 núcleos la CPU está saturada (94 % de media, `node` 5,6 núcleos) y la apertura sigue en ~15 s de p95
+  ([010/diagnostico.md](specs/010-latencia-apertura-sobres/diagnostico.md), «Uso de CPU con 100 partidas»). Requiere
+  spec propia y se relaciona con [INI-06](#ini-06-rendimiento-del-motor); los resultados deben seguir idénticos
+  (`pnpm test:equivalence`) o, si cambian, justificarse con calibración (INI-05).
 - **Criterios de cierre**:
   1. Guion actualizado al protocolo vigente (T153 y T128 marcadas; son la misma tarea).
   2. 001/SC-017 cumplido, con servidor, base de datos y generador de carga en máquinas separadas, y resultado registrado.
