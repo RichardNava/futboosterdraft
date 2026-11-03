@@ -954,9 +954,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/ayudas.ts": {
-    "mtime": 1793055174.9612648,
-    "seen": 1793088076.721155,
-    "ast_hash": "f5fb27297733df9bbf0b72abc6a9e4c7",
+    "mtime": 1793717975.8063793,
+    "seen": 1793718058.63104,
+    "ast_hash": "36fddc61f6e7a44716aa4b35566a89be",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/cartas.spec.ts": {
@@ -1014,9 +1014,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/torneo.spec.ts": {
-    "mtime": 1793229469.6556447,
-    "seen": 1793234683.8066952,
-    "ast_hash": "8458fc3f559a56a9b0c598b78447a93f",
+    "mtime": 1793717976.6581168,
+    "seen": 1793718058.6348557,
+    "ast_hash": "4bd6e5830999224faba1973efd9e524a",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/interpolacion.test.ts": {
@@ -3642,9 +3642,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/tienda.spec.ts": {
-    "mtime": 1793055174.9632685,
-    "seen": 1793088076.7243848,
-    "ast_hash": "032580d96610ddc8c902fc6b6d80d0fa",
+    "mtime": 1793716610.1631784,
+    "seen": 1793718058.6346018,
+    "ast_hash": "3f3abf70a008dc92fe95c77b443fadfe",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/filtradoColeccion.test.ts": {
@@ -4974,9 +4974,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1793715145.4246535,
-    "seen": 1793715172.5258083,
-    "ast_hash": "42f805da22143f60416059c60494acd7",
+    "mtime": 1793718027.8708327,
+    "seen": 1793718058.6865149,
+    "ast_hash": "9c0eb48d028d3f415c392b201bfad8ce",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -7158,9 +7158,9 @@
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/tasks.md": {
-    "mtime": 1793714458.848342,
-    "seen": 1793715172.5457156,
-    "ast_hash": "1792bbbefbc0e0f8d22370edb3ef6dc7",
+    "mtime": 1793718028.7255397,
+    "seen": 1793718058.7037141,
+    "ast_hash": "932be9fd01305b6588fdd84a0c4a6329",
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/diagnostico.md": {

@@ -415,6 +415,9 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
 #### Posiciones y penalizaciones
 
 - **FR-031**: Un jugador colocado en una posición que no tiene, pero que pertenece a su misma demarcación, DEBE recibir una penalización del 10 % en todos sus stats. Las posiciones de cada demarcación son las de 001/FR-018: DEF = LI, LD, DCI, DCD, CI, CD; MED = MD, MC, MII, MID, MCO; DEL = DC, SD, EI, ED.
+  **Excepciones (parámetros 6.0.0, 2026-11-03)**: un MC de MII o MID no tiene penalización; un MII o MID de MC, 5 %;
+  un DCI de DCD y un DCD de DCI, 5 %. Cualquier medio (también el MCO) de MD sigue con el 10 %. Las partidas jugadas
+  con versiones anteriores conservan el 10 %.
 - **FR-032**: Un jugador colocado en una posición de otra demarcación DEBE recibir en todos sus stats la penalización de esta tabla, que sustituye a la de 001/FR-027 y su Assumption:
 
   | Demarcación original | Demarcación de destino | Penalización |

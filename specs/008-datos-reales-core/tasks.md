@@ -104,7 +104,7 @@ en tamaño normal y ampliado.
 - [X] T011 [US2] En `apps/web/src/estilos/cartas.css`, después de `.carta-silueta`, añadir
   `.carta-silueta:not(.mascara) { aspect-ratio: 139 / 181; }` (R3). Mantener `object-fit: contain` y el `max-height`
   existente. La máscara SVG no cambia.
-- [ ] T012 [US2] Comprobar el resultado en `pnpm dev`, en la ruta de pruebas de cartas (`apps/web/src/pantallas/PruebasCartas.tsx`,
+- [X] T012 [US2] Comprobar el resultado en `pnpm dev`, en la ruta de pruebas de cartas (`apps/web/src/pantallas/PruebasCartas.tsx`,
   solo en desarrollo). Para ello, cambiar temporalmente la `imagen` de alguna carta de prueba por
   `/cartas/retratos/<slug>.webp` de un PNG y de un JPG. En tamaño normal y ampliado, la cara debe verse nítida,
   centrada y sin estirar. Después deshacer el cambio temporal.
@@ -194,7 +194,7 @@ los definitivos.
     - **`packages/domain/tests/sobres/generador.test.ts`**: «10 000 mesas de 8 con el core.json real» no se debilita.
       Si falla, se anota la celda que lo provoca para T025 y se avisa a la persona (R8).
     - **Parámetros de equilibrado**: no se cambian. Si una prueba de equilibrado se sale del objetivo, se informa.
-- [ ] T022 [US1] Ejecutar `pnpm seed` y `pnpm dev`. Comprobar quickstart §4 en la colección y en un draft:
+- [X] T022 [US1] Ejecutar `pnpm seed` y `pnpm dev`. Comprobar quickstart §4 en la colección y en un draft:
   - aparecen los jugadores reales con su retrato y su bandera;
   - el seed puede avisar del reparto, pero no rechaza nada.
 

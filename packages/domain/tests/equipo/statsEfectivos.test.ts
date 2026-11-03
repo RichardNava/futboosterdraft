@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { POSICIONES, POSICIONES_POR_DEMARCACION, type Demarcacion, type Posicion } from '../../src/catalogo/tipos';
 import { casilla, CASILLA_CENTRAL } from '../../src/equipo/formaciones';
 import { penalizacionPorPosicion, statsEfectivos } from '../../src/equipo/statsEfectivos';
-import { PARAMETROS_V3, PARAMETROS_V4 } from '../../src/parametros/index';
+import { PARAMETROS_V3, PARAMETROS_V4, PARAMETROS_V5, PARAMETROS_V6 } from '../../src/parametros/index';
 import { jugador } from './ayudas';
 
 const p = PARAMETROS_V3;
@@ -91,6 +91,25 @@ describe('penalización por posición (FR-031 a FR-033, SC-012, T024)', () => {
       'DEF>MED': 0.2,
       'DEF>MED_MCO': 0.3,
     });
+  });
+});
+
+describe('excepciones entre posiciones de los parámetros 6.0.0', () => {
+  const pen = (origen: Posicion[], destino: Posicion, extra: Parameters<typeof jugador>[3] = []) =>
+    penalizacionPorPosicion(jugador(DEMARCACION[origen[0]!], origen, 80, extra), { posicionesAdmitidas: [destino] }, PARAMETROS_V6);
+
+  it('MC de MII o MID, 0 %; MII o MID de MC, 5 %; de MD, el 10 % de siempre', () => {
+    expect([pen(['MC'], 'MII'), pen(['MC'], 'MID'), pen(['MII'], 'MC'), pen(['MID'], 'MC')]).toEqual([0, 0, 0.05, 0.05]);
+    expect([pen(['MC'], 'MD'), pen(['MII'], 'MD'), pen(['MCO'], 'MD'), pen(['MII'], 'MID'), pen(['MCO'], 'MC')]).toEqual([0.1, 0.1, 0.1, 0.1, 0.1]);
+  });
+
+  it('DCI y DCD, 5 % entre sí; el resto de la defensa sigue en 10 %', () => {
+    expect([pen(['DCI'], 'DCD'), pen(['DCD'], 'DCI'), pen(['DCI'], 'LI')]).toEqual([0.05, 0.05, 0.1]);
+  });
+
+  it('con Versátil, MII de MC queda en 0; los parámetros 5.0.0 no cambian', () => {
+    expect(pen(['MII'], 'MC', ['Versatil'])).toBe(0);
+    expect(penalizacionPorPosicion(jugador('MED', ['MC'], 80), { posicionesAdmitidas: ['MII'] }, PARAMETROS_V5)).toBe(0.1);
   });
 });
 

@@ -6,6 +6,7 @@ import {
   PARAMETROS_V3,
   PARAMETROS_V4,
   PARAMETROS_V5,
+  PARAMETROS_V6,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -146,8 +147,7 @@ describe('parámetros de equilibrado 4.0.0 (spec 005, T031, T032)', () => {
 });
 
 describe('parámetros de equilibrado 5.0.0 (INI-05)', () => {
-  it('los partidos nuevos usan la versión 5.0.0', () => {
-    expect(parametrosActuales()).toBe(PARAMETROS_V5);
+  it('la versión 5.0.0 se sigue reproduciendo', () => {
     expect(parametrosPorVersion('5.0.0')).toBe(PARAMETROS_V5);
   });
 
@@ -175,5 +175,18 @@ describe('parámetros de equilibrado 5.0.0 (INI-05)', () => {
     const a = PARAMETROS_V5.acciones;
     expect(2 ** ((a.atraccionPasador * (99 - a.statPaseReferencia)) / 10)).toBeLessThanOrEqual(PARAMETROS_V5.pases.atraccionPasadorAcotada[1]);
     expect(a.controlPaseTicks - (a.controlPorStat * (90 - a.statPaseReferencia)) / 10).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('parámetros de equilibrado 6.0.0', () => {
+  it('los partidos nuevos usan la versión 6.0.0, que solo añade las excepciones entre posiciones', () => {
+    expect(parametrosActuales()).toBe(PARAMETROS_V6);
+    expect(parametrosPorVersion('6.0.0')).toBe(PARAMETROS_V6);
+    const { version, penalizacionPosicion: { entrePosiciones, ...penalizacion }, ...resto } = PARAMETROS_V6;
+    const { version: v5, penalizacionPosicion: penalizacion5, ...resto5 } = PARAMETROS_V5;
+    expect(resto).toEqual(resto5);
+    expect(penalizacion).toEqual(penalizacion5);
+    expect(entrePosiciones).toHaveLength(6);
+    expect([version, v5]).toEqual(['6.0.0', '5.0.0']);
   });
 });

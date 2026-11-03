@@ -10,6 +10,8 @@ import v2 from './v2.json';
 import v3 from './v3.json';
 import v4 from './v4.json';
 import v5 from './v5.json';
+import v6 from './v6.json';
+import type { Posicion } from '../catalogo/tipos';
 
 export type GravedadLesion = 'leve' | 'media' | 'grave' | 'larga';
 
@@ -21,6 +23,8 @@ export interface ParametrosEquilibrado {
   /** Penalización por posición de la spec 002 (FR-031, FR-032): misma demarcación, portería y cruces. */
   penalizacionPosicion: {
     mismaDemarcacion: number;
+    /** Desde la 6.0.0: excepciones a `mismaDemarcacion` entre dos posiciones concretas (MC → MII, DCI → DCD…). */
+    entrePosiciones?: { origen: Posicion; destino: Posicion; valor: number }[];
     porteria: number;
     cruces: { origen: RolPenalizacion; destino: RolPenalizacion; valor: number }[];
   };
@@ -407,10 +411,14 @@ export const PARAMETROS_V4: ParametrosEquilibrado = v4 as ParametrosEquilibrado;
 /** Parámetros 5.0.0 (INI-05): factores de stat sin saturar hasta 99; un 80 decide igual que con la 4.0.0. */
 export const PARAMETROS_V5: ParametrosEquilibrado = v5 as ParametrosEquilibrado;
 
+/** Parámetros 6.0.0: un MC rinde igual de MII o MID, y de MII/MID a MC o entre DCI y DCD cuesta un 5 %. */
+export const PARAMETROS_V6: ParametrosEquilibrado = v6 as ParametrosEquilibrado;
+
 const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V3.version]: PARAMETROS_V3,
   [PARAMETROS_V4.version]: PARAMETROS_V4,
   [PARAMETROS_V5.version]: PARAMETROS_V5,
+  [PARAMETROS_V6.version]: PARAMETROS_V6,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -428,7 +436,7 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V5;
+  return PARAMETROS_V6;
 }
 
 /** Versión mayor mínima que el motor actual puede simular (las 3.x y 4.x se reproducen). */

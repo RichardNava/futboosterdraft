@@ -97,6 +97,11 @@ function animarChoque(el: HTMLElement, velocidad: Velocidad): void {
   });
 }
 
+/** Fuera de su posición, la carta enseña la media ya penalizada, como la alineación. */
+function conPenalizacion(carta: CartaResumen, lado: LadoDuelo): CartaResumen {
+  return lado.penalizacion > 0 ? { ...carta, media: (lado.media - lado.penalizacion) / 100 } : carta;
+}
+
 /** `forma`: el valor que enseña la fila «Estado de forma» (el de la ruleta mientras gira), o `null` si aún no se ve. */
 function Desglose({ lado, i, forma }: { lado: LadoDuelo; i: Instante; forma: number | null }) {
   const fila = (etiqueta: string, valor: number, signo: '' | '+' | '−') => (
@@ -254,7 +259,7 @@ export function Duelos() {
           <div className="duelo-pareja">
             {(['local', 'visitante'] as const).map((lado) => (
               <div key={lado} className={`duelo-lado ${lado}`} style={estiloCarta(lado, visible, actual.ganador, reducido)}>
-                <div className="duelo-carta">{datos.cartas[actual[lado].jugadorId] && <CartaJugador jugador={datos.cartas[actual[lado].jugadorId]!} />}</div>
+                <div className="duelo-carta">{datos.cartas[actual[lado].jugadorId] && <CartaJugador jugador={conPenalizacion(datos.cartas[actual[lado].jugadorId]!, actual[lado])} />}</div>
                 <Desglose
                   lado={actual[lado]}
                   i={visible}
