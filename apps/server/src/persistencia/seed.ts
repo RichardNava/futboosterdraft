@@ -7,7 +7,7 @@
  * transacción, entrega las cartas añadidas a los compradores de colecciones ya vendidas (data-model §4.3) e informa
  * del recuento por demarcación × nivel de cada colección.
  *
- * Uso: pnpm seed                       (data/core.json + data/cartas-prueba.json + data/colecciones.json)
+ * Uso: pnpm seed                       (data/core-real.json + data/cartas-prueba.json + data/colecciones.json)
  *      pnpm seed --file a.json --file b.json --colecciones c.json
  */
 import '../entorno';
@@ -43,7 +43,7 @@ const require = createRequire(import.meta.url);
 const esquemaJugadores = require('@fbd/protocol/schemas/player-data.schema.json') as object;
 const esquemaColecciones = require('@fbd/protocol/schemas/colecciones.schema.json') as object;
 
-export const FICHEROS_POR_DEFECTO = { cartas: ['data/core.json', 'data/cartas-prueba.json'], colecciones: 'data/colecciones.json' };
+export const FICHEROS_POR_DEFECTO = { cartas: ['data/core-real.json', 'data/cartas-prueba.json'], colecciones: 'data/colecciones.json' };
 
 export interface ErrorSeed {
   id?: unknown;

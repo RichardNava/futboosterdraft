@@ -7,6 +7,7 @@ interface Carta {
   id: number;
   nombre: string;
   apellidos: string;
+  nombreCarta: string;
 }
 
 test('dorsales del 1 al 24, reasignación con aviso y asignación automática al empezar el partido', async ({ page }) => {
@@ -19,7 +20,7 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
   const datos = (await (await page.request.get(`/api/partidas/${partidaId}/alineacion`)).json()) as { dorsales: Record<string, number>; plantilla: Carta[] };
   expect(Object.values(datos.dorsales).sort((a, b) => a - b)).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
   const conDorsal = (n: number) => datos.plantilla.find((j) => datos.dorsales[j.id] === n)!;
-  const fila = (j: Carta) => page.locator('.rejilla-dorsales li').filter({ hasText: `${j.nombre} ${j.apellidos.split(' ')[0]}` });
+  const fila = (j: Carta) => page.locator('.rejilla-dorsales li').filter({ hasText: `${j.nombre} ${j.nombreCarta}` });
   const editar = async (j: Carta, n: number) => {
     await page.getByLabel(`Nuevo dorsal de ${j.nombre} ${j.apellidos}`).fill(String(n));
     await fila(j).getByRole('button', { name: /^Aceptar el dorsal/ }).click();
@@ -35,7 +36,7 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
   const dos = conDorsal(2);
   const otro = conDorsal(20);
   await editar(otro, 2);
-  const aviso = page.getByRole('alert').filter({ hasText: `El 2 lo lleva ${dos.apellidos.split(' ')[0]}: se quedará sin dorsal` });
+  const aviso = page.getByRole('alert').filter({ hasText: `El 2 lo lleva ${dos.nombreCarta}: se quedará sin dorsal` });
   await expect(aviso).toBeVisible();
   await aviso.getByRole('button', { name: 'Confirmar' }).click();
   await expect(fila(otro).locator('.dorsal-actual')).toHaveText('2');
@@ -44,5 +45,5 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
   // 4. Convocado (el del 2 es titular) y al empezar (desde la preparación del torneo): el libre más bajo (el 14) y un aviso.
   await page.goto(`/partidas/${partidaId}/torneo`);
   await page.getByRole('button', { name: 'Comenzar partido' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Dorsales nuevos' })).toContainText(`${dos.apellidos.split(' ')[0]} lleva el 14`);
+  await expect(page.getByRole('status').filter({ hasText: 'Dorsales nuevos' })).toContainText(`${dos.nombreCarta} lleva el 14`);
 });

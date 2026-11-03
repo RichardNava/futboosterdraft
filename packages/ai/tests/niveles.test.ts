@@ -96,7 +96,7 @@ describe('niveles de los NPC (T120)', () => {
 });
 
 describe('errores por nivel (spec 003, T088)', () => {
-  const CORE = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../data/core.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
+  const CORE = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../data/core-real.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
 
   /** Draft simplificado de un NPC: 3 sobres de 8 cartas Core, elige las 8 de cada uno. */
   function draft(nivel: NivelIA, i: number) {

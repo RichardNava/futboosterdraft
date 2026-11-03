@@ -5,12 +5,12 @@ import { FICHEROS_POR_DEFECTO, informeColecciones, informeDistribucion, leerLote
 
 const RAIZ = fileURLToPath(new URL('../../../../', import.meta.url));
 const leer = (ruta: string) => JSON.parse(readFileSync(`${RAIZ}${ruta}`, 'utf-8')) as { jugadores: Record<string, unknown>[] };
-const core = leer('data/core.json');
+const core = leer('data/core-real.json');
 const prueba = leer('data/cartas-prueba.json');
 const colecciones = JSON.parse(readFileSync(`${RAIZ}data/colecciones.json`, 'utf-8')) as { version: string; colecciones: { id: string; cartas: unknown[] }[] };
 
 describe('seed: validación del catálogo', () => {
-  it('acepta data/core.json', () => {
+  it('acepta data/core-real.json', () => {
     const r = validarFicheroCatalogo(core);
     expect(r.errores).toEqual([]);
     expect(r.jugadores).toHaveLength(300);
@@ -23,7 +23,7 @@ describe('seed: validación del catálogo', () => {
     expect(r.errores.some((e) => e.regla === 'nivel' || e.regla.startsWith('esquema:'))).toBe(true);
   });
 
-  it('el informe compara con la tabla de 300 y no avisa con el core.json real, aunque no la cumpla exactamente (spec 008, R8)', () => {
+  it('el informe compara con la tabla de 300 y no avisa con el core-real.json, aunque no la cumpla exactamente (spec 008, R8)', () => {
     const r = validarFicheroCatalogo(core);
     expect(r.errores).toEqual([]);
     const informe = informeDistribucion(r.jugadores);

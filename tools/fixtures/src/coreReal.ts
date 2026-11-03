@@ -1,11 +1,10 @@
 /**
- * Fusión de los datos reales de Core (spec 008, research R7 y R11; contracts/datos-core-real.md).
+ * Validación y sumario de la colección Core (spec 008, research R7 y R11; contracts/datos-core-real.md).
  *
  * 1. Valida `data/core-real.json` (`validarColeccion`) y las invariantes del contrato: ids 1–N sin huecos, un
  *    retrato existente y distinto por ficha que cubra todos los de `apps/web/public/cartas/retratos/`, y el fondo
  *    genérico de su demarcación.
- * 2. Sustituye las cartas de `data/core.json` por las de `core-real.json` (ya no quedan ficticias) y pone `version: "2.0.0"`.
- * 3. Escribe `specs/008-datos-reales-core/sumario.md` con `sumarioCore` (FR-017 a FR-020).
+ * 2. Escribe `specs/008-datos-reales-core/sumario.md` con `sumarioCore` (FR-017 a FR-020).
  *
  * Si hay errores, los imprime como `[id] regla: mensaje`, sale con código 1 y no escribe nada. Es idempotente.
  *
@@ -174,7 +173,7 @@ export function mesasFallidas(pool: readonly Jugador[], mesas = 200): number {
   return fallos;
 }
 
-/** Sumario en Markdown (T025). `generador`: mesas de 8 fallidas sobre las probadas con el core.json fusionado. */
+/** Sumario en Markdown (T025). `generador`: mesas de 8 fallidas sobre las probadas con `core-real.json`. */
 export function sumarioMarkdown(s: SumarioCore, total: number, generador?: { fallos: number; mesas: number }): string {
   const l: string[] = [
     '# Sumario — Colección Core real (spec 008, fase 0.1)',
@@ -271,20 +270,17 @@ export function validarCoreReal(jugadores: readonly Jugador[], retratos: readonl
 
 function principal(): void {
   const rutaReal = resolve(RAIZ, 'data/core-real.json');
-  const rutaCore = resolve(RAIZ, 'data/core.json');
   const dirRetratos = resolve(RAIZ, 'apps/web/public/cartas/retratos');
   const rutaSumario = resolve(RAIZ, 'specs/008-datos-reales-core/sumario.md');
 
   // shortcut: el esquema JSON no se comprueba aquí (ajv solo está en apps/server); validarColeccion aplica las mismas
-  // reglas de campos y valores, y `pnpm seed` valida el esquema de core.json.
+  // reglas de campos y valores, y `pnpm seed` valida el esquema de core-real.json.
   const real = JSON.parse(readFileSync(rutaReal, 'utf-8')) as { version: string; jugadores: Jugador[] };
   const retratos = existsSync(dirRetratos) ? readdirSync(dirRetratos).filter((f) => f.endsWith('.webp')) : [];
   const errores = Array.isArray(real.jugadores)
     ? validarCoreReal(real.jugadores, retratos)
     : [{ id: undefined, regla: 'campos', mensaje: '"jugadores" debe ser una lista' }];
 
-  const textoCore = readFileSync(rutaCore, 'utf-8');
-  const core = JSON.parse(textoCore) as { version: string; jugadores: Jugador[] };
   const jugadores = [...real.jugadores].sort((a, b) => a.id - b.id);
 
   if (errores.length) {
@@ -293,12 +289,10 @@ function principal(): void {
     process.exit(1);
   }
 
-  const salto = textoCore.includes('\r\n') ? '\r\n' : '\n';
-  writeFileSync(rutaCore, JSON.stringify({ ...core, version: '2.0.0', jugadores }, null, 2).replace(/\n/g, salto) + salto, 'utf-8');
   const sumario = sumarioCore(real.jugadores, DISTRIBUCION_CORE);
   const generador = { fallos: mesasFallidas(jugadores), mesas: 200 };
   writeFileSync(rutaSumario, sumarioMarkdown(sumario, real.jugadores.length, generador), 'utf-8');
-  console.log(`core-real: ${real.jugadores.length} cartas reales fusionadas en ${rutaCore} (${jugadores.length} en total, versión 2.0.0).`);
+  console.log(`core-real: ${real.jugadores.length} cartas válidas en ${rutaReal}.`);
   console.log(`core-real: sumario en ${rutaSumario} (huecos ${sumario.huecos}, excesos ${sumario.excesos}).`);
   if (generador.fallos) console.warn(`core-real: AVISO: ${generador.fallos} de ${generador.mesas} mesas de 8 no se pueden generar.`);
 }

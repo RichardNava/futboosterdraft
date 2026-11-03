@@ -155,8 +155,8 @@ describe('avisosColeccion (reparto de defectos)', () => {
   });
 });
 
-describe('data/core.json con rasgos (spec 005, T050; SC-008)', () => {
-  const core = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
+describe('data/core-real.json con rasgos (spec 005, T050; SC-008)', () => {
+  const core = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
 
   it('es válida: ninguna carta con más de 2 defectos ni con rasgos incompatibles', () => {
     expect(validarColeccion(core)).toEqual([]);

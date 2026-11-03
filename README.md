@@ -92,7 +92,7 @@ de turno, preparación y jornada sin esperar.
 | `apps/server` | Fastify + WebSocket, actor por partida, partidos simulados en hilos de trabajo, PostgreSQL (Drizzle), autenticación |
 | `apps/web` | React + Vite; Canvas 2D para el partido |
 | `tools/balance` | Equilibrado por simulación masiva: los criterios estadísticos de las specs 001 a 005 (`pnpm balance --solo <spec>/` filtra por spec) |
-| `tools/fixtures` | Catálogo Core (`core-real`: copia `data/core-real.json` en `data/core.json`) y semillas de escenarios de prueba |
+| `tools/fixtures` | Catálogo Core (`core-real`: valida `data/core-real.json` y regenera su sumario) y semillas de escenarios de prueba |
 | `tools/load` | Prueba de carga con k6 (SC-017) |
 
 ### Pruebas

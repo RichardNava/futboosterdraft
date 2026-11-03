@@ -25,7 +25,7 @@ import type { Comprobacion } from './partido';
 const leer = <T>(fichero: string): T => JSON.parse(readFileSync(fileURLToPath(new URL(`../../../../data/${fichero}`, import.meta.url)), 'utf-8')) as T;
 
 function catalogo() {
-  const cartas = [...leer<{ jugadores: Jugador[] }>('core.json').jugadores, ...leer<{ jugadores: Jugador[] }>('cartas-prueba.json').jugadores];
+  const cartas = [...leer<{ jugadores: Jugador[] }>('core-real.json').jugadores, ...leer<{ jugadores: Jugador[] }>('cartas-prueba.json').jugadores];
   const { colecciones } = validarCatalogo(cartas, leer<{ colecciones: unknown }>('colecciones.json').colecciones);
   const ids = (tipo: 'basica' | 'pago') => [...new Set(colecciones.filter((c) => c.tipo === tipo).flatMap((c) => c.cartas.map((x) => x.id)))];
   return { porId: new Map(cartas.map((j) => [j.id, j])), core: ids('basica'), pago: ids('pago') };

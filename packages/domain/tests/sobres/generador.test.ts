@@ -9,7 +9,7 @@ import { ErrorPoolInsuficiente, generarMesa, generarSobre } from '../../src/sobr
 import { Rng } from '../../src/rng/xoshiro';
 
 const core = (
-  JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core.json', import.meta.url)), 'utf-8')) as {
+  JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url)), 'utf-8')) as {
     jugadores: Jugador[];
   }
 ).jugadores;
@@ -71,7 +71,7 @@ describe('generarMesa (FR-011, FR-014)', () => {
     expect(generarMesa(core, 8, semilla, PARAMETROS_V3)).toEqual(generarMesa(core, 8, semilla, PARAMETROS_V3));
   });
 
-  it('no falla en 10.000 mesas de 8 con el core.json real', { timeout: 120_000 }, () => {
+  it('no falla en 10.000 mesas de 8 con el core-real.json', { timeout: 120_000 }, () => {
     for (let i = 0; i < 10_000; i++) generarMesa(core, 8, semillaDesdeTexto(`mesa-${i}`), PARAMETROS_V3);
   });
 

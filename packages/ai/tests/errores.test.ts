@@ -33,7 +33,7 @@ import { decidirAlineacionDetallada } from '../src/alineacion';
 import { erroresDe } from '../src/perfiles';
 
 const p = PARAMETROS_V3;
-const RUTA_CORE = fileURLToPath(new URL('../../../data/core.json', import.meta.url));
+const RUTA_CORE = fileURLToPath(new URL('../../../data/core-real.json', import.meta.url));
 const CORE = (JSON.parse(readFileSync(RUTA_CORE, 'utf-8')) as { jugadores: Jugador[] }).jugadores;
 const CUPO = { POR: 3, DEF: 8, MED: 8, DEL: 5 } as const;
 

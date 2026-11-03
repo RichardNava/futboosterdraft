@@ -7,7 +7,7 @@ import { draftMesa } from '../src/checks/npc';
 import { alineacionReferencia, elegirCartaReferencia, FORMACIONES_REFERENCIA } from '../src/referencia';
 
 const p = PARAMETROS_V3;
-const CORE = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../data/core.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
+const CORE = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../data/core-real.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
 
 describe('participante de referencia (T089)', () => {
   it('es determinista: con la misma semilla, el mismo draft y la misma alineación', () => {

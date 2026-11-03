@@ -48,7 +48,7 @@ import { errorEstandar } from '../series';
 import type { Comprobacion } from './partido';
 
 const NIVELES: readonly NivelNPC[] = ['PRO', 'avanzado', 'intermedio', 'amateur'];
-const RUTA_CORE = fileURLToPath(new URL('../../../../data/core.json', import.meta.url));
+const RUTA_CORE = fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url));
 
 let catalogo: Jugador[] | null = null;
 export function core(): Jugador[] {

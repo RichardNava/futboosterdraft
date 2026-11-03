@@ -1,10 +1,13 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
 /** Entra como invitado, crea una liga de 4 contra NPC y completa el draft adelantando el reloj simulado. */
-export async function partidaTrasDraft(page: Page, cuerpo: Record<string, unknown> = {}): Promise<string> {
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Jugar como invitado' }).click();
-  await expect(page.getByRole('heading', { name: 'Nueva partida' })).toBeVisible();
+export async function partidaTrasDraft(page: Page, cuerpo: Record<string, unknown> = {}, { registrado = false } = {}): Promise<string> {
+  if (registrado) await registrar(page);
+  else {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Jugar como invitado' }).click();
+    await expect(page.getByRole('heading', { name: 'Nueva partida' })).toBeVisible();
+  }
   const r = await page.request.post('/api/partidas', {
     data: { modo: 'liga', numParticipantes: 4, ...cuerpo },
   });

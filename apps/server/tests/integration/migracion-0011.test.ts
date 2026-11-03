@@ -39,7 +39,7 @@ describe('migración 0011 (colecciones)', () => {
     expect(columnas.rows.map((c) => c.c)).not.toContain('coleccion');
   });
 
-  it('GBR se reasigna con la tabla de data/core.json, también en la historia', async () => {
+  it('GBR se reasigna con la tabla de data/core-real.json, también en la historia', async () => {
     const filas = await bd.db.execute<{ id: number; nacionalidad: string; historia: string }>(sql`select id, nacionalidad, historia from jugadores order by id`);
     expect(filas.rows[0]).toMatchObject({ id: 2, nacionalidad: 'WAL', historia: 'Filipe Galodez (WAL) es un fijo en cualquier once.' });
     expect(filas.rows[1]).toMatchObject({ id: 3, nacionalidad: 'SEN' });

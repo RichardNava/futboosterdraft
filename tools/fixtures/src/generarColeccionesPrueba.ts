@@ -94,7 +94,7 @@ export function generarColeccionesPrueba(core: readonly Jugador[], semilla = 'fu
 
 function principal(): void {
   const raiz = process.env.INIT_CWD ?? process.cwd();
-  const core = (JSON.parse(readFileSync(resolve(raiz, 'data/core.json'), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
+  const core = (JSON.parse(readFileSync(resolve(raiz, 'data/core-real.json'), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
   const { cartas, colecciones } = generarColeccionesPrueba(core);
   const errores = [...validarColeccion([...core, ...cartas]), ...validarCatalogo([...core, ...cartas], colecciones).errores];
   if (errores.length) {

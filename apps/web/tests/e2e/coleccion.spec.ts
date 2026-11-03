@@ -28,9 +28,9 @@ test('300 cartas, búsqueda sin tildes, orden por nacionalidad, última página,
   await expect(page.locator('.coleccion-resumen')).toContainText('300');
   await expect(page.locator('.coleccion-resumen')).toContainText('Cumple el mínimo');
 
-  await page.getByRole('searchbox', { name: 'Buscar por nombre' }).fill('VALOTAL');
+  await page.getByRole('searchbox', { name: 'Buscar por nombre' }).fill('ESTEVAO');
   await expect(page.locator('.coleccion-carta')).toHaveCount(1);
-  await expect(page.locator('.coleccion-carta')).toContainText('Teo Valotal');
+  await expect(page.locator('.coleccion-carta')).toContainText('Estêvão');
   await page.getByRole('button', { name: 'Borrar', exact: true }).click();
 
   await page.getByLabel('Ordenar por').selectOption('nacionalidad');

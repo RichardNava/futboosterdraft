@@ -8,7 +8,7 @@ import { validarCatalogo, validarColeccion } from '../../src/catalogo/validar';
 const leer = <T>(fichero: string): T =>
   JSON.parse(readFileSync(fileURLToPath(new URL(`../../../../data/${fichero}`, import.meta.url)), 'utf-8')) as T;
 
-const core = leer<{ jugadores: Jugador[] }>('core.json').jugadores;
+const core = leer<{ jugadores: Jugador[] }>('core-real.json').jugadores;
 const prueba = leer<{ jugadores: Jugador[] }>('cartas-prueba.json').jugadores;
 const ficheroColecciones = leer<{ colecciones: unknown[] }>('colecciones.json').colecciones;
 const cartas = [...core, ...prueba];

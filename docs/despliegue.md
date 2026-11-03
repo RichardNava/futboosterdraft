@@ -16,7 +16,7 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 - `dist/seed.js`: la carga del catálogo.
 - `drizzle/`: las migraciones.
 - `web/`: la web compilada.
-- `data/`: las cartas (`core.json`, `cartas-prueba.json`) y las colecciones (`colecciones.json`).
+- `data/`: las cartas (`core-real.json`, `cartas-prueba.json`) y las colecciones (`colecciones.json`).
 - Las dependencias de producción.
 
 ## 2. Variables de entorno
@@ -124,11 +124,11 @@ location / {
 
 ## 4. Cargar el catálogo
 
-La primera vez, y cada vez que cambien las cartas o las colecciones, carga el catálogo. Por defecto lee `data/core.json`, `data/cartas-prueba.json` y `data/colecciones.json` (spec 006). La carga es idempotente (*upsert* por `id`) y va en una transacción: si cualquier fichero tiene un error, rechaza el lote entero (FR-024). Informa del recuento por demarcación × nivel de cada colección y, si una colección de pago ya vendida gana cartas, de lo que entrega a sus compradores.
+La primera vez, y cada vez que cambien las cartas o las colecciones, carga el catálogo. Por defecto lee `data/core-real.json`, `data/cartas-prueba.json` y `data/colecciones.json` (spec 006). La carga es idempotente (*upsert* por `id`) y va en una transacción: si cualquier fichero tiene un error, rechaza el lote entero (FR-024). Informa del recuento por demarcación × nivel de cada colección y, si una colección de pago ya vendida gana cartas, de lo que entrega a sus compradores.
 
 ```bash
 docker exec futboosterdraft node dist/seed.js
-docker exec futboosterdraft node dist/seed.js --file data/core.json --file otras.json --colecciones colecciones.json
+docker exec futboosterdraft node dist/seed.js --file data/core-real.json --file otras.json --colecciones colecciones.json
 ```
 
 **Después de cargar el catálogo, reinicia el servidor** (`docker restart futboosterdraft`): el catálogo se lee en memoria al arrancar, y hasta reiniciar no conoce las cartas nuevas (quien recibió una al ampliarse su colección vería un error en «Colección»).

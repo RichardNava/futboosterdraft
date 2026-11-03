@@ -36,7 +36,7 @@ export function jugador(
 
 export function catalogoCore(): Jugador[] {
   return (
-    JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core.json', import.meta.url)), 'utf-8')) as {
+    JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url)), 'utf-8')) as {
       jugadores: Jugador[];
     }
   ).jugadores;

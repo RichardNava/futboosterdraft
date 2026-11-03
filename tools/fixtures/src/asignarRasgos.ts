@@ -1,7 +1,7 @@
 /**
  * Pasada de rasgos sobre Core (spec 005, research R5; FR-012, FR-035, FR-037; T049 y T092).
  *
- * Añade defectos y las cuatro virtudes nuevas a las cartas de `data/core.json` sin tocar ids, nombres, stats, medias
+ * Añade defectos y las cuatro virtudes nuevas a las cartas de `data/core-real.json` sin tocar ids, nombres, stats, medias
  * ni las virtudes que ya tenían: así `cartaEnVersion(carta, 1)` devuelve exactamente la carta anterior (research R4).
  * Es determinista (semilla `rasgos-005`) e idempotente: parte siempre de las cartas en la versión 1.
  *
@@ -9,7 +9,7 @@
  * 2. Virtudes nuevas solo en cartas con un hueco libre según `MAX_VIRTUDES`, unas 12 por virtud, repartidas por nivel.
  * 3. Ninguna carta con rasgos incompatibles: si un sorteo lo produce, se vuelve a sortear entre los compatibles.
  *
- * Uso: `pnpm --filter @fbd/fixtures asignar-rasgos [--fichero data/core.json]`.
+ * Uso: `pnpm --filter @fbd/fixtures asignar-rasgos [--fichero data/core-real.json]`.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -117,7 +117,7 @@ export function asignarRasgos(cartas: readonly Jugador[]): Jugador[] {
 function principal(): void {
   const args = process.argv.slice(2).filter((a) => a !== '--');
   const i = args.indexOf('--fichero');
-  const ruta = resolve(process.env.INIT_CWD ?? process.cwd(), i >= 0 ? args[i + 1]! : 'data/core.json');
+  const ruta = resolve(process.env.INIT_CWD ?? process.cwd(), i >= 0 ? args[i + 1]! : 'data/core-real.json');
   const texto = readFileSync(ruta, 'utf-8');
   const fichero = JSON.parse(texto) as { version: string; jugadores: Jugador[] };
   const jugadores = asignarRasgos(fichero.jugadores);

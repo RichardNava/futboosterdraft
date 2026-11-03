@@ -11,7 +11,8 @@ interface Torneo {
 /** Escenario E del quickstart (lo que no depende del correo): liga de 4 de un humano hasta el campeón. */
 test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) => {
   test.setTimeout(600_000);
-  const partidaId = await partidaTrasDraft(page);
+  // Registrado: fuera de la pantalla del torneo no hay conexión, y la partida de un invitado se abandona a los 10 minutos.
+  const partidaId = await partidaTrasDraft(page, {}, { registrado: true });
   await page.goto(`/partidas/${partidaId}/torneo`);
   await expect(page.getByRole('heading', { name: 'Torneo' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Jornada 1' })).toBeVisible();

@@ -1,6 +1,6 @@
 /**
  * Serie Core (spec 003, research R8; T030): torneos en los que 8 NPC avanzados draftan la colección Core
- * (`data/core.json`, la misma que genera `generarCore()` de `tools/fixtures`) con la semilla de la serie y
+ * (`data/core-real.json`) con la semilla de la serie y
  * juegan una liga a doble vuelta con sus alineaciones de `decidirAlineacion`. Es la medida más cercana a los
  * partidos que juzgaron las personas.
  *

@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Migración de las cartas de Core a la spec 006 (R4). Se ejecuta una vez y el resultado queda versionado en
- * `data/core.json`:
+ * `data/core-real.json`:
  *
  * - se quitan la clave raíz `coleccion` y el campo `coleccion` de cada carta (la pertenencia va en
  *   `data/colecciones.json`);
@@ -12,7 +12,7 @@
  *
  * Imprime la tabla `id → código` de las cartas `GBR`, que usa la migración SQL `0011_colecciones`.
  *
- * Uso: pnpm --filter @fbd/fixtures migrar-cartas-006 [--fichero data/core.json]
+ * Uso: pnpm --filter @fbd/fixtures migrar-cartas-006 [--fichero data/core-real.json]
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -62,7 +62,7 @@ export function migrarCartas(antiguas: readonly CartaAntigua[]): { jugadores: Ju
 function principal(): void {
   const args = process.argv.slice(2).filter((a) => a !== '--');
   const i = args.indexOf('--fichero');
-  const ruta = resolve(process.env.INIT_CWD ?? process.cwd(), i >= 0 ? args[i + 1]! : 'data/core.json');
+  const ruta = resolve(process.env.INIT_CWD ?? process.cwd(), i >= 0 ? args[i + 1]! : 'data/core-real.json');
   const texto = readFileSync(ruta, 'utf-8');
   const fichero = JSON.parse(texto) as { coleccion?: string; version: string; jugadores: CartaAntigua[] };
   const { jugadores, gbr } = migrarCartas(fichero.jugadores);

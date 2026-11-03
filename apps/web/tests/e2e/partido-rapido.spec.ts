@@ -17,7 +17,7 @@ test('partido rápido: descanso, cambios y resumen final', async ({ page }) => {
   // Una sustitución desde «Gestionar equipo» (spec 003, US5): el primer suplente entra por el delantero centro.
   await page.getByRole('button', { name: 'Gestionar equipo' }).click();
   const suplente = page.getByTestId('gestion-equipo').getByTestId('banquillo').locator('.ficha-lista').first();
-  const nombreEntra = (await suplente.getAttribute('aria-label'))!.replace(/ \(.*$/, '');
+  const nombreEntra = await suplente.locator('.carta-nombre').first().innerText();
   await sustituirEnGestion(page);
   await page.getByRole('button', { name: 'Confirmar cambios' }).click();
   await expect(page.getByTestId('gestion-equipo')).toBeHidden();
@@ -25,9 +25,8 @@ test('partido rápido: descanso, cambios y resumen final', async ({ page }) => {
   await page.getByRole('button', { name: 'Seguir' }).click();
   await expect(page.locator('.resultado .fase')).toHaveText('Final');
   await expect(page.getByRole('heading', { name: 'Resumen del partido' })).toBeVisible();
-  // El resumen muestra el dorsal delante del nombre: "Entra 17. Nombre Apellido por …".
-  const nombre = nombreEntra.split(' ').slice(0, 2).join(' ');
-  await expect(page.locator('.resumen-eventos')).toContainText(new RegExp(`Entra (\\d+\\. )?${nombre}`));
+  // El resumen muestra el dorsal delante del nombre de la carta: "Entra 17. Cucurella por …".
+  await expect(page.locator('.resumen-eventos')).toContainText(new RegExp(`Entra (\\d+\\. )?${nombreEntra}`));
   await expect(page.getByRole('table')).toContainText('Posesión');
   await expect(page.getByRole('table')).toContainText('Tiros a puerta');
 });

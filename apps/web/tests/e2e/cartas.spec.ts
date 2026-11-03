@@ -12,7 +12,8 @@ async function desbordes(page: Page): Promise<string[]> {
       const problemas: string[] = [];
       const id = carta.getAttribute('data-jugador') ?? '?';
       for (const el of [carta, ...Array.from(carta.querySelectorAll<HTMLElement>('*'))]) {
-        if (el.matches('[popover]')) continue;
+        // Los nombres largos se recortan a propósito (NombreRecortado), y la cabecera desplaza cifras y retrato con transform.
+        if (el.matches('[popover], .nombre-recortado, .carta-cabecera')) continue;
         if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1) {
           problemas.push(`${id}: ${el.className || el.tagName}`);
         }

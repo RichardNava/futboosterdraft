@@ -5,8 +5,8 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 - Principios del proyecto: [.specify/memory/constitution.md](.specify/memory/constitution.md)
 - Iniciativas, prioridades y estado de cada spec: [ROADMAP.md](ROADMAP.md)
 - Especificación y plan en curso: [specs/010-latencia-apertura-sobres/](specs/010-latencia-apertura-sobres/)
-- Datos del catálogo: `data/core.json` y `data/cartas-prueba.json` (cartas) y `data/colecciones.json` (pertenencia); `pnpm seed` los carga todos
-- Las 300 cartas de Core son jugadores reales: su fuente es `data/core-real.json`, que se copia en `data/core.json` (y regenera `specs/008-datos-reales-core/sumario.md`) con `pnpm --filter @fbd/fixtures core-real`
+- Datos del catálogo: `data/core-real.json` y `data/cartas-prueba.json` (cartas) y `data/colecciones.json` (pertenencia); `pnpm seed` los carga todos
+- Las 300 cartas de Core son jugadores reales y su única fuente es `data/core-real.json`; `pnpm --filter @fbd/fixtures core-real` lo valida y regenera `specs/008-datos-reales-core/sumario.md`
 - Guía de estilos visuales (referencia de la spec 004): [docs/diseno/DESIGN.md](docs/diseno/DESIGN.md)
 - Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)
 

@@ -3,7 +3,7 @@ import type { CartaResumen } from '../componentes/CartaJugador';
 /**
  * Cartas de la colección Core que se muestran en la portada (spec 004, FR-045; spec 008): por nivel, de la más común
  * a la más rara, las cuatro de media más alta de cada uno. La portada saca una al azar de cada grupo.
- * shortcut: copia de `data/core.json`; si cambian esas cartas, regenerar la lista.
+ * shortcut: copia de `data/core-real.json`; si cambian esas cartas, regenerar la lista.
  */
 export const CARTAS_MUESTRA: CartaResumen[][] = [
   [

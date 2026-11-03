@@ -375,6 +375,9 @@ y `pnpm test:equivalence` siguen en verde sin tocar expectativas. Con 100 partid
       lo mismo que en `partido-rapido`, y la 010 no toca `apps/web` ni los nombres. Sin la 010 pasó porque el draft
       salió así; no se repitió.
   - Ningún fallo lo causa la 010. No se arregla ninguno aquí: son de los datos de Core (INI-11).
+  - **Arreglados en INI-11 (2026-11-03).** `torneo.spec.ts` no dependía de los datos: el invitado se desconecta al
+    ir a la portada y su partida se abandona a los 10 minutos de reloj simulado (FR-019). Ahora lo juega un usuario
+    registrado.
 - [ ] T036 SC-001 y SC-003 en tres máquinas por cable (servidor Linux sin Docker Desktop, PostgreSQL y k6 separados;
   quickstart §6). Si el entorno no está disponible, dejarla pendiente con la razón (como 009/T036); SC-001 queda «no
   cumplido aún», no «cumplido». Si un umbral no se alcanza, reformularlo en `specs/001-draft-manager-mvp/spec.md`
@@ -383,7 +386,12 @@ y `pnpm test:equivalence` siguen en verde sin tocar expectativas. Con 100 partid
   partidas en un solo equipo: el equipo B se satura de CPU (94 % de media, `node` 5,6 núcleos; diagnostico.md, «Uso
   de CPU con 100 partidas»). SC-001 y SC-003 quedan **no cumplidos aún**. Los umbrales de `beta-100.js` y del CI no
   se tocan (FR-016). 001/SC-017 no se reformula por ahora: FR-016 lo pide cuando un umbral no se alcanza en el
-  entorno de tres máquinas, que no se ha medido.
+  entorno de tres máquinas, que no se ha medido. La persona acepta por ahora el empeoramiento de `final_ms` y
+  `jornada_npc_ms` con 100 partidas en una máquina (ver T037). **Aplazada sin fecha:** el
+  entorno disponible son tres equipos con Windows 10, uno por cable y dos por Wi-Fi. No cumple lo que pide la tarea:
+  servidor Linux sin Docker Desktop y las tres máquinas por cable. En Windows 10, WSL2 solo tiene red NAT y haría
+  falta `netsh portproxy`, un reenvío de puertos parecido al de Docker Desktop. Los ajustes que hagan falta
+  dependerán del resultado cuando haya entorno.
 - [X] T037 Registrar cada medición en `specs/003-mejoras-ux-simulacion/checklists/validacion.md` (fila «Carga») y en
   `ROADMAP.md` INI-07, y actualizar el estado de la spec en `spec.md` y `ROADMAP.md` (FR-017).
   Hecho el 2026-11-03. Se registran `referencia-{10,100}-us2`, `-us3`, `-grupo` y `referencia-100-cpu`. Estado:

@@ -60,7 +60,7 @@ test('comprar Top Argentinos: confirmación, resumen y tarjeta «Adquirida» (US
   await page.getByRole('button', { name: 'Saltar' }).click();
   const resumen = page.getByRole('dialog', { name: /adquirida/ });
   await expect(resumen).toContainText('39 cartas nuevas');
-  await expect(resumen).toContainText('+175');
+  await expect(resumen).toContainText('+150');
   await resumen.getByRole('button', { name: 'Seguir comprando' }).click();
   await expect(page.locator('[data-coleccion="top-argentinos"]')).toContainText('Adquirida');
   await expect(page.locator('[data-coleccion="top-argentinos"]').getByRole('button', { name: /Comprar/ })).toHaveCount(0);
