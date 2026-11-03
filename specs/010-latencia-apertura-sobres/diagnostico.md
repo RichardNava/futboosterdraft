@@ -275,4 +275,77 @@ efecto sobre la saturación del pool, que es donde R7 debería notarse más.
 
 ## Tras US3
 
-Pendiente (T032).
+Medido el 2026-11-03 en el entorno de referencia (equipo B, por cable; T032: [referencia-10-us3](mediciones/referencia-10-us3.md),
+[referencia-100-us3](mediciones/referencia-100-us3.md)), con los mismos comandos que «Tras US2». Es una ejecución por
+escenario, así que no se sabe cuánto varían los resultados entre ejecuciones.
+
+### Entrega de sobre en el entorno de referencia (mediana / p95, ms)
+
+| | R 10 tras US2 | R 10 tras US3 | R 100 tras US2 | R 100 tras US3 |
+|---|---:|---:|---:|---:|
+| cola | 54 / 86 | 54 / 75 | 595 / 932 | 648 / 1177 |
+| bd | 51 / 180 | 48 / 163 | 406 / 721 | 376 / 1026 |
+| total | 107 / 225 | 106 / 194 | 999 / 1666 | 1027 / 2422 |
+| k6 `entrega_sobre_ms` | 109 / 200 | **107 / 171** | 932 / 1360 | **932 / 1760** |
+| consultas, media (suma / n) | 9,7 | 9,5 | 9,7 | 9,5 |
+| consultas, mediana / p95 (resumen) | 6,2 / 8,0 | 9,4 / 83,5 | 6,2 / 8,0 | 9,4 / 83,6 |
+| entregas (n) | 240 | 240 | 2640 | 2400 |
+
+- **Las consultas por entrega casi no bajan con esta carga: la media pasa de 9,7 a 9,5 (−2 %).** En el guion de k6
+  (`tools/load/beta-100.js`), 9 de cada 10 partidas son de 8 humanos sin NPC; la décima es de 1 humano y 7 NPC. En
+  un turno sin NPC, T029 no ahorra nada. Antes: deduplicación, elección, BEGIN, mesa, COMMIT y `ack` (6). Ahora: deduplicación, BEGIN,
+  elecciones, mesa, COMMIT y `ack` (6). Solo ahorra en el turno 1 de cada ronda, porque el margen de animación ya
+  no es otra escritura, y en las mesas con NPC, porque sus elecciones van en la misma inserción.
+- **Medido en local con 1 humano y 3 NPC** (prueba temporal, ya borrada): cada entrega hace 6 consultas, antes 7
+  u 8; la que cierra el draft hace 55, antes 56. Ahí el ahorro sí es de ~1 consulta por entrega.
+- **La mediana y el p95 de consultas no sirven para comparar.** Son cuantiles estimados (t-digest, acumulados desde el
+  arranque) de un número entero repartido en dos grupos muy separados. Uno son las entregas normales, con unas
+  pocas consultas. El otro es una de cada 24, la que cierra el draft, con decenas. La mediana de 9,4 que da el
+  resumen no coincide con ninguna entrega medida en local. Se compara con la media.
+- **Con 10 partidas mejora un poco** (`entrega_sobre_ms` p95 200 → 171 ms). Con tan poco cambio en las consultas,
+  no se puede atribuir a T029.
+- **Con 100 partidas, el p95 empeora (1,36 s → 1,76 s) y la mediana no cambia (932 ms).** El empeoramiento está
+  en la cola (p95 932 → 1177 ms) y en la fase bd (p95 721 → 1026 ms). Como T029 apenas cambia las consultas de la
+  entrega en este escenario, lo más probable es que venga de la contención del pool que comparte con las
+  aperturas: su fase bd sube de 9,1 a 11,0 s de mediana. No se ha comprobado; con una sola ejecución también puede
+  ser variación entre ejecuciones.
+- Con 100 partidas se cuentan 2400 entregas: 24 por partida, que es lo esperado (3 rondas × 8 turnos). En «Tras
+  US2» se contaron 2640; esa diferencia no se ha investigado.
+
+### Apertura en el entorno de referencia (mediana / p95, ms)
+
+US3 no toca la apertura. Se anota porque comparte el pool con la entrega.
+
+| Fase | R 10 tras US2 | R 10 tras US3 | R 100 tras US2 | R 100 tras US3 |
+|------|--------------:|--------------:|---------------:|---------------:|
+| cola | 464 / 900 | 409 / 728 | 2756 / 7204 | 2547 / 6113 |
+| cálculo | 311 / 1153 | 272 / 1069 | 445 / 6855 | 393 / 5326 |
+| bd | 908 / 1120 | 746 / 985 | 9143 / 13 635 | 11 049 / 13 066 |
+| total | 1763 / 2152 | 1509 / 1860 | 15 378 / 17 079 | 14 315 / 16 068 |
+| k6 `apertura_ms` | 1850 / 2460 | 1590 / 1990 | 16 050 / 17 580 | 14 750 / 16 600 |
+
+### Umbrales en el entorno de referencia (k6)
+
+| Umbral | 10 partidas | 100 partidas |
+|--------|------------:|-------------:|
+| `apertura_ms` p95 < 3 s | ✓ 1,99 s (tras US2 2,46 s) | ✗ 16,6 s (tras US2 17,58 s) |
+| `entrega_sobre_ms` p95 < 1 s | ✓ 171 ms (tras US2 200 ms) | ✗ 1,76 s (tras US2 1,36 s) |
+| resto (`errores_ws`, bloqueadas, terminadas, `final_ms`, `jornada_npc_ms`, `descanso_ms`) | ✓ | ✓ |
+
+Con 100 partidas vuelven a agotar el tiempo de k6 9 peticiones `POST …/siguiente-jornada` (tras US2 fueron 10): tasa
+de fallos 0,07 %, dentro del umbral < 1 %.
+
+### Conclusión tras US3
+
+- T029 está hecho y funciona como se diseñó: la entrega guarda todo en una transacción y con NPC ahorra ~1 consulta.
+  Pero **en el escenario de carga, con mesas de humanos, apenas cambia las consultas, y no acerca la entrega al
+  umbral de 1 s con 100 partidas**.
+- El límite con 100 partidas sigue siendo el de «Tras US2»: la espera por una conexión del pool de PostgreSQL, que
+  la entrega comparte con los grupos de aperturas (fase bd de la apertura: 11 s de mediana).
+- Hay dos caminos posibles. Falta decidir cuál:
+  1. **Entrega en una sola sentencia.** Juntar la inserción de elecciones y la actualización de la mesa en una
+     consulta (`WITH … INSERT … UPDATE`), que es atómica sin BEGIN ni COMMIT. La entrega pasaría de 6 consultas a
+     3, también en mesas solo de humanos.
+  2. **Menos consultas en el grupo de aperturas** (~100 por grupo), que es lo que satura el pool. Antes conviene
+     separar en el desglose las consultas de `despuesDePartido` de las de preparar y guardar, como ya proponía
+     «Conclusión tras US2».

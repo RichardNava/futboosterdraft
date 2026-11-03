@@ -270,8 +270,12 @@ orden de mensajes.
   ya estaban (se reproducen igual con el código de HEAD): `cartaEnVersion` (`data/core.json` ≠
   `data/core-real.json`) y, en e2e, `partido-rapido`, `dorsales`, `torneo`, `cartas` y `coleccion`. Dependen de la
   semilla y del nombre de carta.
-- [ ] T032 [US3] Medir con `k6 run -e PARTIDAS=100 -e METRICAS_URL=…` en el entorno de referencia y anotar en
+- [X] T032 [US3] Medir con `k6 run -e PARTIDAS=100 -e METRICAS_URL=…` en el entorno de referencia y anotar en
   `diagnostico.md` (sección «Tras US3») y en `mediciones/` el p95 de `entrega_sobre_ms` y sus consultas.
+  Medido el 2026-11-03 con 10 y 100 partidas ([referencia-10-us3](mediciones/referencia-10-us3.md),
+  [referencia-100-us3](mediciones/referencia-100-us3.md)). Con 100 partidas, `entrega_sobre_ms` p95 1,76 s (tras US2
+  1,36 s), y las consultas por entrega pasan de 9,7 a 9,5 de media: en mesas de humanos T029 apenas ahorra. Con 10
+  partidas se cumplen todos los umbrales. Análisis y próximos pasos en «Tras US3».
 
 **Checkpoint**: las tres historias completas.
 
