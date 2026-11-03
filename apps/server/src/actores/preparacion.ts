@@ -25,9 +25,8 @@ export async function crearPartidosJornada(
   opciones: OpcionesJornada,
   venceEn: number | null,
 ): Promise<void> {
-  const cruces: { partidoId: string; local: string; visitante: string }[] = [];
-  for (const [i, e] of emparejamientos.entries()) {
-    const fila = await c.servicios.repoPartidos.crear({
+  const ids = await c.servicios.repoPartidos.crear(
+    emparejamientos.map((e, i) => ({
       partidaId: c.id,
       jornadaId: opciones.jornadaId ?? null,
       jornadaNumero: numero,
@@ -37,9 +36,9 @@ export async function crearPartidosJornada(
       semilla: derivarSemilla(c.partida.semilla, `partido:${numero}:${i}`),
       versionParametros: parametrosActuales().version,
       ...(c.partida.modo === 'duelos' ? { tipo: 'duelos' as const } : {}),
-    });
-    cruces.push({ partidoId: fila.id, local: e.local, visitante: e.visitante });
-  }
+    })),
+  );
+  const cruces = emparejamientos.map((e, i) => ({ partidoId: ids[i]!, local: e.local, visitante: e.visitante }));
   c.partidosEnCurso.clear();
   c.jornada = { numero, partidoIds: cruces.map((x) => x.partidoId), cruces, venceEn };
 }

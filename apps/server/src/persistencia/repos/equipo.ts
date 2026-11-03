@@ -16,6 +16,20 @@ export interface AlineacionGuardada extends Alineacion {
   bloqueada: boolean;
 }
 
+function alineacionGuardada(fila: typeof alineaciones.$inferSelect): AlineacionGuardada {
+  return {
+    formacion: fila.formacion as Alineacion['formacion'],
+    titulares: fila.titulares as Alineacion['titulares'],
+    suplentes: fila.suplentes,
+    tactica: fila.tactica as Alineacion['tactica'],
+    lanzadores: fila.lanzadores as Alineacion['lanzadores'],
+    ...(fila.colocacion ? { colocacion: fila.colocacion as NonNullable<Alineacion['colocacion']> } : {}),
+    version: fila.version,
+    confirmadaEn: fila.confirmadaEn,
+    bloqueada: fila.bloqueada,
+  };
+}
+
 export class RepoEquipo {
   constructor(private readonly db: BaseDatos) {}
 
@@ -28,18 +42,18 @@ export class RepoEquipo {
         .orderBy(desc(alineaciones.version))
         .limit(1)
     )[0];
-    if (!fila) return undefined;
-    return {
-      formacion: fila.formacion as Alineacion['formacion'],
-      titulares: fila.titulares as Alineacion['titulares'],
-      suplentes: fila.suplentes,
-      tactica: fila.tactica as Alineacion['tactica'],
-      lanzadores: fila.lanzadores as Alineacion['lanzadores'],
-      ...(fila.colocacion ? { colocacion: fila.colocacion as NonNullable<Alineacion['colocacion']> } : {}),
-      version: fila.version,
-      confirmadaEn: fila.confirmadaEn,
-      bloqueada: fila.bloqueada,
-    };
+    return fila && alineacionGuardada(fila);
+  }
+
+  /** Última alineación de varios participantes en una consulta (spec 010, R13); sin entrada si no tienen. */
+  async ultimasAlineaciones(participanteIds: readonly string[]): Promise<Map<string, AlineacionGuardada>> {
+    if (participanteIds.length === 0) return new Map();
+    const filas = await this.db
+      .selectDistinctOn([alineaciones.participanteId])
+      .from(alineaciones)
+      .where(inArray(alineaciones.participanteId, [...participanteIds]))
+      .orderBy(alineaciones.participanteId, desc(alineaciones.version));
+    return new Map(filas.map((f) => [f.participanteId, alineacionGuardada(f)]));
   }
 
   async guardarAlineacion(participanteId: string, a: Alineacion, ahora: number, ejecutor: Ejecutor = this.db, bloqueada = false): Promise<number> {

@@ -294,9 +294,40 @@ y `pnpm test:equivalence` siguen en verde sin tocar expectativas. Con 100 partid
 - [X] T039 [US2] Contar en local las consultas de un grupo de 8 aperturas que cierra la jornada, por método de
   repositorio y por tramo del comando, con un test en `apps/server/tests/integration/aperturas-grupo.test.ts`
   (R13) que fije el total. Anotar el reparto en `diagnostico.md` («Consultas del grupo de aperturas»).
-- [ ] T040 [US2] Decidir con el reparto qué se recorta y en qué orden, y anotarlo en `diagnostico.md`. Desglosar aquí
+- [X] T040 [US2] Decidir con el reparto qué se recorta y en qué orden, y anotarlo en `diagnostico.md`. Desglosar aquí
   las tareas de implementación que salgan (a partir de T043).
-- [ ] T041 [US2] Pasar toda la integración en los dos modos, `pnpm test:equivalence` y los e2e del torneo sin cambios.
+  Decidido el 2026-11-03: las cuatro de abajo, en ese orden. Cada una baja la cifra del test de reparto.
+- [X] T043 [US2] `fijarModalidad` por lotes: `fijarModalidades` en `actores/torneo.ts` con una consulta por tabla
+  (`repoPartidos.fijarModalidades`, `repoPartidas.fijarUltimasModalidades`, `repoPerfiles.fijarUltimasModalidades`).
+  Se mantienen las reglas: en el partido manda la primera modalidad; en participante y perfil, la última; los
+  invitados no tienen perfil. Grupo: 115 → 78.
+- [X] T044 [US2] Guardar el torneo una vez por comando: hoy `repoTorneo.guardar` se llama en la transacción del grupo,
+  al cerrar la jornada y al abrir la siguiente (5 consultas cada vez).
+  **Hecho de otra forma:** juntar los tres guardados cambiaría lo que queda escrito si el comando falla a mitad.
+  El cierre y la apertura de la jornada se guardan por separado, y entre medias se calculan los partidos NPC. En su
+  lugar, `RepoTorneo.guardar` recibe el estado que el mismo comando acaba de guardar. Si las bajas son el mismo
+  objeto (el dominio lo conserva cuando no cambian), no reescribe bajas ni amarillas: 1 consulta en vez de 5 al
+  cerrar y al abrir la jornada. El test de reparto comprueba que lo cargado de la BD coincide con la memoria.
+  Grupo: 78 → 70.
+- [X] T045 [US2] Leer a la vez, para todos los participantes del grupo, la alineación vigente, la plantilla y los
+  dorsales (hoy tres lecturas por participante; para dorsales ya existe `dorsalesDeVarios`).
+  `precargar` en `actores/equipo.ts` (con `repoEquipo.ultimasAlineaciones`, nueva) y un parámetro opcional `precarga`
+  en `alineacionVigente`, `plantillaDe`, `prepararPartido` y `dorsalesParaPartido`. Sin precarga, todo sigue igual.
+  Grupo: 70 → 49.
+- [X] T046 [US2] Al abrir la jornada, insertar en una consulta cada cosa: los avisos `jornada_abierta`, los partidos
+  y los pendientes de visionado (hoy una por elemento).
+  `ServicioAvisos.avisar` y `RepoPartidos.crear` reciben listas, con ids generados en el servidor. Los pendientes de
+  visionado no son de abrir la jornada, sino de `aplicarEntreHumanos` (uno por partido, en la transacción del grupo):
+  se quedan como están. Grupo: 49 → 39.
+- [X] T041 [US2] Pasar toda la integración en los dos modos, `pnpm test:equivalence` y los e2e del torneo sin cambios.
+  Hecho el 2026-11-03:
+  - Integración: 182/182 en modo normal. En hilos falló solo el test de reparto: daba 38 en vez de 39, porque el total
+    depende de si los partidos producen bajas. Se cambió a «como mucho 39», y después `aperturas-grupo.test.ts` pasó
+    6/6 entre los dos modos.
+  - `pnpm test:equivalence` en verde.
+  - e2e en verde (12/12): `apertura`, `avanzar-solo`, `duelos`, `finalizar`, `modo-partido`, `torneo-asincrono` y
+    `torneo-final`. No se pasó `torneo.spec.ts`, que ya fallaba con HEAD (ver T031).
+  - En `pnpm test` solo falla `cartaEnVersion`, ya conocido (ROADMAP INI-11).
 - [ ] T042 [US2] Medir con `k6 run -e PARTIDAS=10` y `-e PARTIDAS=100` (`-e APERTURA_MAX_S=0 -e METRICAS_URL=…`) en el
   entorno de referencia (equipo B, por cable), guardar en `mediciones/referencia-{10,100}-grupo.md` y anotar en
   `diagnostico.md` una sección «Tras recortar el grupo» comparando con «Tras US3».
@@ -340,7 +371,7 @@ y `pnpm test:equivalence` siguen en verde sin tocar expectativas. Con 100 partid
 - US2: T017 → T020; T018 primero (falla); T019 y T020 → T021 → T022 → T023 → T024; T025 → T026 (tras T024 para aislar
   regresiones); T024 + T026 → T027.
 - US3: T028 en cualquier momento; T029 → T030 → T031 → T032.
-- Phase 5b: tras T032. T039 → T040 → tareas que salgan de T040 → T041 → T042.
+- Phase 5b: tras T032. T039 → T040 → T043 → T044 → T045 → T046 → T041 → T042.
 
 ### Parallel Opportunities
 

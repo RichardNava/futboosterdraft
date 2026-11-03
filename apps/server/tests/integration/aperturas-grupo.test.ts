@@ -355,10 +355,18 @@ describe('grupo de aperturas (spec 010, US2)', () => {
     await c.actor.drenar();
     traza.activo = false;
     expect(c.jornada!.numero).toBe(2);
+    // Lo guardado coincide con la memoria aunque no se reescriban las bajas sin cambios (T044).
+    const cargado = (await c.servicios.repoTorneo.cargar(c.id))!;
+    const orden = (b: EstadoTorneo['bajas']) => ({ ...b, bajas: [...b.bajas].sort((x, y) => `${x.participanteId}|${x.jugadorId}`.localeCompare(`${y.participanteId}|${y.jugadorId}`)) });
+    expect(orden(cargado.bajas)).toEqual(orden(c.torneo!.bajas));
     const filas = Object.entries(traza.cuenta).sort((a, b) => b[1] - a[1]);
     const total = filas.reduce((s, [, n]) => s + n, 0);
     const reparto = filas.map(([k, n]) => `${String(n).padStart(4)}  ${k} (${traza.llamadas[k] ?? '-'} llamadas)`).join('\n');
-    // Reparto por tramos en diagnostico.md («Consultas del grupo de aperturas»). Al recortar, se baja esta cifra.
-    expect(total, `consultas del grupo:\n${reparto}`).toBe(115);
+    // Reparto por tramos en diagnostico.md («Consultas del grupo de aperturas»). Al recortar, se baja esta cifra:
+    // 115 al empezar (T039); 78 con `fijarModalidades` por lotes (T043); 70 sin reescribir bajas sin cambios (T044);
+    // 49 con la precarga de alineaciones, plantillas y dorsales (T045); 39 con avisos y partidos de la jornada
+    // siguiente en una consulta cada uno (T046). Puede salir 1 o 2 menos: el guardado del torneo solo inserta bajas
+    // y amarillas si los partidos (con la semilla aleatoria de la partida) las producen.
+    expect(total, `consultas del grupo:\n${reparto}`).toBeLessThanOrEqual(39);
   });
 });

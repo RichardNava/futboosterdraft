@@ -24,7 +24,25 @@ import {
   type Jugador,
 } from '@fbd/domain';
 import { errores } from '../http/errores';
+import type { AlineacionGuardada } from '../persistencia/repos/equipo';
 import type { ControladorPartida } from './partida';
+
+/** Lecturas de varios participantes hechas de una vez, para un grupo de aperturas (spec 010, R13). */
+export interface Precarga {
+  alineaciones: Map<string, AlineacionGuardada>;
+  plantillas: Map<string, number[]>;
+  dorsales: Map<string, Dorsales | null>;
+}
+
+export async function precargar(c: ControladorPartida, participanteIds: readonly string[]): Promise<Precarga> {
+  const { repoEquipo, repoDraft } = c.servicios;
+  const [alineaciones, plantillas, dorsales] = await Promise.all([
+    repoEquipo.ultimasAlineaciones(participanteIds),
+    repoDraft.plantillas([...participanteIds]),
+    repoEquipo.dorsalesDeVarios(participanteIds),
+  ]);
+  return { alineaciones, plantillas, dorsales };
+}
 
 export function exigirEquipoEditable(c: ControladorPartida): void {
   if (c.partida.estado === 'buscando' || c.partida.estado === 'en_draft') {
@@ -46,8 +64,8 @@ function exigirNoDuelos(c: ControladorPartida): void {
   if (esDuelos(c)) throw errores.conflicto('NO_DISPONIBLE_EN_MODO', 'No disponible en el modo Duelo de jugadores');
 }
 
-export async function plantillaDe(c: ControladorPartida, participanteId: string): Promise<Jugador[]> {
-  const ids = (await c.servicios.repoDraft.plantillas([participanteId])).get(participanteId) ?? [];
+export async function plantillaDe(c: ControladorPartida, participanteId: string, precarga?: Precarga): Promise<Jugador[]> {
+  const ids = (precarga?.plantillas ?? (await c.servicios.repoDraft.plantillas([participanteId]))).get(participanteId) ?? [];
   return ids.map((id) => c.catalogo.jugador(id));
 }
 
@@ -57,9 +75,9 @@ export function bajasActivas(c: ControladorPartida, participanteId: string): Set
 }
 
 /** Alineación vigente o, si no hay ninguna confirmada, la automática (FR-031). */
-export async function alineacionVigente(c: ControladorPartida, participanteId: string) {
-  const guardada = await c.servicios.repoEquipo.ultimaAlineacion(participanteId);
-  const plantilla = await plantillaDe(c, participanteId);
+export async function alineacionVigente(c: ControladorPartida, participanteId: string, precarga?: Precarga) {
+  const guardada = precarga ? precarga.alineaciones.get(participanteId) : await c.servicios.repoEquipo.ultimaAlineacion(participanteId);
+  const plantilla = await plantillaDe(c, participanteId, precarga);
   const bajas = bajasActivas(c, participanteId);
   const duelos = esDuelos(c);
   const enFormacion = !duelos || guardada?.formacion === configDuelos(c).formacion;

@@ -1,8 +1,9 @@
 /**
  * Repositorio de partidos.
  */
+import { randomUUID } from 'node:crypto';
 import type { ModoSimulacion } from '@fbd/domain';
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
 import { partidos } from '../esquema/index';
 
@@ -20,8 +21,9 @@ export const resueltoAutomaticamente = (p: Pick<FilaPartido, 'resolucion'>): boo
 export class RepoPartidos {
   constructor(private readonly db: BaseDatos) {}
 
+  /** Crea los partidos en una consulta (spec 010, R13) y devuelve sus ids en el mismo orden. */
   async crear(
-    datos: {
+    lista: readonly {
       partidaId: string;
       jornadaId?: string | null;
       jornadaNumero: number;
@@ -32,24 +34,41 @@ export class RepoPartidos {
       versionParametros: string;
       /** `duelos` en los cruces del modo Duelo de jugadores (spec 005). */
       tipo?: 'futbol' | 'duelos';
-    },
+    }[],
     ejecutor: Ejecutor = this.db,
-  ): Promise<FilaPartido> {
-    const [fila] = await ejecutor.insert(partidos).values({ ...datos, jornadaId: datos.jornadaId ?? null }).returning();
-    return fila!;
+  ): Promise<string[]> {
+    // Ids generados aquí: así no se depende del orden en que `returning` devuelve las filas.
+    const filas = lista.map((datos) => ({ ...datos, id: randomUUID(), jornadaId: datos.jornadaId ?? null }));
+    if (filas.length) await ejecutor.insert(partidos).values(filas);
+    return filas.map((f) => f.id);
   }
 
   /**
    * Fija la modalidad de un participante en un partido solo si aún no la tiene (FR-035: no cambia después).
    * Devuelve la modalidad que queda.
    */
-  async fijarModalidad(partidoId: string, participanteId: string, modalidad: ModoSimulacion, ejecutor: Ejecutor = this.db): Promise<ModoSimulacion> {
-    await ejecutor
-      .update(partidos)
-      .set({ modalidades: sql`${partidos.modalidades} || jsonb_build_object(${participanteId}::text, ${modalidad}::text)` })
-      .where(and(eq(partidos.id, partidoId), sql`not (${partidos.modalidades} ? ${participanteId}::text)`));
-    const [fila] = await ejecutor.select({ m: partidos.modalidades }).from(partidos).where(eq(partidos.id, partidoId)).limit(1);
-    return ((fila?.m as Record<string, ModoSimulacion> | undefined) ?? {})[participanteId] ?? modalidad;
+  /**
+   * Fija la modalidad de cada participante en su partido si aún no tenía una (manda la primera, también dentro de
+   * `pedidas`) y devuelve, por partido, las modalidades que quedan. Una sola consulta para todas (spec 010, R13).
+   */
+  async fijarModalidades(
+    pedidas: readonly { partidoId: string; participanteId: string; modalidad: ModoSimulacion }[],
+    ejecutor: Ejecutor = this.db,
+  ): Promise<Map<string, Record<string, ModoSimulacion>>> {
+    const porPartido = new Map<string, Record<string, ModoSimulacion>>();
+    for (const p of pedidas) {
+      const m = porPartido.get(p.partidoId) ?? {};
+      m[p.participanteId] ??= p.modalidad;
+      porPartido.set(p.partidoId, m);
+    }
+    if (porPartido.size === 0) return new Map();
+    const valores = sql.join([...porPartido].map(([id, m]) => sql`(${id}::uuid, ${JSON.stringify(m)}::jsonb)`), sql`, `);
+    // `nuevas || guardadas`: con la misma clave gana la guardada.
+    const r = await ejecutor.execute<{ id: string; modalidades: Record<string, ModoSimulacion> }>(sql`
+      update ${partidos} set modalidades = v.m || ${partidos.modalidades}
+      from (values ${valores}) as v(id, m) where ${partidos.id} = v.id
+      returning ${partidos.id} as id, ${partidos.modalidades} as modalidades`);
+    return new Map(r.rows.map((f) => [f.id, f.modalidades]));
   }
 
   async obtener(id: string): Promise<FilaPartido | undefined> {

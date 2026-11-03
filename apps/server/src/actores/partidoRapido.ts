@@ -47,7 +47,7 @@ import type { Ejecutor } from '../persistencia/db';
 import type { FilaPartido } from '../persistencia/repos/partidos';
 import { ErrorCalculo, type Prioridad } from '../simulacion/grupo';
 import type { ContextoComando } from './actor';
-import { alineacionVigente, bajasActivas, plantillaDe } from './equipo';
+import { alineacionVigente, bajasActivas, plantillaDe, type Precarga } from './equipo';
 import type { ControladorPartida } from './partida';
 import { aplicarLote, type DecisionLote } from './loteDecisiones';
 import { avanzar2D, crearEstado2D, vista2D, type Estado2D } from './partido2d';
@@ -93,11 +93,18 @@ type AlineacionDe = { alineacion: Alineacion; plantilla: Jugador[] };
  * Alineación con la que juega un participante: la de su nivel si lo controla un NPC (T128), que mira la
  * plantilla del rival (visible tras el draft, FR-054a); si no, la vigente o la automática (FR-031).
  */
-async function alineacionParaPartido(c: ControladorPartida, participanteId: string, rivalId: string, semilla: string, prioridad: Prioridad): Promise<AlineacionDe> {
+async function alineacionParaPartido(
+  c: ControladorPartida,
+  participanteId: string,
+  rivalId: string,
+  semilla: string,
+  prioridad: Prioridad,
+  precarga?: Precarga,
+): Promise<AlineacionDe> {
   const nivel = nivelNPCDe(c, participanteId);
-  if (!nivel) return alineacionVigente(c, participanteId);
-  const plantilla = await plantillaDe(c, participanteId);
-  const rival = await plantillaDe(c, rivalId);
+  if (!nivel) return alineacionVigente(c, participanteId, precarga);
+  const plantilla = await plantillaDe(c, participanteId, precarga);
+  const rival = await plantillaDe(c, rivalId, precarga);
   const alineacion = await c.servicios.calculo.ejecutar(
     'decidirAlineacion',
     [nivel, plantilla, bajasActivas(c, participanteId), rival, derivarSemilla(semilla, `npc-alineacion:${participanteId}`), { parametros: parametrosActuales() }],
@@ -116,11 +123,11 @@ export interface PartidoCalculado {
 }
 
 /** Alineaciones y estado inicial del motor; no guarda ni anuncia nada. */
-export async function prepararPartido(c: ControladorPartida, fila: FilaPartido, prioridad: Prioridad): Promise<PartidoCalculado> {
+export async function prepararPartido(c: ControladorPartida, fila: FilaPartido, prioridad: Prioridad, precarga?: Precarga): Promise<PartidoCalculado> {
   const parametros = parametrosActuales();
   const [local, visitante] = await Promise.all([
-    alineacionParaPartido(c, fila.localId, fila.visitanteId, fila.semilla, prioridad),
-    alineacionParaPartido(c, fila.visitanteId, fila.localId, fila.semilla, prioridad),
+    alineacionParaPartido(c, fila.localId, fila.visitanteId, fila.semilla, prioridad, precarga),
+    alineacionParaPartido(c, fila.visitanteId, fila.localId, fila.semilla, prioridad, precarga),
   ]);
   const entrada: EntradaPartido = {
     version: parametros.version,
@@ -173,8 +180,9 @@ export async function dorsalesParaPartido(
   participanteId: string,
   { alineacion, plantilla }: AlineacionDe,
   ejecutor?: Ejecutor,
+  precarga?: Precarga,
 ): Promise<{ dorsales: Dorsales; asignados: { jugadorId: number; dorsal: number }[] }> {
-  let dorsales = await c.servicios.repoEquipo.dorsales(participanteId, ejecutor);
+  let dorsales = precarga ? (precarga.dorsales.get(participanteId) ?? null) : await c.servicios.repoEquipo.dorsales(participanteId, ejecutor);
   if (!dorsales) {
     dorsales = asignarDorsalesIniciales(
       plantilla.map((j) => j.id),

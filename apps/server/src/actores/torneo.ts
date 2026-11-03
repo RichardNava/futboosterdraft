@@ -63,11 +63,11 @@ function nombre(c: ControladorPartida, pid: string): string {
 }
 
 async function avisarHumanos(c: ControladorPartida, deps: DependenciasTorneo, pids: string[], tipo: TipoAviso, texto: string, partidoId?: string) {
-  for (const pid of pids) {
+  const usuarioIds = pids.flatMap((pid) => {
     const p = c.participante(pid);
-    if (p?.tipo !== 'humano' || p.controladoPorNPC || !p.usuarioId) continue;
-    await deps.avisos.avisar({ usuarioId: p.usuarioId, tipo, partidaId: c.id, ...(partidoId ? { partidoId } : {}), texto });
-  }
+    return p?.tipo !== 'humano' || p.controladoPorNPC || !p.usuarioId ? [] : [p.usuarioId];
+  });
+  await deps.avisos.avisar(usuarioIds.map((usuarioId) => ({ usuarioId, tipo, partidaId: c.id, ...(partidoId ? { partidoId } : {}), texto })));
 }
 
 /** Conecta el controlador con el torneo: bajas, final de partido y alineaciones. */
@@ -142,7 +142,8 @@ async function hayHumanosEnCompeticionVisibles(
 /** Partidas en las que `simularResto` está en curso: no se emiten las actualizaciones intermedias. */
 const silenciosas = new WeakSet<ControladorPartida>();
 
-async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
+/** `guardado`: el torneo actual, si este comando acaba de guardarlo al cerrar la jornada (ver `RepoTorneo.guardar`). */
+async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo, guardado?: EstadoTorneo): Promise<void> {
   const t = c.torneo!;
   const j = jornadaActual(t);
   if (!j) return;
@@ -153,7 +154,7 @@ async function abrirSiguienteJornada(c: ControladorPartida, ctx: ContextoComando
   const conPlazo = !soloUnHumano(c.participantes) && hayHumanosEnCompeticion(c);
   const venceEn = conPlazo ? ahora + c.partida.plazoJornadaHoras * 3600_000 : null;
   const jornadaId = await repoTorneo.guardarJornada(c.id, { ...j, estado: 'abierta' }, { abreEn: ahora, venceEn });
-  await repoTorneo.guardar(c.id, c.torneo);
+  await repoTorneo.guardar(c.id, c.torneo, undefined, guardado);
   await crearPartidosJornada(c, j.numero, j.cruces, { eliminatoria: esEliminatoria(j), jornadaId }, venceEn);
   await emitirTorneo(c, ctx);
   if (!silenciosas.has(c)) await emitirPreparacion(c, ctx, venceEn);
@@ -252,7 +253,7 @@ export async function abrirPartido(
   const f = fila!;
   const rival = f.localId === participanteId ? f.visitanteId : f.localId;
   const contraHumano = esHumano(c, rival) && esHumano(c, participanteId);
-  const modalidad = await fijarModalidad(c, f.id, participanteId, pedida);
+  const [modalidad] = (await fijarModalidades(c, [{ partidoId: f.id, participanteId, modalidad: pedida }])) as [ModoSimulacion];
   recordarModalidad(c, participanteId, modalidad);
   f.modalidades = { ...((f.modalidades as Record<string, ModoSimulacion> | null) ?? {}), [participanteId]: modalidad };
   const enCurso = c.partidosEnCurso.get(f.id);
@@ -279,13 +280,23 @@ export function errorAlAbrir(c: ControladorPartida, fila: FilaPartido | undefine
  * La modalidad se fija en el primer `abrir` y ya no cambia (FR-035); se recuerda en el participante y, si es un
  * usuario registrado, en su perfil (FR-032). Devuelve la que queda. Solo escribe: la memoria la cambia `recordarModalidad`.
  */
-export async function fijarModalidad(c: ControladorPartida, partidoId: string, participanteId: string, pedida: ModoSimulacion, ejecutor?: Ejecutor): Promise<ModoSimulacion> {
+export async function fijarModalidades(
+  c: ControladorPartida,
+  pedidas: readonly { partidoId: string; participanteId: string; modalidad: ModoSimulacion }[],
+  ejecutor?: Ejecutor,
+): Promise<ModoSimulacion[]> {
   const { repoPartidos, repoPartidas, repoPerfiles, reloj } = c.servicios;
-  const modalidad = await repoPartidos.fijarModalidad(partidoId, participanteId, pedida, ejecutor);
-  await repoPartidas.fijarUltimaModalidad(participanteId, modalidad, ejecutor);
-  const usuarioId = c.participante(participanteId)?.usuarioId;
-  if (usuarioId) await repoPerfiles.fijarUltimaModalidad(usuarioId, modalidad, reloj.ahora(), ejecutor);
-  return modalidad;
+  // Tres consultas para todas las pedidas, en vez de cinco por pedida (spec 010, R13).
+  const quedan = await repoPartidos.fijarModalidades(pedidas, ejecutor);
+  const modalidades = pedidas.map((p) => quedan.get(p.partidoId)?.[p.participanteId] ?? p.modalidad);
+  const fijadas = pedidas.map((p, i) => ({ participanteId: p.participanteId, modalidad: modalidades[i]! }));
+  await repoPartidas.fijarUltimasModalidades(fijadas, ejecutor);
+  const deUsuarios = fijadas.flatMap((f) => {
+    const usuarioId = c.participante(f.participanteId)?.usuarioId;
+    return usuarioId ? [{ usuarioId, modalidad: f.modalidad }] : [];
+  });
+  await repoPerfiles.fijarUltimasModalidades(deUsuarios, reloj.ahora(), ejecutor);
+  return modalidades;
 }
 
 export function recordarModalidad(c: ControladorPartida, participanteId: string, modalidad: ModoSimulacion): void {
@@ -351,11 +362,13 @@ export function anotarResultado(c: ControladorPartida, t: EstadoTorneo, p: Parti
 async function despuesDePartido(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
   if (!c.torneo || !c.jornada) return;
   const numero = c.jornada.numero;
-  const { torneo, cerrada } = cerrarJornadaSiCompleta(c.torneo, numero);
+  // Quien llama acaba de guardar `c.torneo` en este mismo comando, con el resultado del partido.
+  const anterior = c.torneo;
+  const { torneo, cerrada } = cerrarJornadaSiCompleta(anterior, numero);
   c.torneo = torneo;
   if (cerrada) {
     // Si la jornada sigue abierta, el torneo no ha cambiado desde que se registró el resultado (ya guardado).
-    await c.servicios.repoTorneo.guardar(c.id, torneo);
+    await c.servicios.repoTorneo.guardar(c.id, torneo, undefined, anterior);
     await c.servicios.repoTorneo.marcarJornada(c.id, numero, 'cerrada');
     c.servicios.temporizadores.cancelar(c.clave(`plazo:${numero}`));
     c.servicios.temporizadores.cancelar(c.clave(`aviso-plazo:${numero}`));
@@ -373,7 +386,7 @@ async function despuesDePartido(c: ControladorPartida, ctx: ContextoComando, dep
   // Con un solo humano, la siguiente jornada se abre cuando él lo pide (research R9). Sin humanos en competición,
   // el resto del torneo se juega con «Simular resto del torneo» (spec 003, FR-041a).
   if (soloUnHumano(c.participantes) || !hayHumanosEnCompeticion(c)) return;
-  await abrirSiguienteJornada(c, ctx, deps);
+  await abrirSiguienteJornada(c, ctx, deps, torneo);
 }
 
 export type ResultadoSimularResto =

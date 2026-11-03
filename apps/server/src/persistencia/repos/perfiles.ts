@@ -2,7 +2,7 @@
  * Perfil de los usuarios registrados (spec 003, data-model §5): la última modalidad usada (US3) y, desde la
  * migración 0008, el nombre de equipo y las equipaciones por defecto (US11). Los invitados no tienen perfil.
  */
-import { and, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { Equipaciones, ModoSimulacion } from '@fbd/domain';
 import type { BaseDatos } from '../db';
 import { perfilesUsuario, usuarios } from '../esquema/index';
@@ -40,12 +40,19 @@ export class RepoPerfiles {
   }
 
   /** Guarda la última modalidad de un usuario registrado, creando su perfil si no existe. A un invitado no le hace nada. */
-  async fijarUltimaModalidad(usuarioId: string, modalidad: ModoSimulacion, ahora: number, ejecutor: Ejecutor = this.db): Promise<void> {
-    const [u] = await ejecutor.select({ invitado: usuarios.isAnonymous }).from(usuarios).where(and(eq(usuarios.id, usuarioId))).limit(1);
-    if (!u || u.invitado) return;
-    await ejecutor
-      .insert(perfilesUsuario)
-      .values({ usuarioId, ultimaModalidad: modalidad, actualizadoEn: new Date(ahora) })
-      .onConflictDoUpdate({ target: perfilesUsuario.usuarioId, set: { ultimaModalidad: modalidad, actualizadoEn: sql`excluded.actualizado_en` } });
+  /**
+   * Última modalidad en el perfil de varios usuarios, en una consulta (spec 010, R13). Los invitados no tienen
+   * perfil y se saltan; si un usuario se repite, manda la última.
+   */
+  async fijarUltimasModalidades(lista: readonly { usuarioId: string; modalidad: ModoSimulacion }[], ahora: number, ejecutor: Ejecutor = this.db): Promise<void> {
+    const ultima = new Map(lista.map((x) => [x.usuarioId, x.modalidad]));
+    if (ultima.size === 0) return;
+    const valores = sql.join([...ultima].map(([id, m]) => sql`(${id}, ${m})`), sql`, `);
+    await ejecutor.execute(sql`
+      insert into ${perfilesUsuario} (usuario_id, ultima_modalidad, actualizado_en)
+      select v.id, v.m, ${new Date(ahora).toISOString()}::timestamptz
+      from (values ${valores}) as v(id, m) join ${usuarios} on ${usuarios.id} = v.id
+      where not ${usuarios.isAnonymous}
+      on conflict (usuario_id) do update set ultima_modalidad = excluded.ultima_modalidad, actualizado_en = excluded.actualizado_en`);
   }
 }

@@ -14,12 +14,17 @@ export type FilaJornada = typeof jornadas.$inferSelect;
 export class RepoTorneo {
   constructor(private readonly db: BaseDatos) {}
 
-  async guardar(partidaId: string, t: EstadoTorneo, ejecutor: Ejecutor = this.db): Promise<void> {
+  /**
+   * Guarda el torneo. `guardado` es un estado que este mismo comando ya ha guardado: si sus bajas son el mismo
+   * objeto (el dominio lo conserva cuando no cambian), no se reescriben bajas ni amarillas (spec 010, R13).
+   */
+  async guardar(partidaId: string, t: EstadoTorneo, ejecutor: Ejecutor = this.db, guardado?: EstadoTorneo): Promise<void> {
     const { bajas: estadoBajas, ...resto } = t;
     await ejecutor
       .insert(torneos)
       .values({ partidaId, estado: resto, campeonId: t.campeon })
       .onConflictDoUpdate({ target: torneos.partidaId, set: { estado: resto, campeonId: t.campeon, actualizadoEn: new Date() } });
+    if (guardado?.bajas === estadoBajas) return;
     await ejecutor.delete(bajas).where(eq(bajas.partidaId, partidaId));
     if (estadoBajas.bajas.length) {
       await ejecutor.insert(bajas).values(

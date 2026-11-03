@@ -18,6 +18,7 @@ import type { FilaPartido } from '../persistencia/repos/partidos';
 import type { Tramos } from '../simulacion/funciones';
 import type { Prioridad } from '../simulacion/grupo';
 import type { ContextoComando } from './actor';
+import type { Precarga } from './equipo';
 import type { ControladorPartida } from './partida';
 import {
   dorsalesParaPartido,
@@ -70,9 +71,9 @@ export async function resolverPartidoEntreHumanos(
   await confirmarEntreHumanos(c, ctx, [aplicado]);
 }
 
-/** Alineaciones y estado inicial del motor (solo lecturas). */
-export function prepararEntreHumanos(c: ControladorPartida, fila: FilaPartido, prioridad: Prioridad): Promise<PartidoCalculado> {
-  return prepararPartido(c, fila, prioridad);
+/** Alineaciones y estado inicial del motor (solo lecturas, o ninguna con `precarga`). */
+export function prepararEntreHumanos(c: ControladorPartida, fila: FilaPartido, prioridad: Prioridad, precarga?: Precarga): Promise<PartidoCalculado> {
+  return prepararPartido(c, fila, prioridad, precarga);
 }
 
 /** El partido entero con decisiones automáticas del mismo nivel para los dos (sin E/S). */
@@ -94,11 +95,11 @@ export async function aplicarEntreHumanos(
   r: Awaited<ReturnType<typeof calcularEntreHumanos>>,
   torneo: EstadoTorneo | null,
   ejecutor: Ejecutor,
-  opciones: { resolucion: 'apertura' | 'plazo'; abiertoPorId?: string },
+  opciones: { resolucion: 'apertura' | 'plazo'; abiertoPorId?: string; precarga?: Precarga },
 ) {
   const { repoPartidos, repoVisionados, reloj } = c.servicios;
-  const local = await dorsalesParaPartido(c, fila.localId, alineaciones.local, ejecutor);
-  const visitante = await dorsalesParaPartido(c, fila.visitanteId, alineaciones.visitante, ejecutor);
+  const local = await dorsalesParaPartido(c, fila.localId, alineaciones.local, ejecutor, opciones.precarga);
+  const visitante = await dorsalesParaPartido(c, fila.visitanteId, alineaciones.visitante, ejecutor, opciones.precarga);
   // Nadie lo ve empezar: los dorsales nuevos se avisan en la bandeja (FR-038).
   const avisos = ([[fila.localId, local.asignados], [fila.visitanteId, visitante.asignados]] as const).filter(([, a]) => a.length);
   const ultimo = r.tramos[r.tramos.length - 1]!;

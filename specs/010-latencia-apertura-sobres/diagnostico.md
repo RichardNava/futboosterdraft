@@ -360,9 +360,9 @@ lo mismo en los dos modos (en proceso y con hilos), en línea con las ~103–120
 | Tramo | Consultas | Detalle (consultas · llamadas) |
 |-------|----------:|--------------------------------|
 | 1. Leer y preparar (fuera de la transacción) | 20 | `repoPartidos.obtener` 4 · 4; `repoEquipo.ultimaAlineacion` 8 · 8 y `repoDraft.plantillas` 8 · 8 (alineación vigente y plantilla de cada participante) |
-| 2. Transacción del grupo | 59 | BEGIN y COMMIT 2; `fijarModalidad` por apertura (40): `repoPartidos.fijarModalidad` 16 · 8 (UPDATE y SELECT), `repoPartidas.fijarUltimaModalidad` 8 · 8, `repoPerfiles.fijarUltimaModalidad` 16 · 8 (SELECT del usuario y UPSERT); `aplicarEntreHumanos` por partido: `repoEquipo.dorsales` 8 · 8 (`dorsalesParaPartido`, uno por equipo) y `repoPartidos.actualizar` 4 · 4; `repoTorneo.guardar` 5 · 1 |
+| 2. Transacción del grupo | 63 | BEGIN y COMMIT 2; `fijarModalidad` por apertura (40): `repoPartidos.fijarModalidad` 16 · 8 (UPDATE y SELECT), `repoPartidas.fijarUltimaModalidad` 8 · 8, `repoPerfiles.fijarUltimaModalidad` 16 · 8 (SELECT del usuario y UPSERT); `aplicarEntreHumanos` por partido: `repoEquipo.dorsales` 8 · 8 (`dorsalesParaPartido`, uno por equipo), `repoPartidos.actualizar` 4 · 4 y `repoVisionados.crearPendientes` 4 · 4; `repoTorneo.guardar` 5 · 1 |
 | 3. Cerrar la jornada (`despuesDePartido`) | 10 | `repoTorneo.guardar` 5 · 1; `repoTorneo.marcarJornada` 1 · 1; `emitirTorneo` 4 (`jornadas`, `resumenesDePartida`, `pendientesDeVarios`, `dorsalesDeVarios`) |
-| 4. Abrir la jornada siguiente (`abrirSiguienteJornada`) | 26 | `repoTorneo.guardarJornada` 1 · 1; `repoTorneo.guardar` 5 · 1; `repoPartidos.crear` 4 · 4; `repoVisionados.crearPendientes` 4 · 4; `emitirTorneo` 4; avisos `jornada_abierta` 8 (un INSERT en `avisos` por humano, `avisarHumanos`) |
+| 4. Abrir la jornada siguiente (`abrirSiguienteJornada`) | 22 | `repoTorneo.guardarJornada` 1 · 1; `repoTorneo.guardar` 5 · 1; `repoPartidos.crear` 4 · 4; `emitirTorneo` 4; avisos `jornada_abierta` 8 (un INSERT en `avisos` por humano, `avisarHumanos`) |
 | **Total** | **115** | |
 
 Lo que más pesa:
@@ -373,7 +373,35 @@ Lo que más pesa:
   dentro de la transacción. Para los dorsales ya hay una versión por lotes (`dorsalesDeVarios`).
 - **`repoTorneo.guardar` tres veces, 15 (13 %).** Son 5 consultas cada vez (torneo, y borrar e insertar bajas y
   amarillas): en el grupo, al cerrar la jornada y al abrir la siguiente.
-- **Una consulta por elemento al abrir la jornada:** 8 avisos, 4 partidos y 4 pendientes de visionado (16, 14 %).
+- **Una consulta por elemento al abrir la jornada:** 8 avisos y 4 partidos (12, 10 %). Los 4 pendientes de visionado (uno por partido) son de la transacción del grupo (corregido al hacer T046).
 - `emitirTorneo` dos veces, 8 (7 %).
 
-Qué se recorta y en qué orden se decide en T040.
+**Decisión (T040):** recortar en este orden, bajando cada vez la cifra del test: `fijarModalidad` por lotes (T043), guardar el torneo una vez por comando (T044), leer alineaciones, plantillas y dorsales de todos a la vez (T045) e insertar en una consulta avisos, partidos y pendientes al abrir la jornada (T046). Estimación: de 115 a ~50 consultas por grupo.
+
+### Tras los recortes (T043–T046)
+
+Mismo test y mismo escenario: **de 115 a 39 consultas por grupo (−66 %)**, en los dos modos.
+
+| Recorte | Consultas del grupo |
+|---------|--------------------:|
+| Antes (T039) | 115 |
+| T043: `fijarModalidades`, una consulta por tabla para todo el grupo (40 → 3) | 78 |
+| T044: no reescribir bajas ni amarillas si no han cambiado, al cerrar y al abrir la jornada (15 → 7) | 70 |
+| T045: alineaciones, plantillas y dorsales de todos de una vez (24 → 3) | 49 |
+| T046: avisos y partidos de la jornada siguiente en una consulta cada uno (12 → 2) | 39 |
+
+- T044 no hace lo que decía la decisión, «guardar el torneo una vez por comando». Juntar los tres guardados
+  cambiaría lo que queda escrito si el comando falla a mitad: el cierre y la apertura de la jornada se guardan por
+  separado, y entre medias se calculan los partidos NPC. Se recorta lo que repetían: bajas y amarillas.
+- T046 no toca los pendientes de visionado: son de la transacción del grupo, no de abrir la jornada.
+- Quedan 39 (sacado del test en modo hilos):
+  - leer los partidos, 4;
+  - precarga, 3 (`ultimasAlineaciones`, `plantillas`, `dorsalesDeVarios`);
+  - transacción del grupo, 18: BEGIN y COMMIT 2, modalidades 3, `repoPartidos.actualizar` 4,
+    `crearPendientes` 4 y `repoTorneo.guardar` 5;
+  - cierre de la jornada, 6: guardar el torneo 1, `marcarJornada` 1 y `emitirTorneo` 4;
+  - jornada siguiente, 8: `guardarJornada` 1, guardar el torneo 1, partidos 1, `emitirTorneo` 4 y avisos 1.
+- **El total no es fijo:** puede salir 1 o 2 menos. El guardado del torneo en el grupo solo inserta bajas o
+  amarillas si los partidos las producen, y los resultados dependen de la semilla aleatoria de la partida. En una
+  ejecución salió 38. Lo mismo valía para las 115 de partida. El test comprueba «como mucho 39».
+- **Falta medir con carga (T042)** si esto baja la espera por el pool con 100 partidas.

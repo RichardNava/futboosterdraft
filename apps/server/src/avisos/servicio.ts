@@ -2,6 +2,7 @@
  * Avisos (T112; FR-056b): se guardan en la bandeja del usuario, se envían en vivo si está conectado y,
  * a los usuarios registrados, también por correo (si hay `SMTP_URL`).
  */
+import { randomUUID } from 'node:crypto';
 import { and, desc, eq } from 'drizzle-orm';
 import nodemailer, { type Transporter } from 'nodemailer';
 import type { Logger } from '../observabilidad/logger';
@@ -34,15 +35,18 @@ export class ServicioAvisos {
     this.transporte = smtpUrl ? nodemailer.createTransport(smtpUrl) : null;
   }
 
-  async avisar(a: NuevoAviso): Promise<void> {
+  /** Guarda los avisos en una consulta (spec 010, R13) y después envía cada uno en vivo y por correo. */
+  async avisar(lista: readonly NuevoAviso[]): Promise<void> {
+    if (lista.length === 0) return;
     const ahora = new Date(this.reloj.ahora());
-    const [fila] = await this.db
-      .insert(avisos)
-      .values({ usuarioId: a.usuarioId, tipo: a.tipo, partidaId: a.partidaId, partidoId: a.partidoId ?? null, texto: a.texto, creadoEn: ahora })
-      .returning({ id: avisos.id });
-    this.enVivo({ ...a, id: fila!.id });
-    // Sin esperar: se llama dentro de la cola de la partida, y esperar al SMTP la frenaba ~1 s por humano (INI-07).
-    void this.enviarCorreo(fila!.id, a).catch((err: unknown) => this.logger.warn({ err, usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
+    const filas = lista.map((a) => ({ id: randomUUID(), usuarioId: a.usuarioId, tipo: a.tipo, partidaId: a.partidaId, partidoId: a.partidoId ?? null, texto: a.texto, creadoEn: ahora }));
+    await this.db.insert(avisos).values(filas);
+    lista.forEach((a, i) => {
+      const id = filas[i]!.id;
+      this.enVivo({ ...a, id });
+      // Sin esperar: se llama dentro de la cola de la partida, y esperar al SMTP la frenaba ~1 s por humano (INI-07).
+      void this.enviarCorreo(id, a).catch((err: unknown) => this.logger.warn({ err, usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
+    });
   }
 
   private async enviarCorreo(avisoId: string, a: NuevoAviso): Promise<void> {

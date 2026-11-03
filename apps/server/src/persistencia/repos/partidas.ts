@@ -3,7 +3,7 @@
  */
 import { plazasHumanasEfectivas, VERSION_CATALOGO_ACTUAL, type ConfigDuelos, type ConfigPartida, type Equipaciones, type EstadoPartida, type ModoSimulacion, type NivelNPC } from '@fbd/domain';
 import { errores } from '../../http/errores';
-import { and, asc, desc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
 import { participantes, partidas, usuarios } from '../esquema/index';
 
@@ -51,8 +51,14 @@ export class RepoPartidas {
   }
 
   /** Última modalidad con la que el participante abrió un partido (spec 003, FR-032). */
-  async fijarUltimaModalidad(participanteId: string, modalidad: ModoSimulacion, ejecutor: Ejecutor = this.db): Promise<void> {
-    await ejecutor.update(participantes).set({ ultimaModalidad: modalidad }).where(eq(participantes.id, participanteId));
+  /** Última modalidad de varios participantes en una consulta (spec 010, R13); si uno se repite, manda la última. */
+  async fijarUltimasModalidades(lista: readonly { participanteId: string; modalidad: ModoSimulacion }[], ejecutor: Ejecutor = this.db): Promise<void> {
+    const ultima = new Map(lista.map((x) => [x.participanteId, x.modalidad]));
+    if (ultima.size === 0) return;
+    const valores = sql.join([...ultima].map(([id, m]) => sql`(${id}::uuid, ${m})`), sql`, `);
+    await ejecutor.execute(sql`
+      update ${participantes} set ultima_modalidad = v.m
+      from (values ${valores}) as v(id, m) where ${participantes.id} = v.id`);
   }
 
   /** Marca vista la pantalla de derrota o la del campeón (spec 003, FR-041); solo escribe la primera vez. */

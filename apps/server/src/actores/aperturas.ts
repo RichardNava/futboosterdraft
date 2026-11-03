@@ -21,8 +21,9 @@ import {
   prepararEntreHumanos,
   type AplicadoEntreHumanos,
 } from './partidoEntreHumanos';
+import { precargar } from './equipo';
 import { registrarCalculoFallido } from './partidoRapido';
-import { abrirPartido, errorAlAbrir, fijarModalidad, recordarModalidad, type ResultadoAbrir } from './torneo';
+import { abrirPartido, errorAlAbrir, fijarModalidades, recordarModalidad, type ResultadoAbrir } from './torneo';
 
 interface Apertura {
   participanteId: string;
@@ -118,9 +119,11 @@ async function resolverAperturas(c: ControladorPartida, ctx: ContextoComando, ap
 
   // Cálculo en paralelo; un partido que falla se queda programado y fuera del grupo (FR-010).
   const lista = [...entradas.values()];
+  // Alineaciones, plantillas y dorsales de todos los equipos del grupo en tres consultas (spec 010, R13).
+  const precarga = await precargar(c, lista.flatMap((e) => [e.fila.localId, e.fila.visitanteId]));
   const calculos = await Promise.allSettled(
     lista.map(async (e) => {
-      const preparado = await prepararEntreHumanos(c, e.fila, 'humano');
+      const preparado = await prepararEntreHumanos(c, e.fila, 'humano', precarga);
       return { preparado, r: await calcularEntreHumanos(c, e.fila, preparado, 'humano') };
     }),
   );
@@ -138,10 +141,11 @@ async function resolverAperturas(c: ControladorPartida, ctx: ContextoComando, ap
   const { aplicados, modalidades } = await db.transaction(async (tx) => {
     let torneo = c.torneo;
     const aplicados: AplicadoEntreHumanos[] = [];
-    const modalidades = new Map<Apertura, ModoSimulacion>();
+    const esperas = buenas.flatMap((e) => e.esperas.map((a) => ({ a, partidoId: e.fila.id })));
+    const fijadas = await fijarModalidades(c, esperas.map(({ a, partidoId }) => ({ partidoId, participanteId: a.participanteId, modalidad: a.modalidad })), tx);
+    const modalidades = new Map(esperas.map(({ a }, i) => [a, fijadas[i]!]));
     for (const e of buenas) {
-      for (const a of e.esperas) modalidades.set(a, await fijarModalidad(c, e.fila.id, a.participanteId, a.modalidad, tx));
-      const aplicado = await aplicarEntreHumanos(c, e.fila, e.preparado, e.r, torneo, tx, { resolucion: 'apertura', abiertoPorId: e.esperas[0]!.participanteId });
+      const aplicado = await aplicarEntreHumanos(c, e.fila, e.preparado, e.r, torneo, tx, { resolucion: 'apertura', abiertoPorId: e.esperas[0]!.participanteId, precarga });
       torneo = aplicado.torneo;
       aplicados.push(aplicado);
     }
