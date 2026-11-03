@@ -225,7 +225,7 @@ datos comunes una vez.
   datos una vez por emisión; `GET` del torneo de un participante usa el mismo camino con un destinatario. Cada
   `torneo.actualizado` debe ser idéntico al de hoy: `visibilidad.test.ts`, `goleadores.test.ts`, `dorsales.test.ts` y
   `recompensa.test.ts` sin cambios.
-- [ ] T027 [US2] Medir con `k6 run -e PARTIDAS=10 -e APERTURA_MAX_S=0 -e METRICAS_URL=…` en el entorno de referencia:
+- [X] T027 [US2] Medir con `k6 run -e PARTIDAS=10 -e APERTURA_MAX_S=0 -e METRICAS_URL=…` en el entorno de referencia:
   `apertura_ms` p95 < 3 s (SC-002) y consultas de `apertura` frente al diagnóstico; anotar en `diagnostico.md`
   (sección «Tras US2») y en `mediciones/`.
 

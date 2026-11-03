@@ -169,9 +169,73 @@ La medición del 2026-11-02 (100 partidas por Wi-Fi, sin desglose: mediana 25 s 
 
 ## Tras US2
 
-**Medido solo con Docker Desktop** ([docker-10-us2](mediciones/docker-10-us2.md), 2026-11-03, mismo equipo y
-condiciones que [docker-10](mediciones/docker-10.md)). La medición en el entorno de referencia sigue pendiente (T027):
-ese equipo no estaba disponible.
+Medido el 2026-11-03 en el entorno de referencia (T027: [referencia-10-us2](mediciones/referencia-10-us2.md),
+[referencia-100-us2](mediciones/referencia-100-us2.md)) y con Docker Desktop
+([docker-10-us2](mediciones/docker-10-us2.md)), en las mismas condiciones que las mediciones de antes.
+
+**Cómo leer las fases tras US2.** Cada apertura que se une a un grupo cuenta como suyo el trabajo entero del grupo
+(`compartido` en `desglose.ts`): el cálculo en paralelo de sus partidos, su transacción y lo que sigue
+(`despuesDePartido`). Por eso cálculo, bd y consultas suben por apertura sin que el servidor haga más trabajo, y **las
+consultas por apertura no son comparables con las de antes** (antes, mediana 14 y p95 316; ahora ~103 y ~116 en todos
+los escenarios: son las del grupo, no las de cada apertura). La cola sí es comparable: es la espera hasta que empieza
+el comando que resuelve la apertura.
+
+### Apertura en el entorno de referencia (mediana / p95, ms)
+
+| Fase | R 10 antes | R 10 tras US2 | R 100 antes | R 100 tras US2 |
+|------|-----------:|--------------:|------------:|---------------:|
+| cola | 1578 / 2831 | **464 / 900** | 14 474 / 26 531 | **2756 / 7204** |
+| cálculo | 89 / 254 | 311 / 1153 | 97 / 224 | 445 / 6855 |
+| bd | 59 / 745 | 908 / 1120 | 560 / 9505 | **9143 / 13 635** |
+| serialización | 0,4 / 2,2 | 0,1 / 2,5 | 0,4 / 2,1 | 0,1 / 2,5 |
+| difusión | 0,3 / 3,0 | 0,6 / 3,7 | 0,3 / 2,8 | 0,5 / 3,5 |
+| resto | 3,0 / 53 | 41 / 76 | 2,4 / 52 | 25 / 55 |
+| **total** | **1797 / 2917** | **1763 / 2152** | **16 603 / 27 066** | **15 378 / 17 079** |
+| k6 `apertura_ms` | 1820 / 2930 | **1850 / 2460** | 16 690 / 27 170 | **16 050 / 17 580** |
+
+- **10 partidas: `apertura_ms` p95 2,46 s < 3 s (SC-002 se cumple).** Antes estaba justo en el límite (2,93 s).
+  El p95 baja un 16 % y la mediana no cambia (+2 %).
+- **100 partidas: el p95 baja un 35 % (27,2 s → 17,6 s), pero la mediana apenas se mueve (−4 %) y el umbral de 3 s
+  sigue muy lejos.**
+- **El cuello de botella ha pasado de la cola a la base de datos.** La cola baja un 71–81 % en la mediana, pero lo
+  que se ahorra reaparece en la fase bd del grupo: 9,1 s de mediana con 100 partidas. Es la espera por una conexión
+  libre del pool (25): cien partidas con grupos que hacen ~100 consultas cada uno. Antes de US2 esa espera estaba
+  repartida entre las aperturas en cola. Con 10 partidas pasa lo mismo a menor escala (bd 908 ms de mediana).
+- `resto` / total: 2,3 % / 3,5 % con 10 partidas y 0,2 % / 0,3 % con 100. FR-001 se sigue cumpliendo.
+
+### Entrega de sobre en el entorno de referencia (mediana / p95, ms)
+
+| | R 10 antes | R 10 tras US2 | R 100 antes | R 100 tras US2 |
+|---|---:|---:|---:|---:|
+| cola | 52 / 98 | 54 / 86 | 548 / 887 | 595 / 932 |
+| bd | 48 / 115 | 51 / 180 | 371 / 996 | 406 / 721 |
+| total | 106 / 250 | 107 / 225 | 910 / 2358 | 999 / 1666 |
+| k6 `entrega_sobre_ms` | 115 / 263 | 109 / 200 | 840 / 1560 | 932 / 1360 |
+| consultas (mediana / p95) | 6 / 8 | 6,2 / 8,0 | 6 / 8 | 6,2 / 8,0 |
+
+US2 no toca el draft: la entrega queda igual con 10 partidas. Con 100, el p95 mejora (1,56 s → 1,36 s) y la mediana
+empeora un poco (840 → 932 ms); sigue por encima de 1 s. La entrega depende de la contención del pool, que comparte
+con las aperturas. Su número de consultas es el mismo; eso lo aborda US3 (T029).
+
+### Umbrales en el entorno de referencia (k6)
+
+| Umbral | 10 partidas | 100 partidas |
+|--------|------------:|-------------:|
+| `apertura_ms` p95 < 3 s | ✓ 2,46 s | ✗ 17,58 s (antes 27,17 s) |
+| `entrega_sobre_ms` p95 < 1 s | ✓ 200 ms | ✗ 1,36 s (antes 1,56 s) |
+| resto (`errores_ws`, bloqueadas, terminadas, `final_ms`, `jornada_npc_ms`, `descanso_ms`) | ✓ | ✓ |
+
+**Observación nueva con 100 partidas:** 10 peticiones `POST …/siguiente-jornada` agotaron el tiempo de k6 hacia el
+segundo 115 (tasa de fallos 0,08 %, dentro del umbral < 1 %). En las mediciones de antes no aparecían. Probablemente
+esperan en la cola de su partida tras un grupo largo, pero no se ha comprobado.
+
+### Conclusión tras US2
+
+- US2 cumple lo que pedía en el entorno de referencia con 10 partidas (SC-002) y elimina la mayor parte de la cola.
+- Con 100 partidas el límite ya no es la cola, sino **el pool de PostgreSQL**. El siguiente paso con más efecto es
+  hacer menos consultas, tanto en la entrega del sobre (US3, T029) como en el comando del grupo. Antes de cambiar nada
+  más, convendría saber qué parte de las ~100 consultas de un grupo son de `despuesDePartido` (cierre de jornada y
+  apertura de la siguiente) y cuáles de preparar alineaciones y guardar. El desglose actual no lo separa.
 
 ### Apertura con 10 partidas (Docker Desktop; mediana / p95, ms)
 
