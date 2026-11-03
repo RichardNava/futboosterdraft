@@ -4,6 +4,7 @@
  * Partida de 8 humanos: en la jornada 1 hay 4 partidos entre humanos. Para juntar aperturas en un grupo de forma
  * determinista, un comando que bloquea el actor las retiene hasta que todas han llegado al buzón.
  */
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { clasificacionActual, type EstadoTorneo } from '@fbd/domain';
 import { inArray } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -297,5 +298,67 @@ describe('grupo de aperturas (spec 010, US2)', () => {
       amarillas: t.bajas.amarillas,
     });
     expect(ordenar(deUnoEnUno)).toEqual(ordenar(agrupado));
+  });
+
+  /**
+   * Cuenta las consultas mientras `activo`: cada una se atribuye al método de repositorio más externo que la hace
+   * o, fuera de los repositorios, a su SQL. Usa su propio `AsyncLocalStorage`, así que el cálculo en paralelo de los
+   * partidos del grupo no mezcla atribuciones.
+   */
+  function trazarConsultas(c: ControladorPartida) {
+    const als = new AsyncLocalStorage<string>();
+    const cuenta: Record<string, number> = {};
+    const llamadas: Record<string, number> = {};
+    const traza = { activo: false, cuenta, llamadas };
+    for (const [nombre, repo] of Object.entries(c.servicios)) {
+      if (!nombre.startsWith('repo')) continue;
+      const proto = Object.getPrototypeOf(repo) as Record<string, unknown>;
+      for (const m of Object.getOwnPropertyNames(proto)) {
+        const original = (repo as Record<string, unknown>)[m];
+        if (m === 'constructor' || typeof original !== 'function') continue;
+        const k = `${nombre}.${m}`;
+        (repo as Record<string, unknown>)[m] = (...a: unknown[]) => {
+          if (als.getStore()) return original.apply(repo, a);
+          if (traza.activo) llamadas[k] = (llamadas[k] ?? 0) + 1;
+          return als.run(k, () => original.apply(repo, a));
+        };
+      }
+    }
+    const anotar = (consulta: unknown) => {
+      if (!traza.activo) return;
+      const texto = typeof consulta === 'string' ? consulta : String((consulta as { text?: string }).text ?? '?');
+      const k = als.getStore() ?? `sql: ${texto.replace(/\s+/g, ' ').slice(0, 60)}`;
+      cuenta[k] = (cuenta[k] ?? 0) + 1;
+    };
+    const query = bd.pool.query.bind(bd.pool) as (...a: unknown[]) => unknown;
+    bd.pool.query = ((...a: unknown[]) => (anotar(a[0]), query(...a))) as typeof bd.pool.query;
+    const connect = bd.pool.connect.bind(bd.pool) as (...a: unknown[]) => unknown;
+    bd.pool.connect = ((...a: unknown[]) => {
+      if (a.length) return connect(...a);
+      return (connect() as Promise<{ query: (...q: unknown[]) => unknown }>).then((cliente) => {
+        const q = cliente.query.bind(cliente);
+        return new Proxy(cliente, { get: (o, p) => (p === 'query' ? (...x: unknown[]) => (anotar(x[0]), q(...x)) : Reflect.get(o, p, o)) });
+      });
+    }) as typeof bd.pool.connect;
+    return traza;
+  }
+
+  it('reparto de las consultas de un grupo de 8 aperturas que cierra la jornada (spec 010, US4)', async () => {
+    const { c, cruces, usuarioDe } = await partidaDeOcho();
+    const traza = trazarConsultas(c);
+    const soltar = bloquear(c);
+    const pedidas = cruces.flatMap((x) => [abrir(usuarioDe(x.local), x.partidoId), abrir(usuarioDe(x.visitante), x.partidoId)]);
+    await esperarBuzon(c, 8);
+    traza.activo = true;
+    await soltar();
+    for (const r of await Promise.all(pedidas)) expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
+    await c.actor.drenar();
+    traza.activo = false;
+    expect(c.jornada!.numero).toBe(2);
+    const filas = Object.entries(traza.cuenta).sort((a, b) => b[1] - a[1]);
+    const total = filas.reduce((s, [, n]) => s + n, 0);
+    const reparto = filas.map(([k, n]) => `${String(n).padStart(4)}  ${k} (${traza.llamadas[k] ?? '-'} llamadas)`).join('\n');
+    // Reparto por tramos en diagnostico.md («Consultas del grupo de aperturas»). Al recortar, se baja esta cifra.
+    expect(total, `consultas del grupo:\n${reparto}`).toBe(115);
   });
 });

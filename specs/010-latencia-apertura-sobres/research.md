@@ -191,3 +191,18 @@ sockets. Los mensajes por participante (`torneo.actualizado`, `draft.turno`) son
   definiciones de métricas (Assumptions).
 - **Protocolo**: reiniciar el servidor entre escenarios. El `Summary` acumula desde el arranque, así que cada escenario
   da su propio desglose.
+
+## R13. Consultas del grupo de aperturas (tras US3; FR-012 y R1)
+
+- **Contexto**: tras US3, con 100 partidas el límite sigue siendo la espera por una conexión del pool, que la entrega
+  del sobre comparte con los grupos de aperturas ([diagnostico.md](diagnostico.md), «Conclusión tras US3»). Se opta por
+  reducir las consultas del grupo (camino 2), no las de la entrega.
+- **Método**: antes de recortar, se cuenta en local qué hace cada consulta de un grupo. El recuento no depende de la
+  carga, así que basta con un test de integración, sin k6. El test (`aperturas-grupo.test.ts`, «reparto de las
+  consultas…») envuelve los métodos de los repositorios con su propio `AsyncLocalStorage` y cuenta cada consulta del
+  pool. Atribuye cada una al método más externo que la hace o, fuera de los repositorios, a su SQL. No toca código de
+  producción. El total queda fijado en el test, para que una regresión se note y para bajarlo al recortar.
+- **Escenario**: liga de 8 humanos en la jornada 1 (4 partidos entre humanos). Las 8 aperturas llegan a la vez, se
+  resuelven en un grupo y cierran la jornada, así que el comando también abre la siguiente (como en `beta-100.js`).
+- **Qué recortar** se decide con el reparto (T040), con el mismo criterio que T029: calcular primero y guardar en
+  menos viajes, sin cambiar resultados, mensajes ni su orden.

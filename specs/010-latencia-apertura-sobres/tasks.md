@@ -281,6 +281,28 @@ orden de mensajes.
 
 ---
 
+## Phase 5b: Consultas del grupo de aperturas (tras US3; sirve a US2 y US3)
+
+**Goal**: menos consultas por grupo de aperturas, para que la apertura y la entrega del sobre esperen menos por una
+conexión del pool con 100 partidas ([diagnostico.md](diagnostico.md), «Conclusión tras US3»; [research.md](research.md)
+R13).
+
+**Independent Test**: el recuento del test de reparto baja, y el resto de `aperturas-grupo.test.ts`, `torneo*.test.ts`
+y `pnpm test:equivalence` siguen en verde sin tocar expectativas. Con 100 partidas en el entorno de referencia,
+`apertura_ms` y `entrega_sobre_ms` p95 bajan respecto a «Tras US3».
+
+- [X] T039 [US2] Contar en local las consultas de un grupo de 8 aperturas que cierra la jornada, por método de
+  repositorio y por tramo del comando, con un test en `apps/server/tests/integration/aperturas-grupo.test.ts`
+  (R13) que fije el total. Anotar el reparto en `diagnostico.md` («Consultas del grupo de aperturas»).
+- [ ] T040 [US2] Decidir con el reparto qué se recorta y en qué orden, y anotarlo en `diagnostico.md`. Desglosar aquí
+  las tareas de implementación que salgan (a partir de T043).
+- [ ] T041 [US2] Pasar toda la integración en los dos modos, `pnpm test:equivalence` y los e2e del torneo sin cambios.
+- [ ] T042 [US2] Medir con `k6 run -e PARTIDAS=10` y `-e PARTIDAS=100` (`-e APERTURA_MAX_S=0 -e METRICAS_URL=…`) en el
+  entorno de referencia (equipo B, por cable), guardar en `mediciones/referencia-{10,100}-grupo.md` y anotar en
+  `diagnostico.md` una sección «Tras recortar el grupo» comparando con «Tras US3».
+
+---
+
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 - [X] T033 [P] Documentar `MEDIR_FASES` (por defecto `1`, `0` lo desactiva) y las dos métricas nuevas en
@@ -318,6 +340,7 @@ orden de mensajes.
 - US2: T017 → T020; T018 primero (falla); T019 y T020 → T021 → T022 → T023 → T024; T025 → T026 (tras T024 para aislar
   regresiones); T024 + T026 → T027.
 - US3: T028 en cualquier momento; T029 → T030 → T031 → T032.
+- Phase 5b: tras T032. T039 → T040 → tareas que salgan de T040 → T041 → T042.
 
 ### Parallel Opportunities
 

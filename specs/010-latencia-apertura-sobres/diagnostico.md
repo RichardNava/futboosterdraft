@@ -349,3 +349,31 @@ de fallos 0,07 %, dentro del umbral < 1 %.
   2. **Menos consultas en el grupo de aperturas** (~100 por grupo), que es lo que satura el pool. Antes conviene
      separar en el desglose las consultas de `despuesDePartido` de las de preparar y guardar, como ya proponía
      «Conclusión tras US2».
+
+## Consultas del grupo de aperturas
+
+Contado en local el 2026-11-03 (T039; método en [research.md](research.md) R13), con el test «reparto de las
+consultas…» de `aperturas-grupo.test.ts`. El escenario es una liga de 8 humanos en la jornada 1: las 8 aperturas
+llegan a la vez, se resuelven en un grupo, cierran la jornada y abren la siguiente. El grupo hace **115 consultas**,
+lo mismo en los dos modos (en proceso y con hilos), en línea con las ~103–120 por apertura que da `beta-100.js`.
+
+| Tramo | Consultas | Detalle (consultas · llamadas) |
+|-------|----------:|--------------------------------|
+| 1. Leer y preparar (fuera de la transacción) | 20 | `repoPartidos.obtener` 4 · 4; `repoEquipo.ultimaAlineacion` 8 · 8 y `repoDraft.plantillas` 8 · 8 (alineación vigente y plantilla de cada participante) |
+| 2. Transacción del grupo | 59 | BEGIN y COMMIT 2; `fijarModalidad` por apertura (40): `repoPartidos.fijarModalidad` 16 · 8 (UPDATE y SELECT), `repoPartidas.fijarUltimaModalidad` 8 · 8, `repoPerfiles.fijarUltimaModalidad` 16 · 8 (SELECT del usuario y UPSERT); `aplicarEntreHumanos` por partido: `repoEquipo.dorsales` 8 · 8 (`dorsalesParaPartido`, uno por equipo) y `repoPartidos.actualizar` 4 · 4; `repoTorneo.guardar` 5 · 1 |
+| 3. Cerrar la jornada (`despuesDePartido`) | 10 | `repoTorneo.guardar` 5 · 1; `repoTorneo.marcarJornada` 1 · 1; `emitirTorneo` 4 (`jornadas`, `resumenesDePartida`, `pendientesDeVarios`, `dorsalesDeVarios`) |
+| 4. Abrir la jornada siguiente (`abrirSiguienteJornada`) | 26 | `repoTorneo.guardarJornada` 1 · 1; `repoTorneo.guardar` 5 · 1; `repoPartidos.crear` 4 · 4; `repoVisionados.crearPendientes` 4 · 4; `emitirTorneo` 4; avisos `jornada_abierta` 8 (un INSERT en `avisos` por humano, `avisarHumanos`) |
+| **Total** | **115** | |
+
+Lo que más pesa:
+
+- **`fijarModalidad`, 40 consultas (35 %).** Son 5 por apertura: marcar la modalidad en el partido y leerla de
+  vuelta, guardarla como última del participante y, para un registrado, leer si es invitado y guardar su perfil.
+- **Tres lecturas por participante, 24 (21 %).** `ultimaAlineacion` y `plantillas` al preparar, y `dorsales`
+  dentro de la transacción. Para los dorsales ya hay una versión por lotes (`dorsalesDeVarios`).
+- **`repoTorneo.guardar` tres veces, 15 (13 %).** Son 5 consultas cada vez (torneo, y borrar e insertar bajas y
+  amarillas): en el grupo, al cerrar la jornada y al abrir la siguiente.
+- **Una consulta por elemento al abrir la jornada:** 8 avisos, 4 partidos y 4 pendientes de visionado (16, 14 %).
+- `emitirTorneo` dos veces, 8 (7 %).
+
+Qué se recorta y en qué orden se decide en T040.
