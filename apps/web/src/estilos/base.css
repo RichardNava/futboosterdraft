@@ -1085,48 +1085,48 @@ html {
   min-height: var(--espacio-12);
 }
 
-/* Ficha de un titular: la chapa con la equipación y el dorsal, y debajo nombre, posición y media. */
+/*
+ * Ficha de un titular (rediseño 2026-11-04): el retrato en el centro, la media a su izquierda y la posición a su
+ * derecha en círculos que montan sobre el borde superior de la caja del dorsal y el nombre. Ocupa menos alto que la
+ * versión en tres filas, así las fichas de una misma línea ya no se montan.
+ */
 .ficha-equipo {
+  --ficha-circulo: 26px;
   position: absolute;
   z-index: 1;
   transform: translate(-50%, 50%);
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto auto auto;
   grid-template-areas:
-    'chapa chapa'
-    'nombre nombre'
-    'posicion media';
+    'media chapa posicion'
+    'nombre nombre nombre';
+  align-items: end;
   justify-items: center;
-  column-gap: var(--espacio-1);
-  min-width: var(--espacio-16);
   min-height: 0;
-  padding: 0 var(--espacio-2) 3px;
-  border: 1px solid var(--borde-vidrio-fuerte);
-  border-radius: var(--radio);
-  background: var(--color-ficha-campo);
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
   color: var(--color-texto);
   font-size: 0.72rem;
   font-weight: 500;
   line-height: 1.25;
-  box-shadow: var(--sombra-boton);
   cursor: grab;
   touch-action: none;
-  transition:
-    transform var(--duracion-corta) var(--curva-salida),
-    border-color var(--duracion-corta) var(--curva-salida);
+  transition: transform var(--duracion-corta) var(--curva-salida);
 }
 
 .ficha-equipo:hover {
-  border-color: var(--color-texto-suave);
-  background: var(--color-ficha-campo);
+  background: none;
   transform: translate(-50%, 50%) translateY(-2px);
 }
 
 .ficha-equipo > .chapa {
   grid-area: chapa;
+  z-index: 1;
   width: 40px;
   height: 40px;
-  margin-top: -20px;
+  margin-inline: -3px;
   font-family: var(--letra-cartel);
   font-size: 1rem;
   font-style: var(--inclinacion-cartel);
@@ -1143,29 +1143,60 @@ html {
   pointer-events: none;
 }
 
-/* Nombre de la carta entero: si no cabe, en dos líneas, nunca recortado (spec 008). */
-.ficha-equipo-nombre {
-  grid-area: nombre;
-  max-width: 11ch;
-  font-weight: 600;
-  text-align: center;
-  text-wrap: balance;
+/* Círculos de media y posición: medio por encima del borde superior de la caja del nombre. */
+.ficha-equipo-media,
+.ficha-equipo-posicion {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--ficha-circulo);
+  height: var(--ficha-circulo);
+  margin-bottom: calc(var(--ficha-circulo) / -2);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: 50%;
+  background: var(--color-elevado);
+  box-shadow: var(--sombra-boton);
 }
 
-.ficha-equipo-dorsal {
-  margin-left: 0.3em;
-  color: var(--color-oro);
-  font-weight: 800;
+.ficha-equipo-media {
+  grid-area: media;
+  /* Por encima del retrato: la insignia de penalización asoma sobre él. */
+  z-index: 2;
+  font-weight: 700;
 }
 
 .ficha-equipo-posicion {
   grid-area: posicion;
   color: var(--color-texto-suave);
+  font-size: 0.85em;
+  font-weight: 700;
 }
 
-.ficha-equipo-media {
-  grid-area: media;
-  font-weight: 700;
+/* Caja del dorsal y el nombre: el nombre entero; si no cabe, en dos líneas, nunca recortado (spec 008). */
+.ficha-equipo-nombre {
+  grid-area: nombre;
+  justify-self: stretch;
+  max-width: 13ch;
+  padding: calc(var(--ficha-circulo) / 2 + 1px) var(--espacio-2) 3px;
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio);
+  background: var(--color-ficha-campo);
+  box-shadow: var(--sombra-boton);
+  font-weight: 600;
+  text-align: center;
+  text-wrap: balance;
+  transition: border-color var(--duracion-corta) var(--curva-salida);
+}
+
+.ficha-equipo:hover .ficha-equipo-nombre {
+  border-color: var(--color-texto-suave);
+}
+
+.ficha-equipo-dorsal {
+  margin-right: 0.3em;
+  color: var(--color-oro);
+  font-weight: 800;
 }
 
 .ficha-equipo > :not(.chapa, .ficha-equipo-nombre, .ficha-equipo-posicion, .ficha-equipo-media) {
@@ -1175,20 +1206,23 @@ html {
 /* Campo estrecho: fichas más compactas para que no se monten. */
 @media (max-width: 479.98px) {
   .ficha-equipo {
-    min-width: var(--espacio-12);
-    padding-inline: var(--espacio-1);
+    --ficha-circulo: 20px;
     font-size: 0.65rem;
   }
 
   .ficha-equipo > .chapa {
     width: 26px;
     height: 26px;
-    margin-top: -13px;
     font-size: 0.8rem;
+  }
+
+  .ficha-equipo-nombre {
+    padding-inline: var(--espacio-1);
   }
 }
 
-.ficha-equipo.fuera {
+.ficha-equipo.fuera .ficha-equipo-nombre,
+.ficha-equipo.fuera .ficha-equipo-posicion {
   border-color: var(--color-advertencia);
 }
 
@@ -1203,9 +1237,27 @@ html {
   cursor: grabbing;
 }
 
+/* Penalización por posición: círculo pequeño a la derecha de la media, con la cifra en rojo. */
 .badge-fuera {
-  color: var(--color-advertencia);
-  font-weight: 600;
+  position: absolute;
+  top: -55%;
+  left: 55%;
+  display: grid;
+  place-items: center;
+  min-width: 2.6em;
+  height: 2.6em;
+  padding-inline: 2px;
+  border: 1px solid var(--color-error);
+  border-radius: 50%;
+  background: var(--color-lienzo-hondo);
+  color: var(--color-error);
+  font-size: 0.75em;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.badge-fuera[hidden] {
+  display: none;
 }
 
 .ficha-lista {
@@ -2715,8 +2767,9 @@ html {
 }
 
 .cuadro {
+  --cuadro-hueco: var(--espacio-6);
   display: flex;
-  gap: var(--espacio-4);
+  gap: var(--cuadro-hueco);
   overflow-x: auto;
   padding-bottom: var(--espacio-2);
 }
@@ -2730,8 +2783,56 @@ html {
   min-width: 160px;
 }
 
-.ronda > .cruce {
-  margin-block: auto;
+/*
+ * Cruces en huecos de igual alto: el cruce i de una ronda queda centrado entre los cruces 2i y 2i+1 de la anterior
+ * (`avanzarCuadro`). Las líneas van por el hueco entre rondas: cada pareja sale a la derecha, se une en vertical y
+ * entra por la izquierda en su cruce siguiente.
+ */
+.ronda-cruces {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.ronda-hueco {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: var(--espacio-2);
+}
+
+.ronda:not(:last-child) .ronda-hueco::after,
+.ronda + .ronda .ronda-hueco::before {
+  content: '';
+  position: absolute;
+  width: calc(var(--cuadro-hueco) / 2);
+  border: 0 solid var(--color-borde-marco);
+  pointer-events: none;
+}
+
+.ronda:not(:last-child) .ronda-hueco::after {
+  left: 100%;
+  border-right-width: 2px;
+}
+
+.ronda:not(:last-child) .ronda-hueco:nth-child(odd)::after {
+  top: 50%;
+  bottom: 0;
+  border-top-width: 2px;
+}
+
+.ronda:not(:last-child) .ronda-hueco:nth-child(even)::after {
+  top: 0;
+  bottom: 50%;
+  border-bottom-width: 2px;
+}
+
+.ronda + .ronda .ronda-hueco::before {
+  right: 100%;
+  top: 50%;
+  border-top-width: 2px;
 }
 
 .ronda h3 {

@@ -23,7 +23,10 @@ export interface ParametrosEquilibrado {
   /** Penalización por posición de la spec 002 (FR-031, FR-032): misma demarcación, portería y cruces. */
   penalizacionPosicion: {
     mismaDemarcacion: number;
-    /** Desde la 6.0.0: excepciones a `mismaDemarcacion` entre dos posiciones concretas (MC → MII, DCI → DCD…). */
+    /**
+     * Desde la 6.0.0: excepciones entre dos posiciones concretas (MC → MII, DCI → DCD…), dentro de la demarcación o,
+     * desde la 6.1.0, también entre demarcaciones (centrocampista → CI/CD). Con Todocampista no se aplican.
+     */
     entrePosiciones?: { origen: Posicion; destino: Posicion; valor: number }[];
     porteria: number;
     cruces: { origen: RolPenalizacion; destino: RolPenalizacion; valor: number }[];
@@ -414,11 +417,40 @@ export const PARAMETROS_V5: ParametrosEquilibrado = v5 as ParametrosEquilibrado;
 /** Parámetros 6.0.0: un MC rinde igual de MII o MID, y de MII/MID a MC o entre DCI y DCD cuesta un 5 %. */
 export const PARAMETROS_V6: ParametrosEquilibrado = v6 as ParametrosEquilibrado;
 
+/**
+ * Parámetros 6.1.0: el carrilero (CI/CD) es un especialista de banda. De carrilero, un MC o MD pierde un 15 %, un MCO
+ * un 20 %, un MII/MID un 10 % en su banda y un 20 % en la contraria, y un LI/LD un 5 % en su banda.
+ */
+const CARRILEROS_6_1: { origen: Posicion; destino: Posicion; valor: number }[] = [
+  ...(['MC', 'MD'] as const).flatMap((origen) => (['CI', 'CD'] as const).map((destino) => ({ origen, destino, valor: 0.15 }))),
+  { origen: 'MCO', destino: 'CI', valor: 0.2 },
+  { origen: 'MCO', destino: 'CD', valor: 0.2 },
+  { origen: 'MII', destino: 'CI', valor: 0.1 },
+  { origen: 'MID', destino: 'CD', valor: 0.1 },
+  { origen: 'MII', destino: 'CD', valor: 0.2 },
+  { origen: 'MID', destino: 'CI', valor: 0.2 },
+  { origen: 'LI', destino: 'CI', valor: 0.05 },
+  { origen: 'LD', destino: 'CD', valor: 0.05 },
+];
+
+export const PARAMETROS_V6_1: ParametrosEquilibrado = {
+  ...PARAMETROS_V6,
+  version: '6.1.0',
+  penalizacionPosicion: {
+    ...PARAMETROS_V6.penalizacionPosicion,
+    entrePosiciones: [
+      ...(PARAMETROS_V6.penalizacionPosicion.entrePosiciones ?? []),
+      ...CARRILEROS_6_1,
+    ],
+  },
+};
+
 const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V3.version]: PARAMETROS_V3,
   [PARAMETROS_V4.version]: PARAMETROS_V4,
   [PARAMETROS_V5.version]: PARAMETROS_V5,
   [PARAMETROS_V6.version]: PARAMETROS_V6,
+  [PARAMETROS_V6_1.version]: PARAMETROS_V6_1,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -436,7 +468,7 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V6;
+  return PARAMETROS_V6_1;
 }
 
 /** Versión mayor mínima que el motor actual puede simular (las 3.x y 4.x se reproducen). */

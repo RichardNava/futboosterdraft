@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { POSICIONES, POSICIONES_POR_DEMARCACION, type Demarcacion, type Posicion } from '../../src/catalogo/tipos';
 import { casilla, CASILLA_CENTRAL } from '../../src/equipo/formaciones';
 import { penalizacionPorPosicion, statsEfectivos } from '../../src/equipo/statsEfectivos';
-import { PARAMETROS_V3, PARAMETROS_V4, PARAMETROS_V5, PARAMETROS_V6 } from '../../src/parametros/index';
+import { PARAMETROS_V3, PARAMETROS_V4, PARAMETROS_V5, PARAMETROS_V6, PARAMETROS_V6_1 } from '../../src/parametros/index';
 import { jugador } from './ayudas';
 
 const p = PARAMETROS_V3;
@@ -110,6 +110,26 @@ describe('excepciones entre posiciones de los parámetros 6.0.0', () => {
   it('con Versátil, MII de MC queda en 0; los parámetros 5.0.0 no cambian', () => {
     expect(pen(['MII'], 'MC', ['Versatil'])).toBe(0);
     expect(penalizacionPorPosicion(jugador('MED', ['MC'], 80), { posicionesAdmitidas: ['MII'] }, PARAMETROS_V5)).toBe(0.1);
+  });
+});
+
+describe('carrileros con los parámetros 6.1.0', () => {
+  const pen = (demarcacion: 'DEF' | 'MED', origen: Posicion[], destino: Posicion, extra: Parameters<typeof jugador>[3] = [], p = PARAMETROS_V6_1) =>
+    penalizacionPorPosicion(jugador(demarcacion, origen, 80, extra), { posicionesAdmitidas: [destino] }, p);
+
+  it('MC/MD 15 %, MCO 20 %, MII/MID 10 % en su banda y 20 % en la contraria, LI/LD 5 % en su banda', () => {
+    expect([pen('MED', ['MC'], 'CI'), pen('MED', ['MD'], 'CD'), pen('MED', ['MCO'], 'CI'), pen('MED', ['MCO'], 'CD')]).toEqual([0.15, 0.15, 0.2, 0.2]);
+    expect([pen('MED', ['MII'], 'CI'), pen('MED', ['MID'], 'CD'), pen('MED', ['MII'], 'CD'), pen('MED', ['MID'], 'CI')]).toEqual([0.1, 0.1, 0.2, 0.2]);
+    expect([pen('DEF', ['LI'], 'CI'), pen('DEF', ['LD'], 'CD'), pen('DEF', ['LI'], 'CD')]).toEqual([0.05, 0.05, 0.1]);
+    expect(pen('MED', ['MC'], 'CI', [], PARAMETROS_V6)).toBe(0.2);
+  });
+
+  it('con varias posiciones, la menor; Todocampista anula la penalización y Versátil resta 5 puntos', () => {
+    expect(pen('MED', ['MCO', 'MD', 'MII'], 'CI')).toBe(0.1);
+    expect(penalizacionPorPosicion(jugador('MED', ['MCO'], 80), { posicionesAdmitidas: ['CI'] }, PARAMETROS_V6_1)).toBe(0.2);
+    expect(pen('MED', ['MC'], 'CI', ['Todocampista'])).toBe(0);
+    expect(pen('MED', ['MCO'], 'CI', ['Versatil'])).toBeCloseTo(0.15);
+    expect([pen('MED', ['MII'], 'CI', ['Versatil']), pen('DEF', ['LI'], 'CI', ['Versatil'])]).toEqual([0.05, 0]);
   });
 });
 

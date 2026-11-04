@@ -7,7 +7,8 @@
  * - Todocampista: sin penalización fuera de la portería.
  * - Misma demarcación, posición que no tiene: −`mismaDemarcacion` (10 %), salvo las excepciones de `entrePosiciones`
  *   (desde la 6.0.0: MC → MII/MID 0 %; MII/MID → MC y DCI ↔ DCD 5 %).
- * - Otra demarcación: la tabla de cruces de FR-032. Con varias posiciones, se aplica la menor.
+ * - Otra demarcación: la tabla de cruces de FR-032, salvo las excepciones de `entrePosiciones` (desde la 6.1.0:
+ *   centrocampista o lateral de carrilero, CI/CD). Con varias posiciones, se aplica la menor.
  * - Inflexible y Versátil (spec 005): si hay penalización, 5 puntos porcentuales más (`defectos.inflexible`) o menos
  *   (`virtudes.versatil`, con un mínimo de 0).
  */
@@ -75,12 +76,13 @@ function penalizacionBase(jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'v
   let menor = Number.POSITIVE_INFINITY;
   for (const posicion of jugador.posicion) {
     const rol = rolOrigen(posicion);
+    const excepcion = Math.min(
+      ...destino.posicionesAdmitidas.map((d) => tabla.entrePosiciones?.find((e) => e.origen === posicion && e.destino === d)?.valor ?? Infinity),
+    );
     let valor: number;
-    if (demarcacionDeRol(rol) === demarcacionDeRol(clase)) {
-      valor = Math.min(
-        ...destino.posicionesAdmitidas.map((d) => tabla.entrePosiciones?.find((e) => e.origen === posicion && e.destino === d)?.valor ?? tabla.mismaDemarcacion),
-      );
-    } else {
+    if (Number.isFinite(excepcion)) valor = excepcion;
+    else if (demarcacionDeRol(rol) === demarcacionDeRol(clase)) valor = tabla.mismaDemarcacion;
+    else {
       const cruce = tabla.cruces.find((c) => c.origen === rol && c.destino === clase)
         // MED (sin MCO ni MD) hacia la casilla MCO no existe: dentro de la demarcación ya se resolvió arriba.
         ?? tabla.cruces.find((c) => c.origen === rol && demarcacionDeRol(c.destino) === demarcacionDeRol(clase));

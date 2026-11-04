@@ -72,6 +72,15 @@ describe('contrato HTTP de partidas', () => {
     expect(relleno.filter((n) => n === permitidos[0])).toHaveLength(3);
   });
 
+  it('con dificultad «extrema», el relleno solo usa NPC avanzados y PRO (FR-038a)', async () => {
+    const g = await crearInvitado(srv.url);
+    const r = await peticion(srv.url, '/api/partidas', { cookie: g.cookie, cuerpo: { modo: 'liga', numParticipantes: 8, dificultad: 'extrema' } });
+    expect(r.estado).toBe(201);
+    const relleno = ResumenPartida.parse(r.cuerpo).participantes.flatMap((p) => (p.nivelNPC ? [p.nivelNPC] : []));
+    expect(relleno).toHaveLength(7);
+    expect(relleno.every((n) => n === 'avanzado' || n === 'PRO')).toBe(true);
+  });
+
   it('422 NUM_PARTICIPANTES_INVALIDO', async () => {
     const u = await crearRegistrado(srv.url);
     const r = await peticion(srv.url, '/api/partidas', { cookie: u.cookie, cuerpo: { ...base, modo: 'playoff', numParticipantes: 6 } });

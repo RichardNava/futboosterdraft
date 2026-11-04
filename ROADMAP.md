@@ -106,7 +106,7 @@ cuesta simular los partidos.
 - **Alcance**: cartas legibles, botón «Siguiente», 2D fluida, penalizaciones de posición, «Finalizar partido»,
   barra de navegación, colocación libre, dorsales, goleadores, apertura de sobres (002 US1–US10); campo único de
   preparación, botones principales, gestión en el descanso, pantalla de resultado, campeón/eliminado, nombre y
-  equipación, dificultad de partida Fácil/Normal/Difícil (003 US2, US4–US8, US10, US11, FR-038a).
+  equipación, dificultad de partida Fácil/Normal/Difícil/Extrema (003 US2, US4–US8, US10, US11, FR-038a).
 - **Specs**: [002](specs/002-mejoras-mvp/spec.md), [003](specs/003-mejoras-ux-simulacion/spec.md).
 - **Prioridad / estado**: P1 · **Implementada, sin validar**.
 - **Evidencia**: hallazgos H1–H14 de la prueba con personas de la 003 corregidos y cubiertos por e2e

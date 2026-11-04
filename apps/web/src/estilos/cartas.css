@@ -570,10 +570,12 @@ img.carta-fondo-accion {
   margin-bottom: 4px;
 }
 
+/* En el hueco entre la media (izquierda) y el retrato (derecha), a la altura de la media: no pisa ninguno. */
 .carta-dorsal {
   position: absolute;
-  top: var(--carta-hueco-y, clamp(6px, 4.5cqi, 12px));
-  right: calc(var(--carta-hueco-x, 0px) + clamp(30px, 18cqi, 40px));
+  top: calc(var(--carta-hueco-y, 0px) + 6cqi);
+  left: 50cqi;
+  translate: -50% 0;
   font-size: clamp(0.65rem, 5.5cqi, 0.9rem);
   font-weight: 800;
   color: var(--carta-texto-suave);

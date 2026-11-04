@@ -418,6 +418,12 @@ Los participantes humanos coinciden en directo solo durante el draft. Después, 
   **Excepciones (parámetros 6.0.0, 2026-11-03)**: un MC de MII o MID no tiene penalización; un MII o MID de MC, 5 %;
   un DCI de DCD y un DCD de DCI, 5 %. Cualquier medio (también el MCO) de MD sigue con el 10 %. Las partidas jugadas
   con versiones anteriores conservan el 10 %.
+  **Carrileros (parámetros 6.1.0, 2026-11-04)**: el CI/CD es un especialista de banda, así que en lugar del cruce
+  MED → DEF de FR-032 (y del 10 % de misma demarcación para los laterales) se aplica: MC o MD → CI/CD, 15 %; MCO → CI/CD,
+  20 %; MII → CI y MID → CD, 10 %; MII → CD y MID → CI, 20 %; LI → CI y LD → CD, 5 % (los laterales suelen tener ya la
+  posición de carrilero de su banda; la regla cubre a los que no). Con varias posiciones se aplica la menor (MCO, MD y
+  MII de CI: 10 %; MCO y SD de CI: 20 %). Todocampista sigue anulando la penalización, y Versátil e Inflexible restan o
+  suman 5 puntos porcentuales encima, como en el resto de penalizaciones.
 - **FR-032**: Un jugador colocado en una posición de otra demarcación DEBE recibir en todos sus stats la penalización de esta tabla, que sustituye a la de 001/FR-027 y su Assumption:
 
   | Demarcación original | Demarcación de destino | Penalización |

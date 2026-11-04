@@ -28,17 +28,18 @@ export const NIVELES_NPC: readonly NivelNPC[] = ['amateur', 'intermedio', 'avanz
 export const NIVELES_RELLENO: readonly NivelNPC[] = ['amateur', 'intermedio', 'avanzado'];
 
 /** Dificultad de la partida: decide los niveles del relleno automático de NPC (spec 003, FR-038a). */
-export type Dificultad = 'facil' | 'normal' | 'dificil';
-export const DIFICULTADES: readonly Dificultad[] = ['facil', 'normal', 'dificil'];
+export type Dificultad = 'facil' | 'normal' | 'dificil' | 'extrema';
+export const DIFICULTADES: readonly Dificultad[] = ['facil', 'normal', 'dificil', 'extrema'];
 
 /**
- * Niveles del relleno por dificultad. «Normal» los sortea uno a uno (001/FR-059); «Fácil» y «Difícil» los reparten a
- * partes iguales. Nunca PRO.
+ * Niveles del relleno por dificultad. «Normal» y «Extrema» los sortean uno a uno (001/FR-059); «Fácil» y «Difícil» los
+ * reparten a partes iguales. Solo «Extrema» usa PRO.
  */
 export const NIVELES_RELLENO_POR_DIFICULTAD: Readonly<Record<Dificultad, readonly NivelNPC[]>> = {
   facil: ['amateur', 'intermedio'],
   normal: NIVELES_RELLENO,
   dificil: ['intermedio', 'avanzado'],
+  extrema: ['avanzado', 'PRO'],
 };
 
 export interface TiemposPartida {
@@ -164,13 +165,14 @@ export function transicion(estado: EstadoPartida, evento: EventoPartida): Estado
 }
 
 /**
- * Niveles para rellenar plazas según la dificultad, nunca PRO (001/FR-059, 003/FR-038a). «Normal» sortea cada
- * nivel; «Fácil» y «Difícil» reparten sus dos niveles a partes iguales, con el sobrante y el orden sorteados.
+ * Niveles para rellenar plazas según la dificultad (001/FR-059, 003/FR-038a). «Normal» y «Extrema» sortean cada
+ * nivel; «Fácil» y «Difícil» reparten sus dos niveles a partes iguales, con el sobrante y el orden sorteados. Solo
+ * «Extrema» rellena con PRO.
  */
 export function rellenarConNPC(cantidad: number, semilla: Semilla, dificultad: Dificultad = 'normal'): NivelNPC[] {
   const rng = new Rng(semilla);
   const niveles = NIVELES_RELLENO_POR_DIFICULTAD[dificultad];
-  if (dificultad === 'normal') return Array.from({ length: cantidad }, () => rng.elegir(niveles));
+  if (dificultad === 'normal' || dificultad === 'extrema') return Array.from({ length: cantidad }, () => rng.elegir(niveles));
   const inicio = rng.entero(0, niveles.length - 1);
   const reparto = Array.from({ length: cantidad }, (_, i) => niveles[(inicio + i) % niveles.length]!);
   return rng.barajar(reparto);

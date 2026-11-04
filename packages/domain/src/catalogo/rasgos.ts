@@ -317,7 +317,8 @@ const VIRTUDES: Readonly<Record<Virtud, Entrada>> = {
     efecto: 'Su penalización por posición es 0, salvo en la portería.',
     activacion: 'Jugando fuera de su posición.',
     acumulacion: PROPIA,
-    impacto: 0.5,
+    // 2026-11-04: de 0,50 a 0,70; permite alineaciones de más media, que pesan mucho en la victoria.
+    impacto: 0.7,
   },
   JugadorEntreLineas: {
     nombre: 'Jugador entre líneas',

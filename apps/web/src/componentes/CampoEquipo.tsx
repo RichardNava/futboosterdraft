@@ -207,14 +207,17 @@ export function CampoEquipo(props: Props) {
             {/* Spec 008: el retrato identifica mejor al jugador; sin él (cartas antiguas), el dorsal. */}
             {j.imagen?.startsWith('/cartas/retratos/') ? <img src={j.imagen} alt="" draggable={false} /> : (dorsales?.[jugadorId] ?? '')}
           </span>
-          <span className="ficha-equipo-posicion">{posicion}</span>
-          <span className="ficha-equipo-nombre">
-            {nombreCartaDe(j)}
-            {dorsales?.[jugadorId] !== undefined && <span className="ficha-equipo-dorsal">{dorsales[jugadorId]}</span>}
-          </span>
+          {/* Media y posición en círculos a los lados del retrato; debajo, dorsal y nombre (rediseño 2026-11-04). */}
           <span className="ficha-equipo-media">
             {Math.round(ef.media)}
-            {penal > 0 && <span className="badge-fuera"> −{penal} %</span>}
+            <span className="badge-fuera" hidden={penal === 0}>
+              −{penal}%
+            </span>
+          </span>
+          <span className="ficha-equipo-posicion">{posicion}</span>
+          <span className="ficha-equipo-nombre">
+            {dorsales?.[jugadorId] !== undefined && <span className="ficha-equipo-dorsal">{dorsales[jugadorId]}</span>}
+            {nombreCartaDe(j)}
           </span>
           {distintivos?.get(jugadorId)}
         </button>

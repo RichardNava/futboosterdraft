@@ -72,7 +72,7 @@ coherente (FR-051).
 | Llegador | MED | 0,50 | |
 | BoxToBox | MED | 0,70 | +1 a defensa y ataque (era 0,60; T099) |
 | PrimerToque | MED | 0,45 | |
-| Todocampista | MED | 0,50 | sin penalización fuera de posición |
+| Todocampista | MED | 0,70 | sin penalización fuera de posición |
 | JugadorEntreLineas | MED | 0,45 | |
 | Matador | DEL | 0,65 | |
 | Rematador | DEL | 0,55 | |

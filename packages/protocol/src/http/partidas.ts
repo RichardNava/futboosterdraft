@@ -6,7 +6,7 @@ import { ParticipanteSala } from '../ws/draft';
 
 export const NivelNPC = z.enum(['amateur', 'intermedio', 'avanzado', 'PRO']);
 /** Dificultad de la partida: niveles del relleno automático de NPC (spec 003, FR-038a). */
-export const Dificultad = z.enum(['facil', 'normal', 'dificil']);
+export const Dificultad = z.enum(['facil', 'normal', 'dificil', 'extrema']);
 /** Modos de juego; `duelos` es el modo Duelo de jugadores (spec 005, FR-060). */
 export const ModoPartida = z.enum(['liga', 'playoff', 'mixto', 'duelos']);
 /** Formación común y Estado de forma del modo duelos (spec 005, FR-061, FR-064a). */

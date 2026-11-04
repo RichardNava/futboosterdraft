@@ -19,12 +19,13 @@ export const ETIQUETA_NIVEL_NPC: Readonly<Record<NivelNPC, string>> = {
 };
 
 /** Dificultad de la partida (spec 003, FR-038a). */
-export type Dificultad = 'facil' | 'normal' | 'dificil';
+export type Dificultad = 'facil' | 'normal' | 'dificil' | 'extrema';
 
 export const ETIQUETA_DIFICULTAD: Readonly<Record<Dificultad, string>> = {
   facil: 'Fácil',
   normal: 'Normal',
   dificil: 'Difícil',
+  extrema: 'Extrema',
 };
 
 /** Niveles de los NPC de relleno con cada dificultad, tal como se explican en la interfaz. */
@@ -32,6 +33,7 @@ export const DESCRIPCION_DIFICULTAD: Readonly<Record<Dificultad, string>> = {
   facil: 'NPC amateur e intermedios a partes iguales',
   normal: 'NPC amateur, intermedios o avanzados al azar',
   dificil: 'NPC intermedios y avanzados a partes iguales',
+  extrema: 'NPC avanzados o PRO al azar',
 };
 
 /** Texto del distintivo de un NPC ("NPC · Avanzado"); vacío si lo controla una persona. */

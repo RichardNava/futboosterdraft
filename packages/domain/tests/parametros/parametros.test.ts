@@ -7,6 +7,7 @@ import {
   PARAMETROS_V4,
   PARAMETROS_V5,
   PARAMETROS_V6,
+  PARAMETROS_V6_1,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -179,8 +180,7 @@ describe('parámetros de equilibrado 5.0.0 (INI-05)', () => {
 });
 
 describe('parámetros de equilibrado 6.0.0', () => {
-  it('los partidos nuevos usan la versión 6.0.0, que solo añade las excepciones entre posiciones', () => {
-    expect(parametrosActuales()).toBe(PARAMETROS_V6);
+  it('la versión 6.0.0, que solo añade las excepciones entre posiciones, sigue reproduciéndose', () => {
     expect(parametrosPorVersion('6.0.0')).toBe(PARAMETROS_V6);
     const { version, penalizacionPosicion: { entrePosiciones, ...penalizacion }, ...resto } = PARAMETROS_V6;
     const { version: v5, penalizacionPosicion: penalizacion5, ...resto5 } = PARAMETROS_V5;
@@ -188,5 +188,19 @@ describe('parámetros de equilibrado 6.0.0', () => {
     expect(penalizacion).toEqual(penalizacion5);
     expect(entrePosiciones).toHaveLength(6);
     expect([version, v5]).toEqual(['6.0.0', '5.0.0']);
+  });
+});
+
+describe('parámetros de equilibrado 6.1.0', () => {
+  it('los partidos nuevos usan la 6.1.0, que solo añade las excepciones de los carrileros (CI/CD)', () => {
+    expect(parametrosActuales()).toBe(PARAMETROS_V6_1);
+    expect(parametrosPorVersion('6.1.0')).toBe(PARAMETROS_V6_1);
+    const { version, penalizacionPosicion: { entrePosiciones, ...penalizacion }, ...resto } = PARAMETROS_V6_1;
+    const { version: v6, penalizacionPosicion: { entrePosiciones: entre6, ...penalizacion6 }, ...resto6 } = PARAMETROS_V6;
+    expect(resto).toEqual(resto6);
+    expect(penalizacion).toEqual(penalizacion6);
+    expect(entrePosiciones!.slice(0, entre6!.length)).toEqual(entre6);
+    expect(entrePosiciones!.slice(entre6!.length).every((e) => ['CI', 'CD'].includes(e.destino))).toBe(true);
+    expect([version, v6]).toEqual(['6.1.0', '6.0.0']);
   });
 });

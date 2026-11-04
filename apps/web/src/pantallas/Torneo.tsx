@@ -503,12 +503,17 @@ function Cuadro({ cuadro, yo }: { cuadro: NonNullable<VistaTorneo['cuadro']>; yo
       {cuadro.rondas.map((ronda) => (
         <section key={ronda.tipo} className="ronda">
           <h3>{ETIQUETA_RONDA[ronda.tipo] ?? ronda.tipo}</h3>
-          {ronda.cruces.map((x, i) => (
-            <div key={i} className="cruce">
-              {equipo(x.local, x.ganador)}
-              {equipo(x.visitante, x.ganador)}
-            </div>
-          ))}
+          {/* Cada cruce en un hueco del mismo alto: así las líneas del CSS unen cada pareja con su cruce siguiente. */}
+          <div className="ronda-cruces">
+            {ronda.cruces.map((x, i) => (
+              <div key={i} className="ronda-hueco">
+                <div className="cruce">
+                  {equipo(x.local, x.ganador)}
+                  {equipo(x.visitante, x.ganador)}
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
       ))}
     </div>

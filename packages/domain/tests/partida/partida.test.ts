@@ -100,6 +100,12 @@ describe('Partida', () => {
     }
   });
 
+  it('«Extrema» sortea cada NPC entre avanzado y PRO, con la semilla (003/FR-038a)', () => {
+    const niveles = rellenarConNPC(200, semillaDesdeTexto('relleno-extrema'), 'extrema');
+    expect(new Set(niveles)).toEqual(new Set(['avanzado', 'PRO']));
+    expect(rellenarConNPC(200, semillaDesdeTexto('relleno-extrema'), 'extrema')).toEqual(niveles);
+  });
+
   it('con un número impar de NPC, el nivel sobrante se sortea con la semilla (003/FR-038a)', () => {
     const sobrantes = new Set<string>();
     for (let s = 0; s < 50; s++) {

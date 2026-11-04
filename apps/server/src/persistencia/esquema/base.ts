@@ -162,7 +162,7 @@ export const partidas = pgTable(
       'partidas_estado_ck',
       sql`${t.estado} in ('buscando','en_draft','en_torneo','terminada','cancelada','abandonada')`,
     ),
-    check('partidas_dificultad_ck', sql`${t.dificultad} in ('facil','normal','dificil')`),
+    check('partidas_dificultad_ck', sql`${t.dificultad} in ('facil','normal','dificil','extrema')`),
   ],
 );
 

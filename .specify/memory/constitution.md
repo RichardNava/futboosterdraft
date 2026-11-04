@@ -1,10 +1,9 @@
 <!--
 Sync Impact Report
-- Version change: 1.2.0 → 1.3.0 (MINOR: se añade el Principio XI, «La interfaz debe mostrar lo
-  importante sin desplazarse»)
+- Version change: 1.3.0 → 1.3.1 (PATCH: «Niveles de los NPC» menciona la dificultad «Extrema»)
 - Principios modificados: ninguno
-- Principios añadidos: XI
-- Secciones modificadas: Core Principles
+- Principios añadidos: ninguno
+- Secciones modificadas: Decisiones resueltas (Niveles de los NPC)
 - Secciones añadidas: ninguna
 - Secciones eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
@@ -252,7 +251,9 @@ Actualizadas en `specs/003-mejoras-ux-simulacion/`:
 - **Niveles de los NPC**: la dificultad sale solo de la calidad de las decisiones; los niveles bajos
   cometen errores creíbles y el PRO toma alguna decisión dudosa, sin ventajas en el motor → `spec.md`
   (FR-036 a FR-038). Las probabilidades y costes de los errores están en los parámetros de equilibrado
-  versionados (`npc.errores`).
+  versionados (`npc.errores`). La dificultad de la partida (Fácil, Normal, Difícil o Extrema) solo
+  decide los niveles de los NPC de relleno; «Extrema» los sortea entre avanzado y PRO, y es la única
+  que rellena con PRO → `spec.md` (FR-038a).
 - **Equipaciones**: diseño (lisa, rayas, franjas, banda o mitades) y de 1 a 3 colores, con una regla de
   parecido que mira todos los colores → `spec.md` (FR-045 a FR-047). Sustituye a la parte de
   equipaciones de 001/FR-031b.
@@ -321,4 +322,4 @@ persona, que revisa los cambios antes de confirmarlos.
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.3.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-04
+**Version**: 1.3.1 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-04
