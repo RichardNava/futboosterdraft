@@ -3576,9 +3576,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/tienda.test.ts": {
-    "mtime": 1793320534.6135168,
-    "seen": 1793321352.247934,
-    "ast_hash": "320d5c8e57d7d61f7c9e6de3a479b325",
+    "mtime": 1793798738.7716446,
+    "seen": 1793809967.8380725,
+    "ast_hash": "9f70dcdf6e13745731d30dd0904247eb",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ConfirmacionCompra.tsx": {
@@ -7164,9 +7164,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/aperturas-grupo.test.ts": {
-    "mtime": 1793698463.25603,
-    "seen": 1793698899.013106,
-    "ast_hash": "2b4f22c0f7f4f38e7e3926c92589e49f",
+    "mtime": 1793798793.108227,
+    "seen": 1793809967.834778,
+    "ast_hash": "71b9f3877ced18f2540b8279cad97cc4",
     "semantic_hash": ""
   },
   "specs/010-latencia-apertura-sobres/mediciones/docker-1.md": {
@@ -7305,6 +7305,12 @@
     "mtime": 1793748088.2934456,
     "seen": 1793752192.6889863,
     "ast_hash": "68cc519f37814686ee8f80bc03ffad71",
+    "semantic_hash": ""
+  },
+  "packages/domain/tests/tmp/x.test.ts": {
+    "mtime": 1793787314.1937659,
+    "seen": 1793809967.87592,
+    "ast_hash": "21feddd523e2519c9daefe5c757721e4",
     "semantic_hash": ""
   }
 }

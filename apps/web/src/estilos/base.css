@@ -1093,7 +1093,8 @@ html {
 /*
  * Ficha de un titular (rediseño 2026-11-04): la ficha es la caja del dorsal y el nombre; el retrato (centrado) y los
  * círculos de media (izquierda) y posición (derecha) montan sobre su borde superior sin taparle el texto. Todo va
- * colocado respecto a la caja, así que es simétrico sea cual sea el largo del nombre.
+ * colocado respecto a la caja, así que es simétrico sea cual sea el largo del nombre. La caja se dibuja con `::before`
+ * y el botón abarca también el retrato, para que el área táctil llegue a 44 px de alto (e2e de diseño).
  */
 .ficha-equipo {
   --ficha-circulo: 26px;
@@ -1107,32 +1108,45 @@ html {
   justify-items: center;
   /* La caja llega hasta el centro de los círculos laterales; estos asoman por los lados. */
   min-width: calc(var(--ficha-retrato) + var(--ficha-circulo));
-  min-height: 0;
-  padding: var(--ficha-solape) var(--espacio-1) 2px;
-  border: 1px solid var(--borde-vidrio-fuerte);
-  border-radius: var(--radio);
-  background: var(--color-ficha-campo);
+  min-height: 44px;
+  padding: var(--ficha-retrato) var(--espacio-1) 2px;
+  border: 0;
+  background: none;
   color: var(--color-texto);
   font-size: 0.72rem;
   font-weight: 500;
   line-height: 1.25;
-  box-shadow: var(--sombra-boton);
+  box-shadow: none;
   cursor: grab;
   touch-action: none;
-  transition:
-    transform var(--duracion-corta) var(--curva-salida),
-    border-color var(--duracion-corta) var(--curva-salida);
+  transition: transform var(--duracion-corta) var(--curva-salida);
+}
+
+/* La caja visible empieza donde el retrato entra en ella (`--ficha-solape` por encima del texto). */
+.ficha-equipo::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--ficha-retrato) - var(--ficha-solape)) 0 0;
+  z-index: -1;
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio);
+  background: var(--color-ficha-campo);
+  box-shadow: var(--sombra-boton);
+  transition: border-color var(--duracion-corta) var(--curva-salida);
 }
 
 .ficha-equipo:hover {
-  border-color: var(--color-texto-suave);
-  background: var(--color-ficha-campo);
+  background: none;
   transform: translate(-50%, 50%) translateY(-2px);
+}
+
+.ficha-equipo:hover::before {
+  border-color: var(--color-texto-suave);
 }
 
 .ficha-equipo > .chapa {
   position: absolute;
-  bottom: calc(100% - var(--ficha-solape));
+  top: 0;
   left: 50%;
   z-index: 1;
   width: var(--ficha-retrato);
@@ -1158,7 +1172,8 @@ html {
 .ficha-equipo-media,
 .ficha-equipo-posicion {
   position: absolute;
-  bottom: calc(100% - var(--ficha-solape));
+  /* Mismo borde inferior que el retrato. */
+  top: calc(var(--ficha-retrato) - var(--ficha-circulo));
   z-index: 1;
   display: grid;
   place-items: center;
@@ -1213,7 +1228,7 @@ html {
   }
 }
 
-.ficha-equipo.fuera,
+.ficha-equipo.fuera::before,
 .ficha-equipo.fuera .ficha-equipo-posicion {
   border-color: var(--color-advertencia);
 }
