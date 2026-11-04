@@ -587,6 +587,8 @@ img.carta-fondo-accion {
   width: 26px;
   height: 26px;
   padding: 0;
+  /* Un poco hacia la esquina para no pisar el retrato. */
+  translate: 2px -2px;
   border-radius: 50%;
   background: var(--carta-chip);
   color: var(--carta-texto);

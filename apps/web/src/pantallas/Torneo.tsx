@@ -494,7 +494,7 @@ function Clasificacion({ filas, yo }: { filas: FilaClasificacion[]; yo: string |
 function Cuadro({ cuadro, yo }: { cuadro: NonNullable<VistaTorneo['cuadro']>; yo: string | null }) {
   const equipo = (r: Ref, ganador: Ref) => (
     <span className={[r && ganador?.id === r.id ? 'ganador' : '', r?.id === yo ? 'propio' : ''].filter(Boolean).join(' ')}>
-      <NombreRecortado texto={r?.nombre ?? 'Por decidir'} />
+      <span className="cruce-nombre">{r?.nombre ?? 'Por decidir'}</span>
       {r?.nivelNPC && <span className="etiqueta nivel-npc">{etiquetaNPC(r.nivelNPC)}</span>}
     </span>
   );

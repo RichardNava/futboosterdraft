@@ -81,6 +81,28 @@ Con `pnpm --filter @fbd/server dev -- --fake-clock` el servidor usa un
 reloj simulado que se adelanta con `POST /api/dev/reloj/avanzar { "ms": … }`: sirve para probar plazos
 de turno, preparación y jornada sin esperar.
 
+### Ajustar las cartas
+
+Las cartas de Core se editan en `data/core-real.json` (su única fuente). Tras cada ajuste:
+
+```bash
+pnpm datos                      # valida core-real.json, regenera su sumario y lo carga en la base de datos
+```
+
+`pnpm datos` encadena `pnpm --filter @fbd/fixtures core-real` (valida los datos y regenera
+`specs/008-datos-reales-core/sumario.md`) y `pnpm seed` (actualiza las cartas por id; si algo no es válido, no carga
+nada). Modificar cartas existentes no afecta a los usuarios; solo al añadir cartas nuevas a una colección de pago ya
+vendida, el seed se las entrega a sus compradores (o les da fragmentos si ya las tenían).
+
+Después, **reinicia `pnpm dev`**: el servidor carga el catálogo en memoria al arrancar, así que el draft y los partidos
+no ven los cambios hasta reiniciarlo (la portada y las fichas leen la base de datos y los ven al momento). Cuando los
+ajustes estén listos, confírmalos con el sumario:
+
+```bash
+git add data/core-real.json specs/008-datos-reales-core/sumario.md
+git commit -m "datos(core): ajustes de cartas"
+```
+
 ### Estructura
 
 | Carpeta | Contenido |

@@ -1,6 +1,6 @@
 # Roadmap de Fútboosterdraft
 
-**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 (actualizado el 2026-11-02) · **Constitución**: 1.2.0
+**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 (actualizado el 2026-11-02) · **Constitución**: 1.3.0
 
 Este documento es la *spec de specs* del proyecto: agrupa las especificaciones de `specs/` en iniciativas de
 producto, fija su orden y dice cuándo se da por cerrada cada una. No sustituye a las specs: cada iniciativa remite

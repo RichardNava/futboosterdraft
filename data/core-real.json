@@ -2489,20 +2489,19 @@
       "historia": "Central formado en el Sochaux que creció en el RB Leipzig. En el Liverpool ha ganado dos Premier League, la FA Cup y la Copa de la Liga. Subcampeón del Mundo con Francia en 2022.",
       "stats": {
         "velocidad": 86,
-        "tecnica": 74,
-        "tackling": 86,
-        "anticipacion": 84,
-        "marcaje": 86,
-        "liderazgo": 82
+        "tecnica": 78,
+        "tackling": 84,
+        "anticipacion": 82,
+        "marcaje": 84,
+        "liderazgo": 80
       },
-      "media": 83,
+      "media": 82.33,
       "virtudes": [
         "Potente",
-        "Volador",
         "Robusto"
       ],
       "defectos": [],
-      "nivel": "Legendario",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/ibrahima-konate.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -2688,21 +2687,22 @@
       "historia": "Central que pasó por el Salzburgo y el RB Leipzig antes de llegar al Bayern de Múnich, con el que ha ganado varias Bundesligas. Subcampeón del Mundo con Francia en 2022. Potente, aunque a veces precipitado.",
       "stats": {
         "velocidad": 86,
-        "tecnica": 78,
-        "tackling": 84,
-        "anticipacion": 82,
-        "marcaje": 84,
-        "liderazgo": 80
+        "tecnica": 74,
+        "tackling": 86,
+        "anticipacion": 84,
+        "marcaje": 86,
+        "liderazgo": 82
       },
-      "media": 82.33,
+      "media": 83,
       "virtudes": [
         "Potente",
+        "Volador",
         "Robusto"
       ],
       "defectos": [
         "Impulsivo"
       ],
-      "nivel": "Crack",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos/dayot-upamecano.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
@@ -3773,7 +3773,8 @@
       "demarcacion": "MED",
       "posicion": [
         "MCO",
-        "MII"
+        "MII",
+        "EI"
       ],
       "historia": "Mediapunta zurdo de la cantera del Villarreal, uno de los máximos asistentes de LaLiga. En 2025 fichó por el Atlético de Madrid. Internacional con España y oro olímpico en París 2024.",
       "stats": {
@@ -4428,21 +4429,20 @@
       "historia": "Centrocampista formado en el Brescia que ganó la Serie A de 2022 con el Milan. Fichó por el Newcastle, donde cumplió una larga sanción por apuestas antes de recuperar su nivel. Internacional con Italia.",
       "stats": {
         "velocidad": 78,
-        "tecnica": 84,
-        "pase": 84,
-        "posicionamiento": 84,
-        "vision": 82,
-        "disparo": 78
+        "tecnica": 82,
+        "pase": 80,
+        "posicionamiento": 80,
+        "vision": 81,
+        "disparo": 75
       },
-      "media": 81.67,
+      "media": 79.33,
       "virtudes": [
-        "BoxToBox",
-        "Presionador"
+        "BoxToBox"
       ],
       "defectos": [
         "Polemico"
       ],
-      "nivel": "Crack",
+      "nivel": "Superclase",
       "imagen": "/cartas/retratos/sandro-tonali.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
@@ -6029,18 +6029,19 @@
       "historia": "Extremo marfileño formado en Estados Unidos que debutó en LaLiga con el Leganés. En 2025 fichó por el RB Leipzig. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
         "velocidad": 90,
-        "regate": 82,
-        "finalizacion": 70,
-        "desmarque": 72,
-        "creatividad": 70,
-        "agresividad": 64
+        "regate": 86,
+        "finalizacion": 80,
+        "desmarque": 82,
+        "creatividad": 78,
+        "agresividad": 82
       },
-      "media": 74.67,
+      "media": 83,
       "virtudes": [
-        "Desbordante"
+        "Desbordante",
+        "Filigranas"
       ],
       "defectos": [],
-      "nivel": "Superclase",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/yan-diomande.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
@@ -6092,12 +6093,12 @@
       "stats": {
         "velocidad": 93,
         "regate": 86,
-        "finalizacion": 78,
-        "desmarque": 82,
-        "creatividad": 78,
-        "agresividad": 68
+        "finalizacion": 79,
+        "desmarque": 83,
+        "creatividad": 79,
+        "agresividad": 69
       },
-      "media": 80.83,
+      "media": 81.5,
       "virtudes": [
         "Desbordante",
         "Revulsivo"
@@ -6281,22 +6282,21 @@
       ],
       "historia": "Delantero surgido del Palmeiras que ganó cuatro Premier League con el Manchester City. En el Arsenal sufrió una grave lesión de rodilla. Campeón de la Copa América 2019 y oro olímpico en 2016 con Brasil.",
       "stats": {
-        "velocidad": 86,
-        "regate": 86,
+        "velocidad": 82,
+        "regate": 82,
         "finalizacion": 80,
-        "desmarque": 84,
-        "creatividad": 78,
-        "agresividad": 84
+        "desmarque": 80,
+        "creatividad": 74,
+        "agresividad": 78
       },
-      "media": 83,
+      "media": 79.33,
       "virtudes": [
-        "Presionador",
-        "Versatil"
+        "Presionador"
       ],
       "defectos": [
         "Fragil"
       ],
-      "nivel": "Crack",
+      "nivel": "Superclase",
       "imagen": "/cartas/retratos/gabriel-jesus.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
@@ -9093,21 +9093,22 @@
       ],
       "historia": "Centrocampista de la cantera del Barcelona que debutó con 17 años. Golden Boy y Trofeo Kopa en 2022, ganó la Liga de Naciones de 2023 con España. Una grave lesión de rodilla frenó su carrera.",
       "stats": {
-        "velocidad": 78,
-        "tecnica": 82,
-        "pase": 80,
-        "posicionamiento": 78,
+        "velocidad": 79,
+        "tecnica": 85,
+        "pase": 81,
+        "posicionamiento": 83,
         "vision": 80,
-        "disparo": 72
+        "disparo": 76
       },
-      "media": 78.33,
+      "media": 80.67,
       "virtudes": [
-        "Presionador"
+        "Presionador",
+        "RecuperadorTrasPerdida"
       ],
       "defectos": [
         "Impulsivo"
       ],
-      "nivel": "Superclase",
+      "nivel": "Crack",
       "imagen": "/cartas/retratos/gavi.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },

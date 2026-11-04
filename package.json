@@ -18,6 +18,7 @@
     "e2e": "pnpm --filter @fbd/web e2e",
     "balance": "pnpm --filter @fbd/balance balance",
     "seed": "pnpm --filter @fbd/server seed",
+    "datos": "pnpm --filter @fbd/fixtures core-real && pnpm seed",
     "db:migrate": "pnpm --filter @fbd/server db:migrate",
     "generar-core": "pnpm --filter @fbd/fixtures generar-core"
   },

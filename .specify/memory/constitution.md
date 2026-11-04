@@ -1,17 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.1 → 1.2.0 (MINOR: «habilidades especiales» pasa a «virtudes y defectos»; el
-  Principio V aclara que el motor único resuelve los partidos y que el modo Duelo de jugadores usa una
-  función de dominio; se añaden decisiones resueltas de las specs 003 y 005). Aplica, rebasadas sobre la
-  1.1.1, las propuestas `specs/003-mejoras-ux-simulacion/propuesta-constitucion-1.0.5.md` (T126) y
-  `specs/005-virtudes-defectos/propuesta-constitucion-1.2.0.md` (T102); ROADMAP INI-09
-- Principios modificados: I, III, IV, V y IX (vocabulario y alcance; sin cambio de sentido). El
-  Principio IV añade que cada virtud y cada defecto tiene prueba de unidad y comprobación estadística
-- Secciones modificadas: Visión y propósito, Decisiones resueltas, Decisiones aún pendientes
+- Version change: 1.2.0 → 1.3.0 (MINOR: se añade el Principio XI, «La interfaz debe mostrar lo
+  importante sin desplazarse»)
+- Principios modificados: ninguno
+- Principios añadidos: XI
+- Secciones modificadas: Core Principles
 - Secciones añadidas: ninguna
 - Secciones eliminadas: ninguna
-- Decisiones resueltas: + niveles de los NPC, equipaciones y tipo de simulación (spec 003);
-  + virtudes y defectos, + modo Duelo de jugadores (spec 005)
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
 - TODOs pendientes: ninguno
 -->
@@ -191,6 +186,17 @@ relacionados. Las decisiones técnicas concretas se documentan en la fase de pla
 - Se prioriza una primera versión funcional que valide el ciclo central del juego (draft →
   alineación → partido) antes de ampliar su complejidad.
 
+### XI. La interfaz debe mostrar lo importante sin desplazarse
+
+- Evitar el desplazamiento es una máxima de experiencia de usuario: en cada pantalla, la información
+  principal y la acción principal DEBEN verse sin desplazarse en las pantallas de referencia (portátil y
+  escritorio), siempre que quepan.
+- El espacio disponible DEBE aprovecharse antes de recurrir al desplazamiento: en pantallas anchas, la
+  información se reparte en columnas en lugar de apilarse en una sola.
+- El desplazamiento solo se acepta cuando la información es demasiada para la pantalla (por ejemplo, el
+  cuadro de un playoff de 16 o una lista larga). En ese caso, lo más importante DEBE quedar arriba.
+- En móvil se permite apilar en una sola columna, con el mismo orden de importancia.
+
 ## Criterios de aceptación de alto nivel
 
 1. Los participantes pueden completar un draft de tres sobres de ocho cartas, con selección
@@ -315,4 +321,4 @@ persona, que revisa los cambios antes de confirmarlos.
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.2.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-02
+**Version**: 1.3.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-04

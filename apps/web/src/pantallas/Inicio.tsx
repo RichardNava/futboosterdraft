@@ -1,12 +1,12 @@
+import type { Jugador, Nivel } from '@fbd/domain';
 import { useEffect, useState, type CSSProperties, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { BandejaAvisos } from '../componentes/BandejaAvisos';
-import { CartaJugador } from '../componentes/CartaJugador';
+import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { Icono } from '../componentes/Icono';
 import { Estadio } from '../componentes/arte/Estadio';
 import { SobreArte } from '../componentes/arte/SobreArte';
-import { CARTAS_MUESTRA } from '../textos/cartasMuestra';
 import { useSesion } from '../estado/sesion';
 import { destinoPartida, type PartidaResumen } from './MisPartidas';
 
@@ -195,8 +195,32 @@ export function Inicio() {
  * Composición de la portada (spec 004, FR-045): el sobre recién abierto con cuatro cartas reales en abanico, una por
  * nivel y al azar entre las mejores de cada uno, bajo los focos del estadio. Decorativa e inerte: no recibe el foco ni la lee el lector de pantalla.
  */
+const NIVELES_PORTADA: Nivel[] = ['Superclase', 'Crack', 'Legendario', 'GOAT'];
+
+/** Del catálogo oficial (colección Core), una carta al azar entre las cuatro de media más alta de cada nivel. */
+export function cartasPortada(catalogo: readonly (Jugador & { colecciones?: string[] })[], azar = Math.random): CartaResumen[] {
+  return NIVELES_PORTADA.flatMap((nivel) => {
+    const grupo = catalogo
+      .filter((j) => j.nivel === nivel && j.colecciones?.includes('core'))
+      .sort((a, b) => b.media - a.media)
+      .slice(0, 4);
+    const j = grupo[Math.floor(azar() * grupo.length)];
+    return j ? [{ ...j, nombreCarta: j.nombre_carta, imagenBg: j.imagen_bg, stats: j.stats as unknown as Record<string, number> }] : [];
+  });
+}
+
 function EscenaPortada() {
-  const [cartas] = useState(() => CARTAS_MUESTRA.map((grupo) => grupo[Math.floor(Math.random() * grupo.length)]!));
+  const [cartas, setCartas] = useState<CartaResumen[]>([]);
+  useEffect(() => {
+    let vigente = true;
+    // Sin catálogo (servidor caído), la escena queda con el sobre y el estadio.
+    api<Jugador[]>('/api/catalogo/jugadores')
+      .then((c) => vigente && setCartas(cartasPortada(c)))
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, []);
   return (
     <div className="portada-escena" aria-hidden="true" inert>
       <Estadio className="portada-estadio" />

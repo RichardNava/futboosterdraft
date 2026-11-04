@@ -2620,7 +2620,7 @@ html {
 @media (min-width: 1024px) {
   .torneo-cuerpo {
     display: grid;
-    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
     gap: var(--espacio-8);
     align-items: start;
   }
@@ -2631,6 +2631,59 @@ html {
 
   .torneo-resumen > :last-child {
     margin-bottom: 0;
+  }
+
+  /* En la columna, el cartel apila rival y selector, con el rival más pequeño. */
+  .torneo-resumen .partido-cartel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espacio-4);
+    margin-bottom: var(--espacio-6);
+    padding: var(--espacio-5);
+  }
+
+  .torneo-resumen .partido-cartel-rival {
+    font-size: clamp(28px, 2.4vw, 40px);
+  }
+
+  /* Selector de modo compacto: dos losetas lado a lado con icono y nombre; el detalle, solo para el lector. */
+  .torneo-resumen .selector-modo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--espacio-2);
+  }
+
+  .torneo-resumen .selector-modo label {
+    gap: var(--espacio-2);
+    padding: var(--espacio-2) var(--espacio-3);
+  }
+
+  .torneo-resumen .selector-modo-icono {
+    grid-row: auto;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+  }
+
+  .torneo-resumen .selector-modo-texto {
+    padding-right: var(--espacio-4);
+  }
+
+  .torneo-resumen .selector-modo-texto strong {
+    font-size: var(--texto-cuerpo);
+    line-height: 1.15;
+  }
+
+  .torneo-resumen .selector-modo-texto .nota {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .torneo-resumen .selector-modo input {
+    top: var(--espacio-2);
+    right: var(--espacio-2);
   }
 }
 
@@ -2668,12 +2721,17 @@ html {
   padding-bottom: var(--espacio-2);
 }
 
+/* El título de cada ronda arriba; sus cruces, repartidos en el alto que queda (centrados entre los de la anterior). */
 .ronda {
-  display: grid;
-  flex: 1 1 200px;
+  display: flex;
+  flex: 1 1 160px;
+  flex-direction: column;
   gap: var(--espacio-3);
-  align-content: space-around;
-  min-width: 200px;
+  min-width: 160px;
+}
+
+.ronda > .cruce {
+  margin-block: auto;
 }
 
 .ronda h3 {
@@ -2691,11 +2749,16 @@ html {
   box-shadow: var(--sombra-panel);
 }
 
+/* Dos líneas por equipo, nombre y nivel, sin recortar: el nombre parte en varias líneas si hace falta. */
 .cruce > span {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-2);
+  display: grid;
+  justify-items: start;
+  gap: var(--espacio-1);
   padding: var(--espacio-2) var(--espacio-3);
+}
+
+.cruce-nombre {
+  overflow-wrap: anywhere;
 }
 
 .cruce > span + span {
