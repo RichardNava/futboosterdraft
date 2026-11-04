@@ -128,14 +128,14 @@ describe('tienda (spec 006)', () => {
   });
 
   describe('colecciones (US5)', () => {
-    it('Top Argentinos con 3 ya poseídas: el resto activas y 175 fragmentos por duplicados; repetir devuelve lo mismo', async () => {
+    it('Top Argentinos con 3 ya poseídas: el resto activas y 150 fragmentos por duplicados; repetir devuelve lo mismo', async () => {
       const u = await crearRegistradoConColeccion(srv);
       const idCompra = randomUUID();
       const r = await comprarColeccion(u, 'top-argentinos', idCompra);
       expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
-      // Las 3 de Core (Superclase, Crack y GOAT) ya las tiene: 25 + 50 + 100.
-      expect(r.cuerpo.fragmentos).toBe(175);
-      expect(r.cuerpo.duplicados.map((d: any) => d.fragmentos).sort((a: number, b: number) => a - b)).toEqual([25, 50, 100]);
+      // Las 3 de Core (Guido Rodríguez Superclase, Lisandro Martínez Crack y Dibu Martínez Legendario) ya las tiene: 25 + 50 + 75.
+      expect(r.cuerpo.fragmentos).toBe(150);
+      expect(r.cuerpo.duplicados.map((d: any) => d.fragmentos).sort((a: number, b: number) => a - b)).toEqual([25, 50, 75]);
       expect(r.cuerpo.cartas).toHaveLength(39);
       const nuevas = (await cartasDe(u)).filter((c) => c.via === 'coleccion');
       expect(nuevas).toHaveLength(39);
@@ -144,7 +144,7 @@ describe('tienda (spec 006)', () => {
       const otra = await comprarColeccion(u, 'top-argentinos');
       expect(otra.estado).toBe(409);
       expect(otra.cuerpo.error.codigo).toBe('COLECCION_ADQUIRIDA');
-      expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 175, suma: 175 });
+      expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 150, suma: 150 });
     });
 
     it('core o un id inexistente: 404 PRODUCTO_NO_ENCONTRADO', async () => {
@@ -202,7 +202,7 @@ describe('tienda (spec 006)', () => {
         expect((await cartasDe(u)).find((c) => c.jugador_id === 301)).toMatchObject({ via: 'coleccion', activa: true });
         const sv = await saldoYSuma(bd.db, v.id);
         expect(sv.saldo).toBe(sv.suma);
-        expect(sv.saldo).toBe(175 + ({ Superclase: 25, Crack: 50, Legendario: 75, GOAT: 100 } as Record<string, number>)[await nivelDe(301)]!);
+        expect(sv.saldo).toBe(150 + ({ Superclase: 25, Crack: 50, Legendario: 75, GOAT: 100 } as Record<string, number>)[await nivelDe(301)]!);
       } finally {
         await cargarCatalogo(bd.db, lote.jugadores, lote.colecciones);
       }

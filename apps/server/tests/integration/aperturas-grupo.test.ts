@@ -61,7 +61,10 @@ describe('grupo de aperturas (spec 010, US2)', () => {
       await s.esperar('estado');
     }
     await peticion(srv.url, `/api/partidas/${partidaId}/iniciar`, { metodo: 'POST', cookie: usuarios[0]!.cookie });
-    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, usuarios[0]!)).jornadaActual === 1);
+    // Por WS y no por HTTP: `jornadaActual` ya vale 1 con la jornada pendiente, y el aviso de su apertura llegaría
+    // después y contaría como una emisión más en los tests que miden `torneo.actualizado`.
+    const abierta = (s: ClienteWs) => s.recibidos.some((m) => m.t === 'torneo.actualizado' && (m as any).jornadas?.[0]?.estado === 'abierta');
+    await avanzarHasta(srv, 46_000, async () => usuarios.every((u) => abierta(ws.get(u.id)!)));
     const c = await srv.gestor.obtenerOError(partidaId);
     const cruces: Cruce[] = [...c.jornada!.cruces];
     expect(cruces).toHaveLength(4);
