@@ -37,11 +37,12 @@ export async function misPartidas(gestor: GestorPartidas, usuarioId: string): Pr
     const resumen: PartidaResumen = {
       id: partida.id,
       modo: partida.modo,
-      fase: partida.estado,
+      // Quien abandonó la ve como abandonada aunque la sigan jugando otros: no hay «Continuar».
+      fase: participante?.controladoPorNPC ? 'abandonada' : partida.estado,
       nombreEquipo: c && participante ? c.nombreDe(participante) : '',
       actualizadaEn: partida.actualizadaEn.toISOString(),
     };
-    if (c && EN_CURSO.has(partida.estado)) {
+    if (c && EN_CURSO.has(resumen.fase)) {
       Object.assign(resumen, await c.ejecutar(() => accionYRival(c, participanteId)));
       enCurso.push(resumen);
     } else terminadas.push(resumen);

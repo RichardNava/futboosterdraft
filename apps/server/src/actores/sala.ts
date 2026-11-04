@@ -76,7 +76,8 @@ export function programarBusqueda(c: ControladorPartida): void {
 }
 
 export async function unirse(c: ControladorPartida, ctx: ContextoComando, usuarioId: string): Promise<string> {
-  const existente = c.participanteDeUsuario(usuarioId);
+  const existente = c.participantes.find((p) => p.usuarioId === usuarioId);
+  if (existente?.controladoPorNPC) throw errores.prohibido('NO_PARTICIPA', 'Abandonaste esta partida');
   if (existente) return existente.id;
   if (c.partida.estado !== 'buscando') throw errores.conflicto('PARTIDA_INICIADA', 'La partida ya ha empezado');
   const humanos = c.humanos().length;

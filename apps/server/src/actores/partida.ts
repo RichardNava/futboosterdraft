@@ -117,8 +117,9 @@ export class ControladorPartida {
     return this.participantes.find((p) => p.id === participanteId);
   }
 
+  /** Plaza del usuario mientras la juega él: si la abandonó (la juega un NPC), ya no tiene acceso a la partida. */
   participanteDeUsuario(usuarioId: string): FilaParticipante | undefined {
-    return this.participantes.find((p) => p.usuarioId === usuarioId);
+    return this.participantes.find((p) => p.usuarioId === usuarioId && !p.controladoPorNPC);
   }
 
   humanos(): FilaParticipante[] {

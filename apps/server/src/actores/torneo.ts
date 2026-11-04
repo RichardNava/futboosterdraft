@@ -703,6 +703,12 @@ export async function abandonar(c: ControladorPartida, ctx: ContextoComando, par
   await c.servicios.repoPartidas.pasarANPC(participanteId);
   p.controladoPorNPC = true;
   p.nivelNPC = 'intermedio';
+  // Sin humanos activos nadie abriría las jornadas manuales y la partida quedaría atascada: se da por abandonada.
+  if (!c.participantes.some((x) => x.tipo === 'humano' && !x.controladoPorNPC)) {
+    const { abandonarPartidaInvitado } = await import('./sala');
+    await abandonarPartidaInvitado(c, ctx);
+    return;
+  }
   // En el draft (spec 002, FR-019): el NPC que ocupa su plaza elige ya si no lo había hecho.
   if (c.partida.estado === 'en_draft') {
     const { abandonarDraft } = await import('./draft');

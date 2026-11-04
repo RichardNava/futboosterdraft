@@ -109,10 +109,28 @@ describe('torneo de un humano y abandonos (spec 001/US4; spec 002/US11)', () => 
     await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, a)).jornadaActual === 1);
     const abandono = await peticion(srv.url, `/api/partidas/${partidaId}/abandonar`, { metodo: 'POST', cookie: b.cookie });
     expect(abandono.cuerpo.controladoPorNPC).toBe(true);
+    // b ya no puede volver: no la tiene en curso ni puede ver el torneo.
+    const mias = await peticion(srv.url, '/api/mis-partidas', { cookie: b.cookie });
+    expect(mias.cuerpo.enCurso).toEqual([]);
+    expect(mias.cuerpo.terminadas[0]).toMatchObject({ id: partidaId, fase: 'abandonada' });
+    expect((await peticion(srv.url, `/api/partidas/${partidaId}/torneo`, { cookie: b.cookie })).estado).toBe(403);
     // El torneo termina aunque b no vuelva. Tras el abandono, a es el único humano activo: sin plazos, juega
     // su partido y abre la siguiente jornada cuando quiere (research R9).
     await jugarSolo(srv, partidaId, a, async () => (await torneo(srv, partidaId, a)).campeon !== null);
     expect((await torneo(srv, partidaId, a)).siguienteJornada).toBe('manual');
+    parar();
+    await ws.cerrar();
+  });
+
+  it('si abandona el único humano, la partida queda abandonada y no se puede continuar', async () => {
+    const u = await crearRegistrado(srv.url);
+    const { partidaId, ws, parar } = await crear(u, { modo: 'liga', numParticipantes: 4 });
+    await avanzarHasta(srv, 46_000, async () => (await torneo(srv, partidaId, u)).jornadaActual === 1);
+    const abandono = await peticion(srv.url, `/api/partidas/${partidaId}/abandonar`, { metodo: 'POST', cookie: u.cookie });
+    expect(abandono.cuerpo.estado).toBe('abandonada');
+    const mias = await peticion(srv.url, '/api/mis-partidas', { cookie: u.cookie });
+    expect(mias.cuerpo.enCurso).toEqual([]);
+    expect(mias.cuerpo.terminadas[0]).toMatchObject({ id: partidaId, fase: 'abandonada' });
     parar();
     await ws.cerrar();
   });
