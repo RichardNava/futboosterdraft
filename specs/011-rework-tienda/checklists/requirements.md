@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain — quedan 3 (FR-001 = Q1, FR-008 = Q2, FR-010 = Q3)
+- [x] No [NEEDS CLARIFICATION] markers remain (Q1 = A, Q2 = A, Q3 = A, sesión 2026-11-04)
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,5 +31,5 @@
 
 ## Notes
 
-- Las tres preguntas se resuelven en `/speckit-clarify`. FR-002 depende de la Q1 (solo aplica si Q1 = A).
+- Las tres preguntas están resueltas en la sección «Clarifications» de la spec.
 - La investigación de derechos está en [derechos-imagen.md](../derechos-imagen.md), separada de la spec.

@@ -68,6 +68,9 @@ Términos:
   retratos nuevos antes de la implementación; la spec los incorpora y sustituye todos los de Transfermarkt.
 - Q: ¿Cómo se cambia el ajuste de identidad y a qué afecta? → A: se cambia sin reiniciar el servidor y solo afecta a
   las partidas nuevas; las que están en curso terminan con la identidad con la que empezaron.
+- Dato aportado (plan): precios de escudo 0,25 € o 250 fragmentos y pack de 5 por 0,99 €; de diseño de sobre 0,50 € o
+  250 fragmentos y pack de 5 por 1,99 €. La posición del carrusel se guarda por cuenta. Un invitado que no elige escudo
+  se muestra con el círculo de color, como hasta ahora.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -213,8 +216,9 @@ ambos modos y comprobar que el resultado es idéntico.
 
 **Escudos**
 
-- **FR-005**: Cada cuenta DEBE tener un escudo en todo momento: el elegido o, si no ha elegido, uno gratuito asignado de
-  forma estable a partir de la cuenta. Los NPC reciben un escudo gratuito por partida.
+- **FR-005**: Cada cuenta registrada DEBE tener un escudo en todo momento: el elegido o, si no ha elegido, uno gratuito
+  asignado de forma estable a partir de la cuenta. Los NPC reciben un escudo gratuito por partida. Un invitado que no
+  elige escudo se muestra con el círculo de color, como hasta ahora.
 - **FR-006**: «Mi perfil» y las pantallas donde se elige el nombre del equipo al crear o unirse a una partida DEBEN
   ofrecer un selector con los escudos disponibles para esa persona (gratuitos y comprados) y mostrar los de pago no
   comprados como bloqueados con acceso a la tienda. Los invitados solo ven los gratuitos.
@@ -303,7 +307,9 @@ ambos modos y comprobar que el resultado es idéntico.
 
 - La investigación legal es orientativa; la decisión final puede cambiar con la respuesta de FIFPRO o una consulta
   con un abogado, y el plan B de identidad (US4) sirve para cualquiera de las opciones.
-- Los precios de cada cosmético se fijan en el plan; todos los de pago del mismo tipo pueden tener el mismo precio.
+- Precios: escudo de pago 0,25 € o 250 fragmentos, pack de 5 escudos 0,99 €; diseño de sobre 0,50 € o 250 fragmentos,
+  pack de 5 diseños 1,99 €. Los packs solo se pagan con dinero real. Otros cosméticos, en próximas specs.
+- La preferencia de sobre y la posición del carrusel se guardan en la cuenta, no en el dispositivo.
 - El pago con dinero real sigue simulado hasta INI-12 (006/FR-031).
 - Los escudos y diseños de sobre son arte propio del proyecto; hay que revisar que ningún escudo se parezca a uno real.
 - No hay cuentas premium ni pase de temporada en esta spec.

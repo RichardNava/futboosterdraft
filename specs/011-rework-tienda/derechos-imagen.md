@@ -31,16 +31,27 @@
   retiradas (negociación individual), ni escudos ni nombres de clubes, ligas o selecciones (licencias aparte), y ha
   sido discutida por agentes (Raiola, Ibrahimović, 2020). Hay noticias sin confirmar de que la AFE española habría
   salido de FIFPRO; si fuera así, los jugadores de LaLiga necesitarían otra vía.
-- **Consecuencia para el catálogo actual**: Core mezcla activos y leyendas (GOAT y Legendarias). Aunque FIFPRO
-  aceptara, **las leyendas quedarían fuera**, y son el principal reclamo de las rarezas altas.
+- **Consecuencia para el catálogo actual** (corregido el 2026-11-04): los 300 jugadores de Core están **en activo**;
+  «Legendario» y «GOAT» son solo rarezas. Todo Core es, a priori, licenciable vía FIFPRO. Matiz a confirmar con
+  FIFPRO: la licencia llega a través de los sindicatos afiliados, y algunos jugadores juegan en ligas donde no consta
+  un sindicato afiliado (p. ej. Arabia Saudí o la MLS). Conviene preguntar por ellos en el correo. Las leyendas
+  retiradas solo serían un problema en colecciones futuras.
 
 ## 3. Riesgos que no son FIFPRO (y suelen llegar antes)
 
-1. **Derechos de autor de los retratos**. Si los 250 retratos de la 008 salen de fotografías de internet (aunque se
-   hayan recortado o retocado), el riesgo es del fotógrafo o de la agencia, no del jugador. Las agencias (Getty y
-   otras) rastrean la web de forma automática y envían reclamaciones con importe a sitios pequeños. Es **el riesgo más
-   probable a corto plazo**. Si los retratos son ilustraciones generadas o propias, este riesgo baja (pero se
-   mantiene el de imagen).
+1. **Derechos de autor de los retratos**. **Confirmado (2026-11-04)**: los 250 retratos de la 008 se obtuvieron por
+   *web scraping* de Transfermarkt. Eso suma tres problemas al de la imagen del jugador:
+   - **Las fotos tienen autor**: Transfermarkt las publica con licencia de agencias o clubes, y esa licencia no pasa
+     a quien las copia. Recortarlas o retocarlas no cambia nada: una obra derivada sin permiso también infringe.
+   - **Las condiciones de uso de Transfermarkt** prohíben extraer y reutilizar su contenido, y en la UE su base de
+     datos tiene además un derecho propio (*sui generis*).
+   - **Las agencias rastrean la web de forma automática** y envían reclamaciones con importe a sitios pequeños. Es
+     **el riesgo más probable a corto plazo**, mucho antes que FIFPRO.
+
+   **Voltear las imágenes no sirve.** Legalmente sigue siendo la misma foto. Técnicamente, los buscadores de imágenes
+   inversas y los servicios de rastreo comparan huellas que detectan espejados, recortes y cambios de color.
+   La salida es dejar de mostrarlas antes de la beta abierta y usar la silueta o retratos propios (ilustraciones),
+   que quitan el riesgo de autor aunque no el de imagen del jugador.
 2. **Pasarelas de pago y tiendas de aplicaciones**: pueden cerrar la cuenta ante una reclamación de derechos, con
    independencia de que llegue o no la demanda. Esto afecta a cualquier monetización (0.3 incluida).
 3. **Escudos y marcas**: los escudos de selecciones ya están desactivados (006/T087). Los escudos nuevos de esta spec
@@ -70,10 +81,11 @@ Un camino por fases que no cierra ninguna puerta:
 2. **Ya (esta spec)**: **capa de identidad** en las cartas. Cada carta tiene su identidad real y una identidad
    alternativa (nombre y retrato), y un único ajuste del servicio decide cuál se muestra, sin tocar stats ni
    resultados. Es el plan B para un «cese y desista»: cambiar en horas, no reescribir el catálogo. Las identidades
-   alternativas pueden rellenarse poco a poco (empezando por las leyendas fallecidas, que son las de más riesgo).
-3. **Antes de la beta abierta**: aclarar el origen de los retratos (punto 3.1) y hacer la consulta legal.
-4. **Si FIFPRO responde con una fórmula indie**: licenciar activos (0.6) y mantener las leyendas con identidad
-   alternativa hasta negociarlas una a una.
+   alternativas pueden rellenarse poco a poco.
+3. **Antes de la beta abierta**: sustituir los retratos de Transfermarkt por retratos manga propios (punto 3.1) y
+   hacer la consulta legal.
+4. **Si FIFPRO responde con una fórmula indie**: licenciar todo Core (0.6), porque todos están en activo. Las leyendas
+   retiradas de colecciones futuras se negociarían una a una o irían con identidad alternativa.
 
 ## Fuentes
 
