@@ -5,14 +5,17 @@
  * reproducción; la franja del partido 2D tiene su versión compacta, con `GoleadoresFranja` (ronda 4, FR-053).
  */
 import { contornoSobreLienzo } from './colores';
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
+import { urlEscudo, type Lado } from './chapa';
 import type { Goleador } from './goleadores';
 import { NombreRecortado } from './NombreRecortado';
 
 export interface EquipoMarcador {
   nombre: string;
-  /** Color principal de la equipación. */
+  /** Color principal de la equipación (o el de respaldo si los escudos coinciden, spec 011 R7). */
   color?: string;
+  /** Escudo del equipo (spec 011); sin él, el círculo de color. */
+  escudo?: string | null;
 }
 
 export interface MarcadorGoles {
@@ -21,8 +24,25 @@ export interface MarcadorGoles {
   penaltis?: { local: number; visitante: number };
 }
 
-/** Chapa del color de la equipación. */
-export function Chapa({ color }: { color?: string }) {
+/**
+ * Chapa del equipo: su escudo (spec 011, contracts/ui.md §1) o, sin él o si la imagen falla, el círculo del color de
+ * la equipación.
+ */
+export function Chapa({ color, escudo, nombre, lado }: { color?: string; escudo?: string | null; nombre?: string; lado?: Lado }) {
+  const [fallo, setFallo] = useState<string | null>(null);
+  if (escudo && fallo !== escudo) {
+    return (
+      <img
+        src={urlEscudo(escudo)}
+        alt={nombre ?? ''}
+        className="chapa chapa-escudo"
+        data-testid={lado ? `escudo-${lado}` : undefined}
+        width={64}
+        height={64}
+        onError={() => setFallo(escudo)}
+      />
+    );
+  }
   if (!color) return null;
   return <span className={contornoSobreLienzo(color) ? 'chapa con-contorno' : 'chapa'} style={{ background: color }} aria-hidden="true" />;
 }
@@ -72,7 +92,7 @@ export function GoleadoresFranja({
         if (goleadores[lado].length === 0) return null;
         return (
           <span key={lado} className="goleadores-2d-lado">
-            <Chapa color={equipo.color} />
+            <Chapa {...equipo} lado={lado} />
             <ListaGoleadores goleadores={goleadores[lado]} etiqueta={`Goles de ${equipo.nombre}`} />
           </span>
         );
@@ -85,7 +105,7 @@ export function Marcador({ local, visitante, marcador, fase, testIdGoles, golead
   return (
     <header className="marcador" aria-live="polite">
       <div className="equipo-marcador" style={{ '--color-equipo': local.color } as CSSProperties}>
-        <Chapa color={local.color} />
+        <Chapa {...local} lado="local" />
         <div className="equipo-marcador-texto">
           <NombreRecortado texto={local.nombre} como="strong" />
           {goleadores && <ListaGoleadores goleadores={goleadores.local} etiqueta={`Goles de ${local.nombre}`} />}
@@ -107,7 +127,7 @@ export function Marcador({ local, visitante, marcador, fase, testIdGoles, golead
           <NombreRecortado texto={visitante.nombre} como="strong" />
           {goleadores && <ListaGoleadores goleadores={goleadores.visitante} etiqueta={`Goles de ${visitante.nombre}`} />}
         </div>
-        <Chapa color={visitante.color} />
+        <Chapa {...visitante} lado="visitante" />
       </div>
     </header>
   );

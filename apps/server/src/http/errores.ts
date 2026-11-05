@@ -4,7 +4,7 @@
  */
 export class ErrorApi extends Error {
   constructor(
-    readonly estado: 400 | 401 | 403 | 404 | 409 | 422,
+    readonly estado: 400 | 401 | 403 | 404 | 409 | 410 | 422,
     readonly codigo: string,
     mensaje: string,
     readonly detalles: Record<string, unknown> = {},
@@ -20,6 +20,7 @@ export const errores = {
   sinSesion: () => new ErrorApi(401, 'SIN_SESION', 'Necesitas iniciar sesión o entrar como invitado'),
   prohibido: (codigo: string, mensaje: string) => new ErrorApi(403, codigo, mensaje),
   noEncontrado: (codigo: string, mensaje: string) => new ErrorApi(404, codigo, mensaje),
+  retirado: (codigo: string, mensaje: string) => new ErrorApi(410, codigo, mensaje),
   conflicto: (codigo: string, mensaje: string, detalles?: Record<string, unknown>) =>
     new ErrorApi(409, codigo, mensaje, detalles),
   regla: (codigo: string, mensaje: string, detalles?: Record<string, unknown>) =>

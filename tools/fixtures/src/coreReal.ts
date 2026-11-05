@@ -2,7 +2,8 @@
  * Validación y sumario de la colección Core (spec 008, research R7 y R11; contracts/datos-core-real.md).
  *
  * 1. Valida `data/core-real.json` (`validarColeccion`) y las invariantes del contrato: ids 1–N sin huecos, un
- *    retrato existente y distinto por ficha que cubra todos los de `apps/web/public/cartas/retratos/`, y el fondo
+ *    retrato propio existente y distinto por ficha que cubra todos los de `apps/web/public/cartas/retratos-propios/`
+ *    (spec 011, FR-021: ningún retrato de terceros, `/cartas/retratos/`), y el fondo
  *    genérico de su demarcación.
  * 2. Escribe `specs/008-datos-reales-core/sumario.md` con `sumarioCore` (FR-017 a FR-020).
  *
@@ -37,7 +38,10 @@ import {
 
 const RAIZ = fileURLToPath(new URL('../../../', import.meta.url));
 const PARTICIPANTES = 8;
-const RUTA_RETRATO = /^\/cartas\/retratos\/[a-z0-9-]+\.webp$/;
+/** Retratos propios (spec 011, research R5); `/cartas/retratos/` eran los de terceros y ya no se admiten (FR-021). */
+const PREFIJO_PROPIO = '/cartas/retratos-propios/';
+const PREFIJO_TERCEROS = '/cartas/retratos/';
+const RUTA_RETRATO = /^\/cartas\/retratos-propios\/[a-z0-9-]+\.webp$/;
 
 /** Bandas de media por nivel (spec 008, Contexto). GOAT no tiene techo. */
 const BANDAS: Readonly<Record<Nivel, [number, number]>> = {
@@ -173,6 +177,31 @@ export function mesasFallidas(pool: readonly Jugador[], mesas = 200): number {
   return fallos;
 }
 
+/**
+ * Identidad y retratos por rareza (spec 011, FR-020; research R13): total, con identidad alternativa, con retrato
+ * propio y con retrato de terceros, y la lista de las cartas que aún usan uno de terceros.
+ */
+export function seccionIdentidad(jugadores: readonly Jugador[]): string {
+  const l = [
+    '',
+    '## 7. Identidad y retratos (spec 011)',
+    '',
+    '| Rareza | Total | Con identidad alternativa | Retrato propio | Retrato de terceros |',
+    '|---|---:|---:|---:|---:|',
+  ];
+  for (const n of NIVELES) {
+    const de = jugadores.filter((j) => j.nivel === n);
+    const cuenta = (f: (j: Jugador) => boolean) => de.filter(f).length;
+    l.push(
+      `| ${ETIQUETA_NIVEL[n]} | ${de.length} | ${cuenta((j) => j.identidad_alternativa !== undefined)} | ${cuenta((j) => j.imagen.startsWith(PREFIJO_PROPIO))} | ${cuenta((j) => j.imagen.startsWith(PREFIJO_TERCEROS))} |`,
+    );
+  }
+  const terceros = jugadores.filter((j) => j.imagen.startsWith(PREFIJO_TERCEROS));
+  l.push('', terceros.length ? 'Cartas con retrato de terceros:' : 'Retratos de terceros: 0.', '');
+  for (const j of terceros) l.push(`- [${j.id}] ${j.nombre_carta}`);
+  return l.join('\n') + '\n';
+}
+
 /** Sumario en Markdown (T025). `generador`: mesas de 8 fallidas sobre las probadas con `core-real.json`. */
 export function sumarioMarkdown(s: SumarioCore, total: number, generador?: { fallos: number; mesas: number }): string {
   const l: string[] = [
@@ -252,8 +281,9 @@ export function validarCoreReal(jugadores: readonly Jugador[], retratos: readonl
   for (let id = 1; id <= jugadores.length; id++) if (!ids.has(id)) errores.push({ id, regla: 'id', mensaje: `Falta el id ${id}` });
   for (const j of jugadores) {
     if (!Number.isInteger(j.id) || j.id < 1 || j.id > jugadores.length) errores.push({ id: j.id, regla: 'id', mensaje: `El id debe estar entre 1 y ${jugadores.length}` });
-    if (!RUTA_RETRATO.test(j.imagen)) errores.push({ id: j.id, regla: 'imagen', mensaje: `"imagen" debe ser /cartas/retratos/<slug>.webp` });
-    else if (!retratos.includes(j.imagen.slice('/cartas/retratos/'.length))) errores.push({ id: j.id, regla: 'imagen', mensaje: `No existe ${j.imagen}` });
+    if (j.imagen.startsWith(PREFIJO_TERCEROS)) errores.push({ id: j.id, regla: 'imagen', mensaje: `Retrato de terceros (FR-021): ${j.imagen}` });
+    else if (!RUTA_RETRATO.test(j.imagen)) errores.push({ id: j.id, regla: 'imagen', mensaje: `"imagen" debe ser ${PREFIJO_PROPIO}<slug>.webp` });
+    else if (!retratos.includes(j.imagen.slice(PREFIJO_PROPIO.length))) errores.push({ id: j.id, regla: 'imagen', mensaje: `No existe ${j.imagen}` });
     const fondo = `/cartas/fondos/${String(j.demarcacion).toLowerCase()}.svg`;
     if (j.imagen_bg !== fondo) errores.push({ id: j.id, regla: 'imagen_bg', mensaje: `"imagen_bg" debe ser ${fondo}` });
   }
@@ -263,14 +293,14 @@ export function validarCoreReal(jugadores: readonly Jugador[], retratos: readonl
     usadas.set(j.imagen, j.id);
   }
   for (const r of retratos) {
-    if (!usadas.has(`/cartas/retratos/${r}`)) errores.push({ id: undefined, regla: 'imagen', mensaje: `El retrato ${r} no lo usa ninguna ficha` });
+    if (!usadas.has(`${PREFIJO_PROPIO}${r}`)) errores.push({ id: undefined, regla: 'imagen', mensaje: `El retrato ${r} no lo usa ninguna ficha` });
   }
   return errores;
 }
 
 function principal(): void {
   const rutaReal = resolve(RAIZ, 'data/core-real.json');
-  const dirRetratos = resolve(RAIZ, 'apps/web/public/cartas/retratos');
+  const dirRetratos = resolve(RAIZ, 'apps/web/public/cartas/retratos-propios');
   const rutaSumario = resolve(RAIZ, 'specs/008-datos-reales-core/sumario.md');
 
   // shortcut: el esquema JSON no se comprueba aquí (ajv solo está en apps/server); validarColeccion aplica las mismas
@@ -291,7 +321,7 @@ function principal(): void {
 
   const sumario = sumarioCore(real.jugadores, DISTRIBUCION_CORE);
   const generador = { fallos: mesasFallidas(jugadores), mesas: 200 };
-  writeFileSync(rutaSumario, sumarioMarkdown(sumario, real.jugadores.length, generador), 'utf-8');
+  writeFileSync(rutaSumario, sumarioMarkdown(sumario, real.jugadores.length, generador) + seccionIdentidad(real.jugadores), 'utf-8');
   console.log(`core-real: ${real.jugadores.length} cartas válidas en ${rutaReal}.`);
   console.log(`core-real: sumario en ${rutaSumario} (huecos ${sumario.huecos}, excesos ${sumario.excesos}).`);
   if (generador.fallos) console.warn(`core-real: AVISO: ${generador.fallos} de ${generador.mesas} mesas de 8 no se pueden generar.`);

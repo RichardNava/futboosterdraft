@@ -28,7 +28,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/senne-lammens.webp",
+      "imagen": "/cartas/retratos-propios/senne-lammens.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -58,7 +58,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/zion-suzuki.webp",
+      "imagen": "/cartas/retratos-propios/zion-suzuki.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -88,7 +88,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/james-trafford.webp",
+      "imagen": "/cartas/retratos-propios/james-trafford.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -118,7 +118,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/bart-verbruggen.webp",
+      "imagen": "/cartas/retratos-propios/bart-verbruggen.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -149,7 +149,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/lucas-chevalier.webp",
+      "imagen": "/cartas/retratos-propios/lucas-chevalier.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -181,7 +181,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/joan-garcia.webp",
+      "imagen": "/cartas/retratos-propios/joan-garcia.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -214,7 +214,7 @@
         "Torpe"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/andre-onana.webp",
+      "imagen": "/cartas/retratos-propios/andre-onana.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -247,7 +247,7 @@
         "Impulsivo"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/jordan-pickford.webp",
+      "imagen": "/cartas/retratos-propios/jordan-pickford.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -278,7 +278,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/mile-svilar.webp",
+      "imagen": "/cartas/retratos-propios/mile-svilar.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -309,7 +309,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/diogo-costa.webp",
+      "imagen": "/cartas/retratos-propios/diogo-costa.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -340,7 +340,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/gregor-kobel.webp",
+      "imagen": "/cartas/retratos-propios/gregor-kobel.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -371,7 +371,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/david-raya.webp",
+      "imagen": "/cartas/retratos-propios/david-raya.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -402,7 +402,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/unai-simon.webp",
+      "imagen": "/cartas/retratos-propios/unai-simon.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -435,7 +435,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/thibaut-courtois.webp",
+      "imagen": "/cartas/retratos-propios/thibaut-courtois.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -469,7 +469,7 @@
         "Provocador"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/emiliano-martinez.webp",
+      "imagen": "/cartas/retratos-propios/emiliano-martinez.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -504,7 +504,7 @@
         "Torpe"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/gianluigi-donnarumma.webp",
+      "imagen": "/cartas/retratos-propios/gianluigi-donnarumma.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -537,7 +537,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/manuel-neuer.webp",
+      "imagen": "/cartas/retratos-propios/manuel-neuer.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -570,7 +570,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/jan-oblak.webp",
+      "imagen": "/cartas/retratos-propios/jan-oblak.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -601,7 +601,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/honest-ahanor.webp",
+      "imagen": "/cartas/retratos-propios/honest-ahanor.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -632,7 +632,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/julian-araujo.webp",
+      "imagen": "/cartas/retratos-propios/julian-araujo.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -662,7 +662,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/berkay-yilmaz.webp",
+      "imagen": "/cartas/retratos-propios/berkay-yilmaz.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -692,7 +692,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jarrad-branthwaite.webp",
+      "imagen": "/cartas/retratos-propios/jarrad-branthwaite.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -723,7 +723,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/levi-colwill.webp",
+      "imagen": "/cartas/retratos-propios/levi-colwill.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -754,7 +754,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/maxim-de-cuyper.webp",
+      "imagen": "/cartas/retratos-propios/maxim-de-cuyper.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -788,7 +788,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/eric-garcia.webp",
+      "imagen": "/cartas/retratos-propios/eric-garcia.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -819,7 +819,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/gerard-martin.webp",
+      "imagen": "/cartas/retratos-propios/gerard-martin.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -850,7 +850,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jorrel-hato.webp",
+      "imagen": "/cartas/retratos-propios/jorrel-hato.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -880,7 +880,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jacobo-ramon.webp",
+      "imagen": "/cartas/retratos-propios/jacobo-ramon.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -910,7 +910,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jeremy-jacquet.webp",
+      "imagen": "/cartas/retratos-propios/jeremy-jacquet.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -940,7 +940,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jon-martin.webp",
+      "imagen": "/cartas/retratos-propios/jon-martin.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -971,7 +971,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/junior-firpo.webp",
+      "imagen": "/cartas/retratos-propios/junior-firpo.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1001,7 +1001,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/abdukodir-khusanov.webp",
+      "imagen": "/cartas/retratos-propios/abdukodir-khusanov.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1032,7 +1032,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ezri-konsa.webp",
+      "imagen": "/cartas/retratos-propios/ezri-konsa.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1062,7 +1062,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/maxence-lacroix.webp",
+      "imagen": "/cartas/retratos-propios/maxence-lacroix.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1093,7 +1093,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/lewis-hall.webp",
+      "imagen": "/cartas/retratos-propios/lewis-hall.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1124,7 +1124,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/myles-lewis-skelly.webp",
+      "imagen": "/cartas/retratos-propios/myles-lewis-skelly.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1155,7 +1155,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/tino-livramento.webp",
+      "imagen": "/cartas/retratos-propios/tino-livramento.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1186,7 +1186,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/castello-lukeba.webp",
+      "imagen": "/cartas/retratos-propios/castello-lukeba.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1217,7 +1217,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ian-maatsen.webp",
+      "imagen": "/cartas/retratos-propios/ian-maatsen.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1248,7 +1248,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/nathaniel-brown.webp",
+      "imagen": "/cartas/retratos-propios/nathaniel-brown.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1279,7 +1279,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/nico-o-reilly.webp",
+      "imagen": "/cartas/retratos-propios/nico-o-reilly.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1310,7 +1310,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/marco-palestra.webp",
+      "imagen": "/cartas/retratos-propios/marco-palestra.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1341,7 +1341,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/marc-pubill.webp",
+      "imagen": "/cartas/retratos-propios/marc-pubill.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1371,7 +1371,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jarell-quansah.webp",
+      "imagen": "/cartas/retratos-propios/jarell-quansah.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1402,7 +1402,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/geovany-quenda.webp",
+      "imagen": "/cartas/retratos-propios/geovany-quenda.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1433,7 +1433,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/rico-lewis.webp",
+      "imagen": "/cartas/retratos-propios/rico-lewis.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1463,7 +1463,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/malick-thiaw.webp",
+      "imagen": "/cartas/retratos-propios/malick-thiaw.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1493,7 +1493,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/joel-van-den-berg.webp",
+      "imagen": "/cartas/retratos-propios/joel-van-den-berg.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1524,7 +1524,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jan-paul-van-hecke.webp",
+      "imagen": "/cartas/retratos-propios/jan-paul-van-hecke.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1554,7 +1554,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/luka-vuskovic.webp",
+      "imagen": "/cartas/retratos-propios/luka-vuskovic.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1584,7 +1584,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/aaron-wan-bissaka.webp",
+      "imagen": "/cartas/retratos-propios/aaron-wan-bissaka.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1614,7 +1614,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/leny-yoro.webp",
+      "imagen": "/cartas/retratos-propios/leny-yoro.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1646,7 +1646,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/rayan-ait-nouri.webp",
+      "imagen": "/cartas/retratos-propios/rayan-ait-nouri.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1678,7 +1678,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/alvaro-carreras.webp",
+      "imagen": "/cartas/retratos-propios/alvaro-carreras.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1708,7 +1708,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/yann-bisseck.webp",
+      "imagen": "/cartas/retratos-propios/yann-bisseck.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1742,7 +1742,7 @@
         "Fragil"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/riccardo-calafiori.webp",
+      "imagen": "/cartas/retratos-propios/riccardo-calafiori.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1775,7 +1775,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/pau-cubarsi.webp",
+      "imagen": "/cartas/retratos-propios/pau-cubarsi.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1810,7 +1810,7 @@
         "Provocador"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/marc-cucurella.webp",
+      "imagen": "/cartas/retratos-propios/marc-cucurella.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1842,7 +1842,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/federico-dimarco.webp",
+      "imagen": "/cartas/retratos-propios/federico-dimarco.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1874,7 +1874,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/marc-guehi.webp",
+      "imagen": "/cartas/retratos-propios/marc-guehi.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1906,7 +1906,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/piero-hincapie.webp",
+      "imagen": "/cartas/retratos-propios/piero-hincapie.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1938,7 +1938,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/dean-huijsen.webp",
+      "imagen": "/cartas/retratos-propios/dean-huijsen.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -1970,7 +1970,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/milos-kerkez.webp",
+      "imagen": "/cartas/retratos-propios/milos-kerkez.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2004,7 +2004,7 @@
         "Fragil"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/lisandro-martinez.webp",
+      "imagen": "/cartas/retratos-propios/lisandro-martinez.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2035,7 +2035,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/murillo.webp",
+      "imagen": "/cartas/retratos-propios/murillo.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2067,7 +2067,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/ousmane-diomande.webp",
+      "imagen": "/cartas/retratos-propios/ousmane-diomande.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2099,7 +2099,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/willian-pacho.webp",
+      "imagen": "/cartas/retratos-propios/willian-pacho.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2131,7 +2131,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/pedro-porro.webp",
+      "imagen": "/cartas/retratos-propios/pedro-porro.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2164,7 +2164,7 @@
         "Impulsivo"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/nico-schlotterbeck.webp",
+      "imagen": "/cartas/retratos-propios/nico-schlotterbeck.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2197,7 +2197,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/jurrien-timber.webp",
+      "imagen": "/cartas/retratos-propios/jurrien-timber.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2232,7 +2232,7 @@
         "MalDefensor"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/trent-alexander-arnold.webp",
+      "imagen": "/cartas/retratos-propios/trent-alexander-arnold.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2267,7 +2267,7 @@
         "Fragil"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/alphonso-davies.webp",
+      "imagen": "/cartas/retratos-propios/alphonso-davies.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2300,7 +2300,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/alessandro-bastoni.webp",
+      "imagen": "/cartas/retratos-propios/alessandro-bastoni.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2336,7 +2336,7 @@
         "Polemico"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/joao-cancelo.webp",
+      "imagen": "/cartas/retratos-propios/joao-cancelo.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2370,7 +2370,7 @@
         "Provocador"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/daniel-carvajal.webp",
+      "imagen": "/cartas/retratos-propios/daniel-carvajal.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2404,7 +2404,7 @@
         "Agresivo"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/gabriel.webp",
+      "imagen": "/cartas/retratos-propios/gabriel.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2437,7 +2437,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/josko-gvardiol.webp",
+      "imagen": "/cartas/retratos-propios/josko-gvardiol.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2471,7 +2471,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/achraf-hakimi.webp",
+      "imagen": "/cartas/retratos-propios/achraf-hakimi.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2502,7 +2502,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/ibrahima-konate.webp",
+      "imagen": "/cartas/retratos-propios/ibrahima-konate.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2534,7 +2534,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/jules-kounde.webp",
+      "imagen": "/cartas/retratos-propios/jules-kounde.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2568,7 +2568,7 @@
       ],
       "defectos": ["Canchero"],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/nuno-mendes.webp",
+      "imagen": "/cartas/retratos-propios/nuno-mendes.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2602,7 +2602,7 @@
         "DeCristal"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/reece-james.webp",
+      "imagen": "/cartas/retratos-propios/reece-james.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2634,7 +2634,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/ruben-dias.webp",
+      "imagen": "/cartas/retratos-propios/ruben-dias.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2668,7 +2668,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/william-saliba.webp",
+      "imagen": "/cartas/retratos-propios/william-saliba.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2703,7 +2703,7 @@
         "Impulsivo"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/dayot-upamecano.webp",
+      "imagen": "/cartas/retratos-propios/dayot-upamecano.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2740,7 +2740,7 @@
         "Provocador"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/sergio-ramos.webp",
+      "imagen": "/cartas/retratos-propios/sergio-ramos.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2773,7 +2773,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/virgil-van-dijk.webp",
+      "imagen": "/cartas/retratos-propios/virgil-van-dijk.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -2805,7 +2805,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/aaron-ramsey.webp",
+      "imagen": "/cartas/retratos-propios/aaron-ramsey.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -2835,7 +2835,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/alex-scott.webp",
+      "imagen": "/cartas/retratos-propios/alex-scott.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -2866,7 +2866,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/andrey-santos.webp",
+      "imagen": "/cartas/retratos-propios/andrey-santos.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -2896,7 +2896,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/yasin-ayari.webp",
+      "imagen": "/cartas/retratos-propios/yasin-ayari.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -2927,7 +2927,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/carlos-baleba.webp",
+      "imagen": "/cartas/retratos-propios/carlos-baleba.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -2958,7 +2958,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/martin-baturina.webp",
+      "imagen": "/cartas/retratos-propios/martin-baturina.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -2989,7 +2989,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/tom-bischof.webp",
+      "imagen": "/cartas/retratos-propios/tom-bischof.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3021,7 +3021,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ayyoub-bouaddi.webp",
+      "imagen": "/cartas/retratos-propios/ayyoub-bouaddi.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3051,7 +3051,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/can-uzun.webp",
+      "imagen": "/cartas/retratos-propios/can-uzun.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3081,7 +3081,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/curtis-jones.webp",
+      "imagen": "/cartas/retratos-propios/curtis-jones.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3111,7 +3111,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/victor-froholdt.webp",
+      "imagen": "/cartas/retratos-propios/victor-froholdt.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3142,7 +3142,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/james-garner.webp",
+      "imagen": "/cartas/retratos-propios/james-garner.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3172,7 +3172,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/guido-rodriguez.webp",
+      "imagen": "/cartas/retratos-propios/guido-rodriguez.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3203,7 +3203,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/lamine-camara.webp",
+      "imagen": "/cartas/retratos-propios/lamine-camara.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3234,7 +3234,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/lennart-karl.webp",
+      "imagen": "/cartas/retratos-propios/lennart-karl.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3264,7 +3264,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/luis-milla.webp",
+      "imagen": "/cartas/retratos-propios/luis-milla.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3295,7 +3295,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/kobbie-mainoo.webp",
+      "imagen": "/cartas/retratos-propios/kobbie-mainoo.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3326,7 +3326,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/johan-manzambi.webp",
+      "imagen": "/cartas/retratos-propios/johan-manzambi.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3356,7 +3356,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/marc-bernal.webp",
+      "imagen": "/cartas/retratos-propios/marc-bernal.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3387,7 +3387,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/franco-mastantuono.webp",
+      "imagen": "/cartas/retratos-propios/franco-mastantuono.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3418,7 +3418,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/mateus-fernandes.webp",
+      "imagen": "/cartas/retratos-propios/mateus-fernandes.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3449,7 +3449,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/senny-mayulu.webp",
+      "imagen": "/cartas/retratos-propios/senny-mayulu.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3480,7 +3480,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ibrahim-maza.webp",
+      "imagen": "/cartas/retratos-propios/ibrahim-maza.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3511,7 +3511,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/alberto-moleiro.webp",
+      "imagen": "/cartas/retratos-propios/alberto-moleiro.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3542,7 +3542,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/felix-nmecha.webp",
+      "imagen": "/cartas/retratos-propios/felix-nmecha.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3573,7 +3573,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/aleksandar-pavlovic.webp",
+      "imagen": "/cartas/retratos-propios/aleksandar-pavlovic.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3604,7 +3604,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ismael-saibari.webp",
+      "imagen": "/cartas/retratos-propios/ismael-saibari.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3635,7 +3635,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/mamadou-sangare.webp",
+      "imagen": "/cartas/retratos-propios/mamadou-sangare.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3666,7 +3666,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/petar-sucic.webp",
+      "imagen": "/cartas/retratos-propios/petar-sucic.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3696,7 +3696,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/thiago-pitarch.webp",
+      "imagen": "/cartas/retratos-propios/thiago-pitarch.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3727,7 +3727,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/adam-wharton.webp",
+      "imagen": "/cartas/retratos-propios/adam-wharton.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3759,7 +3759,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/maghnes-akliouche.webp",
+      "imagen": "/cartas/retratos-propios/maghnes-akliouche.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3794,7 +3794,7 @@
         "Provocador"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/alex-baena.webp",
+      "imagen": "/cartas/retratos-propios/alex-baena.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3826,7 +3826,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/arda-guler.webp",
+      "imagen": "/cartas/retratos-propios/arda-guler.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3858,7 +3858,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/pablo-barrios.webp",
+      "imagen": "/cartas/retratos-propios/pablo-barrios.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3891,7 +3891,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/eduardo-camavinga.webp",
+      "imagen": "/cartas/retratos-propios/eduardo-camavinga.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3923,7 +3923,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/rayan-cherki.webp",
+      "imagen": "/cartas/retratos-propios/rayan-cherki.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3957,7 +3957,7 @@
         "Provocador"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/rodrigo-de-paul.webp",
+      "imagen": "/cartas/retratos-propios/rodrigo-de-paul.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -3989,7 +3989,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/elliot-anderson.webp",
+      "imagen": "/cartas/retratos-propios/elliot-anderson.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4020,7 +4020,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/eberechi-eze.webp",
+      "imagen": "/cartas/retratos-propios/eberechi-eze.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4054,7 +4054,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/fermin-lopez.webp",
+      "imagen": "/cartas/retratos-propios/fermin-lopez.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4087,7 +4087,7 @@
         "Provocador"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/morgan-gibbs-white.webp",
+      "imagen": "/cartas/retratos-propios/morgan-gibbs-white.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4118,7 +4118,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/morten-hjulmand.webp",
+      "imagen": "/cartas/retratos-propios/morten-hjulmand.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4151,7 +4151,7 @@
         "Fragil"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/boubacar-kamara.webp",
+      "imagen": "/cartas/retratos-propios/boubacar-kamara.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4183,7 +4183,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/manu-kone.webp",
+      "imagen": "/cartas/retratos-propios/manu-kone.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4217,7 +4217,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/marcos-llorente.webp",
+      "imagen": "/cartas/retratos-propios/marcos-llorente.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4250,7 +4250,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/matheus-nunes.webp",
+      "imagen": "/cartas/retratos-propios/matheus-nunes.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4282,7 +4282,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/morgan-rogers.webp",
+      "imagen": "/cartas/retratos-propios/morgan-rogers.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4314,7 +4314,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/nico-paz.webp",
+      "imagen": "/cartas/retratos-propios/nico-paz.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4346,7 +4346,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/pedro-goncalves.webp",
+      "imagen": "/cartas/retratos-propios/pedro-goncalves.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4378,7 +4378,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/tijjani-reijnders.webp",
+      "imagen": "/cartas/retratos-propios/tijjani-reijnders.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4410,7 +4410,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/angelo-stiller.webp",
+      "imagen": "/cartas/retratos-propios/angelo-stiller.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4443,7 +4443,7 @@
         "Polemico"
       ],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/sandro-tonali.webp",
+      "imagen": "/cartas/retratos-propios/sandro-tonali.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4475,7 +4475,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/warren-zaire-emery.webp",
+      "imagen": "/cartas/retratos-propios/warren-zaire-emery.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4510,7 +4510,7 @@
         "Polemico"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/nicolo-barella.webp",
+      "imagen": "/cartas/retratos-propios/nicolo-barella.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4545,7 +4545,7 @@
         "Polemico"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/bruno-fernandes.webp",
+      "imagen": "/cartas/retratos-propios/bruno-fernandes.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4577,7 +4577,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/bruno-guimaraes.webp",
+      "imagen": "/cartas/retratos-propios/bruno-guimaraes.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4610,7 +4610,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/moises-caicedo.webp",
+      "imagen": "/cartas/retratos-propios/moises-caicedo.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4645,7 +4645,7 @@
         "Fragil"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/dani-olmo.webp",
+      "imagen": "/cartas/retratos-propios/dani-olmo.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4677,7 +4677,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/enzo-fernandez.webp",
+      "imagen": "/cartas/retratos-propios/enzo-fernandez.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4711,7 +4711,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/phil-foden.webp",
+      "imagen": "/cartas/retratos-propios/phil-foden.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4743,7 +4743,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/ryan-gravenberch.webp",
+      "imagen": "/cartas/retratos-propios/ryan-gravenberch.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4776,7 +4776,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/joao-neves.webp",
+      "imagen": "/cartas/retratos-propios/joao-neves.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4810,7 +4810,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/alexis-mac-allister.webp",
+      "imagen": "/cartas/retratos-propios/alexis-mac-allister.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4845,7 +4845,7 @@
         "Fragil"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/jamal-musiala.webp",
+      "imagen": "/cartas/retratos-propios/jamal-musiala.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4880,7 +4880,7 @@
         "Fragil"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/cole-palmer.webp",
+      "imagen": "/cartas/retratos-propios/cole-palmer.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4915,7 +4915,7 @@
         "Fragil"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/pedri.webp",
+      "imagen": "/cartas/retratos-propios/pedri.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4948,7 +4948,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/declan-rice.webp",
+      "imagen": "/cartas/retratos-propios/declan-rice.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -4981,7 +4981,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/dominik-szoboszlai.webp",
+      "imagen": "/cartas/retratos-propios/dominik-szoboszlai.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5014,7 +5014,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/aurelien-tchouameni.webp",
+      "imagen": "/cartas/retratos-propios/aurelien-tchouameni.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5051,7 +5051,7 @@
         "Agresivo"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/federico-valverde.webp",
+      "imagen": "/cartas/retratos-propios/federico-valverde.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5084,7 +5084,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/vitinha.webp",
+      "imagen": "/cartas/retratos-propios/vitinha.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5117,7 +5117,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/florian-wirtz.webp",
+      "imagen": "/cartas/retratos-propios/florian-wirtz.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5148,7 +5148,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/martin-zubimendi.webp",
+      "imagen": "/cartas/retratos-propios/martin-zubimendi.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5181,7 +5181,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/martin-odegaard.webp",
+      "imagen": "/cartas/retratos-propios/martin-odegaard.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5217,7 +5217,7 @@
         "Provocador"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/jude-bellingham.webp",
+      "imagen": "/cartas/retratos-propios/jude-bellingham.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5251,7 +5251,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/rodri.webp",
+      "imagen": "/cartas/retratos-propios/rodri.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -5281,7 +5281,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/folarin-balogun.webp",
+      "imagen": "/cartas/retratos-propios/folarin-balogun.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5311,7 +5311,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/bazoumana-toure.webp",
+      "imagen": "/cartas/retratos-propios/bazoumana-toure.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5341,7 +5341,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/brian-brobbey.webp",
+      "imagen": "/cartas/retratos-propios/brian-brobbey.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5371,7 +5371,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/carlos-espi.webp",
+      "imagen": "/cartas/retratos-propios/carlos-espi.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5402,7 +5402,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/cucho-hernandez.webp",
+      "imagen": "/cartas/retratos-propios/cucho-hernandez.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5433,7 +5433,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/diego-moreira.webp",
+      "imagen": "/cartas/retratos-propios/diego-moreira.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5463,7 +5463,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/max-dowman.webp",
+      "imagen": "/cartas/retratos-propios/max-dowman.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5493,7 +5493,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/said-el-mala.webp",
+      "imagen": "/cartas/retratos-propios/said-el-mala.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5523,7 +5523,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/endrick.webp",
+      "imagen": "/cartas/retratos-propios/endrick.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5554,7 +5554,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/karl-etta-eyong.webp",
+      "imagen": "/cartas/retratos-propios/karl-etta-eyong.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5585,7 +5585,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/matias-fernandez-pardo.webp",
+      "imagen": "/cartas/retratos-propios/matias-fernandez-pardo.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5616,7 +5616,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ibrahim-mbaye.webp",
+      "imagen": "/cartas/retratos-propios/ibrahim-mbaye.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5646,7 +5646,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/igor-thiago.webp",
+      "imagen": "/cartas/retratos-propios/igor-thiago.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5676,7 +5676,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/christian-kofane.webp",
+      "imagen": "/cartas/retratos-propios/christian-kofane.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5706,7 +5706,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/charalampos-kostoulas.webp",
+      "imagen": "/cartas/retratos-propios/charalampos-kostoulas.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5737,7 +5737,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/junior-kroupi.webp",
+      "imagen": "/cartas/retratos-propios/junior-kroupi.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5767,7 +5767,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/yankuba-minteh.webp",
+      "imagen": "/cartas/retratos-propios/yankuba-minteh.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5797,7 +5797,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/rio-ngumoha.webp",
+      "imagen": "/cartas/retratos-propios/rio-ngumoha.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5827,7 +5827,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/antonio-nusa.webp",
+      "imagen": "/cartas/retratos-propios/antonio-nusa.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5857,7 +5857,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/pio-esposito.webp",
+      "imagen": "/cartas/retratos-propios/pio-esposito.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5888,7 +5888,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/julian-quinones.webp",
+      "imagen": "/cartas/retratos-propios/julian-quinones.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5919,7 +5919,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/rayan.webp",
+      "imagen": "/cartas/retratos-propios/rayan.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5949,7 +5949,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/rayan-fofana.webp",
+      "imagen": "/cartas/retratos-propios/rayan-fofana.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -5980,7 +5980,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/kevin-schade.webp",
+      "imagen": "/cartas/retratos-propios/kevin-schade.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6010,7 +6010,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/nicolo-tresoldi.webp",
+      "imagen": "/cartas/retratos-propios/nicolo-tresoldi.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6042,7 +6042,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/yan-diomande.webp",
+      "imagen": "/cartas/retratos-propios/yan-diomande.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6073,7 +6073,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/amad-diallo.webp",
+      "imagen": "/cartas/retratos-propios/amad-diallo.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6105,7 +6105,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/bradley-barcola.webp",
+      "imagen": "/cartas/retratos-propios/bradley-barcola.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6136,7 +6136,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jeremy-doku.webp",
+      "imagen": "/cartas/retratos-propios/jeremy-doku.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6169,7 +6169,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/desire-doue.webp",
+      "imagen": "/cartas/retratos-propios/desire-doue.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6201,7 +6201,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/hugo-ekitike.webp",
+      "imagen": "/cartas/retratos-propios/hugo-ekitike.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6231,7 +6231,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/estevao.webp",
+      "imagen": "/cartas/retratos-propios/estevao.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6263,7 +6263,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ferran-torres.webp",
+      "imagen": "/cartas/retratos-propios/ferran-torres.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6297,7 +6297,7 @@
         "Fragil"
       ],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/gabriel-jesus.webp",
+      "imagen": "/cartas/retratos-propios/gabriel-jesus.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6329,7 +6329,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/cody-gakpo.webp",
+      "imagen": "/cartas/retratos-propios/cody-gakpo.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6359,7 +6359,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/goncalo-ramos.webp",
+      "imagen": "/cartas/retratos-propios/goncalo-ramos.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6392,7 +6392,7 @@
       "defectos": [
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/anthony-gordon.webp",
+      "imagen": "/cartas/retratos-propios/anthony-gordon.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6424,7 +6424,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/kai-havertz.webp",
+      "imagen": "/cartas/retratos-propios/kai-havertz.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6454,7 +6454,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/rasmus-hojlund.webp",
+      "imagen": "/cartas/retratos-propios/rasmus-hojlund.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6486,7 +6486,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/iliman-ndiaye.webp",
+      "imagen": "/cartas/retratos-propios/iliman-ndiaye.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6518,7 +6518,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/joao-pedro.webp",
+      "imagen": "/cartas/retratos-propios/joao-pedro.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6552,7 +6552,7 @@
         "Agresivo"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/mohammed-kudus.webp",
+      "imagen": "/cartas/retratos-propios/mohammed-kudus.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6582,7 +6582,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/noni-madueke.webp",
+      "imagen": "/cartas/retratos-propios/noni-madueke.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6613,7 +6613,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/donyell-malen.webp",
+      "imagen": "/cartas/retratos-propios/donyell-malen.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6646,7 +6646,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/omar-marmoush.webp",
+      "imagen": "/cartas/retratos-propios/omar-marmoush.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6677,7 +6677,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/gabriel-martinelli.webp",
+      "imagen": "/cartas/retratos-propios/gabriel-martinelli.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6712,7 +6712,7 @@
         "Impulsivo"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/matheus-cunha.webp",
+      "imagen": "/cartas/retratos-propios/matheus-cunha.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6744,7 +6744,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/bryan-mbeumo.webp",
+      "imagen": "/cartas/retratos-propios/bryan-mbeumo.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6778,7 +6778,7 @@
         "Fragil"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/nico-gonzalez.webp",
+      "imagen": "/cartas/retratos-propios/nico-gonzalez.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6811,7 +6811,7 @@
         "Indisciplinado"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/nicolas-jackson.webp",
+      "imagen": "/cartas/retratos-propios/nicolas-jackson.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6845,7 +6845,7 @@
         "Fragil"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/pedro-neto.webp",
+      "imagen": "/cartas/retratos-propios/pedro-neto.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6875,7 +6875,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/nicolas-pepe.webp",
+      "imagen": "/cartas/retratos-propios/nicolas-pepe.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6908,7 +6908,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/rodrygo.webp",
+      "imagen": "/cartas/retratos-propios/rodrygo.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6938,7 +6938,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/savio.webp",
+      "imagen": "/cartas/retratos-propios/savio.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -6971,7 +6971,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/antoine-semenyo.webp",
+      "imagen": "/cartas/retratos-propios/antoine-semenyo.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7002,7 +7002,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/benjamin-sesko.webp",
+      "imagen": "/cartas/retratos-propios/benjamin-sesko.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7032,7 +7032,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/alexander-sorloth.webp",
+      "imagen": "/cartas/retratos-propios/alexander-sorloth.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7064,7 +7064,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/marcus-thuram.webp",
+      "imagen": "/cartas/retratos-propios/marcus-thuram.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7095,7 +7095,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/nick-woltemade.webp",
+      "imagen": "/cartas/retratos-propios/nick-woltemade.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7127,7 +7127,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/kenan-yildiz.webp",
+      "imagen": "/cartas/retratos-propios/kenan-yildiz.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7159,7 +7159,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/edinson-cavani.webp",
+      "imagen": "/cartas/retratos-propios/edinson-cavani.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7190,7 +7190,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/viktor-gyokeres.webp",
+      "imagen": "/cartas/retratos-propios/viktor-gyokeres.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7225,7 +7225,7 @@
         "Fragil"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/alexander-isak.webp",
+      "imagen": "/cartas/retratos-propios/alexander-isak.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7258,7 +7258,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/julian-alvarez.webp",
+      "imagen": "/cartas/retratos-propios/julian-alvarez.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7290,7 +7290,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/khvicha-kvaratskhelia.webp",
+      "imagen": "/cartas/retratos-propios/khvicha-kvaratskhelia.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7323,7 +7323,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/lautaro-martinez.webp",
+      "imagen": "/cartas/retratos-propios/lautaro-martinez.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7356,7 +7356,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/luis-diaz.webp",
+      "imagen": "/cartas/retratos-propios/luis-diaz.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7388,7 +7388,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/nico-williams.webp",
+      "imagen": "/cartas/retratos-propios/nico-williams.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7420,7 +7420,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/michael-olise.webp",
+      "imagen": "/cartas/retratos-propios/michael-olise.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7454,7 +7454,7 @@
         "Polemico"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/victor-osimhen.webp",
+      "imagen": "/cartas/retratos-propios/victor-osimhen.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7487,7 +7487,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/raphinha.webp",
+      "imagen": "/cartas/retratos-propios/raphinha.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7520,7 +7520,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/bukayo-saka.webp",
+      "imagen": "/cartas/retratos-propios/bukayo-saka.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7556,7 +7556,7 @@
         "Polemico"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/karim-benzema.webp",
+      "imagen": "/cartas/retratos-propios/karim-benzema.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7593,7 +7593,7 @@
         "Estrellita"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/cristiano-ronaldo.webp",
+      "imagen": "/cartas/retratos-propios/cristiano-ronaldo.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7630,7 +7630,7 @@
         "DeCristal"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/ousmane-dembele.webp",
+      "imagen": "/cartas/retratos-propios/ousmane-dembele.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7664,7 +7664,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/angel-di-maria.webp",
+      "imagen": "/cartas/retratos-propios/angel-di-maria.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7697,7 +7697,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/erling-haaland.webp",
+      "imagen": "/cartas/retratos-propios/erling-haaland.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7731,7 +7731,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/harry-kane.webp",
+      "imagen": "/cartas/retratos-propios/harry-kane.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7764,7 +7764,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/lamine-yamal.webp",
+      "imagen": "/cartas/retratos-propios/lamine-yamal.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7800,7 +7800,7 @@
         "Polemico"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/luis-suarez.webp",
+      "imagen": "/cartas/retratos-propios/luis-suarez.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7834,7 +7834,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/sadio-mane.webp",
+      "imagen": "/cartas/retratos-propios/sadio-mane.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7870,7 +7870,7 @@
         "MalDefensor"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/kylian-mbappe.webp",
+      "imagen": "/cartas/retratos-propios/kylian-mbappe.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7907,7 +7907,7 @@
         "MalDefensor"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/lionel-messi.webp",
+      "imagen": "/cartas/retratos-propios/lionel-messi.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7945,7 +7945,7 @@
         "Provocador"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/neymar.webp",
+      "imagen": "/cartas/retratos-propios/neymar.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -7979,7 +7979,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/mohamed-salah.webp",
+      "imagen": "/cartas/retratos-propios/mohamed-salah.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -8015,7 +8015,7 @@
         "Polemico"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/vinicius-junior.webp",
+      "imagen": "/cartas/retratos-propios/vinicius-junior.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     },
     {
@@ -8043,7 +8043,7 @@
       "virtudes": [],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/dominik-greif.webp",
+      "imagen": "/cartas/retratos-propios/dominik-greif.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8073,7 +8073,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/mike-maignan.webp",
+      "imagen": "/cartas/retratos-propios/mike-maignan.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8103,7 +8103,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/vanja-milinkovic-savic.webp",
+      "imagen": "/cartas/retratos-propios/vanja-milinkovic-savic.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8131,7 +8131,7 @@
       "virtudes": [],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/mike-penders.webp",
+      "imagen": "/cartas/retratos-propios/mike-penders.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8161,7 +8161,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/alex-remiro.webp",
+      "imagen": "/cartas/retratos-propios/alex-remiro.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8189,7 +8189,7 @@
       "virtudes": [],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/robert-sanchez.webp",
+      "imagen": "/cartas/retratos-propios/robert-sanchez.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8219,7 +8219,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/matvey-safonov.webp",
+      "imagen": "/cartas/retratos-propios/matvey-safonov.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8247,7 +8247,7 @@
       "virtudes": [],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/anatoliy-trubin.webp",
+      "imagen": "/cartas/retratos-propios/anatoliy-trubin.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8277,7 +8277,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/konstantinos-tzolakis.webp",
+      "imagen": "/cartas/retratos-propios/konstantinos-tzolakis.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8309,7 +8309,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/alisson.webp",
+      "imagen": "/cartas/retratos-propios/alisson.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8339,7 +8339,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/ederson.webp",
+      "imagen": "/cartas/retratos-propios/ederson.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8370,7 +8370,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/giorgi-mamardashvili.webp",
+      "imagen": "/cartas/retratos-propios/giorgi-mamardashvili.webp",
       "imagen_bg": "/cartas/fondos/por.svg"
     },
     {
@@ -8402,7 +8402,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/archie-gray.webp",
+      "imagen": "/cartas/retratos-propios/archie-gray.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8433,7 +8433,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/calvin-bassey.webp",
+      "imagen": "/cartas/retratos-propios/calvin-bassey.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8463,7 +8463,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/nathan-collins.webp",
+      "imagen": "/cartas/retratos-propios/nathan-collins.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8494,7 +8494,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/malo-gusto.webp",
+      "imagen": "/cartas/retratos-propios/malo-gusto.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8525,7 +8525,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/david-hancko.webp",
+      "imagen": "/cartas/retratos-propios/david-hancko.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8553,7 +8553,7 @@
       "virtudes": [],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ibrahima-ba.webp",
+      "imagen": "/cartas/retratos-propios/ibrahima-ba.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8584,7 +8584,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/el-hadji-malick-diouf.webp",
+      "imagen": "/cartas/retratos-propios/el-hadji-malick-diouf.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8617,7 +8617,7 @@
         "DeCristal"
       ],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/giorgio-scalvini.webp",
+      "imagen": "/cartas/retratos-propios/giorgio-scalvini.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8647,7 +8647,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jonathan-tah.webp",
+      "imagen": "/cartas/retratos-propios/jonathan-tah.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8678,7 +8678,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/adrien-truffert.webp",
+      "imagen": "/cartas/retratos-propios/adrien-truffert.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8710,7 +8710,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/jeremie-frimpong.webp",
+      "imagen": "/cartas/retratos-propios/jeremie-frimpong.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8742,7 +8742,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/josip-stanisic.webp",
+      "imagen": "/cartas/retratos-propios/josip-stanisic.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8777,7 +8777,7 @@
         "Agresivo"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/ronald-araujo.webp",
+      "imagen": "/cartas/retratos-propios/ronald-araujo.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8809,7 +8809,7 @@
       ],
       "defectos": [],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/matthijs-de-ligt.webp",
+      "imagen": "/cartas/retratos-propios/matthijs-de-ligt.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8843,7 +8843,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/marquinhos.webp",
+      "imagen": "/cartas/retratos-propios/marquinhos.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8877,7 +8877,7 @@
         "DeCristal"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/eder-militao.webp",
+      "imagen": "/cartas/retratos-propios/eder-militao.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8912,7 +8912,7 @@
         "Provocador"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/antonio-rudiger.webp",
+      "imagen": "/cartas/retratos-propios/antonio-rudiger.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8948,7 +8948,7 @@
         "Fragil"
       ],
       "nivel": "Legendario",
-      "imagen": "/cartas/retratos/john-stones.webp",
+      "imagen": "/cartas/retratos-propios/john-stones.webp",
       "imagen_bg": "/cartas/fondos/def.svg"
     },
     {
@@ -8979,7 +8979,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/marcelo-brozovic.webp",
+      "imagen": "/cartas/retratos-propios/marcelo-brozovic.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9010,7 +9010,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/giorgian-de-arrascaeta.webp",
+      "imagen": "/cartas/retratos-propios/giorgian-de-arrascaeta.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9041,7 +9041,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/fabinho.webp",
+      "imagen": "/cartas/retratos-propios/fabinho.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9074,7 +9074,7 @@
       ],
       "defectos": [],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/frenkie-de-jong.webp",
+      "imagen": "/cartas/retratos-propios/frenkie-de-jong.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9109,7 +9109,7 @@
         "Impulsivo"
       ],
       "nivel": "Crack",
-      "imagen": "/cartas/retratos/gavi.webp",
+      "imagen": "/cartas/retratos-propios/gavi.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9140,7 +9140,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/mateo-kovacic.webp",
+      "imagen": "/cartas/retratos-propios/mateo-kovacic.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9171,7 +9171,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/jefferson-lerma.webp",
+      "imagen": "/cartas/retratos-propios/jefferson-lerma.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9204,7 +9204,7 @@
         "Impulsivo"
       ],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/leandro-paredes.webp",
+      "imagen": "/cartas/retratos-propios/leandro-paredes.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9236,7 +9236,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/ricardo-horta.webp",
+      "imagen": "/cartas/retratos-propios/ricardo-horta.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9267,7 +9267,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/corentin-tolisso.webp",
+      "imagen": "/cartas/retratos-propios/corentin-tolisso.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9298,7 +9298,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/granit-xhaka.webp",
+      "imagen": "/cartas/retratos-propios/granit-xhaka.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9330,7 +9330,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/piotr-zielinski.webp",
+      "imagen": "/cartas/retratos-propios/piotr-zielinski.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9362,7 +9362,7 @@
       ],
       "defectos": [],
       "nivel": "Superclase",
-      "imagen": "/cartas/retratos/hakan-calhanoglu.webp",
+      "imagen": "/cartas/retratos-propios/hakan-calhanoglu.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9397,7 +9397,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/bernardo-silva.webp",
+      "imagen": "/cartas/retratos-propios/bernardo-silva.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9431,7 +9431,7 @@
         "Impulsivo"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/casemiro.webp",
+      "imagen": "/cartas/retratos-propios/casemiro.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9466,7 +9466,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/kevin-de-bruyne.webp",
+      "imagen": "/cartas/retratos-propios/kevin-de-bruyne.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9502,7 +9502,7 @@
         "Fragil"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/paulo-dybala.webp",
+      "imagen": "/cartas/retratos-propios/paulo-dybala.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9537,7 +9537,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/luka-modric.webp",
+      "imagen": "/cartas/retratos-propios/luka-modric.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9572,7 +9572,7 @@
         "Impulsivo"
       ],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/marco-verratti.webp",
+      "imagen": "/cartas/retratos-propios/marco-verratti.webp",
       "imagen_bg": "/cartas/fondos/med.svg"
     },
     {
@@ -9605,7 +9605,7 @@
       ],
       "defectos": [],
       "nivel": "GOAT",
-      "imagen": "/cartas/retratos/robert-lewandowski.webp",
+      "imagen": "/cartas/retratos-propios/robert-lewandowski.webp",
       "imagen_bg": "/cartas/fondos/del.svg"
     }
   ]

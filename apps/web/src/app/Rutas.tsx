@@ -69,7 +69,7 @@ const router = createBrowserRouter([
       { path: '/mis-partidas', element: conSesion(<MisPartidas />) },
       { path: '/perfil', element: conSesion(<Perfil />) },
       { path: '/coleccion', element: <ConSesionRegistrada><Coleccion /></ConSesionRegistrada> },
-      { path: '/tienda', element: <ConSesionRegistrada><Tienda /></ConSesionRegistrada> },
+      { path: '/tienda', element: conSesion(<Tienda />) },
       { path: '/partidas/nueva', element: conSesion(<CrearPartida />) },
       { path: '/partidas/:partidaId/sala', element: conSesion(<Sala />) },
       { path: '/partidas/:partidaId/draft', element: conSesion(<Draft />) },

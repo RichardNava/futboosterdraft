@@ -109,6 +109,11 @@ export const jugadores = pgTable(
     /** Imagen superior y fondo de la carta (spec 006, R7). La pertenencia a colecciones va en `colecciones_cartas`. */
     imagen: text('imagen').notNull(),
     imagenBg: text('imagen_bg').notNull(),
+    /** Identidad alternativa de la carta (spec 011, data-model §6): los tres nombres o ninguno. */
+    nombreAlt: text('nombre_alt'),
+    apellidosAlt: text('apellidos_alt'),
+    nombreCartaAlt: text('nombre_carta_alt'),
+    imagenAlt: text('imagen_alt'),
   },
   (t) => [
     check('jugadores_demarcacion_ck', sql`${t.demarcacion} in ('POR','DEF','MED','DEL')`),
@@ -144,6 +149,8 @@ export const partidas = pgTable(
     versionCatalogo: integer('version_catalogo').notNull().default(1),
     /** Formación común y Estado de forma del modo duelos (spec 005, FR-061): `ConfigDuelos`, o null. */
     configDuelos: jsonb('config_duelos'),
+    /** Identidad de las cartas, copiada del ajuste al crear la partida (spec 011, FR-018). */
+    identidad: text('identidad').$type<'real' | 'alternativa'>().notNull().default('real'),
     creadaEn: timestamp('creada_en', { withTimezone: true }).notNull().defaultNow(),
     actualizadaEn: timestamp('actualizada_en', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -187,6 +194,8 @@ export const participantes = pgTable(
     /** Pantallas de final de torneo ya vistas (spec 003, FR-041). */
     derrotaVistaEn: timestamp('derrota_vista_en', { withTimezone: true }),
     campeonVistoEn: timestamp('campeon_visto_en', { withTimezone: true }),
+    /** Escudo elegido para esta partida (spec 011, data-model §5); null = asignado, de NPC o círculo. Sin FK. */
+    escudo: text('escudo'),
     unidoEn: timestamp('unido_en', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -221,6 +230,13 @@ export const perfilesUsuario = pgTable(
     /** Nombre de equipo y equipaciones (v2) por defecto para las partidas nuevas (spec 003, FR-042a, FR-045). */
     nombreEquipo: text('nombre_equipo'),
     equipaciones: jsonb('equipaciones'),
+    /** Aspecto (spec 011, data-model §4). FK a `cosmeticos` en la migración 0014. */
+    escudo: text('escudo'),
+    sobreFavorito: text('sobre_favorito'),
+    sobreCarrusel: boolean('sobre_carrusel').notNull().default(false),
+    sobresMarcados: text('sobres_marcados').array().notNull().default(sql`'{}'::text[]`),
+    sobreBaraja: text('sobre_baraja').array().notNull().default(sql`'{}'::text[]`),
+    sobreUltimo: text('sobre_ultimo'),
     actualizadoEn: timestamp('actualizado_en', { withTimezone: true }).notNull(),
   },
   (t) => [check('perfiles_usuario_modalidad_ck', sql`${t.ultimaModalidad} is null or ${t.ultimaModalidad} in ('rapida','2d')`)],

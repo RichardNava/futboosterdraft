@@ -11,7 +11,7 @@ import type { GestorPartidas } from '../actores/gestor';
 import type { ControladorPartida } from '../actores/partida';
 import { abrirEntreHumanos } from '../actores/aperturas';
 import { entreHumanos, reproduccion } from '../actores/partidoEntreHumanos';
-import { equipacionesDelPartido, resumenAlineaciones } from '../actores/partidoRapido';
+import { equipacionesDelPartido, escudosDelPartido, resumenAlineaciones } from '../actores/partidoRapido';
 import { vistaCruce } from '../actores/duelos';
 import { abrirPartido, emitirTorneo } from '../actores/torneo';
 import type { Auth } from '../auth/auth';
@@ -139,7 +139,14 @@ async function resumen(c: ControladorPartida, fila: FilaPartido, participanteId:
     estadisticas: fila.estadisticas,
     resueltoAutomaticamente: resueltoAutomaticamente(fila),
     resolucion: fila.resolucion,
-    ...(empezado ? { alineaciones, dorsales, equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId) } : {}),
+    ...(empezado
+      ? {
+          alineaciones,
+          dorsales,
+          equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId),
+          escudos: escudosDelPartido(c, fila.localId, fila.visitanteId),
+        }
+      : {}),
     // La modalidad de quien pregunta (spec 003, FR-033); `null` si aún no lo ha abierto.
     modalidad: ((fila.modalidades as Record<string, 'rapida' | '2d'> | null) ?? {})[participanteId] ?? null,
   };

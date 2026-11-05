@@ -9,11 +9,14 @@ import { procesarEleccion } from './actores/draft';
 import { procesarReproduccion } from './actores/partido2d';
 import { procesarDecisionesLote, procesarDecisionPartido, procesarFinalizar, procesarSeguir } from './actores/partidoRapido';
 import { GestorPartidas } from './actores/gestor';
+import { randomUUID } from 'node:crypto';
 import { crearAuth, type Auth } from './auth/auth';
+import { crearHooksSesion } from './auth/rutas';
 import { construirApp } from './http/app';
 import { registrarRutasCatalogo } from './http/catalogo';
 import { registrarRutasColeccion } from './http/coleccion';
 import { registrarRutasTienda } from './http/tienda';
+import { registrarRutasCosmeticos } from './http/cosmeticos';
 import { ServicioEconomia } from './economia/servicio';
 import { errores } from './http/errores';
 import { registrarRutasAlineacion } from './http/alineacion';
@@ -25,6 +28,8 @@ import { configurarDesglose } from './observabilidad/desglose';
 import type { BaseDatos } from './persistencia/db';
 import { AlmacenPeticionesBD, type AlmacenPeticiones } from './persistencia/peticiones';
 import { Catalogo } from './persistencia/repos/catalogo';
+import { RepoCosmeticos } from './persistencia/repos/cosmeticos';
+import { ServicioAjustes } from './ajustes/servicio';
 import { RepoDraft } from './persistencia/repos/draft';
 import { RepoEquipo } from './persistencia/repos/equipo';
 import { RepoPartidos } from './persistencia/repos/partidos';
@@ -34,6 +39,7 @@ import { RepoTorneo } from './persistencia/repos/torneo';
 import { ServicioAvisos } from './avisos/servicio';
 import { registrarRutasTorneo } from './http/torneo';
 import { registrarRutasPerfil } from './http/perfil';
+import { registrarRutasAspecto } from './http/aspecto';
 import { RepoPartidas } from './persistencia/repos/partidas';
 import { RelojFalso, type Reloj } from './programador/reloj';
 import { Temporizadores } from './programador/temporizadores';
@@ -50,6 +56,9 @@ export interface ConfigServidor {
   peticiones?: AlmacenPeticiones;
   /** Si no se indica, se carga de la base de datos. */
   catalogo?: Catalogo;
+  /** Cosméticos y ajustes (spec 011); si no se indican, de la base de datos. */
+  cosmeticos?: RepoCosmeticos;
+  ajustes?: ServicioAjustes;
   /** Servidor SMTP para los avisos por correo (opcional). */
   smtpUrl?: string;
   /** Límites de peticiones HTTP y mensajes WebSocket por sesión (por defecto, los de `http/limitador.ts`). */
@@ -78,8 +87,11 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   configurarDesglose({ activo: config.medirFases ?? true, metricas });
   const peticiones = config.peticiones ?? new AlmacenPeticionesBD(config.db);
   const catalogo = config.catalogo ?? (await Catalogo.cargar(config.db));
+  const cosmeticos = config.cosmeticos ?? (await RepoCosmeticos.cargar(config.db));
+  // Con el reloj del servidor, para que las pruebas puedan hacer caducar la caché (≤ 30 s, FR-018).
+  const ajustes = config.ajustes ?? new ServicioAjustes(config.db, () => config.reloj.ahora());
   const temporizadores = new Temporizadores(config.reloj);
-  const economia = new ServicioEconomia(config.db, catalogo);
+  const economia = new ServicioEconomia(config.db, catalogo, cosmeticos, ajustes);
   const calculo = crearCalculo(config.hilosSimulacion ?? 0, { metricas, logger });
 
   // El gestor se crea después de la autenticación y la pasarela, que lo usan a través de esta referencia.
@@ -117,6 +129,8 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     repoVisionados: new RepoVisionados(config.db),
     repoPerfiles: new RepoPerfiles(config.db),
     catalogo,
+    cosmeticos,
+    ajustes,
     economia,
     reloj: config.reloj,
     temporizadores,
@@ -207,14 +221,20 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     ...(config.limites?.http ? { limiteHttp: config.limites.http } : {}),
   });
   pasarela.registrarRuta(app);
-  registrarRutasCatalogo(app, config.db);
+  // La identidad de las cartas se lee (con caché) antes de cada petición, para que las vistas síncronas la usen.
+  app.addHook('onRequest', async () => {
+    await ajustes.identidadCartas();
+  });
+  registrarRutasCatalogo(app, config.db, ajustes);
   registrarRutasPartidas(app, auth, gestor);
   registrarRutasAlineacion(app, auth, gestor);
   registrarRutasPartidos(app, auth, gestor);
   registrarRutasTorneo(app, auth, gestor, { avisos });
   registrarRutasPerfil(app, auth, gestor.servicios);
+  registrarRutasAspecto(app, auth, gestor.servicios);
   registrarRutasColeccion(app, auth, economia);
   registrarRutasTienda(app, auth, economia);
+  registrarRutasCosmeticos(app, auth, economia, cosmeticos);
 
   // Reloj simulado en desarrollo (quickstart, escenario E): permite adelantar plazos.
   if (config.reloj instanceof RelojFalso) {
@@ -224,6 +244,15 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
       if (typeof ms !== 'number' || ms < 0) throw errores.validacion('MS_INVALIDO', 'Indica "ms" ≥ 0');
       reloj.avanzar(ms);
       return { ahora: new Date(reloj.ahora()).toISOString() };
+    });
+    // Sin paquetes de fragmentos (spec 011, FR-002), los e2e reciben saldo como si hubieran ganado torneos.
+    const { soloRegistrados } = crearHooksSesion(auth);
+    app.post<{ Body: { fragmentos?: number } }>('/api/dev/fragmentos', { preHandler: soloRegistrados }, async (req) => {
+      const fragmentos = req.body?.fragmentos;
+      if (!Number.isInteger(fragmentos) || fragmentos! <= 0) throw errores.validacion('FRAGMENTOS_INVALIDOS', 'Indica "fragmentos" > 0');
+      await economia.asegurarColeccion(req.usuario!.id);
+      await economia.recompensarTorneo(req.usuario!.id, randomUUID(), fragmentos!);
+      return economia.leerSaldo(req.usuario!.id);
     });
   }
 

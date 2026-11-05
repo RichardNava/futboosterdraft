@@ -1331,6 +1331,15 @@ html {
   font-size: var(--texto-subtitulo);
 }
 
+/* Escudo del equipo (spec 011, contracts/ui.md §1): la misma caja que el círculo, sin recortar la imagen. */
+.chapa.chapa-escudo {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  object-fit: contain;
+  box-shadow: none;
+}
+
 .distintivo {
   display: inline-flex;
   align-items: center;
@@ -3267,5 +3276,104 @@ html {
 @media (min-width: 720px) {
   .gestion-equipo {
     padding-inline: var(--espacio-6);
+  }
+}
+
+/* ---------- Cosméticos: selectores de escudo y de sobre (spec 011, contracts/ui.md §3 y §4) ---------- */
+
+.selector-cosmeticos {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+/* 4 columnas a 360 px; con muchas filas, desplazamiento propio y la elección primero (Principio XI). */
+.rejilla-cosmeticos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--espacio-2);
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: var(--espacio-1);
+  list-style: none;
+}
+
+.opcion-cosmetico {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 76px;
+  padding: var(--espacio-1);
+  border: 2px solid transparent;
+  border-radius: var(--radio);
+  background: var(--color-elevado);
+}
+
+.opcion-cosmetico img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.opcion-cosmetico[aria-pressed='true'],
+.opcion-cosmetico[aria-checked='true'] {
+  border-color: var(--color-accion);
+  background: var(--color-accion-tenue);
+}
+
+.cosmetico-bloqueado .opcion-cosmetico {
+  opacity: 0.55;
+}
+
+.cosmetico-bloqueado .candado {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  color: var(--color-texto);
+}
+
+/* Sobres: la miniatura cerrada y, al pasar el ratón o enfocar, la rasgada. */
+.miniatura-sobre {
+  position: relative;
+  display: block;
+  width: 48px;
+  aspect-ratio: 2 / 3;
+}
+
+.miniatura-sobre img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.miniatura-sobre .sobre-rasgado-mini {
+  opacity: 0;
+}
+
+.opcion-cosmetico:is(:hover, :focus-visible) .sobre-rasgado-mini {
+  opacity: 1;
+}
+
+.opcion-cosmetico:is(:hover, :focus-visible) .sobre-cerrado-mini {
+  opacity: 0;
+}
+
+.interruptor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.perfil-aspecto {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+@media (min-width: 1024px) {
+  .perfil-aspecto {
+    grid-template-columns: 1fr 1fr;
   }
 }

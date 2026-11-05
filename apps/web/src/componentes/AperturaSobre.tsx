@@ -55,6 +55,8 @@ type EstadoCarta = 'oculta' | 'salida' | 'girada';
 interface Props {
   cartas: readonly CartaResumen[];
   onTerminar: () => void;
+  /** Diseño del sobre que se abre (spec 011, US2); sin él, el original. */
+  diseno?: string;
 }
 
 /**
@@ -64,7 +66,7 @@ interface Props {
  * «Saltar» o un toque en cualquier punto revela todo al instante. Con movimiento reducido, solo un fundido.
  * Las cartas nunca dependen de las partículas: si el canvas falla o se desactiva, la secuencia sigue igual.
  */
-export function AperturaSobre({ cartas, onTerminar }: Props) {
+export function AperturaSobre({ cartas, onTerminar, diseno }: Props) {
   const reducido = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
   const [fase, setFase] = useState<Fase>(reducido ? 'fundido' : 'sobre');
   const [estados, setEstados] = useState<EstadoCarta[]>(() => cartas.map(() => 'oculta'));
@@ -161,7 +163,7 @@ export function AperturaSobre({ cartas, onTerminar }: Props) {
       </button>
       {fase === 'sobre' && (
         <div ref={sobre} className="sobre-cerrado" aria-hidden="true">
-          <SobreArte />
+          <SobreArte diseno={diseno} />
         </div>
       )}
       <div ref={mesa} className="apertura-mesa" hidden={fase === 'sobre'}>

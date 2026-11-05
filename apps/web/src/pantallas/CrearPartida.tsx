@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
 import { Icono } from '../componentes/Icono';
-import { SobreArte } from '../componentes/arte/SobreArte';
+import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { useSesion } from '../estado/sesion';
 import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, type Dificultad, type NivelNPC } from '../textos/niveles';
 
@@ -198,7 +198,7 @@ export function CrearPartida() {
 
         {/* Resumen del torneo que se va a crear, con el sobre ilustrado. */}
         <aside className="crear-resumen" aria-label="Resumen de la partida">
-          <SobreArte className="crear-resumen-sobre" />
+          <SobreDecorativo className="crear-resumen-sobre" />
           <dl className="crear-resumen-datos">
             <div>
               <dt>Modo</dt>

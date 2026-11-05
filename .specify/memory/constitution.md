@@ -1,9 +1,9 @@
 <!--
 Sync Impact Report
-- Version change: 1.3.0 → 1.3.1 (PATCH: «Niveles de los NPC» menciona la dificultad «Extrema»)
-- Principios modificados: ninguno
+- Version change: 1.3.1 → 1.4.0 (MINOR: regla de derechos de imagen en el Principio VII; decisión de la 011)
+- Principios modificados: VII (el dinero real no compra cartas, sobres, colecciones ni fragmentos sin licencia de imagen)
 - Principios añadidos: ninguno
-- Secciones modificadas: Decisiones resueltas (Niveles de los NPC)
+- Secciones modificadas: Decisiones resueltas (entrada de specs/011-rework-tienda/)
 - Secciones añadidas: ninguna
 - Secciones eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
@@ -140,6 +140,8 @@ dos modalidades DEBEN reflejar el mismo desarrollo subyacente del partido.
   definirse de forma transparente y coherente con el equilibrio del juego.
 - Toda decisión futura de monetización DEBE preservar la integridad competitiva y NO DEBE introducir
   ventajas que eludan las reglas comunes de draft.
+- Mientras no haya licencia de imagen de los futbolistas, el dinero real NO DEBE comprar cartas, sobres,
+  colecciones ni fragmentos: solo cosméticos propios (escudos, diseños de sobre…) que no cambian el juego.
 
 ### VIII. La arquitectura debe favorecer la modularidad
 
@@ -275,6 +277,13 @@ Resuelta en `specs/006-preparacion-bd-cartas/`:
   sobres (el pool del torneo es la colección activa del anfitrión, con los mismos cupos) → `spec.md`
   (FR-001 a FR-033), `plan.md` y `research.md` (R1 a R18).
 
+Resuelta en `specs/011-rework-tienda/`:
+
+- **Derechos de imagen y monetización**: el juego sigue con jugadores reales; el dinero real solo compra
+  cosméticos propios (escudos y diseños de sobre), y las cartas, sobres y colecciones se pagan con
+  fragmentos. Hay un plan B de identidad alternativa de las cartas (nombres y retratos genéricos) que se
+  activa con un ajuste, sin reiniciar y sin cambiar el juego → `spec.md` (FR-001, FR-002, FR-017 a FR-021).
+
 ### Decisiones aún pendientes
 
 Lo siguiente NO está aprobado como requisito y DEBE concretarse en una especificación propia antes de
@@ -322,4 +331,4 @@ persona, que revisa los cambios antes de confirmarlos.
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.3.1 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-04
+**Version**: 1.4.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-05

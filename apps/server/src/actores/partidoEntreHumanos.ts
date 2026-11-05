@@ -23,6 +23,7 @@ import type { ControladorPartida } from './partida';
 import {
   dorsalesParaPartido,
   equipacionesDelPartido,
+  escudosDelPartido,
   esHumano,
   prepararPartido,
   reconstruirMotor,
@@ -244,6 +245,7 @@ export async function reproduccion(c: ControladorPartida, fila: FilaPartido, mod
       alineaciones: resumenAlineaciones(c, guardada, participanteId ? [participanteId] : []),
       dorsales,
       equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId),
+      escudos: escudosDelPartido(c, fila.localId, fila.visitanteId),
       decisiones: false,
       gestionDisponible: false,
       ordenJugadores: ordenJugadores(crearPartido({ ...guardada, parametros: parametrosPorVersion(fila.versionParametros) })),

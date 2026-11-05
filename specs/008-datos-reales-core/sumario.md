@@ -138,3 +138,15 @@ Por orden de prioridad (tamaño del hueco). La posición preferida es la de meno
 1. Falta 1 MED Legendario, preferiblemente MII.
 
 Como hay 25 cartas de más en otras celdas, los huecos suman 25: cuadrar la distribución obliga a recolocar o sustituir 25 (sección 5).
+
+## 7. Identidad y retratos (spec 011)
+
+| Rareza | Total | Con identidad alternativa | Retrato propio | Retrato de terceros |
+|---|---:|---:|---:|---:|
+| Superclase | 140 | 0 | 140 | 0 |
+| Crack | 70 | 0 | 70 | 0 |
+| Legendario | 54 | 0 | 54 | 0 |
+| GOAT | 36 | 0 | 36 | 0 |
+
+Retratos de terceros: 0.
+

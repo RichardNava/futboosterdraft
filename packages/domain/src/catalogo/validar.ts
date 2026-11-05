@@ -49,6 +49,7 @@ export type ReglaCatalogo =
   | 'reparto_defectos'
   | 'nombre_carta'
   | 'imagen'
+  | 'identidad_alternativa'
   | 'coleccion'
   | 'id'
   | 'id_repetido';
@@ -107,7 +108,7 @@ export function validarJugador(entrada: unknown): ErrorCatalogo[] {
   const error = (regla: ReglaCatalogo, mensaje: string) => errores.push({ id, regla, mensaje });
 
   const faltan = CAMPOS.filter((c) => !(c in j));
-  const sobran = Object.keys(j).filter((c) => !incluye(CAMPOS, c));
+  const sobran = Object.keys(j).filter((c) => !incluye(CAMPOS, c) && c !== 'identidad_alternativa');
   if (faltan.length || sobran.length) {
     error('campos', `Campos incorrectos. Faltan: [${faltan.join(', ')}]. Sobran: [${sobran.join(', ')}]`);
     return errores;
@@ -127,6 +128,15 @@ export function validarJugador(entrada: unknown): ErrorCatalogo[] {
   for (const campo of ['imagen', 'imagen_bg'] as const) {
     if (typeof j[campo] !== 'string' || !RUTA_IMAGEN.test(j[campo])) {
       error('imagen', `"${campo}" debe ser una ruta que empieza por /cartas/ (svg, png, webp o jpg)`);
+    }
+  }
+  if (j.identidad_alternativa !== undefined) {
+    const alt = j.identidad_alternativa as Record<string, unknown> | null;
+    const vacio = (v: unknown) => typeof v !== 'string' || v.trim() === '';
+    if (typeof alt !== 'object' || alt === null || vacio(alt.nombre) || vacio(alt.apellidos) || vacio(alt.nombre_carta)) {
+      error('identidad_alternativa', '"identidad_alternativa" necesita nombre, apellidos y nombre_carta no vacíos');
+    } else if ((alt.nombre_carta as string).length > MAX_NOMBRE_CARTA || (alt.imagen !== undefined && (typeof alt.imagen !== 'string' || !RUTA_IMAGEN.test(alt.imagen)))) {
+      error('identidad_alternativa', `"identidad_alternativa": nombre_carta de ${MAX_NOMBRE_CARTA} caracteres como máximo e imagen bajo /cartas/`);
     }
   }
   if (typeof j.fecha_nacimiento !== 'string' || !esFechaIsoValida(j.fecha_nacimiento)) {
@@ -317,7 +327,11 @@ export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcaci
     if (tipo !== 'basica' && tipo !== 'pago') error(id, `Tipo de colección desconocido: ${String(tipo)}`);
     const precio = entrada?.precio_centimos;
     if (tipo === 'pago' && (!Number.isInteger(precio) || (precio as number) <= 0)) error(id, 'Una colección de pago necesita precio_centimos > 0');
-    if (tipo === 'basica' && precio !== undefined) error(id, 'La colección básica no lleva precio');
+    const precioFragmentos = entrada?.precio_fragmentos;
+    if (tipo === 'pago' && (!Number.isInteger(precioFragmentos) || (precioFragmentos as number) <= 0)) {
+      error(id, 'Una colección de pago necesita precio_fragmentos > 0');
+    }
+    if (tipo === 'basica' && (precio !== undefined || precioFragmentos !== undefined)) error(id, 'La colección básica no lleva precio');
 
     const lista: Coleccion['cartas'] = [];
     const vistas = new Set<number>();
@@ -346,6 +360,7 @@ export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcaci
       descripcion: entrada?.descripcion as string,
       tipo: tipo as Coleccion['tipo'],
       ...(precio !== undefined ? { precioCentimos: precio as number } : {}),
+      ...(precioFragmentos !== undefined ? { precioFragmentos: precioFragmentos as number } : {}),
       ...(Array.isArray(destacadas) ? { destacadas: destacadas as number[] } : {}),
       cartas: lista,
     });

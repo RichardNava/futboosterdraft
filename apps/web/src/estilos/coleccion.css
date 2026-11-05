@@ -263,15 +263,120 @@
   list-style: none;
 }
 
-.tienda-colecciones,
-.tienda-paquetes {
+.tienda-colecciones {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: var(--espacio-4);
 }
 
-.tienda-paquetes {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+/* Spec 011: cartas | cosméticos en escritorio (Principio XI); en móvil, apilados. */
+.tienda-columnas,
+.tienda-cartas,
+.tienda-cosmeticos {
+  display: grid;
+  gap: var(--espacio-6);
+  align-content: start;
+}
+
+@media (min-width: 1024px) {
+  .tienda-columnas {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  /* Si el catálogo no cabe, se desplaza dentro de cada bloque y los packs quedan arriba. */
+  .tienda-bloque-desplazable {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+
+.tienda-bloque,
+.tienda-bloque-desplazable {
+  display: grid;
+  gap: var(--espacio-3);
+  align-content: start;
+}
+
+.tienda-bloque h2 {
+  margin: 0;
+}
+
+.tienda-packs,
+.rejilla-tienda-cosmeticos {
+  display: grid;
+  gap: var(--espacio-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tienda-packs {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}
+
+.tienda-pack {
+  display: grid;
+  gap: var(--espacio-2);
+}
+
+.tienda-pack h3,
+.tienda-pack p {
+  margin: 0;
+}
+
+.pack-miniaturas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-1);
+}
+
+.pack-miniaturas .miniatura-escudo {
+  width: 40px;
+  height: 40px;
+}
+
+.pack-miniaturas .miniatura-sobre {
+  width: 32px;
+}
+
+.rejilla-tienda-cosmeticos {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+}
+
+.tienda-cosmetico {
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-2);
+  text-align: center;
+}
+
+.tienda-cosmetico .acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espacio-1);
+}
+
+.tienda-cosmetico .miniatura-escudo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.tienda-cosmetico .miniatura-sobre {
+  width: 56px;
+}
+
+.tienda-cosmetico:is(:hover, :focus-within) .sobre-rasgado-mini {
+  opacity: 1;
+}
+
+.tienda-cosmetico:is(:hover, :focus-within) .sobre-cerrado-mini {
+  opacity: 0;
+}
+
+.ahorro {
+  color: var(--color-texto-suave);
 }
 
 .tienda-producto.adquirida {

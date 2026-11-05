@@ -180,7 +180,7 @@ describe('validarCatalogo (spec 006, data-model §1.2)', () => {
   const extra = { id: 301, demarcacion: 'DEL' as const, nivel: 'GOAT' as const };
   const cartas = [...core, extra];
   const colCore = { id: 'core', nombre: 'Core', descripcion: 'Básica', tipo: 'basica', cartas: core.map((c) => c.id) };
-  const pago = { id: 'all-stars', nombre: 'All Stars', descripcion: 'Pago', tipo: 'pago', precio_centimos: 499, destacadas: [301], cartas: [1, { id: 301, version: 'normal' }] };
+  const pago = { id: 'all-stars', nombre: 'All Stars', descripcion: 'Pago', tipo: 'pago', precio_centimos: 499, precio_fragmentos: 5000, destacadas: [301], cartas: [1, { id: 301, version: 'normal' }] };
   const mensajes = (colecciones: unknown, lista = cartas) => validarCatalogo(lista, colecciones).errores.map((e) => e.mensaje).join(' | ');
 
   it('acepta un catálogo válido y normaliza las entradas', () => {
@@ -194,8 +194,9 @@ describe('validarCatalogo (spec 006, data-model §1.2)', () => {
     ['carta repetida', [colCore, { ...pago, cartas: [301, 301] }], /dos veces/],
     ['versión desconocida', [colCore, { ...pago, cartas: [{ id: 301, version: 'premium' }] }], /Versión desconocida/],
     ['carta huérfana', [colCore], /301 no pertenece/],
-    ['dos básicas', [colCore, { ...pago, tipo: 'basica', precio_centimos: undefined }], /exactamente una colección básica/],
+    ['dos básicas', [colCore, { ...pago, tipo: 'basica', precio_centimos: undefined, precio_fragmentos: undefined }], /exactamente una colección básica/],
     ['pago sin precio', [colCore, { ...pago, precio_centimos: undefined }], /precio_centimos > 0/],
+    ['pago sin precio en fragmentos', [colCore, { ...pago, precio_fragmentos: undefined }], /precio_fragmentos > 0/],
     ['destacadas fuera de cartas', [colCore, { ...pago, destacadas: [2] }], /destacadas/],
     ['id repetido', [colCore, pago, { ...pago }], /repetido/],
     ['id con mayúsculas', [colCore, { ...pago, id: 'All-Stars' }], /kebab-case/],

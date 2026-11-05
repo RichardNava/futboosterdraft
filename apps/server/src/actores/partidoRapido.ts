@@ -11,6 +11,7 @@
  */
 import { decidirNPCEnPausa, type NivelesPartido } from '@fbd/ai';
 import {
+  escudosEnPartido,
   asignarDorsalesIniciales,
   completarDorsales,
   derivarSemilla,
@@ -51,6 +52,7 @@ import { alineacionVigente, bajasActivas, plantillaDe, type Precarga } from './e
 import type { ControladorPartida } from './partida';
 import { aplicarLote, type DecisionLote } from './loteDecisiones';
 import { avanzar2D, crearEstado2D, vista2D, type Estado2D } from './partido2d';
+import { escudoDe } from './identidad';
 
 export interface PartidoEnCurso {
   fila: FilaPartido;
@@ -212,6 +214,11 @@ export function equipacionesDelPartido(c: ControladorPartida, localId: string, v
   return equipacionEnPartido(equipacionesDe(c, localId), equipacionesDe(c, visitanteId), parametrosActuales());
 }
 
+/** Escudos que se pintan (spec 011, FR-008): ninguno si coinciden. Sin consultas: salen de los participantes en memoria. */
+export function escudosDelPartido(c: ControladorPartida, localId: string, visitanteId: string) {
+  return escudosEnPartido(escudoDe(c, localId), escudoDe(c, visitanteId));
+}
+
 /** Entrada sin los parámetros (se recuperan por versión al reconstruir). */
 export type EntradaGuardada = Omit<EntradaPartido, 'parametros'>;
 
@@ -272,6 +279,7 @@ export async function iniciarPartido(
     alineaciones: resumenAlineaciones(c, entrada, humanosDe(c, fila)),
     dorsales: { ...local.dorsales, ...visitante.dorsales },
     equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId),
+    escudos: escudosDelPartido(c, fila.localId, fila.visitanteId),
     decisiones: true,
     // En directo solo se juega contra un NPC: se puede gestionar el equipo (FR-027).
     gestionDisponible: humanosDe(c, fila).length === 1,

@@ -24,12 +24,15 @@ export const PARAMETROS_ECONOMIA: Readonly<ParametrosEconomia> = {
   desfragmentar: { Superclase: 25, Crack: 50, Legendario: 75, GOAT: 100 },
   precioSobreFragmentos: 1000,
   precioSobreCentimos: 99,
-  paquetesFragmentos: [
-    { id: 'fragmentos-1000', fragmentos: 1000, centimos: 99 },
-    { id: 'fragmentos-5500', fragmentos: 5500, centimos: 499 },
-    { id: 'fragmentos-12000', fragmentos: 12000, centimos: 999 },
-  ],
+  // Retirados por la spec 011 (FR-002): sin licencia de imagen, el dinero real no compra fragmentos.
+  paquetesFragmentos: [],
 };
+
+/**
+ * Spec 011, FR-002: mientras no haya licencia de imagen de los futbolistas, el dinero real no compra cartas, sobres,
+ * colecciones ni fragmentos (constitución 1.4.0, Principio VII). Solo compra cosméticos propios.
+ */
+export const VENTA_CARTAS_CON_DINERO = false;
 
 export function valorDesfragmentar(nivel: Nivel, p: Readonly<ParametrosEconomia> = PARAMETROS_ECONOMIA): number {
   return p.desfragmentar[nivel];

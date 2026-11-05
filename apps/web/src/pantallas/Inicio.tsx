@@ -6,7 +6,7 @@ import { BandejaAvisos } from '../componentes/BandejaAvisos';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { Icono } from '../componentes/Icono';
 import { Estadio } from '../componentes/arte/Estadio';
-import { SobreArte } from '../componentes/arte/SobreArte';
+import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { useSesion } from '../estado/sesion';
 import { destinoPartida, type PartidaResumen } from './MisPartidas';
 
@@ -231,7 +231,7 @@ function EscenaPortada() {
           </div>
         ))}
       </div>
-      <SobreArte className="portada-sobre" />
+      <SobreDecorativo className="portada-sobre" />
     </div>
   );
 }

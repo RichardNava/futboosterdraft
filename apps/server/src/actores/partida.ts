@@ -84,7 +84,8 @@ export class ControladorPartida {
 
   /** Catálogo en la versión de esta partida (spec 005, FR-036). */
   get catalogo(): Catalogo {
-    return this.servicios.catalogo.enVersion(this.partida.versionCatalogo);
+    // Cada partida juega con su versión del catálogo y la identidad fijada al crearla (spec 011, FR-018).
+    return this.servicios.catalogo.enVersion(this.partida.versionCatalogo).conIdentidad(this.partida.identidad);
   }
 
   ejecutar<T>(comando: (ctx: ContextoComando) => Promise<T> | T): Promise<T> {

@@ -19,7 +19,7 @@ import {
 import type { GestorPartidas } from '../actores/gestor';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
-import { torneoIniciado } from '../actores/identidad';
+import { escudoDe, torneoIniciado } from '../actores/identidad';
 import { errores } from './errores';
 
 export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gestor: GestorPartidas): void {
@@ -38,7 +38,7 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
     const equipaciones = desdeV1(c.participante(participanteId)?.equipaciones ?? null);
     // Nombre del equipo, editable hasta que se abre el primer partido (spec 003, FR-042).
     const p = c.participante(participanteId);
-    return { ...vistaEquipo(c, datos, dorsales, equipaciones), nombreEquipo: p ? c.nombreDe(p) : '', nombreEditable: !(await torneoIniciado(c)) };
+    return { ...vistaEquipo(c, datos, dorsales, equipaciones), nombreEquipo: p ? c.nombreDe(p) : '', escudo: escudoDe(c, participanteId), nombreEditable: !(await torneoIniciado(c)) };
   }
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id/alineacion', { preHandler: requiereSesion }, async (req) => {

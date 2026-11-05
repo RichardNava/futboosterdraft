@@ -17,7 +17,10 @@ export interface ProductoColeccion {
   id: string;
   nombre: string;
   descripcion: string;
+  /** Precio en euros para cuando haya licencia de imagen; no se ofrece (spec 011, FR-002). */
   precioCentimos: number;
+  /** Único precio de venta mientras no haya licencia de imagen (spec 011, FR-002). */
+  precioFragmentos: number;
   numCartas: number;
   porNivel: Record<Nivel, number>;
   muestra: CartaResumen[];
@@ -52,5 +55,6 @@ export interface RespuestaTienda {
 export const CuerpoCompra = z.object({ idCompra: z.string().uuid() });
 export type CuerpoCompra = z.infer<typeof CuerpoCompra>;
 
+/** `'eur'` se sigue aceptando al leer el cuerpo para responder 422 `MONEDA_NO_ADMITIDA` (spec 011, FR-002). */
 export const CuerpoCompraSobre = CuerpoCompra.extend({ moneda: z.enum(['eur', 'fragmentos']) });
 export type CuerpoCompraSobre = z.infer<typeof CuerpoCompraSobre>;

@@ -224,7 +224,7 @@ export function Marco() {
               {interruptorSonido(false)}
             </div>
             {esRegistrado && saldo !== null && (
-              <Link to="/tienda#fragmentos" className="saldo-navegacion" aria-label={`Fragmentos: ${formatoFragmentos.format(saldo)}. Comprar fragmentos`} title="Comprar fragmentos">
+              <Link to="/tienda" className="saldo-navegacion" aria-label={`Fragmentos: ${formatoFragmentos.format(saldo)}. Ir a la tienda`} title="Ir a la tienda">
                 <Icono nombre="cristal" tamano={18} />
                 {formatoFragmentos.format(saldo)}
               </Link>

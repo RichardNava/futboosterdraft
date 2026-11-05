@@ -40,10 +40,10 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
 | [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Hecho | — |
 | [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-08, INI-09 |
-| [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1) | P1 | Parcial | INI-08, INI-05 |
+| [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1), 011 | P1 | Parcial | INI-08, INI-05 |
 | [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
-| [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | sin spec | P3 | Idea | INI-12 |
+| [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada, sin validar | INI-08 |
 | [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007 | P1 | Parcial | INI-03, INI-04, INI-08 |
 
 Los ids siguen el orden en que se registran, no el de prioridad: INI-15 se añadió al aparecer la spec 007.
@@ -309,6 +309,13 @@ cuesta simular los partidos.
   `tienda` ya usan el Core real y el nombre de la carta (`nombreCarta`) en lugar del primer apellido. `torneo` no
   fallaba por los datos: el invitado se desconectaba al ir a la portada y su partida se abandonaba a los 10 minutos
   de reloj simulado; ahora lo juega un usuario registrado.
+- **En curso (2026-11-05): [011](specs/011-rework-tienda/spec.md).** Se mantienen los jugadores reales, pero los
+  300 retratos de Core pasan a ser propios (estilo manga, entregados por el responsable del juego) y se retiran los de
+  terceros. Hay un plan B de **identidad alternativa** (nombres y retratos genéricos) que se activa con
+  `pnpm --filter @fbd/server ajuste identidad_cartas alternativa`, sin reiniciar y solo en las partidas nuevas.
+  Hecho (2026-11-05): los 300 retratos están en `apps/web/public/cartas/retratos-propios/` y la validación de Core
+  rechaza los de terceros («retratos de terceros: 0» en el sumario). Ninguna carta tiene aún identidad alternativa:
+  en «alternativa» todas usan el nombre genérico (`Defensa 40`) y la silueta.
 - **Dependencias**: INI-08 (modelo de colecciones) e INI-05 (el equilibrio del catálogo se mide con el motor ya calibrado).
 - **Criterios de cierre**: los de su spec, como mínimo: `pnpm seed` carga el catálogo nuevo; validación del catálogo
   en verde; serie Core dentro de los criterios estadísticos; derechos de todo el contenido revisados.
@@ -334,10 +341,18 @@ cuesta simular los partidos.
 ## INI-14 Cosméticos y versiones premium de cartas
 
 - **Objetivo**: ampliar la tienda con cosméticos (006/FR-033) y versiones premium de las cartas (006/FR-003).
-- **Specs**: ninguna; el modelo de la 006 ya lo admite sin rediseñarse.
-- **Prioridad / estado**: P3 · **Idea**.
-- **Dependencias**: INI-12.
-- **Criterios de cierre**: no se definen hasta que exista una spec aprobada; debe respetar el Principio VII.
+- **Specs**: [011](specs/011-rework-tienda/spec.md) (monetización cosmética: 38 escudos y 31 diseños de sobre, sueltos
+  o en packs fijos, con fragmentos o euros simulados). Mientras no haya licencia de imagen, el dinero real solo compra
+  cosméticos (constitución 1.4.0, Principio VII); las versiones premium de cartas quedan fuera.
+- **Prioridad / estado**: P2 · **Implementada, sin validar** (011, 2026-11-05). Hecho: catálogo de cosméticos en
+  `data/cosmeticos.json`, escudos en el marcador, el resumen y el 2D, sobres con carrusel y rasgadura propia, venta en
+  la tienda y tienda de cartas solo en fragmentos. Pendiente: los recorridos manuales del quickstart (T077: SC-001,
+  SC-003, 360 px) y el e2e `cosmeticos` en un entorno con la base de datos de desarrollo.
+- **Riesgo (economía de fragmentos, 011 research R11)**: sin venta de fragmentos, solo entran por torneos ganados (10),
+  duplicados y desfragmentar; un cosmético de 250 fragmentos equivale a unos 25 torneos ganados y una colección a
+  cientos. Requiere una spec de economía que revise `recompensaTorneo`.
+- **Dependencias**: INI-08 (tienda y fragmentos). Los pagos reales (INI-12) solo hacen falta para cobrar de verdad.
+- **Criterios de cierre**: los de la 011 (SC-001 a SC-009); debe respetar el Principio VII.
 
 ## INI-15 Retoques visuales y sonoros
 

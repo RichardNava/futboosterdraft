@@ -6,7 +6,7 @@
  *
  * La pertenencia a colecciones viene de `colecciones_cartas` (spec 006, R1): una carta puede estar en varias.
  */
-import { cartaEnVersion, VERSION_CATALOGO_ACTUAL, type Jugador } from '@fbd/domain';
+import { cartaEnVersion, conIdentidad, VERSION_CATALOGO_ACTUAL, type Identidad, type Jugador } from '@fbd/domain';
 import { filaAJugador } from '../../http/catalogo';
 import type { BaseDatos } from '../db';
 import { coleccionesCartas, jugadores } from '../esquema/index';
@@ -16,6 +16,7 @@ export const COLECCION_CORE = 'core';
 
 export class Catalogo {
   private readonly vistas = new Map<number, Catalogo>();
+  private vistaAlternativa: Catalogo | null = null;
 
   private constructor(
     private readonly porId: ReadonlyMap<number, Jugador>,
@@ -33,6 +34,20 @@ export class Catalogo {
       this.vistas.set(version, vista);
     }
     return vista;
+  }
+
+  /**
+   * El mismo catálogo con la identidad indicada (spec 011, research R12): «alternativa» sustituye nombres, retratos
+   * e historia; nada más (FR-019). Se calcula una vez por vista.
+   */
+  conIdentidad(identidad: Identidad): Catalogo {
+    if (identidad === 'real') return this;
+    this.vistaAlternativa ??= new Catalogo(
+      new Map([...this.porId].map(([id, j]) => [id, conIdentidad(j, identidad)])),
+      this.pertenencia,
+      this.version,
+    );
+    return this.vistaAlternativa;
   }
 
   static async cargar(db: BaseDatos): Promise<Catalogo> {

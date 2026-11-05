@@ -11,6 +11,10 @@ import { useSesion } from '../estado/sesion';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
 import { Dialogo } from '../componentes/Dialogo';
+import { SelectorEscudo } from '../componentes/SelectorEscudo';
+import { SelectorSobre } from '../componentes/SelectorSobre';
+import { useAspecto } from '../estado/aspecto';
+import type { CuerpoAspecto } from '@fbd/protocol';
 
 interface PerfilVista {
   nombreEquipo: string | null;
@@ -20,6 +24,8 @@ interface PerfilVista {
 /**
  * «Mi perfil» (spec 003, FR-042a, FR-045; contracts/ui.md): nombre de equipo y equipaciones por defecto para las
  * partidas nuevas. Solo para usuarios registrados. «Guardar» es el botón principal.
+ *
+ * Spec 011 (US1, US2): el escudo y el diseño del sobre se guardan al elegirlos, sin pasar por «Guardar».
  */
 export function Perfil() {
   const usuario = useSesion((s) => s.usuario);
@@ -91,6 +97,7 @@ export function Perfil() {
         </p>
       </div>
       <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
+      <AspectoPerfil />
       <EliminarCuenta />
       <BarraPrincipal
         principal={{
@@ -103,6 +110,39 @@ export function Perfil() {
         }}
       />
     </main>
+  );
+}
+
+/** Escudo y sobre de la cuenta (spec 011): cada elección se guarda al momento. */
+function AspectoPerfil() {
+  const { aspecto, cargar, actualizar } = useAspecto();
+  const [guardando, setGuardando] = useState(false);
+  useEffect(() => {
+    void cargar();
+  }, [cargar]);
+  if (!aspecto) return null;
+  const guardar = async (cambios: CuerpoAspecto) => {
+    setGuardando(true);
+    try {
+      await actualizar(cambios);
+    } catch (e) {
+      mostrarAviso('error', e instanceof ErrorApi ? e.message : 'No se ha podido guardar');
+    } finally {
+      setGuardando(false);
+    }
+  };
+  return (
+    <div className="perfil-aspecto">
+      <section aria-labelledby="titulo-escudo">
+        <h2 id="titulo-escudo">Escudo</h2>
+        {aspecto.escudoAsignado && <p className="nota">Te hemos asignado este escudo: elige otro cuando quieras.</p>}
+        <SelectorEscudo elegido={aspecto.escudo} onElegir={(escudo) => void guardar({ escudo })} desactivado={guardando} />
+      </section>
+      <section aria-labelledby="titulo-sobre">
+        <h2 id="titulo-sobre">Sobre</h2>
+        <SelectorSobre aspecto={aspecto} onCambiar={(cambios) => void guardar(cambios)} desactivado={guardando} />
+      </section>
+    </div>
   );
 }
 

@@ -88,7 +88,7 @@ export async function unirse(c: ControladorPartida, ctx: ContextoComando, usuari
   c.apodos.set(usuarioId, apodo);
   // Solo se unen usuarios registrados (`POST /unirse` lo exige): pueden traer su perfil.
   const identidad = await identidadInicial(c.servicios, { id: usuarioId, apodo, tipo: 'registrado' }, nombresUsados(c));
-  const fila = await c.servicios.repoPartidas.anadirHumano(c.id, usuarioId, identidad.nombre, undefined, identidad.equipaciones);
+  const fila = await c.servicios.repoPartidas.anadirHumano(c.id, usuarioId, identidad.nombre, undefined, identidad.equipaciones, identidad.escudo);
   c.participantes.push(fila);
   if (identidad.ajustado) marcarNombreAjustado(c, fila.id);
   emitirSala(c, ctx);

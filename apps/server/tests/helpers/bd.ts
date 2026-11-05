@@ -7,7 +7,7 @@ import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testconta
 import { sql } from 'drizzle-orm';
 import { conectar, type ConexionBD } from '../../src/persistencia/db';
 import { aplicarMigraciones } from '../../src/persistencia/migrar';
-import { cargarCatalogo, FICHEROS_POR_DEFECTO, leerLote } from '../../src/persistencia/seed';
+import { cargarCatalogo, cargarCosmeticos, FICHEROS_POR_DEFECTO, leerCosmeticos, leerLote } from '../../src/persistencia/seed';
 
 export interface BdPruebas extends ConexionBD {
   contenedor: StartedPostgreSqlContainer;
@@ -19,7 +19,7 @@ export interface BdPruebas extends ConexionBD {
 const RAIZ = fileURLToPath(new URL('../../../../', import.meta.url));
 
 /** Tablas del catálogo: `limpiar` las conserva. */
-const TABLAS_CATALOGO = ['jugadores', 'colecciones', 'colecciones_cartas', '__drizzle_migrations'];
+const TABLAS_CATALOGO = ['jugadores', 'colecciones', 'colecciones_cartas', 'cosmeticos', 'packs_cosmeticos', '__drizzle_migrations'];
 
 export async function iniciarBdPruebas(): Promise<BdPruebas> {
   const contenedor = await new PostgreSqlContainer('postgres:16').start();
@@ -28,6 +28,9 @@ export async function iniciarBdPruebas(): Promise<BdPruebas> {
   const { jugadores, colecciones, errores } = leerLote(RAIZ, FICHEROS_POR_DEFECTO.cartas, FICHEROS_POR_DEFECTO.colecciones);
   if (errores.length) throw new Error(`Catálogo inválido: ${errores.length} errores`);
   await cargarCatalogo(conexion.db, jugadores, colecciones);
+  const cosmeticos = leerCosmeticos(RAIZ);
+  if (cosmeticos.errores.length) throw new Error(`Cosméticos inválidos: ${cosmeticos.errores.length} errores`);
+  await cargarCosmeticos(conexion.db, cosmeticos.catalogo);
 
   return {
     ...conexion,

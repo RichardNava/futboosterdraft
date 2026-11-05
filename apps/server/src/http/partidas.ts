@@ -1,10 +1,10 @@
 /**
  * Rutas de partidas (T051; contracts/http-api.md).
  */
-import { AnadirNPC, ConfigDuelosEntrada, CrearPartida, CuerpoNombreEquipo } from '@fbd/protocol';
+import { AnadirNPC, ConfigDuelosEntrada, CrearPartida, CuerpoEscudoPartida, CuerpoNombreEquipo } from '@fbd/protocol';
 import type { FastifyInstance } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
-import { cambiarNombreEquipo } from '../actores/identidad';
+import { cambiarEscudo, cambiarNombreEquipo } from '../actores/identidad';
 import { misPartidas } from '../actores/misPartidas';
 import { anadirNPC, configurarDuelos, iniciar, unirse } from '../actores/sala';
 import type { Auth } from '../auth/auth';
@@ -79,6 +79,16 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
     const participante = c.participanteDeUsuario(req.usuario!.id);
     if (!participante) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
     return c.ejecutar((ctx) => cambiarNombreEquipo(c, ctx, participante.id, cuerpo.data.nombre));
+  });
+
+  // Escudo del equipo en la partida (spec 011): mismas reglas que el nombre; no cambia el del perfil.
+  app.put<{ Params: { id: string } }>('/api/partidas/:id/escudo', { preHandler: requiereSesion }, async (req) => {
+    const cuerpo = CuerpoEscudoPartida.safeParse(req.body);
+    if (!cuerpo.success) throw errores.validacion('CUERPO_INVALIDO', 'Falta el escudo (o null)');
+    const c = await gestor.obtenerOError(req.params.id);
+    const participante = c.participanteDeUsuario(req.usuario!.id);
+    if (!participante) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+    return c.ejecutar((ctx) => cambiarEscudo(c, ctx, participante.id, cuerpo.data.escudo));
   });
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id/plantillas', { preHandler: requiereSesion }, async (req) => {

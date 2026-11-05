@@ -121,14 +121,12 @@ export function obtenerTienda(): Promise<RespuestaTienda> {
 }
 
 /** Las compras se repiten con el mismo `idCompra` (lo genera quien llama): el servidor no cobra dos veces (FR-032). */
-export function comprarSobre(idCompra: string, moneda: 'eur' | 'fragmentos'): Promise<ResumenCompra> {
-  return api('/api/tienda/sobre/comprar', { cuerpo: { idCompra, moneda } });
+/** Los sobres de cartas solo se pagan con fragmentos (spec 011, FR-002). */
+export function comprarSobre(idCompra: string): Promise<ResumenCompra> {
+  return api('/api/tienda/sobre/comprar', { cuerpo: { idCompra, moneda: 'fragmentos' } });
 }
 
 export function comprarColeccion(coleccionId: string, idCompra: string): Promise<ResumenCompra> {
   return api(`/api/tienda/colecciones/${coleccionId}/comprar`, { cuerpo: { idCompra } });
 }
 
-export function comprarFragmentos(paqueteId: string, idCompra: string): Promise<ResumenCompra> {
-  return api(`/api/tienda/fragmentos/${paqueteId}/comprar`, { cuerpo: { idCompra } });
-}

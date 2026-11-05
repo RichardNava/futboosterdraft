@@ -2,15 +2,15 @@ import { useNavigate } from 'react-router';
 import { BarraPrincipal } from './BarraPrincipal';
 import { Estadisticas } from './Estadisticas';
 import { goleadoresDe } from './goleadores';
-import { Marcador } from './Marcador';
+import { Marcador, type EquipoMarcador } from './Marcador';
 import { ResumenEventos, type EventoVista } from './ResumenEventos';
 
 export type MarcadorFinal = { local: number; visitante: number; penaltis?: { local: number; visitante: number } };
 
 interface Props {
   partidaId: string;
-  local: { nombre: string; color?: string };
-  visitante: { nombre: string; color?: string };
+  local: EquipoMarcador;
+  visitante: EquipoMarcador;
   marcador: MarcadorFinal;
   /** Eventos relevantes del partido (con su minuto). */
   eventos: EventoVista[];
@@ -44,7 +44,7 @@ export function ResultadoPartido({ partidaId, local, visitante, marcador, evento
       <div className="resultado-cuerpo">
         <section aria-label="Resumen del partido" data-testid="resultado-eventos">
           <h2>Resumen del partido</h2>
-          <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} colores={{ local: local.color, visitante: visitante.color }} />
+          <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo} chapas={{ local, visitante }} />
         </section>
 
         {estadisticas !== null && estadisticas !== undefined && (

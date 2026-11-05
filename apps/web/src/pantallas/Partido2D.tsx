@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { coloresDe } from '../componentes/colores';
+import { chapasDelPartido, equipoMarcador } from '../componentes/chapa';
 import { useParams } from 'react-router';
 import { jugadoresDe, Lienzo2D, type Superposicion } from '../campo2d/Lienzo2D';
 import type { JugadorDibujo } from '../campo2d/renderizador';
@@ -227,8 +228,8 @@ export function Partido2D() {
     return (
       <ResultadoPartido
         partidaId={partidaId!}
-        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
-        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        local={equipoMarcador(inicio, 'local')}
+        visitante={equipoMarcador(inicio, 'visitante')}
         marcador={fin.marcador}
         eventos={fin.eventos}
         estadisticas={fin.estadisticas}
@@ -282,13 +283,13 @@ export function Partido2D() {
       <div className="franja-2d">
         <p className="marcador-2d" aria-live="polite">
           <span className="equipos-2d">
-            <Chapa color={coloresDe(inicio.equipaciones.local).principal} />
+            <Chapa {...equipoMarcador(inicio, 'local')} lado="local" />
             <NombreRecortado texto={inicio.local.nombre} />
             <span className="goles-2d">
               {marcador.local} – {marcador.visitante}
             </span>
             <NombreRecortado texto={inicio.visitante.nombre} />
-            <Chapa color={coloresDe(inicio.equipaciones.visitante).principal} />
+            <Chapa {...equipoMarcador(inicio, 'visitante')} lado="visitante" />
           </span>
           <span className="nota">
             {minuto} · {aviso ?? ETIQUETA_FASE[fase] ?? fase}
@@ -303,8 +304,8 @@ export function Partido2D() {
         </div>
         {/* Goleadores con su minuto, solo los goles ya vistos (ronda 4, FR-053). */}
         <GoleadoresFranja
-          local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
-          visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+          local={equipoMarcador(inicio, 'local')}
+          visitante={equipoMarcador(inicio, 'visitante')}
           goleadores={goleadoresDe(eventosVistos, nombre)}
         />
         {malestar.map((m) => (
@@ -348,7 +349,7 @@ export function Partido2D() {
           <section aria-label="Eventos del partido">
             <h2>Lo que ha pasado</h2>
             <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo}
-              colores={{ local: coloresDe(inicio.equipaciones.local).principal, visitante: coloresDe(inicio.equipaciones.visitante).principal }}
+              chapas={chapasDelPartido(inicio.equipaciones, inicio.escudos)}
             />
           </section>
         </div>
@@ -362,7 +363,7 @@ export function Partido2D() {
           poseedor &&
           idPoseedor !== undefined && (
             <span className="poseedor-2d" aria-hidden="true">
-              <Chapa color={coloresDe(inicio.equipaciones[poseedor.lado]).principal} />
+              <Chapa {...equipoMarcador(inicio, poseedor.lado)} />
               {nombre(idPoseedor)}
             </span>
           )

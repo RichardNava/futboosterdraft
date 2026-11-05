@@ -56,7 +56,7 @@ export interface RespuestaDesfragmentar {
   minimo: EstadoMinimo;
 }
 
-export type MotivoMovimiento = 'recompensa_torneo' | 'desfragmentacion' | 'duplicado' | 'compra_fragmentos' | 'compra_sobre';
+export type MotivoMovimiento = 'recompensa_torneo' | 'desfragmentacion' | 'duplicado' | 'compra_fragmentos' | 'compra_sobre' | 'compra_cosmetico' | 'compra_coleccion';
 
 export interface MovimientoFragmentos {
   id: string;

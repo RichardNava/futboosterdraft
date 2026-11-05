@@ -162,6 +162,16 @@ export interface Jugador {
   imagen: string;
   /** Imagen de fondo de la acción (ruta del sitio bajo `/cartas/`). */
   imagen_bg: string;
+  /** Identidad alternativa para el plan B de derechos de imagen (spec 011, FR-017): opcional. */
+  identidad_alternativa?: IdentidadAlternativa;
+}
+
+export interface IdentidadAlternativa {
+  nombre: string;
+  apellidos: string;
+  nombre_carta: string;
+  /** Sin ella, la silueta de su demarcación. */
+  imagen?: string;
 }
 
 /** Versiones de una carta (R2). La premium llegará con su propia tabla de presentación. */
@@ -177,6 +187,8 @@ export interface Coleccion {
   descripcion: string;
   tipo: TipoColeccion;
   precioCentimos?: number;
+  /** Precio de venta mientras no haya licencia de imagen (spec 011, FR-002). */
+  precioFragmentos?: number;
   destacadas?: number[];
   cartas: { id: number; version: VersionCarta }[];
 }

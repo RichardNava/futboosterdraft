@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { AperturaSobre } from '../componentes/AperturaSobre';
+import { sobreSiguiente, useAspecto } from '../estado/aspecto';
 import { usePartidaActiva } from '../estado/partidaActiva';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { BotonAvanzar } from '../componentes/BotonAvanzar';
@@ -45,6 +46,9 @@ export function Draft() {
   const [ficha, setFicha] = useState<CartaResumen | null>(null);
   /** Sobre propio recién abierto: animación de apertura (solo cuando el servidor la pide; FR-006). */
   const [apertura, setApertura] = useState<CartaResumen[] | null>(null);
+  /** Diseño del sobre de la apertura en curso (spec 011, US2): uno por ronda, del favorito o del carrusel. */
+  const [diseno, setDiseno] = useState<string | undefined>(undefined);
+  const sobreActual = useAspecto((s) => s.aspecto?.sobreActual);
   /** Turno mostrado ("ronda-turno"): el ack de una elección solo cuenta para el turno en que se envió. */
   const turnoActual = useRef<string | null>(null);
   /** Hay una elección en camino: el doble clic y el botón no envían dos veces (FR-056). */
@@ -104,6 +108,21 @@ export function Draft() {
     setConfirmada(d.eleccionActual?.id ?? null);
   }, [estado, navegar, partidaId]);
 
+  // Cada apertura (una por ronda) pide el siguiente diseño; si falla, el sobre original sin bloquear la apertura.
+  const hayApertura = apertura !== null;
+  useEffect(() => {
+    if (!hayApertura) return;
+    setDiseno(undefined);
+    let vigente = true;
+    void sobreSiguiente().then((d) => vigente && setDiseno(d));
+    return () => {
+      vigente = false;
+    };
+  }, [hayApertura]);
+  useEffect(() => {
+    void useAspecto.getState().cargar();
+  }, []);
+
   const restante = useCuentaAtras(turno?.venceEn, conexion);
 
   const confirmar = async (jugadorId: number | null = elegida) => {
@@ -154,7 +173,7 @@ export function Draft() {
     return (
       <main className="pantalla draft-fin">
         <section className="draft-fin-escena" aria-labelledby="titulo-draft-fin">
-          <SobreArte className="draft-fin-sobre" rasgado />
+          <SobreArte className="draft-fin-sobre" rasgado diseno={diseno ?? sobreActual} />
           <div className="draft-fin-texto">
             <h1 id="titulo-draft-fin" className="cartel">
               Draft terminado
@@ -188,7 +207,7 @@ export function Draft() {
 
   return (
     <main className="pantalla draft">
-      {apertura && <AperturaSobre cartas={apertura} onTerminar={() => setApertura(null)} />}
+      {apertura && <AperturaSobre cartas={apertura} diseno={diseno} onTerminar={() => setApertura(null)} />}
 
       {/* Las cartas dominan; el contexto va en un carril lateral (arriba y abajo en móvil). Spec 004, FR-018, FR-046. */}
       <div className="draft-mesa">

@@ -4,3 +4,4 @@ export * from './equipo';
 export * from './partido';
 export * from './torneo';
 export * from './coleccion';
+export * from './cosmeticos';

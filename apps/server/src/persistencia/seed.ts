@@ -24,6 +24,7 @@ import {
   valorDesfragmentar,
   type Coleccion,
   type Jugador,
+  type TipoCosmetico,
 } from '@fbd/domain';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
@@ -34,7 +35,9 @@ import {
   colecciones as tablaColecciones,
   coleccionesCartas,
   coleccionesUsuario,
+  cosmeticos as tablaCosmeticos,
   jugadores as tablaJugadores,
+  packsCosmeticos,
   movimientosFragmentos,
   saldosFragmentos,
 } from './esquema/index';
@@ -43,7 +46,11 @@ const require = createRequire(import.meta.url);
 const esquemaJugadores = require('@fbd/protocol/schemas/player-data.schema.json') as object;
 const esquemaColecciones = require('@fbd/protocol/schemas/colecciones.schema.json') as object;
 
-export const FICHEROS_POR_DEFECTO = { cartas: ['data/core-real.json', 'data/cartas-prueba.json'], colecciones: 'data/colecciones.json' };
+export const FICHEROS_POR_DEFECTO = {
+  cartas: ['data/core-real.json', 'data/cartas-prueba.json'],
+  colecciones: 'data/colecciones.json',
+  cosmeticos: 'data/cosmeticos.json',
+};
 
 export interface ErrorSeed {
   id?: unknown;
@@ -171,6 +178,11 @@ export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[
         nivel: j.nivel,
         imagen: j.imagen,
         imagenBg: j.imagen_bg,
+        // Identidad alternativa (spec 011, FR-017): los tres nombres o ninguno (check de la migración 0014).
+        nombreAlt: j.identidad_alternativa?.nombre ?? null,
+        apellidosAlt: j.identidad_alternativa?.apellidos ?? null,
+        nombreCartaAlt: j.identidad_alternativa?.nombre_carta ?? null,
+        imagenAlt: j.identidad_alternativa?.imagen ?? null,
       };
       await tx
         .insert(tablaJugadores)
@@ -186,6 +198,7 @@ export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[
         descripcion: c.descripcion,
         tipo: c.tipo,
         precioCentimos: c.precioCentimos ?? null,
+        precioFragmentos: c.precioFragmentos ?? null,
         destacadas: c.destacadas ?? [],
         orden,
       };
@@ -236,6 +249,91 @@ export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[
   });
 }
 
+// ---------- Cosméticos (spec 011, data-model §1) ----------
+
+export interface CosmeticoJson {
+  id: string;
+  tipo: TipoCosmetico;
+  nombre: string;
+  gratuito: boolean;
+  precio_centimos?: number;
+  precio_fragmentos?: number;
+  orden: number;
+  activo?: boolean;
+}
+export interface PackJson {
+  id: string;
+  tipo: TipoCosmetico;
+  nombre: string;
+  precio_centimos: number;
+  cosmeticos: string[];
+  activo?: boolean;
+}
+export interface CatalogoCosmeticosJson {
+  version: string;
+  cosmeticos: CosmeticoJson[];
+  packs: PackJson[];
+}
+
+/** Ids únicos, precios de los de pago y packs de exactamente 5 cosméticos activos, de pago y del tipo del pack. */
+export function validarCosmeticos(c: CatalogoCosmeticosJson): ErrorSeed[] {
+  const errores: ErrorSeed[] = [];
+  const porId = new Map<string, CosmeticoJson>();
+  const ids = new Set<string>();
+  for (const x of [...c.cosmeticos, ...c.packs]) {
+    if (ids.has(x.id)) errores.push({ id: x.id, regla: 'cosmetico_repetido', mensaje: `Id repetido: ${x.id}` });
+    ids.add(x.id);
+  }
+  for (const x of c.cosmeticos) {
+    porId.set(x.id, x);
+    if (!x.gratuito && !((x.precio_centimos ?? 0) > 0 && (x.precio_fragmentos ?? 0) > 0)) {
+      errores.push({ id: x.id, regla: 'cosmetico_precio', mensaje: 'Un cosmético de pago necesita precio_centimos y precio_fragmentos > 0' });
+    }
+  }
+  for (const p of c.packs) {
+    const validos = new Set(
+      p.cosmeticos.filter((id) => {
+        const x = porId.get(id);
+        return x !== undefined && x.activo !== false && !x.gratuito && x.tipo === p.tipo;
+      }),
+    );
+    if (p.cosmeticos.length !== 5 || validos.size !== 5) {
+      errores.push({ id: p.id, regla: 'pack', mensaje: `El pack ${p.id} debe tener 5 cosméticos distintos, activos, de pago y de tipo ${p.tipo}` });
+    }
+  }
+  return errores;
+}
+
+/** Upsert de cosméticos y packs; lo que ya no está en el JSON queda `activo = false` (nunca se borra). */
+export async function cargarCosmeticos(db: BaseDatos, c: CatalogoCosmeticosJson): Promise<void> {
+  await db.transaction(async (tx) => {
+    for (const x of c.cosmeticos) {
+      const fila = {
+        id: x.id,
+        tipo: x.tipo,
+        nombre: x.nombre,
+        gratuito: x.gratuito,
+        precioCentimos: x.gratuito ? null : (x.precio_centimos ?? null),
+        precioFragmentos: x.gratuito ? null : (x.precio_fragmentos ?? null),
+        activo: x.activo !== false,
+        orden: x.orden,
+      };
+      await tx.insert(tablaCosmeticos).values(fila).onConflictDoUpdate({ target: tablaCosmeticos.id, set: fila });
+    }
+    await tx.update(tablaCosmeticos).set({ activo: false }).where(notInArray(tablaCosmeticos.id, c.cosmeticos.map((x) => x.id)));
+    for (const p of c.packs) {
+      const fila = { id: p.id, tipo: p.tipo, nombre: p.nombre, cosmeticos: p.cosmeticos, precioCentimos: p.precio_centimos, activo: p.activo !== false };
+      await tx.insert(packsCosmeticos).values(fila).onConflictDoUpdate({ target: packsCosmeticos.id, set: fila });
+    }
+    if (c.packs.length) await tx.update(packsCosmeticos).set({ activo: false }).where(notInArray(packsCosmeticos.id, c.packs.map((p) => p.id)));
+  });
+}
+
+export function leerCosmeticos(base: string, fichero: string = FICHEROS_POR_DEFECTO.cosmeticos): { catalogo: CatalogoCosmeticosJson; errores: ErrorSeed[] } {
+  const catalogo = JSON.parse(readFileSync(resolve(base, fichero), 'utf-8')) as CatalogoCosmeticosJson;
+  return { catalogo, errores: validarCosmeticos(catalogo) };
+}
+
 /** Lee y valida un lote desde disco (rutas relativas a `base`). */
 export function leerLote(base: string, ficherosCartas: readonly string[], ficheroColecciones: string): LoteCatalogo {
   const leer = (ruta: string): unknown => JSON.parse(readFileSync(resolve(base, ruta), 'utf-8'));
@@ -254,14 +352,18 @@ function opciones(args: readonly string[]): { cartas: string[]; colecciones: str
 async function principal(): Promise<void> {
   const o = opciones(process.argv.slice(2).filter((a) => a !== '--'));
   const { jugadores, colecciones, errores } = leerLote(process.env.INIT_CWD ?? process.cwd(), o.cartas, o.colecciones);
+  const cosmeticos = leerCosmeticos(process.env.INIT_CWD ?? process.cwd());
+  errores.push(...cosmeticos.errores);
   if (errores.length) {
     for (const e of errores.slice(0, 50)) console.error(`  [${String(e.id ?? '-')}] ${e.regla}: ${e.mensaje}`);
-    throw new Error(`Catálogo rechazado: ${errores.length} errores. No se ha cargado ninguna carta ni colección.`);
+    throw new Error(`Catálogo rechazado: ${errores.length} errores. No se ha cargado ninguna carta, colección ni cosmético.`);
   }
   const conexion = conectar(urlBaseDatos());
   try {
     const entregas = await cargarCatalogo(conexion.db, jugadores, colecciones);
-    console.log(`Cargadas ${jugadores.length} cartas y ${colecciones.length} colecciones.\n`);
+    await cargarCosmeticos(conexion.db, cosmeticos.catalogo);
+    const { cosmeticos: c, packs } = cosmeticos.catalogo;
+    console.log(`Cargadas ${jugadores.length} cartas, ${colecciones.length} colecciones, ${c.length} cosméticos y ${packs.length} packs.\n`);
     console.log(informeColecciones(jugadores, colecciones));
     for (const e of entregas) {
       console.log(`Entrega a ${e.usuarioId} (${e.coleccionId}): ${e.cartas.length} cartas nuevas y ${e.duplicados.length} duplicadas`);

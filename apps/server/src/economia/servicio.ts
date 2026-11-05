@@ -21,6 +21,7 @@ import {
   type Jugador,
   type Nivel,
   type ParametrosEquilibrado,
+  VENTA_CARTAS_CON_DINERO,
 } from '@fbd/domain';
 import type {
   CartaPoseida,
@@ -28,6 +29,7 @@ import type {
   ProductoColeccion,
   ResumenCompra,
   RespuestaColeccion,
+  RespuestaCompraCosmetico,
   RespuestaMovimientos,
   RespuestaTienda,
 } from '@fbd/protocol';
@@ -39,12 +41,15 @@ import {
   colecciones,
   coleccionesUsuario,
   compras,
+  cosmeticosUsuario,
   movimientosFragmentos,
   saldosFragmentos,
   usuarios,
   type ResultadoCompraGuardado,
 } from '../persistencia/esquema/index';
 import { COLECCION_CORE, type Catalogo } from '../persistencia/repos/catalogo';
+import type { RepoCosmeticos } from '../persistencia/repos/cosmeticos';
+import type { ServicioAjustes } from '../ajustes/servicio';
 
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
@@ -66,15 +71,31 @@ function descripcion(motivo: MotivoMovimiento, nombreCarta: string | undefined):
       return 'Compra de fragmentos';
     case 'compra_sobre':
       return 'Compra de un sobre';
+    case 'compra_coleccion':
+      return 'Compra de una colección';
+    case 'compra_cosmetico':
+      return 'Compra de un cosmético';
   }
 }
+
+type TipoProducto = 'coleccion' | 'sobre' | 'fragmentos' | 'cosmetico' | 'pack_cosmeticos';
+type MotivoCargo = 'compra_sobre' | 'compra_coleccion' | 'compra_cosmetico';
+/** `ResumenCompra` más los cosméticos entregados, que solo devuelven las compras de cosméticos. */
+type ResumenCompraInterno = ResumenCompra & { cosmeticos: string[] };
 
 export class ServicioEconomia {
   constructor(
     private readonly db: BaseDatos,
-    private readonly catalogo: Catalogo,
+    private readonly catalogoBase: Catalogo,
+    private readonly cosmeticos: RepoCosmeticos,
+    private readonly ajustes: ServicioAjustes,
     private readonly parametros: ParametrosEquilibrado = parametrosActuales(),
   ) {}
+
+  /** Cartas con la identidad del ajuste vigente (spec 011, R12): colección, tienda e historial. */
+  private get catalogo(): Catalogo {
+    return this.catalogoBase.conIdentidad(this.ajustes.actual());
+  }
 
   // ---------- Colección ----------
 
@@ -243,13 +264,13 @@ export class ServicioEconomia {
   }
 
   async comprarSobre(usuarioId: string, moneda: Moneda, idCompra: string): Promise<ResumenCompra> {
-    const p = PARAMETROS_ECONOMIA;
-    const importe = moneda === 'eur' ? p.precioSobreCentimos : p.precioSobreFragmentos;
-    return this.comprar(usuarioId, idCompra, { tipo: 'sobre', id: 'sobre', moneda, importe }, async (tx) => {
+    if (moneda === 'eur' && !VENTA_CARTAS_CON_DINERO) throw errores.regla('MONEDA_NO_ADMITIDA', 'Los sobres de cartas solo se pagan con fragmentos');
+    const importe = PARAMETROS_ECONOMIA.precioSobreFragmentos;
+    return this.comprar(usuarioId, idCompra, { tipo: 'sobre', id: 'sobre', moneda: 'fragmentos', importe }, async (tx) => {
       const poseidas = new Set((await this.cartas(tx, usuarioId)).map((f) => f.jugadorId));
       const disponibles = (await this.cartasDePago()).filter((id) => !poseidas.has(id)).map((id) => this.catalogo.jugador(id));
       if (disponibles.length < 8) throw errores.conflicto('SOBRE_NO_DISPONIBLE', MENSAJE_SOBRE_NO_DISPONIBLE, { restantes: disponibles.length });
-      if (moneda === 'fragmentos') await this.cobrar(tx, usuarioId, importe, idCompra);
+      await this.cobrar(tx, usuarioId, importe, idCompra, 'compra_sobre');
       const cartas = generarSobreTienda(disponibles, derivarSemilla(semillaDesdeTexto(idCompra), 'sobre-tienda'), this.parametros);
       await tx.insert(cartasUsuario).values(cartas.map((jugadorId) => ({ usuarioId, jugadorId, via: 'sobre' as const })));
       return { cartas, fragmentos: 0, duplicados: [] };
@@ -259,13 +280,15 @@ export class ServicioEconomia {
   async comprarColeccion(usuarioId: string, coleccionId: string, idCompra: string): Promise<ResumenCompra> {
     const coleccion = (await this.coleccionesDePago()).find((c) => c.id === coleccionId);
     if (!coleccion) throw errores.noEncontrado('PRODUCTO_NO_ENCONTRADO', `No existe la colección ${coleccionId}`);
-    const producto = { tipo: 'coleccion' as const, id: coleccionId, moneda: 'eur' as const, importe: coleccion.precioCentimos! };
+    // Spec 011, FR-002: las colecciones se pagan con fragmentos mientras no haya licencia de imagen.
+    const producto = { tipo: 'coleccion' as const, id: coleccionId, moneda: 'fragmentos' as const, importe: coleccion.precioFragmentos! };
     return this.comprar(usuarioId, idCompra, producto, async (tx) => {
       const comprada = await tx
         .select()
         .from(coleccionesUsuario)
         .where(and(eq(coleccionesUsuario.usuarioId, usuarioId), eq(coleccionesUsuario.coleccionId, coleccionId)));
       if (comprada.length) throw errores.conflicto('COLECCION_ADQUIRIDA', 'Ya tienes esta colección');
+      await this.cobrar(tx, usuarioId, producto.importe, idCompra, 'compra_coleccion');
       await tx.insert(coleccionesUsuario).values({ usuarioId, coleccionId, compraId: idCompra });
       const poseidas = new Set((await this.cartas(tx, usuarioId)).map((f) => f.jugadorId));
       const ids = this.catalogo.cartasDe(coleccionId);
@@ -279,11 +302,42 @@ export class ServicioEconomia {
 
   async comprarFragmentos(usuarioId: string, paqueteId: string, idCompra: string): Promise<ResumenCompra> {
     const paquete = PARAMETROS_ECONOMIA.paquetesFragmentos.find((x) => x.id === paqueteId);
-    if (!paquete) throw errores.noEncontrado('PRODUCTO_NO_ENCONTRADO', `No existe el paquete ${paqueteId}`);
+    // Spec 011, FR-002: los paquetes de fragmentos se retiraron; 410 para que un cliente antiguo vea un error claro.
+    if (!paquete) throw errores.retirado('PRODUCTO_RETIRADO', 'Los fragmentos ya no se venden: se consiguen jugando');
     return this.comprar(usuarioId, idCompra, { tipo: 'fragmentos', id: paqueteId, moneda: 'eur', importe: paquete.centimos }, async (tx) => {
       await this.sumar(tx, usuarioId, paquete.fragmentos, 'compra_fragmentos', idCompra);
       return { cartas: [], fragmentos: paquete.fragmentos, duplicados: [] };
     });
+  }
+
+  // ---------- Cosméticos (spec 011, research R10) ----------
+
+  async comprarCosmetico(usuarioId: string, cosmeticoId: string, moneda: Moneda, idCompra: string): Promise<RespuestaCompraCosmetico> {
+    const c = this.cosmeticos.cosmetico(cosmeticoId);
+    if (!c || !c.activo) throw errores.noEncontrado('PRODUCTO_NO_ENCONTRADO', `No existe el cosmético ${cosmeticoId}`);
+    if (c.gratuito) throw errores.regla('COSMETICO_GRATUITO', 'Este cosmético es gratuito: ya lo tienes');
+    const importe = moneda === 'eur' ? c.precioCentimos! : c.precioFragmentos!;
+    const r = await this.comprar(usuarioId, idCompra, { tipo: 'cosmetico', id: c.id, moneda, importe }, async (tx) => {
+      if ((await this.cosmeticos.poseidos(usuarioId, tx)).has(c.id)) throw errores.conflicto('COSMETICO_POSEIDO', 'Ya tienes este cosmético');
+      if (moneda === 'fragmentos') await this.cobrar(tx, usuarioId, importe, idCompra, 'compra_cosmetico');
+      await tx.insert(cosmeticosUsuario).values({ usuarioId, cosmeticoId: c.id, compraId: idCompra });
+      return { cartas: [], fragmentos: 0, duplicados: [], cosmeticos: [c.id] };
+    });
+    return { idCompra, cosmeticos: r.cosmeticos, saldo: r.saldo };
+  }
+
+  /** Los packs solo se pagan con euros y solo si no se tiene ninguno de sus cosméticos (research R10). */
+  async comprarPack(usuarioId: string, packId: string, idCompra: string): Promise<RespuestaCompraCosmetico> {
+    const pack = this.cosmeticos.pack(packId);
+    if (!pack || !pack.activo) throw errores.noEncontrado('PRODUCTO_NO_ENCONTRADO', `No existe el pack ${packId}`);
+    const r = await this.comprar(usuarioId, idCompra, { tipo: 'pack_cosmeticos', id: pack.id, moneda: 'eur', importe: pack.precioCentimos }, async (tx) => {
+      const tengo = await this.cosmeticos.poseidos(usuarioId, tx);
+      const poseidos = pack.cosmeticos.filter((id) => tengo.has(id));
+      if (poseidos.length) throw errores.conflicto('PACK_CON_POSEIDOS', 'Ya tienes alguno: cómpralos sueltos', { poseidos });
+      await tx.insert(cosmeticosUsuario).values(pack.cosmeticos.map((cosmeticoId) => ({ usuarioId, cosmeticoId, compraId: idCompra })));
+      return { cartas: [], fragmentos: 0, duplicados: [], cosmeticos: [...pack.cosmeticos] };
+    });
+    return { idCompra, cosmeticos: r.cosmeticos, saldo: r.saldo };
   }
 
   // ---------- Ayudantes ----------
@@ -295,9 +349,9 @@ export class ServicioEconomia {
   private async comprar(
     usuarioId: string,
     idCompra: string,
-    producto: { tipo: 'coleccion' | 'sobre' | 'fragmentos'; id: string; moneda: Moneda; importe: number },
+    producto: { tipo: TipoProducto; id: string; moneda: Moneda; importe: number },
     entregar: (tx: Tx) => Promise<ResultadoCompraGuardado>,
-  ): Promise<ResumenCompra> {
+  ): Promise<ResumenCompraInterno> {
     await this.asegurarColeccion(usuarioId);
     return this.db.transaction(async (tx) => {
       await this.bloquear(tx, usuarioId);
@@ -326,9 +380,10 @@ export class ServicioEconomia {
     });
   }
 
-  private async resumen(tx: Tx, usuarioId: string, idCompra: string, r: ResultadoCompraGuardado): Promise<ResumenCompra> {
+  private async resumen(tx: Tx, usuarioId: string, idCompra: string, r: ResultadoCompraGuardado): Promise<ResumenCompraInterno> {
     return {
       idCompra,
+      cosmeticos: r.cosmeticos ?? [],
       cartas: r.cartas.map((id) => this.catalogo.resumen(id)),
       fragmentos: r.fragmentos,
       duplicados: r.duplicados.map((d) => ({ ...d, nivel: this.catalogo.jugador(d.id).nivel, nombreCarta: this.catalogo.jugador(d.id).nombre_carta })),
@@ -358,7 +413,7 @@ export class ServicioEconomia {
   }
 
   /** Cargo condicional: nunca deja el saldo en negativo (R10). */
-  private async cobrar(tx: Tx, usuarioId: string, precio: number, idCompra: string): Promise<void> {
+  private async cobrar(tx: Tx, usuarioId: string, precio: number, idCompra: string, motivo: MotivoCargo): Promise<void> {
     const fila = await tx
       .update(saldosFragmentos)
       .set({ saldo: sql`${saldosFragmentos.saldo} - ${precio}`, actualizadoEn: new Date() })
@@ -368,7 +423,7 @@ export class ServicioEconomia {
       const saldo = await this.saldo(tx, usuarioId);
       throw errores.regla('SALDO_INSUFICIENTE', `Te faltan ${precio - saldo} fragmentos`, { saldo, precio, faltan: precio - saldo });
     }
-    await tx.insert(movimientosFragmentos).values({ usuarioId, importe: -precio, motivo: 'compra_sobre', referencia: idCompra });
+    await tx.insert(movimientosFragmentos).values({ usuarioId, importe: -precio, motivo, referencia: idCompra });
   }
 
   private cartas(ejecutor: Ejecutor, usuarioId: string): Promise<FilaCarta[]> {
@@ -436,6 +491,7 @@ export class ServicioEconomia {
       nombre: c.nombre,
       descripcion: c.descripcion,
       precioCentimos: c.precioCentimos!,
+      precioFragmentos: c.precioFragmentos!,
       numCartas: ids.length,
       porNivel,
       muestra: muestra.map((id) => this.catalogo.resumen(id)),

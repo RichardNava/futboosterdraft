@@ -6,8 +6,19 @@
  *   `nombreAjustado`. Un invitado recibe siempre «Equipo de {apodo}».
  * - El nombre se puede cambiar hasta que se abre el primer partido del torneo; cambiarlo en una partida no toca
  *   el perfil.
+ * - Escudo (spec 011, data-model §5): al unirse se copia el del perfil si sigue disponible; se cambia por partida
+ *   con las mismas reglas que el nombre. Sin elección, `escudoDe` lo resuelve al leerlo, sin tocar la fila.
  */
-import { claveNombre, desdeV1, nombrePorDefecto, normalizarNombre, validarNombre, type Equipaciones } from '@fbd/domain';
+import {
+  claveNombre,
+  desdeV1,
+  escudoAsignado,
+  escudoNpc,
+  nombrePorDefecto,
+  normalizarNombre,
+  validarNombre,
+  type Equipaciones,
+} from '@fbd/domain';
 import { errores } from '../http/errores';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
@@ -16,21 +27,63 @@ import type { ServiciosPartida as Servicios } from './servicios';
 export interface IdentidadInicial {
   nombre: string;
   equipaciones: Equipaciones | null;
+  /** Escudo elegido en el perfil, si sigue disponible; null = asignado al leerlo. */
+  escudo: string | null;
   /** El nombre del perfil estaba ocupado y se le ha dado otro. */
   ajustado: boolean;
 }
 
 /** Nombre y equipaciones con los que entra un humano en una partida. */
 export async function identidadInicial(
-  servicios: Pick<Servicios, 'repoPerfiles'>,
+  servicios: Pick<Servicios, 'repoPerfiles' | 'cosmeticos'>,
   usuario: { id: string; apodo: string; tipo?: 'registrado' | 'invitado' },
   usados: readonly string[],
 ): Promise<IdentidadInicial> {
-  const perfil = usuario.tipo === 'invitado' ? null : await servicios.repoPerfiles.obtener(usuario.id);
+  const registrado = usuario.tipo !== 'invitado';
+  const perfil = registrado ? await servicios.repoPerfiles.obtener(usuario.id) : null;
   const equipaciones = desdeV1(perfil?.equipaciones ?? null);
+  const elegido = registrado ? (await servicios.repoPerfiles.obtenerAspecto(usuario.id)).escudo : null;
+  const quien = { id: usuario.id, tipo: 'registrado' as const };
+  const escudo = elegido && (await servicios.cosmeticos.estaDisponible(quien, elegido, 'escudo')) ? elegido : null;
   const propio = perfil?.nombreEquipo ? normalizarNombre(perfil.nombreEquipo) : null;
-  if (propio && validarNombre(propio, usados).length === 0) return { nombre: propio, equipaciones, ajustado: false };
-  return { nombre: nombrePorDefecto(usuario.apodo, usados), equipaciones, ajustado: propio !== null };
+  if (propio && validarNombre(propio, usados).length === 0) return { nombre: propio, equipaciones, escudo, ajustado: false };
+  return { nombre: nombrePorDefecto(usuario.apodo, usados), equipaciones, escudo, ajustado: propio !== null };
+}
+
+/** ¿Es el participante un invitado? Un invitado solo juega solo y es el anfitrión (FR-000). */
+const esInvitado = (c: ControladorPartida, usuarioId: string | null): boolean => c.anfitrionEsInvitado && usuarioId === c.partida.anfitrionId;
+
+/**
+ * Escudo con que se pinta un equipo (data-model §5): el de la partida; si no, el asignado del registrado, el del NPC
+ * por semilla o null (círculo) para el invitado. Sin consultas a la BD.
+ */
+export function escudoDe(c: ControladorPartida, participanteId: string): string | null {
+  const p = c.participante(participanteId);
+  if (!p) return null;
+  if (p.escudo) return p.escudo;
+  const gratuitos = c.servicios.cosmeticos.gratuitos('escudo');
+  if (p.tipo === 'npc' || !p.usuarioId) return escudoNpc(c.partida.semilla, p.id, gratuitos);
+  return esInvitado(c, p.usuarioId) ? null : escudoAsignado(p.usuarioId, gratuitos);
+}
+
+/** `PUT /api/partidas/:id/escudo` (spec 011): mismas reglas que el nombre; no cambia el perfil. */
+export async function cambiarEscudo(c: ControladorPartida, ctx: ContextoComando, participanteId: string, escudo: string | null): Promise<{ escudo: string | null }> {
+  const p = c.participante(participanteId);
+  if (!p?.usuarioId) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+  if (await torneoIniciado(c)) throw errores.conflicto('TORNEO_INICIADO', 'El escudo ya no se puede cambiar: el torneo ha empezado');
+  const quien = { id: p.usuarioId, tipo: esInvitado(c, p.usuarioId) ? ('invitado' as const) : ('registrado' as const) };
+  if (escudo !== null && !(await c.servicios.cosmeticos.estaDisponible(quien, escudo, 'escudo'))) {
+    throw errores.regla('COSMETICO_NO_DISPONIBLE', 'Ese escudo no está disponible para tu cuenta');
+  }
+  // null vuelve al del perfil (si sigue disponible) o al asignado.
+  const elegido = escudo ?? (quien.tipo === 'registrado' ? (await identidadInicial(c.servicios, { id: p.usuarioId, apodo: '' }, [])).escudo : null);
+  await c.servicios.repoPartidas.cambiarEscudo(participanteId, elegido);
+  p.escudo = elegido;
+  if (c.partida.estado === 'buscando') {
+    const { resumenSala } = await import('./sala');
+    ctx.emitirATodos({ t: 'sala.actualizada', ...resumenSala(c) });
+  }
+  return { escudo: escudoDe(c, participanteId) };
 }
 
 /** Nombres ya usados en la partida (para comparar con la clave del índice único). */

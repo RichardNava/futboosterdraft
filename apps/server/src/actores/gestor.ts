@@ -122,12 +122,16 @@ export class GestorPartidas {
     const { db, repoPartidas, economia } = this.servicios;
     // Foto de la colección activa del anfitrión registrado (spec 006, FR-014); un invitado juega con Core (FR-015).
     const poolCartas = usuario.tipo === 'registrado' ? await economia.poolActivo(usuario.id) : null;
+    const identidadCartas = await this.servicios.ajustes.identidadCartas();
     const semilla = randomBytes(16).toString('hex');
     const partidaId = await db.transaction(async (tx) => {
-      const partida = await repoPartidas.crear({ anfitrionId: usuario.id, config, semilla, poolCartas, ahora: this.servicios.reloj.ahora() }, tx);
+      const partida = await repoPartidas.crear(
+        { anfitrionId: usuario.id, config, semilla, poolCartas, ahora: this.servicios.reloj.ahora(), identidad: identidadCartas },
+        tx,
+      );
       // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
       const identidad = await identidadInicial(this.servicios, usuario, []);
-      await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones);
+      await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones, identidad.escudo);
       const niveles: NivelNPC[] = config.npc.map((n) => n.nivel);
       // En una partida de invitado, el resto de plazas se rellenan con NPC desde el principio.
       const libres = config.numParticipantes - 1 - niveles.length;

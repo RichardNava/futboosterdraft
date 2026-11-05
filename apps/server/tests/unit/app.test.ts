@@ -2,7 +2,9 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import pino from 'pino';
 import type { BaseDatos } from '../../src/persistencia/db';
 import { AlmacenPeticionesMemoria } from '../../src/persistencia/peticiones';
+import { ServicioAjustes } from '../../src/ajustes/servicio';
 import { Catalogo } from '../../src/persistencia/repos/catalogo';
+import { RepoCosmeticos } from '../../src/persistencia/repos/cosmeticos';
 import { RelojFalso } from '../../src/programador/reloj';
 import { crearServidor, type Servidor } from '../../src/servidor';
 
@@ -22,6 +24,8 @@ describe('app HTTP (sin base de datos)', () => {
       logger: pino({ level: 'silent' }),
       peticiones: new AlmacenPeticionesMemoria(),
       catalogo: Catalogo.desdeLista([]),
+      cosmeticos: RepoCosmeticos.desdeLista(dbSinUso),
+      ajustes: Object.assign(Object.create(ServicioAjustes.prototype) as ServicioAjustes, { identidadCartas: async () => 'real' as const }),
     });
     await servidor.app.ready();
   });

@@ -205,7 +205,7 @@ export function CampoEquipo(props: Props) {
         >
           <span className={contornoSobreLienzo(colores.principal) ? 'chapa con-contorno' : 'chapa'} style={{ background: colores.principal, color: colores.secundario }}>
             {/* Spec 008: el retrato identifica mejor al jugador; sin él (cartas antiguas), el dorsal. */}
-            {j.imagen?.startsWith('/cartas/retratos/') ? <img src={j.imagen} alt="" draggable={false} /> : (dorsales?.[jugadorId] ?? '')}
+            {j.imagen?.startsWith('/cartas/retratos-propios/') ? <img src={j.imagen} alt="" draggable={false} /> : (dorsales?.[jugadorId] ?? '')}
           </span>
           {/* Media y posición en círculos a los lados del retrato; debajo, dorsal y nombre (rediseño 2026-11-04). */}
           <span className="ficha-equipo-media">

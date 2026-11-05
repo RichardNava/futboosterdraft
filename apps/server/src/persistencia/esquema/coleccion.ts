@@ -14,6 +14,8 @@ export const colecciones = pgTable(
     descripcion: text('descripcion').notNull(),
     tipo: text('tipo').$type<'basica' | 'pago'>().notNull(),
     precioCentimos: integer('precio_centimos'),
+    /** Precio de venta mientras no haya licencia de imagen (spec 011, FR-002). */
+    precioFragmentos: integer('precio_fragmentos'),
     destacadas: integer('destacadas').array().notNull().default(sql`'{}'::integer[]`),
     /** Orden en la tienda. */
     orden: integer('orden').notNull(),
@@ -21,6 +23,7 @@ export const colecciones = pgTable(
   (t) => [
     check('colecciones_tipo_ck', sql`${t.tipo} in ('basica','pago')`),
     check('colecciones_precio_ck', sql`${t.tipo} = 'basica' or ${t.precioCentimos} > 0`),
+    check('colecciones_precio_fragmentos_ck', sql`${t.tipo} = 'basica' or coalesce(${t.precioFragmentos}, 0) > 0`),
   ],
 );
 
@@ -66,6 +69,8 @@ export const cartasUsuario = pgTable(
 
 export interface ResultadoCompraGuardado {
   cartas: number[];
+  /** Cosméticos entregados (spec 011); ausente en las filas antiguas. */
+  cosmeticos?: string[];
   fragmentos: number;
   duplicados: { id: number; fragmentos: number }[];
 }
@@ -78,7 +83,7 @@ export const compras = pgTable(
     usuarioId: text('usuario_id')
       .notNull()
       .references(() => usuarios.id, { onDelete: 'cascade' }),
-    productoTipo: text('producto_tipo').$type<'coleccion' | 'sobre' | 'fragmentos'>().notNull(),
+    productoTipo: text('producto_tipo').$type<'coleccion' | 'sobre' | 'fragmentos' | 'cosmetico' | 'pack_cosmeticos'>().notNull(),
     productoId: text('producto_id').notNull(),
     moneda: text('moneda').$type<'eur' | 'fragmentos'>().notNull(),
     /** Céntimos o fragmentos. */
@@ -90,7 +95,7 @@ export const compras = pgTable(
   },
   (t) => [
     index('compras_usuario_idx').on(t.usuarioId, t.creadaEn.desc()),
-    check('compras_producto_tipo_ck', sql`${t.productoTipo} in ('coleccion','sobre','fragmentos')`),
+    check('compras_producto_tipo_ck', sql`${t.productoTipo} in ('coleccion','sobre','fragmentos','cosmetico','pack_cosmeticos')`),
     check('compras_moneda_ck', sql`${t.moneda} in ('eur','fragmentos')`),
     check('compras_estado_ck', sql`${t.estado} in ('completada')`),
   ],
@@ -146,7 +151,7 @@ export const movimientosFragmentos = pgTable(
     check('movimientos_fragmentos_importe_ck', sql`${t.importe} <> 0`),
     check(
       'movimientos_fragmentos_motivo_ck',
-      sql`${t.motivo} in ('recompensa_torneo','desfragmentacion','duplicado','compra_fragmentos','compra_sobre')`,
+      sql`${t.motivo} in ('recompensa_torneo','desfragmentacion','duplicado','compra_fragmentos','compra_sobre','compra_cosmetico','compra_coleccion')`,
     ),
   ],
 );

@@ -12,7 +12,7 @@ import { mostrarAviso } from '../estado/avisos';
 import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, etiquetaNPC, type Dificultad, type NivelNPC } from '../textos/niveles';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
-import { SobreArte } from '../componentes/arte/SobreArte';
+import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { ConfigDuelos } from '../componentes/ConfigDuelos';
 import type { ConfigDuelos as Duelos } from '@fbd/domain';
 
@@ -239,7 +239,7 @@ export function Sala() {
               />
             );
           })()}
-          <SobreArte className="sala-sobre" />
+          <SobreDecorativo className="sala-sobre" />
           <p className="nota">Cada participante abre un sobre de 8 cartas por ronda, se queda una y pasa el resto. Tres rondas: 24 jugadores.</p>
         </div>
       </div>

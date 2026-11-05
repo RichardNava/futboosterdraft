@@ -315,6 +315,7 @@
       "descripcion": "Estrellas de todas las selecciones (colección de prueba).",
       "tipo": "pago",
       "precio_centimos": 499,
+      "precio_fragmentos": 5000,
       "destacadas": [
         341,
         342,
@@ -374,6 +375,7 @@
       "descripcion": "Lo mejor de la selección argentina (colección de prueba).",
       "tipo": "pago",
       "precio_centimos": 399,
+      "precio_fragmentos": 4000,
       "destacadas": [
         373,
         339,

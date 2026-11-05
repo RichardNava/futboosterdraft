@@ -31,6 +31,8 @@ import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
 import { Dialogo } from '../componentes/Dialogo';
 import { Insignia } from '../componentes/Insignia';
+import { SelectorEscudo } from '../componentes/SelectorEscudo';
+import { useSesion } from '../estado/sesion';
 
 export interface CasillaVista {
   casillaId: string;
@@ -52,6 +54,8 @@ interface DatosEquipo {
   /** Spec 003, FR-042: nombre del equipo, editable hasta que se abre el primer partido. */
   nombreEquipo?: string;
   nombreEditable?: boolean;
+  /** Spec 011: escudo de este equipo en la partida (null = círculo de color del invitado). */
+  escudo?: string | null;
   /** Modo Duelo de jugadores (spec 005, FR-063, FR-063a): once único en la formación común, confirmado una vez. */
   soloTitulares?: true;
   formacionFija?: FormacionId;
@@ -95,6 +99,7 @@ function estadoDesde(a: AlineacionDominio): EstadoCampo {
  */
 export function Alineacion() {
   const { partidaId } = useParams();
+  const usuario = useSesion((s) => s.usuario);
   const navegar = useNavigate();
   const [datos, setDatos] = useState<DatosEquipo | null>(null);
   const [campo, setCampo] = useState<EstadoCampo | null>(null);
@@ -205,6 +210,16 @@ export function Alineacion() {
       mostrarAviso('exito', 'Nombre guardado');
     } catch (e) {
       setMensaje({ tipo: 'error', texto: e instanceof Error ? e.message : 'No se pudo guardar el nombre' });
+    }
+  };
+
+  const guardarEscudo = async (escudo: string) => {
+    try {
+      const r = await api<{ escudo: string | null }>(`/api/partidas/${partidaId}/escudo`, { metodo: 'PUT', cuerpo: { escudo } });
+      setDatos((d) => (d ? { ...d, escudo: r.escudo } : d));
+      mostrarAviso('exito', 'Escudo guardado');
+    } catch (e) {
+      setMensaje({ tipo: 'error', texto: e instanceof Error ? e.message : 'No se pudo guardar el escudo' });
     }
   };
 
@@ -396,6 +411,18 @@ export function Alineacion() {
             <strong>{datos.nombreEquipo}</strong> <span className="nota">(ya no se puede cambiar: el torneo ha empezado)</span>
           </p>
         )}
+      </details>
+
+      <details className="seccion-plegable">
+        <summary>Escudo</summary>
+        {!datos.nombreEditable && <p className="nota">El escudo ya no se puede cambiar: el torneo ha empezado.</p>}
+        <SelectorEscudo
+          elegido={datos.escudo ?? null}
+          onElegir={(id) => void guardarEscudo(id)}
+          invitado={usuario?.tipo !== 'registrado'}
+          desactivado={!datos.nombreEditable}
+          etiqueta="Escudo del equipo en esta partida"
+        />
       </details>
 
       {equipaciones && !duelos && (

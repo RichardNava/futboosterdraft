@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { PARAMETROS_ECONOMIA, validarParametrosEconomia, valorDesfragmentar, valorEsperadoSobre } from '../../src/economia/parametros';
+import {
+  PARAMETROS_ECONOMIA,
+  validarParametrosEconomia,
+  valorDesfragmentar,
+  valorEsperadoSobre,
+  VENTA_CARTAS_CON_DINERO,
+} from '../../src/economia/parametros';
 import { parametrosActuales } from '../../src/parametros/index';
 
 describe('parámetros de economía (R9; FR-024)', () => {
@@ -19,5 +25,10 @@ describe('parámetros de economía (R9; FR-024)', () => {
 
   it('valor por nivel', () => {
     expect(['Superclase', 'Crack', 'Legendario', 'GOAT'].map((n) => valorDesfragmentar(n as 'GOAT'))).toEqual([25, 50, 75, 100]);
+  });
+
+  it('sin licencia de imagen no se venden fragmentos ni cartas con dinero (spec 011, FR-002)', () => {
+    expect(PARAMETROS_ECONOMIA.paquetesFragmentos).toEqual([]);
+    expect(VENTA_CARTAS_CON_DINERO).toBe(false);
   });
 });

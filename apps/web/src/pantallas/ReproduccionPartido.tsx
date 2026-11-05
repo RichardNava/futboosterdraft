@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { coloresDe } from '../componentes/colores';
+import { chapasDelPartido, equipoMarcador } from '../componentes/chapa';
 import { Link, useParams } from 'react-router';
 import { api, ErrorApi, marcarVisto, obtenerReproduccion } from '../api/cliente';
 import { jugadoresDe, Lienzo2D, type Superposicion } from '../campo2d/Lienzo2D';
@@ -218,8 +218,8 @@ export function ReproduccionPartido() {
     return (
       <ResultadoPartido
         partidaId={partidaId!}
-        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
-        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        local={equipoMarcador(inicio, 'local')}
+        visitante={equipoMarcador(inicio, 'visitante')}
         marcador={datos.fin.marcador}
         eventos={datos.fin.eventos}
         estadisticas={datos.fin.estadisticas}
@@ -233,7 +233,7 @@ export function ReproduccionPartido() {
     <section aria-label="Eventos del partido">
       <h2>Lo que ha pasado</h2>
       <ResumenEventos eventos={eventosVistos} nombre={nombre} nombresEquipo={nombresEquipo}
-        colores={{ local: coloresDe(inicio.equipaciones.local).principal, visitante: coloresDe(inicio.equipaciones.visitante).principal }}
+        chapas={chapasDelPartido(inicio.equipaciones, inicio.escudos)}
       />
     </section>
   );
@@ -248,13 +248,13 @@ export function ReproduccionPartido() {
           <div className="franja-2d">
             <p className="marcador-2d" aria-live="polite">
               <span className="equipos-2d">
-                <Chapa color={coloresDe(inicio.equipaciones.local).principal} />
+                <Chapa {...equipoMarcador(inicio, 'local')} lado="local" />
                 <NombreRecortado texto={inicio.local.nombre} />
                 <span className="goles-2d">
                   {marcador.local} – {marcador.visitante}
                 </span>
                 <NombreRecortado texto={inicio.visitante.nombre} />
-                <Chapa color={coloresDe(inicio.equipaciones.visitante).principal} />
+                <Chapa {...equipoMarcador(inicio, 'visitante')} lado="visitante" />
               </span>
               <span className="nota">{minuto}</span>
             </p>
@@ -267,8 +267,8 @@ export function ReproduccionPartido() {
             </div>
             {/* Goleadores con su minuto, solo los goles ya vistos (ronda 4, FR-053). */}
             <GoleadoresFranja
-              local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
-              visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+              local={equipoMarcador(inicio, 'local')}
+              visitante={equipoMarcador(inicio, 'visitante')}
               goleadores={goleadoresDe(eventosVistos, nombre)}
             />
           </div>

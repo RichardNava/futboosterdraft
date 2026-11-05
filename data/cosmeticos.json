@@ -1,0 +1,720 @@
+{
+  "version": "1.0.0",
+  "cosmeticos": [
+    {
+      "id": "sobre-original",
+      "tipo": "sobre",
+      "nombre": "Original",
+      "gratuito": true,
+      "orden": 0
+    },
+    {
+      "id": "escudo-flor-de-lis-azul-oro",
+      "tipo": "escudo",
+      "nombre": "Flor de lis azul y oro",
+      "gratuito": true,
+      "orden": 1
+    },
+    {
+      "id": "escudo-faro-marino-circular",
+      "tipo": "escudo",
+      "nombre": "Faro marino",
+      "gratuito": true,
+      "orden": 2
+    },
+    {
+      "id": "escudo-fortaleza-granate",
+      "tipo": "escudo",
+      "nombre": "Fortaleza granate",
+      "gratuito": true,
+      "orden": 3
+    },
+    {
+      "id": "escudo-trebol-verde-rombo",
+      "tipo": "escudo",
+      "nombre": "Trébol verde",
+      "gratuito": true,
+      "orden": 4
+    },
+    {
+      "id": "escudo-montana-rio-azul",
+      "tipo": "escudo",
+      "nombre": "Montaña y río",
+      "gratuito": true,
+      "orden": 5
+    },
+    {
+      "id": "escudo-navio-dorado",
+      "tipo": "escudo",
+      "nombre": "Navío dorado",
+      "gratuito": true,
+      "orden": 6
+    },
+    {
+      "id": "escudo-columna-clasica",
+      "tipo": "escudo",
+      "nombre": "Columna clásica",
+      "gratuito": true,
+      "orden": 7
+    },
+    {
+      "id": "escudo-cruz-heraldica",
+      "tipo": "escudo",
+      "nombre": "Cruz heráldica",
+      "gratuito": true,
+      "orden": 8
+    },
+    {
+      "id": "escudo-arbol-de-raices",
+      "tipo": "escudo",
+      "nombre": "Árbol de raíces",
+      "gratuito": true,
+      "orden": 9
+    },
+    {
+      "id": "escudo-estrella-polar-triangular",
+      "tipo": "escudo",
+      "nombre": "Estrella polar",
+      "gratuito": true,
+      "orden": 10
+    },
+    {
+      "id": "escudo-puente-de-piedra",
+      "tipo": "escudo",
+      "nombre": "Puente de piedra",
+      "gratuito": true,
+      "orden": 11
+    },
+    {
+      "id": "escudo-antorcha-alada",
+      "tipo": "escudo",
+      "nombre": "Antorcha alada",
+      "gratuito": true,
+      "orden": 12
+    },
+    {
+      "id": "escudo-balon-lineas-verdes",
+      "tipo": "escudo",
+      "nombre": "Balón de líneas verdes",
+      "gratuito": true,
+      "orden": 13
+    },
+    {
+      "id": "escudo-leon-corona",
+      "tipo": "escudo",
+      "nombre": "León coronado",
+      "gratuito": true,
+      "orden": 14
+    },
+    {
+      "id": "escudo-aguila-estrella",
+      "tipo": "escudo",
+      "nombre": "Águila y estrella",
+      "gratuito": true,
+      "orden": 15
+    },
+    {
+      "id": "escudo-lobo",
+      "tipo": "escudo",
+      "nombre": "Lobo",
+      "gratuito": true,
+      "orden": 16
+    },
+    {
+      "id": "escudo-mountain-rayo",
+      "tipo": "escudo",
+      "nombre": "Montaña y rayo",
+      "gratuito": true,
+      "orden": 17
+    },
+    {
+      "id": "escudo-cometa-estelar",
+      "tipo": "escudo",
+      "nombre": "Cometa estelar",
+      "gratuito": true,
+      "orden": 18
+    },
+    {
+      "id": "escudo-premium-1",
+      "tipo": "escudo",
+      "nombre": "Premium 1",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 19
+    },
+    {
+      "id": "escudo-premium-2",
+      "tipo": "escudo",
+      "nombre": "Premium 2",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 20
+    },
+    {
+      "id": "escudo-premium-3",
+      "tipo": "escudo",
+      "nombre": "Premium 3",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 21
+    },
+    {
+      "id": "escudo-premium-4",
+      "tipo": "escudo",
+      "nombre": "Premium 4",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 22
+    },
+    {
+      "id": "escudo-premium-5",
+      "tipo": "escudo",
+      "nombre": "Premium 5",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 23
+    },
+    {
+      "id": "escudo-premium-6",
+      "tipo": "escudo",
+      "nombre": "Premium 6",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 24
+    },
+    {
+      "id": "escudo-premium-7",
+      "tipo": "escudo",
+      "nombre": "Premium 7",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 25
+    },
+    {
+      "id": "escudo-premium-8",
+      "tipo": "escudo",
+      "nombre": "Premium 8",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 26
+    },
+    {
+      "id": "escudo-premium-9",
+      "tipo": "escudo",
+      "nombre": "Premium 9",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 27
+    },
+    {
+      "id": "escudo-premium-10",
+      "tipo": "escudo",
+      "nombre": "Premium 10",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 28
+    },
+    {
+      "id": "escudo-premium-11",
+      "tipo": "escudo",
+      "nombre": "Premium 11",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 29
+    },
+    {
+      "id": "escudo-premium-12",
+      "tipo": "escudo",
+      "nombre": "Premium 12",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 30
+    },
+    {
+      "id": "escudo-premium-13",
+      "tipo": "escudo",
+      "nombre": "Premium 13",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 31
+    },
+    {
+      "id": "escudo-premium-14",
+      "tipo": "escudo",
+      "nombre": "Premium 14",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 32
+    },
+    {
+      "id": "escudo-premium-15",
+      "tipo": "escudo",
+      "nombre": "Premium 15",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 33
+    },
+    {
+      "id": "escudo-premium-16",
+      "tipo": "escudo",
+      "nombre": "Premium 16",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 34
+    },
+    {
+      "id": "escudo-premium-17",
+      "tipo": "escudo",
+      "nombre": "Premium 17",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 35
+    },
+    {
+      "id": "escudo-premium-18",
+      "tipo": "escudo",
+      "nombre": "Premium 18",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 36
+    },
+    {
+      "id": "escudo-premium-19",
+      "tipo": "escudo",
+      "nombre": "Premium 19",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 37
+    },
+    {
+      "id": "escudo-premium-20",
+      "tipo": "escudo",
+      "nombre": "Premium 20",
+      "gratuito": false,
+      "precio_centimos": 25,
+      "precio_fragmentos": 250,
+      "orden": 38
+    },
+    {
+      "id": "sobre-cubismo",
+      "tipo": "sobre",
+      "nombre": "Cubismo",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 1
+    },
+    {
+      "id": "sobre-synthwave",
+      "tipo": "sobre",
+      "nombre": "Synthwave",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 2
+    },
+    {
+      "id": "sobre-motivos-marinos",
+      "tipo": "sobre",
+      "nombre": "Motivos marinos",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 3
+    },
+    {
+      "id": "sobre-ciberpunk",
+      "tipo": "sobre",
+      "nombre": "Ciberpunk",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 4
+    },
+    {
+      "id": "sobre-futbol-chibi",
+      "tipo": "sobre",
+      "nombre": "Fútbol chibi",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 5
+    },
+    {
+      "id": "sobre-tinta-y-trama",
+      "tipo": "sobre",
+      "nombre": "Tinta y trama",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 6
+    },
+    {
+      "id": "sobre-1",
+      "tipo": "sobre",
+      "nombre": "Sobre 1",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 7
+    },
+    {
+      "id": "sobre-2",
+      "tipo": "sobre",
+      "nombre": "Sobre 2",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 8
+    },
+    {
+      "id": "sobre-3",
+      "tipo": "sobre",
+      "nombre": "Sobre 3",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 9
+    },
+    {
+      "id": "sobre-4",
+      "tipo": "sobre",
+      "nombre": "Sobre 4",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 10
+    },
+    {
+      "id": "sobre-5",
+      "tipo": "sobre",
+      "nombre": "Sobre 5",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 11
+    },
+    {
+      "id": "sobre-6",
+      "tipo": "sobre",
+      "nombre": "Sobre 6",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 12
+    },
+    {
+      "id": "sobre-7",
+      "tipo": "sobre",
+      "nombre": "Sobre 7",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 13
+    },
+    {
+      "id": "sobre-8",
+      "tipo": "sobre",
+      "nombre": "Sobre 8",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 14
+    },
+    {
+      "id": "sobre-9",
+      "tipo": "sobre",
+      "nombre": "Sobre 9",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 15
+    },
+    {
+      "id": "sobre-10",
+      "tipo": "sobre",
+      "nombre": "Sobre 10",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 16
+    },
+    {
+      "id": "sobre-11",
+      "tipo": "sobre",
+      "nombre": "Sobre 11",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 17
+    },
+    {
+      "id": "sobre-12",
+      "tipo": "sobre",
+      "nombre": "Sobre 12",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 18
+    },
+    {
+      "id": "sobre-13",
+      "tipo": "sobre",
+      "nombre": "Sobre 13",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 19
+    },
+    {
+      "id": "sobre-14",
+      "tipo": "sobre",
+      "nombre": "Sobre 14",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 20
+    },
+    {
+      "id": "sobre-15",
+      "tipo": "sobre",
+      "nombre": "Sobre 15",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 21
+    },
+    {
+      "id": "sobre-16",
+      "tipo": "sobre",
+      "nombre": "Sobre 16",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 22
+    },
+    {
+      "id": "sobre-17",
+      "tipo": "sobre",
+      "nombre": "Sobre 17",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 23
+    },
+    {
+      "id": "sobre-18",
+      "tipo": "sobre",
+      "nombre": "Sobre 18",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 24
+    },
+    {
+      "id": "sobre-19",
+      "tipo": "sobre",
+      "nombre": "Sobre 19",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 25
+    },
+    {
+      "id": "sobre-20",
+      "tipo": "sobre",
+      "nombre": "Sobre 20",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 26
+    },
+    {
+      "id": "sobre-21",
+      "tipo": "sobre",
+      "nombre": "Sobre 21",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 27
+    },
+    {
+      "id": "sobre-22",
+      "tipo": "sobre",
+      "nombre": "Sobre 22",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 28
+    },
+    {
+      "id": "sobre-23",
+      "tipo": "sobre",
+      "nombre": "Sobre 23",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 29
+    },
+    {
+      "id": "sobre-24",
+      "tipo": "sobre",
+      "nombre": "Sobre 24",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 30
+    }
+  ],
+  "packs": [
+    {
+      "id": "pack-escudos-1",
+      "tipo": "escudo",
+      "nombre": "Pack de escudos 1",
+      "precio_centimos": 99,
+      "cosmeticos": [
+        "escudo-premium-1",
+        "escudo-premium-2",
+        "escudo-premium-3",
+        "escudo-premium-4",
+        "escudo-premium-5"
+      ]
+    },
+    {
+      "id": "pack-escudos-2",
+      "tipo": "escudo",
+      "nombre": "Pack de escudos 2",
+      "precio_centimos": 99,
+      "cosmeticos": [
+        "escudo-premium-6",
+        "escudo-premium-7",
+        "escudo-premium-8",
+        "escudo-premium-9",
+        "escudo-premium-10"
+      ]
+    },
+    {
+      "id": "pack-escudos-3",
+      "tipo": "escudo",
+      "nombre": "Pack de escudos 3",
+      "precio_centimos": 99,
+      "cosmeticos": [
+        "escudo-premium-11",
+        "escudo-premium-12",
+        "escudo-premium-13",
+        "escudo-premium-14",
+        "escudo-premium-15"
+      ]
+    },
+    {
+      "id": "pack-escudos-4",
+      "tipo": "escudo",
+      "nombre": "Pack de escudos 4",
+      "precio_centimos": 99,
+      "cosmeticos": [
+        "escudo-premium-16",
+        "escudo-premium-17",
+        "escudo-premium-18",
+        "escudo-premium-19",
+        "escudo-premium-20"
+      ]
+    },
+    {
+      "id": "pack-sobres-1",
+      "tipo": "sobre",
+      "nombre": "Pack de sobres 1",
+      "precio_centimos": 199,
+      "cosmeticos": [
+        "sobre-cubismo",
+        "sobre-synthwave",
+        "sobre-motivos-marinos",
+        "sobre-ciberpunk",
+        "sobre-futbol-chibi"
+      ]
+    },
+    {
+      "id": "pack-sobres-2",
+      "tipo": "sobre",
+      "nombre": "Pack de sobres 2",
+      "precio_centimos": 199,
+      "cosmeticos": [
+        "sobre-tinta-y-trama",
+        "sobre-1",
+        "sobre-2",
+        "sobre-3",
+        "sobre-4"
+      ]
+    },
+    {
+      "id": "pack-sobres-3",
+      "tipo": "sobre",
+      "nombre": "Pack de sobres 3",
+      "precio_centimos": 199,
+      "cosmeticos": [
+        "sobre-5",
+        "sobre-6",
+        "sobre-7",
+        "sobre-8",
+        "sobre-9"
+      ]
+    },
+    {
+      "id": "pack-sobres-4",
+      "tipo": "sobre",
+      "nombre": "Pack de sobres 4",
+      "precio_centimos": 199,
+      "cosmeticos": [
+        "sobre-10",
+        "sobre-11",
+        "sobre-12",
+        "sobre-13",
+        "sobre-14"
+      ]
+    },
+    {
+      "id": "pack-sobres-5",
+      "tipo": "sobre",
+      "nombre": "Pack de sobres 5",
+      "precio_centimos": 199,
+      "cosmeticos": [
+        "sobre-15",
+        "sobre-16",
+        "sobre-17",
+        "sobre-18",
+        "sobre-19"
+      ]
+    },
+    {
+      "id": "pack-sobres-6",
+      "tipo": "sobre",
+      "nombre": "Pack de sobres 6",
+      "precio_centimos": 199,
+      "cosmeticos": [
+        "sobre-20",
+        "sobre-21",
+        "sobre-22",
+        "sobre-23",
+        "sobre-24"
+      ]
+    }
+  ]
+}

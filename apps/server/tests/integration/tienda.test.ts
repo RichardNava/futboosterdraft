@@ -1,9 +1,10 @@
 /**
  * Tienda (spec 006, US4, US5 y US7; T065, T075, T076, T094): compras idempotentes, saldo nunca negativo, colecciones
- * con duplicados y paquetes de fragmentos (SC-006, SC-007).
+ * con duplicados (SC-006, SC-007). Spec 011 (FR-002, T020): las cartas solo se pagan con fragmentos y los paquetes de
+ * fragmentos se retiran.
  */
 import { randomUUID } from 'node:crypto';
-import { NIVELES } from '@fbd/domain';
+import { NIVELES, VENTA_CARTAS_CON_DINERO } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { cargarCatalogo, FICHEROS_POR_DEFECTO, leerLote } from '../../src/persistencia/seed';
@@ -69,14 +70,13 @@ describe('tienda (spec 006)', () => {
       expect((await tienda(u)).cuerpo.sobre.faltan).toBe(600);
     });
 
-    it('en euros: entrega sin cargo y la compra queda simulada', async () => {
+    it('en euros: 422 MONEDA_NO_ADMITIDA y no se guarda la compra (spec 011, FR-002)', async () => {
       const u = await crearRegistradoConColeccion(srv);
       const idCompra = randomUUID();
       const r = await comprarSobre(u, 'eur', idCompra);
-      expect(r.estado).toBe(200);
-      expect(r.cuerpo.saldo).toBe(0);
-      const c = await bd.db.execute<{ simulada: boolean; importe: number }>(sql`select simulada, importe from compras where id = ${idCompra}`);
-      expect(c.rows).toEqual([{ simulada: true, importe: 99 }]);
+      expect(r.estado).toBe(422);
+      expect(r.cuerpo.error.codigo).toBe('MONEDA_NO_ADMITIDA');
+      expect((await bd.db.execute(sql`select 1 from compras where id = ${idCompra}`)).rows).toEqual([]);
     });
 
     it('50 repeticiones del mismo idCompra (secuenciales y concurrentes) cobran y entregan una vez (SC-007)', async () => {
@@ -102,11 +102,12 @@ describe('tienda (spec 006)', () => {
       expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 0, suma: 0 });
     });
 
-    it('idCompra reutilizado con otra moneda: 409 ID_COMPRA_REUTILIZADO; sin UUID: 400 CUERPO_INVALIDO', async () => {
+    it('idCompra reutilizado con otro producto: 409 ID_COMPRA_REUTILIZADO; sin UUID: 400 CUERPO_INVALIDO', async () => {
       const u = await crearRegistradoConColeccion(srv);
+      await fijarSaldo(bd.db, u.id, 6000);
       const idCompra = randomUUID();
-      expect((await comprarSobre(u, 'eur', idCompra)).estado).toBe(200);
-      const otra = await comprarSobre(u, 'fragmentos', idCompra);
+      expect((await comprarSobre(u, 'fragmentos', idCompra)).estado).toBe(200);
+      const otra = await comprarColeccion(u, 'top-argentinos', idCompra);
       expect(otra.estado).toBe(409);
       expect(otra.cuerpo.error.codigo).toBe('ID_COMPRA_REUTILIZADO');
       const mal = await comprarSobre(u, 'fragmentos', 'no-es-un-uuid');
@@ -118,7 +119,7 @@ describe('tienda (spec 006)', () => {
     it('con menos de 8 cartas por conseguir: 409 SOBRE_NO_DISPONIBLE y la tienda lo marca no disponible', async () => {
       const u = await crearRegistradoConColeccion(srv);
       await darCartas(bd.db, u.id, Array.from({ length: 70 }, (_, i) => 301 + i));
-      const r = await comprarSobre(u, 'eur');
+      const r = await comprarSobre(u, 'fragmentos');
       expect(r.estado).toBe(409);
       expect(r.cuerpo.error).toMatchObject({ codigo: 'SOBRE_NO_DISPONIBLE', detalles: { restantes: 5 } });
       const t = (await tienda(u)).cuerpo;
@@ -128,8 +129,9 @@ describe('tienda (spec 006)', () => {
   });
 
   describe('colecciones (US5)', () => {
-    it('Top Argentinos con 3 ya poseídas: el resto activas y 150 fragmentos por duplicados; repetir devuelve lo mismo', async () => {
+    it('Top Argentinos con 3 ya poseídas: cobra 4.000, el resto activas y 150 fragmentos por duplicados; repetir devuelve lo mismo', async () => {
       const u = await crearRegistradoConColeccion(srv);
+      await fijarSaldo(bd.db, u.id, 4000);
       const idCompra = randomUUID();
       const r = await comprarColeccion(u, 'top-argentinos', idCompra);
       expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
@@ -145,6 +147,17 @@ describe('tienda (spec 006)', () => {
       expect(otra.estado).toBe(409);
       expect(otra.cuerpo.error.codigo).toBe('COLECCION_ADQUIRIDA');
       expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 150, suma: 150 });
+      const mov = await bd.db.execute<{ importe: number }>(sql`select importe from movimientos_fragmentos where usuario_id = ${u.id} and motivo = 'compra_coleccion'`);
+      expect(mov.rows).toEqual([{ importe: -4000 }]);
+    });
+
+    it('sin saldo suficiente: 422 SALDO_INSUFICIENTE y no entrega nada (spec 011, FR-002)', async () => {
+      const u = await crearRegistradoConColeccion(srv);
+      await fijarSaldo(bd.db, u.id, 1000);
+      const r = await comprarColeccion(u, 'top-argentinos');
+      expect(r.estado).toBe(422);
+      expect(r.cuerpo.error).toMatchObject({ codigo: 'SALDO_INSUFICIENTE', detalles: { saldo: 1000, precio: 4000, faltan: 3000 } });
+      expect((await cartasDe(u)).filter((c) => c.via === 'coleccion')).toEqual([]);
     });
 
     it('core o un id inexistente: 404 PRODUCTO_NO_ENCONTRADO', async () => {
@@ -155,10 +168,11 @@ describe('tienda (spec 006)', () => {
 
     it('comprar después All Stars da fragmentos por las 6 compartidas; la tienda informa de cada colección', async () => {
       const u = await crearRegistradoConColeccion(srv);
+      await fijarSaldo(bd.db, u.id, 9000);
       expect((await comprarColeccion(u, 'top-argentinos')).estado).toBe(200);
       const antes = (await tienda(u)).cuerpo;
       const allStars = antes.colecciones.find((c: any) => c.id === 'all-stars');
-      expect(allStars).toMatchObject({ numCartas: 45, adquirida: false, soloFragmentos: null, precioCentimos: 499 });
+      expect(allStars).toMatchObject({ numCartas: 45, adquirida: false, soloFragmentos: null, precioFragmentos: 5000 });
       expect(allStars.muestra).toHaveLength(3);
       expect(NIVELES.reduce((a, n) => a + allStars.porNivel[n], 0)).toBe(45);
       expect(allStars.poseidas).toBe(3 + 6);
@@ -171,9 +185,9 @@ describe('tienda (spec 006)', () => {
 
     it('tras compras, desfragmentaciones y recompensas al azar, la suma del historial es el saldo (SC-006)', async () => {
       const u = await crearRegistradoConColeccion(srv);
-      await comprarPaquete(u, 'fragmentos-5500');
+      await fijarSaldo(bd.db, u.id, 9500);
       await comprarColeccion(u, 'top-argentinos');
-      for (let i = 0; i < 3; i++) await comprarSobre(u, i % 2 ? 'eur' : 'fragmentos');
+      for (let i = 0; i < 3; i++) await comprarSobre(u, 'fragmentos');
       await srv.gestor.servicios.economia.recompensarTorneo(u.id, randomUUID(), 10);
       const sobrantes = (await cartasDe(u)).filter((c) => c.via !== 'registro').slice(0, 6);
       for (const c of sobrantes) await peticion(srv.url, `/api/coleccion/cartas/${c.jugador_id}/desfragmentar`, { metodo: 'POST', cookie: u.cookie });
@@ -185,6 +199,8 @@ describe('tienda (spec 006)', () => {
     it('re-sembrar con una carta añadida a una colección ya vendida la entrega al comprador (data-model §4.3)', async () => {
       const u = await crearRegistradoConColeccion(srv);
       const v = await crearRegistradoConColeccion(srv);
+      await fijarSaldo(bd.db, u.id, 4000);
+      await fijarSaldo(bd.db, v.id, 4000);
       expect((await comprarColeccion(u, 'top-argentinos')).estado).toBe(200);
       expect((await comprarColeccion(v, 'top-argentinos')).estado).toBe(200);
       // v ya tiene la 301 (no está en Top Argentinos); u no.
@@ -209,25 +225,41 @@ describe('tienda (spec 006)', () => {
     });
   });
 
-  describe('paquetes de fragmentos (US7)', () => {
-    it('suma 1.000, registra compra_fragmentos simulada y no suma dos veces con el mismo idCompra', async () => {
+  describe('paquetes de fragmentos retirados (spec 011, FR-002)', () => {
+    it('comprar un paquete da 410 PRODUCTO_RETIRADO y la tienda no ofrece ninguno', async () => {
       const u = await crearRegistradoConColeccion(srv);
-      const idCompra = randomUUID();
-      const r = await comprarPaquete(u, 'fragmentos-1000', idCompra);
-      expect(r.estado).toBe(200);
-      expect(r.cuerpo).toMatchObject({ cartas: [], fragmentos: 1000, saldo: 1000 });
-      expect((await comprarPaquete(u, 'fragmentos-1000', idCompra)).cuerpo.saldo).toBe(1000);
-      const c = await bd.db.execute<{ simulada: boolean }>(sql`select simulada from compras where id = ${idCompra}`);
-      expect(c.rows).toEqual([{ simulada: true }]);
-      expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 1000, suma: 1000 });
-      expect((await tienda(u)).cuerpo.paquetes.map((p: any) => p.id)).toEqual(['fragmentos-1000', 'fragmentos-5500', 'fragmentos-12000']);
+      for (const id of ['fragmentos-1000', 'fragmentos-1']) {
+        const r = await comprarPaquete(u, id);
+        expect(r.estado).toBe(410);
+        expect(r.cuerpo.error.codigo).toBe('PRODUCTO_RETIRADO');
+      }
+      expect((await tienda(u)).cuerpo.paquetes).toEqual([]);
+      expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 0, suma: 0 });
     });
 
-    it('un paquete inexistente da 404 PRODUCTO_NO_ENCONTRADO', async () => {
+    it('las compras antiguas de fragmentos siguen en el historial', async () => {
       const u = await crearRegistradoConColeccion(srv);
-      const r = await comprarPaquete(u, 'fragmentos-1');
-      expect(r.estado).toBe(404);
-      expect(r.cuerpo.error.codigo).toBe('PRODUCTO_NO_ENCONTRADO');
+      await bd.db.execute(sql`update saldos_fragmentos set saldo = 1000 where usuario_id = ${u.id}`);
+      await bd.db.execute(
+        sql`insert into movimientos_fragmentos (usuario_id, importe, motivo, referencia) values (${u.id}, 1000, 'compra_fragmentos', ${randomUUID()})`,
+      );
+      const r = await peticion(srv.url, '/api/fragmentos/movimientos', { cookie: u.cookie });
+      expect(r.cuerpo.movimientos).toEqual([expect.objectContaining({ importe: 1000, motivo: 'compra_fragmentos', descripcion: 'Compra de fragmentos' })]);
+    });
+
+    it('ninguna ruta de cartas acepta euros (VENTA_CARTAS_CON_DINERO = false)', async () => {
+      expect(VENTA_CARTAS_CON_DINERO).toBe(false);
+      const u = await crearRegistradoConColeccion(srv);
+      const sobre = await comprarSobre(u, 'eur');
+      const coleccion = await peticion(srv.url, '/api/tienda/colecciones/all-stars/comprar', {
+        cookie: u.cookie,
+        cuerpo: { idCompra: randomUUID(), moneda: 'eur' },
+      });
+      const paquete = await comprarPaquete(u, 'fragmentos-1000');
+      expect([sobre.estado, coleccion.estado, paquete.estado]).toEqual([422, 422, 410]);
+      expect(coleccion.cuerpo.error.codigo).toBe('SALDO_INSUFICIENTE');
+      const enEuros = await bd.db.execute(sql`select 1 from compras where usuario_id = ${u.id} and moneda = 'eur'`);
+      expect(enEuros.rows).toEqual([]);
     });
   });
 });

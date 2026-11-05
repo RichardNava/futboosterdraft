@@ -93,7 +93,8 @@ interface Props {
   nombre: (id: number) => string;
   nombresEquipo: { local: string; visitante: string };
   /** Color principal de cada equipación: la chapa junto al nombre del equipo (hasta que haya escudos). */
-  colores?: { local?: string; visitante?: string };
+  /** Color y escudo de cada equipo (spec 011). */
+  chapas?: Record<'local' | 'visitante', { color?: string; escudo?: string | null }>;
 }
 
 /**
@@ -101,7 +102,7 @@ interface Props {
  * columna fija y un icono por tipo con su texto alternativo, para escanearla sin leer cada línea. Los goles van
  * resaltados con la luz del oro (ronda 4, FR-054).
  */
-export function ResumenEventos({ eventos, nombre, nombresEquipo, colores }: Props) {
+export function ResumenEventos({ eventos, nombre, nombresEquipo, chapas }: Props) {
   if (eventos.length === 0) return <p className="nota">Sin incidencias destacadas.</p>;
   return (
     <ol className="resumen-eventos">
@@ -116,7 +117,7 @@ export function ResumenEventos({ eventos, nombre, nombresEquipo, colores }: Prop
             <span className="evento-texto">
               <span>{describirEvento(e, nombre)}</span>
               <span className="evento-equipo">
-                <Chapa color={colores?.[e.equipo]} />
+                <Chapa {...chapas?.[e.equipo]} nombre={nombresEquipo[e.equipo]} />
                 {nombresEquipo[e.equipo]}
               </span>
             </span>

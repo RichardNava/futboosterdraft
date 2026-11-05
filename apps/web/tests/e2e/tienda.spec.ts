@@ -1,29 +1,31 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { registrar } from './ayudas';
 
 /**
- * Tienda (spec 006, US4, US5 y US7; quickstart G, H y J): paquete de fragmentos con el pago de prueba, sobre con
- * fragmentos con su apertura y compra de una colección.
+ * Tienda (spec 006, US4 y US5; quickstart G y H): sobre con fragmentos con su apertura y compra de una colección.
+ * Spec 011 (FR-002, quickstart recorrido 9): sin bloque de fragmentos y las cartas solo en fragmentos. Sin paquetes de
+ * fragmentos, el saldo se da con `/api/dev/fragmentos` (solo con el reloj simulado).
  */
 
-test('paquete de 1.000 fragmentos con la cinta de pago de prueba (US7)', async ({ page }) => {
+const darFragmentos = async (page: Page, fragmentos: number) =>
+  expect((await page.request.post('/api/dev/fragmentos', { data: { fragmentos } })).status()).toBe(200);
+
+test('sin fragmentos a la venta y cartas solo en fragmentos (spec 011, FR-002)', async ({ page }) => {
   await registrar(page);
-  // El saldo de la barra lleva a los paquetes de fragmentos de la tienda.
   await page.goto('/');
   await page.getByRole('link', { name: /^Fragmentos: 0\./ }).click();
-  await expect(page).toHaveURL(/\/tienda#fragmentos$/);
-  await page.locator('[data-paquete="fragmentos-1000"]').getByRole('button', { name: /Comprar/ }).click();
-  const dialogo = page.getByRole('dialog');
-  await expect(dialogo.getByText('PAGO DE PRUEBA — no se cobra nada')).toBeVisible();
-  await dialogo.getByRole('button', { name: 'Confirmar compra' }).click();
-  await expect(page.locator('.tienda-saldo')).toContainText('1.000');
-  await expect(page.locator('.saldo-navegacion')).toContainText('1.000');
+  await expect(page).toHaveURL(/\/tienda$/);
+  await expect(page.getByRole('heading', { name: 'Fragmentos' })).toHaveCount(0);
+  // Los cosméticos sí tienen precio en euros; las cartas no.
+  await expect(page.locator('.tienda-sobre, [data-coleccion]').getByText(/€/)).toHaveCount(0);
+  const top = page.locator('[data-coleccion="top-argentinos"]');
+  await expect(top.getByRole('button', { name: 'Comprar por 4.000 fragmentos' })).toHaveAttribute('aria-disabled', 'true');
+  await expect(top).toContainText('Te faltan 4.000');
 });
 
 test('sobre con fragmentos desde «Colección»: apertura, 8 cartas nuevas y saldo −1.000 (US4)', async ({ page }) => {
   await registrar(page);
-  const id = crypto.randomUUID();
-  expect((await page.request.post('/api/tienda/fragmentos/fragmentos-1000/comprar', { data: { idCompra: id } })).status()).toBe(200);
+  await darFragmentos(page, 1000);
   await page.goto('/coleccion');
   await page.getByRole('link', { name: 'Tienda' }).last().click();
   await expect(page.locator('.tienda-saldo')).toContainText('1.000');
@@ -51,11 +53,13 @@ test('sobre con fragmentos desde «Colección»: apertura, 8 cartas nuevas y sal
   await expect(page.locator('.tienda-saldo')).toContainText('0');
 });
 
-test('comprar Top Argentinos: confirmación, resumen y tarjeta «Adquirida» (US5)', async ({ page }) => {
+test('comprar Top Argentinos con 4.000 fragmentos: confirmación, resumen y tarjeta «Adquirida» (US5)', async ({ page }) => {
   await registrar(page);
+  await darFragmentos(page, 4000);
   await page.goto('/tienda');
   await page.locator('[data-coleccion="top-argentinos"]').getByRole('button', { name: /Comprar/ }).click();
-  await expect(page.getByRole('dialog').getByText('PAGO DE PRUEBA — no se cobra nada')).toBeVisible();
+  await expect(page.getByRole('dialog')).toContainText('4.000 fragmentos');
+  await expect(page.getByRole('dialog').getByText('PAGO DE PRUEBA — no se cobra nada')).toHaveCount(0);
   await page.getByRole('dialog').getByRole('button', { name: 'Confirmar compra' }).click();
   await page.getByRole('button', { name: 'Saltar' }).click();
   const resumen = page.getByRole('dialog', { name: /adquirida/ });

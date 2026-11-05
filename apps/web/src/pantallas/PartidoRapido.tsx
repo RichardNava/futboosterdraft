@@ -1,6 +1,7 @@
 import { nombreCartaDe } from '../componentes/CartaJugador';
 import { useEffect, useMemo, useState } from 'react';
 import { coloresDe } from '../componentes/colores';
+import { chapasDelPartido, equipoMarcador } from '../componentes/chapa';
 import type { Equipacion } from '@fbd/domain';
 import { useParams } from 'react-router';
 import { api } from '../api/cliente';
@@ -27,6 +28,8 @@ export interface Inicio {
   dorsales: Record<string, number>;
   /** Equipaciones v2 del partido (spec 003, FR-045). */
   equipaciones: { local: Equipacion; visitante: Equipacion };
+  /** Escudos (spec 011); null en los dos si coinciden; sin el campo, círculos de color. */
+  escudos?: { local: string | null; visitante: string | null };
   /** Orden de los jugadores en los fotogramas v2. */
   ordenJugadores?: number[];
   /** Dorsales dados al empezar a convocados que no tenían (FR-038). */
@@ -150,8 +153,8 @@ export function PartidoRapido() {
     return (
       <ResultadoPartido
         partidaId={partidaId!}
-        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
-        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        local={equipoMarcador(inicio, 'local')}
+        visitante={equipoMarcador(inicio, 'visitante')}
         marcador={marcador}
         eventos={eventos}
         estadisticas={estadisticas}
@@ -208,8 +211,8 @@ export function PartidoRapido() {
   return (
     <main className="pantalla partido">
       <MarcadorPartido
-        local={{ nombre: inicio.local.nombre, color: coloresDe(inicio.equipaciones.local).principal }}
-        visitante={{ nombre: inicio.visitante.nombre, color: coloresDe(inicio.equipaciones.visitante).principal }}
+        local={equipoMarcador(inicio, 'local')}
+        visitante={equipoMarcador(inicio, 'visitante')}
         marcador={marcador}
         fase={ETIQUETA_FASE[fase] ?? fase}
         goleadores={goleadoresDe(eventos, nombre)}
@@ -228,7 +231,7 @@ export function PartidoRapido() {
         <section aria-label="Resumen de eventos">
           <h2>Lo más destacado</h2>
           <ResumenEventos eventos={eventos} nombre={nombre} nombresEquipo={nombresEquipo}
-            colores={{ local: coloresDe(inicio.equipaciones.local).principal, visitante: coloresDe(inicio.equipaciones.visitante).principal }}
+            chapas={chapasDelPartido(inicio.equipaciones, inicio.escudos)}
           />
         </section>
 

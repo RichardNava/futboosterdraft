@@ -1,9 +1,11 @@
 /**
  * Dependencias compartidas por los controladores de partida.
  */
+import type { ServicioAjustes } from '../ajustes/servicio';
 import type { ServicioEconomia } from '../economia/servicio';
 import type { BaseDatos } from '../persistencia/db';
 import type { Catalogo } from '../persistencia/repos/catalogo';
+import type { RepoCosmeticos } from '../persistencia/repos/cosmeticos';
 import type { RepoDraft } from '../persistencia/repos/draft';
 import type { RepoEquipo } from '../persistencia/repos/equipo';
 import type { RepoPartidas } from '../persistencia/repos/partidas';
@@ -28,6 +30,10 @@ export interface ServiciosPartida {
   repoVisionados: RepoVisionados;
   repoPerfiles: RepoPerfiles;
   catalogo: Catalogo;
+  /** Identidad de las cartas y otros ajustes sin reinicio (spec 011). */
+  ajustes: ServicioAjustes;
+  /** Escudos y sobres: catálogo y disponibilidad (spec 011). */
+  cosmeticos: RepoCosmeticos;
   /** Colección propia, fragmentos y recompensas (spec 006). */
   economia: ServicioEconomia;
   reloj: Reloj;

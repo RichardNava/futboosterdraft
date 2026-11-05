@@ -3,7 +3,7 @@
  * migración 0008, el nombre de equipo y las equipaciones por defecto (US11). Los invitados no tienen perfil.
  */
 import { eq, sql } from 'drizzle-orm';
-import type { Equipaciones, ModoSimulacion } from '@fbd/domain';
+import type { Equipaciones, ModoSimulacion, PreferenciasSobre } from '@fbd/domain';
 import type { BaseDatos } from '../db';
 import { perfilesUsuario, usuarios } from '../esquema/index';
 
@@ -28,6 +28,38 @@ export class RepoPerfiles {
     return fila ?? null;
   }
 
+  /**
+   * Aspecto (spec 011, data-model §4): escudo elegido (null = asignado) y preferencias de sobre, tal como están
+   * guardados; quien llama descarta los ids que ya no estén disponibles. `forUpdate` bloquea la fila (carrusel).
+   */
+  async obtenerAspecto(usuarioId: string, ejecutor: Ejecutor = this.db, forUpdate = false): Promise<{ escudo: string | null } & PreferenciasSobre> {
+    const consulta = ejecutor
+      .select({
+        escudo: perfilesUsuario.escudo,
+        sobreFavorito: perfilesUsuario.sobreFavorito,
+        sobreCarrusel: perfilesUsuario.sobreCarrusel,
+        sobresMarcados: perfilesUsuario.sobresMarcados,
+        sobreBaraja: perfilesUsuario.sobreBaraja,
+        sobreUltimo: perfilesUsuario.sobreUltimo,
+      })
+      .from(perfilesUsuario)
+      .where(eq(perfilesUsuario.usuarioId, usuarioId))
+      .limit(1);
+    const [fila] = forUpdate ? await consulta.for('update') : await consulta;
+    return fila ?? { escudo: null, sobreFavorito: null, sobreCarrusel: false, sobresMarcados: [], sobreBaraja: [], sobreUltimo: null };
+  }
+
+  /** Guarda los campos de aspecto indicados, creando el perfil si no existe. */
+  async guardarAspecto(
+    usuarioId: string,
+    datos: Partial<{ escudo: string | null } & PreferenciasSobre>,
+    ahora: number,
+    ejecutor: Ejecutor = this.db,
+  ): Promise<void> {
+    const set = { ...datos, actualizadoEn: new Date(ahora) };
+    await ejecutor.insert(perfilesUsuario).values({ usuarioId, ...set }).onConflictDoUpdate({ target: perfilesUsuario.usuarioId, set });
+  }
+
   /** Guarda el nombre y las equipaciones por defecto, creando el perfil si no existe; no toca la última modalidad. */
   async guardar(usuarioId: string, datos: { nombreEquipo: string | null; equipaciones: Equipaciones | null }, ahora: number, ejecutor: Ejecutor = this.db): Promise<void> {
     await ejecutor
@@ -39,7 +71,6 @@ export class RepoPerfiles {
       });
   }
 
-  /** Guarda la última modalidad de un usuario registrado, creando su perfil si no existe. A un invitado no le hace nada. */
   /**
    * Última modalidad en el perfil de varios usuarios, en una consulta (spec 010, R13). Los invitados no tienen
    * perfil y se saltan; si un usuario se repite, manda la última.

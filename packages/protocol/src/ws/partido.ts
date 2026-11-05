@@ -44,6 +44,8 @@ export const MsgPartidoInicio = z.object({
   alineaciones: z.object({ local: z.unknown(), visitante: z.unknown() }),
   dorsales: z.record(z.number()),
   equipaciones: z.object({ local: Equipacion, visitante: Equipacion }),
+  /** Escudos de los equipos (spec 011), null en los dos si coinciden (FR-008); sin ellos, círculos de color. */
+  escudos: z.object({ local: z.string().nullable(), visitante: z.string().nullable() }).optional(),
   /** false al ver un partido entre humanos ya resuelto: no hay panel de cambios (FR-030). */
   decisiones: z.boolean(),
   /**

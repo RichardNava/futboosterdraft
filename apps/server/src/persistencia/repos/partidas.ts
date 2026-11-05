@@ -1,7 +1,7 @@
 /**
  * Repositorio de partidas y participantes.
  */
-import { plazasHumanasEfectivas, VERSION_CATALOGO_ACTUAL, type ConfigDuelos, type ConfigPartida, type Equipaciones, type EstadoPartida, type ModoSimulacion, type NivelNPC } from '@fbd/domain';
+import { plazasHumanasEfectivas, VERSION_CATALOGO_ACTUAL, type ConfigDuelos, type ConfigPartida, type Equipaciones, type Identidad, type EstadoPartida, type ModoSimulacion, type NivelNPC } from '@fbd/domain';
 import { errores } from '../../http/errores';
 import { and, asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
@@ -16,7 +16,7 @@ export class RepoPartidas {
   constructor(private readonly db: BaseDatos) {}
 
   async crear(
-    datos: { anfitrionId: string; config: ConfigPartida; semilla: string; ahora: number; poolCartas?: number[] | null },
+    datos: { anfitrionId: string; config: ConfigPartida; semilla: string; ahora: number; poolCartas?: number[] | null; identidad?: Identidad },
     ejecutor: Ejecutor = this.db,
   ): Promise<FilaPartida> {
     const { config } = datos;
@@ -37,6 +37,8 @@ export class RepoPartidas {
         // Las partidas nuevas juegan con el catálogo actual (spec 005, FR-036).
         versionCatalogo: VERSION_CATALOGO_ACTUAL,
         configDuelos: config.modo === 'duelos' ? (config.duelos ?? null) : null,
+        // Copia del ajuste vigente: no cambia nunca, aunque cambie el ajuste (spec 011, FR-018).
+        identidad: datos.identidad ?? 'real',
         // La lógica de juego usa siempre el reloj del servidor, nunca la hora de la base de datos.
         creadaEn: new Date(datos.ahora),
         actualizadaEn: new Date(datos.ahora),
@@ -95,12 +97,18 @@ export class RepoPartidas {
     nombreEquipo: string,
     ejecutor: Ejecutor = this.db,
     equipaciones: Equipaciones | null = null,
+    escudo: string | null = null,
   ): Promise<FilaParticipante> {
     const [fila] = await ejecutor
       .insert(participantes)
-      .values({ partidaId, tipo: 'humano', usuarioId, nombreEquipo, equipaciones })
+      .values({ partidaId, tipo: 'humano', usuarioId, nombreEquipo, equipaciones, escudo })
       .returning();
     return fila!;
+  }
+
+  /** Escudo de esta partida (spec 011, data-model §5); null = el del perfil, el asignado o el círculo. */
+  async cambiarEscudo(participanteId: string, escudo: string | null, ejecutor: Ejecutor = this.db): Promise<void> {
+    await ejecutor.update(participantes).set({ escudo }).where(eq(participantes.id, participanteId));
   }
 
   /** Cambia el nombre del equipo (spec 003, FR-042); la violación del índice único es `NOMBRE_REPETIDO`. */

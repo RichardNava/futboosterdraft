@@ -74,7 +74,18 @@
         "defectos": { "type": "array", "uniqueItems": true, "minItems": 0, "maxItems": 2, "items": { "$ref": "#/$defs/defecto" } },
         "nivel": { "enum": ["Superclase", "Crack", "Legendario", "GOAT"] },
         "imagen": { "$ref": "#/$defs/rutaImagen" },
-        "imagen_bg": { "$ref": "#/$defs/rutaImagen" }
+        "imagen_bg": { "$ref": "#/$defs/rutaImagen" },
+        "identidad_alternativa": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["nombre", "apellidos", "nombre_carta"],
+          "properties": {
+            "nombre": { "type": "string", "minLength": 1 },
+            "apellidos": { "type": "string", "minLength": 1 },
+            "nombre_carta": { "type": "string", "minLength": 1, "maxLength": 24 },
+            "imagen": { "$ref": "#/$defs/rutaImagen" }
+          }
+        }
       },
       "allOf": [
         { "if": { "properties": { "nivel": { "const": "Superclase" } } }, "then": { "properties": { "virtudes": { "maxItems": 1 } } } },
