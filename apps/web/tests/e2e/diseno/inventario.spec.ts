@@ -73,12 +73,14 @@ test('inventario: inicio, partida, draft, formación, partido, torneo', async ({
   await comprobarDiseno(page, 'Ficha de jugador', { pasosTab: 10 });
   await page.keyboard.press('Escape');
 
-  // 9. Formación, con las secciones plegables abiertas.
+  // 9. Formación y cada una de sus pestañas.
   await page.goto(`/partidas/${id}/alineacion`);
   await expect(page.getByRole('heading', { name: 'Formación' })).toBeVisible();
-  const cerrada = page.locator('details.seccion-plegable:not([open]) > summary');
-  while ((await cerrada.count()) > 0) await cerrada.first().click();
   await comprobarDiseno(page, 'Formación');
+  for (const pestana of ['Táctica', 'Personalización', 'Lanzadores']) {
+    await page.getByRole('tab', { name: pestana }).click();
+    await comprobarDiseno(page, `Formación: ${pestana}`, { pasosTab: 0 });
+  }
 
   // 10, 16 y 21. Torneo con la preparación del partido.
   await page.goto(`/partidas/${id}/torneo`);

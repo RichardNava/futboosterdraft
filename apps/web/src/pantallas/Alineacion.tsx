@@ -30,7 +30,10 @@ import { mostrarAviso } from '../estado/avisos';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
 import { Dialogo } from '../componentes/Dialogo';
+import { Icono } from '../componentes/Icono';
 import { Insignia } from '../componentes/Insignia';
+import { colocarJunto } from '../componentes/NombreRecortado';
+import { alTeclaPestanas } from '../componentes/pestanas';
 import { SelectorEscudo } from '../componentes/SelectorEscudo';
 import { useSesion } from '../estado/sesion';
 
@@ -68,6 +71,14 @@ const NOMBRE_FORMACION: Record<FormacionId, string> = Object.fromEntries(
 
 const P = parametrosActuales();
 
+type Pestana = 'alineacion' | 'tactica' | 'personalizacion' | 'lanzadores';
+const PESTANAS: { id: Pestana; texto: string }[] = [
+  { id: 'alineacion', texto: 'Alineación' },
+  { id: 'tactica', texto: 'Táctica' },
+  { id: 'personalizacion', texto: 'Personalización' },
+  { id: 'lanzadores', texto: 'Lanzadores' },
+];
+
 /** Forma canónica de una alineación, para saber si hay cambios sin confirmar (sin depender del orden de claves). */
 function firma(a: AlineacionDominio | null): string {
   if (!a) return '';
@@ -93,7 +104,8 @@ function estadoDesde(a: AlineacionDominio): EstadoCampo {
 
 /**
  * «Formación» (spec 003, US2; FR-001 a FR-003): un único campo con titulares, banquillo y resto de la plantilla,
- * donde se eligen titulares, se intercambian y se coloca libremente. La carta completa aparece al pasar el cursor
+ * donde se eligen titulares, se intercambian y se coloca libremente. Sin desplazarse: el campo a la izquierda y, a la
+ * derecha, pestañas con la plantilla (por defecto), la táctica, la personalización y los lanzadores. La carta completa aparece al pasar el cursor
  * o mantener pulsado. El botón principal es siempre «Confirmar alineación», que guarda y lleva al torneo, donde está la
  * preparación del partido con el modo y «Comenzar partido» (FR-003b, FR-032).
  */
@@ -112,6 +124,7 @@ export function Alineacion() {
   const [formacionPendiente, setFormacionPendiente] = useState<FormacionId | null>(null);
   /** Diálogo «Confirmar once» del modo duelos. */
   const [confirmandoOnce, setConfirmandoOnce] = useState(false);
+  const [pestana, setPestana] = useState<Pestana>('alineacion');
 
   const aplicarDatos = useCallback((d: DatosEquipo) => {
     setDatos(d);
@@ -277,10 +290,140 @@ export function Alineacion() {
         motivoDesactivado: motivo ? `No se puede confirmar: ${motivo}` : null,
       };
 
+  const ayuda = `${
+    duelos
+      ? bloqueada
+        ? 'Este es tu once para todo el torneo. Cada jugador se enfrenta en un duelo al rival de su misma casilla.'
+        : 'Elige tu once: arrastra a los jugadores de la plantilla a cada casilla. Cada uno se enfrentará en un duelo al rival de su misma casilla.'
+      : 'Arrastra a los jugadores para elegir titulares, intercambiarlos o colocarlos donde quieras; o selecciónalos con Intro y muévelos con las flechas.'
+  } Pasa el cursor (o mantén pulsado) sobre una ficha para ver su carta.`;
+
+  // En el modo duelos no hay táctica ni lanzadores: el once se enfrenta casilla a casilla.
+  const pestanasVisibles = PESTANAS.filter((p) => !duelos || p.id === 'alineacion' || p.id === 'personalizacion');
+  const listaPestanas = (
+    <div className="pestanas" role="tablist" aria-label="Secciones de la formación" onKeyDown={alTeclaPestanas}>
+      {pestanasVisibles.map((p) => (
+        <button
+          key={p.id}
+          id={`pestana-${p.id}`}
+          type="button"
+          role="tab"
+          aria-selected={pestana === p.id}
+          aria-controls={`panel-${p.id}`}
+          tabIndex={pestana === p.id ? 0 : -1}
+          onClick={() => setPestana(p.id)}
+        >
+          {p.texto}
+        </button>
+      ))}
+    </div>
+  );
+
+  const panelPersonalizacion = (
+    <div className="panel-personalizacion">
+      <section aria-labelledby="titulo-nombre-equipo">
+        <h2 id="titulo-nombre-equipo">Nombre del equipo</h2>
+        {datos.nombreEditable ? (
+          <div className="campo-nombre">
+            <input aria-labelledby="titulo-nombre-equipo" value={nombreEquipo} maxLength={40} onChange={(e) => setNombreEquipo(e.target.value)} />
+            <button type="button" className="secundario" onClick={() => void guardarNombre()}>
+              Guardar nombre
+            </button>
+          </div>
+        ) : (
+          <p>
+            <strong>{datos.nombreEquipo}</strong> <span className="nota">(ya no se puede cambiar: el torneo ha empezado)</span>
+          </p>
+        )}
+      </section>
+      <section aria-labelledby="titulo-escudo">
+        <h2 id="titulo-escudo">Escudo</h2>
+        {!datos.nombreEditable && <p className="nota">El escudo ya no se puede cambiar: el torneo ha empezado.</p>}
+        <SelectorEscudo
+          elegido={datos.escudo ?? null}
+          onElegir={(id) => void guardarEscudo(id)}
+          invitado={usuario?.tipo !== 'registrado'}
+          desactivado={!datos.nombreEditable}
+          etiqueta="Escudo del equipo en esta partida"
+        />
+      </section>
+      {!duelos && (
+        <section aria-labelledby="titulo-dorsales">
+          <h2 id="titulo-dorsales">Dorsales</h2>
+          <EditorDorsales plantilla={datos.plantilla} dorsales={datos.dorsales} asignar={asignarDorsal} />
+        </section>
+      )}
+      {equipaciones && !duelos && (
+        <section aria-labelledby="titulo-equipaciones">
+          <h2 id="titulo-equipaciones">Equipaciones</h2>
+          <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
+          <button type="button" className="secundario" aria-disabled={equipacionesParecidas(equipaciones) || undefined} onClick={() => void guardarEquipaciones()}>
+            Guardar equipaciones
+          </button>
+        </section>
+      )}
+    </div>
+  );
+
+  const panel =
+    pestana === 'tactica' ? (
+      <section aria-label="Táctica">
+        <PanelTactica tactica={tactica} onCambiar={setTactica} />
+      </section>
+    ) : pestana === 'lanzadores' ? (
+      <EditorLanzadores lanzadores={lanzadores} titulares={titularesLista} nombre={nombre} onCambiar={setLanzadores} conTitulo={false} />
+    ) : pestana === 'personalizacion' ? (
+      panelPersonalizacion
+    ) : undefined;
+
+  const resumen = !duelos && (
+    <div className="colocacion-resumen" aria-live="polite">
+      <p>
+        <strong>
+          {resultadoColocacion.personalizada
+            ? `Personalizada (${campo.formacion} → ${resultadoColocacion.reparto.defensa}-${resultadoColocacion.reparto.medio}-${resultadoColocacion.reparto.ataque})`
+            : `Formación ${NOMBRE_FORMACION[campo.formacion]}`}
+        </strong>{' '}
+        · Ofensividad {resultadoColocacion.ofensividad > 0 ? '+' : ''}
+        {resultadoColocacion.ofensividad} · Amplitud {resultadoColocacion.amplitud > 0 ? '+' : ''}
+        {resultadoColocacion.amplitud}
+        {Object.keys(campo.puntos).length > 0 && (
+          <>
+            {' '}
+            <button type="button" className="texto" onClick={() => setCampo({ ...campo, puntos: {} })}>
+              Volver a la formación
+            </button>
+          </>
+        )}
+      </p>
+      {resultadoColocacion.avisos.length > 0 && (
+        <ul className="avisos-colocacion" role="status" aria-label="Avisos de la colocación">
+          {resultadoColocacion.avisos.map((a) => (
+            <li key={a}>{a}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+
   return (
     <main className="pantalla alineacion">
       <header className="cabecera-fila">
-        <h1>Formación</h1>
+        <div className="titulo-con-ayuda">
+          <h1>Formación</h1>
+          <button type="button" className="boton-ayuda" popoverTarget="ayuda-formacion" aria-label="Cómo se usa la formación">
+            <Icono nombre="informacion" />
+          </button>
+          <div
+            id="ayuda-formacion"
+            popover="auto"
+            className="carta-descripcion"
+            role="tooltip"
+            onToggle={(e) => e.newState === 'open' && colocarJunto(e.currentTarget, e.currentTarget.previousElementSibling ?? e.currentTarget)}
+          >
+            {ayuda}
+          </div>
+        </div>
         <Link className="boton secundario" to={`/partidas/${partidaId}/torneo`}>
           Torneo
         </Link>
@@ -309,57 +452,6 @@ export function Alineacion() {
         </Aviso>
       )}
 
-      <p className="nota">
-        {duelos
-          ? bloqueada
-            ? 'Este es tu once para todo el torneo. Cada jugador se enfrenta en un duelo al rival de su misma casilla.'
-            : 'Elige tu once: arrastra a los jugadores de la plantilla a cada casilla. Cada uno se enfrentará en un duelo al rival de su misma casilla.'
-          : 'Arrastra a los jugadores para elegir titulares, intercambiarlos o colocarlos donde quieras; o selecciónalos con Intro y muévelos con las flechas.'}{' '}
-        Pasa el cursor (o mantén pulsado) sobre una ficha para ver su carta.
-      </p>
-      <CampoEquipo
-        estado={campo}
-        colocacion={resultadoColocacion}
-        jugadores={porId}
-        parametros={P}
-        dorsales={datos.dorsales}
-        colores={colores}
-        modo="preparacion"
-        reserva={reserva}
-        bloqueados={bajas}
-        distintivos={distintivos}
-        sinBanquillo={duelos}
-        onSoltar={alSoltar}
-        onMover={alMover}
-      />
-
-      {!duelos && (
-      <div className="colocacion-resumen" aria-live="polite">
-        <p>
-          <strong>
-            {resultadoColocacion.personalizada
-              ? `Formación personalizada (${campo.formacion} → ${resultadoColocacion.reparto.defensa}-${resultadoColocacion.reparto.medio}-${resultadoColocacion.reparto.ataque})`
-              : `Formación ${NOMBRE_FORMACION[campo.formacion]}`}
-          </strong>{' '}
-          · Ofensividad {resultadoColocacion.ofensividad > 0 ? '+' : ''}
-          {resultadoColocacion.ofensividad} · Amplitud {resultadoColocacion.amplitud > 0 ? '+' : ''}
-          {resultadoColocacion.amplitud}
-        </p>
-        {resultadoColocacion.avisos.length > 0 && (
-          <ul className="avisos-colocacion" role="status" aria-label="Avisos de la colocación">
-            {resultadoColocacion.avisos.map((a) => (
-              <li key={a}>{a}</li>
-            ))}
-          </ul>
-        )}
-        {Object.keys(campo.puntos).length > 0 && (
-          <button type="button" className="secundario" onClick={() => setCampo({ ...campo, puntos: {} })}>
-            Volver a la formación
-          </button>
-        )}
-      </div>
-      )}
-
       {mensaje && (
         <Aviso tipo="error">
           <p>{mensaje.texto}</p>
@@ -373,67 +465,24 @@ export function Alineacion() {
         </Aviso>
       )}
 
-      {!duelos && (
-        <>
-      <details className="seccion-plegable" open>
-        <summary>Táctica</summary>
-        <section aria-label="Táctica">
-          <PanelTactica tactica={tactica} onCambiar={setTactica} />
-        </section>
-      </details>
+      <CampoEquipo
+        estado={campo}
+        colocacion={resultadoColocacion}
+        jugadores={porId}
+        parametros={P}
+        dorsales={datos.dorsales}
+        colores={colores}
+        modo="preparacion"
+        reserva={reserva}
+        bloqueados={bajas}
+        distintivos={distintivos}
+        sinBanquillo={duelos}
+        bajoMedia={resumen}
+        pestanas={{ lista: listaPestanas, activa: pestana, panel }}
+        onSoltar={alSoltar}
+        onMover={alMover}
+      />
 
-      <details className="seccion-plegable" open>
-        <summary>Lanzadores</summary>
-        <EditorLanzadores lanzadores={lanzadores} titulares={titularesLista} nombre={nombre} onCambiar={setLanzadores} conTitulo={false} />
-      </details>
-
-      <details className="seccion-plegable">
-        <summary>Dorsales</summary>
-        <EditorDorsales plantilla={datos.plantilla} dorsales={datos.dorsales} asignar={asignarDorsal} />
-      </details>
-        </>
-      )}
-
-      <details className="seccion-plegable">
-        <summary>Nombre del equipo</summary>
-        {datos.nombreEditable ? (
-          <div className="campo-nombre">
-            <label>
-              Nombre del equipo{' '}
-              <input value={nombreEquipo} maxLength={40} onChange={(e) => setNombreEquipo(e.target.value)} />
-            </label>
-            <button type="button" className="secundario" onClick={() => void guardarNombre()}>
-              Guardar nombre
-            </button>
-          </div>
-        ) : (
-          <p>
-            <strong>{datos.nombreEquipo}</strong> <span className="nota">(ya no se puede cambiar: el torneo ha empezado)</span>
-          </p>
-        )}
-      </details>
-
-      <details className="seccion-plegable">
-        <summary>Escudo</summary>
-        {!datos.nombreEditable && <p className="nota">El escudo ya no se puede cambiar: el torneo ha empezado.</p>}
-        <SelectorEscudo
-          elegido={datos.escudo ?? null}
-          onElegir={(id) => void guardarEscudo(id)}
-          invitado={usuario?.tipo !== 'registrado'}
-          desactivado={!datos.nombreEditable}
-          etiqueta="Escudo del equipo en esta partida"
-        />
-      </details>
-
-      {equipaciones && !duelos && (
-        <details className="seccion-plegable">
-          <summary>Equipaciones</summary>
-          <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
-          <button type="button" className="secundario" aria-disabled={equipacionesParecidas(equipaciones) || undefined} onClick={() => void guardarEquipaciones()}>
-            Guardar equipaciones
-          </button>
-        </details>
-      )}
       {formacionPendiente && (
         <Dialogo rol="alertdialog" etiquetadoPor="titulo-cambio-formacion" alEscape={() => setFormacionPendiente(null)}>
           <p id="titulo-cambio-formacion">Se perderá la colocación personalizada. ¿Cambiar de formación?</p>

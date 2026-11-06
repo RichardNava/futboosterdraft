@@ -25,7 +25,7 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
     await page.getByLabel(`Nuevo dorsal de ${j.nombre} ${j.apellidos}`).fill(String(n));
     await fila(j).getByRole('button', { name: /^Aceptar el dorsal/ }).click();
   };
-  await page.getByText('Dorsales', { exact: true }).click();
+  await page.getByRole('tab', { name: 'Personalización' }).click();
 
   // 2. El 33 al que lleva el 14: el 14 queda libre, sin preguntar.
   const catorce = conDorsal(14);

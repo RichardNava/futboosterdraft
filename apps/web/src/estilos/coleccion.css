@@ -148,11 +148,79 @@
   font-weight: 800;
 }
 
+/* Tamaño pequeño: la carta compacta ocupa una columna ancha, así que su letra puede crecer. */
+.coleccion-rejilla.tamano-pequeno .carta.compacta .carta-cuerpo {
+  padding-block: var(--espacio-2);
+}
+
+.coleccion-rejilla.tamano-pequeno .carta.compacta .carta-media {
+  font-size: 1.7rem;
+}
+
+.coleccion-rejilla.tamano-pequeno .carta.compacta .carta-nombre {
+  font-size: 1.2rem;
+}
+
+.coleccion-rejilla.tamano-pequeno .carta.compacta .carta-posicion {
+  font-size: 0.85rem;
+}
+
+.coleccion-rejilla.tamano-pequeno .carta.compacta .carta-bandera {
+  height: 16px;
+}
+
+/*
+ * Ficha ampliada: el diálogo crece y la carta se dibuja a 280 px (donde su letra ya está en el máximo) y se amplía con
+ * `zoom`, que escala todo su contenido; el factor sale del alto de la ventana para que quepa sin desplazarse.
+ */
+.modal:has(.ficha-coleccion) {
+  width: min(1100px, 100%);
+  max-height: 96dvh;
+}
+
 .ficha-coleccion {
+  --zoom-ficha: 1;
   display: grid;
-  grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
-  gap: var(--espacio-5);
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--espacio-6);
   align-items: start;
+  font-size: 1.15rem;
+}
+
+.ficha-coleccion-carta {
+  width: 280px;
+  zoom: var(--zoom-ficha);
+}
+
+/* La descripción de un rasgo se coloca con coordenadas de la ventana: sin el zoom heredado. */
+.ficha-coleccion-carta .carta-descripcion {
+  zoom: calc(1 / var(--zoom-ficha));
+}
+
+.ficha-coleccion-datos h2 {
+  font-size: 2.2rem;
+}
+
+.ficha-coleccion-datos .nota {
+  font-size: var(--texto-cuerpo);
+}
+
+@media (min-width: 760px) and (min-height: 640px) {
+  .ficha-coleccion {
+    --zoom-ficha: 1.25;
+  }
+}
+
+@media (min-width: 900px) and (min-height: 760px) {
+  .ficha-coleccion {
+    --zoom-ficha: 1.5;
+  }
+}
+
+@media (min-width: 1040px) and (min-height: 900px) {
+  .ficha-coleccion {
+    --zoom-ficha: 1.8;
+  }
 }
 
 .ficha-coleccion-datos {

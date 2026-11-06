@@ -31,6 +31,13 @@ interface Props {
   maxBanquillo?: number;
   /** Sin banquillo (modo Duelo de jugadores, spec 005): solo el campo y el resto de la plantilla. */
   sinBanquillo?: boolean;
+  /** Bajo la media del once (Formación): el resumen de la colocación. */
+  bajoMedia?: ReactNode;
+  /**
+   * Pestañas sobre el lateral (Formación): su lista, la activa y, si no es la de la plantilla, el panel que sustituye
+   * al banquillo y al resto. Sin ellas, el lateral es solo la plantilla.
+   */
+  pestanas?: { lista: ReactNode; activa: string; panel?: ReactNode };
   onSoltar: (jugadorId: number, destino: DestinoSoltar) => void;
   onMover: (jugadorId: number, dx: number, dy: number) => void;
   onArrastrando?: (arrastrando: boolean) => void;
@@ -52,7 +59,7 @@ interface Arrastre {
  * Se dibuja en vertical, con la propia portería abajo: x (0–1000) hacia arriba e y (0–640) de izquierda a derecha.
  */
 export function CampoEquipo(props: Props) {
-  const { estado, colocacion, jugadores, parametros, dorsales, colores, modo, reserva = [], bloqueados, distintivos, maxBanquillo = 7, sinBanquillo, onSoltar, onMover, onArrastrando } =
+  const { estado, colocacion, jugadores, parametros, dorsales, colores, modo, reserva = [], bloqueados, distintivos, maxBanquillo = 7, sinBanquillo, bajoMedia, pestanas, onSoltar, onMover, onArrastrando } =
     props;
   const campo = useRef<HTMLDivElement>(null);
   const banquillo = useRef<HTMLDivElement>(null);
@@ -254,6 +261,7 @@ export function CampoEquipo(props: Props) {
       <div className="campo-equipo-principal">
         {/* En Formación, la media del once sobre el campo, en estrellas y en cifra (spec 004, FR-060). */}
         {modo === 'preparacion' && <MediaEquipo media={mediaEquipo(colocacion, jugadores, parametros)} />}
+        {bajoMedia}
         <div ref={campo} className="campo campo-unico" aria-label="Campo del equipo" data-testid="campo-equipo">
           <LineasCampo />
           {colocacion.titulares.map((t) => fichaCampo(t.jugadorId, t.x, t.y, t.posicionEfectiva, t.casillaId))}
@@ -261,20 +269,30 @@ export function CampoEquipo(props: Props) {
         </div>
       </div>
       <div className="campo-equipo-lateral">
-        {!sinBanquillo && (
-          <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
-            <h2>
-              Banquillo ({estado.banquillo.length}/{maxBanquillo})
-            </h2>
-            <div className="lista-compacta">{estado.banquillo.map(fichaLista)}</div>
-          </section>
-        )}
-        {reserva.length > 0 && (
-          <section ref={restoPlantilla} aria-label="Resto de la plantilla" data-testid="reserva">
-            <h2>Resto de la plantilla</h2>
-            <div className="lista-compacta">{reserva.map(fichaLista)}</div>
-          </section>
-        )}
+        {pestanas?.lista}
+        <div
+          className="campo-equipo-secciones"
+          {...(pestanas ? { role: 'tabpanel', id: `panel-${pestanas.activa}`, 'aria-labelledby': `pestana-${pestanas.activa}` } : {})}
+        >
+          {pestanas?.panel ?? (
+            <>
+              {!sinBanquillo && (
+                <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
+                  <h2>
+                    Banquillo ({estado.banquillo.length}/{maxBanquillo})
+                  </h2>
+                  <div className="lista-compacta">{estado.banquillo.map(fichaLista)}</div>
+                </section>
+              )}
+              {reserva.length > 0 && (
+                <section ref={restoPlantilla} aria-label="Resto de la plantilla" data-testid="reserva">
+                  <h2>Resto de la plantilla</h2>
+                  <div className="lista-compacta">{reserva.map(fichaLista)}</div>
+                </section>
+              )}
+            </>
+          )}
+        </div>
       </div>
       {arrastre?.movido && (
         <span className="ficha-fantasma" style={{ left: arrastre.actual.x, top: arrastre.actual.y }} aria-hidden="true">

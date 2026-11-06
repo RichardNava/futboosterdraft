@@ -65,7 +65,7 @@ test('equipación: rayas verticales blancas y rojas; la vista previa y la chapa 
   await avanzarDraft(page, id);
 
   await page.goto(`/partidas/${id}/alineacion`);
-  await page.getByText('Equipaciones', { exact: true }).click();
+  await page.getByRole('tab', { name: 'Personalización' }).click();
   const primera = page.locator('fieldset[data-equipacion="primera"]');
   await primera.getByLabel('Diseño').selectOption('rayas');
   await primera.getByLabel('Color 1').fill('#ffffff');

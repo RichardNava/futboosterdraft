@@ -48,7 +48,7 @@ test.describe('escudos', () => {
   test('un invitado sin elegir ve el círculo y en la Alineación solo escudos gratuitos (US1-6)', async ({ page }) => {
     const id = await partidaTrasDraft(page);
     await page.goto(`/partidas/${id}/alineacion`);
-    await page.locator('summary', { hasText: 'Escudo' }).click();
+    await page.getByRole('tab', { name: 'Personalización' }).click();
     const selector = page.getByRole('group', { name: 'Escudo del equipo en esta partida' });
     await expect(selector.locator('button[data-cosmetico]')).toHaveCount(18);
     await expect(selector.locator('.cosmetico-bloqueado')).toHaveCount(0);

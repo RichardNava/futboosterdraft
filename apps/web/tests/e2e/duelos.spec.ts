@@ -45,7 +45,10 @@ test('torneo de duelos de 4: once bloqueado, duelos animados, salto al resultado
   await page.goto(`/partidas/${id}/alineacion`);
   await expect(page.getByText(/la elige el anfitrión para todos/)).toBeVisible();
   await expect(page.getByTestId('banquillo')).toHaveCount(0);
-  for (const seccion of ['Táctica', 'Lanzadores', 'Dorsales', 'Equipaciones']) await expect(page.locator('summary', { hasText: seccion })).toHaveCount(0);
+  for (const pestana of ['Táctica', 'Lanzadores']) await expect(page.getByRole('tab', { name: pestana })).toHaveCount(0);
+  await page.getByRole('tab', { name: 'Personalización' }).click();
+  for (const seccion of ['Dorsales', 'Equipaciones']) await expect(page.getByRole('heading', { name: seccion })).toHaveCount(0);
+  await page.getByRole('tab', { name: 'Alineación' }).click();
 
   // 5. Confirmar el once con su diálogo: queda de solo lectura.
   await page.getByRole('button', { name: 'Confirmar once' }).click();

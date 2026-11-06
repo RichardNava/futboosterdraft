@@ -92,6 +92,8 @@ html {
 .portada {
   position: relative;
   overflow-x: clip;
+  /* La carta de la derecha del abanico puede asomar sobre el margen de la página sin crear desplazamiento. */
+  overflow-clip-margin: var(--espacio-6);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
@@ -190,7 +192,7 @@ html {
 
 .portada-abanico {
   position: absolute;
-  left: 44%;
+  left: 42%;
   bottom: 30%;
   width: 0;
   height: 0;
@@ -227,7 +229,7 @@ html {
 
 .portada-sobre {
   position: absolute;
-  left: 44%;
+  left: 42%;
   bottom: 4%;
   z-index: 3;
   /* Del ancho de las cartas del abanico. */
@@ -369,12 +371,13 @@ html {
     min-height: clamp(280px, 50dvh, 600px);
   }
 
+  /* Nunca por debajo de 170 px: la letra de la carta tiene mínimos en rem y, más estrecha, se amontona. */
   .portada-carta {
-    width: clamp(110px, min(12.5vw, 22dvh), 230px);
+    width: clamp(170px, min(14vw, 26dvh), 250px);
   }
 
   .portada-sobre {
-    width: clamp(110px, min(12.5vw, 22dvh), 230px);
+    width: clamp(170px, min(14vw, 26dvh), 250px);
   }
 
   .pasos {
@@ -1060,10 +1063,14 @@ html {
   stroke-linejoin: round;
 }
 
-/* El centro óptico de la estrella está algo por debajo del de su caja. */
+/*
+ * Centrada en la estrella: la caja se recorta al alto de las cifras (`text-box`) y baja lo que el centro de la estrella
+ * queda por debajo del de su caja (12,4 de 24).
+ */
 .media-equipo-valor {
   position: relative;
-  padding-top: 8%;
+  text-box: trim-both cap alphabetic;
+  translate: 0 2%;
   color: var(--color-oro);
   font-family: var(--letra-cartel);
   font-size: 26px;
@@ -1349,6 +1356,116 @@ html {
 
 .colocacion-resumen {
   margin-top: var(--espacio-4);
+}
+
+.campo-equipo-secciones {
+  display: grid;
+  gap: var(--espacio-5);
+  align-content: start;
+}
+
+.campo-equipo-lateral > .pestanas {
+  margin: 0;
+}
+
+/* ---------- Formación sin desplazarse (correcciones 2026-11-06) ---------- */
+
+.titulo-con-ayuda {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.boton-ayuda {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.panel-personalizacion {
+  display: grid;
+  gap: var(--espacio-6);
+}
+
+.panel-personalizacion .campo-nombre {
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin: 0;
+}
+
+/* Estrellas más pequeñas: la media del once ocupa una franja estrecha sobre el campo. */
+.alineacion .media-equipo {
+  padding: var(--espacio-1) var(--espacio-3);
+}
+
+.alineacion .estrella {
+  max-width: 18px;
+}
+
+.alineacion .media-equipo-cifra {
+  width: 52px;
+}
+
+.alineacion .media-equipo-valor {
+  font-size: 19px;
+}
+
+.alineacion .colocacion-resumen {
+  margin: 0;
+  font-size: var(--texto-pequeno);
+}
+
+.alineacion .colocacion-resumen p {
+  margin: 0;
+}
+
+.alineacion .colocacion-resumen button.texto {
+  min-height: 0;
+  padding: 0;
+  font-size: inherit;
+}
+
+/*
+ * Desde 1024 px, todo cabe en la ventana: el campo toma su ancho del alto disponible (la reserva es lo que ocupan la
+ * navegación, la cabecera, la media, el resumen y la barra del botón principal), y el lateral, con las pestañas, mide
+ * lo mismo que la columna del campo y se desplaza por dentro si su pestaña no cabe.
+ */
+@media (min-width: 1024px) {
+  .alineacion {
+    --alineacion-reserva: 21.5rem;
+    padding-top: var(--espacio-4);
+  }
+
+  .alineacion .cabecera-fila {
+    margin-bottom: var(--espacio-3);
+  }
+
+  .alineacion .campo-equipo {
+    grid-template-columns: clamp(300px, calc((100dvh - var(--alineacion-reserva)) * 64 / 100), 520px) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .alineacion .campo-unico {
+    width: 100%;
+  }
+
+  /* Tres columnas en el lateral: con cuatro, los nombres del banquillo se recortan demasiado. */
+  .alineacion .lista-compacta {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  /* Alto 0 y mínimo del 100 %: no agranda la fila, se estira hasta el alto de la columna del campo. */
+  .alineacion .campo-equipo-lateral {
+    height: 0;
+    min-height: 100%;
+    overflow-y: auto;
+  }
+
+  .alineacion .barra-principal {
+    margin-top: var(--espacio-4);
+  }
 }
 
 .avisos-colocacion {
