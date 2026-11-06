@@ -67,8 +67,8 @@ async function marcadorDeCartel(page: Page) {
   expect(estilo.familia).toMatch(/^"?Barlow Condensed/);
   expect(estilo.cifras).toContain('tabular-nums');
   await expect(page.locator('.marcador .chapa')).toHaveCount(2);
-  // Las chapas que se confunden con el lienzo llevan contorno (FR-034).
-  const chapas = await page.locator('.marcador .chapa').evaluateAll((cs) =>
+  // Las chapas de color que se confunden con el lienzo llevan contorno (FR-034); un escudo (spec 011) no es una chapa de color.
+  const chapas = await page.locator('.marcador span.chapa').evaluateAll((cs) =>
     cs.map((c) => ({ fondo: getComputedStyle(c).backgroundColor, contorno: c.classList.contains('con-contorno') })),
   );
   for (const c of chapas) {

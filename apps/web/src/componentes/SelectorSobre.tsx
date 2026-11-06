@@ -36,43 +36,58 @@ export function SelectorSobre({ aspecto, onCambiar, desactivado = false }: Props
     carrusel ? null : favorito,
     false,
   );
-  const alternar = (id: string) => onCambiar({ sobresMarcados: marcados.includes(id) ? marcados.filter((x) => x !== id) : [...marcados, id] });
+  const alternar = (id: string) =>
+    onCambiar({
+      sobresMarcados: marcados.includes(id) ? marcados.filter((x) => x !== id) : [...marcados, id],
+    });
   return (
     <div className="selector-cosmeticos selector-sobres">
       <label className="interruptor">
-        <input type="checkbox" role="switch" checked={carrusel} disabled={desactivado} onChange={(e) => onCambiar({ sobreCarrusel: e.target.checked })} />
+        <input
+          type="checkbox"
+          role="switch"
+          checked={carrusel}
+          disabled={desactivado}
+          onChange={(e) => onCambiar({ sobreCarrusel: e.target.checked })}
+        />
         Carrusel
       </label>
       {carrusel && <p className="nota">Se alternan sin repetirse. Marca los que quieras.</p>}
-      <ul className="rejilla-cosmeticos" role="group" aria-label={carrusel ? 'Sobres del carrusel' : 'Sobre favorito'} onKeyDown={moverFoco}>
-        {disponibles.map((c) => {
-          const activo = carrusel ? marcados.includes(c.id) : c.id === favorito;
-          return (
-            <li key={c.id}>
-              <button
-                type="button"
-                className="opcion-cosmetico"
-                data-cosmetico={c.id}
-                {...(carrusel ? { role: 'checkbox', 'aria-checked': activo } : { 'aria-pressed': activo })}
-                aria-label={c.nombre}
-                title={c.nombre}
-                disabled={desactivado}
-                onClick={() => (carrusel ? alternar(c.id) : onCambiar({ sobreFavorito: c.id }))}
-              >
+      <div
+        role="group"
+        aria-label={carrusel ? 'Sobres del carrusel' : 'Sobre favorito'}
+        onKeyDown={moverFoco}
+      >
+        <ul className="rejilla-cosmeticos">
+          {disponibles.map((c) => {
+            const activo = carrusel ? marcados.includes(c.id) : c.id === favorito;
+            return (
+              <li key={c.id}>
+                <button
+                  type="button"
+                  className="opcion-cosmetico"
+                  data-cosmetico={c.id}
+                  {...(carrusel ? { role: 'checkbox', 'aria-checked': activo } : { 'aria-pressed': activo })}
+                  aria-label={c.nombre}
+                  title={c.nombre}
+                  disabled={desactivado}
+                  onClick={() => (carrusel ? alternar(c.id) : onCambiar({ sobreFavorito: c.id }))}
+                >
+                  <Miniatura c={c} />
+                </button>
+              </li>
+            );
+          })}
+          {bloqueados.map((c) => (
+            <li key={c.id} className="cosmetico-bloqueado">
+              <span className="opcion-cosmetico" title={`${c.nombre}: bloqueado`}>
                 <Miniatura c={c} />
-              </button>
+                <Icono nombre="candado" etiqueta={`${c.nombre} (bloqueado)`} className="candado" />
+              </span>
             </li>
-          );
-        })}
-        {bloqueados.map((c) => (
-          <li key={c.id} className="cosmetico-bloqueado">
-            <span className="opcion-cosmetico" title={`${c.nombre}: bloqueado`}>
-              <Miniatura c={c} />
-              <Icono nombre="candado" etiqueta={`${c.nombre} (bloqueado)`} className="candado" />
-            </span>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </ul>
+      </div>
       {bloqueados.length > 0 && (
         <Link className="enlace-tienda" to="/tienda#sobres">
           Ver en la tienda

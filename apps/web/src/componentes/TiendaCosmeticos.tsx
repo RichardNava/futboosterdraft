@@ -26,7 +26,17 @@ const BLOQUES = [
 ] as const;
 
 function Miniatura({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
-  if (tipo === 'escudo') return <img src={urlEscudo(id, 256)} alt="" width={64} height={64} loading="lazy" className="miniatura-escudo" />;
+  if (tipo === 'escudo')
+    return (
+      <img
+        src={urlEscudo(id, 256)}
+        alt=""
+        width={64}
+        height={64}
+        loading="lazy"
+        className="miniatura-escudo"
+      />
+    );
   return (
     <span className="miniatura-sobre">
       <SobreArte diseno={id} mini className="sobre-cerrado-mini" />
@@ -48,7 +58,12 @@ export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
   const trasComprar = (r: RespuestaCompraCosmetico) => {
     setCompra(null);
     useSaldo.setState({ saldo: r.saldo });
-    mostrarAviso('exito', r.cosmeticos.length > 1 ? `${r.cosmeticos.length} cosméticos desbloqueados` : 'Desbloqueado: ya puedes elegirlo en tu perfil');
+    mostrarAviso(
+      'exito',
+      r.cosmeticos.length > 1
+        ? `${r.cosmeticos.length} cosméticos desbloqueados`
+        : 'Desbloqueado: ya puedes elegirlo en tu perfil',
+    );
     void useCosmeticos.getState().recargar();
     void useAspecto.getState().recargar();
   };
@@ -61,51 +76,69 @@ export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
         return (
           <section key={b.id} id={b.id} className="tienda-bloque" aria-labelledby={`titulo-${b.id}`}>
             <h2 id={`titulo-${b.id}`}>{b.titulo}</h2>
-            <div className="tienda-bloque-desplazable">
-              <ul className="tienda-packs" aria-label={`Packs de ${b.titulo.toLowerCase()}`}>
-                {packs.map((p) => {
-                  const suelto = p.cosmeticos.reduce((t, id) => t + (porId.get(id)?.precioCentimos ?? 0), 0);
-                  return (
-                    <li key={p.id} className="panel tienda-pack" data-pack={p.id}>
-                      <h3>{p.nombre}</h3>
-                      <span className="pack-miniaturas">
-                        {p.cosmeticos.map((id) => (
-                          <Miniatura key={id} id={id} tipo={b.tipo} />
-                        ))}
-                      </span>
-                      {p.disponible === false ? (
-                        <p className="nota">Ya tienes alguno: cómpralos sueltos</p>
-                      ) : (
-                        <button type="button" className="secundario" onClick={() => abrir({ tipo: 'pack', pack: p })}>
-                          5 por {formatoEuros.format(p.precioCentimos / 100)}
-                          {suelto > p.precioCentimos && <span className="ahorro"> (ahorras {formatoEuros.format((suelto - p.precioCentimos) / 100)})</span>}
-                        </button>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-              <ul className="rejilla-tienda-cosmeticos">
-                {lista.map((c) => (
-                  <li key={c.id} className="panel tienda-cosmetico" data-cosmetico={c.id}>
-                    <Miniatura id={c.id} tipo={b.tipo} />
-                    <span className="nombre-cosmetico">{c.nombre}</span>
-                    {c.poseido ? (
-                      <span className="sello-adquirida pequeno">Comprado</span>
+            <ul className="tienda-packs" aria-label={`Packs de ${b.titulo.toLowerCase()}`}>
+              {packs.map((p) => {
+                const suelto = p.cosmeticos.reduce((t, id) => t + (porId.get(id)?.precioCentimos ?? 0), 0);
+                return (
+                  <li key={p.id} className="panel tienda-pack" data-pack={p.id}>
+                    <h3>{p.nombre}</h3>
+                    <span className="pack-miniaturas">
+                      {p.cosmeticos.map((id) => (
+                        <Miniatura key={id} id={id} tipo={b.tipo} />
+                      ))}
+                    </span>
+                    {p.disponible === false ? (
+                      <p className="nota">Ya tienes alguno: cómpralos sueltos</p>
                     ) : (
-                      <span className="acciones">
-                        <button type="button" className="secundario" onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'fragmentos' })}>
-                          {formatoFragmentos.format(c.precioFragmentos!)} fragmentos
-                        </button>
-                        <button type="button" className="secundario" onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'eur' })}>
-                          {formatoEuros.format(c.precioCentimos! / 100)}
-                        </button>
-                      </span>
+                      <button
+                        type="button"
+                        className="secundario"
+                        onClick={() => abrir({ tipo: 'pack', pack: p })}
+                      >
+                        5 por {formatoEuros.format(p.precioCentimos / 100)}
+                        {suelto > p.precioCentimos && (
+                          <span className="ahorro">
+                            {' '}
+                            (ahorras {formatoEuros.format((suelto - p.precioCentimos) / 100)})
+                          </span>
+                        )}
+                      </button>
                     )}
                   </li>
-                ))}
-              </ul>
-            </div>
+                );
+              })}
+            </ul>
+            <ul
+              className="rejilla-tienda-cosmeticos tienda-bloque-desplazable"
+              aria-label={`${b.titulo} sueltos`}
+            >
+              {lista.map((c) => (
+                <li key={c.id} className="panel tienda-cosmetico" data-cosmetico={c.id}>
+                  <Miniatura id={c.id} tipo={b.tipo} />
+                  <span className="nombre-cosmetico">{c.nombre}</span>
+                  {c.poseido ? (
+                    <span className="sello-adquirida pequeno">Comprado</span>
+                  ) : (
+                    <span className="acciones">
+                      <button
+                        type="button"
+                        className="secundario"
+                        onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'fragmentos' })}
+                      >
+                        {formatoFragmentos.format(c.precioFragmentos!)} fragmentos
+                      </button>
+                      <button
+                        type="button"
+                        className="secundario"
+                        onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'eur' })}
+                      >
+                        {formatoEuros.format(c.precioCentimos! / 100)}
+                      </button>
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
           </section>
         );
       })}
@@ -119,9 +152,13 @@ export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
               {compra.moneda === 'fragmentos' && ` Tienes ${formatoFragmentos.format(saldo)} fragmentos.`}
             </p>
           }
-          {...(compra.moneda === 'eur' ? { precioCentimos: compra.cosmetico.precioCentimos! } : { precioFragmentos: compra.cosmetico.precioFragmentos! })}
+          {...(compra.moneda === 'eur'
+            ? { precioCentimos: compra.cosmetico.precioCentimos! }
+            : { precioFragmentos: compra.cosmetico.precioFragmentos! })}
           comprar={(idCompra) =>
-            api(`/api/tienda/cosmeticos/${compra.cosmetico.id}/comprar`, { cuerpo: { idCompra, moneda: compra.moneda } })
+            api(`/api/tienda/cosmeticos/${compra.cosmetico.id}/comprar`, {
+              cuerpo: { idCompra, moneda: compra.moneda },
+            })
           }
           onHecho={trasComprar}
           onCancelar={() => setCompra(null)}
@@ -138,9 +175,16 @@ export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
         />
       )}
       {pedirCuenta && (
-        <Dialogo etiquetadoPor="titulo-pedir-cuenta" alEscape={() => setPedirCuenta(false)} alPulsarFondo={() => setPedirCuenta(false)}>
+        <Dialogo
+          etiquetadoPor="titulo-pedir-cuenta"
+          alEscape={() => setPedirCuenta(false)}
+          alPulsarFondo={() => setPedirCuenta(false)}
+        >
           <h2 id="titulo-pedir-cuenta">Crea tu cuenta para comprar</h2>
-          <p>La colección y la tienda son para usuarios registrados. Crea tu cuenta para conservar tus cartas y ganar fragmentos con tus victorias.</p>
+          <p>
+            La colección y la tienda son para usuarios registrados. Crea tu cuenta para conservar tus cartas y
+            ganar fragmentos con tus victorias.
+          </p>
           <div className="acciones">
             <button type="button" className="secundario" onClick={() => setPedirCuenta(false)}>
               Ahora no

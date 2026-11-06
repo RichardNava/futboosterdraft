@@ -351,15 +351,15 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
-  /* Si el catálogo no cabe, se desplaza dentro de cada bloque y los packs quedan arriba. */
+  /* Los packs quedan fijos arriba; si los sueltos no caben, se desplazan dentro de su rejilla. */
   .tienda-bloque-desplazable {
     max-height: 60vh;
     overflow-y: auto;
+    padding-right: var(--espacio-1);
   }
 }
 
-.tienda-bloque,
-.tienda-bloque-desplazable {
+.tienda-bloque {
   display: grid;
   gap: var(--espacio-3);
   align-content: start;
@@ -408,7 +408,8 @@
 }
 
 .rejilla-tienda-cosmeticos {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+  align-content: start;
 }
 
 .tienda-cosmetico {
@@ -416,6 +417,10 @@
   justify-items: center;
   gap: var(--espacio-2);
   text-align: center;
+}
+
+.tienda-cosmetico .acciones button {
+  white-space: nowrap;
 }
 
 .tienda-cosmetico .acciones {

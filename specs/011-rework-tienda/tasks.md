@@ -223,6 +223,7 @@ description: "Tareas de la spec 011: rework de la tienda (derechos de imagen, es
 - [X] T074 [P] Actualizar CLAUDE.md: `data/cosmeticos.json` en la línea de datos del catálogo y el guion `pnpm --filter @fbd/fixtures imagenes`; la especificación en curso
 - [X] T075 [P] Actualizar ROADMAP.md con el estado final de la 011, INI-11 e INI-14
 - [ ] T076 Ejecutar `pnpm typecheck && pnpm lint`, `pnpm test`, `pnpm --filter @fbd/server test:integration` y `test:integration:hilos`, `pnpm test:equivalence` y `pnpm e2e`, y corregir lo que falle
+  - 2026-11-06: verdes typecheck, lint, `pnpm test` (933), integración y `test:integration:hilos` (215 cada una) y equivalencia (32). `pnpm e2e`: 93/100. Corregidos los dos de la spec 011 (axe `listitem` en el selector de sobres; el test de contorno de chapas ya no mira los escudos). Quedan cinco ajenos a la spec 011: `dificultad.spec.ts` (4 dificultades desde e420c61), `diseno/tema.spec.ts` (radio 50 % de `.boton-ayuda`) y `diseno/ronda5.spec.ts` (sin texto «Dorsales»), ambos desde ad80b41, `navegacion.spec.ts:80` (desde bc01ba1 quien abandona ya no participa y no puede volver al draft) y `torneo-asincrono.spec.ts`, intermitente (pasa al repetirlo)
 - [ ] T077 Recorridos manuales 1–13 de specs/011-rework-tienda/quickstart.md, incluidos el cronómetro de SC-001, 20 partidos con el mismo escudo (SC-003) y el marcador del 2D y los selectores a 360 px
 - [X] T078 Ejecutar `graphify update .`
 
