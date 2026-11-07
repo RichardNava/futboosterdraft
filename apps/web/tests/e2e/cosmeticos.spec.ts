@@ -38,7 +38,7 @@ test.describe('escudos', () => {
     const marcador = page.locator('.marcador');
     await expect(marcador.getByTestId('escudo-local')).toBeVisible();
     await expect(marcador.getByTestId('escudo-visitante')).toBeVisible();
-    await expect(marcador.locator('img[src*="escudo-lobo-64"]')).toHaveCount(1);
+    await expect(marcador.locator('img[src*="escudo-lobo-"]')).toHaveCount(1);
     await page.getByRole('button', { name: 'Seguir' }).click();
     await expect(page.locator('.resultado .fase')).toHaveText('Final');
     const eventos = page.locator('.resumen-eventos .evento');

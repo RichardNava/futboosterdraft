@@ -112,8 +112,8 @@ test('«Abandonar» en la barra: en cualquier momento de la partida, un NPC ocup
   await b.getByRole('button', { name: 'Confirmar elección' }).click();
   await expect(tituloB).toContainText('Turno 2 de 8', { timeout: 5000 });
 
-  // Al volver a la partida, ya no puede abandonarla otra vez.
-  await a.goto(`/partidas/${id}/draft`);
-  await expect(a.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(barra(a).getByRole('button', { name: 'Abandonar la partida' })).toHaveCount(0);
+  // Quien abandona ya no participa: en «Mis partidas» la ve como abandonada, sin «Continuar».
+  const mias = (await (await a.request.get('/api/mis-partidas')).json()) as { enCurso: { id: string }[]; terminadas: { id: string; fase: string }[] };
+  expect(mias.enCurso.map((p) => p.id)).not.toContain(id);
+  expect(mias.terminadas.find((p) => p.id === id)?.fase).toBe('abandonada');
 });

@@ -77,6 +77,12 @@
     var(--cesped-grano) 0 0 / 160px 160px,
     var(--cesped-briznas) 0 0 / 200px 200px,
     repeating-linear-gradient(0deg, var(--cesped) 0 8.33%, var(--cesped-franja) 8.33% 16.66%);
+  /* El mismo césped con el campo tumbado: las franjas, en vertical. */
+  --cesped-textura-horizontal:
+    radial-gradient(ellipse 70% 90% at 50% 50%, transparent 40%, rgb(0 0 0 / 45%) 100%),
+    var(--cesped-grano) 0 0 / 160px 160px,
+    var(--cesped-briznas) 0 0 / 200px 200px,
+    repeating-linear-gradient(90deg, var(--cesped) 0 8.33%, var(--cesped-franja) 8.33% 16.66%);
   /* Fondo de las fichas sobre el césped: el texto blanco encima cumple 4,5:1. */
   --color-ficha-campo: rgb(4 14 9 / 78%);
 
@@ -154,6 +160,7 @@
   --barra-propia: inset 3px 0 0 #b7ff2c;
   --sombra-pieza: drop-shadow(0 30px 40px rgb(0 0 0 / 70%));
   --sombra-carta-escena: drop-shadow(0 24px 30px rgb(0 0 0 / 65%));
+  --sombra-escudo: drop-shadow(0 4px 8px rgb(0 0 0 / 45%));
   --halo-foco: radial-gradient(circle, rgb(255 241 201 / 14%), transparent 60%);
   --mascara-fundido-arriba: linear-gradient(180deg, transparent 0%, #000 30%);
   --sombra-trofeo: drop-shadow(0 0 40px rgb(243 197 82 / 45%)) drop-shadow(0 30px 30px rgb(0 0 0 / 60%));
@@ -188,6 +195,8 @@
   --objetivo-tactil: 44px;
   --ancho-lectura: 72ch;
   --ancho-pantalla: 1240px;
+  /* Pantallas que aprovechan el ancho de un monitor grande (Formación con el campo horizontal). */
+  --ancho-pantalla-amplia: 1600px;
 
   /* Movimiento (research R10): solo opacity, transform y filtros */
   --duracion-corta: 150ms;

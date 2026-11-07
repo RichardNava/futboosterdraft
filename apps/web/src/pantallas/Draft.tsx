@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { AperturaSobre } from '../componentes/AperturaSobre';
-import { sobreSiguiente, useAspecto } from '../estado/aspecto';
+import { prepararSobre, useAspecto } from '../estado/aspecto';
 import { usePartidaActiva } from '../estado/partidaActiva';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { BotonAvanzar } from '../componentes/BotonAvanzar';
@@ -70,7 +70,9 @@ export function Draft() {
       setEsperando((m.pendientes as { id: string; nombre: string }[] | undefined) ?? null);
     } else if (m.t === 'draft.eleccion_auto') {
       const j = m.jugador as CartaResumen;
-      setAviso(`Se acabó el tiempo: se ha elegido automáticamente a ${j.nombre} ${j.apellidos} (${Math.round(j.media)}).`);
+      setAviso(
+        `Se acabó el tiempo: se ha elegido automáticamente a ${j.nombre} ${j.apellidos} (${Math.round(j.media)}).`,
+      );
     } else if (m.t === 'draft.terminado') {
       setTerminado(true);
     } else if (m.t === 'error' && m.codigo === 'PARTIDA_ABANDONADA') {
@@ -104,17 +106,24 @@ export function Draft() {
       usePartidaActiva.getState().actualizar({ aperturaPendiente: null });
       setApertura(d.sobre.cartas);
     }
-    setTurno({ ronda: d.ronda, turno: d.turno, direccion: d.direccion, sobre: d.sobre, venceEn: d.venceEn, misElecciones: d.misElecciones });
+    setTurno({
+      ronda: d.ronda,
+      turno: d.turno,
+      direccion: d.direccion,
+      sobre: d.sobre,
+      venceEn: d.venceEn,
+      misElecciones: d.misElecciones,
+    });
     setConfirmada(d.eleccionActual?.id ?? null);
   }, [estado, navegar, partidaId]);
 
-  // Cada apertura (una por ronda) pide el siguiente diseño; si falla, el sobre original sin bloquear la apertura.
+  // Cada apertura (una por ronda) pide el siguiente diseño y espera a su imagen; si falla, el sobre original. El
+  // diseño se borra al terminar cada apertura: si no, la siguiente empezaba un instante con el de la anterior.
   const hayApertura = apertura !== null;
   useEffect(() => {
     if (!hayApertura) return;
-    setDiseno(undefined);
     let vigente = true;
-    void sobreSiguiente().then((d) => vigente && setDiseno(d));
+    void prepararSobre().then((d) => vigente && setDiseno(d));
     return () => {
       vigente = false;
     };
@@ -131,7 +140,12 @@ export function Draft() {
     const clave = `${turno.ronda}-${turno.turno}`;
     enviando.current = true;
     try {
-      const ack = await conexion.enviar({ t: 'draft.elegir', ronda: turno.ronda, turno: turno.turno, jugadorId });
+      const ack = await conexion.enviar({
+        t: 'draft.elegir',
+        ronda: turno.ronda,
+        turno: turno.turno,
+        jugadorId,
+      });
       // Si el turno ya avanzó (fuimos los últimos en elegir), el ack llega después del sobre nuevo.
       if (turnoActual.current !== clave) return;
       if (ack.ok) setConfirmada(jugadorId);
@@ -149,7 +163,6 @@ export function Draft() {
     void confirmar(jugadorId);
   };
 
-
   const misPorDemarcacion = useMemo(() => {
     const grupos: Record<string, CartaResumen[]> = { POR: [], DEF: [], MED: [], DEL: [] };
     for (const j of turno?.misElecciones ?? []) grupos[j.demarcacion]!.push(j);
@@ -159,7 +172,9 @@ export function Draft() {
   // Las cartas del sobre se escalan para caber sin desplazarse (spec 004, FR-046).
   const zona = useRef<HTMLElement>(null);
   const rejilla = useRef<HTMLDivElement>(null);
-  useEscalaRejilla(zona, rejilla, { clave: `${turno?.ronda}-${turno?.turno}-${turno?.sobre.cartas.length}-${apertura ? 1 : 0}` });
+  useEscalaRejilla(zona, rejilla, {
+    clave: `${turno?.ronda}-${turno?.turno}-${turno?.sobre.cartas.length}-${apertura ? 1 : 0}`,
+  });
 
   // Duración del turno: el mayor tiempo restante visto en él (45 s, o 53 s con la apertura del sobre).
   const duracion = useRef<{ clave: string; segundos: number }>({ clave: '', segundos: 0 });
@@ -178,18 +193,25 @@ export function Draft() {
             <h1 id="titulo-draft-fin" className="cartel">
               Draft terminado
             </h1>
-            <p className="entradilla">Ya tienes tu plantilla de 24 jugadores. Elige el once y la táctica antes del primer partido.</p>
+            <p className="entradilla">
+              Ya tienes tu plantilla de 24 jugadores. Elige el once y la táctica antes del primer partido.
+            </p>
           </div>
         </section>
         <BotonAvanzar
           situacion="fin_draft"
           onAvanzar={() => navegar(`/partidas/${partidaId}/alineacion`)}
-          secundarios={[{ etiqueta: 'Ver las plantillas', onClick: () => navegar(`/partidas/${partidaId}/plantillas`) }]}
+          secundarios={[
+            { etiqueta: 'Ver las plantillas', onClick: () => navegar(`/partidas/${partidaId}/plantillas`) },
+          ]}
         />
       </main>
     );
   }
-  if (!turno) return <PantallaCargando forma="cartas" texto={conectada ? 'Esperando el primer sobre…' : 'Conectando…'} />;
+  if (!turno)
+    return (
+      <PantallaCargando forma="cartas" texto={conectada ? 'Esperando el primer sobre…' : 'Conectando…'} />
+    );
 
   const pendientes = participantes.length - eligieron.length;
   const textoEspera =
@@ -201,13 +223,25 @@ export function Draft() {
 
   const eleccion = (turno.ronda - 1) * 8 + turno.turno;
   const urgente = restante !== null && restante <= 10;
-  const progreso = restante !== null && duracion.current.segundos > 0 ? Math.max(0, Math.min(1, restante / duracion.current.segundos)) : 1;
+  const progreso =
+    restante !== null && duracion.current.segundos > 0
+      ? Math.max(0, Math.min(1, restante / duracion.current.segundos))
+      : 1;
   const RADIO_RELOJ = 26;
   const vuelta = 2 * Math.PI * RADIO_RELOJ;
 
   return (
     <main className="pantalla draft">
-      {apertura && <AperturaSobre cartas={apertura} diseno={diseno} onTerminar={() => setApertura(null)} />}
+      {apertura && diseno !== undefined && (
+        <AperturaSobre
+          cartas={apertura}
+          diseno={diseno}
+          onTerminar={() => {
+            setApertura(null);
+            setDiseno(undefined);
+          }}
+        />
+      )}
 
       {/* Las cartas dominan; el contexto va en un carril lateral (arriba y abajo en móvil). Spec 004, FR-018, FR-046. */}
       <div className="draft-mesa">
@@ -244,7 +278,8 @@ export function Draft() {
         <aside className="draft-contexto" aria-label="Contexto del draft">
           <header className="draft-cabecera">
             <h1>
-              <span className="draft-sobre">Sobre {turno.ronda}</span> <span className="draft-turno">· Turno {turno.turno} de 8</span>
+              <span className="draft-sobre">Sobre {turno.ronda}</span>{' '}
+              <span className="draft-turno">· Turno {turno.turno} de 8</span>
             </h1>
             <p className="eleccion-cartel">Elección {eleccion} de 24</p>
           </header>
@@ -253,7 +288,14 @@ export function Draft() {
             <div className={`reloj ${urgente ? 'urgente' : ''}`} aria-live="polite">
               <svg className="reloj-anillo" viewBox="0 0 64 64" aria-hidden="true">
                 <circle cx="32" cy="32" r={RADIO_RELOJ} className="reloj-pista" />
-                <circle cx="32" cy="32" r={RADIO_RELOJ} className="reloj-avance" strokeDasharray={vuelta} strokeDashoffset={vuelta * (1 - progreso)} />
+                <circle
+                  cx="32"
+                  cy="32"
+                  r={RADIO_RELOJ}
+                  className="reloj-avance"
+                  strokeDasharray={vuelta}
+                  strokeDashoffset={vuelta * (1 - progreso)}
+                />
               </svg>
               <span className="reloj-cifra">
                 {urgente && <Icono nombre="advertencia" etiqueta="Quedan pocos segundos" />}
@@ -266,7 +308,8 @@ export function Draft() {
                 <Icono nombre="flecha" tamano={22} />
               </span>
               <span>
-                Las cartas que dejes pasan a tu <strong>{turno.direccion === 'izquierda' ? 'izquierda' : 'derecha'}</strong>
+                Las cartas que dejes pasan a tu{' '}
+                <strong>{turno.direccion === 'izquierda' ? 'izquierda' : 'derecha'}</strong>
               </span>
             </p>
           </div>
@@ -310,7 +353,10 @@ export function Draft() {
             <h2>Mi plantilla ({turno.misElecciones.length}/24)</h2>
             <ul className="plantilla-acumulada">
               {DEMARCACIONES.map((d) => (
-                <li key={d} style={{ '--relleno': Math.min(1, misPorDemarcacion[d]!.length / 8) } as CSSProperties}>
+                <li
+                  key={d}
+                  style={{ '--relleno': Math.min(1, misPorDemarcacion[d]!.length / 8) } as CSSProperties}
+                >
                   <span>{ETIQUETA_DEMARCACION[d]}</span>
                   <span className="cifra">{misPorDemarcacion[d]!.length}</span>
                 </li>
@@ -338,8 +384,18 @@ export function Draft() {
       </div>
       {ficha !== null && <FichaJugador jugadorId={ficha.id} rasgos={ficha} onCerrar={() => setFicha(null)} />}
       <BarraPrincipal
-        principal={confirmada === null ? { etiqueta: 'Confirmar elección', onClick: () => confirmar(), motivoDesactivado: elegida === null ? 'Elige una carta del sobre' : null } : null}
-        estado={confirmada !== null ? <span role="status">Elección confirmada. {textoEspera}</span> : undefined}
+        principal={
+          confirmada === null
+            ? {
+                etiqueta: 'Confirmar elección',
+                onClick: () => confirmar(),
+                motivoDesactivado: elegida === null ? 'Elige una carta del sobre' : null,
+              }
+            : null
+        }
+        estado={
+          confirmada !== null ? <span role="status">Elección confirmada. {textoEspera}</span> : undefined
+        }
       />
     </main>
   );

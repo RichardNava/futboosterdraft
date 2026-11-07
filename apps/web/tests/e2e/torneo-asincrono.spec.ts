@@ -98,13 +98,18 @@ test('dos humanos ven el mismo partido cada uno cuando quiere, sin revelarse el 
   await avanzarReloj(a.request, 24 * HORA + 1000);
   await expect.poll(async () => (await torneo(a)).jornadas.find((j) => j.numero === jornada)!.estado).toBe('cerrada');
 
-  // 5. «Máximos goleadores» y «Máximos asistentes» coinciden con la suma de los resúmenes (sin la tanda).
+  // 5. «Máximos goleadores» y «Máximos asistentes» coinciden con la suma de los resúmenes (sin la tanda ni los goles en propia) de los
+  // partidos que A ya puede ver: los pendientes de ver no cuentan para que no revelen el resultado (research R8).
   const goles = new Map<number, number>();
   const asistencias = new Map<number, number>();
-  for (const p of (await torneo(a)).jornadas.flatMap((j) => j.partidos)) {
-    if (p.estado !== 'finalizado' || !p.partidoId) continue;
-    const r = (await (await a.request.get(`/api/partidos/${p.partidoId}`)).json()) as { eventos: { tipo: string; jugadores: { rol: string; jugadorId: number }[] }[] };
-    for (const e of r.eventos.filter((x) => x.tipo === 'gol')) {
+  const vistaA = await torneo(a);
+  for (const p of vistaA.jornadas.flatMap((j) => j.partidos)) {
+    if (p.estado !== 'finalizado' || !p.partidoId || vistaA.pendientesDeVer.includes(p.partidoId)) continue;
+    const r = (await (await a.request.get(`/api/partidos/${p.partidoId}`)).json()) as {
+      eventos: { tipo: string; datos?: { enPropia?: boolean }; jugadores: { rol: string; jugadorId: number }[] }[];
+    };
+    // Un gol en propia no cuenta para la tabla de goleadores ni de asistentes.
+    for (const e of r.eventos.filter((x) => x.tipo === 'gol' && x.datos?.enPropia !== true)) {
       for (const x of e.jugadores) {
         const m = x.rol === 'autor' ? goles : x.rol === 'asistente' ? asistencias : null;
         m?.set(x.jugadorId, (m.get(x.jugadorId) ?? 0) + 1);

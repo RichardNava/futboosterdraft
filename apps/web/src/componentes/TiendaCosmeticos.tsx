@@ -14,6 +14,7 @@ import { useSaldo } from '../estado/saldo';
 import { SobreArte } from './arte/SobreArte';
 import { urlEscudo } from './chapa';
 import { Dialogo } from './Dialogo';
+import { Icono } from './Icono';
 import { DialogoPagoPrueba, formatoEuros, formatoFragmentos } from './DialogoPagoPrueba';
 
 type Compra =
@@ -45,7 +46,15 @@ function Miniatura({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
   );
 }
 
-export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
+interface Props {
+  invitado?: boolean;
+  /** Tipos que se muestran (la subsección elegida de la tienda); por defecto, escudos y sobres. */
+  tipos?: readonly ('escudo' | 'sobre')[];
+  /** En «Todo»: los sueltos se desplazan dentro de su rejilla para no alargar la página. */
+  compacta?: boolean;
+}
+
+export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre'], compacta = false }: Props) {
   const { catalogo, error } = useCatalogoCosmeticos();
   const [compra, setCompra] = useState<Compra | null>(null);
   const [pedirCuenta, setPedirCuenta] = useState(false);
@@ -70,18 +79,27 @@ export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
 
   return (
     <div className="tienda-cosmeticos">
-      {BLOQUES.map((b) => {
+      {BLOQUES.filter((b) => tipos.includes(b.tipo)).map((b) => {
         const lista = catalogo.cosmeticos.filter((c) => c.tipo === b.tipo && !c.gratuito);
         const packs = catalogo.packs.filter((p) => p.tipo === b.tipo);
+        const tuyos = lista.filter((c) => c.poseido).length;
         return (
           <section key={b.id} id={b.id} className="tienda-bloque" aria-labelledby={`titulo-${b.id}`}>
-            <h2 id={`titulo-${b.id}`}>{b.titulo}</h2>
+            <header className="tienda-bloque-cabecera">
+              <h3 id={`titulo-${b.id}`}>{b.titulo}</h3>
+              {!invitado && (
+                <span className="nota">
+                  Tienes {tuyos} de {lista.length}
+                </span>
+              )}
+            </header>
+            <h4 className="tienda-bloque-subtitulo">Packs: 5 a mejor precio</h4>
             <ul className="tienda-packs" aria-label={`Packs de ${b.titulo.toLowerCase()}`}>
               {packs.map((p) => {
                 const suelto = p.cosmeticos.reduce((t, id) => t + (porId.get(id)?.precioCentimos ?? 0), 0);
                 return (
                   <li key={p.id} className="panel tienda-pack" data-pack={p.id}>
-                    <h3>{p.nombre}</h3>
+                    <h5>{p.nombre}</h5>
                     <span className="pack-miniaturas">
                       {p.cosmeticos.map((id) => (
                         <Miniatura key={id} id={id} tipo={b.tipo} />
@@ -108,8 +126,9 @@ export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
                 );
               })}
             </ul>
+            <h4 className="tienda-bloque-subtitulo">Sueltos</h4>
             <ul
-              className="rejilla-tienda-cosmeticos tienda-bloque-desplazable"
+              className={`rejilla-tienda-cosmeticos${compacta ? ' tienda-bloque-desplazable' : ''}`}
               aria-label={`${b.titulo} sueltos`}
             >
               {lista.map((c) => (
@@ -122,9 +141,24 @@ export function TiendaCosmeticos({ invitado = false }: { invitado?: boolean }) {
                     <span className="acciones">
                       <button
                         type="button"
-                        className="secundario"
-                        onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'fragmentos' })}
+                        className="secundario precio-fragmentos"
+                        // Sin saldo suficiente no se abre el pago: se dice cuánto falta (los invitados ven la invitación).
+                        aria-disabled={(!invitado && saldo < c.precioFragmentos!) || undefined}
+                        title={
+                          !invitado && saldo < c.precioFragmentos!
+                            ? `Te faltan ${formatoFragmentos.format(c.precioFragmentos! - saldo)} fragmentos`
+                            : undefined
+                        }
+                        onClick={() =>
+                          !invitado && saldo < c.precioFragmentos!
+                            ? mostrarAviso(
+                                'advertencia',
+                                `Te faltan ${formatoFragmentos.format(c.precioFragmentos! - saldo)} fragmentos para ${c.nombre}`,
+                              )
+                            : abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'fragmentos' })
+                        }
                       >
+                        <Icono nombre="cristal" tamano={14} />
                         {formatoFragmentos.format(c.precioFragmentos!)} fragmentos
                       </button>
                       <button

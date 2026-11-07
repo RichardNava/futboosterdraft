@@ -1,13 +1,16 @@
 /**
  * Tienda (spec 006, US4 y US5; FR-025 a FR-031; contracts/ui.md «Tienda»): el sobre de 8 cartas nuevas y las
  * colecciones de pago. Spec 011 (FR-002): las cartas solo se pagan con fragmentos y ya no se venden fragmentos.
- * Spec 011 (US3): escudos y sobres cosméticos en su columna; un invitado solo ve esa columna (US3-3).
+ * Spec 011 (US3): escudos y sobres cosméticos; un invitado ve el catálogo y, al comprar, se le pide cuenta (US3-3).
+ * Retoques de la spec 011: secciones (Todo, Cosméticos, Colecciones, Funcionalidades y Modos de juego) con sus
+ * subsecciones, en la URL para poder enlazarlas; lo que aún no se vende se ve como «Próximamente».
  * Tras un sobre, la apertura del draft y la revelación de las 8 cartas; tras una colección, su confirmación.
  */
 import { NIVELES } from '@fbd/domain';
 import type { ProductoColeccion, RespuestaTienda, ResumenCompra } from '@fbd/protocol';
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation, useSearchParams } from 'react-router';
+import { Icono, type NombreIcono } from '../componentes/Icono';
 import { comprarColeccion, comprarSobre, ErrorApi, obtenerTienda } from '../api/cliente';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { CartaJugador } from '../componentes/CartaJugador';
@@ -18,7 +21,7 @@ import { EstadoVacio } from '../componentes/EstadoVacio';
 import { SobreArte } from '../componentes/arte/SobreArte';
 import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { TiendaCosmeticos } from '../componentes/TiendaCosmeticos';
-import { sobreSiguiente } from '../estado/aspecto';
+import { prepararSobre } from '../estado/aspecto';
 import { useSesion } from '../estado/sesion';
 import { useEscalaRejilla } from '../componentes/useEscalaRejilla';
 import { mostrarAviso } from '../estado/avisos';
@@ -31,26 +34,260 @@ type Resultado =
   | { tipo: 'sobre'; resumen: ResumenCompra; abierto: boolean; diseno: string }
   | { tipo: 'coleccion'; nombre: string; resumen: ResumenCompra };
 
+/** Secciones de la tienda y sus subsecciones (retoques de la spec 011). «Todo» las muestra todas, sin subsecciones. */
+export type SeccionTienda = 'todo' | 'cosmeticos' | 'colecciones' | 'funcionalidades' | 'modos';
+
+interface DefinicionSeccion {
+  id: SeccionTienda;
+  texto: string;
+  icono: NombreIcono;
+  subsecciones: { id: string; texto: string }[];
+}
+
+const SECCIONES: DefinicionSeccion[] = [
+  { id: 'todo', texto: 'Todo', icono: 'tienda', subsecciones: [] },
+  {
+    id: 'cosmeticos',
+    texto: 'Cosméticos',
+    icono: 'escudo',
+    subsecciones: [
+      { id: 'escudos', texto: 'Escudos' },
+      { id: 'sobres', texto: 'Sobres' },
+    ],
+  },
+  {
+    id: 'colecciones',
+    texto: 'Colecciones',
+    icono: 'cartas',
+    subsecciones: [
+      { id: 'sobre', texto: 'Sobre de cartas' },
+      { id: 'colecciones', texto: 'Colecciones de jugadores' },
+    ],
+  },
+  {
+    id: 'funcionalidades',
+    texto: 'Funcionalidades',
+    icono: 'rayo',
+    subsecciones: [{ id: 'premium', texto: 'Premium' }],
+  },
+  { id: 'modos', texto: 'Modos de juego', icono: 'duelo', subsecciones: [] },
+];
+
+/** Los enlaces antiguos (`/tienda#escudos`, `#sobres`) llevan a su subsección. */
+const POR_ANCLA: Record<string, [SeccionTienda, string]> = {
+  escudos: ['cosmeticos', 'escudos'],
+  sobres: ['cosmeticos', 'sobres'],
+};
+
+interface Navegacion {
+  seccion: SeccionTienda;
+  sub: string | null;
+  ruta: (s: SeccionTienda, sub?: string) => string;
+}
+
+/** Sección y subsección de la URL (`?seccion=cosmeticos&sub=escudos`), con las anclas antiguas como respaldo. */
+function useSeccion(): Navegacion {
+  const [params] = useSearchParams();
+  const { hash } = useLocation();
+  const ancla = POR_ANCLA[hash.slice(1)];
+  const pedida = params.get('seccion');
+  const def =
+    SECCIONES.find((s) => s.id === pedida) ?? SECCIONES.find((s) => s.id === ancla?.[0]) ?? SECCIONES[0]!;
+  const pedidaSub = params.get('sub') ?? (ancla && !pedida ? ancla[1] : null);
+  const sub = def.subsecciones.some((s) => s.id === pedidaSub) ? pedidaSub : null;
+  const ruta = (s: SeccionTienda, subseccion?: string) =>
+    s === 'todo' ? '/tienda' : `/tienda?seccion=${s}${subseccion ? `&sub=${subseccion}` : ''}`;
+  return { seccion: def.id, sub, ruta };
+}
+
+/** Navegación de la tienda: secciones como pestañas y, debajo, las subsecciones de la elegida como fichas. */
+function NavegacionTienda({ seccion, sub, ruta }: Navegacion) {
+  const actual = SECCIONES.find((s) => s.id === seccion)!;
+  return (
+    <nav className="tienda-navegacion" aria-label="Secciones de la tienda">
+      <ul className="tienda-secciones">
+        {SECCIONES.map((s) => (
+          <li key={s.id}>
+            <Link
+              to={ruta(s.id)}
+              aria-current={s.id === seccion ? 'page' : undefined}
+              className="tienda-seccion"
+            >
+              <Icono nombre={s.icono} tamano={18} />
+              {s.texto}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {actual.subsecciones.length > 0 && (
+        <ul className="tienda-subsecciones" aria-label={`Subsecciones de ${actual.texto}`}>
+          <li>
+            <Link
+              to={ruta(seccion)}
+              aria-current={sub === null ? 'true' : undefined}
+              className="ficha-filtro"
+            >
+              Todo
+            </Link>
+          </li>
+          {actual.subsecciones.map((s) => (
+            <li key={s.id}>
+              <Link
+                to={ruta(seccion, s.id)}
+                aria-current={sub === s.id ? 'true' : undefined}
+                className="ficha-filtro"
+              >
+                {s.texto}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </nav>
+  );
+}
+
+/** Lo que aún no se vende: un adelanto, sin botones que no lleven a nada. */
+function Proximamente({ titulo, texto, icono }: { titulo: string; texto: string; icono: NombreIcono }) {
+  return (
+    <article className="panel tienda-proximamente">
+      <span className="tienda-proximamente-icono">
+        <Icono nombre={icono} tamano={28} />
+      </span>
+      <div>
+        <h3>{titulo}</h3>
+        <p className="nota">{texto}</p>
+      </div>
+      <span className="insignia-proximamente">Próximamente</span>
+    </article>
+  );
+}
+
+interface PropsCabecera {
+  id: SeccionTienda;
+  titulo: string;
+  descripcion: string;
+  enTodo: boolean;
+  ruta: Navegacion['ruta'];
+}
+
+/** Cabecera de una sección con su descripción; en «Todo», con el enlace para verla sola. */
+function CabeceraSeccion({ id, titulo, descripcion, enTodo, ruta }: PropsCabecera) {
+  return (
+    <header className="tienda-seccion-cabecera">
+      <div>
+        <h2 id={`titulo-${id}`}>{titulo}</h2>
+        <p className="nota">{descripcion}</p>
+      </div>
+      {enTodo && (
+        <Link className="enlace-seccion" to={ruta(id)}>
+          Ver la sección
+          <Icono nombre="flecha" tamano={16} />
+        </Link>
+      )}
+    </header>
+  );
+}
+
+/** Funcionalidades y modos de juego: aún sin productos (se ven como «Próximamente»). */
+function SeccionesFuturas({ seccion, ruta }: Navegacion) {
+  const enTodo = seccion === 'todo';
+  return (
+    <>
+      {(enTodo || seccion === 'funcionalidades') && (
+        <section className="tienda-seccion-bloque" aria-labelledby="titulo-funcionalidades">
+          <CabeceraSeccion
+            id="funcionalidades"
+            titulo="Funcionalidades"
+            descripcion="Ventajas para tu cuenta."
+            enTodo={enTodo}
+            ruta={ruta}
+          />
+          <Proximamente
+            titulo="Premium"
+            icono="rayo"
+            texto="Funciones extra para gestionar tus partidas y tu colección. Muy pronto, aquí."
+          />
+        </section>
+      )}
+      {(enTodo || seccion === 'modos') && (
+        <section className="tienda-seccion-bloque" aria-labelledby="titulo-modos">
+          <CabeceraSeccion
+            id="modos"
+            titulo="Modos de juego"
+            descripcion="Nuevas formas de jugar con tus cartas."
+            enTodo={enTodo}
+            ruta={ruta}
+          />
+          <Proximamente
+            titulo="Nuevos modos"
+            icono="duelo"
+            texto="Modos de juego que podrás desbloquear para tus partidas. Muy pronto, aquí."
+          />
+        </section>
+      )}
+    </>
+  );
+}
+
+/** Cosméticos de la sección elegida: en «Todo» o sin subsección, escudos y sobres; si no, solo la subsección. */
+function SeccionCosmeticos({ seccion, sub, ruta, invitado }: Navegacion & { invitado: boolean }) {
+  if (seccion !== 'todo' && seccion !== 'cosmeticos') return null;
+  const tipos: ('escudo' | 'sobre')[] =
+    sub === 'escudos' ? ['escudo'] : sub === 'sobres' ? ['sobre'] : ['escudo', 'sobre'];
+  return (
+    <section className="tienda-seccion-bloque" aria-labelledby="titulo-cosmeticos">
+      <CabeceraSeccion
+        id="cosmeticos"
+        titulo="Cosméticos"
+        descripcion="Escudos para tu equipo y diseños para tus sobres. Se eligen en «Mi perfil»."
+        enTodo={seccion === 'todo'}
+        ruta={ruta}
+      />
+      <TiendaCosmeticos invitado={invitado} tipos={tipos} compacta={seccion === 'todo'} />
+    </section>
+  );
+}
+
 export function Tienda() {
   const invitado = useSesion((s) => s.usuario?.tipo !== 'registrado');
+  const navegacion = useSeccion();
   if (invitado) {
+    const { seccion, ruta } = navegacion;
     return (
       <main className="pantalla tienda">
         <header className="cabecera-pantalla tienda-cabecera">
           <h1>Tienda</h1>
         </header>
-        <p className="nota">
-          Las cartas son para usuarios registrados. <Link to="/?acceso=registro">Crea tu cuenta</Link> para
-          comprar escudos y sobres.
-        </p>
-        <TiendaCosmeticos invitado />
+        <NavegacionTienda {...navegacion} />
+        {(seccion === 'todo' || seccion === 'colecciones') && (
+          <section className="tienda-seccion-bloque" aria-labelledby="titulo-colecciones">
+            <CabeceraSeccion
+              id="colecciones"
+              titulo="Colecciones"
+              descripcion="Sobres de cartas y colecciones de jugadores."
+              enTodo={seccion === 'todo'}
+              ruta={ruta}
+            />
+            <EstadoVacio
+              mensaje="Las cartas son para cuentas registradas: crea la tuya para comprar sobres, colecciones y cosméticos."
+              accion={
+                <Link className="boton secundario" to="/?acceso=registro">
+                  Crear cuenta
+                </Link>
+              }
+            />
+          </section>
+        )}
+        <SeccionCosmeticos {...navegacion} invitado />
+        <SeccionesFuturas {...navegacion} />
       </main>
     );
   }
-  return <TiendaRegistrado />;
+  return <TiendaRegistrado navegacion={navegacion} />;
 }
 
-function TiendaRegistrado() {
+function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
   const [tienda, setTienda] = useState<RespuestaTienda | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pago, setPago] = useState<Pago | null>(null);
@@ -71,12 +308,6 @@ function TiendaRegistrado() {
   useEffect(() => {
     if (tienda) useSaldo.setState({ saldo: tienda.saldo });
   }, [tienda?.saldo]);
-  // Los enlaces «Ver en la tienda» llevan a un bloque (`#escudos`, `#sobres`): se baja en cuanto está cargada.
-  const { hash } = useLocation();
-  const cargada = tienda !== null;
-  useEffect(() => {
-    if (cargada && hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' });
-  }, [cargada, hash]);
 
   if (error)
     return <EstadoVacio mensaje={error} accion={<button onClick={() => void cargar()}>Reintentar</button>} />;
@@ -96,7 +327,7 @@ function TiendaRegistrado() {
       idSobre.current = null;
       trasComprar(r);
       // Cada compra de sobre es una apertura: avanza el carrusel (spec 011, US2); si falla, el original.
-      setResultado({ tipo: 'sobre', resumen: r, abierto: false, diseno: await sobreSiguiente() });
+      setResultado({ tipo: 'sobre', resumen: r, abierto: false, diseno: await prepararSobre() });
     } catch (e) {
       if (e instanceof ErrorApi && e.estado < 500) idSobre.current = null;
       mostrarAviso(
@@ -108,60 +339,74 @@ function TiendaRegistrado() {
     }
   };
 
+  const { seccion, sub, ruta } = navegacion;
   const { sobre } = tienda;
   const faltan = sobre.faltan ?? 0;
+  const verColecciones = seccion === 'todo' || seccion === 'colecciones';
+  const verSub = (s: string) => seccion === 'todo' || sub === null || sub === s;
 
   return (
     <main className="pantalla tienda">
       <header className="cabecera-pantalla tienda-cabecera">
         <h1>Tienda</h1>
         <p className="tienda-saldo">
+          <Icono nombre="cristal" tamano={20} />
           <strong>{formatoFragmentos.format(tienda.saldo)}</strong> fragmentos
         </p>
         <Link className="boton secundario" to="/coleccion">
           Colección
         </Link>
       </header>
+      <NavegacionTienda {...navegacion} />
 
-      <div className="tienda-columnas">
-        <div className="tienda-cartas">
-          <section className="panel tienda-producto tienda-sobre" aria-labelledby="titulo-sobre">
-            <SobreDecorativo className="tienda-sobre-arte" />
-            <div>
-              <h2 id="titulo-sobre">Sobre de 8 cartas</h2>
-              <p>
-                8 cartas que aún no tienes de las colecciones de pago, con el reparto de un sobre del draft.
-              </p>
-              {!sobre.disponible ? (
-                <p className="nota" role="status">
-                  No disponible: {sobre.motivoNoDisponible}
-                </p>
-              ) : (
-                <div className="acciones">
-                  <button
-                    type="button"
-                    className="boton-principal"
-                    data-principal=""
-                    aria-disabled={faltan > 0 || comprandoSobre || undefined}
-                    aria-describedby={faltan > 0 ? 'faltan-sobre' : undefined}
-                    onClick={() => (faltan > 0 ? undefined : void sobreConFragmentos())}
-                  >
-                    Comprar por {formatoFragmentos.format(sobre.precioFragmentos)} fragmentos
-                  </button>
-                  {faltan > 0 && (
-                    <span id="faltan-sobre" className="motivo">
-                      Te faltan {formatoFragmentos.format(faltan)}
-                    </span>
+      {verColecciones && (
+        <section className="tienda-seccion-bloque" aria-labelledby="titulo-colecciones">
+          <CabeceraSeccion
+            id="colecciones"
+            titulo="Colecciones"
+            descripcion="Cartas nuevas para tu colección, siempre con fragmentos."
+            enTodo={seccion === 'todo'}
+            ruta={ruta}
+          />
+          <div className="tienda-colecciones-contenido">
+            {verSub('sobre') && (
+              <section className="panel tienda-producto tienda-sobre" aria-labelledby="titulo-sobre">
+                <SobreDecorativo className="tienda-sobre-arte" />
+                <div>
+                  <h3 id="titulo-sobre">Sobre de 8 cartas</h3>
+                  <p>
+                    8 cartas que aún no tienes de las colecciones de pago, con el reparto de un sobre del
+                    draft.
+                  </p>
+                  {!sobre.disponible ? (
+                    <p className="nota" role="status">
+                      No disponible: {sobre.motivoNoDisponible}
+                    </p>
+                  ) : (
+                    <div className="acciones">
+                      <button
+                        type="button"
+                        className="boton-principal"
+                        data-principal=""
+                        aria-disabled={faltan > 0 || comprandoSobre || undefined}
+                        aria-describedby={faltan > 0 ? 'faltan-sobre' : undefined}
+                        onClick={() => (faltan > 0 ? undefined : void sobreConFragmentos())}
+                      >
+                        Comprar por {formatoFragmentos.format(sobre.precioFragmentos)} fragmentos
+                      </button>
+                      {faltan > 0 && (
+                        <span id="faltan-sobre" className="motivo">
+                          Te faltan {formatoFragmentos.format(faltan)}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
-          </section>
+              </section>
+            )}
 
-          <section aria-labelledby="titulo-colecciones">
-            <h2 id="titulo-colecciones">Colecciones</h2>
-            <div className="tienda-colecciones">
-              {tienda.colecciones.map((c) => (
+            {verSub('colecciones') &&
+              tienda.colecciones.map((c) => (
                 <article
                   key={c.id}
                   className={c.adquirida ? 'panel tienda-producto adquirida' : 'panel tienda-producto'}
@@ -182,9 +427,16 @@ function TiendaRegistrado() {
                       </li>
                     ))}
                   </ul>
-                  <p>
-                    Tienes {c.poseidas} de {c.numCartas}
-                  </p>
+                  <div className="progreso-coleccion">
+                    <span>
+                      Tienes {c.poseidas} de {c.numCartas}
+                    </span>
+                    <progress
+                      max={c.numCartas}
+                      value={c.poseidas}
+                      aria-label={`Cartas de ${c.nombre} que tienes`}
+                    />
+                  </div>
                   {c.adquirida ? (
                     <p className="sello-adquirida pequeno">Adquirida</p>
                   ) : (
@@ -216,11 +468,19 @@ function TiendaRegistrado() {
                   )}
                 </article>
               ))}
-            </div>
-          </section>
-        </div>
-        <TiendaCosmeticos />
-      </div>
+            {seccion === 'colecciones' && sub === null && (
+              <Proximamente
+                titulo="Más tipos de colección"
+                icono="cartas"
+                texto="Colecciones temáticas y de temporada para completar con tus cartas."
+              />
+            )}
+          </div>
+        </section>
+      )}
+
+      <SeccionCosmeticos {...navegacion} invitado={false} />
+      <SeccionesFuturas {...navegacion} />
 
       {pago?.tipo === 'coleccion' && (
         <DialogoPagoPrueba

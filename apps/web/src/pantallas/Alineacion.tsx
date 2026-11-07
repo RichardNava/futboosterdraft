@@ -20,7 +20,15 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { CampoEquipo } from '../componentes/CampoEquipo';
-import { cambiarFormacion as cambiarFormacionCampo, colocacionDe, mover, RADIO_FICHA, soltar, type DestinoSoltar, type EstadoCampo } from '../componentes/campoEquipoEstado';
+import {
+  cambiarFormacion as cambiarFormacionCampo,
+  colocacionDe,
+  mover,
+  RADIO_FICHA,
+  soltar,
+  type DestinoSoltar,
+  type EstadoCampo,
+} from '../componentes/campoEquipoEstado';
 import { EditorDorsales } from '../componentes/EditorDorsales';
 import { EditorLanzadores } from '../componentes/EditorLanzadores';
 import type { CartaResumen } from '../componentes/CartaJugador';
@@ -79,11 +87,55 @@ const PESTANAS: { id: Pestana; texto: string }[] = [
   { id: 'lanzadores', texto: 'Lanzadores' },
 ];
 
+const CLAVE_DISTRIBUCION = 'fbd:formacion-distribucion';
+const PANTALLA_ANCHA = '(min-width: 1024px)';
+
+/**
+ * Distribución de la Formación (retoques de la spec 011): el campo en horizontal por defecto en pantallas anchas, o
+ * el vertical de siempre; la elección se recuerda en este navegador. En pantallas estrechas, siempre vertical.
+ */
+function useDistribucion() {
+  const [elegida, setElegida] = useState<'horizontal' | 'vertical'>(() => {
+    try {
+      return localStorage.getItem(CLAVE_DISTRIBUCION) === 'vertical' ? 'vertical' : 'horizontal';
+    } catch {
+      return 'horizontal';
+    }
+  });
+  const [ancha, setAncha] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia?.(PANTALLA_ANCHA).matches === true,
+  );
+  useEffect(() => {
+    const m = window.matchMedia?.(PANTALLA_ANCHA);
+    if (!m) return;
+    const alCambiar = () => setAncha(m.matches);
+    m.addEventListener('change', alCambiar);
+    return () => m.removeEventListener('change', alCambiar);
+  }, []);
+  const elegir = (d: 'horizontal' | 'vertical') => {
+    setElegida(d);
+    try {
+      localStorage.setItem(CLAVE_DISTRIBUCION, d);
+    } catch {
+      // Sin almacenamiento (modo privado): vale para esta visita.
+    }
+  };
+  return { orientacion: ancha ? elegida : ('vertical' as const), elegida, ancha, elegir };
+}
+
 /** Forma canónica de una alineación, para saber si hay cambios sin confirmar (sin depender del orden de claves). */
 function firma(a: AlineacionDominio | null): string {
   if (!a) return '';
   const ordenar = (v: unknown): unknown =>
-    Array.isArray(v) ? v.map(ordenar) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).sort(([x], [y]) => x.localeCompare(y)).map(([k, x]) => [k, ordenar(x)])) : v;
+    Array.isArray(v)
+      ? v.map(ordenar)
+      : v && typeof v === 'object'
+        ? Object.fromEntries(
+            Object.entries(v)
+              .sort(([x], [y]) => x.localeCompare(y))
+              .map(([k, x]) => [k, ordenar(x)]),
+          )
+        : v;
   return JSON.stringify(
     ordenar({
       ...a,
@@ -125,6 +177,7 @@ export function Alineacion() {
   /** Diálogo «Confirmar once» del modo duelos. */
   const [confirmandoOnce, setConfirmandoOnce] = useState(false);
   const [pestana, setPestana] = useState<Pestana>('alineacion');
+  const distribucion = useDistribucion();
 
   const aplicarDatos = useCallback((d: DatosEquipo) => {
     setDatos(d);
@@ -139,26 +192,51 @@ export function Alineacion() {
     api<DatosEquipo>(`/api/partidas/${partidaId}/alineacion`)
       .then(aplicarDatos)
       .catch((e: unknown) => {
-        if (e instanceof ErrorApi && e.codigo === 'DRAFT_EN_CURSO') navegar(`/partidas/${partidaId}/draft`, { replace: true });
-        else setMensaje({ tipo: 'error', texto: e instanceof Error ? e.message : 'No se pudo cargar la alineación' });
+        if (e instanceof ErrorApi && e.codigo === 'DRAFT_EN_CURSO')
+          navegar(`/partidas/${partidaId}/draft`, { replace: true });
+        else
+          setMensaje({
+            tipo: 'error',
+            texto: e instanceof Error ? e.message : 'No se pudo cargar la alineación',
+          });
       });
   }, [partidaId, aplicarDatos, navegar]);
 
   const porId = useMemo(() => new Map((datos?.plantilla ?? []).map((j) => [j.id, j])), [datos]);
   const bajas = useMemo(() => new Set(datos?.bajas ?? []), [datos]);
-  const detalleBaja = useMemo(() => new Map((datos?.bajasDetalle ?? []).map((b) => [b.jugadorId, b])), [datos]);
+  const detalleBaja = useMemo(
+    () => new Map((datos?.bajasDetalle ?? []).map((b) => [b.jugadorId, b])),
+    [datos],
+  );
   const posicionesDe = useCallback((id: number) => (porId.get(id)?.posicion ?? []) as Posicion[], [porId]);
-  const opcionesCampo = useMemo(() => ({ parametros: P, radioFicha: RADIO_FICHA, posicionesDe, bloqueados: bajas }), [posicionesDe, bajas]);
+  const opcionesCampo = useMemo(
+    () => ({ parametros: P, radioFicha: RADIO_FICHA, posicionesDe, bloqueados: bajas }),
+    [posicionesDe, bajas],
+  );
 
   const alineacionActual = useCallback((): AlineacionDominio | null => {
     if (!tactica || !lanzadores || !campo) return null;
-    const lista = FORMACIONES[campo.formacion].casillas.flatMap((c) => (campo.asignacion[c.id] !== undefined ? [{ casillaId: c.id, jugadorId: campo.asignacion[c.id]! }] : []));
-    const colocacion = lista.flatMap((t) => (campo.puntos[t.jugadorId] ? [{ jugadorId: t.jugadorId, ...campo.puntos[t.jugadorId]! }] : []));
-    return { formacion: campo.formacion, titulares: lista, suplentes: campo.banquillo, tactica, lanzadores, ...(colocacion.length ? { colocacion } : {}) };
+    const lista = FORMACIONES[campo.formacion].casillas.flatMap((c) =>
+      campo.asignacion[c.id] !== undefined ? [{ casillaId: c.id, jugadorId: campo.asignacion[c.id]! }] : [],
+    );
+    const colocacion = lista.flatMap((t) =>
+      campo.puntos[t.jugadorId] ? [{ jugadorId: t.jugadorId, ...campo.puntos[t.jugadorId]! }] : [],
+    );
+    return {
+      formacion: campo.formacion,
+      titulares: lista,
+      suplentes: campo.banquillo,
+      tactica,
+      lanzadores,
+      ...(colocacion.length ? { colocacion } : {}),
+    };
   }, [campo, tactica, lanzadores]);
 
   // Colocación calculada al instante en el cliente con el mismo dominio que el servidor (002/SC-016).
-  const resultadoColocacion = useMemo(() => (campo ? colocacionDe(campo, P, posicionesDe) : null), [campo, posicionesDe]);
+  const resultadoColocacion = useMemo(
+    () => (campo ? colocacionDe(campo, P, posicionesDe) : null),
+    [campo, posicionesDe],
+  );
   const titulares = campo?.asignacion ?? {};
 
   // Los lanzadores deben ser titulares: si alguno deja de serlo, se vuelven a proponer (FR-029a).
@@ -169,7 +247,8 @@ export function Alineacion() {
       [lanzadores.penaltis, lanzadores.faltas, lanzadores.corners].every((id) => enCampo.has(id)) &&
       lanzadores.tanda.every((id) => enCampo.has(id)) &&
       lanzadores.tanda.length === Math.min(5, enCampo.size);
-    if (!valido) setLanzadores(proponerLanzadores([...enCampo].map((id) => porId.get(id) as unknown as Jugador)));
+    if (!valido)
+      setLanzadores(proponerLanzadores([...enCampo].map((id) => porId.get(id) as unknown as Jugador)));
   }, [titulares, lanzadores, porId]);
 
   const cambiarFormacion = (f: FormacionId, confirmado = false) => {
@@ -192,7 +271,8 @@ export function Alineacion() {
       const n = soltar(c, jugadorId, destino, opcionesCampo);
       return duelos ? { ...n, puntos: {} } : n;
     });
-  const alMover = (jugadorId: number, dx: number, dy: number) => setCampo((c) => (c && !duelos ? mover(c, jugadorId, dx, dy, opcionesCampo) : c));
+  const alMover = (jugadorId: number, dx: number, dy: number) =>
+    setCampo((c) => (c && !duelos ? mover(c, jugadorId, dx, dy, opcionesCampo) : c));
 
   const confirmar = async () => {
     const a = alineacionActual();
@@ -210,14 +290,20 @@ export function Alineacion() {
   };
 
   const asignarDorsal = async (jugadorId: number, dorsal: number) => {
-    const r = await api<{ dorsales: Record<number, number> }>(`/api/partidas/${partidaId}/dorsales`, { metodo: 'PUT', cuerpo: { jugadorId, dorsal } });
+    const r = await api<{ dorsales: Record<number, number> }>(`/api/partidas/${partidaId}/dorsales`, {
+      metodo: 'PUT',
+      cuerpo: { jugadorId, dorsal },
+    });
     setDatos((d) => (d ? { ...d, dorsales: r.dorsales } : d));
     mostrarAviso('exito', 'Dorsal cambiado');
   };
 
   const guardarNombre = async () => {
     try {
-      const r = await api<{ nombreEquipo: string }>(`/api/partidas/${partidaId}/nombre-equipo`, { metodo: 'PUT', cuerpo: { nombre: nombreEquipo } });
+      const r = await api<{ nombreEquipo: string }>(`/api/partidas/${partidaId}/nombre-equipo`, {
+        metodo: 'PUT',
+        cuerpo: { nombre: nombreEquipo },
+      });
       setNombreEquipo(r.nombreEquipo);
       setDatos((d) => (d ? { ...d, nombreEquipo: r.nombreEquipo } : d));
       mostrarAviso('exito', 'Nombre guardado');
@@ -228,7 +314,10 @@ export function Alineacion() {
 
   const guardarEscudo = async (escudo: string) => {
     try {
-      const r = await api<{ escudo: string | null }>(`/api/partidas/${partidaId}/escudo`, { metodo: 'PUT', cuerpo: { escudo } });
+      const r = await api<{ escudo: string | null }>(`/api/partidas/${partidaId}/escudo`, {
+        metodo: 'PUT',
+        cuerpo: { escudo },
+      });
       setDatos((d) => (d ? { ...d, escudo: r.escudo } : d));
       mostrarAviso('exito', 'Escudo guardado');
     } catch (e) {
@@ -243,7 +332,10 @@ export function Alineacion() {
       setDatos((d) => (d ? { ...d, equipaciones } : d));
       mostrarAviso('exito', 'Equipaciones guardadas');
     } catch (e) {
-      setMensaje({ tipo: 'error', texto: e instanceof Error ? e.message : 'No se pudieron guardar las equipaciones' });
+      setMensaje({
+        tipo: 'error',
+        texto: e instanceof Error ? e.message : 'No se pudieron guardar las equipaciones',
+      });
     }
   };
 
@@ -260,20 +352,32 @@ export function Alineacion() {
   }
 
   const enCampo = new Set(Object.values(titulares).filter((x): x is number => x !== undefined));
-  const reserva = datos.plantilla.filter((j) => !enCampo.has(j.id) && !campo.banquillo.includes(j.id)).map((j) => j.id);
+  const reserva = datos.plantilla
+    .filter((j) => !enCampo.has(j.id) && !campo.banquillo.includes(j.id))
+    .map((j) => j.id);
   const porteroEnPorteria = titulares.POR !== undefined ? porId.get(titulares.POR!) : undefined;
   const titularesLista = [...enCampo].map((id) => porId.get(id)!).filter(Boolean);
   // Sin equipaciones guardadas, una por defecto.
-  const colores = equipaciones ? coloresDe(equipaciones.primera) : { principal: '#1f7a4d', secundario: '#ffffff' }; // lint-tokens: datos de equipación
+  const colores = equipaciones
+    ? coloresDe(equipaciones.primera)
+    : { principal: '#1f7a4d', secundario: '#ffffff' }; // lint-tokens: datos de equipación
   const nombre = (id: number) => {
     const j = porId.get(id);
     return j ? `${datos.dorsales?.[id] ? `#${datos.dorsales[id]} ` : ''}${nombreCartaDe(j)}` : String(id);
   };
-  const distintivos = new Map([...bajas].map((id) => [id, <DistintivoBaja key={id} baja={detalleBaja.get(id)} />]));
+  const distintivos = new Map(
+    [...bajas].map((id) => [id, <DistintivoBaja key={id} baja={detalleBaja.get(id)} />]),
+  );
 
   // Motivo por el que no se puede confirmar (FR-007): la primera regla de alineación que no se cumple.
   const actual = alineacionActual();
-  const errores = actual ? validarAlineacion(actual, datos.plantilla.map((j) => j.id), bajas) : [];
+  const errores = actual
+    ? validarAlineacion(
+        actual,
+        datos.plantilla.map((j) => j.id),
+        bajas,
+      )
+    : [];
   const motivo = errores[0]?.motivos?.[0] ?? errores[0]?.mensaje ?? null;
   const sinCambios = firma(datos.alineacion) === firma(actual);
   const confirmada = sinCambios && datos.confirmada;
@@ -281,7 +385,11 @@ export function Alineacion() {
   const principal: AccionBarra | null = duelos
     ? bloqueada
       ? null
-      : { etiqueta: 'Confirmar once', onClick: () => setConfirmandoOnce(true), motivoDesactivado: motivo ? `No se puede confirmar: ${motivo}` : null }
+      : {
+          etiqueta: 'Confirmar once',
+          onClick: () => setConfirmandoOnce(true),
+          motivoDesactivado: motivo ? `No se puede confirmar: ${motivo}` : null,
+        }
     : {
         etiqueta: 'Confirmar alineación',
         onClick: async () => {
@@ -299,9 +407,16 @@ export function Alineacion() {
   } Pasa el cursor (o mantén pulsado) sobre una ficha para ver su carta.`;
 
   // En el modo duelos no hay táctica ni lanzadores: el once se enfrenta casilla a casilla.
-  const pestanasVisibles = PESTANAS.filter((p) => !duelos || p.id === 'alineacion' || p.id === 'personalizacion');
+  const pestanasVisibles = PESTANAS.filter(
+    (p) => !duelos || p.id === 'alineacion' || p.id === 'personalizacion',
+  );
   const listaPestanas = (
-    <div className="pestanas" role="tablist" aria-label="Secciones de la formación" onKeyDown={alTeclaPestanas}>
+    <div
+      className="pestanas"
+      role="tablist"
+      aria-label="Secciones de la formación"
+      onKeyDown={alTeclaPestanas}
+    >
       {pestanasVisibles.map((p) => (
         <button
           key={p.id}
@@ -325,20 +440,28 @@ export function Alineacion() {
         <h2 id="titulo-nombre-equipo">Nombre del equipo</h2>
         {datos.nombreEditable ? (
           <div className="campo-nombre">
-            <input aria-labelledby="titulo-nombre-equipo" value={nombreEquipo} maxLength={40} onChange={(e) => setNombreEquipo(e.target.value)} />
+            <input
+              aria-labelledby="titulo-nombre-equipo"
+              value={nombreEquipo}
+              maxLength={40}
+              onChange={(e) => setNombreEquipo(e.target.value)}
+            />
             <button type="button" className="secundario" onClick={() => void guardarNombre()}>
               Guardar nombre
             </button>
           </div>
         ) : (
           <p>
-            <strong>{datos.nombreEquipo}</strong> <span className="nota">(ya no se puede cambiar: el torneo ha empezado)</span>
+            <strong>{datos.nombreEquipo}</strong>{' '}
+            <span className="nota">(ya no se puede cambiar: el torneo ha empezado)</span>
           </p>
         )}
       </section>
       <section aria-labelledby="titulo-escudo">
         <h2 id="titulo-escudo">Escudo</h2>
-        {!datos.nombreEditable && <p className="nota">El escudo ya no se puede cambiar: el torneo ha empezado.</p>}
+        {!datos.nombreEditable && (
+          <p className="nota">El escudo ya no se puede cambiar: el torneo ha empezado.</p>
+        )}
         <SelectorEscudo
           elegido={datos.escudo ?? null}
           onElegir={(id) => void guardarEscudo(id)}
@@ -347,20 +470,29 @@ export function Alineacion() {
           etiqueta="Escudo del equipo en esta partida"
         />
       </section>
-      {!duelos && (
-        <section aria-labelledby="titulo-dorsales">
-          <h2 id="titulo-dorsales">Dorsales</h2>
-          <EditorDorsales plantilla={datos.plantilla} dorsales={datos.dorsales} asignar={asignarDorsal} />
-        </section>
-      )}
       {equipaciones && !duelos && (
         <section aria-labelledby="titulo-equipaciones">
           <h2 id="titulo-equipaciones">Equipaciones</h2>
           <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
-          <button type="button" className="secundario" aria-disabled={equipacionesParecidas(equipaciones) || undefined} onClick={() => void guardarEquipaciones()}>
+          <button
+            type="button"
+            className="secundario"
+            aria-disabled={equipacionesParecidas(equipaciones) || undefined}
+            onClick={() => void guardarEquipaciones()}
+          >
             Guardar equipaciones
           </button>
         </section>
+      )}
+      {/* Los dorsales son un ajuste de puristas: al final y plegados, en una lista compacta (retoques de la spec 011). */}
+      {!duelos && (
+        <details className="seccion-plegable plegable-dorsales">
+          <summary>
+            <span>Dorsales</span>
+            <span className="nota">Cambia el número de cada jugador</span>
+          </summary>
+          <EditorDorsales plantilla={datos.plantilla} dorsales={datos.dorsales} asignar={asignarDorsal} />
+        </details>
       )}
     </div>
   );
@@ -371,7 +503,13 @@ export function Alineacion() {
         <PanelTactica tactica={tactica} onCambiar={setTactica} />
       </section>
     ) : pestana === 'lanzadores' ? (
-      <EditorLanzadores lanzadores={lanzadores} titulares={titularesLista} nombre={nombre} onCambiar={setLanzadores} conTitulo={false} />
+      <EditorLanzadores
+        lanzadores={lanzadores}
+        titulares={titularesLista}
+        nombre={nombre}
+        onCambiar={setLanzadores}
+        conTitulo={false}
+      />
     ) : pestana === 'personalizacion' ? (
       panelPersonalizacion
     ) : undefined;
@@ -411,7 +549,12 @@ export function Alineacion() {
       <header className="cabecera-fila">
         <div className="titulo-con-ayuda">
           <h1>Formación</h1>
-          <button type="button" className="boton-ayuda" popoverTarget="ayuda-formacion" aria-label="Cómo se usa la formación">
+          <button
+            type="button"
+            className="boton-ayuda"
+            popoverTarget="ayuda-formacion"
+            aria-label="Cómo se usa la formación"
+          >
             <Icono nombre="informacion" />
           </button>
           <div
@@ -419,7 +562,10 @@ export function Alineacion() {
             popover="auto"
             className="carta-descripcion"
             role="tooltip"
-            onToggle={(e) => e.newState === 'open' && colocarJunto(e.currentTarget, e.currentTarget.previousElementSibling ?? e.currentTarget)}
+            onToggle={(e) =>
+              e.newState === 'open' &&
+              colocarJunto(e.currentTarget, e.currentTarget.previousElementSibling ?? e.currentTarget)
+            }
           >
             {ayuda}
           </div>
@@ -427,9 +573,21 @@ export function Alineacion() {
         <Link className="boton secundario" to={`/partidas/${partidaId}/torneo`}>
           Torneo
         </Link>
+        {distribucion.ancha && (
+          <label className="interruptor interruptor-distribucion">
+            <input
+              type="checkbox"
+              role="switch"
+              checked={distribucion.elegida === 'horizontal'}
+              onChange={(e) => distribucion.elegir(e.target.checked ? 'horizontal' : 'vertical')}
+            />
+            Campo horizontal
+          </label>
+        )}
         {duelos ? (
           <p className="formacion-fija">
-            Formación <strong>{NOMBRE_FORMACION[campo.formacion]}</strong> <span className="nota">(la elige el anfitrión para todos)</span>
+            Formación <strong>{NOMBRE_FORMACION[campo.formacion]}</strong>{' '}
+            <span className="nota">(la elige el anfitrión para todos)</span>
             {bloqueada && <Insignia texto="Once confirmado" />}
           </p>
         ) : (
@@ -479,15 +637,24 @@ export function Alineacion() {
         sinBanquillo={duelos}
         bajoMedia={resumen}
         pestanas={{ lista: listaPestanas, activa: pestana, panel }}
+        orientacion={distribucion.orientacion}
         onSoltar={alSoltar}
         onMover={alMover}
       />
 
       {formacionPendiente && (
-        <Dialogo rol="alertdialog" etiquetadoPor="titulo-cambio-formacion" alEscape={() => setFormacionPendiente(null)}>
+        <Dialogo
+          rol="alertdialog"
+          etiquetadoPor="titulo-cambio-formacion"
+          alEscape={() => setFormacionPendiente(null)}
+        >
           <p id="titulo-cambio-formacion">Se perderá la colocación personalizada. ¿Cambiar de formación?</p>
           <div className="acciones">
-            <button type="button" className="secundario" onClick={() => cambiarFormacion(formacionPendiente, true)}>
+            <button
+              type="button"
+              className="secundario"
+              onClick={() => cambiarFormacion(formacionPendiente, true)}
+            >
               Cambiar
             </button>
             <button type="button" className="texto" onClick={() => setFormacionPendiente(null)}>
@@ -497,7 +664,11 @@ export function Alineacion() {
         </Dialogo>
       )}
       {confirmandoOnce && (
-        <Dialogo rol="alertdialog" etiquetadoPor="titulo-confirmar-once" alEscape={() => setConfirmandoOnce(false)}>
+        <Dialogo
+          rol="alertdialog"
+          etiquetadoPor="titulo-confirmar-once"
+          alEscape={() => setConfirmandoOnce(false)}
+        >
           <p id="titulo-confirmar-once">Este será tu once para todo el torneo. No podrás cambiarlo.</p>
           <div className="acciones">
             <button

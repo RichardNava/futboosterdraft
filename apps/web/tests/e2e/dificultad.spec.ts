@@ -2,12 +2,12 @@ import { expect, test } from '@playwright/test';
 
 /** H14 de la validación (spec 003, FR-038a): dificultad de la partida al crearla. */
 
-test('«Nueva partida» ofrece Fácil, Normal y Difícil, con Normal preseleccionada; la sala muestra la elegida', async ({ page }) => {
+test('«Nueva partida» ofrece Fácil, Normal, Difícil y Extrema, con Normal preseleccionada; la sala muestra la elegida', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Jugar como invitado' }).click();
   await expect(page.getByRole('heading', { name: 'Nueva partida' })).toBeVisible();
   const grupo = page.getByRole('group', { name: 'Dificultad' });
-  await expect(grupo.getByRole('radio')).toHaveCount(3);
+  await expect(grupo.getByRole('radio')).toHaveCount(4);
   await expect(grupo.getByRole('radio', { name: /^Normal/ })).toBeChecked();
   await grupo.getByRole('radio', { name: /^Difícil/ }).check();
   await page.getByRole('button', { name: 'Crear partida' }).click();

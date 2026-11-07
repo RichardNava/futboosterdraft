@@ -269,6 +269,28 @@ ambos modos y comprobar que el resultado es idéntico.
 - **FR-022**: El catálogo de cosméticos DEBE admitir nuevos tipos de cosmético (p. ej. marcos o reversos de carta)
   sin rediseñarse (ver [monetizacion.md](monetizacion.md)).
 
+#### Retoques tras la prueba manual (2026-11-07)
+
+- **FR-023**: La tienda DEBE organizarse en secciones (Todo, Cosméticos, Colecciones, Funcionalidades y Modos de
+  juego) con subsecciones (Cosméticos: Escudos y Sobres; Colecciones: Sobre de cartas y Colecciones de jugadores;
+  Funcionalidades: Premium). «Todo» las muestra todas sin subsecciones. La sección y la subsección van en la URL
+  (los enlaces `/tienda#escudos` y `#sobres` siguen llevando a su subsección). Lo que aún no se vende se muestra como
+  «Próximamente», sin botones de compra. Cada bloque informa de lo que ya se tiene («Tienes 3 de 20», progreso de
+  cada colección) y un precio en fragmentos sin saldo suficiente dice cuánto falta en lugar de abrir el pago.
+- **FR-024**: En Formación, en pantallas de 1024 px o más, el campo DEBE poder verse en horizontal (por defecto), con
+  la portería propia a la izquierda, la media y el resumen de la colocación sobre el lateral y el lateral a la altura
+  del campo; un interruptor «Campo horizontal» vuelve a la distribución vertical y la elección se recuerda en el
+  navegador. En pantallas estrechas, siempre vertical.
+- **FR-025**: Las pestañas del lateral de Formación DEBEN quedar siempre visibles arriba aunque su panel se desplace.
+- **FR-026**: Los dorsales DEBEN estar al final de «Personalización», plegados, en una lista compacta (una fila por
+  jugador con el número editable en el sitio, el nombre de la carta y su demarcación, en un orden fijo por
+  demarcación); aceptar y descartar solo aparecen mientras se edita. Sustituye a la rejilla de la spec 004 (FR-057).
+- **FR-027**: La apertura de un sobre NO DEBE empezar hasta tener el diseño que toca y su imagen descargada (como mucho
+  1,5 s; si no, el sobre original), ni empezar con el diseño de la apertura anterior: nada de cambios de sobre durante
+  la animación.
+- **FR-028**: El escudo DEBE ser protagonista en el marcador y el resultado (hasta 96 px según el ancho, con la imagen
+  de 256 px) y verse mayor en la franja del 2D (40 px) y en el resumen de acciones (24 px).
+
 ### Key Entities
 
 - **Cosmético**: identificador, tipo (escudo o diseño de sobre), nombre visible, gratuito o de pago, precio en

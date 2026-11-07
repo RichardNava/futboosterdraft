@@ -20,17 +20,20 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
   const datos = (await (await page.request.get(`/api/partidas/${partidaId}/alineacion`)).json()) as { dorsales: Record<string, number>; plantilla: Carta[] };
   expect(Object.values(datos.dorsales).sort((a, b) => a - b)).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
   const conDorsal = (n: number) => datos.plantilla.find((j) => datos.dorsales[j.id] === n)!;
-  const fila = (j: Carta) => page.locator('.rejilla-dorsales li').filter({ hasText: `${j.nombre} ${j.nombreCarta}` });
+  const fila = (j: Carta) => page.locator(`.lista-dorsales li[data-jugador="${j.id}"]`);
+  const numero = (j: Carta) => fila(j).locator('.dorsal-campo');
   const editar = async (j: Carta, n: number) => {
-    await page.getByLabel(`Nuevo dorsal de ${j.nombre} ${j.apellidos}`).fill(String(n));
+    await numero(j).fill(String(n));
     await fila(j).getByRole('button', { name: /^Aceptar el dorsal/ }).click();
   };
+  // Los dorsales están al final de «Personalización», plegados (retoques de la spec 011).
   await page.getByRole('tab', { name: 'Personalización' }).click();
+  await page.locator('.plegable-dorsales > summary').click();
 
   // 2. El 33 al que lleva el 14: el 14 queda libre, sin preguntar.
   const catorce = conDorsal(14);
   await editar(catorce, 33);
-  await expect(fila(catorce).locator('.dorsal-actual')).toHaveText('33');
+  await expect(numero(catorce)).toHaveValue('33');
 
   // 3. El 2 a otro jugador: aviso, se confirma con un clic y el que lo tenía queda «Sin dorsal».
   const dos = conDorsal(2);
@@ -39,8 +42,9 @@ test('dorsales del 1 al 24, reasignación con aviso y asignación automática al
   const aviso = page.getByRole('alert').filter({ hasText: `El 2 lo lleva ${dos.nombreCarta}: se quedará sin dorsal` });
   await expect(aviso).toBeVisible();
   await aviso.getByRole('button', { name: 'Confirmar' }).click();
-  await expect(fila(otro).locator('.dorsal-actual')).toHaveText('2');
-  await expect(fila(dos)).toContainText('Sin dorsal');
+  await expect(numero(otro)).toHaveValue('2');
+  await expect(numero(dos)).toHaveValue('');
+  await expect(numero(dos)).toHaveAccessibleName(/sin dorsal/);
 
   // 4. Convocado (el del 2 es titular) y al empezar (desde la preparación del torneo): el libre más bajo (el 14) y un aviso.
   await page.goto(`/partidas/${partidaId}/torneo`);

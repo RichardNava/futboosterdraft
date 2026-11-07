@@ -5,6 +5,7 @@
 import type { Aspecto, CuerpoAspecto } from '@fbd/protocol';
 import { create } from 'zustand';
 import { api } from '../api/cliente';
+import { urlSobre } from '../componentes/arte/SobreArte';
 import { useSesion } from './sesion';
 
 interface EstadoAspecto {
@@ -50,4 +51,26 @@ export async function sobreSiguiente(): Promise<string> {
   } catch {
     return 'sobre-original';
   }
+}
+
+/** Espera máxima a la imagen del sobre antes de empezar la apertura; si tarda más, se abre el original. */
+const ESPERA_IMAGEN_MS = 1500;
+
+/**
+ * Siguiente diseño con su imagen ya descargada y decodificada: la apertura no empieza con el sobre original ni con
+ * un hueco que luego cambia (el «pestañeo» del carrusel).
+ */
+export async function prepararSobre(): Promise<string> {
+  const diseno = await sobreSiguiente();
+  if (diseno === 'sobre-original' || typeof Image === 'undefined') return diseno;
+  const img = new Image();
+  img.src = urlSobre(diseno);
+  const cargada = img.decode().then(
+    () => diseno,
+    () => 'sobre-original',
+  );
+  return Promise.race([
+    cargada,
+    new Promise<string>((r) => setTimeout(() => r('sobre-original'), ESPERA_IMAGEN_MS)),
+  ]);
 }

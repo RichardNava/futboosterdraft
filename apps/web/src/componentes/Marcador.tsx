@@ -28,12 +28,25 @@ export interface MarcadorGoles {
  * Chapa del equipo: su escudo (spec 011, contracts/ui.md §1) o, sin él o si la imagen falla, el círculo del color de
  * la equipación.
  */
-export function Chapa({ color, escudo, nombre, lado }: { color?: string; escudo?: string | null; nombre?: string; lado?: Lado }) {
+export function Chapa({
+  color,
+  escudo,
+  nombre,
+  lado,
+  grande = false,
+}: {
+  color?: string;
+  escudo?: string | null;
+  nombre?: string;
+  lado?: Lado;
+  /** Escudo protagonista (marcador y resultado): la imagen de 256 px para que no se vea borrosa. */
+  grande?: boolean;
+}) {
   const [fallo, setFallo] = useState<string | null>(null);
   if (escudo && fallo !== escudo) {
     return (
       <img
-        src={urlEscudo(escudo)}
+        src={urlEscudo(escudo, grande ? 256 : 64)}
         alt={nombre ?? ''}
         className="chapa chapa-escudo"
         data-testid={lado ? `escudo-${lado}` : undefined}
@@ -105,7 +118,7 @@ export function Marcador({ local, visitante, marcador, fase, testIdGoles, golead
   return (
     <header className="marcador" aria-live="polite">
       <div className="equipo-marcador" style={{ '--color-equipo': local.color } as CSSProperties}>
-        <Chapa {...local} lado="local" />
+        <Chapa {...local} lado="local" grande />
         <div className="equipo-marcador-texto">
           <NombreRecortado texto={local.nombre} como="strong" />
           {goleadores && <ListaGoleadores goleadores={goleadores.local} etiqueta={`Goles de ${local.nombre}`} />}
@@ -127,7 +140,7 @@ export function Marcador({ local, visitante, marcador, fase, testIdGoles, golead
           <NombreRecortado texto={visitante.nombre} como="strong" />
           {goleadores && <ListaGoleadores goleadores={goleadores.visitante} etiqueta={`Goles de ${visitante.nombre}`} />}
         </div>
-        <Chapa {...visitante} lado="visitante" />
+        <Chapa {...visitante} lado="visitante" grande />
       </div>
     </header>
   );

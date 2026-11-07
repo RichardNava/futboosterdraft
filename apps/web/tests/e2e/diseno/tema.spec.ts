@@ -30,7 +30,9 @@ async function revisarSuperficies(page: Page, pantalla: string) {
       if (!el.matches('.boton-principal') && luminancia(estilo.backgroundColor) > 0.5) fallos.push(`${describir(el)}: fondo claro ${estilo.backgroundColor}`);
       const radio = estilo.borderTopLeftRadius;
       const esPestana = el.matches('.pestanas > *, .segmentado > *');
-      if (!esPestana && !radios.includes(radio)) fallos.push(`${describir(el)}: radio ${radio}`);
+      // El botón de ayuda de la Formación es un icono redondo a propósito.
+      const esRedondo = el.matches('.boton-ayuda');
+      if (!esPestana && !esRedondo && !radios.includes(radio)) fallos.push(`${describir(el)}: radio ${radio}`);
     }
     return fallos.slice(0, 10);
   }, RADIOS);

@@ -14,47 +14,48 @@ const capturar = async (page: Page, nombre: string) => {
 
 const proporcion = (caja: { width: number; height: number } | null) => caja!.width / caja!.height;
 
-test('FR-057: dorsales alineados y aceptar o descartar bajo cada campo', async ({ page }) => {
+test('FR-057 (retoques de la spec 011): dorsales plegados en una lista compacta, con aceptar y descartar en la fila', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   const partidaId = await partidaTrasDraft(page);
   await page.goto(`/partidas/${partidaId}/alineacion`);
-  await page.getByText('Dorsales', { exact: true }).click();
-  const celdas = page.locator('.rejilla-dorsales li');
-  await expect(celdas).toHaveCount(24);
+  await page.getByRole('tab', { name: 'Personalización' }).click();
+  // Plegados al final de la pestaña: no se ven hasta abrirlos.
+  const plegable = page.locator('.plegable-dorsales');
+  await expect(plegable).not.toHaveAttribute('open');
+  await plegable.locator('summary').click();
+  const filas = page.locator('.lista-dorsales li');
+  await expect(filas).toHaveCount(24);
 
-  // Los campos de una misma columna comparten x y los de una misma fila comparten y, sea cual sea el nombre.
-  const cajas = await page.locator('.rejilla-dorsales input').evaluateAll((es) => es.map((e) => e.getBoundingClientRect()).map((r) => ({ x: Math.round(r.x), y: Math.round(r.y) })));
-  const xs = new Set(cajas.map((c) => c.x));
-  const ys = new Set(cajas.map((c) => c.y));
-  const columnas = Math.round(24 / ys.size);
-  expect(xs.size).toBe(columnas);
-  expect(ys.size * columnas).toBeGreaterThanOrEqual(24);
+  // Una fila por jugador, todas del mismo alto y compactas; los números, alineados en columna.
+  const cajas = await filas.evaluateAll((es) => es.map((e) => e.getBoundingClientRect()).map((r) => ({ alto: Math.round(r.height), x: Math.round(r.x) })));
+  expect(new Set(cajas.map((c) => c.alto)).size).toBe(1);
+  expect(cajas[0]!.alto).toBeLessThanOrEqual(52);
   await capturar(page, 'dorsales');
 
-  // Sin cambio, los botones no se ven; al escribir, aparecen bajo el campo sin cambiar el alto de la celda.
-  const celda = celdas.first();
-  const alto = (await celda.boundingBox())!.height;
-  const aceptar = celda.getByRole('button', { name: /^Aceptar el dorsal/ });
-  const descartar = celda.getByRole('button', { name: /^Descartar el dorsal/ });
-  await expect(aceptar).toBeHidden();
-  await celda.locator('input').fill('77');
+  // Sin cambio, no hay botones; al escribir, aparecen en la misma fila sin cambiar su alto.
+  const fila = filas.first();
+  const numero = fila.locator('.dorsal-campo');
+  const original = await numero.inputValue();
+  const aceptar = fila.getByRole('button', { name: /^Aceptar el dorsal/ });
+  const descartar = fila.getByRole('button', { name: /^Descartar el dorsal/ });
+  await expect(aceptar).toHaveCount(0);
+  await numero.fill('77');
   await expect(aceptar).toBeVisible();
   await expect(descartar).toBeVisible();
-  const campo = (await celda.locator('input').boundingBox())!;
-  expect((await aceptar.boundingBox())!.y).toBeGreaterThan(campo.y + campo.height - 1);
-  expect((await celda.boundingBox())!.height).toBe(alto);
+  expect(Math.round((await fila.boundingBox())!.height)).toBe(cajas[0]!.alto);
   await capturar(page, 'dorsales-editando');
 
-  // Descartar vacía el campo; Escape también.
+  // Descartar vuelve al número de antes; Escape también.
   await descartar.click();
-  await expect(celda.locator('input')).toHaveValue('');
-  await celda.locator('input').fill('78');
-  await celda.locator('input').press('Escape');
-  await expect(celda.locator('input')).toHaveValue('');
+  await expect(numero).toHaveValue(original);
+  await numero.fill('78');
+  await numero.press('Escape');
+  await expect(numero).toHaveValue(original);
   // Intro acepta.
-  await celda.locator('input').fill('79');
-  await celda.locator('input').press('Enter');
-  await expect(celda.locator('.dorsal-actual')).toHaveText('79');
+  await numero.fill('79');
+  await numero.press('Enter');
+  await expect(numero).toHaveValue('79');
+  await expect(aceptar).toHaveCount(0);
 });
 
 test('FR-058: las filas de máximos goleadores y asistentes van debajo de los encabezados', async ({ page }) => {

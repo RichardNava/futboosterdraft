@@ -1468,6 +1468,74 @@ html {
   }
 }
 
+/* Retoques de la spec 011: las pestañas del lateral quedan arriba aunque su panel se desplace. */
+@media (min-width: 1024px) {
+  .alineacion .campo-equipo-lateral {
+    padding-top: 0;
+  }
+
+  .alineacion .campo-equipo-lateral > .pestanas {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    width: auto;
+    margin: 0 calc(-1 * var(--espacio-5));
+    padding: var(--espacio-4) var(--espacio-5) var(--espacio-3);
+    border: 0;
+    border-bottom: 1px solid var(--borde-vidrio);
+    border-radius: 0;
+    background: var(--color-panel);
+    max-width: none;
+  }
+
+  .interruptor-distribucion {
+    margin-left: auto;
+    color: var(--color-texto-suave);
+    font-size: var(--texto-pequeno);
+  }
+
+  /*
+   * Campo horizontal: el campo toma su ancho del alto que queda (sin la media ni el resumen, que pasan sobre el
+   * lateral) y el lateral ocupa el resto, con su panel desplazable a la altura del campo.
+   */
+  .alineacion {
+    --alineacion-reserva-horizontal: 16rem;
+  }
+
+  .alineacion:has(.campo-equipo.horizontal) {
+    max-width: var(--ancho-pantalla-amplia);
+  }
+
+  .alineacion .campo-equipo.horizontal {
+    grid-template-columns: clamp(520px, calc((100dvh - var(--alineacion-reserva-horizontal)) * 100 / 64), 60%) minmax(400px, 1fr);
+    /* El portero y los extremos asoman por los lados del campo: margen para que no se corten. */
+    overflow-clip-margin: var(--espacio-12);
+  }
+
+  .alineacion .campo-equipo.horizontal .campo-equipo-principal {
+    padding-left: var(--espacio-8);
+  }
+
+  .campo-equipo.horizontal .campo-equipo-lado {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-3);
+    height: 0;
+    min-height: 100%;
+  }
+
+  .alineacion .campo-equipo.horizontal .campo-equipo-lateral {
+    flex: 1 1 0;
+    height: auto;
+    min-height: 0;
+  }
+}
+
+.campo-unico.horizontal {
+  aspect-ratio: 100 / 64;
+  background: var(--cesped-textura-horizontal);
+}
+
 .avisos-colocacion {
   margin: 0;
   padding-left: var(--espacio-5);
@@ -1515,51 +1583,58 @@ html {
   min-width: 0;
 }
 
-.rejilla-dorsales {
+/*
+ * Dorsales en lista compacta (retoques de la spec 011): una fila de 44 px por jugador con el número, editable en el
+ * sitio como una pieza de la camiseta, el nombre de la carta y su demarcación; aceptar y descartar, solo al editar.
+ */
+.plegable-dorsales > summary .nota {
+  font-weight: 400;
+}
+
+.lista-dorsales {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-  gap: var(--espacio-2);
-  margin: var(--espacio-3) 0;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 168px), 1fr));
+  gap: var(--espacio-1) var(--espacio-3);
+  margin-block: var(--espacio-3);
   padding: 0;
   list-style: none;
 }
 
-.rejilla-dorsales {
-  /* Columnas fijas en todas las celdas: dorsal, nombre (recortado) y campo, alineados en vertical y en horizontal. */
-  --dorsal-columnas: 3rem minmax(0, 1fr) 4.5rem;
-}
-
-.rejilla-dorsales li {
+.lista-dorsales li {
   display: grid;
-  grid-template-columns: var(--dorsal-columnas);
-  grid-template-rows: auto auto;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: var(--espacio-2);
-  row-gap: var(--espacio-1);
-  padding: var(--espacio-2) var(--espacio-3);
-  border: 1px solid var(--borde-vidrio);
-  border-radius: var(--radio);
-  background: var(--vidrio);
+  gap: var(--espacio-2);
+  min-height: var(--objetivo-tactil);
+  border-bottom: 1px solid var(--borde-vidrio);
 }
 
-.rejilla-dorsales input {
-  grid-column: 3;
+.dorsal-campo {
   width: 100%;
+  min-height: 36px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radio);
+  background: var(--vidrio-claro);
+  color: var(--color-texto);
+  font-family: var(--letra-cartel);
+  font-size: 1.05rem;
+  font-weight: 800;
   text-align: center;
   font-variant-numeric: tabular-nums;
+  transition: border-color var(--duracion-corta) var(--curva-salida);
 }
 
-.dorsal-actual {
-  justify-self: start;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+.dorsal-campo::placeholder {
+  color: var(--color-texto-suave);
 }
 
-.rejilla-dorsales .distintivo-sin-dorsal {
-  display: inline-block;
-  white-space: normal;
-  text-align: center;
-  line-height: 1.1;
+.dorsal-campo:hover {
+  border-color: var(--borde-vidrio-fuerte);
+}
+
+.lista-dorsales li[data-editando] .dorsal-campo {
+  border-color: var(--color-accion);
 }
 
 .dorsal-nombre {
@@ -1568,18 +1643,15 @@ html {
   white-space: nowrap;
 }
 
-/* Aceptar y descartar, bajo el campo; ocupan su sitio aunque no se vean para que la celda no cambie de alto. */
-.dorsal-acciones {
-  grid-column: 3;
-  grid-row: 2;
-  display: flex;
-  justify-content: center;
-  gap: var(--espacio-1);
-  visibility: hidden;
+.dorsal-demarcacion {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+  letter-spacing: 0.04em;
 }
 
-.dorsal-acciones[data-visible] {
-  visibility: visible;
+.dorsal-acciones {
+  display: flex;
+  gap: var(--espacio-1);
 }
 
 .icono-boton {
@@ -2323,6 +2395,29 @@ html {
   box-shadow: var(--sombra-boton);
 }
 
+/* El escudo es el protagonista del marcador (spec 011, retoques): crece con la pantalla hasta 96 px. */
+.equipo-marcador .chapa.chapa-escudo {
+  width: clamp(48px, 9vw, 96px);
+  height: clamp(48px, 9vw, 96px);
+  box-shadow: none;
+  filter: var(--sombra-escudo);
+}
+
+.marcador-2d .chapa.chapa-escudo {
+  width: 40px;
+  height: 40px;
+}
+
+.poseedor-2d .chapa.chapa-escudo {
+  width: 28px;
+  height: 28px;
+}
+
+.goleadores-2d .chapa.chapa-escudo {
+  width: 18px;
+  height: 18px;
+}
+
 .equipo-marcador-texto {
   display: grid;
   gap: var(--espacio-1);
@@ -2530,6 +2625,11 @@ html {
   width: 12px;
   height: 12px;
   border-width: 1px;
+}
+
+.evento-equipo .chapa.chapa-escudo {
+  width: 24px;
+  height: 24px;
 }
 
 .evento-texto {

@@ -49,6 +49,10 @@ pnpm typecheck && pnpm lint
 | 11 | `pnpm --filter @fbd/server ajuste identidad_cartas alternativa`, esperar 30 s y crear una partida nueva | Colección, draft, partido y avisos sin nombres ni retratos reales; la partida anterior sigue con la identidad real | SC-007, SC-008, FR-018 |
 | 12 | Volver a `real` y repetir el mismo partido con la misma semilla en los dos modos (test de integración `identidad-cartas`) | Mismo desarrollo y resultado | US4-3, FR-019 |
 | 13 | A 360 px: marcador del 2D y selectores | Escudo reconocible; sin desplazamiento horizontal | Caso límite de pantallas estrechas |
+| 14 | Tienda: recorrer Todo, Cosméticos (Escudos, Sobres), Colecciones, Funcionalidades y Modos de juego; abrir `/tienda#escudos`; con poco saldo, pulsar un precio en fragmentos | Cada sección y subsección muestra lo suyo y queda en la URL; lo que no se vende dice «Próximamente»; «Tienes X de Y»; sin saldo, «Te faltan…» sin abrir el pago | FR-023 |
+| 15 | Formación a 1366 × 657 y a 1920 × 1080: campo horizontal, desplazar «Personalización», cambiar el interruptor y recargar | Campo tumbado sin fichas amontonadas; las pestañas siguen arriba; la distribución elegida se recuerda | FR-024, FR-025 |
+| 16 | «Personalización» → abrir «Dorsales», cambiar uno con Intro, otro con ✓ y descartar un tercero con Escape | Lista compacta al final; las filas no saltan; el conflicto de número pide confirmación | FR-026 |
+| 17 | Carrusel con 3 diseños: hacer un draft completo y 3 aperturas en la tienda | Ningún cambio de sobre durante la animación; marcador y resultado con el escudo grande | FR-027, FR-028 |
 
 ## Cierre
 

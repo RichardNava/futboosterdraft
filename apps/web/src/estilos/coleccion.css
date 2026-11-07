@@ -292,8 +292,227 @@
 }
 
 .tienda-saldo {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
   margin: 0;
+  padding: var(--espacio-1) var(--espacio-4);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio-pildora);
+  background: var(--vidrio);
   font-size: var(--texto-subtitulo);
+}
+
+.tienda-saldo svg {
+  color: var(--color-oro);
+}
+
+/* ---------- Secciones y subsecciones de la tienda (retoques de la spec 011) ---------- */
+
+.tienda-navegacion {
+  display: grid;
+  gap: var(--espacio-3);
+  margin-bottom: var(--espacio-6);
+}
+
+.tienda-secciones,
+.tienda-subsecciones {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Las secciones, como las pestañas de la aplicación; en móvil se desplazan dentro de su barra. */
+.tienda-secciones {
+  gap: var(--espacio-1);
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--espacio-1);
+  overflow-x: auto;
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel);
+  background: var(--vidrio);
+  scrollbar-width: none;
+}
+
+/* Cada sección conserva su ancho: si no caben, la barra se desplaza en lugar de montarlas. */
+.tienda-secciones > li {
+  flex: none;
+}
+
+.tienda-seccion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: var(--objetivo-tactil);
+  padding: 0 var(--espacio-4);
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radio);
+  color: var(--color-texto-suave);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--duracion-corta) var(--curva-salida),
+    color var(--duracion-corta) var(--curva-salida);
+}
+
+.tienda-seccion:hover {
+  background: var(--vidrio-claro);
+  color: var(--color-texto);
+}
+
+.tienda-seccion[aria-current='page'] {
+  border-bottom-color: var(--color-accion);
+  background: var(--color-elevado);
+  color: var(--color-texto);
+  font-weight: 600;
+  box-shadow: var(--sombra-boton);
+}
+
+.tienda-subsecciones {
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
+.ficha-filtro {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--objetivo-tactil);
+  padding: 0 var(--espacio-4);
+  border: 1px solid var(--borde-vidrio-fuerte);
+  border-radius: var(--radio-pildora);
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    border-color var(--duracion-corta) var(--curva-salida),
+    color var(--duracion-corta) var(--curva-salida);
+}
+
+.ficha-filtro:hover {
+  border-color: var(--color-texto-suave);
+  color: var(--color-texto);
+}
+
+.ficha-filtro[aria-current='true'] {
+  border-color: var(--color-accion);
+  background: var(--color-accion-tenue);
+  color: var(--color-texto);
+}
+
+.tienda-seccion-bloque {
+  display: grid;
+  gap: var(--espacio-4);
+  align-content: start;
+}
+
+.tienda-seccion-bloque + .tienda-seccion-bloque {
+  margin-top: var(--espacio-10);
+  padding-top: var(--espacio-6);
+  border-top: 1px solid var(--borde-vidrio);
+}
+
+.tienda-seccion-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.tienda-seccion-cabecera h2,
+.tienda-seccion-cabecera p {
+  margin: 0;
+}
+
+.enlace-seccion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  min-height: var(--objetivo-tactil);
+  color: var(--color-accion);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* El icono `flecha` apunta hacia atrás: aquí, hacia delante. */
+.enlace-seccion svg {
+  transform: rotate(180deg);
+}
+
+.enlace-seccion:hover {
+  text-decoration: underline;
+}
+
+/* El sobre de cartas ocupa toda la fila; las colecciones, en rejilla debajo. */
+.tienda-colecciones-contenido {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: var(--espacio-4);
+}
+
+.tienda-colecciones-contenido > .tienda-sobre,
+.tienda-colecciones-contenido > .tienda-proximamente {
+  grid-column: 1 / -1;
+}
+
+.progreso-coleccion {
+  display: grid;
+  gap: var(--espacio-1);
+}
+
+.progreso-coleccion progress {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--color-accion);
+}
+
+.tienda-proximamente {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--espacio-4);
+  border-style: dashed;
+}
+
+.tienda-proximamente h3,
+.tienda-proximamente p {
+  margin: 0;
+}
+
+.tienda-proximamente-icono {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radio-pildora);
+  background: var(--vidrio-claro);
+  color: var(--color-texto-suave);
+}
+
+.insignia-proximamente {
+  padding: var(--espacio-1) var(--espacio-3);
+  border: 1px solid var(--color-oro);
+  border-radius: var(--radio-pildora);
+  color: var(--color-oro);
+  font-size: var(--texto-pequeno);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 719.98px) {
+  .tienda-proximamente {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .insignia-proximamente {
+    grid-column: 2;
+    justify-self: start;
+  }
 }
 
 .tienda-producto h2,
@@ -338,19 +557,70 @@
 }
 
 /* Spec 011: cartas | cosméticos en escritorio (Principio XI); en móvil, apilados. */
-.tienda-columnas,
-.tienda-cartas,
 .tienda-cosmeticos {
   display: grid;
-  gap: var(--espacio-6);
+  /* En «Todo», escudos y sobres lado a lado si caben; en su subsección, a lo ancho. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+  gap: var(--espacio-8);
   align-content: start;
 }
 
-@media (min-width: 1024px) {
-  .tienda-columnas {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+.tienda-bloque-cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.tienda-bloque-cabecera h3,
+.tienda-bloque-subtitulo,
+.tienda-pack h5 {
+  margin: 0;
+}
+
+.tienda-bloque-cabecera h3 {
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+}
+
+.tienda-bloque-subtitulo {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tienda-pack h5 {
+  font-size: var(--texto-cuerpo);
+}
+
+.precio-fragmentos svg {
+  color: var(--color-oro);
+}
+
+.precio-fragmentos[aria-disabled='true'] {
+  opacity: 0.6;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tienda-cosmetico,
+  .tienda-pack {
+    transition:
+      transform var(--duracion-corta) var(--curva-salida),
+      border-color var(--duracion-corta) var(--curva-salida);
   }
 
+  .tienda-cosmetico:hover,
+  .tienda-pack:hover {
+    border-color: var(--borde-vidrio-fuerte);
+    transform: translateY(-2px);
+  }
+}
+
+@media (min-width: 1024px) {
   /* Los packs quedan fijos arriba; si los sueltos no caben, se desplazan dentro de su rejilla. */
   .tienda-bloque-desplazable {
     max-height: 60vh;

@@ -1,5 +1,19 @@
-import { ANCHO_CAMPO, LARGO_CAMPO, statsEfectivos, type Jugador, type ParametrosEquilibrado, type ResultadoColocacion } from '@fbd/domain';
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent as EventoPuntero, type ReactNode } from 'react';
+import {
+  ANCHO_CAMPO,
+  LARGO_CAMPO,
+  statsEfectivos,
+  type Jugador,
+  type ParametrosEquilibrado,
+  type ResultadoColocacion,
+} from '@fbd/domain';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent as EventoPuntero,
+  type ReactNode,
+} from 'react';
 import type { CartaResumen } from './CartaJugador';
 import { CartaJugador, nombreCartaDe } from './CartaJugador';
 import type { DestinoSoltar, EstadoCampo } from './campoEquipoEstado';
@@ -38,6 +52,11 @@ interface Props {
    * al banquillo y al resto. Sin ellas, el lateral es solo la plantilla.
    */
   pestanas?: { lista: ReactNode; activa: string; panel?: ReactNode };
+  /**
+   * `horizontal` (Formación en pantallas anchas, retoques de la spec 011): el campo tumbado, con la portería propia a
+   * la izquierda, y la media y el resumen encima del lateral para que el campo aproveche el alto.
+   */
+  orientacion?: 'vertical' | 'horizontal';
   onSoltar: (jugadorId: number, destino: DestinoSoltar) => void;
   onMover: (jugadorId: number, dx: number, dy: number) => void;
   onArrastrando?: (arrastrando: boolean) => void;
@@ -57,10 +76,30 @@ interface Arrastre {
  * sobre otra ficha intercambia; Escape cancela.
  *
  * Se dibuja en vertical, con la propia portería abajo: x (0–1000) hacia arriba e y (0–640) de izquierda a derecha.
+ * En horizontal, la portería propia queda a la izquierda: x hacia la derecha e y de arriba abajo.
  */
 export function CampoEquipo(props: Props) {
-  const { estado, colocacion, jugadores, parametros, dorsales, colores, modo, reserva = [], bloqueados, distintivos, maxBanquillo = 7, sinBanquillo, bajoMedia, pestanas, onSoltar, onMover, onArrastrando } =
-    props;
+  const {
+    estado,
+    colocacion,
+    jugadores,
+    parametros,
+    dorsales,
+    colores,
+    modo,
+    reserva = [],
+    bloqueados,
+    distintivos,
+    maxBanquillo = 7,
+    sinBanquillo,
+    bajoMedia,
+    pestanas,
+    orientacion = 'vertical',
+    onSoltar,
+    onMover,
+    onArrastrando,
+  } = props;
+  const horizontal = orientacion === 'horizontal';
   const campo = useRef<HTMLDivElement>(null);
   const banquillo = useRef<HTMLDivElement>(null);
   const restoPlantilla = useRef<HTMLDivElement>(null);
@@ -79,8 +118,15 @@ export function CampoEquipo(props: Props) {
   const puntoCampo = (x: number, y: number): { x: number; y: number } | null => {
     const r = campo.current?.getBoundingClientRect();
     if (!r || r.width === 0 || x < r.left || x > r.right || y < r.top || y > r.bottom) return null;
+    if (horizontal)
+      return { x: ((x - r.left) / r.width) * LARGO_CAMPO, y: ((y - r.top) / r.height) * ANCHO_CAMPO };
     return { x: ((r.bottom - y) / r.height) * LARGO_CAMPO, y: ((x - r.left) / r.width) * ANCHO_CAMPO };
   };
+  /** Sitio de un punto del campo en la pantalla (porcentajes desde la izquierda y desde abajo). */
+  const sitio = (x: number, y: number) =>
+    horizontal
+      ? { left: `${(x / LARGO_CAMPO) * 100}%`, bottom: `${(1 - y / ANCHO_CAMPO) * 100}%` }
+      : { left: `${(y / ANCHO_CAMPO) * 100}%`, bottom: `${(x / LARGO_CAMPO) * 100}%` };
   const dentro = (el: HTMLElement | null, x: number, y: number) => {
     const r = el?.getBoundingClientRect();
     return r !== undefined && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
@@ -140,7 +186,12 @@ export function CampoEquipo(props: Props) {
   const empezar = (jugadorId: number) => (e: EventoPuntero<HTMLElement>) => {
     if (e.button !== 0 || (bloqueados?.has(jugadorId) && !estaEnCampo(jugadorId))) return;
     e.preventDefault();
-    setArrastre({ jugadorId, inicio: { x: e.clientX, y: e.clientY }, actual: { x: e.clientX, y: e.clientY }, movido: false });
+    setArrastre({
+      jugadorId,
+      inicio: { x: e.clientX, y: e.clientY },
+      actual: { x: e.clientX, y: e.clientY },
+      movido: false,
+    });
   };
 
   const estaEnCampo = (id: number) => colocacion.titulares.some((t) => t.jugadorId === id);
@@ -178,7 +229,10 @@ export function CampoEquipo(props: Props) {
       return;
     }
     const paso = e.shiftKey ? PASO_LARGO : PASO;
-    const flechas: Record<string, [number, number]> = { ArrowUp: [paso, 0], ArrowDown: [-paso, 0], ArrowLeft: [0, -paso], ArrowRight: [0, paso] };
+    // Las flechas mueven en la pantalla: en horizontal, derecha es avanzar y arriba, hacia la banda izquierda.
+    const flechas: Record<string, [number, number]> = horizontal
+      ? { ArrowRight: [paso, 0], ArrowLeft: [-paso, 0], ArrowUp: [0, -paso], ArrowDown: [0, paso] }
+      : { ArrowUp: [paso, 0], ArrowDown: [-paso, 0], ArrowLeft: [0, -paso], ArrowRight: [0, paso] };
     if (seleccionado === jugadorId && flechas[e.key] && estaEnCampo(jugadorId)) {
       e.preventDefault();
       onMover(jugadorId, ...flechas[e.key]!);
@@ -191,7 +245,11 @@ export function CampoEquipo(props: Props) {
   const fichaCampo = (jugadorId: number, x: number, y: number, posicion: string, casillaId: string) => {
     const j = jugadores.get(jugadorId);
     if (!j) return null;
-    const ef = statsEfectivos(j as unknown as Jugador, { posicionesAdmitidas: [posicion as Jugador['posicion'][number]] }, parametros);
+    const ef = statsEfectivos(
+      j as unknown as Jugador,
+      { posicionesAdmitidas: [posicion as Jugador['posicion'][number]] },
+      parametros,
+    );
     const penal = Math.round(ef.penalizacion * 100);
     const sel = seleccionado === jugadorId;
     const moviendo = arrastre?.jugadorId === jugadorId && arrastre.movido;
@@ -201,7 +259,7 @@ export function CampoEquipo(props: Props) {
         <button
           type="button"
           className={`ficha-equipo ${sel ? 'seleccionada' : ''} ${moviendo ? 'arrastrando' : ''} ${penal > 0 ? 'fuera' : ''}`}
-          style={{ left: `${(y / ANCHO_CAMPO) * 100}%`, bottom: `${(x / LARGO_CAMPO) * 100}%` }}
+          style={sitio(x, y)}
           data-jugador={jugadorId}
           data-casilla={casillaId}
           data-posicion={posicion}
@@ -210,9 +268,16 @@ export function CampoEquipo(props: Props) {
           onPointerDown={empezar(jugadorId)}
           onKeyDown={alTeclado(jugadorId)}
         >
-          <span className={contornoSobreLienzo(colores.principal) ? 'chapa con-contorno' : 'chapa'} style={{ background: colores.principal, color: colores.secundario }}>
+          <span
+            className={contornoSobreLienzo(colores.principal) ? 'chapa con-contorno' : 'chapa'}
+            style={{ background: colores.principal, color: colores.secundario }}
+          >
             {/* Spec 008: el retrato identifica mejor al jugador; sin él (cartas antiguas), el dorsal. */}
-            {j.imagen?.startsWith('/cartas/retratos-propios/') ? <img src={j.imagen} alt="" draggable={false} /> : (dorsales?.[jugadorId] ?? '')}
+            {j.imagen?.startsWith('/cartas/retratos-propios/') ? (
+              <img src={j.imagen} alt="" draggable={false} />
+            ) : (
+              (dorsales?.[jugadorId] ?? '')
+            )}
           </span>
           {/* Media y posición en círculos a los lados del retrato; debajo, dorsal y nombre (rediseño 2026-11-04). */}
           <span className="ficha-equipo-media">
@@ -223,7 +288,9 @@ export function CampoEquipo(props: Props) {
           </span>
           <span className="ficha-equipo-posicion">{posicion}</span>
           <span className="ficha-equipo-nombre">
-            {dorsales?.[jugadorId] !== undefined && <span className="ficha-equipo-dorsal">{dorsales[jugadorId]}</span>}
+            {dorsales?.[jugadorId] !== undefined && (
+              <span className="ficha-equipo-dorsal">{dorsales[jugadorId]}</span>
+            )}
             {nombreCartaDe(j)}
           </span>
           {distintivos?.get(jugadorId)}
@@ -256,47 +323,83 @@ export function CampoEquipo(props: Props) {
     );
   };
 
-  return (
-    <div className={`campo-equipo modo-${modo}`}>
-      <div className="campo-equipo-principal">
-        {/* En Formación, la media del once sobre el campo, en estrellas y en cifra (spec 004, FR-060). */}
-        {modo === 'preparacion' && <MediaEquipo media={mediaEquipo(colocacion, jugadores, parametros)} />}
-        {bajoMedia}
-        <div ref={campo} className="campo campo-unico" aria-label="Campo del equipo" data-testid="campo-equipo">
-          <LineasCampo />
-          {colocacion.titulares.map((t) => fichaCampo(t.jugadorId, t.x, t.y, t.posicionEfectiva, t.casillaId))}
-          {enVuelo && arrastre && <span className="marca-destino" style={{ left: `${(enVuelo.y / ANCHO_CAMPO) * 100}%`, bottom: `${(enVuelo.x / LARGO_CAMPO) * 100}%` }} aria-hidden="true" />}
-        </div>
+  // En Formación, la media del once en estrellas y en cifra (spec 004, FR-060) y el resumen de la colocación.
+  const cabecera = (
+    <>
+      {modo === 'preparacion' && <MediaEquipo media={mediaEquipo(colocacion, jugadores, parametros)} />}
+      {bajoMedia}
+    </>
+  );
+  const lateral = (
+    <div className="campo-equipo-lateral">
+      {pestanas?.lista}
+      <div
+        className="campo-equipo-secciones"
+        {...(pestanas
+          ? {
+              role: 'tabpanel',
+              id: `panel-${pestanas.activa}`,
+              'aria-labelledby': `pestana-${pestanas.activa}`,
+            }
+          : {})}
+      >
+        {pestanas?.panel ?? (
+          <>
+            {!sinBanquillo && (
+              <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
+                <h2>
+                  Banquillo ({estado.banquillo.length}/{maxBanquillo})
+                </h2>
+                <div className="lista-compacta">{estado.banquillo.map(fichaLista)}</div>
+              </section>
+            )}
+            {reserva.length > 0 && (
+              <section ref={restoPlantilla} aria-label="Resto de la plantilla" data-testid="reserva">
+                <h2>Resto de la plantilla</h2>
+                <div className="lista-compacta">{reserva.map(fichaLista)}</div>
+              </section>
+            )}
+          </>
+        )}
       </div>
-      <div className="campo-equipo-lateral">
-        {pestanas?.lista}
+    </div>
+  );
+
+  return (
+    <div className={`campo-equipo modo-${modo}${horizontal ? ' horizontal' : ''}`}>
+      <div className="campo-equipo-principal">
+        {!horizontal && cabecera}
         <div
-          className="campo-equipo-secciones"
-          {...(pestanas ? { role: 'tabpanel', id: `panel-${pestanas.activa}`, 'aria-labelledby': `pestana-${pestanas.activa}` } : {})}
+          ref={campo}
+          className={`campo campo-unico${horizontal ? ' horizontal' : ''}`}
+          aria-label="Campo del equipo"
+          data-testid="campo-equipo"
         >
-          {pestanas?.panel ?? (
-            <>
-              {!sinBanquillo && (
-                <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
-                  <h2>
-                    Banquillo ({estado.banquillo.length}/{maxBanquillo})
-                  </h2>
-                  <div className="lista-compacta">{estado.banquillo.map(fichaLista)}</div>
-                </section>
-              )}
-              {reserva.length > 0 && (
-                <section ref={restoPlantilla} aria-label="Resto de la plantilla" data-testid="reserva">
-                  <h2>Resto de la plantilla</h2>
-                  <div className="lista-compacta">{reserva.map(fichaLista)}</div>
-                </section>
-              )}
-            </>
+          <LineasCampo horizontal={horizontal} />
+          {colocacion.titulares.map((t) =>
+            fichaCampo(t.jugadorId, t.x, t.y, t.posicionEfectiva, t.casillaId),
+          )}
+          {enVuelo && arrastre && (
+            <span className="marca-destino" style={sitio(enVuelo.x, enVuelo.y)} aria-hidden="true" />
           )}
         </div>
       </div>
+      {horizontal ? (
+        <div className="campo-equipo-lado">
+          {cabecera}
+          {lateral}
+        </div>
+      ) : (
+        lateral
+      )}
       {arrastre?.movido && (
-        <span className="ficha-fantasma" style={{ left: arrastre.actual.x, top: arrastre.actual.y }} aria-hidden="true">
-          {dorsales?.[arrastre.jugadorId] ?? (jugadores.has(arrastre.jugadorId) && nombreCartaDe(jugadores.get(arrastre.jugadorId)!))}
+        <span
+          className="ficha-fantasma"
+          style={{ left: arrastre.actual.x, top: arrastre.actual.y }}
+          aria-hidden="true"
+        >
+          {dorsales?.[arrastre.jugadorId] ??
+            (jugadores.has(arrastre.jugadorId) && nombreCartaDe(jugadores.get(arrastre.jugadorId)!))}
         </span>
       )}
     </div>
@@ -307,21 +410,30 @@ export function CampoEquipo(props: Props) {
  * Líneas de cal del campo en vertical, con la portería propia abajo (spec 004, FR-043): banda, medio campo, círculo
  * central, áreas, puntos de penalti y medias lunas, a escala reglamentaria sobre 64 × 100. Decorativas.
  */
-function LineasCampo() {
+function LineasCampo({ horizontal = false }: { horizontal?: boolean }) {
   return (
-    <svg className="campo-lineas" viewBox="0 0 64 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <rect x="1" y="1" width="62" height="98" />
-      <path d="M1 50h62" />
-      <circle cx="32" cy="50" r="8.5" />
-      <circle cx="32" cy="50" r="0.6" className="punto" />
-      <rect x="12.5" y="1" width="39" height="15.5" />
-      <rect x="22" y="1" width="20" height="5.2" />
-      <circle cx="32" cy="11.2" r="0.6" className="punto" />
-      <path d="M25.6 16.5a8.5 8.5 0 0 0 12.8 0" />
-      <rect x="12.5" y="83.5" width="39" height="15.5" />
-      <rect x="22" y="93.8" width="20" height="5.2" />
-      <circle cx="32" cy="88.8" r="0.6" className="punto" />
-      <path d="M25.6 83.5a8.5 8.5 0 0 1 12.8 0" />
+    <svg
+      className="campo-lineas"
+      viewBox={horizontal ? '0 0 100 64' : '0 0 64 100'}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* En horizontal, el mismo dibujo girado: (u, v) del vertical pasa a (100 − v, u), con la portería propia a la izquierda. */}
+      <g transform={horizontal ? 'matrix(0 1 -1 0 100 0)' : undefined}>
+        <rect x="1" y="1" width="62" height="98" />
+        <path d="M1 50h62" />
+        <circle cx="32" cy="50" r="8.5" />
+        <circle cx="32" cy="50" r="0.6" className="punto" />
+        <rect x="12.5" y="1" width="39" height="15.5" />
+        <rect x="22" y="1" width="20" height="5.2" />
+        <circle cx="32" cy="11.2" r="0.6" className="punto" />
+        <path d="M25.6 16.5a8.5 8.5 0 0 0 12.8 0" />
+        <rect x="12.5" y="83.5" width="39" height="15.5" />
+        <rect x="22" y="93.8" width="20" height="5.2" />
+        <circle cx="32" cy="88.8" r="0.6" className="punto" />
+        <path d="M25.6 83.5a8.5 8.5 0 0 1 12.8 0" />
+      </g>
     </svg>
   );
 }
