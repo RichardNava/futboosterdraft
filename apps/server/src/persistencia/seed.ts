@@ -377,7 +377,7 @@ async function principal(): Promise<void> {
 const ejecutable = process.argv[1]?.replace(/\\/g, '/') ?? '';
 if (ejecutable.endsWith('persistencia/seed.ts') || ejecutable.endsWith('dist/seed.js')) {
   principal().catch((e: unknown) => {
-    console.error(e instanceof Error ? e.message : e);
+    console.error(e instanceof Error && e.message ? e.message : e); // AggregateError (p. ej. ECONNREFUSED) llega sin mensaje
     process.exitCode = 1;
   });
 }
