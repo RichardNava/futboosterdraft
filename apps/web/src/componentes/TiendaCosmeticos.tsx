@@ -1,10 +1,11 @@
 /**
  * Escudos y sobres en la tienda (spec 011, US3; contracts/ui.md §5): packs arriba y, debajo, cada cosmético de pago
  * con sus dos precios (fragmentos o euros simulados) o «Comprado». Los sobres se ven cerrados y, al pasar el ratón,
- * rasgados. Un invitado ve el catálogo y, al comprar, la invitación a crear cuenta.
+ * rasgados. Un invitado ve el catálogo y, al comprar, la invitación a crear cuenta. Al pulsar una miniatura se abre
+ * la previsualización a tamaño grande (con ← y → para pasar al siguiente) y desde ella se puede comprar.
  */
 import type { Cosmetico, PackCosmeticos, RespuestaCompraCosmetico } from '@fbd/protocol';
-import { useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { api } from '../api/cliente';
 import { useAspecto } from '../estado/aspecto';
@@ -46,6 +47,95 @@ function Miniatura({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
   );
 }
 
+type Vista =
+  { tipo: 'cosmetico'; lista: Cosmetico[]; indice: number } | { tipo: 'pack'; pack: PackCosmeticos };
+
+/** El cosmético a tamaño grande: el escudo como se ve en el juego y el sobre cerrado y abierto. */
+function ArteGrande({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
+  if (tipo === 'escudo')
+    return (
+      <figure className="previsualizacion-escudo">
+        <img src={urlEscudo(id, 256)} alt="" width={256} height={256} />
+        <figcaption>
+          <span className="nota">En el juego:</span>
+          {[96, 40, 24].map((t) => (
+            <img key={t} src={urlEscudo(id, t > 64 ? 256 : 64)} alt="" width={t} height={t} />
+          ))}
+        </figcaption>
+      </figure>
+    );
+  return (
+    <div className="previsualizacion-sobre">
+      <figure>
+        <SobreArte diseno={id} />
+        <figcaption className="nota">Cerrado</figcaption>
+      </figure>
+      <figure>
+        <SobreArte diseno={id} rasgado />
+        <figcaption className="nota">Abierto</figcaption>
+      </figure>
+    </div>
+  );
+}
+
+function Previsualizacion({
+  titulo,
+  subtitulo,
+  onCerrar,
+  navegar,
+  children,
+}: {
+  titulo: string;
+  subtitulo: string;
+  onCerrar: () => void;
+  navegar?: { anterior: () => void; siguiente: () => void; posicion: string };
+  children: ReactNode;
+}) {
+  // ← y → pasan de cosmético estén donde estén el foco (tras comprar, el botón pulsado desaparece).
+  const ir = useRef(navegar);
+  ir.current = navegar;
+  useEffect(() => {
+    const alTecla = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') ir.current?.anterior();
+      else if (e.key === 'ArrowRight') ir.current?.siguiente();
+    };
+    window.addEventListener('keydown', alTecla);
+    return () => window.removeEventListener('keydown', alTecla);
+  }, []);
+  return (
+    <Dialogo etiquetadoPor="titulo-previsualizacion" alEscape={onCerrar} alPulsarFondo={onCerrar}>
+      <div className="previsualizacion-cosmetico">
+        <button type="button" className="texto modal-cerrar" onClick={onCerrar} aria-label="Cerrar">
+          <Icono nombre="cerrar" tamano={20} />
+        </button>
+        <header>
+          <h2 id="titulo-previsualizacion">{titulo}</h2>
+          <p className="nota">{subtitulo}</p>
+        </header>
+        {children}
+        {navegar && (
+          <nav className="previsualizacion-navegacion" aria-label="Otros cosméticos">
+            <button type="button" className="texto" onClick={navegar.anterior} aria-label="Anterior">
+              <Icono nombre="flecha" tamano={20} />
+            </button>
+            <span className="nota" aria-live="polite">
+              {navegar.posicion}
+            </span>
+            <button
+              type="button"
+              className="texto siguiente"
+              onClick={navegar.siguiente}
+              aria-label="Siguiente"
+            >
+              <Icono nombre="flecha" tamano={20} />
+            </button>
+          </nav>
+        )}
+      </div>
+    </Dialogo>
+  );
+}
+
 interface Props {
   invitado?: boolean;
   /** Tipos que se muestran (la subsección elegida de la tienda); por defecto, escudos y sobres. */
@@ -58,11 +148,64 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
   const { catalogo, error } = useCatalogoCosmeticos();
   const [compra, setCompra] = useState<Compra | null>(null);
   const [pedirCuenta, setPedirCuenta] = useState(false);
+  const [vista, setVista] = useState<Vista | null>(null);
   if (error && !catalogo) return <p className="nota">No se han podido cargar los cosméticos.</p>;
   if (!catalogo) return <p className="nota">Cargando cosméticos…</p>;
   const saldo = catalogo.saldo ?? 0;
   const porId = new Map(catalogo.cosmeticos.map((c) => [c.id, c]));
-  const abrir = (c: Compra) => (invitado ? setPedirCuenta(true) : setCompra(c));
+  const abrir = (c: Compra) => {
+    setVista(null);
+    if (invitado) setPedirCuenta(true);
+    else setCompra(c);
+  };
+
+  // Precio en fragmentos o en euros, o «Comprado»; en la ficha de la rejilla y en la previsualización.
+  const comprarCosmetico = (c: Cosmetico) => {
+    if (c.poseido) return <span className="sello-adquirida pequeno">Comprado</span>;
+    const falta = invitado ? 0 : c.precioFragmentos! - saldo;
+    return (
+      <span className="acciones">
+        <button
+          type="button"
+          className="secundario precio-fragmentos"
+          // Sin saldo suficiente no se abre el pago: se dice cuánto falta (los invitados ven la invitación).
+          aria-disabled={falta > 0 || undefined}
+          title={falta > 0 ? `Te faltan ${formatoFragmentos.format(falta)} fragmentos` : undefined}
+          onClick={() =>
+            falta > 0
+              ? mostrarAviso(
+                  'advertencia',
+                  `Te faltan ${formatoFragmentos.format(falta)} fragmentos para ${c.nombre}`,
+                )
+              : abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'fragmentos' })
+          }
+        >
+          <Icono nombre="cristal" tamano={14} />
+          {formatoFragmentos.format(c.precioFragmentos!)} fragmentos
+        </button>
+        <button
+          type="button"
+          className="secundario"
+          onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'eur' })}
+        >
+          {formatoEuros.format(c.precioCentimos! / 100)}
+        </button>
+      </span>
+    );
+  };
+
+  const comprarPack = (p: PackCosmeticos) => {
+    if (p.disponible === false) return <p className="nota">Ya tienes alguno: cómpralos sueltos</p>;
+    const suelto = p.cosmeticos.reduce((t, id) => t + (porId.get(id)?.precioCentimos ?? 0), 0);
+    return (
+      <button type="button" className="secundario" onClick={() => abrir({ tipo: 'pack', pack: p })}>
+        5 por {formatoEuros.format(p.precioCentimos / 100)}
+        {suelto > p.precioCentimos && (
+          <span className="ahorro"> (ahorras {formatoEuros.format((suelto - p.precioCentimos) / 100)})</span>
+        )}
+      </button>
+    );
+  };
 
   const trasComprar = (r: RespuestaCompraCosmetico) => {
     setCompra(null);
@@ -95,81 +238,40 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
             </header>
             <h4 className="tienda-bloque-subtitulo">Packs: 5 a mejor precio</h4>
             <ul className="tienda-packs" aria-label={`Packs de ${b.titulo.toLowerCase()}`}>
-              {packs.map((p) => {
-                const suelto = p.cosmeticos.reduce((t, id) => t + (porId.get(id)?.precioCentimos ?? 0), 0);
-                return (
-                  <li key={p.id} className="panel tienda-pack" data-pack={p.id}>
-                    <h5>{p.nombre}</h5>
-                    <span className="pack-miniaturas">
-                      {p.cosmeticos.map((id) => (
-                        <Miniatura key={id} id={id} tipo={b.tipo} />
-                      ))}
-                    </span>
-                    {p.disponible === false ? (
-                      <p className="nota">Ya tienes alguno: cómpralos sueltos</p>
-                    ) : (
-                      <button
-                        type="button"
-                        className="secundario"
-                        onClick={() => abrir({ tipo: 'pack', pack: p })}
-                      >
-                        5 por {formatoEuros.format(p.precioCentimos / 100)}
-                        {suelto > p.precioCentimos && (
-                          <span className="ahorro">
-                            {' '}
-                            (ahorras {formatoEuros.format((suelto - p.precioCentimos) / 100)})
-                          </span>
-                        )}
-                      </button>
-                    )}
-                  </li>
-                );
-              })}
+              {packs.map((p) => (
+                <li key={p.id} className="panel tienda-pack" data-pack={p.id}>
+                  <h5>{p.nombre}</h5>
+                  <button
+                    type="button"
+                    className="pack-miniaturas boton-previsualizar"
+                    aria-label={`Ver el ${p.nombre} en grande`}
+                    onClick={() => setVista({ tipo: 'pack', pack: p })}
+                  >
+                    {p.cosmeticos.map((id) => (
+                      <Miniatura key={id} id={id} tipo={b.tipo} />
+                    ))}
+                  </button>
+                  {comprarPack(p)}
+                </li>
+              ))}
             </ul>
             <h4 className="tienda-bloque-subtitulo">Sueltos</h4>
             <ul
               className={`rejilla-tienda-cosmeticos${compacta ? ' tienda-bloque-desplazable' : ''}`}
               aria-label={`${b.titulo} sueltos`}
             >
-              {lista.map((c) => (
+              {lista.map((c, i) => (
                 <li key={c.id} className="panel tienda-cosmetico" data-cosmetico={c.id}>
-                  <Miniatura id={c.id} tipo={b.tipo} />
+                  <button
+                    type="button"
+                    className="boton-previsualizar"
+                    aria-label={`Ver ${c.nombre} en grande`}
+                    onClick={() => setVista({ tipo: 'cosmetico', lista, indice: i })}
+                  >
+                    <Miniatura id={c.id} tipo={b.tipo} />
+                  </button>
                   <span className="nombre-cosmetico">{c.nombre}</span>
-                  {c.poseido ? (
-                    <span className="sello-adquirida pequeno">Comprado</span>
-                  ) : (
-                    <span className="acciones">
-                      <button
-                        type="button"
-                        className="secundario precio-fragmentos"
-                        // Sin saldo suficiente no se abre el pago: se dice cuánto falta (los invitados ven la invitación).
-                        aria-disabled={(!invitado && saldo < c.precioFragmentos!) || undefined}
-                        title={
-                          !invitado && saldo < c.precioFragmentos!
-                            ? `Te faltan ${formatoFragmentos.format(c.precioFragmentos! - saldo)} fragmentos`
-                            : undefined
-                        }
-                        onClick={() =>
-                          !invitado && saldo < c.precioFragmentos!
-                            ? mostrarAviso(
-                                'advertencia',
-                                `Te faltan ${formatoFragmentos.format(c.precioFragmentos! - saldo)} fragmentos para ${c.nombre}`,
-                              )
-                            : abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'fragmentos' })
-                        }
-                      >
-                        <Icono nombre="cristal" tamano={14} />
-                        {formatoFragmentos.format(c.precioFragmentos!)} fragmentos
-                      </button>
-                      <button
-                        type="button"
-                        className="secundario"
-                        onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'eur' })}
-                      >
-                        {formatoEuros.format(c.precioCentimos! / 100)}
-                      </button>
-                    </span>
-                  )}
+                  {comprarCosmetico(c)}
                 </li>
               ))}
             </ul>
@@ -177,6 +279,48 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
         );
       })}
 
+      {vista?.tipo === 'cosmetico' &&
+        (() => {
+          const c = vista.lista[vista.indice]!;
+          const n = vista.lista.length;
+          const ir = (paso: number) => setVista({ ...vista, indice: (vista.indice + paso + n) % n });
+          return (
+            <Previsualizacion
+              titulo={c.nombre}
+              subtitulo={c.tipo === 'escudo' ? 'Escudo' : 'Diseño de sobre'}
+              onCerrar={() => setVista(null)}
+              navegar={{
+                anterior: () => ir(-1),
+                siguiente: () => ir(1),
+                posicion: `${vista.indice + 1} de ${n}`,
+              }}
+            >
+              <ArteGrande id={c.id} tipo={c.tipo} />
+              {comprarCosmetico(c)}
+            </Previsualizacion>
+          );
+        })()}
+      {vista?.tipo === 'pack' && (
+        <Previsualizacion
+          titulo={vista.pack.nombre}
+          subtitulo={`Pack de ${vista.pack.tipo === 'escudo' ? 'escudos' : 'sobres'}`}
+          onCerrar={() => setVista(null)}
+        >
+          <ul className={`previsualizacion-pack ${vista.pack.tipo}`}>
+            {vista.pack.cosmeticos.map((id) => (
+              <li key={id}>
+                {vista.pack.tipo === 'escudo' ? (
+                  <img src={urlEscudo(id, 256)} alt="" width={160} height={160} />
+                ) : (
+                  <SobreArte diseno={id} />
+                )}
+                <span>{porId.get(id)?.nombre ?? id}</span>
+              </li>
+            ))}
+          </ul>
+          {comprarPack(vista.pack)}
+        </Previsualizacion>
+      )}
       {compra?.tipo === 'cosmetico' && (
         <DialogoPagoPrueba<RespuestaCompraCosmetico>
           titulo={compra.cosmetico.nombre}

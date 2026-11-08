@@ -205,7 +205,7 @@ description: "Tareas de la spec 011: rework de la tienda (derechos de imagen, es
 - [X] T065 [US4] Al crear la partida (apps/server/src/persistencia/repos/partidas.ts y el gestor que la crea en apps/server/src/actores/) copiar `await ajustes.identidadCartas()` a `partidas.identidad`; en `ControladorPartida.catalogo` encadenar `enVersion(v).conIdentidad(identidad)`
 - [X] T066 [US4] Fuera de las partidas, usar `catalogo.conIdentidad(await ajustes.identidadCartas())` en apps/server/src/http/catalogo.ts, apps/server/src/http/coleccion.ts, apps/server/src/http/tienda.ts y en el historial de fragmentos de apps/server/src/economia/servicio.ts (localizar con `graphify query` cualquier otro sitio que lea `Catalogo` directamente)
 - [X] T067 [US4] En tools/fixtures/src/coreReal.ts: aceptar `imagen` bajo `/cartas/retratos-propios/` y `/cartas/retratos/`; añadir a specs/008-datos-reales-core/sumario.md una tabla por rareza (total, con identidad alternativa, con retrato propio, con retrato de terceros) y la lista de cartas que aún usan un retrato de terceros (FR-020; research R13)
-- [ ] T068 [US4] Recorrido manual en «alternativa» (quickstart, recorrido 11): Colección, draft, alineación, partido rápido, 2D, torneo y avisos sin nombres ni retratos reales; la partida anterior sigue en «real»
+- [X] T068 [US4] Recorrido manual en «alternativa» (quickstart, recorrido 11): Colección, draft, alineación, partido rápido, 2D, torneo y avisos sin nombres ni retratos reales; la partida anterior sigue en «real»
 
 **Checkpoint**: T056–T058 en verde; `pnpm test:equivalence` sin cambios; recorridos 11 y 12 correctos.
 
@@ -225,7 +225,7 @@ description: "Tareas de la spec 011: rework de la tienda (derechos de imagen, es
 - [X] T075 [P] Actualizar ROADMAP.md con el estado final de la 011, INI-11 e INI-14
 - [X] T076 Ejecutar `pnpm typecheck && pnpm lint`, `pnpm test`, `pnpm --filter @fbd/server test:integration` y `test:integration:hilos`, `pnpm test:equivalence` y `pnpm e2e`, y corregir lo que falle
   - 2026-11-06: verdes typecheck, lint, `pnpm test` (933), integración y `test:integration:hilos` (215 cada una) y equivalencia (32). `pnpm e2e`: 93/100. Corregidos los dos de la spec 011 (axe `listitem` en el selector de sobres; el test de contorno de chapas ya no mira los escudos). Quedan cinco ajenos a la spec 011: `dificultad.spec.ts` (4 dificultades desde e420c61), `diseno/tema.spec.ts` (radio 50 % de `.boton-ayuda`) y `diseno/ronda5.spec.ts` (sin texto «Dorsales»), ambos desde ad80b41, `navegacion.spec.ts:80` (desde bc01ba1 quien abandona ya no participa y no puede volver al draft) y `torneo-asincrono.spec.ts`, intermitente (pasa al repetirlo). Actualizados los cinco (el último sumaba los goles en propia, que la tabla no cuenta): `pnpm e2e` 100/100
-- [ ] T077 Recorridos manuales 1–17 de specs/011-rework-tienda/quickstart.md (14–17: retoques de la fase 9), incluidos el cronómetro de SC-001, 20 partidos con el mismo escudo (SC-003) y el marcador del 2D y los selectores a 360 px
+- [X] T077 Recorridos manuales 1–17 de specs/011-rework-tienda/quickstart.md (14–17: retoques de la fase 9), incluidos el cronómetro de SC-001, 20 partidos con el mismo escudo (SC-003) y el marcador del 2D y los selectores a 360 px
 - [X] T078 Ejecutar `graphify update .`
 
 ---
@@ -241,6 +241,16 @@ description: "Tareas de la spec 011: rework de la tienda (derechos de imagen, es
 - [X] T083 Dorsales compactos y plegados al final de «Personalización» (FR-026): EditorDorsales.tsx, Alineacion.tsx y base.css; adaptar dorsales.spec.ts y diseno/ronda5.spec.ts
 - [X] T084 Tienda con secciones y subsecciones (FR-023): Tienda.tsx (`useSeccion`, `NavegacionTienda`, «Próximamente»), TiendaCosmeticos.tsx (`tipos`, `compacta`, «Tienes X de Y», saldo insuficiente) y coleccion.css
 - [X] T085 Ejecutar typecheck, lint, tests unitarios y `pnpm e2e`; `graphify update .`
+
+---
+
+## Phase 10: Previsualización en la tienda y cierre (2026-11-08)
+
+**Purpose**: ver los cosméticos en grande antes de comprarlos (FR-029) y cerrar la spec tras aprobar T068 y T077.
+
+- [X] T086 Previsualización (FR-029): `Previsualizacion`, `ArteGrande` y la miniatura como botón en apps/web/src/componentes/TiendaCosmeticos.tsx (precios compartidos entre la ficha y la previsualización); estilos en apps/web/src/estilos/coleccion.css; e2e en cosmeticos.spec.ts
+- [X] T087 [P] Cerrar la spec: estado «Implementada» en spec.md, recorrido 18 en quickstart.md, INI-11 e INI-14 en ROADMAP.md y CLAUDE.md sin spec en curso
+- [X] T088 Ejecutar typecheck, lint, tests unitarios y los e2e de la tienda; `graphify update .`
 
 ---
 

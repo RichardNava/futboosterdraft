@@ -11,12 +11,15 @@ const darFragmentos = async (page: Page, fragmentos: number) =>
   expect((await page.request.post('/api/dev/fragmentos', { data: { fragmentos } })).status()).toBe(200);
 
 async function completarDraft(page: Page): Promise<string> {
-  const r = await page.request.post('/api/partidas', { data: { modo: 'liga', numParticipantes: 4, plazasHumanas: 1 } });
+  const r = await page.request.post('/api/partidas', {
+    data: { modo: 'liga', numParticipantes: 4, plazasHumanas: 1 },
+  });
   expect(r.status()).toBe(201);
   const { id } = (await r.json()) as { id: string };
   await page.request.post(`/api/partidas/${id}/iniciar`);
   for (let i = 0; i < 60; i++) {
-    const estado = ((await (await page.request.get(`/api/partidas/${id}`)).json()) as { estado: string }).estado;
+    const estado = ((await (await page.request.get(`/api/partidas/${id}`)).json()) as { estado: string })
+      .estado;
     if (estado === 'en_torneo') return id;
     await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 54_000 } });
     await page.waitForTimeout(50);
@@ -25,7 +28,9 @@ async function completarDraft(page: Page): Promise<string> {
 }
 
 test.describe('escudos', () => {
-  test('una cuenta nueva elige un escudo gratuito y lo ve en el marcador y el resumen (US1)', async ({ page }) => {
+  test('una cuenta nueva elige un escudo gratuito y lo ve en el marcador y el resumen (US1)', async ({
+    page,
+  }) => {
     await registrar(page);
     await page.goto('/perfil');
     const escudos = page.getByRole('group', { name: 'Escudo' });
@@ -42,10 +47,13 @@ test.describe('escudos', () => {
     await page.getByRole('button', { name: 'Seguir' }).click();
     await expect(page.locator('.resultado .fase')).toHaveText('Final');
     const eventos = page.locator('.resumen-eventos .evento');
-    if ((await eventos.count()) > 0) await expect(page.locator('.resumen-eventos .chapa-escudo').first()).toBeVisible();
+    if ((await eventos.count()) > 0)
+      await expect(page.locator('.resumen-eventos .chapa-escudo').first()).toBeVisible();
   });
 
-  test('un invitado sin elegir ve el círculo y en la Alineación solo escudos gratuitos (US1-6)', async ({ page }) => {
+  test('un invitado sin elegir ve el círculo y en la Alineación solo escudos gratuitos (US1-6)', async ({
+    page,
+  }) => {
     const id = await partidaTrasDraft(page);
     await page.goto(`/partidas/${id}/alineacion`);
     await page.getByRole('tab', { name: 'Personalización' }).click();
@@ -64,7 +72,9 @@ test.describe('sobres', () => {
   test('con dos diseños en carrusel, las aperturas de la tienda alternan los dos (US2)', async ({ page }) => {
     await registrar(page);
     for (const id of ['sobre-1', 'sobre-2']) {
-      const r = await page.request.post(`/api/tienda/cosmeticos/${id}/comprar`, { data: { idCompra: crypto.randomUUID(), moneda: 'eur' } });
+      const r = await page.request.post(`/api/tienda/cosmeticos/${id}/comprar`, {
+        data: { idCompra: crypto.randomUUID(), moneda: 'eur' },
+      });
       expect(r.status()).toBe(200);
     }
     await page.goto('/perfil');
@@ -87,31 +97,72 @@ test.describe('sobres', () => {
       const src = (await apertura.locator('img.sobre-arte').first().getAttribute('src')) ?? '';
       vistos.push(src);
       await page.getByRole('button', { name: 'Saltar' }).click();
-      await page.getByRole('region', { name: 'Tu sobre' }).getByRole('button', { name: 'Seguir comprando' }).click();
+      await page
+        .getByRole('region', { name: 'Tu sobre' })
+        .getByRole('button', { name: 'Seguir comprando' })
+        .click();
     }
     expect(vistos.map((s) => /sobre-(\d)\.webp/.exec(s)?.[1]).sort()).toEqual(['1', '2']);
   });
 });
 
 test.describe('tienda', () => {
-  test('comprar un escudo con fragmentos y doble pulsación: un cargo, «Comprado» y desbloqueado en el perfil (US3)', async ({ page }) => {
+  test('comprar un escudo con fragmentos y doble pulsación: un cargo, «Comprado» y desbloqueado en el perfil (US3)', async ({
+    page,
+  }) => {
     await registrar(page);
     await darFragmentos(page, 250);
     await page.goto('/tienda#escudos');
-    await page.locator('[data-cosmetico="escudo-premium-1"]').getByRole('button', { name: '250 fragmentos' }).click();
+    await page
+      .locator('[data-cosmetico="escudo-premium-1"]')
+      .getByRole('button', { name: '250 fragmentos' })
+      .click();
     const dialogo = page.getByRole('dialog');
     await expect(dialogo).toContainText('250 fragmentos');
     await dialogo.getByRole('button', { name: 'Confirmar compra' }).dblclick();
     await expect(page.locator('[data-cosmetico="escudo-premium-1"]')).toContainText('Comprado');
     await expect(page.locator('[data-pack="pack-escudos-1"]')).toContainText('Ya tienes alguno');
     await expect(page.locator('.saldo-navegacion')).toContainText('0');
-    const movimientos = (await (await page.request.get('/api/fragmentos/movimientos')).json()) as { movimientos: { motivo: string }[] };
+    const movimientos = (await (await page.request.get('/api/fragmentos/movimientos')).json()) as {
+      movimientos: { motivo: string }[];
+    };
     expect(movimientos.movimientos.filter((m) => m.motivo === 'compra_cosmetico')).toHaveLength(1);
 
     await page.goto('/perfil');
     const escudos = page.getByRole('group', { name: 'Escudo' });
     await escudos.getByRole('button', { name: 'Premium 1' }).click();
     await expect(escudos.getByRole('button', { name: 'Premium 1' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('la miniatura abre la previsualización grande; ← y → pasan de escudo y se compra desde ella (FR-029)', async ({
+    page,
+  }) => {
+    await registrar(page);
+    await darFragmentos(page, 250);
+    await page.goto('/tienda#escudos');
+    await page
+      .locator('[data-cosmetico="escudo-premium-1"]')
+      .getByRole('button', { name: 'Ver Premium 1 en grande' })
+      .click();
+    const vista = page.getByRole('dialog');
+    await expect(vista.getByRole('heading', { name: 'Premium 1' })).toBeVisible();
+    expect(
+      (await vista.locator('.previsualizacion-escudo > img').boundingBox())!.width,
+    ).toBeGreaterThanOrEqual(200);
+    await page.keyboard.press('ArrowRight');
+    await expect(vista.getByRole('heading', { name: 'Premium 1' })).toBeHidden();
+    await page.keyboard.press('ArrowLeft');
+    await vista.getByRole('button', { name: '250 fragmentos' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Confirmar compra' }).click();
+    await expect(page.locator('[data-cosmetico="escudo-premium-1"]')).toContainText('Comprado');
+
+    await page
+      .locator('[data-pack="pack-escudos-2"]')
+      .getByRole('button', { name: /en grande$/ })
+      .click();
+    await expect(page.getByRole('dialog').locator('.previsualizacion-pack li')).toHaveCount(5);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('dialog')).toBeHidden();
   });
 
   test('un invitado ve el catálogo y al comprar se le pide crear cuenta (US3-3)', async ({ page }) => {

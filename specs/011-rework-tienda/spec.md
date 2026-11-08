@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-04
 
-**Status**: Draft — aclaraciones de 2026-11-04 y 2026-11-05 resueltas (ver «Clarifications»)
+**Status**: Implementada (2026-11-08) — recorridos manuales aprobados; aclaraciones de 2026-11-04 y 2026-11-05 resueltas (ver «Clarifications»)
 
 **Input**: User description: "Spec 11 — Rework Shop. 0) Licencias y derechos: investigar los derechos de imagen de
 futbolistas en activo y retirados (vivos o fallecidos) y decidir el rumbo entre seguir igual, versiones ficticias
@@ -290,6 +290,14 @@ ambos modos y comprobar que el resultado es idéntico.
   la animación.
 - **FR-028**: El escudo DEBE ser protagonista en el marcador y el resultado (hasta 96 px según el ancho, con la imagen
   de 256 px) y verse mayor en la franja del 2D (40 px) y en el resumen de acciones (24 px).
+
+#### Previsualización en la tienda (2026-11-08)
+
+- **FR-029**: Cada escudo, sobre y pack de la tienda DEBE poder verse a tamaño grande antes de comprarlo: al pulsar su
+  miniatura se abre una previsualización con el escudo a 256 px y a los tamaños del juego (marcador, franja y
+  resumen), el sobre cerrado y abierto, o los cinco cosméticos del pack. Desde ella se compra con los mismos precios,
+  y ← y → (o sus botones) pasan al cosmético anterior o siguiente del mismo tipo. Las miniaturas de la rejilla crecen
+  (escudo 96 px, sobre 72 px).
 
 ### Key Entities
 

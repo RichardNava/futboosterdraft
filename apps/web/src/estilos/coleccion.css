@@ -701,13 +701,13 @@
 }
 
 .tienda-cosmetico .miniatura-escudo {
-  width: 64px;
-  height: 64px;
+  width: 96px;
+  height: 96px;
   object-fit: contain;
 }
 
 .tienda-cosmetico .miniatura-sobre {
-  width: 56px;
+  width: 72px;
 }
 
 .tienda-cosmetico:is(:hover, :focus-within) .sobre-rasgado-mini {
@@ -878,4 +878,121 @@
 
 .pantalla-final .final-recompensa strong {
   color: var(--color-oro);
+}
+
+/* Previsualización de cosméticos (retoques de la spec 011): la miniatura abre el cosmético a tamaño grande. */
+.boton-previsualizar {
+  position: relative;
+  padding: var(--espacio-1);
+  border: 1px solid transparent;
+  border-radius: var(--radio);
+  background: none;
+  color: inherit;
+  cursor: zoom-in;
+}
+
+.boton-previsualizar.pack-miniaturas {
+  justify-content: center;
+}
+
+.tienda-cosmetico:is(:hover, :focus-within) .boton-previsualizar,
+.tienda-pack:is(:hover, :focus-within) .boton-previsualizar {
+  border-color: var(--borde-vidrio-fuerte);
+}
+
+.modal:has(> .previsualizacion-cosmetico) {
+  width: min(880px, 100%);
+  max-height: 96dvh;
+}
+
+.previsualizacion-cosmetico {
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-4);
+  text-align: center;
+}
+
+.previsualizacion-cosmetico header h2 {
+  margin: 0;
+}
+
+.previsualizacion-cosmetico header p {
+  margin: 0;
+}
+
+.previsualizacion-cosmetico figure {
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-2);
+  margin: 0;
+}
+
+.previsualizacion-escudo > img {
+  width: min(256px, 64vw, 44dvh);
+  height: auto;
+  filter: var(--sombra-escudo);
+}
+
+.previsualizacion-escudo figcaption {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.previsualizacion-sobre {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-6);
+  width: 100%;
+}
+
+.previsualizacion-sobre .sobre-arte {
+  width: auto;
+  max-width: 100%;
+  height: min(50dvh, 480px);
+  object-fit: contain;
+}
+
+.previsualizacion-pack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+  gap: var(--espacio-4);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.previsualizacion-pack li {
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-2);
+}
+
+.previsualizacion-pack img {
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+}
+
+.previsualizacion-pack.sobre .sobre-arte {
+  max-height: 40dvh;
+  object-fit: contain;
+}
+
+.previsualizacion-navegacion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.previsualizacion-navegacion .siguiente svg {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 599px) {
+  .previsualizacion-sobre .sobre-arte {
+    height: auto;
+    width: 100%;
+  }
 }

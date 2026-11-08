@@ -43,7 +43,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1), 011 | P1 | Parcial | INI-08, INI-05 |
 | [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
-| [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada, sin validar | INI-08 |
+| [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
 | [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007 | P1 | Parcial | INI-03, INI-04, INI-08 |
 
 Los ids siguen el orden en que se registran, no el de prioridad: INI-15 se añadió al aparecer la spec 007.
@@ -309,7 +309,7 @@ cuesta simular los partidos.
   `tienda` ya usan el Core real y el nombre de la carta (`nombreCarta`) en lugar del primer apellido. `torneo` no
   fallaba por los datos: el invitado se desconectaba al ir a la portada y su partida se abandonaba a los 10 minutos
   de reloj simulado; ahora lo juega un usuario registrado.
-- **En curso (2026-11-05): [011](specs/011-rework-tienda/spec.md).** Se mantienen los jugadores reales, pero los
+- **Hecho (2026-11-08): [011](specs/011-rework-tienda/spec.md).** Se mantienen los jugadores reales, pero los
   300 retratos de Core pasan a ser propios (estilo manga, entregados por el responsable del juego) y se retiran los de
   terceros. Hay un plan B de **identidad alternativa** (nombres y retratos genéricos) que se activa con
   `pnpm --filter @fbd/server ajuste identidad_cartas alternativa`, sin reiniciar y solo en las partidas nuevas.
@@ -344,10 +344,11 @@ cuesta simular los partidos.
 - **Specs**: [011](specs/011-rework-tienda/spec.md) (monetización cosmética: 38 escudos y 31 diseños de sobre, sueltos
   o en packs fijos, con fragmentos o euros simulados). Mientras no haya licencia de imagen, el dinero real solo compra
   cosméticos (constitución 1.4.0, Principio VII); las versiones premium de cartas quedan fuera.
-- **Prioridad / estado**: P2 · **Implementada, sin validar** (011, 2026-11-05). Hecho: catálogo de cosméticos en
+- **Prioridad / estado**: P2 · **Implementada** (011, cerrada el 2026-11-08). Hecho: catálogo de cosméticos en
   `data/cosmeticos.json`, escudos en el marcador, el resumen y el 2D, sobres con carrusel y rasgadura propia, venta en
-  la tienda y tienda de cartas solo en fragmentos. Pendiente: los recorridos manuales del quickstart (T077: SC-001,
-  SC-003, 360 px) y el e2e `cosmeticos` en un entorno con la base de datos de desarrollo.
+  la tienda (por secciones y con previsualización a tamaño grande) y tienda de cartas solo en fragmentos. Recorridos
+  manuales 1–17 del quickstart aprobados (T068, T077) y `pnpm e2e` en verde. Las versiones premium de cartas siguen
+  fuera hasta tener licencia de imagen.
 - **Riesgo (economía de fragmentos, 011 research R11)**: sin venta de fragmentos, solo entran por torneos ganados (10),
   duplicados y desfragmentar; un cosmético de 250 fragmentos equivale a unos 25 torneos ganados y una colección a
   cientos. Requiere una spec de economía que revise `recompensaTorneo`.
