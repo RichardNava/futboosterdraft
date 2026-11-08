@@ -10,13 +10,14 @@
  *   se espera a «Seguir» o a que venza la ventana (`descansoS`), como en la rápida.
  * - Las decisiones se aplican en la primera interrupción aún no simulada; llega
  *   `partido.decision_aplicada` con el tick y el minuto.
+ * - Con «control total» (spec 012), también paran el partido las incidencias propias y cada gol.
  * - Sin informes de reproducción el búfer no crece: el partido queda en pausa sin coste. Al volver, la
  *   vista `estado` trae los tramos simulados y el último tick informado.
  */
 import type { Velocidad2D } from '@fbd/protocol';
 import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
-import { abrirPausa, registrarTramo, terminarPartido, type PartidoEnCurso } from './partidoRapido';
+import { abrirPausa, controlTotalDe, humanosDe, registrarTramo, terminarPartido, type PartidoEnCurso } from './partidoRapido';
 
 type Tramo2D = Record<string, unknown> & { t: string; hastaTick: number };
 
@@ -69,6 +70,12 @@ export async function avanzar2D(c: ControladorPartida, ctx: ContextoComando, p: 
     }
     if (r.fase === 'descanso' || r.fase === 'pre_prorroga') {
       abrirPausa(c, ctx, p, r.fase === 'descanso' ? 'descanso' : 'pre_prorroga');
+      return;
+    }
+    // Spec 012, ronda 2: en «control total», cada gol (propio o del rival) para el partido. El trozo acaba en el gol
+    // (`ticks` corta en cada interrupción), así que lo que se decida se aplica en el saque de centro.
+    if (r.eventos.some((e) => e.tipo === 'gol') && humanosDe(c, p.fila).some((pid) => controlTotalDe(c, pid))) {
+      abrirPausa(c, ctx, p, 'gol');
       return;
     }
   }

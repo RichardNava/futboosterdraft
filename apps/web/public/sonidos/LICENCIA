@@ -35,6 +35,23 @@ Cambios comunes a todos: recorte al momento útil, mezcla a mono, remuestreo a 2
                       https://freesound.org/people/kirbydx/sounds/175409/ — CC0 1.0. Recorte 0,2–4,6 s y
                       tempo ×1,7 sin cambiar el tono (≈ 2,6 s).
 
+- golPropio.mp3, golRival.mp3, tarjetaAmarilla.mp3, tarjetaRoja.mp3 (spec 012, ronda 2) — la grada.
+                      Philipp Feit (itmightgetloud), «Sound of Sankt Pauli», grabaciones en el estadio Millerntor:
+                      «Millerntor Stadium Crowd Reaction Goal 01» (Freesound #829455) para el gol propio (recorte
+                      0,4–4,6 s) y «… Chance Missed 01» (Freesound #829452) para el gol del rival (0,5–3,3 s) y el
+                      «oooh» de las tarjetas (13,6–15,4 s y 13,6–16,2 s).
+                      https://freesound.org/people/itmightgetloud/sounds/829455/ y …/829452/ — CC0 1.0.
+- pitidoInicio.mp3, pitidoDescanso.mp3, pitidoFinal.mp3 y los pitidos de las tarjetas — silbato de árbitro.
+                      Rosa-Orenes256, «Referee whistle sound.wav» (Freesound #538422), recortes de 0,3 y 0,42 s;
+                      el pitido largo del final, SpliceSound, «Referee whistle blow, gymnasium.wav» (Freesound
+                      #218318), recorte 0–1,1 s. https://freesound.org/people/Rosa-Orenes256/sounds/538422/ y
+                      https://freesound.org/people/SpliceSound/sounds/218318/ — CC0 1.0.
+- cajaRegistradora.mp3 — compra en la tienda.
+                      Zott820, «Cash Register Purchase» (Freesound #209578). Recorte 0–1,5 s.
+                      https://freesound.org/people/Zott820/sounds/209578/ — CC0 1.0.
+                      Los montajes (pitidos encadenados, pitido + «oooh») se hacen con
+                      `python tools/sonidos/grabaciones.py <descargas> [ffmpeg]`.
+
 Sintetizados (obra propia, CC0 1.0), WAV mono de 16 bits a 22.050 Hz con el pico a −3 dBFS.
 Se regeneran con `python tools/sonidos/generar.py` (necesita numpy):
 
@@ -45,16 +62,6 @@ Se regeneran con `python tools/sonidos/generar.py` (necesita numpy):
 
 Spec 012 (obra propia, CC0 1.0, mismo formato y `python tools/sonidos/generar.py`):
 
-- pitidoInicio.wav      — empieza una parte: un pitido corto de silbato (≈ 0,45 s).
-- pitidoDescanso.wav    — descanso: dos pitidos (≈ 1 s).
-- pitidoFinal.wav       — final del partido: tres pitidos, el último largo (≈ 2 s).
-- tarjetaAmarilla.wav   — silbato y «oooh» del público (≈ 1,8 s).
-- tarjetaRoja.wav       — dos pitidos fuertes y un «oooh» más largo (≈ 2,4 s).
-- golPropio.wav         — el público canta el gol (≈ 3,2 s).            PROVISIONAL: sustituir por grabación CC0.
-- golRival.wav          — murmullo grave de la grada (≈ 2,2 s).         PROVISIONAL: sustituir por grabación CC0.
 - confirmarEleccion.wav — se confirma la elección del draft (≈ 0,45 s).
 - latido.wav            — últimos 5 s del turno: latido que se acelera y crece (5 s).
 - clicPrincipal.wav     — botón principal (≈ 0,05 s).
-- cajaRegistradora.wav  — compra de un sobre o un diseño de sobre (≈ 1,2 s). PROVISIONAL: sustituir por grabación CC0.
-
-El «oooh» de las tarjetas también es síntesis (coro con formantes): sustituir por grabación CC0 cuando la haya.

@@ -34,7 +34,6 @@ function PruebaCelebraciones() {
             celebracion={vista.c}
             equipo={{ nombre: 'Prueba', escudo: null, color: 'var(--color-accion)' }}
             goleador="Goleador de prueba"
-            velocidad={1}
             onFin={() => setVista(null)}
           />
         )}

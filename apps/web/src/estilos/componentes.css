@@ -904,8 +904,9 @@ span.error {
 /* Región de avisos emergentes: fija sobre la barra principal, sin taparla (research R12). */
 .region-avisos {
   position: fixed;
+  /* Arriba a la derecha, bajo la barra de navegación (spec 012, ronda 2): abajo tapaban la barra principal. */
+  top: calc(var(--barra-navegacion-alto) + var(--espacio-3));
   right: var(--espacio-4);
-  bottom: calc(var(--barra-principal-alto) + var(--espacio-4));
   z-index: 30;
   display: grid;
   gap: var(--espacio-2);
@@ -937,7 +938,7 @@ span.error {
 @keyframes aviso-entra {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(-8px);
   }
 }
 

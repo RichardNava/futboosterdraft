@@ -115,10 +115,14 @@ export function soltar(e: EstadoCampo, jugadorId: number, destino: DestinoSoltar
     if (origen) {
       const puntos = { ...e.puntos };
       delete puntos[jugadorId];
+      // Un titular de baja no puede ir al banquillo (spec 012, FR-029): sale de la alineación al resto de la plantilla.
+      const deBaja = o.bloqueados?.has(jugadorId) === true;
       // Sobre un suplente (o con el banquillo lleno y sin hueco): intercambio, el suplente pasa a la casilla.
       if (sobre !== undefined) {
-        return { ...e, asignacion: { ...e.asignacion, [origen]: sobre }, puntos, banquillo: e.banquillo.map((id) => (id === sobre ? jugadorId : id)) };
+        const banquillo = deBaja ? e.banquillo.filter((id) => id !== sobre) : e.banquillo.map((id) => (id === sobre ? jugadorId : id));
+        return { ...e, asignacion: { ...e.asignacion, [origen]: sobre }, puntos, banquillo };
       }
+      if (deBaja) return { ...e, asignacion: { ...e.asignacion, [origen]: undefined }, puntos };
       if (lleno) return e;
       return { ...e, asignacion: { ...e.asignacion, [origen]: undefined }, puntos, banquillo: [...e.banquillo, jugadorId] };
     }
@@ -171,7 +175,8 @@ export function soltar(e: EstadoCampo, jugadorId: number, destino: DestinoSoltar
     const suPunto = e.puntos[sale];
     delete puntos[sale];
     if (suPunto) puntos[jugadorId] = suPunto;
-    const banquillo = enBanquillo ? e.banquillo.map((id) => (id === jugadorId ? sale : id)) : e.banquillo;
+    // El titular que sale ocupa el sitio del suplente, salvo si está de baja: entonces deja el banquillo.
+    const banquillo = !enBanquillo ? e.banquillo : o.bloqueados?.has(sale) ? e.banquillo.filter((id) => id !== jugadorId) : e.banquillo.map((id) => (id === jugadorId ? sale : id));
     return { ...e, asignacion: { ...e.asignacion, [encima.casillaId]: jugadorId }, puntos, banquillo };
   }
   // En una zona libre: solo si queda una casilla vacía.

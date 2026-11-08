@@ -8,6 +8,7 @@ import { DistintivoBaja, type BajaVista } from '../componentes/DistintivoBaja';
 import { FichaJugador } from '../componentes/FichaJugador';
 import { NombreRecortado } from '../componentes/NombreRecortado';
 import { Chapa } from '../componentes/Marcador';
+import { MediaEquipo, mediaMejorOnce } from '../componentes/MediaEquipo';
 import { ETIQUETA_DEMARCACION, etiquetaNPC } from '../textos/niveles';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { PantallaError } from '../componentes/Aviso';
@@ -26,7 +27,8 @@ interface PlantillaParticipante {
   color?: string | null;
 }
 
-const DEMARCACIONES = ['POR', 'DEF', 'MED', 'DEL'] as const;
+/** Columnas de jugadores (spec 012, ronda 2): los porteros, arriba en la de los defensas. */
+const COLUMNAS = [['POR', 'DEF'], ['MED'], ['DEL']] as const;
 
 /** Plantillas de todos los participantes, visibles al terminar el draft (T055; FR-054a). */
 export function Plantillas() {
@@ -79,35 +81,45 @@ export function Plantillas() {
             tabIndex={p.participanteId === seleccion ? 0 : -1}
             onClick={() => setSeleccion(p.participanteId)}
           >
-            <span className="pestana-equipo">
-              <Chapa color={p.color ?? undefined} escudo={p.escudo ?? null} nombre={p.nombreEquipo ?? p.nombre} />
-              <NombreRecortado texto={p.nombreEquipo ?? p.nombre} />
-            </span>
+            <NombreRecortado texto={p.nombreEquipo ?? p.nombre} />
             {p.participanteId === miId ? ' (tú)' : p.nivelNPC ? ` · ${etiquetaNPC(p.nivelNPC)}` : ''}
           </button>
         ))}
       </div>
       {actual && (
-        <div className="columnas-demarcacion">
-          {DEMARCACIONES.map((d) => {
-            const jugadores = actual.jugadores.filter((j) => j.demarcacion === d).sort((a, b) => b.media - a.media);
-            return (
-              <div key={d}>
-                <h3>
-                  {ETIQUETA_DEMARCACION[d]} ({jugadores.length})
-                </h3>
-                {jugadores.map((j) => {
-                  const baja = actual.bajas?.find((b) => b.jugadorId === j.id);
-                  return (
-                    <div key={j.id}>
-                      <CartaJugador jugador={j} compacta onVerFicha={() => setFicha(j)} />
-                      {baja && <DistintivoBaja baja={baja} />}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div className="columnas-demarcacion columnas-plantilla">
+          {/* Ficha del equipo fuera de las pestañas (spec 012, ronda 2): nombre, escudo y la media del mejor once. */}
+          <section className="ficha-equipo-plantilla" aria-label="Equipo">
+            <h2>{actual.nombreEquipo ?? actual.nombre}</h2>
+            <span className="ficha-equipo-escudo">
+              <Chapa color={actual.color ?? undefined} escudo={actual.escudo ?? null} nombre={actual.nombreEquipo ?? actual.nombre} grande />
+            </span>
+            <MediaEquipo media={mediaMejorOnce(actual.jugadores)} />
+            <p className="nota">Media del mejor once</p>
+          </section>
+          {COLUMNAS.map((demarcaciones) => (
+            <div key={demarcaciones.join('-')}>
+              {demarcaciones.map((d) => {
+                const jugadores = actual.jugadores.filter((j) => j.demarcacion === d).sort((a, b) => b.media - a.media);
+                return (
+                  <div key={d} className="grupo-demarcacion">
+                    <h3>
+                      {ETIQUETA_DEMARCACION[d]} ({jugadores.length})
+                    </h3>
+                    {jugadores.map((j) => {
+                      const baja = actual.bajas?.find((b) => b.jugadorId === j.id);
+                      return (
+                        <div key={j.id}>
+                          <CartaJugador jugador={j} compacta onVerFicha={() => setFicha(j)} />
+                          {baja && <DistintivoBaja baja={baja} />}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
       )}
       {ficha !== null && <FichaJugador jugadorId={ficha.id} rasgos={ficha} onCerrar={() => setFicha(null)} />}

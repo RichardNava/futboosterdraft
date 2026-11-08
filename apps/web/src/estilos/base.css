@@ -1,6 +1,7 @@
 /*
  * Maquetación de las pantallas (spec 004, FR-009, FR-013; research R1). Los componentes comunes están en
- * componentes.css, los valores en tokens.css y las cartas y los sobres en cartas.css.
+ * componentes.css, los valores en tokens.css, las cartas y los sobres en cartas.css y las celebraciones de gol en
+ * celebraciones.css.
  */
 
 /* ---------- Pantalla ---------- */
@@ -803,6 +804,56 @@ html {
 .columnas-demarcacion h3 {
   margin: 0;
   font-size: var(--texto-cuerpo);
+}
+
+/* Plantillas (spec 012, ronda 2): ficha del equipo y tres columnas de jugadores (porteros arriba con los defensas). */
+.grupo-demarcacion {
+  display: grid;
+  gap: var(--espacio-2);
+  align-content: start;
+}
+
+.columnas-plantilla > div:has(> .grupo-demarcacion + .grupo-demarcacion) {
+  gap: var(--espacio-4);
+}
+
+.ficha-equipo-plantilla {
+  position: sticky;
+  top: calc(var(--barra-navegacion-alto) + var(--espacio-4));
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: var(--espacio-3);
+  padding: var(--espacio-5) var(--espacio-4);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel);
+  background: var(--color-panel);
+  text-align: center;
+}
+
+.ficha-equipo-plantilla h2 {
+  margin: 0;
+  font-size: var(--titulo-pequeno);
+  overflow-wrap: anywhere;
+}
+
+.ficha-equipo-escudo .chapa {
+  width: 112px;
+  height: 112px;
+}
+
+.ficha-equipo-escudo .chapa.chapa-escudo {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+
+.ficha-equipo-plantilla .media-equipo {
+  justify-content: center;
+}
+
+.ficha-equipo-plantilla .nota {
+  margin: 0;
 }
 
 .draft-contexto .columnas-demarcacion {
@@ -3670,295 +3721,9 @@ html {
   }
 }
 
-/*
- * Celebraciones de gol (spec 012, FR-009 a FR-014; contracts/ui.md «CapaCelebracion»): capa encima del lienzo, con su
- * propio bucle de CSS (no toca el del campo). Las animaciones van en porcentajes de `--duracion-celebracion`, que ya
- * viene dividida por la velocidad. Con movimiento reducido (sistema o `.reducido`), solo fundido.
- */
+/* Zona del campo 2D: referencia de la capa de celebración (estilos en celebraciones.css). */
 .partido-2d-zona {
   position: relative;
-}
-
-.capa-celebracion {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  cursor: pointer;
-  animation: celebracion-fundido var(--duracion-celebracion, 2600ms) linear both;
-}
-
-.capa-celebracion .celebracion-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-.celebracion {
-  position: relative;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: var(--espacio-3);
-  width: 100%;
-  height: 100%;
-  text-align: center;
-}
-
-.celebracion-titulo {
-  position: relative;
-  font-family: var(--letra-cartel);
-  font-size: clamp(56px, 16cqmin, 168px);
-  font-style: var(--inclinacion-cartel);
-  font-weight: 800;
-  line-height: 0.9;
-  color: var(--color-texto);
-}
-
-.celebracion-pie,
-.celebracion-rotulo {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--espacio-3);
-  font-family: var(--letra-cartel);
-  font-size: var(--titulo-pequeno);
-  font-style: var(--inclinacion-cartel);
-  font-weight: 800;
-}
-
-.celebracion-insignia {
-  display: inline-flex;
-}
-
-.celebracion-insignia .chapa {
-  width: 44px;
-  height: 44px;
-}
-
-.celebracion-insignia .chapa.chapa-escudo {
-  width: 56px;
-  height: 56px;
-}
-
-/* Clásica (la del juego): velo con el color del equipo y golpe de entrada. */
-.celebracion-clasica .celebracion-velo {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, color-mix(in srgb, var(--color-equipo) 45%, transparent), var(--celebracion-velo) 70%);
-}
-
-.celebracion-clasica .celebracion-titulo {
-  animation: celebracion-golpe var(--duracion-celebracion, 2600ms) var(--curva-salida) both;
-}
-
-.celebracion-clasica .celebracion-pie {
-  animation: celebracion-sube var(--duracion-celebracion, 2600ms) var(--curva-salida) both;
-}
-
-/* Estadio: dos focos que barren y un rótulo de retransmisión con la franja del color del equipo. */
-.celebracion-estadio {
-  background: var(--celebracion-velo);
-}
-
-.celebracion-foco {
-  position: absolute;
-  top: -20%;
-  width: 40%;
-  height: 140%;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--color-foco) 55%, transparent), transparent 80%);
-  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
-  transform-origin: 50% 0;
-  animation: celebracion-barrido var(--duracion-celebracion, 2800ms) ease-in-out both;
-}
-
-.celebracion-foco-izquierdo {
-  left: 5%;
-}
-
-.celebracion-foco-derecho {
-  right: 5%;
-  animation-direction: reverse;
-}
-
-.celebracion-estadio .celebracion-titulo {
-  color: var(--color-foco);
-  animation: celebracion-sube var(--duracion-celebracion, 2800ms) var(--curva-salida) both;
-}
-
-.celebracion-estadio .celebracion-rotulo {
-  padding: var(--espacio-2) var(--espacio-5);
-  border-left: 6px solid var(--color-equipo);
-  border-radius: var(--radio);
-  background: var(--vidrio-fuerte);
-  animation: celebracion-entra-lado var(--duracion-celebracion, 2800ms) var(--curva-salida) both;
-}
-
-.celebracion-equipo {
-  color: var(--color-texto-suave);
-  font-size: var(--texto-pequeno);
-}
-
-/* Neón: letrero que parpadea al encenderse. */
-.celebracion-neon {
-  background: var(--celebracion-velo);
-}
-
-.celebracion-neon .celebracion-titulo {
-  color: var(--celebracion-tiza);
-  -webkit-text-stroke: 2px var(--celebracion-neon);
-  text-shadow:
-    0 0 8px var(--celebracion-neon),
-    0 0 24px var(--celebracion-neon),
-    0 0 48px var(--color-equipo);
-  animation: celebracion-parpadeo var(--duracion-celebracion, 2500ms) steps(1, end) both;
-}
-
-.celebracion-neon .celebracion-pie {
-  color: var(--celebracion-neon);
-  animation: celebracion-parpadeo var(--duracion-celebracion, 2500ms) steps(1, end) both;
-}
-
-/* Pizarra: escrito con tiza y subrayado. */
-.celebracion-pizarra {
-  background: var(--celebracion-velo);
-}
-
-.celebracion-tablero {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: var(--espacio-2);
-  padding: var(--espacio-5) var(--espacio-8);
-  border: 8px solid var(--celebracion-pizarra-marco);
-  border-radius: var(--radio);
-  background: var(--celebracion-pizarra);
-  color: var(--celebracion-tiza);
-  transform: rotate(-2deg);
-  animation: celebracion-sube var(--duracion-celebracion, 2800ms) var(--curva-salida) both;
-}
-
-.celebracion-pizarra .celebracion-titulo {
-  color: var(--celebracion-tiza);
-  animation: celebracion-escribe var(--duracion-celebracion, 2800ms) linear both;
-}
-
-.celebracion-subrayado {
-  width: 80%;
-  height: 0;
-  border-top: 4px dashed var(--celebracion-tiza);
-  animation: celebracion-escribe var(--duracion-celebracion, 2800ms) linear both;
-  animation-delay: calc(var(--duracion-celebracion, 2800ms) * 0.12);
-}
-
-.celebracion-pizarra .celebracion-pie {
-  color: var(--celebracion-tiza);
-}
-
-/* Movimiento reducido (FR-014): sin transform, recortes ni escalas; solo el fundido de la capa. */
-.capa-celebracion.reducido *,
-.capa-celebracion.reducido *::before,
-.capa-celebracion.reducido *::after {
-  animation: none !important;
-  transform: none !important;
-  clip-path: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .capa-celebracion *,
-  .capa-celebracion *::before,
-  .capa-celebracion *::after {
-    animation: none !important;
-    transform: none !important;
-    clip-path: none !important;
-  }
-}
-
-@keyframes celebracion-fundido {
-  0% {
-    opacity: 0;
-  }
-  8%,
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes celebracion-golpe {
-  0% {
-    transform: scale(0.3);
-  }
-  14% {
-    transform: scale(1.12);
-  }
-  22%,
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes celebracion-sube {
-  0%,
-  10% {
-    transform: translateY(40px);
-  }
-  28%,
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes celebracion-entra-lado {
-  0%,
-  18% {
-    transform: translateX(-120%);
-  }
-  34%,
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes celebracion-barrido {
-  0% {
-    transform: rotate(-28deg);
-  }
-  50% {
-    transform: rotate(28deg);
-  }
-  100% {
-    transform: rotate(-10deg);
-  }
-}
-
-@keyframes celebracion-parpadeo {
-  0%,
-  6%,
-  12% {
-    opacity: 0.15;
-  }
-  4%,
-  9%,
-  16%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes celebracion-escribe {
-  0% {
-    clip-path: inset(0 100% 0 0);
-  }
-  35%,
-  100% {
-    clip-path: inset(0 0 0 0);
-  }
 }
 
 /* Selector de la celebración de gol en «Mi perfil» (spec 012, FR-011): opciones por nombre y vista previa a escala. */
@@ -3997,24 +3762,6 @@ html {
 .ficha-equipo.de-baja {
   outline: 2px dashed var(--color-advertencia);
   outline-offset: 2px;
-}
-
-/* Pestaña de cada plantilla con la chapa del equipo (spec 012, FR-026). */
-.pestana-equipo {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--espacio-2);
-}
-
-.pestana-equipo .chapa {
-  flex: none;
-  width: 16px;
-  height: 16px;
-}
-
-.pestana-equipo .chapa.chapa-escudo {
-  width: 22px;
-  height: 22px;
 }
 
 /* Botones de sesión con presencia (spec 012, FR-031): secundarios con icono, a la altura de los demás. */

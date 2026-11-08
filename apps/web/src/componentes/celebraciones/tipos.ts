@@ -32,10 +32,12 @@ export function planCelebracion(
   return { clase: 'juego', id: CELEBRACION_DEL_JUEGO };
 }
 
-/** Duración real en ms: las de juego, como mucho 3 s (FR-009); todo, dividido por la velocidad de reproducción. */
-export function duracionCelebracion(datos: DatosCelebracion, velocidad: number, clase: 'juego' | 'secuencia' = datos.clase): number {
-  const base = clase === 'juego' ? Math.min(datos.duracionMs, DURACION_MAXIMA_CELEBRACION_JUEGO_MS) : datos.duracionMs;
-  return Math.round(base / Math.max(1, velocidad));
+/**
+ * Duración real en ms: las de juego, como mucho 3 s (FR-009). No depende de la velocidad de reproducción (spec 012,
+ * ronda 2: a x8 no daba tiempo a verla): el reloj de la 2D se para ese tiempo en cada gol.
+ */
+export function duracionCelebracion(datos: DatosCelebracion, clase: 'juego' | 'secuencia' = datos.clase): number {
+  return clase === 'juego' ? Math.min(datos.duracionMs, DURACION_MAXIMA_CELEBRACION_JUEGO_MS) : datos.duracionMs;
 }
 
 /** Ficheros de una secuencia, derivados del id: WebM VP9 con alfa y, para Safari, MOV HEVC con alfa. */

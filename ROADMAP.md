@@ -371,6 +371,11 @@ cuesta simular los partidos.
   con bloqueo `409 BAJA_PENDIENTE` y avisos del equipo, escudos en Plantillas y botones de sesión. Pendiente: los
   recorridos a mano del [quickstart](specs/012-mejoras-simulacion-2d/quickstart.md), SC-009 con 5 personas y la
   comparación del informe de `pnpm balance` con `balance-antes/`.
+- **Spec 012, ronda 2 (2026-11-08)**: grabaciones CC0 reales para pitidos, público y caja; celebraciones elaboradas y
+  sin rótulo «¡Gol!», de igual duración a cualquier velocidad; en la 2D con control total, parada en cada gol; sin
+  control total en la simulación rápida; arreglo del bloqueo de «Confirmar alineación» con bajas en el banquillo;
+  avisos arriba a la derecha; ficha del equipo en Plantillas; motor 6.2.0 (el que gana de mucho baja la intensidad y
+  salen más porteros en los sobres) tras un 41-5 en 5 partidos. Pendiente: T089 (recorrido a mano).
 - **Prioridad / estado**: P1 · **Parcial**. 007: 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
 - **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
   (rarezas y presentación de la carta de la 006).

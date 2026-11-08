@@ -232,6 +232,24 @@ FR-008).
 
 ---
 
+## Phase 11: Ronda 2 (2026-11-08, tras probar la primera entrega)
+
+**Purpose**: corregir lo que no convenció al probar (spec, «Ronda 2»: FR-032 a FR-042, SC-010).
+
+- [X] T079 [P] Bloqueo de «Confirmar alineación» (FR-038): en `apps/web/src/componentes/campoEquipoEstado.ts`, un titular de baja sustituido sale al resto (no al banquillo); en `CampoEquipo.tsx`, un suplente de baja se puede sacar del banquillo; pruebas en `apps/web/tests/unit/campoEquipoEstado.test.ts`
+- [X] T080 Diagnóstico de las goleadas: reproducción de los 5 partidos del 41-5 desde la base local (NPC amateur sin portero; desnivel sin freno) y sonda `tools/balance/src/sondaGolesNPC.ts`
+- [X] T081 Parámetros 6.2.0 (FR-041, FR-042): `relajacion` en `packages/domain/src/parametros/index.ts`, aplicada en `packages/engine/src/modificadores/formacionTactica.ts` y `acciones/tiro.ts`; `probPorteroEnHuecoPorDef` 0,7 y caída a DEF en `packages/domain/src/sobres/generador.ts`; pruebas en `packages/engine/tests/relajacion.test.ts`, `packages/domain/tests/parametros/parametros.test.ts` y `tests/sobres/generador.test.ts`
+- [X] T082 `pnpm balance` con la 6.2.0 y comparación con `balance-antes/` (anotada en `balance-antes/LEEME.md`)
+- [X] T083 [P] Sonidos CC0 reales (FR-035): `tools/sonidos/grabaciones.py`, MP3 en `apps/web/public/sonidos/`, `LICENCIA`, `sonido.ts` y `docs/juego/sonidos.md`; `generar.py` ya no genera los sustituidos
+- [X] T084 [P] Celebraciones (FR-032 a FR-034): sin rótulo «¡Gol!» en `Partido2D.tsx`; duración en tiempo real (`celebraciones/tipos.ts`) y pausa de gol de 3 s en el reloj; efectos en `celebraciones/efectos.tsx` y estilos en `estilos/celebraciones.css` (excepción de tokens como objeto de juego); pruebas en `apps/web/tests/unit/celebracion.test.ts`
+- [X] T085 Pausa por gol en control total (FR-036): motivo `gol` en `packages/protocol/src/ws/partido.ts`, `apps/server/src/actores/partido2d.ts` y `partidoRapido.ts`; cliente en `Partido2D.tsx`; pruebas en `apps/server/tests/integration/incidencias.test.ts` y e2e `control-total.spec.ts`
+- [X] T086 Sin control total en la simulación rápida (FR-037): `PartidoRapido.tsx` y `fijarControlTotal`/`procesarModoIncidencias` en el servidor
+- [X] T087 [P] Avisos arriba a la derecha (FR-039): `apps/web/src/estilos/componentes.css` y `Aviso.tsx`
+- [X] T088 [P] Plantillas (FR-040): ficha del equipo con `mediaMejorOnce` (`componentes/MediaEquipo.tsx`) en `pantallas/Plantillas.tsx`; prueba `apps/web/tests/unit/mediaMejorOnce.test.ts`
+- [ ] T089 Recorrido manual de la ronda 2: 2D a x8 con goles, control total con goles, bajas entre jornadas, Plantillas y avisos
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phases

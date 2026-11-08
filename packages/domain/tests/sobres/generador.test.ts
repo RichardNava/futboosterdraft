@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { Jugador } from '../../src/catalogo/tipos';
-import { PARAMETROS_V3 } from '../../src/parametros/index';
+import { PARAMETROS_V3, PARAMETROS_V6_2 } from '../../src/parametros/index';
 import { semillaDesdeTexto } from '../../src/rng/xoshiro';
 import { ErrorPoolInsuficiente, generarMesa, generarSobre } from '../../src/sobres/generador';
 import { Rng } from '../../src/rng/xoshiro';
@@ -73,6 +73,25 @@ describe('generarMesa (FR-011, FR-014)', () => {
 
   it('no falla en 10.000 mesas de 8 con el core-real.json', { timeout: 120_000 }, () => {
     for (let i = 0; i < 10_000; i++) generarMesa(core, 8, semillaDesdeTexto(`mesa-${i}`), PARAMETROS_V3);
+  });
+
+  // Spec 012, ronda 2: con la 6.2.0 sale portero en el 70 % de los huecos; si el pool se queda sin porteros, va un DEF.
+  it('con la 6.2.0, si el pool se queda sin porteros, el hueco "POR o DEF" es un defensa', () => {
+    const pocos = new Set(core.filter((j) => j.demarcacion === 'POR').slice(0, 4).map((j) => j.id));
+    const pool = core.filter((j) => j.demarcacion !== 'POR' || pocos.has(j.id));
+    for (let i = 0; i < 300; i++) {
+      const mesa = generarMesa(pool, 8, semillaDesdeTexto(`sin-porteros-${i}`), PARAMETROS_V6_2);
+      expect(mesa).toHaveLength(24);
+      expect(mesa.every((s) => s.cartas.length === 8)).toBe(true);
+    }
+  });
+
+  it('con la 6.2.0, el hueco "POR o DEF" es portero el 70 % ± 1 de las veces', () => {
+    const rng = new Rng(semillaDesdeTexto('frecuencias-6.2'));
+    const n = 10_000;
+    let porteros = 0;
+    for (let i = 0; i < n; i++) if (generarSobre(rng, PARAMETROS_V6_2).huecoPorDef === 'POR') porteros++;
+    expect(Math.abs(porteros / n - 0.7)).toBeLessThanOrEqual(0.01);
   });
 
   it('en 10.000 sobres: POR en el hueco "POR o DEF" 50 % ± 1 y GOAT en la alta 20 % ± 1 (SC-013)', () => {

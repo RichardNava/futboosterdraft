@@ -1,8 +1,8 @@
 /**
  * Celebración de un gol sobre el campo (spec 012, FR-009 a FR-014; contracts/ui.md «CapaCelebracion»): capa absoluta
  * encima del lienzo que reproduce una celebración de juego (registro) o una secuencia de vídeo con alfa; si el vídeo
- * no se puede ver, la del juego. Dura lo suyo dividido por la velocidad, un clic la cierra y un gol nuevo la
- * reemplaza (quien la monta le da el `key` del gol). Con movimiento reducido, solo fundido.
+ * no se puede ver, la del juego. Dura lo suyo a cualquier velocidad (el reloj espera), un clic la cierra y un gol
+ * nuevo la reemplaza (quien la monta le da el `key` del gol). Con movimiento reducido, solo fundido.
  */
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { reproducir, type Efecto } from '../../sonido/sonido';
@@ -13,7 +13,6 @@ export interface PropsCapaCelebracion {
   celebracion: CelebracionElegida;
   equipo: EquipoCelebracion;
   goleador: string;
-  velocidad: number;
   onFin: () => void;
   /** Vista previa (perfil, pruebas): sin aviso a lectores de pantalla. */
   vistaPrevia?: boolean;
@@ -21,11 +20,11 @@ export interface PropsCapaCelebracion {
 
 const movimientoReducido = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
-export function CapaCelebracion({ celebracion, equipo, goleador, velocidad, onFin, vistaPrevia = false }: PropsCapaCelebracion) {
+export function CapaCelebracion({ celebracion, equipo, goleador, onFin, vistaPrevia = false }: PropsCapaCelebracion) {
   const [falloVideo, setFalloVideo] = useState(false);
   const [reducido] = useState(movimientoReducido);
   const plan = planCelebracion(celebracion, IDS_CELEBRACIONES_JUEGO, falloVideo);
-  const duracion = duracionCelebracion(celebracion.datos, velocidad, plan.clase);
+  const duracion = duracionCelebracion(celebracion.datos, plan.clase);
   const fin = useRef(onFin);
   fin.current = onFin;
 
@@ -34,9 +33,9 @@ export function CapaCelebracion({ celebracion, equipo, goleador, velocidad, onFi
     return () => clearTimeout(t);
   }, [duracion]);
 
-  // Sonido propio de una secuencia (respeta 🔊 porque va por `reproducir`).
+  // Sonido propio de una secuencia (respeta 🔊 porque va por `reproducir`), a su velocidad natural.
   const sonido = plan.clase === 'secuencia' ? celebracion.datos.sonido : undefined;
-  useEffect(() => (sonido ? reproducir(sonido as Efecto, Math.min(velocidad, 2)) : undefined), [sonido, velocidad]);
+  useEffect(() => (sonido ? reproducir(sonido as Efecto) : undefined), [sonido]);
 
   const Juego = plan.clase === 'juego' ? (CELEBRACIONES_JUEGO[plan.id] ?? CELEBRACIONES_JUEGO['celebracion-clasica']!) : null;
   const estilo = { '--duracion-celebracion': `${duracion}ms`, '--color-equipo': equipo.color } as CSSProperties;
@@ -63,9 +62,6 @@ export function CapaCelebracion({ celebracion, equipo, goleador, velocidad, onFi
           playsInline
           autoPlay
           aria-hidden="true"
-          ref={(v) => {
-            if (v) v.playbackRate = Math.max(1, velocidad);
-          }}
           onError={() => setFalloVideo(true)}
         >
           {fuentesSecuencia(plan.id).map((f, i, todas) => (

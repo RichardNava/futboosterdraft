@@ -58,6 +58,21 @@ Términos:
   bloqueo se mantiene mientras quede algún suplente disponible; solo se levanta si todos los suplentes están
   lesionados o sancionados (caso casi imposible), y entonces se juega con los disponibles.
 
+### Ronda 2 (2026-11-08, tras probar la primera entrega)
+
+- Q: Control total en la simulación rápida → A: **Se quita** (revisa la primera respuesta de arriba). Cambiar de modo
+  solo afectaba desde el descanso; en la simulación rápida las lesiones y expulsiones se resuelven siempre en
+  automático y no hay selector de modo.
+- Q: En control total, ¿se para también en los goles? → A: Sí, solo en la 2D y en **todos** los goles (propios y del
+  rival): tras la celebración se abre «Gestionar equipo» y lo decidido se aplica en el saque de centro.
+- Q: Goleadas (un participante sumó 41-5 en 5 partidos contra NPC amateur e intermedio) → A: Que haya desnivel es
+  correcto, pero el que gana de mucho baja la intensidad (casi por cortesía profesional) y le cuesta mucho más seguir
+  marcando. Además, deben salir algo más de porteros en los sobres. Análisis: el NPC amateur no había drafteado
+  portero (jugaba un extremo con media efectiva 32) y el motor escala los goles con la diferencia de nivel sin freno;
+  no es una regresión de esta spec (hay goleadas de 8-10 desde los parámetros 3.0.0).
+- Q: Plantillas → A: Nombre, escudo y estrellas con la media **del mejor once** (el mejor portero y los diez mejores de
+  campo) en la primera columna, fuera de las pestañas; los porteros pasan arriba de la columna de los defensas.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Partido con sonido y celebración de gol (Priority: P1)
@@ -371,6 +386,32 @@ sin desplazarse y con la importancia acordada.
   enlace), verse sin desplazarse en Inicio en escritorio y móvil, e ir con su icono; «Iniciar sesión» sin sesión
   iniciada DEBE estar junto a la acción principal de jugar, con la misma altura, como botón secundario.
 
+**Ronda 2 (2026-11-08)**:
+
+- **FR-032**: La 2D NO DEBE mostrar el rótulo «¡Gol!» (ni en el campo ni en la franja): lo sustituye la celebración.
+- **FR-033**: La celebración DEBE durar lo mismo a cualquier velocidad (x2, x4, x8) y el reloj de la reproducción DEBE
+  pararse en cada gol el tiempo de la celebración más larga (3 s). Los sonidos de la 2D suenan a su velocidad natural.
+- **FR-034**: Las celebraciones del juego DEBEN ser animaciones elaboradas por capas (destello, ondas, confeti o
+  serpentinas, focos y flashes, chispas de neón, tiza) que conserven el color del equipo y el goleador; con movimiento
+  reducido, solo el fundido.
+- **FR-035**: Los pitidos, el público (gol propio, gol del rival y el «oooh» de las tarjetas) y la caja registradora
+  DEBEN ser grabaciones reales con licencia CC0, con su procedencia en `public/sonidos/LICENCIA`.
+- **FR-036**: En la 2D con control total, cada gol (propio o del rival) DEBE parar el partido tras la celebración y
+  abrir «Gestionar equipo»; lo decidido se aplica en el saque de centro. En automático, los goles no paran.
+- **FR-037**: La simulación rápida NO DEBE ofrecer el modo de incidencias ni pararse por incidencias: se resuelven en
+  automático. FR-020 a FR-025 quedan solo para la 2D.
+- **FR-038**: En Formación, sustituir a un titular de baja NO DEBE dejarlo en el banquillo (sale al resto de la
+  plantilla) y un suplente de baja DEBE poder sacarse del banquillo, para que «Confirmar alineación» se pueda
+  desbloquear siempre.
+- **FR-039**: Los avisos emergentes DEBEN aparecer arriba a la derecha, bajo la barra de navegación.
+- **FR-040**: En Plantillas, la primera columna DEBE mostrar el nombre, el escudo y las estrellas con la media del mejor
+  once del equipo elegido; las pestañas, solo el nombre; los porteros, arriba en la columna de los defensas.
+- **FR-041**: Desde los parámetros 6.2.0, el equipo que gana por 2 goles o más DEBE bajar la intensidad: tira peor y
+  progresa menos en el último tercio, más cuanto mayor es la ventaja (los penaltis no cambian). Los partidos de
+  versiones anteriores se reproducen igual.
+- **FR-042**: Desde los parámetros 6.2.0, el hueco «POR o DEF» de cada sobre DEBE ser un portero el 70 % de las veces
+  (antes, el 50 %); si en el pool ya no quedan porteros, un defensa.
+
 ### Key Entities
 
 - **Preferencia de modo de gestión**: pertenece a la cuenta del participante; valores «Automático» y «Control total»;
@@ -407,6 +448,9 @@ sin desplazarse y con la importancia acordada.
   el plazo.
 - **SC-009**: En una prueba con 5 personas con cuenta, todas encuentran «Iniciar sesión» en Inicio en menos de 5 s.
 
+- **SC-010** (ronda 2): Reproduciendo con los parámetros 6.2.0 los 5 partidos del 41-5, el participante marca de media
+  entre 3,5 y 5 goles por partido (antes, 5-9) y un once de 88 contra uno de 70 no supera los 4,5 goles de media.
+
 ## Assumptions
 
 - La celebración se muestra solo en la 2D; la simulación rápida no tiene terreno de juego (solo suenan los goles si
@@ -422,5 +466,5 @@ sin desplazarse y con la importancia acordada.
 - Los sonidos se obtienen de bancos libres con licencia compatible o se sintetizan,
   como los actuales (procedencia en sonidos.md).
 - La preferencia «Campo horizontal» es la misma para Formación y «Gestionar equipo».
-- Fuera de alcance: venta de celebraciones, animaciones distintas de las de gol, sonidos de ambiente continuos y
-  cambios del motor de simulación.
+- Fuera de alcance: venta de celebraciones, animaciones distintas de las de gol y sonidos de ambiente continuos. Los
+  cambios del motor de la ronda 2 (FR-041, FR-042) se añadieron tras probar la primera entrega.

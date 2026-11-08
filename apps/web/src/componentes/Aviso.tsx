@@ -1,7 +1,7 @@
 /**
  * Avisos (spec 004, FR-003, FR-026, FR-027; data-model §2; contracts/ui.md §8 y §9): superficie de panel, borde
- * izquierdo e icono por tipo y siempre con texto. Ninguno usa el lima. `RegionAvisos` apila los emergentes sobre
- * la barra principal: como mucho 3 a la vista, los nuevos arriba.
+ * izquierdo e icono por tipo y siempre con texto. Ninguno usa el lima. `RegionAvisos` apila los emergentes arriba a
+ * la derecha, bajo la barra de navegación: como mucho 3 a la vista, los nuevos arriba.
  */
 import { useState, type ReactNode } from 'react';
 import { cerrarAviso, useAvisos } from '../estado/avisos';

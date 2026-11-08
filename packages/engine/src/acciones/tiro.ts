@@ -11,7 +11,7 @@ import { aAbsoluta, aEquipo, CENTRO_Y, LARGO, type Punto } from '../espacio/geom
 import { sacadorDeCentro } from '../espacio/colocacion';
 import { anotar } from '../metricas';
 import { atributo } from '../modificadores/atributos';
-import { desplazamientoAtaque } from '../modificadores/formacionTactica';
+import { desplazamientoAtaque, relajacion } from '../modificadores/formacionTactica';
 import { factorAutogol } from '../modificadores/defectos';
 import { ajusteDuelo, santoActivo, tiene } from '../modificadores/virtudes';
 import type { GrupoGol, TipoTiro as TipoTiroGol, ZonaRemate } from '../tipos';
@@ -116,6 +116,8 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
   const tipo = tipoSegunPosicion(tipoPedido, r.punto);
   const enRemate = { distancia: r.distancia, zonaRemate: r.zona };
   const porDistancia = tipo === 'penalti' ? 0 : desplazamientoTiro(p, r.decimas, r.angulo);
+  // El que gana de mucho tira peor (parámetros 6.2.0); los penaltis, igual.
+  const relajado = tipo === 'penalti' ? 0 : -relajacion(e, atacante.lado);
   stats.tiros++;
   stats[ZONA_TIROS[r.zona]]++;
   anotar(ctx.metricas, tirador.id, ZONA_TIROS[r.zona]);
@@ -149,7 +151,7 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
       base: p.acciones.puerta[tipo],
       atacante: remate + aj.atacante,
       defensor: defensaBloqueo + aj.defensor,
-      desplazamiento: tipo === 'penalti' ? 0 : desplazamientoAtaque(e, atacante, defensor, 'tiro', e.balon.zona) * 0.5 + porDistancia,
+      desplazamiento: tipo === 'penalti' ? 0 : desplazamientoAtaque(e, atacante, defensor, 'tiro', e.balon.zona) * 0.5 + porDistancia + relajado,
       ajuste: aj.probabilidad + bonusRemate / 2,
     },
     p,
@@ -193,7 +195,7 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
       base: p.acciones.gol[tipo],
       atacante: remate + ajp.atacante,
       defensor: parada + ajp.defensor,
-      desplazamiento: porDistancia,
+      desplazamiento: porDistancia + relajado,
       ajuste: bonusRemate - bonusPortero,
     },
     p,

@@ -3,7 +3,8 @@ import { partidaTrasDraft, sustituirEnGestion } from './ayudas';
 
 /**
  * Escenario F del quickstart (Historia 3): partido 2D en directo contra un NPC con el búfer de
- * anticipación. Velocidades x2, x4 y x8 (por defecto x2 y recordada al recargar), «¡Gol!», descanso con
+ * anticipación. Velocidades x2, x4 y x8 (por defecto x2 y recordada al recargar), la celebración de cada gol (sin el
+ * rótulo «¡Gol!» de antes, spec 012 ronda 2), descanso con
  * «Seguir», «Se aplicará en el minuto N» tras pedir un cambio, estadísticas finales (FR-024) y a 360 px el
  * campo, el marcador y los controles visibles sin desbordar (FR-025b).
  */
@@ -23,12 +24,14 @@ test('partido 2D en directo: velocidades, pausas anunciadas, cambio y estadísti
   await expect(page.locator('.campo-2d canvas')).toBeVisible();
   await expect(page.getByRole('button', { name: 'x8' })).toHaveAttribute('aria-pressed', 'true');
 
-  // Se apunta si se ve «¡Gol!» en algún momento (el rótulo dura 2 s reales).
+  // Se apunta si se ve la celebración de un gol en algún momento (dura lo mismo a x8) y si reaparece el rótulo viejo.
   await page.evaluate(() => {
-    const w = window as unknown as { golVisto: boolean };
+    const w = window as unknown as { golVisto: boolean; rotuloViejo: boolean };
     w.golVisto = false;
+    w.rotuloViejo = false;
     const mirar = () => {
-      if (document.querySelector('.marcador-2d')?.textContent?.includes('¡Gol!')) w.golVisto = true;
+      if (document.querySelector('[data-testid="capa-celebracion"]')) w.golVisto = true;
+      if (document.querySelector('.marcador-2d')?.textContent?.includes('¡Gol!')) w.rotuloViejo = true;
       requestAnimationFrame(mirar);
     };
     mirar();
@@ -62,6 +65,7 @@ test('partido 2D en directo: velocidades, pausas anunciadas, cambio y estadísti
   const marcador = (await page.getByTestId('resultado-marcador').textContent()) ?? '';
   const goles = [...marcador.matchAll(/(\d+) – (\d+)/g)].flatMap((m) => [Number(m[1]), Number(m[2])]).reduce((a, b) => a + b, 0);
   if (goles > 0) expect(await page.evaluate(() => (window as unknown as { golVisto: boolean }).golVisto)).toBe(true);
+  expect(await page.evaluate(() => (window as unknown as { rotuloViejo: boolean }).rotuloViejo)).toBe(false);
 });
 
 /**

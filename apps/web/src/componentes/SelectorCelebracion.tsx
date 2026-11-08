@@ -57,7 +57,6 @@ export function SelectorCelebracion({ elegida, onElegir, escudo = null, desactiv
             celebracion={{ id: enVista.id, datos: enVista.datos! }}
             equipo={{ nombre: 'Tu equipo', escudo, color: 'var(--color-accion)' }}
             goleador="Tu goleador"
-            velocidad={1}
             vistaPrevia
             onFin={() => setVista(null)}
           />

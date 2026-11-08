@@ -97,7 +97,8 @@ export const MsgPartidoTramo = z.object({
 export const MsgPartidoPausa = z.object({
   t: z.literal('partido.pausa_decision'),
   partidoId: z.string(),
-  motivo: z.enum(['descanso', 'pre_prorroga', 'incidencia']),
+  /** `gol` (spec 012, ronda 2): en la 2D con «control total», tras cada gol. */
+  motivo: z.enum(['descanso', 'pre_prorroga', 'incidencia', 'gol']),
   /** Límite de la ventana frente a un humano ausente; «Seguir» reanuda al instante (FR-012). */
   venceEn: z.string().datetime(),
   /** Solo con motivo `incidencia` (spec 012, FR-022): lances propios que han parado el partido. */

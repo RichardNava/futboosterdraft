@@ -6,6 +6,7 @@ import './estilos/fuentes.css';
 import './estilos/componentes.css';
 import './estilos/cartas.css';
 import './estilos/base.css';
+import './estilos/celebraciones.css';
 import './estilos/coleccion.css';
 
 const raiz = document.getElementById('root');

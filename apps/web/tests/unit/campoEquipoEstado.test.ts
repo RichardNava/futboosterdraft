@@ -164,6 +164,39 @@ describe('banquillo y resto de la plantilla (hallazgo H4)', () => {
     expect(r.banquillo[1]).toBe(titular);
   });
 
+  // Spec 012 (ronda 2): sustituir dos bajas no debe dejarlas en el banquillo, donde bloquean «Confirmar alineación».
+  it('un titular de baja sustituido por un suplente sale al resto, no al banquillo', () => {
+    const e = inicial();
+    const [deBaja, otraBaja] = Object.values(e.asignacion).filter((x): x is number => x !== undefined);
+    const cas = casilla(e, deBaja!)!;
+    const ob = { ...o, bloqueados: new Set([deBaja!, otraBaja!]) };
+    const suplente = e.banquillo[1]!;
+    // Arrastrando la baja sobre el suplente.
+    const r = soltar(e, deBaja!, { tipo: 'banquillo', sobre: suplente }, ob);
+    expect(r.asignacion[cas]).toBe(suplente);
+    expect(r.banquillo).not.toContain(deBaja);
+    expect(r.banquillo).not.toContain(suplente);
+    // Soltando el suplente sobre la otra baja en el campo.
+    const punto = colocacionDe(r, p, o.posicionesDe).titulares.find((t) => t.jugadorId === otraBaja)!;
+    const r2 = soltar(r, e.banquillo[2]!, { tipo: 'campo', punto }, ob);
+    expect(Object.values(r2.asignacion)).toContain(e.banquillo[2]);
+    expect(r2.banquillo).not.toContain(otraBaja);
+  });
+
+  it('un titular de baja soltado en el banquillo deja su casilla libre', () => {
+    const e = inicial();
+    const deBaja = Object.values(e.asignacion).find((x) => x !== undefined)!;
+    const r = soltar(e, deBaja, { tipo: 'banquillo' }, { ...o, bloqueados: new Set([deBaja]) });
+    expect(Object.values(r.asignacion)).not.toContain(deBaja);
+    expect(r.banquillo).toEqual(e.banquillo);
+  });
+
+  it('un suplente de baja puede volver al resto de la plantilla', () => {
+    const e = inicial();
+    const deBaja = e.banquillo[0]!;
+    expect(soltar(e, deBaja, { tipo: 'reserva' }, { ...o, bloqueados: new Set([deBaja]) }).banquillo).not.toContain(deBaja);
+  });
+
   it('un jugador no disponible no entra al banquillo', () => {
     const e = conHueco();
     expect(soltar(e, resto.id, { tipo: 'banquillo' }, { ...o, bloqueados: new Set([resto.id]) })).toBe(e);

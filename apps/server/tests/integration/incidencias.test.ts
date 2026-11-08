@@ -73,42 +73,35 @@ describe('control total (spec 012, US4)', () => {
     return null;
   }
 
-  it('rápida: inicio con el modo; parada con el aviso y los cambios restantes; «Seguir» reanuda y el partido acaba', async () => {
-    const { ws, inicio, p, partidoId } = await abrir('rapida');
+  // Spec 012, ronda 2: la simulación rápida no tiene «control total»; las lesiones se resuelven siempre en automático.
+  it('rápida: sin modo de incidencias ni paradas de incidencia aunque el participante tenga «control total»', async () => {
+    const { ws, inicio, p, partidoId, yo } = await abrir('rapida');
     expect(inicio.gestionDisponible).toBe(true);
-    expect(inicio.modoIncidencias).toBe('control_total');
-    // La primera parte puede traer ya un lance propio (se para en él); si no, se fuerza en la segunda.
-    const primera = await ws.esperar('partido.pausa_decision');
-    let parada = primera.motivo === 'incidencia' ? primera : null;
-    if (!parada) {
-      expect(primera.motivo).toBe('descanso');
-      conLesiones(p);
-      const desde = ws.recibidos.length;
-      ws.enviar({ t: 'partido.seguir', partidoId });
-      parada = await hastaIncidencia(ws, desde);
-    }
-    expect(parada, 'no hubo parada de incidencia').not.toBeNull();
-    expect(parada!.incidencias.length).toBeGreaterThan(0);
-    for (const i of parada!.incidencias) expect(['lesion', 'expulsion']).toContain(i.motivo);
-    expect(parada!.sustitucionesRestantes).toBeGreaterThanOrEqual(0);
-    // Reconectar durante la parada: la vista trae la misma pausa.
-    const estado = ws.recibidos.findLast((m) => m.t === 'estado');
-    expect(estado).toBeDefined();
-    // «Seguir» sin cambios: lo pendiente se resuelve en automático y el partido sigue.
-    const tras = ws.recibidos.length;
+    expect(inicio.modoIncidencias).toBeUndefined();
+    const lado = p.motor.equipos.local.participanteId === yo ? 'local' : 'visitante';
+    expect(p.motor.equipos[lado].controlTotal).toBe(false);
+    // Como antes: la primera parte llega hasta el descanso; desde ahí, lesiones muy probables y ninguna parada.
+    const descanso = await ws.esperar('partido.pausa_decision');
+    expect(descanso.motivo).toBe('descanso');
+    conLesiones(p);
+    let visto = ws.recibidos.length;
     ws.enviar({ t: 'partido.seguir', partidoId });
     const fin = await (async () => {
       for (let i = 0; i < 400; i++) {
-        for (const m of ws.recibidos.slice(tras)) {
+        for (const m of ws.recibidos.slice(visto)) {
           if (m.t === 'partido.fin') return m;
-          if (m.t === 'partido.pausa_decision') ws.enviar({ t: 'partido.seguir', partidoId });
+          if (m.t === 'partido.pausa_decision') {
+            expect(m.motivo).not.toBe('incidencia');
+            ws.enviar({ t: 'partido.seguir', partidoId });
+          }
         }
+        visto = ws.recibidos.length;
         await espera(25);
       }
       return null;
     })();
     expect(fin).not.toBeNull();
-    expect(p.motor.incidencias.every((i) => i.estado !== 'pendiente')).toBe(true);
+    expect((await ws.enviarYEsperarAck({ t: 'partido.modo_incidencias', partidoId, modo: 'automatico' })).ok).toBe(false);
     await ws.cerrar();
   });
 
@@ -147,7 +140,7 @@ describe('control total (spec 012, US4)', () => {
   });
 
   it('partido.modo_incidencias cambia el motor, el participante y el perfil; sin partido en curso, error', async () => {
-    const { ws, p, partidoId, yo, u, c } = await abrir('rapida');
+    const { ws, p, partidoId, yo, u, c } = await abrir('2d');
     const lado = p.motor.equipos.local.participanteId === yo ? 'local' : 'visitante';
     expect(p.motor.equipos[lado].controlTotal).toBe(true);
     const ack = await ws.enviarYEsperarAck({ t: 'partido.modo_incidencias', partidoId, modo: 'automatico' });
@@ -160,6 +153,65 @@ describe('control total (spec 012, US4)', () => {
     // Un partido que no es suyo (o ya terminado): no se acepta.
     const otro = await ws.enviarYEsperarAck({ t: 'partido.modo_incidencias', partidoId: '00000000-0000-4000-8000-000000000000', modo: 'control_total' });
     expect(otro.ok).toBe(false);
+    await ws.cerrar();
+  });
+
+  // Spec 012, ronda 2: en la 2D con «control total», cada gol para el partido; lo decidido se aplica en el saque.
+  it('2D: cada gol abre una pausa «gol» y un cambio decidido en ella se aplica en el saque de centro', async () => {
+    const { ws, p, partidoId, yo } = await abrir('2d');
+    // Goles mucho más probables (solo en este partido) para no depender del azar.
+    p.motor = { ...p.motor, parametros: { ...p.motor.parametros, acciones: { ...p.motor.parametros.acciones, gol: Object.fromEntries(Object.entries(p.motor.parametros.acciones.gol).map(([k, v]) => [k, v + 2])) as typeof p.motor.parametros.acciones.gol } } };
+    let tick = 0;
+    let visto = ws.recibidos.length;
+    let pausa: Record<string, unknown> | null = null;
+    for (let i = 0; i < 600 && !pausa; i++) {
+      for (const m of ws.recibidos.slice(visto)) {
+        if (m.t === 'partido.pausa_decision' && m.motivo === 'gol') pausa = m;
+        else if (m.t === 'partido.pausa_decision') ws.enviar({ t: 'partido.seguir', partidoId });
+      }
+      visto = ws.recibidos.length;
+      tick += 120;
+      ws.enviar({ t: 'partido.reproduccion', partidoId, tick, velocidad: 8 }, false);
+      await espera(25);
+    }
+    expect(pausa, 'no hubo pausa de gol').not.toBeNull();
+    // El trozo acaba en el saque de centro: el gol y los 40 ticks de su interrupción.
+    const tickGol = p.motor.tick;
+    const gol = p.motor.eventos.findLast((e) => e.tipo === 'gol')!;
+    expect(tickGol - gol.tick).toBeGreaterThanOrEqual(0);
+    expect(tickGol - gol.tick).toBeLessThanOrEqual(40);
+    // Sin «Seguir», no se simula más allá del gol.
+    ws.enviar({ t: 'partido.reproduccion', partidoId, tick: tickGol + 600, velocidad: 8 }, false);
+    await espera(200);
+    expect(p.motor.tick).toBe(tickGol);
+
+    const lado = p.motor.equipos.local.participanteId === yo ? 'local' : 'visitante';
+    const sale = p.motor.equipos[lado].jugadores.find((j) => j.enCampo && j.casillaId !== 'POR')!;
+    const entra = p.motor.equipos[lado].jugadores.find((j) => !j.enCampo && !j.retirado && j.jugador.demarcacion !== 'POR')!;
+    const ack = await ws.enviarYEsperarAck({ t: 'partido.decisiones', partidoId, decisiones: [{ tipo: 'sustitucion', datos: { sale: sale.id, entra: entra.id } }] });
+    expect(ack.ok, JSON.stringify(ack)).toBe(true);
+    const tras = ws.recibidos.length;
+    ws.enviar({ t: 'partido.seguir', partidoId });
+    ws.enviar({ t: 'partido.reproduccion', partidoId, tick: tickGol + 60, velocidad: 8 }, false);
+    const aplicada = await ws.esperar('partido.decision_aplicada', { desde: tras, timeoutMs: 10_000 });
+    expect(aplicada.aplicadaEnTick).toBe(tickGol);
+    await ws.cerrar();
+  });
+
+  it('2D en automático: los goles no paran el partido', async () => {
+    const u = await crearRegistrado(srv.url);
+    const { ws, p, partidoId } = await abrir('2d', u);
+    expect((await ws.enviarYEsperarAck({ t: 'partido.modo_incidencias', partidoId, modo: 'automatico' })).ok).toBe(true);
+    p.motor = { ...p.motor, parametros: { ...p.motor.parametros, acciones: { ...p.motor.parametros.acciones, gol: Object.fromEntries(Object.entries(p.motor.parametros.acciones.gol).map(([k, v]) => [k, v + 2])) as typeof p.motor.parametros.acciones.gol } } };
+    let tick = 0;
+    for (let i = 0; i < 80; i++) {
+      for (const m of ws.recibidos) if (m.t === 'partido.pausa_decision') ws.enviar({ t: 'partido.seguir', partidoId });
+      tick += 120;
+      ws.enviar({ t: 'partido.reproduccion', partidoId, tick, velocidad: 8 }, false);
+      await espera(25);
+    }
+    expect(p.motor.eventos.some((e) => e.tipo === 'gol')).toBe(true);
+    expect(ws.recibidos.some((m) => m.t === 'partido.pausa_decision' && m.motivo === 'gol')).toBe(false);
     await ws.cerrar();
   });
 });

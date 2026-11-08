@@ -40,33 +40,42 @@ describe('CapaCelebracion', () => {
     expect(planCelebracion({ id: 'x', datos: secuencia }, IDS_CELEBRACIONES_JUEGO, true)).toEqual({ clase: 'juego', id: 'celebracion-clasica' });
   });
 
-  it('la duración se divide por la velocidad; la de juego, con tope de 3 s', () => {
-    expect(duracionCelebracion(juego, 1)).toBe(2800);
-    expect(duracionCelebracion(juego, 4)).toBe(700);
-    expect(duracionCelebracion({ clase: 'juego', duracionMs: 9000 }, 1)).toBe(3000);
-    expect(duracionCelebracion(secuencia, 2)).toBe(2000);
+  // Spec 012, ronda 2: a x8 no daba tiempo a verla; ahora dura lo mismo a cualquier velocidad (el reloj espera).
+  it('la duración no depende de la velocidad; la de juego, con tope de 3 s', () => {
+    expect(duracionCelebracion(juego)).toBe(2800);
+    expect(duracionCelebracion({ clase: 'juego', duracionMs: 9000 })).toBe(3000);
+    expect(duracionCelebracion(secuencia)).toBe(4000);
     // Una secuencia que cae a la del juego también respeta el tope.
-    expect(duracionCelebracion({ clase: 'secuencia', duracionMs: 5000 }, 1, 'juego')).toBe(3000);
+    expect(duracionCelebracion({ clase: 'secuencia', duracionMs: 5000 }, 'juego')).toBe(3000);
   });
 
-  const pintar = (id: string, datos: typeof juego | typeof secuencia, velocidad = 2) =>
+  const pintar = (id: string, datos: typeof juego | typeof secuencia) =>
     renderToStaticMarkup(
       createElement(CapaCelebracion, {
         celebracion: { id, datos },
         equipo: { nombre: 'Los Ana', escudo: null, color: '#ff0000' },
         goleador: 'Pérez',
-        velocidad,
         onFin: () => undefined,
       }),
     );
 
-  it('anuncia el gol a los lectores de pantalla y lleva la duración ya dividida', () => {
+  it('anuncia el gol a los lectores de pantalla y lleva su duración', () => {
     const html = pintar('celebracion-estadio', juego);
     expect(html).toContain('aria-live="polite"');
     expect(html).toContain('Gol de Pérez (Los Ana)');
     expect(html).toContain('data-celebracion="celebracion-estadio"');
-    expect(html).toContain('--duracion-celebracion:1400ms');
+    expect(html).toContain('--duracion-celebracion:2800ms');
     expect(html).toContain('celebracion-estadio');
+  });
+
+  it('«¡GOL!» va letra a letra y cada celebración del juego trae sus efectos', () => {
+    const clasica = pintar('celebracion-clasica', juego);
+    expect(clasica.match(/class="celebracion-letra"/g)).toHaveLength(5);
+    expect(clasica).toContain('particulas-confeti');
+    expect(clasica).toContain('celebracion-onda');
+    expect(pintar('celebracion-estadio', juego)).toContain('particulas-flash');
+    expect(pintar('celebracion-neon', juego)).toContain('particulas-chispa');
+    expect(pintar('celebracion-pizarra', juego)).toContain('celebracion-flecha');
   });
 
   it('una secuencia es un vídeo silenciado con WebM y MOV', () => {
@@ -77,7 +86,7 @@ describe('CapaCelebracion', () => {
   });
 
   it('con movimiento reducido no queda ningún transform (solo el fundido de la capa)', () => {
-    const css = leer('../../src/estilos/base.css');
+    const css = leer('../../src/estilos/celebraciones.css');
     expect(css).toMatch(/\.capa-celebracion\.reducido \*[^{]*\{[^}]*transform: none !important/);
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.capa-celebracion \*[^{]*\{[^}]*transform: none !important/);
     // El fundido de la propia capa solo anima la opacidad.

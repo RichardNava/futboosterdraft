@@ -20,6 +20,19 @@ export function mediaEquipo(colocacion: ResultadoColocacion, jugadores: Readonly
   return medias.length === 0 ? null : medias.reduce((a, b) => a + b, 0) / medias.length;
 }
 
+/**
+ * Media del mejor once de una plantilla por la media de cada carta (Plantillas, spec 012, ronda 2): el mejor portero y
+ * los diez mejores jugadores de campo; `null` sin jugadores. No depende de ninguna alineación (las de los rivales no
+ * se ven), así que sirve para comparar equipos.
+ */
+export function mediaMejorOnce(plantilla: readonly Pick<CartaResumen, 'demarcacion' | 'media'>[]): number | null {
+  const porMedia = (a: { media: number }, b: { media: number }) => b.media - a.media;
+  const porteros = plantilla.filter((j) => j.demarcacion === 'POR').sort(porMedia).slice(0, 1);
+  const campo = plantilla.filter((j) => j.demarcacion !== 'POR').sort(porMedia).slice(0, 10);
+  const once = [...porteros, ...campo];
+  return once.length === 0 ? null : once.reduce((a, j) => a + j.media, 0) / once.length;
+}
+
 /** Relleno (0–1) de cada una de las diez estrellas: una estrella por cada 10 puntos de media. */
 export function rellenoEstrellas(media: number): number[] {
   return Array.from({ length: ESTRELLAS }, (_, i) => Math.max(0, Math.min(1, media / 10 - i)));

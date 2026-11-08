@@ -78,7 +78,8 @@ export interface PartidoEnCurso {
   dosD: Estado2D | null;
 }
 
-export type MotivoPausa = 'descanso' | 'pre_prorroga' | 'incidencia';
+/** `gol`: en la 2D con «control total», cada gol para el partido para gestionar el equipo (spec 012, ronda 2). */
+export type MotivoPausa = 'descanso' | 'pre_prorroga' | 'incidencia' | 'gol';
 
 export const esHumano = (c: ControladorPartida, pid: string) => c.participante(pid)?.tipo === 'humano' && !c.participante(pid)?.controladoPorNPC;
 
@@ -328,13 +329,13 @@ export async function iniciarPartido(
     decisiones: true,
     // En directo solo se juega contra un NPC: se puede gestionar el equipo (FR-027).
     gestionDisponible,
-    // Spec 012 (FR-020): el modo de incidencias del único humano, que es quien lo ve.
-    ...(gestionDisponible ? { modoIncidencias: c.participante(humanos[0]!)?.modoIncidencias ?? MODO_INCIDENCIAS_POR_DEFECTO } : {}),
+    // Spec 012 (FR-020): el modo de incidencias del único humano, que es quien lo ve. Solo en la 2D (ronda 2).
+    ...(gestionDisponible && modalidadDe(c, fila) === '2d' ? { modoIncidencias: c.participante(humanos[0]!)?.modoIncidencias ?? MODO_INCIDENCIAS_POR_DEFECTO } : {}),
     ordenJugadores: ordenJugadores(motor),
     dorsalesAsignados: [...local.asignados, ...visitante.asignados],
   };
-  // Spec 012 (FR-020, FR-024): «control total» solo contra un NPC, según el modo del único humano.
-  if (gestionDisponible) fijarControlTotal(c, motor, humanos[0]!);
+  // Spec 012 (FR-020, FR-024): «control total» solo contra un NPC y en la 2D, según el modo del único humano.
+  if (gestionDisponible) fijarControlTotal(c, motor, fila, humanos[0]!);
   const p: PartidoEnCurso = { fila: { ...fila, estado: 'primera_parte', entrada: guardada }, motor, inicio, eventos: [], ultimo: null, pausa: null, listos: new Set(), dosD: null };
   c.partidosEnCurso.set(fila.id, p);
   metricas.partidosSimuladosTotal.inc();
@@ -357,10 +358,16 @@ export async function iniciarPartido(
 /** Lado del motor de un participante del partido. */
 const ladoDe = (motor: EstadoMotor, participanteId: string) => (motor.equipos.local.participanteId === participanteId ? 'local' : 'visitante');
 
-/** Pone en el motor el modo de incidencias que tiene el participante (spec 012, research R3). */
-function fijarControlTotal(c: ControladorPartida, motor: EstadoMotor, participanteId: string): void {
-  motor.equipos[ladoDe(motor, participanteId)].controlTotal = c.participante(participanteId)?.modoIncidencias === 'control_total';
+/**
+ * Pone en el motor el modo de incidencias que tiene el participante (spec 012, research R3). Solo en la 2D: en la
+ * simulación rápida las lesiones y expulsiones se resuelven siempre en automático (spec 012, ronda 2).
+ */
+function fijarControlTotal(c: ControladorPartida, motor: EstadoMotor, fila: FilaPartido, participanteId: string): void {
+  motor.equipos[ladoDe(motor, participanteId)].controlTotal = modalidadDe(c, fila) === '2d' && controlTotalDe(c, participanteId);
 }
+
+/** ¿Tiene el participante el modo «control total»? */
+export const controlTotalDe = (c: ControladorPartida, participanteId: string): boolean => c.participante(participanteId)?.modoIncidencias === 'control_total';
 
 async function jugarTramo(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, modo: 'parte' | 'final', calculado?: ResultadoTramo): Promise<void> {
   const { calculo } = c.servicios;
@@ -445,8 +452,8 @@ export function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: Parti
   p.pausa = { motivo, venceEn, ...(incidencias ? { incidencias } : {}) };
   p.listos = new Set([p.fila.localId, p.fila.visitanteId].filter((pid) => !esHumano(c, pid)));
   // El NPC rival decide al empezar la pausa; sus cambios se aplican al reanudar, como los del humano. En una parada
-  // de incidencia no decide (en automático no existe; spec 012, research R2).
-  if (motivo !== 'incidencia') decidirNPCEnPausa(p.motor, nivelesDe(c, p.fila), p.fila.semilla);
+  // de incidencia o de gol no decide (en automático no existen; spec 012, research R2).
+  if (motivo !== 'incidencia' && motivo !== 'gol') decidirNPCEnPausa(p.motor, nivelesDe(c, p.fila), p.fila.semilla);
   emitirPausa(c, ctx, p);
   programarVentana(c, p);
 }
@@ -644,12 +651,12 @@ export async function procesarModoIncidencias(
 ): Promise<ResultadoComandoPartido> {
   const p = partidoDe(c, participanteId, partidoId);
   if ('ok' in p) return p;
-  if (p.fila.estado === 'finalizado' || humanosDe(c, p.fila).length !== 1 || !esHumano(c, participanteId)) {
-    return fallo('SIN_GESTION', 'El modo de incidencias solo se puede elegir en un partido contra un NPC');
+  if (p.fila.estado === 'finalizado' || humanosDe(c, p.fila).length !== 1 || !esHumano(c, participanteId) || !p.dosD) {
+    return fallo('SIN_GESTION', 'El modo de incidencias solo se puede elegir en un partido 2D contra un NPC');
   }
   const participante = c.participante(participanteId)!;
   participante.modoIncidencias = modo;
-  fijarControlTotal(c, p.motor, participanteId);
+  fijarControlTotal(c, p.motor, p.fila, participanteId);
   await c.servicios.repoPartidas.cambiarModoIncidencias(participanteId, modo);
   if (participante.usuarioId && !c.anfitrionEsInvitado) {
     await c.servicios.repoPerfiles.guardarAspecto(participante.usuarioId, { modoIncidencias: modo }, c.servicios.reloj.ahora());

@@ -26,7 +26,7 @@ import { reproducir } from '../sonido/sonido';
 import { SelectorModoIncidencias } from '../componentes/SelectorModoIncidencias';
 import { textoParada, type IncidenciaVista } from '../componentes/textoParada';
 import type { ModoIncidencias } from '@fbd/domain';
-import { CELEBRACION_DEL_JUEGO } from '@fbd/domain';
+import { CELEBRACION_DEL_JUEGO, DURACION_MAXIMA_CELEBRACION_JUEGO_MS } from '@fbd/domain';
 
 interface Tramo extends TramoRecibido {
   eventos: (TramoRecibido['eventos'][number] & EventoVista)[];
@@ -40,8 +40,8 @@ function sumarMinutos(minuto: string, n: number): string {
   return minuto.replace(/(\d+)'$/, (_, m: string) => `${Number(m) + n}'`);
 }
 
+// Sin rótulo de gol: lo sustituye la celebración (spec 012, ronda 2).
 const AVISO: Partial<Record<EstadoReloj, string>> = {
-  gol: '¡Gol!',
   descanso: 'Descanso',
   pre_prorroga: 'Final del tiempo reglamentario: habrá prórroga',
   cargando: 'Cargando…',
@@ -62,11 +62,14 @@ function malestarActivo(eventos: readonly EventoVista[]): { equipo: 'local' | 'v
   return [...estado.values()].filter((x): x is NonNullable<typeof x> => x !== null);
 }
 
-/** `partido.pausa_decision` con motivo `incidencia` (spec 012, contracts/protocolo.md). */
+/** `partido.pausa_decision` con motivo `incidencia` o `gol` (spec 012, contracts/protocolo.md; ronda 2). */
 interface DatosParada {
+  motivo: 'incidencia' | 'gol';
   incidencias?: IncidenciaVista[];
   sustitucionesRestantes?: number;
 }
+
+const TEXTO_PARADA_GOL = 'Partido detenido tras el gol: lo que cambies se aplicará en el saque de centro.';
 
 /** Si un `partido.inicio` anterior a la spec 012 no trae celebraciones: la del juego. */
 const CELEBRACION_POR_DEFECTO: CelebracionElegida = { id: CELEBRACION_DEL_JUEGO, datos: { clase: 'juego', duracionMs: 2600 } };
@@ -75,7 +78,7 @@ const movimientoReducido = () => typeof window !== 'undefined' && window.matchMe
 
 /**
  * Partido 2D en directo contra un NPC (002/FR-021 a FR-025b; research R6): el campo con los jugadores, las
- * velocidades x2, x4 y x8 (solo del cliente; se recuerda la última), las pausas anunciadas («¡Gol!»,
+ * velocidades x2, x4 y x8 (solo del cliente; se recuerda la última), las pausas anunciadas (cada gol, con su celebración;
  * descanso y antes de la prórroga, «Cargando…») y el feed de eventos hasta el minuto que se está viendo.
  *
  * Spec 003: «Gestionar equipo» (contra un NPC) detiene la reproducción y abre la gestión sobre el campo (US5); los
@@ -101,25 +104,33 @@ export function Partido2D() {
   // Gol que se está celebrando (spec 012, FR-009): uno nuevo reemplaza al anterior.
   const [golCelebrado, setGolCelebrado] = useState<EventoVista | null>(null);
   const vistosOidos = useRef<number | null>(null);
-  // Parada de «control total» (spec 012, FR-022): el reloj se detiene al llegar a su tick y se abre la gestión.
-  const [parada, setParada] = useState<{ incidencias: IncidenciaVista[]; restantes: number; tick: number; abierta: boolean } | null>(null);
+  // Parada de «control total» (spec 012, FR-022): el reloj se detiene al llegar a su tick y se abre la gestión. En un
+  // gol (ronda 2), después de la celebración.
+  const [parada, setParada] = useState<{ motivo: DatosParada['motivo']; incidencias: IncidenciaVista[]; restantes: number; tick: number; abierta: boolean } | null>(null);
   const [modo, setModo] = useState<ModoIncidencias | null>(null);
   const datos = useRef(datosVacios());
   const enviarReproduccion = useRef<(tick: number, velocidad: Velocidad) => void>(() => undefined);
-  const [reloj] = useState(() => new RelojReproduccion({ informar: (t, v) => enviarReproduccion.current(t, v) }));
+  // La pausa de cada gol dura lo que la celebración más larga, a cualquier velocidad (spec 012, ronda 2).
+  const [reloj] = useState(() => new RelojReproduccion({ informar: (t, v) => enviarReproduccion.current(t, v), pausaGolMs: DURACION_MAXIMA_CELEBRACION_JUEGO_MS }));
   const [velocidad, setVelocidad] = useState<Velocidad>(reloj.velocidad);
   const sinRotulos = useMemo(movimientoReducido, []);
 
-  const recibirParada = useCallback((m: DatosParada) => {
-    const incidencias = m.incidencias ?? [];
-    if (incidencias.length === 0) return;
-    setParada((actual) => ({
-      incidencias,
-      restantes: m.sustitucionesRestantes ?? 0,
-      tick: Math.max(...incidencias.map((i) => i.tick)),
-      abierta: actual?.abierta === true && actual.tick === Math.max(...incidencias.map((i) => i.tick)),
-    }));
-  }, []);
+  const recibirParada = useCallback(
+    (m: DatosParada) => {
+      const incidencias = m.incidencias ?? [];
+      if (m.motivo === 'incidencia' && incidencias.length === 0) return;
+      // En un gol, el servidor se ha parado justo en él: el final de lo recibido.
+      const tick = m.motivo === 'gol' ? reloj.limite : Math.max(...incidencias.map((i) => i.tick));
+      setParada((actual) => ({
+        motivo: m.motivo,
+        incidencias,
+        restantes: m.sustitucionesRestantes ?? 0,
+        tick,
+        abierta: actual?.abierta === true && actual.tick === tick,
+      }));
+    },
+    [reloj],
+  );
 
   const recibirTramo = useCallback(
     (t: Tramo) => {
@@ -151,7 +162,7 @@ export function Partido2D() {
         setFin({ marcador: m.marcador as Marcador, eventos: m.eventos as EventoVista[], estadisticas: m.estadisticas });
         break;
       case 'partido.pausa_decision':
-        if (m.motivo === 'incidencia') recibirParada(m as unknown as DatosParada);
+        if (m.motivo === 'incidencia' || m.motivo === 'gol') recibirParada(m as unknown as DatosParada);
         break;
     }
   });
@@ -170,7 +181,7 @@ export function Partido2D() {
     const p = estado.vista.partido;
     if (!p || p.inicio.partidoId !== partidoId || !p.dosD) return;
     setInicio(p.inicio);
-    if (p.pausa?.motivo === 'incidencia') recibirParada(p.pausa as unknown as DatosParada);
+    if (p.pausa?.motivo === 'incidencia' || p.pausa?.motivo === 'gol') recibirParada(p.pausa as unknown as DatosParada);
     const ts = p.dosD.tramos as Tramo[];
     setTramos(ts);
     datos.current = datosVacios();
@@ -199,19 +210,22 @@ export function Partido2D() {
     const lado = miId === inicio.local.id ? 'local' : miId === inicio.visitante.id ? 'visitante' : null;
     for (const e of eventosVistos.slice(previos)) {
       const efecto = efectoDeEvento(e, lado, tramos.find((t) => t.eventos.includes(e as Tramo['eventos'][number]))?.fase);
-      if (efecto) reproducir(efecto, Math.min(velocidad, 2));
+      // A su velocidad natural: son grabaciones (spec 012, ronda 2).
+      if (efecto) reproducir(efecto);
       if (e.tipo === 'gol') setGolCelebrado(e);
     }
     // Solo cuando cambia lo visto: la velocidad o los tramos nuevos no deben volver a sonar nada.
   }, [eventosVistos.length, inicio !== null]);
 
-  // Al llegar la reproducción al lance de la parada: se detiene y se abre «Gestionar equipo» (una vez por parada).
+  // Al llegar la reproducción al lance de la parada: se detiene y se abre «Gestionar equipo» (una vez por parada). En
+  // un gol, cuando acaban la pausa del reloj y la celebración.
+  const celebrando = golCelebrado !== null || estadoReloj === 'gol';
   useEffect(() => {
-    if (!parada || parada.abierta || tick < parada.tick) return;
+    if (!parada || parada.abierta || tick < parada.tick || (parada.motivo === 'gol' && celebrando)) return;
     reloj.detener();
     setParada({ ...parada, abierta: true });
     setGestion(true);
-  }, [parada, tick, reloj]);
+  }, [parada, tick, reloj, celebrando]);
 
   const tramoActual = tramos.find((t) => t.hastaTick >= tick) ?? tramos.at(-1);
   const anterior = tramoActual ? tramos[tramos.indexOf(tramoActual) - 1] : undefined;
@@ -309,7 +323,7 @@ export function Partido2D() {
   const gestionDisponible = inicio.gestionDisponible === true && miLado !== null;
   if (gestion && miLado) {
     // Solo lo ya visto: eventos y decisiones hasta el tick de la reproducción (research R17).
-    const lesionadosParada = new Set(parada?.abierta ? parada.incidencias.filter((i) => i.motivo === 'lesion').map((i) => i.jugadorId) : []);
+    const lesionadosParada = new Set(parada?.abierta && parada.motivo === 'incidencia' ? parada.incidencias.filter((i) => i.motivo === 'lesion').map((i) => i.jugadorId) : []);
     const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], eventosVistos, miLado, tick, aplicadas, fase === 'pre_prorroga' || fase === 'prorroga', lesionadosParada);
     const jugadoresPropios = new Map([...inicio.alineaciones[miLado].titulares.map((t) => t.jugador), ...inicio.alineaciones[miLado].suplentes].map((j) => [j.id, j]));
     return (
@@ -320,7 +334,7 @@ export function Partido2D() {
         colores={coloresDe(inicio.equipaciones[miLado])}
         enviar={enviarLote}
         onCerrar={cerrarGestion}
-        aviso={parada?.abierta ? textoParada(parada.incidencias, nombre, parada.restantes) : null}
+        aviso={!parada?.abierta ? null : parada.motivo === 'gol' ? TEXTO_PARADA_GOL : textoParada(parada.incidencias, nombre, parada.restantes)}
       />
     );
   }
@@ -397,7 +411,6 @@ export function Partido2D() {
               celebracion={inicio.celebraciones?.[golCelebrado.equipo] ?? CELEBRACION_POR_DEFECTO}
               equipo={equipoMarcador(inicio, golCelebrado.equipo)}
               goleador={goleadorDe(golCelebrado, nombre)}
-              velocidad={velocidad}
               onFin={() => setGolCelebrado(null)}
             />
           )}

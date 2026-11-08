@@ -6,6 +6,7 @@
  * también concede más; una defensiva, menos de ambas.
  */
 import type { EquipoEstado, EstadoMotor } from '../estado/estado';
+import type { Lado } from '../tipos';
 
 /** Acciones con balón. `tiro` sustituye a `remate` y `tiro_lejano`: su peso sale de la distancia real (spec 003, R6). */
 export type TipoAccion = 'pase_corto' | 'pase_largo' | 'conduccion' | 'regate' | 'pase_espacio' | 'centro' | 'tiro';
@@ -72,12 +73,25 @@ export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: numb
 }
 
 /** Desplazamiento (escala de la sigmoide) a favor del atacante en una acción de progresión o de tiro. */
+/**
+ * Relajación del que gana de mucho (parámetros 6.2.0; spec 012, ronda 2): con `ventajaMinima` goles de ventaja o más,
+ * `porGol` por cada gol desde ahí, hasta `maximo`, en la escala de la sigmoide. Resta a sus tiros y, multiplicada por
+ * `ataque`, a su progresión en el último tercio. 0 sin el bloque (versiones anteriores): no consume PRNG.
+ */
+export function relajacion(estado: Pick<EstadoMotor, 'parametros' | 'marcador'>, lado: Lado): number {
+  const r = estado.parametros.relajacion;
+  if (!r) return 0;
+  const ventaja = estado.marcador[lado] - estado.marcador[lado === 'local' ? 'visitante' : 'local'];
+  return ventaja < r.ventajaMinima ? 0 : Math.min(r.maximo, r.porGol * (ventaja - r.ventajaMinima + 1));
+}
+
 export function desplazamientoAtaque(estado: EstadoMotor, atacante: EquipoEstado, defensor: EquipoEstado, accion: TipoAccion, zona: number): number {
   const p = estado.parametros;
   let x = p.formaciones.efectoOfensividad * (ofensividad(atacante) + ofensividad(defensor));
   // Cuanto más cerca del área rival, más cuesta progresar.
   if (zona >= 3 && accion !== 'pase_corto') x -= p.acciones.dificultadZona * (zona - 2);
   if (zona >= 4 && accion === 'pase_corto') x -= p.acciones.dificultadZona;
+  if (zona >= 3 && p.relajacion) x -= p.relajacion.ataque * relajacion(estado, atacante.lado);
   const ta = atacante.tactica;
   const td = defensor.tactica;
   const progresion = accion !== 'pase_corto' || zona >= 3;

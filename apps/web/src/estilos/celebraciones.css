@@ -1,0 +1,708 @@
+/*
+ * Celebraciones de gol (spec 012, FR-009 a FR-014; ronda 2, FR-033 y FR-034; contracts/ui.md «CapaCelebracion»):
+ * objetos de juego, como las cartas, así que pueden llevar sus propios colores, sombras y radios (excepción en
+ * scripts/comprobar-tokens.mjs). Capa encima del lienzo con su propio bucle de CSS; las animaciones van en porcentajes
+ * de `--duracion-celebracion`, en tiempo real a cualquier velocidad (el reloj espera a que acabe). Con movimiento
+ * reducido (sistema o `.reducido`), solo fundido.
+ */
+.capa-celebracion {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  container-type: size;
+  animation: celebracion-fundido var(--duracion-celebracion, 2600ms) linear both;
+}
+
+.capa-celebracion .celebracion-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.celebracion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--espacio-3);
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.celebracion-titulo {
+  position: relative;
+  font-family: var(--letra-cartel);
+  font-size: clamp(56px, 16cqmin, 168px);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+  line-height: 0.9;
+  color: var(--color-texto);
+}
+
+.celebracion-pie,
+.celebracion-rotulo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-style: var(--inclinacion-cartel);
+  font-weight: 800;
+}
+
+.celebracion-insignia {
+  display: inline-flex;
+}
+
+.celebracion-insignia .chapa {
+  width: 44px;
+  height: 44px;
+}
+
+.celebracion-insignia .chapa.chapa-escudo {
+  width: 56px;
+  height: 56px;
+}
+
+/* Piezas compartidas (spec 012, ronda 2; componentes/celebraciones/efectos.tsx). */
+.celebracion-titulo .celebracion-letra {
+  display: inline-block;
+  animation: celebracion-letra 720ms cubic-bezier(0.2, 0.9, 0.25, 1.25) both;
+  animation-delay: calc(80ms + var(--i) * 70ms);
+}
+
+.celebracion-particulas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particula {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 11px;
+  height: 7px;
+  margin: -3px 0 0 -5px;
+  border-radius: 1px;
+  background: var(--color-equipo);
+  opacity: 0;
+}
+
+.particula:nth-child(3n + 2) {
+  background: #ffffff;
+}
+
+.particula:nth-child(3n) {
+  background: #ffd447;
+}
+
+.particula:nth-child(4n) {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.particulas-confeti .particula {
+  animation: particula-estalla calc(var(--duracion-celebracion, 2600ms) * 0.85) linear both;
+  animation-delay: calc(140ms + var(--retraso) * 160ms);
+}
+
+.particulas-chispa .particula {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 0 6px 2px var(--celebracion-neon),
+    0 0 12px 4px var(--color-equipo);
+  animation: particula-estalla calc(var(--duracion-celebracion, 2600ms) * 0.55) linear both;
+  animation-delay: calc(var(--duracion-celebracion, 2600ms) * 0.16 + var(--retraso) * 260ms);
+}
+
+.particulas-serpentina .particula {
+  top: -8%;
+  left: var(--inicio);
+  width: 6px;
+  height: 22px;
+  margin: 0;
+  border-radius: 3px;
+  animation: particula-cae calc(var(--duracion-celebracion, 2600ms) * 0.8) linear both;
+  animation-delay: calc(var(--retraso) * 700ms);
+}
+
+.particulas-tiza .particula {
+  top: 30%;
+  left: var(--inicio);
+  width: 3px;
+  height: 3px;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--celebracion-tiza);
+  animation: particula-polvo calc(var(--duracion-celebracion, 2600ms) * 0.7) ease-out both;
+  animation-delay: calc(var(--duracion-celebracion, 2600ms) * 0.15 + var(--retraso) * 500ms);
+}
+
+.particulas-flash .particula {
+  top: calc(4% + var(--retraso) * 34%);
+  left: var(--inicio);
+  width: 6px;
+  height: 6px;
+  margin: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 14px 6px rgb(255 255 255 / 70%);
+  animation: particula-flash 260ms ease-out both;
+  animation-delay: calc(var(--retraso) * var(--duracion-celebracion, 2600ms) * 0.7);
+}
+
+.celebracion-ondas {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.celebracion-onda {
+  grid-area: 1 / 1;
+  width: 30cqmin;
+  aspect-ratio: 1;
+  border: 6px solid color-mix(in srgb, var(--color-equipo) 60%, #ffffff);
+  border-radius: 50%;
+  opacity: 0;
+  animation: celebracion-onda 900ms cubic-bezier(0.1, 0.7, 0.3, 1) both;
+  animation-delay: calc(60ms + var(--i) * 140ms);
+}
+
+/* Clásica (la del juego): destello, ondas, rayos, letras de golpe con sacudida y confeti. */
+.celebracion-clasica .celebracion-velo {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--color-equipo) 55%, transparent), var(--celebracion-velo) 72%);
+}
+
+.celebracion-rayos {
+  position: absolute;
+  inset: -40%;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--color-equipo) 40%, transparent) 0deg 8deg, transparent 8deg 22deg);
+  mask-image: radial-gradient(circle at center, #000 0%, transparent 55%);
+  animation: celebracion-rayos var(--duracion-celebracion, 2600ms) linear both;
+}
+
+.celebracion-destello {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  opacity: 0;
+  animation: celebracion-destello 420ms ease-out both;
+}
+
+.celebracion-sacudida {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-3);
+  animation: celebracion-sacudida 520ms linear both;
+  animation-delay: 380ms;
+}
+
+.celebracion-clasica .celebracion-titulo {
+  color: #ffffff;
+  -webkit-text-stroke: 3px color-mix(in srgb, var(--color-equipo) 80%, #000000);
+  text-shadow:
+    0 6px 0 color-mix(in srgb, var(--color-equipo) 70%, #000000),
+    0 0 36px color-mix(in srgb, var(--color-equipo) 80%, transparent);
+}
+
+.celebracion-clasica .celebracion-pie {
+  animation: celebracion-sube var(--duracion-celebracion, 2600ms) var(--curva-salida) both;
+}
+
+/* Estadio: focos que barren, flashes en la grada, serpentinas, «¡GOL!» dorado y rótulo de retransmisión. */
+.celebracion-estadio {
+  background: linear-gradient(to bottom, rgb(0 0 0 / 70%), var(--celebracion-velo) 60%);
+}
+
+.celebracion-foco {
+  position: absolute;
+  top: -20%;
+  width: 40%;
+  height: 140%;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--color-foco) 55%, transparent), transparent 80%);
+  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+  transform-origin: 50% 0;
+  animation: celebracion-barrido var(--duracion-celebracion, 2800ms) ease-in-out both;
+}
+
+.celebracion-foco-izquierdo {
+  left: 5%;
+}
+
+.celebracion-foco-derecho {
+  right: 5%;
+  animation-direction: reverse;
+}
+
+.celebracion-estadio .celebracion-letra {
+  background: linear-gradient(to bottom, #fff6d6 0%, #ffd447 45%, #b8860b 55%, #ffe58a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 0 rgb(0 0 0 / 55%));
+  animation-name: celebracion-letra-sube;
+}
+
+.celebracion-estadio .celebracion-rotulo {
+  overflow: hidden;
+  padding: var(--espacio-2) var(--espacio-5) var(--espacio-2) var(--espacio-3);
+  border-radius: var(--radio);
+  background: var(--vidrio-fuerte);
+  box-shadow: var(--sombra-elevada);
+  animation: celebracion-rotulo var(--duracion-celebracion, 2800ms) var(--curva-salida) both;
+}
+
+.celebracion-rotulo-franja {
+  align-self: stretch;
+  width: 8px;
+  border-radius: 4px;
+  background: var(--color-equipo);
+}
+
+.celebracion-rotulo-texto {
+  display: grid;
+  justify-items: start;
+  line-height: 1.1;
+}
+
+.celebracion-equipo {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-pequeno);
+}
+
+/* Neón: líneas de pantalla, marco que se dibuja, letrero que parpadea al encenderse y chispas. */
+.celebracion-neon {
+  background: rgb(4 2 12 / 78%);
+}
+
+.celebracion-lineas {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 4%) 0 1px, transparent 1px 4px);
+}
+
+.celebracion-marco-neon {
+  position: absolute;
+  inset: 14% 10%;
+  border: 3px solid var(--celebracion-tiza);
+  border-radius: 18px;
+  box-shadow:
+    0 0 10px var(--celebracion-neon),
+    0 0 26px var(--color-equipo),
+    inset 0 0 18px var(--celebracion-neon);
+  animation: celebracion-marco var(--duracion-celebracion, 2500ms) linear both;
+}
+
+.celebracion-neon .celebracion-titulo {
+  color: var(--celebracion-tiza);
+  -webkit-text-stroke: 2px var(--celebracion-neon);
+  text-shadow:
+    0 0 8px var(--celebracion-neon),
+    0 0 24px var(--celebracion-neon),
+    0 0 48px var(--color-equipo);
+  animation:
+    celebracion-parpadeo var(--duracion-celebracion, 2500ms) steps(1, end) both,
+    celebracion-late 700ms ease-in-out calc(var(--duracion-celebracion, 2500ms) * 0.2) infinite alternate;
+}
+
+.celebracion-neon .celebracion-letra {
+  animation: none;
+}
+
+.celebracion-neon .celebracion-pie {
+  color: var(--celebracion-neon);
+  text-shadow: 0 0 10px var(--celebracion-neon);
+  animation: celebracion-parpadeo var(--duracion-celebracion, 2500ms) steps(1, end) both;
+  animation-delay: 180ms;
+}
+
+/* Pizarra: entra la pizarra, se escribe «¡GOL!» con tiza, subrayado y flecha a mano, y polvo de tiza. */
+.celebracion-pizarra {
+  background: var(--celebracion-velo);
+}
+
+.celebracion-tablero {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-2);
+  padding: var(--espacio-5) var(--espacio-8);
+  border: 10px solid var(--celebracion-pizarra-marco);
+  border-radius: var(--radio);
+  background:
+    radial-gradient(circle at 30% 20%, rgb(255 255 255 / 6%), transparent 60%),
+    var(--celebracion-pizarra);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 50%);
+  color: var(--celebracion-tiza);
+  transform: rotate(-2deg);
+  animation: celebracion-tablero var(--duracion-celebracion, 2800ms) var(--curva-salida) both;
+}
+
+.celebracion-pizarra .celebracion-titulo {
+  color: var(--celebracion-tiza);
+  text-shadow: 0 0 2px rgb(255 255 255 / 60%);
+  animation: celebracion-escribe var(--duracion-celebracion, 2800ms) linear both;
+}
+
+.celebracion-trazos {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.celebracion-trazos path {
+  fill: none;
+  stroke: var(--celebracion-tiza);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: celebracion-traza calc(var(--duracion-celebracion, 2800ms) * 0.2) ease-out both;
+}
+
+.celebracion-trazos .celebracion-subrayado {
+  animation-delay: calc(var(--duracion-celebracion, 2800ms) * 0.36);
+}
+
+.celebracion-trazos .celebracion-flecha {
+  stroke: color-mix(in srgb, var(--color-equipo) 55%, var(--celebracion-tiza));
+  animation-delay: calc(var(--duracion-celebracion, 2800ms) * 0.5);
+}
+
+.celebracion-pizarra .celebracion-pie {
+  color: var(--celebracion-tiza);
+  animation: celebracion-aparece var(--duracion-celebracion, 2800ms) linear both;
+}
+
+/* Movimiento reducido (FR-014): sin transform, recortes ni escalas; solo el fundido de la capa. */
+.capa-celebracion.reducido *,
+.capa-celebracion.reducido *::before,
+.capa-celebracion.reducido *::after {
+  animation: none !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+.capa-celebracion.reducido :is(.celebracion-particulas, .celebracion-ondas, .celebracion-destello, .celebracion-rayos) {
+  display: none;
+}
+
+.capa-celebracion.reducido .celebracion-trazos path {
+  stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capa-celebracion *,
+  .capa-celebracion *::before,
+  .capa-celebracion *::after {
+    animation: none !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+
+  .capa-celebracion :is(.celebracion-particulas, .celebracion-ondas, .celebracion-destello, .celebracion-rayos) {
+    display: none;
+  }
+
+  .capa-celebracion .celebracion-trazos path {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes celebracion-fundido {
+  0% {
+    opacity: 0;
+  }
+  5%,
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebracion-letra {
+  0% {
+    opacity: 0;
+    transform: translateY(-30%) scale(2.6);
+    filter: blur(6px);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(0.9);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes celebracion-letra-sube {
+  0% {
+    opacity: 0;
+    transform: translateY(60%) rotateX(80deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0);
+  }
+}
+
+@keyframes particula-estalla {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(var(--escala));
+    animation-timing-function: cubic-bezier(0.05, 0.75, 0.3, 1);
+  }
+  32% {
+    opacity: 1;
+    transform: translate(var(--x), var(--y)) rotate(calc(var(--giro) * 0.4)) scale(var(--escala));
+    animation-timing-function: cubic-bezier(0.45, 0, 0.9, 0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--x) * 1.2), calc(var(--y) + 70cqh)) rotate(var(--giro)) scale(var(--escala));
+  }
+}
+
+@keyframes particula-cae {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate3d(1, 0.4, 0, 0deg) scale(var(--escala));
+  }
+  50% {
+    transform: translate(calc(var(--x) * 0.25), 60cqh) rotate3d(1, 0.4, 0, calc(var(--giro) * 0.5)) scale(var(--escala));
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--x) * -0.2), 118cqh) rotate3d(1, 0.4, 0, var(--giro)) scale(var(--escala));
+  }
+}
+
+@keyframes particula-polvo {
+  0% {
+    opacity: 0.9;
+    transform: translate(0, 0) scale(var(--escala));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--x) * 0.15), 40cqh) scale(calc(var(--escala) * 0.4));
+  }
+}
+
+@keyframes particula-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes celebracion-onda {
+  0% {
+    opacity: 0.95;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(4.2);
+  }
+}
+
+@keyframes celebracion-rayos {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.6);
+  }
+  12%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(40deg) scale(1.1);
+  }
+}
+
+@keyframes celebracion-destello {
+  0% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes celebracion-sacudida {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-10px, 6px) rotate(-1deg);
+  }
+  25% {
+    transform: translate(9px, -5px) rotate(1deg);
+  }
+  40% {
+    transform: translate(-7px, 3px);
+  }
+  60% {
+    transform: translate(5px, -2px);
+  }
+  80% {
+    transform: translate(-2px, 1px);
+  }
+}
+
+@keyframes celebracion-sube {
+  0%,
+  18% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  32%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes celebracion-rotulo {
+  0%,
+  24% {
+    clip-path: inset(0 100% 0 0);
+    transform: translateX(-30px);
+  }
+  38%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes celebracion-barrido {
+  0% {
+    transform: rotate(-28deg);
+  }
+  50% {
+    transform: rotate(28deg);
+  }
+  100% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes celebracion-marco {
+  0% {
+    clip-path: inset(0 100% 100% 0);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  16% {
+    clip-path: inset(0 0 100% 0);
+  }
+  28%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes celebracion-parpadeo {
+  0%,
+  6%,
+  12% {
+    opacity: 0.15;
+  }
+  4%,
+  9%,
+  16%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes celebracion-late {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.35) saturate(1.2);
+  }
+}
+
+@keyframes celebracion-tablero {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) rotate(-8deg) scale(0.9);
+  }
+  16%,
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(-2deg) scale(1);
+  }
+}
+
+@keyframes celebracion-escribe {
+  0%,
+  8% {
+    clip-path: inset(0 100% 0 0);
+  }
+  36%,
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes celebracion-traza {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes celebracion-aparece {
+  0%,
+  55% {
+    opacity: 0;
+  }
+  68%,
+  100% {
+    opacity: 1;
+  }
+}

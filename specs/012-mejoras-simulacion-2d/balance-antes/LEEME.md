@@ -31,3 +31,21 @@ Ninguna métrica sale de su umbral: se sigue con el servidor (T039). Las líneas
 Referencias con semilla fija regeneradas: el partido 14 de `packages/engine/tests/fixtures/equivalencia-005.json`
 (anotado en su campo `regenerados`) y los escenarios de `tools/fixtures/escenarios/`
 (`pnpm --filter @fbd/fixtures generar-escenarios`). `test:equivalence` en verde.
+
+## Ronda 2: parámetros 6.2.0 (T082)
+
+`pnpm balance` con la relajación del que gana de mucho y el 70 % de porteros en el hueco «POR o DEF»: **46/47**.
+
+| | 6.1.0 | 6.2.0 |
+| --- | --- | --- |
+| 003/SC-001 serie sintética (goles por partido) | ✔ | ✔ 2,65 |
+| SC-007 entre equilibrados (goles; % con 8 o más) | ✔ | ✔ 2,71; 0,3 % |
+| 005/SC-013 (+5 de media pesa más que cualquier virtud) | ✔ | ✔ +1,195 frente a +0,355 |
+| 005/SC-004/Fragil (lesiones por minuto, objetivo ×3 ± 20 %) | ✔ | ✘ ×4,96 (11 → 53 lesiones) |
+
+Frágil es ruido de muestra, no efecto de la 6.2.0 (la relajación no toca las lesiones): con `--solo 005/SC-004/Fragil`
+y otras semillas sale ×2,50 (25 → 61, ✔) con `--seed 2` y ×4,55 (12 → 53, ✘) con `--seed 3`. Con tan pocas lesiones en
+la serie base la razón oscila mucho; conviene ampliar `n` de esa comprobación en una spec del motor.
+
+Caso real que motivó el cambio (5 partidos del participante del 41-5, 40 repeticiones con otras semillas): de 9,0 /
+5,3 / 6,5 / 9,2 / 5,0 goles a favor de media con la 6.1.0 a 4,9 / 3,9 / 4,0 / 4,8 / 3,5 con la 6.2.0.

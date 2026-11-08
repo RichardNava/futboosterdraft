@@ -184,7 +184,7 @@ export function CampoEquipo(props: Props) {
   }, [arrastre !== null]);
 
   const empezar = (jugadorId: number) => (e: EventoPuntero<HTMLElement>) => {
-    if (e.button !== 0 || (bloqueados?.has(jugadorId) && !estaEnCampo(jugadorId))) return;
+    if (e.button !== 0 || !movible(jugadorId)) return;
     e.preventDefault();
     setArrastre({
       jugadorId,
@@ -195,6 +195,8 @@ export function CampoEquipo(props: Props) {
   };
 
   const estaEnCampo = (id: number) => colocacion.titulares.some((t) => t.jugadorId === id);
+  // Uno de baja solo se puede sacar: del campo o, en la preparación, del banquillo al resto (spec 012, FR-029).
+  const movible = (id: number) => !bloqueados?.has(id) || estaEnCampo(id) || (modo === 'preparacion' && estado.banquillo.includes(id));
   const puntoDe = (id: number) => colocacion.titulares.find((t) => t.jugadorId === id);
 
   /** Clic o Intro: selecciona; con otro seleccionado, lo suelta sobre este (intercambio). */
@@ -302,7 +304,7 @@ export function CampoEquipo(props: Props) {
   const fichaLista = (id: number) => {
     const j = jugadores.get(id);
     if (!j) return null;
-    const bloqueado = bloqueados?.has(id) ?? false;
+    const bloqueado = !movible(id);
     return (
       <VistaCarta key={id} jugador={j} arrastrando={arrastrando} dorsal={dorsales?.[id]}>
         <div
@@ -313,7 +315,7 @@ export function CampoEquipo(props: Props) {
           role="button"
           aria-disabled={bloqueado}
           aria-pressed={seleccionado === id}
-          aria-label={`${j.nombre} ${j.apellidos}${bloqueado ? ' (no disponible)' : ''}`}
+          aria-label={`${j.nombre} ${j.apellidos}${bloqueados?.has(id) ? ' (no disponible)' : ''}`}
           onKeyDown={bloqueado ? undefined : alTeclado(id)}
         >
           <CartaJugador jugador={j} compacta dorsal={dorsales?.[id]} seleccionada={seleccionado === id} />

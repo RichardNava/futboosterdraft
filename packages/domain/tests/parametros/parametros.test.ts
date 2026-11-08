@@ -8,6 +8,7 @@ import {
   PARAMETROS_V5,
   PARAMETROS_V6,
   PARAMETROS_V6_1,
+  PARAMETROS_V6_2,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -192,8 +193,7 @@ describe('parámetros de equilibrado 6.0.0', () => {
 });
 
 describe('parámetros de equilibrado 6.1.0', () => {
-  it('los partidos nuevos usan la 6.1.0, que solo añade las excepciones de los carrileros (CI/CD)', () => {
-    expect(parametrosActuales()).toBe(PARAMETROS_V6_1);
+  it('la 6.1.0 solo añade las excepciones de los carrileros (CI/CD)', () => {
     expect(parametrosPorVersion('6.1.0')).toBe(PARAMETROS_V6_1);
     const { version, penalizacionPosicion: { entrePosiciones, ...penalizacion }, ...resto } = PARAMETROS_V6_1;
     const { version: v6, penalizacionPosicion: { entrePosiciones: entre6, ...penalizacion6 }, ...resto6 } = PARAMETROS_V6;
@@ -202,5 +202,19 @@ describe('parámetros de equilibrado 6.1.0', () => {
     expect(entrePosiciones!.slice(0, entre6!.length)).toEqual(entre6);
     expect(entrePosiciones!.slice(entre6!.length).every((e) => ['CI', 'CD'].includes(e.destino))).toBe(true);
     expect([version, v6]).toEqual(['6.1.0', '6.0.0']);
+  });
+});
+
+describe('parámetros de equilibrado 6.2.0 (spec 012, ronda 2)', () => {
+  it('los partidos nuevos usan la 6.2.0, que solo añade la relajación del que gana de mucho y más porteros en los sobres', () => {
+    expect(parametrosActuales()).toBe(PARAMETROS_V6_2);
+    expect(parametrosPorVersion('6.2.0')).toBe(PARAMETROS_V6_2);
+    const { version, relajacion, sobres, ...resto } = PARAMETROS_V6_2;
+    const { version: v61, relajacion: r61, sobres: sobres61, ...resto61 } = PARAMETROS_V6_1;
+    expect(resto).toEqual(resto61);
+    expect(r61).toBeUndefined();
+    expect(relajacion).toEqual({ ventajaMinima: 2, porGol: 0.6, maximo: 2.4, ataque: 1.5 });
+    expect(sobres).toEqual({ ...sobres61, probPorteroEnHuecoPorDef: 0.7 });
+    expect([version, v61]).toEqual(['6.2.0', '6.1.0']);
   });
 });

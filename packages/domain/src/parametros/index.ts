@@ -161,6 +161,18 @@ export interface ParametrosEquilibrado {
      */
     factorSegundaAmarilla?: number;
   };
+  /**
+   * Desde la 6.2.0 (spec 012, ronda 2): el que gana de mucho baja la intensidad. Con una ventaja de `ventajaMinima`
+   * goles o más, sus tiros (salvo los penaltis) restan `porGol` en la escala de la sigmoide a la probabilidad de ir a
+   * puerta y a la de gol por cada gol de ventaja desde `ventajaMinima` (incluido), hasta `maximo`; y su progresión en
+   * el último tercio, eso mismo multiplicado por `ataque`.
+   */
+  relajacion?: {
+    ventajaMinima: number;
+    porGol: number;
+    maximo: number;
+    ataque: number;
+  };
   sobres: {
     /** Probabilidad de que el hueco "POR o DEF" sea un portero (FR-014). */
     probPorteroEnHuecoPorDef: number;
@@ -445,12 +457,24 @@ export const PARAMETROS_V6_1: ParametrosEquilibrado = {
   },
 };
 
+/**
+ * Parámetros 6.2.0 (spec 012, ronda 2): el que gana de mucho baja la intensidad y le cuesta más marcar (`relajacion`),
+ * y el hueco "POR o DEF" de cada sobre es un portero el 70 % de las veces (antes, el 50 %).
+ */
+export const PARAMETROS_V6_2: ParametrosEquilibrado = {
+  ...PARAMETROS_V6_1,
+  version: '6.2.0',
+  relajacion: { ventajaMinima: 2, porGol: 0.6, maximo: 2.4, ataque: 1.5 },
+  sobres: { ...PARAMETROS_V6_1.sobres, probPorteroEnHuecoPorDef: 0.7 },
+};
+
 const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V3.version]: PARAMETROS_V3,
   [PARAMETROS_V4.version]: PARAMETROS_V4,
   [PARAMETROS_V5.version]: PARAMETROS_V5,
   [PARAMETROS_V6.version]: PARAMETROS_V6,
   [PARAMETROS_V6_1.version]: PARAMETROS_V6_1,
+  [PARAMETROS_V6_2.version]: PARAMETROS_V6_2,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -468,7 +492,7 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V6_1;
+  return PARAMETROS_V6_2;
 }
 
 /** Versión mayor mínima que el motor actual puede simular (las 3.x y 4.x se reproducen). */

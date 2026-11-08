@@ -7,7 +7,8 @@ añade filas en «Pendientes» con las acciones que deberían sonar, y pide que 
   `apps/web/src/componentes/sonidosPartido.ts`.
 - Ficheros: `apps/web/public/sonidos/` (procedencia y licencias en `LICENCIA`). Las grabaciones van en MP3 y los
   sintetizados en WAV.
-- Sintetizados: `tools/sonidos/generar.py` (`python tools/sonidos/generar.py`).
+- Sintetizados: `tools/sonidos/generar.py` (`python tools/sonidos/generar.py`). Montajes de grabaciones CC0 (pitidos,
+  público, caja registradora): `tools/sonidos/grabaciones.py`.
 - Volumen final = volumen del efecto × volumen general. **Volumen general: 0,65.**
 - El jugador puede silenciarlo todo con el interruptor 🔊 (se recuerda en el navegador).
 
@@ -28,21 +29,22 @@ añade filas en «Pendientes» con las acciones que deberían sonar, y pide que 
 | Duelos | Entran las cartas de un duelo | `entradaDuelo` | entradaDuelo.mp3 | 0,72 | 11 veces por cruce |
 | Duelos | Chocan las cartas | `choqueDuelo` | choqueDuelo.mp3 | 0,53 | 11 veces por cruce |
 | Duelos | Cálculo: recuento de puntos y ruleta del estado de forma | `calculoDuelo` | calculoDuelo.wav | 0,30 | Sintetizado; sin estado de forma se corta al acabar el recuento; a ×2 suena al doble de velocidad |
-| Partido 2D | Empieza cada parte (también las de la prórroga) | `pitidoInicio` | pitidoInicio.wav | 0,30 | Sintetizado (silbato corto) (spec 012) |
-| Partido 2D | Descanso, final de los 90 con prórroga y descanso de la prórroga | `pitidoDescanso` | pitidoDescanso.wav | 0,30 | Sintetizado (dos pitidos) (spec 012) |
-| Partido 2D | Final del partido | `pitidoFinal` | pitidoFinal.wav | 0,32 | Sintetizado (tres pitidos, el último largo) (spec 012) |
-| Partido 2D | Gol del equipo propio | `golPropio` | golPropio.wav | 0,45 | Sintetizado provisional: **sustituir** por un público CC0 cantando el gol. Un gol en propia puerta cuenta para el equipo que lo suma; quien mira sin jugar oye siempre este |
-| Partido 2D | Gol del rival | `golRival` | golRival.wav | 0,30 | Sintetizado provisional: **sustituir** por un murmullo CC0 |
-| Partido 2D | Tarjeta amarilla | `tarjetaAmarilla` | tarjetaAmarilla.wav | 0,32 | Silbato y «oooh» sintetizados (el «oooh», **sustituir** por CC0) (spec 012) |
-| Partido 2D | Tarjeta roja (también por doble amarilla) | `tarjetaRoja` | tarjetaRoja.wav | 0,38 | Más intensa que la amarilla; «oooh» a **sustituir** (spec 012) |
-| Tienda | Compra de un sobre de cartas (con fragmentos) | `cajaRegistradora` | cajaRegistradora.wav | 0,30 | Sintetizado provisional: **sustituir** por CC0 (spec 012) |
-| Tienda | Compra de un diseño de sobre (suelto o dentro de un pack) | `cajaRegistradora` | cajaRegistradora.wav | 0,30 | El mismo efecto; los escudos y celebraciones comprados no suenan |
+| Partido 2D | Empieza cada parte (también las de la prórroga) | `pitidoInicio` | pitidoInicio.mp3 | 0,10 | Silbato de árbitro real, un pitido (spec 012) |
+| Partido 2D | Descanso, final de los 90 con prórroga y descanso de la prórroga | `pitidoDescanso` | pitidoDescanso.mp3 | 0,11 | Dos pitidos (spec 012) |
+| Partido 2D | Final del partido | `pitidoFinal` | pitidoFinal.mp3 | 0,12 | Tres pitidos, el último largo (spec 012) |
+| Partido 2D | Gol del equipo propio | `golPropio` | golPropio.mp3 | 0,61 | La grada del Millerntor cantando un gol. Un gol en propia puerta cuenta para el equipo que lo suma; quien mira sin jugar oye siempre este |
+| Partido 2D | Gol del rival | `golRival` | golRival.mp3 | 0,45 | Lamento de la grada (ocasión fallada, Millerntor) |
+| Partido 2D | Tarjeta amarilla | `tarjetaAmarilla` | tarjetaAmarilla.mp3 | 0,29 | Pitido y «oooh» de la grada (spec 012) |
+| Partido 2D | Tarjeta roja (también por doble amarilla) | `tarjetaRoja` | tarjetaRoja.mp3 | 0,23 | Dos pitidos y un «oooh» más largo (spec 012) |
+| Tienda | Compra de un sobre de cartas (con fragmentos) | `cajaRegistradora` | cajaRegistradora.mp3 | 0,64 | Caja registradora real (spec 012) |
+| Tienda | Compra de un diseño de sobre (suelto o dentro de un pack) | `cajaRegistradora` | cajaRegistradora.mp3 | 0,64 | El mismo efecto; los escudos y celebraciones comprados no suenan |
 | Torneo | Pantalla de campeón | `aplausos` | aplausos.mp3 | 0,34 | |
 | Torneo | Pantalla de derrota | `trompetas` | trompetas.mp3 | 0,75 | |
 
 ### Reglas de la 2D
 
-- Los sonidos van a la velocidad de la reproducción, con un máximo de ×2 (a ×4 y ×8 suenan a ×2).
+- Los sonidos suenan a su velocidad natural a cualquier velocidad de reproducción (son grabaciones; spec 012, ronda 2).
+- Cada gol para el reloj lo que dura la celebración (3 s), también a ×8.
 - Solo suena lo que se acaba de ver: cambiar de velocidad o recibir tramos nuevos no repite sonidos, y lo ya jugado
   al entrar o al reconectar no suena. Tras «Finalizar partido» (se ve todo de golpe) tampoco suena nada.
 - La simulación rápida no tiene sonidos de partido.
@@ -54,12 +56,12 @@ marca, también los del rival.
 
 | Celebración | Clase | Sonido propio |
 | --- | --- | --- |
-| Clásica (por defecto), Estadio, Neón, Pizarra | `juego` (animación CSS) | No: solo suena el efecto del gol (`golPropio` o `golRival`) |
+| Clásica (por defecto), Estadio, Neón, Pizarra | `juego` (animación CSS: confeti, ondas, focos, chispas, tiza…) | No: solo suena el efecto del gol (`golPropio` o `golRival`) |
 | Prueba de secuencia (inactiva, solo para pruebas) | `secuencia` (vídeo WebM con transparencia) | No tiene |
 
 Una celebración de clase `secuencia` puede traer su propio efecto en `datos.sonido` (en `data/cosmeticos.json`).
 Ese valor es el nombre de un efecto de la tabla de arriba, así que para un sonido nuevo hay que añadir antes el
-fichero a `public/sonidos/` y el efecto a `sonido.ts`. Suena junto al efecto del gol, con el mismo tope de ×2.
+fichero a `public/sonidos/` y el efecto a `sonido.ts`. Suena junto al efecto del gol, a su velocidad natural.
 
 ## Pendientes (ideas para añadir)
 
@@ -67,4 +69,3 @@ Añade aquí las acciones que deberían sonar. Columna «Sonido deseado»: una d
 
 | Pantalla | Acción | Sonido deseado | Prioridad |
 | --- | --- | --- | --- |
-| Varias | Sustituir los sintetizados provisionales (`golPropio`, `golRival`, el «oooh» de las tarjetas y `cajaRegistradora`) por grabaciones CC0 | Público real, murmullo, «oooh» de grada, caja registradora | Alta |

@@ -2,7 +2,7 @@
  * Generación de los sobres de una mesa (FR-011, FR-014; research R16).
  *
  * Se genera la mesa completa al empezar el draft: 3 sobres por participante. Cada sobre tiene cupos
- * fijos de demarcación (1 "POR o DEF", 2 DEF, 3 MED, 2 DEL) y de nivel (4 Superclase, 2 Crack,
+ * fijos de demarcación (1 "POR o DEF", 2 DEF, 3 MED, 2 DEL; si ya no quedan porteros, el hueco es un DEF) y de nivel (4 Superclase, 2 Crack,
  * 1 Legendario y 1 carta alta Legendario/GOAT). El cruce demarcación × nivel se sortea, restringido a
  * las combinaciones que aún tienen cartas, y ninguna carta se repite en la mesa.
  */
@@ -75,13 +75,18 @@ export function generarMesa(
     for (let asiento = 0; asiento < numParticipantes; asiento++) {
       const plan = generarSobre(rng, parametros);
       let asignacion: Celda[] | undefined;
-      for (let intento = 0; intento < MAX_REINTENTOS && !asignacion; intento++) {
-        const niveles = rng.barajar(plan.niveles);
-        const propuesta = plan.demarcaciones.map((d, i) => celda(d, niveles[i]!));
-        const necesarias = new Map<Celda, number>();
-        for (const c of propuesta) necesarias.set(c, (necesarias.get(c) ?? 0) + 1);
-        if ([...necesarias].every(([c, n]) => (disponibles.get(c)?.length ?? 0) >= n)) asignacion = propuesta;
-      }
+      const asignar = (demarcaciones: Demarcacion[]) => {
+        for (let intento = 0; intento < MAX_REINTENTOS && !asignacion; intento++) {
+          const niveles = rng.barajar(plan.niveles);
+          const propuesta = demarcaciones.map((d, i) => celda(d, niveles[i]!));
+          const necesarias = new Map<Celda, number>();
+          for (const c of propuesta) necesarias.set(c, (necesarias.get(c) ?? 0) + 1);
+          if ([...necesarias].every(([c, n]) => (disponibles.get(c)?.length ?? 0) >= n)) asignacion = propuesta;
+        }
+      };
+      asignar(plan.demarcaciones);
+      // Sin porteros en el pool (mesas grandes; desde la 6.2.0 salen más), el hueco "POR o DEF" es un defensa.
+      if (!asignacion && plan.huecoPorDef === 'POR') asignar(['DEF', ...plan.demarcaciones.slice(1)]);
       if (!asignacion) {
         throw new ErrorPoolInsuficiente(
           `No hay cartas suficientes para completar el sobre ${asiento} de la ronda ${ronda} (${numParticipantes} participantes)`,
