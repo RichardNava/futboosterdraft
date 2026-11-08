@@ -10,6 +10,7 @@ import { Link } from 'react-router';
 import { api } from '../api/cliente';
 import { useAspecto } from '../estado/aspecto';
 import { mostrarAviso } from '../estado/avisos';
+import { reproducir } from '../sonido/sonido';
 import { useCatalogoCosmeticos, useCosmeticos } from '../estado/cosmeticos';
 import { useSaldo } from '../estado/saldo';
 import { SobreArte } from './arte/SobreArte';
@@ -220,6 +221,8 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
 
   const trasComprar = (r: RespuestaCompraCosmetico) => {
     setCompra(null);
+    // Caja registradora al comprar diseños de sobre (spec 012, FR-007).
+    if (r.cosmeticos.some((id) => porId.get(id)?.tipo === 'sobre')) reproducir('cajaRegistradora');
     useSaldo.setState({ saldo: r.saldo });
     mostrarAviso(
       'exito',
@@ -310,7 +313,7 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
                 posicion: `${vista.indice + 1} de ${n}`,
               }}
             >
-              <ArteGrande id={c.id} tipo={c.tipo} />
+              <ArteGrande id={c.id} tipo={c.tipo as 'escudo' | 'sobre'} />
               {comprarCosmetico(c)}
             </Previsualizacion>
           );

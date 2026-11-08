@@ -11,19 +11,24 @@
  * Las decisiones se aplican siempre en puntos de decisión (interrupciones, descanso, antes de la
  * prórroga). Como el PRNG avanza igual en los tres modos, la misma entrada con las mismas decisiones
  * en los mismos ticks produce exactamente el mismo partido (FR-032, FR-040).
+ *
+ * Spec 012 (research R2; contracts/motor.md): las lesiones y expulsiones del paso se resuelven al terminarlo. Si un
+ * equipo con «control total» tiene alguna (y puede seguir con 7, en juego y fuera del modo `final`), el tramo se
+ * corta ahí con `incidencias`; al reanudar se aplican sus decisiones y lo que quede se resuelve en automático. Entre
+ * el corte y la reanudación no se consume PRNG: sin decisiones, el partido es el mismo que en automático.
  */
 import { Rng } from '@fbd/domain';
 import { anotarFotograma, emitir, interrumpir, type Contexto } from '../acciones/contexto';
 import { actualizarPosesion, paso } from '../acciones/juego';
-import { comprobarInferioridad } from '../acciones/plantel';
+import { comprobarInferioridad, MINIMO_JUGADORES, resolverIncidencias } from '../acciones/plantel';
 import { balonAlCentro } from '../acciones/tiro';
-import { DURACION_PARTE, DURACION_PARTE_PRORROGA, rival, type EstadoMotor } from '../estado/estado';
+import { DURACION_PARTE, DURACION_PARTE_PRORROGA, maxSustituciones, rival, type EstadoMotor, type Incidencia } from '../estado/estado';
 import { colocarSaqueInicial } from '../espacio/colocacion';
 import { ordenJugadores } from '../espacio/paso';
 import { jugarTanda } from '../penaltis/tanda';
 import { guardarMetricas, metricasDesde } from '../metricas';
-import type { AccionVisible, Estadisticas, EventoPartido, Fase, Fotograma, Marcador, MetricasJugador, ModoAvance } from '../tipos';
-import { aplicarPendientes } from './decisiones';
+import type { AccionVisible, DecisionRegistrada, Estadisticas, EventoPartido, Fase, Fotograma, Lado, Marcador, MetricasJugador, ModoAvance } from '../tipos';
+import { aplicarPendientes, equiposQueDecidieron } from './decisiones';
 
 export interface ResultadoTramo {
   estado: EstadoMotor;
@@ -41,6 +46,8 @@ export interface ResultadoTramo {
   marcador: Marcador;
   estadisticas: Estadisticas;
   fase: Fase;
+  /** Spec 012: incidencias pendientes que han cortado el tramo (parada de «control total»). */
+  incidencias?: Incidencia[];
 }
 
 export interface OpcionesAvance {
@@ -60,7 +67,32 @@ function cambioQueNoEspera(e: EstadoMotor): boolean {
 }
 
 /** Límite de pasos por tramo (salvaguarda frente a bucles; un partido tiene unos pocos miles). */
-const MAX_PASOS = 50_000;
+export const MAX_PASOS = 50_000;
+
+const EN_JUEGO: ReadonlySet<Fase> = new Set(['primera_parte', 'segunda_parte', 'prorroga']);
+
+/** Tras resolver en automático sus lesiones pendientes, el equipo seguiría con 7 o más (si no, no hay parada). */
+function sigueConSiete(e: EstadoMotor, lado: Lado): boolean {
+  const equipo = e.equipos[lado];
+  const enCampo = equipo.jugadores.filter((j) => j.enCampo).length;
+  const lesiones = e.incidencias.filter((i) => i.estado === 'pendiente' && i.lado === lado && i.motivo === 'lesion').length;
+  const suplentes = equipo.jugadores.filter((j) => !j.enCampo && !j.retirado).length;
+  const cambios = Math.max(0, maxSustituciones(e) - equipo.sustitucionesUsadas);
+  return enCampo + Math.min(lesiones, suplentes, cambios) >= MINIMO_JUGADORES;
+}
+
+/** Incidencias pendientes del paso si alguna corta el tramo (contracts/motor.md, paso 2.2); si no, ninguna. */
+function incidenciasQueCortan(e: EstadoMotor, modo: ModoAvance): Incidencia[] {
+  if (modo === 'final' || !EN_JUEGO.has(e.fase)) return [];
+  const pendientes = e.incidencias.filter((i) => i.estado === 'pendiente');
+  return pendientes.some((i) => e.equipos[i.lado].controlTotal === true && sigueConSiete(e, i.lado)) ? pendientes : [];
+}
+
+/** Resuelve las incidencias pendientes: los equipos que decidieron en su parada, como ellos dijeron; el resto, en automático. */
+function resolverDelPaso(ctx: Contexto, deLaParada: readonly DecisionRegistrada[]): void {
+  const { decididos, recolocados } = equiposQueDecidieron(ctx.estado, deLaParada);
+  resolverIncidencias(ctx, decididos, recolocados);
+}
 
 function iniciarParte(ctx: Contexto, parte: number): void {
   const e = ctx.estado;
@@ -114,7 +146,12 @@ function comprobarFinParte(ctx: Contexto): void {
 function reanudar(ctx: Contexto): void {
   const e = ctx.estado;
   // Tras un corte por ticks en pleno juego no se aplican decisiones: esperan a la siguiente interrupción.
-  if (e.puntoDecision) aplicarPendientes(ctx);
+  // Tras una parada de incidencia (spec 012), las decisiones son las de esa parada y después se resuelve el resto.
+  const parada = e.incidencias.some((i) => i.estado === 'pendiente');
+  if (e.puntoDecision) {
+    const aplicadas = aplicarPendientes(ctx, parada ? { enIncidencia: true } : {});
+    if (parada) resolverDelPaso(ctx, aplicadas);
+  } else if (parada) resolverDelPaso(ctx, []);
   if (e.fase === 'primera_parte' && e.tick === 0 && !e.eventos.some((x) => x.tipo === 'inicio_tramo')) {
     // Un equipo que no llega a 7 jugadores disponibles (por bajas) pierde el partido de inicio.
     comprobarInferioridad(ctx, 'local');
@@ -164,6 +201,9 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
   // llamada haría que encadenar muchos tramos cortos (2D) costara un tiempo cuadrático.
   const { eventos: anteriores, acciones: accionesAnteriores, ...resto } = entrada;
   const estado: EstadoMotor = { ...structuredClone(resto), eventos: [...anteriores], acciones: [...accionesAnteriores] };
+  // Estados anteriores a la spec 012 (pruebas con estados guardados) no tienen la lista.
+  estado.incidencias ??= [];
+  let incidenciasCorte: Incidencia[] | undefined;
   const rng = new Rng(estado.rng);
   const orden = opciones.fotogramas ? ordenJugadores(estado) : undefined;
   const fotogramas: Fotograma[] = [];
@@ -195,6 +235,19 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
         ctx.interrupcion = false;
         paso(ctx);
         if (fase() !== 'finalizado') comprobarFinParte(ctx);
+        // Lesiones y expulsiones del paso (spec 012): las decisiones de su parada (al reproducir), el corte de
+        // «control total» o la resolución automática. Antes que las de la interrupción: en directo, esas se aplican
+        // al reanudar, después de resolver las incidencias.
+        if (estado.incidencias.some((i) => i.estado === 'pendiente')) {
+          const hayDeLaParada = estado.decisionesPendientes.some((d) => d.enIncidencia && d.aplicadaEnTick !== undefined && d.aplicadaEnTick <= estado.tick);
+          const deLaParada = hayDeLaParada ? aplicarPendientes(ctx, { cual: 'incidencia' }) : [];
+          const cortan = hayDeLaParada ? [] : incidenciasQueCortan(estado, modo);
+          if (cortan.length) {
+            incidenciasCorte = cortan.map((i) => ({ ...i }));
+            break;
+          }
+          resolverDelPaso(ctx, deLaParada);
+        }
         // Una decisión no espera más de `esperaMaximaCambioS` con el balón en juego: se para el juego para el cambio
         // (002/FR-025a). Al reproducir, la misma parada sale de su `aplicadaEnTick`.
         if (!ctx.interrupcion && fase() !== 'finalizado' && cambioQueNoEspera(estado)) {
@@ -202,8 +255,8 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
         }
         if (ctx.interrupcion) {
           // Las decisiones programadas para esta interrupción (al reproducir un partido) se aplican aquí.
-          if (estado.decisionesPendientes.some((d) => d.aplicadaEnTick !== undefined && d.aplicadaEnTick <= estado.tick)) {
-            aplicarPendientes(ctx);
+          if (estado.decisionesPendientes.some((d) => !d.enIncidencia && d.aplicadaEnTick !== undefined && d.aplicadaEnTick <= estado.tick)) {
+            aplicarPendientes(ctx, { cual: 'resto' });
           }
         }
         const parada = fase() === 'descanso' || fase() === 'pre_prorroga' || fase() === 'penaltis';
@@ -242,5 +295,6 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
     marcador: { ...estado.marcador, ...(estado.marcador.penaltis ? { penaltis: { ...estado.marcador.penaltis } } : {}) },
     estadisticas: estadisticasSalida(estado),
     fase: estado.fase,
+    ...(incidenciasCorte ? { incidencias: incidenciasCorte } : {}),
   };
 }

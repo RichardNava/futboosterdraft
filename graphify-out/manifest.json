@@ -150,9 +150,9 @@
     "semantic_hash": "36421750385f4073f056a6151f3f3711"
   },
   "apps/server/drizzle/meta/_journal.json": {
-    "mtime": 1793872019.1598127,
-    "seen": 1793874490.2348723,
-    "ast_hash": "15085f037b1f06b78daf31a526411169",
+    "mtime": 1794106316.8577304,
+    "seen": 1794115785.3170927,
+    "ast_hash": "e9c8dc592bd7d766bd84ac183c6d9a16",
     "semantic_hash": ""
   },
   "apps/server/package.json": {
@@ -174,15 +174,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/equipo.ts": {
-    "mtime": 1793696918.3202577,
-    "seen": 1793698899.0037463,
-    "ast_hash": "2282f33e05691aec4bc5f9103079678b",
+    "mtime": 1794107424.7277436,
+    "seen": 1794115785.3185043,
+    "ast_hash": "a531061d13f244c80f4e0c1a9093c9d5",
     "semantic_hash": ""
   },
   "apps/server/src/actores/gestor.ts": {
-    "mtime": 1793873676.7591436,
-    "seen": 1793874490.2357104,
-    "ast_hash": "12c98a5af2ffc3b19bc0364cb80d16f9",
+    "mtime": 1794106594.579579,
+    "seen": 1794115785.3185098,
+    "ast_hash": "2023be4283234eef80fa82aaaec8008d",
     "semantic_hash": ""
   },
   "apps/server/src/actores/misPartidas.ts": {
@@ -198,15 +198,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/partida.ts": {
-    "mtime": 1793873669.3465617,
-    "seen": 1793874490.2361395,
-    "ast_hash": "1a257b248d8af81cc0eecf4dbf1890dc",
+    "mtime": 1794107475.3476388,
+    "seen": 1794115785.3193526,
+    "ast_hash": "d9914e5f74b815591615f8f742fe45dc",
     "semantic_hash": ""
   },
   "apps/server/src/actores/partido2d.ts": {
-    "mtime": 1793563068.107077,
-    "seen": 1793563195.501251,
-    "ast_hash": "36732231c621f541c44d49d0261a95f5",
+    "mtime": 1794108866.6112235,
+    "seen": 1794115785.319358,
+    "ast_hash": "8d67b7961c61d43b7f5501da9b8b58e1",
     "semantic_hash": ""
   },
   "apps/server/src/actores/partidoEntreHumanos.ts": {
@@ -216,9 +216,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/partidoRapido.ts": {
-    "mtime": 1793872850.1601255,
-    "seen": 1793874490.2362776,
-    "ast_hash": "485c0368a9e8e2f20d62b5fdffaa1858",
+    "mtime": 1794108866.5984306,
+    "seen": 1794115785.3196406,
+    "ast_hash": "70b0e31e52fc491d43771753769edfdb",
     "semantic_hash": ""
   },
   "apps/server/src/actores/pausa.ts": {
@@ -234,9 +234,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/sala.ts": {
-    "mtime": 1793872801.158885,
-    "seen": 1793874490.2365491,
-    "ast_hash": "8718ec98c4bd93406d0669d4044333fe",
+    "mtime": 1794106594.579579,
+    "seen": 1794115785.3201876,
+    "ast_hash": "d90a85386b151bcd328eb413a51c3f88",
     "semantic_hash": ""
   },
   "apps/server/src/actores/servicios.ts": {
@@ -246,15 +246,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/torneo.ts": {
-    "mtime": 1793752217.97216,
-    "seen": 1793781529.6488497,
-    "ast_hash": "25dddf6299813a599cdeb18049d7de10",
+    "mtime": 1794107475.3476388,
+    "seen": 1794115785.3204646,
+    "ast_hash": "f9093547b3ec5e8eea355fdcbf6685d8",
     "semantic_hash": ""
   },
   "apps/server/src/actores/vistas.ts": {
-    "mtime": 1792757964.1213913,
-    "seen": 1792758030.9013522,
-    "ast_hash": "6269318c95ea1333196d3760ae593bbe",
+    "mtime": 1794107296.8829184,
+    "seen": 1794115785.3204703,
+    "ast_hash": "bab34334a43392eccba18192c21064ce",
     "semantic_hash": ""
   },
   "apps/server/src/auth/auth.ts": {
@@ -270,9 +270,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/avisos/servicio.ts": {
-    "mtime": 1793697082.6068301,
-    "seen": 1793698899.0054853,
-    "ast_hash": "46a85fafc20f2239f5f383d7df676bc2",
+    "mtime": 1794107475.346634,
+    "seen": 1794115785.321621,
+    "ast_hash": "7ce3cdb7eb121c2099711269595271fa",
     "semantic_hash": ""
   },
   "apps/server/src/entorno.ts": {
@@ -282,9 +282,9 @@
     "semantic_hash": "67cc70feb6d95b05567433b69f1e8f70"
   },
   "apps/server/src/http/alineacion.ts": {
-    "mtime": 1793872827.908196,
-    "seen": 1793874490.2373812,
-    "ast_hash": "ef9dde3a49574fec12e57aee5033846d",
+    "mtime": 1794109657.2677734,
+    "seen": 1794115785.3221846,
+    "ast_hash": "f17e728fe1b5f523e267e2743ea2073e",
     "semantic_hash": ""
   },
   "apps/server/src/http/app.ts": {
@@ -318,9 +318,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/http/partidos.ts": {
-    "mtime": 1793872845.7028694,
-    "seen": 1793874490.237808,
-    "ast_hash": "371eba9cb199b390c8f691e47408bff8",
+    "mtime": 1794113692.64969,
+    "seen": 1794115785.323882,
+    "ast_hash": "22ea8263f40002213fd781a67c0754d2",
     "semantic_hash": ""
   },
   "apps/server/src/http/torneo.ts": {
@@ -360,9 +360,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/base.ts": {
-    "mtime": 1793872042.9565766,
-    "seen": 1793874490.2392516,
-    "ast_hash": "632a66295ad12f35634b95f558f8ba2d",
+    "mtime": 1794106328.4485366,
+    "seen": 1794115785.3267617,
+    "ast_hash": "e6e66022a378798c225b798d5a5c54e9",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/draft.ts": {
@@ -390,10 +390,10 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/torneo.ts": {
-    "mtime": 1792362216.074038,
-    "seen": 1792367528.4334602,
-    "ast_hash": "bd4d6dfc1043bd713f22a0c518f835ac",
-    "semantic_hash": "bd4d6dfc1043bd713f22a0c518f835ac"
+    "mtime": 1794106328.4492714,
+    "seen": 1794115785.3282316,
+    "ast_hash": "416d478d1ca575ab078442bf2d3252e3",
+    "semantic_hash": ""
   },
   "apps/server/src/persistencia/migrar.ts": {
     "mtime": 1792153826.4061582,
@@ -426,9 +426,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/partidas.ts": {
-    "mtime": 1793873676.7595387,
-    "seen": 1793874490.2403443,
-    "ast_hash": "e11b31f18fe73935dabd2cbe5e99673f",
+    "mtime": 1794108866.6112235,
+    "seen": 1794115785.3299341,
+    "ast_hash": "f58943a5bd1dca2b3b1c0ae1206aca8a",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/partidos.ts": {
@@ -450,9 +450,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/seed.ts": {
-    "mtime": 1793962080.0219533,
-    "seen": 1793967907.2646682,
-    "ast_hash": "d51ebc16999a568a954cded873079117",
+    "mtime": 1794106544.0186355,
+    "seen": 1794115785.3307998,
+    "ast_hash": "bb11ccfb7b12714d802034ae8d67ed11",
     "semantic_hash": ""
   },
   "apps/server/src/programador/reloj.ts": {
@@ -468,9 +468,9 @@
     "semantic_hash": "cde9297a5932d62e2c5198c2fd696fe0"
   },
   "apps/server/src/servidor.ts": {
-    "mtime": 1793874237.679613,
-    "seen": 1793874490.241035,
-    "ast_hash": "8ce55c374d1d9836d909c9b15a00bf64",
+    "mtime": 1794109699.7769146,
+    "seen": 1794115785.3313584,
+    "ast_hash": "bf80b4bfeb30fd3d1a8436645a3314de",
     "semantic_hash": ""
   },
   "apps/server/src/ws/pasarela.ts": {
@@ -744,9 +744,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BandejaAvisos.tsx": {
-    "mtime": 1792592850.7749157,
-    "seen": 1792645202.695503,
-    "ast_hash": "eff207d5268ada038c1b2e1bdf935a31",
+    "mtime": 1794107628.326082,
+    "seen": 1794115785.3534617,
+    "ast_hash": "47a0ce6db50176279350207616aa0e3e",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BotonAvanzar.tsx": {
@@ -840,9 +840,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Alineacion.tsx": {
-    "mtime": 1794074152.0495887,
-    "seen": 1794075087.0739634,
-    "ast_hash": "92cbd36c8a039648053b27f1fc916466",
+    "mtime": 1794109680.443222,
+    "seen": 1794115785.3680687,
+    "ast_hash": "1d0ead24b84774ff4c301fb268a4d599",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/CrearPartida.tsx": {
@@ -852,15 +852,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Draft.tsx": {
-    "mtime": 1794073145.225471,
-    "seen": 1794075087.0742683,
-    "ast_hash": "2c1f084f36188d4ce0981929a54b1f49",
+    "mtime": 1794107795.5273614,
+    "seen": 1794115785.3686335,
+    "ast_hash": "08775710bb83befa1d91d88d38a6164b",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Inicio.tsx": {
-    "mtime": 1793873408.161615,
-    "seen": 1793874490.2574794,
-    "ast_hash": "a27b4f73fa2255ee76af9662660594b0",
+    "mtime": 1794107852.4418495,
+    "seen": 1794115785.3689177,
+    "ast_hash": "c75526b34116137d5ec193be4481c81a",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/MisPartidas.tsx": {
@@ -876,27 +876,27 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido2D.tsx": {
-    "mtime": 1793873109.9727015,
-    "seen": 1793874490.258004,
-    "ast_hash": "8f7e74367f92f0243993de2a84c5de67",
+    "mtime": 1794109605.1677797,
+    "seen": 1794115785.3700306,
+    "ast_hash": "706fae24d5c56dd039ac3f3ceaa1902c",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PartidoRapido.tsx": {
-    "mtime": 1793873126.4485636,
-    "seen": 1793874490.2580063,
-    "ast_hash": "0aecf802a90808654de4edd268185d3c",
+    "mtime": 1794109632.2987018,
+    "seen": 1794115785.3700361,
+    "ast_hash": "bac31471940a8cc30f960a72d893ef12",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Plantillas.tsx": {
-    "mtime": 1792757964.1343932,
-    "seen": 1792758030.919613,
-    "ast_hash": "56ecec5b8477af88a8b653242088b534",
+    "mtime": 1794107726.8368187,
+    "seen": 1794115785.3700452,
+    "ast_hash": "33af6409ade98e6cea41d5581ad61532",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PruebasCartas.tsx": {
-    "mtime": 1793320534.8670814,
-    "seen": 1793321352.2618406,
-    "ast_hash": "0bc787e394df7f9fbda8fbe5cc42be22",
+    "mtime": 1794107020.2066479,
+    "seen": 1794115785.3700497,
+    "ast_hash": "0bcf6d2d2f0789f4a7a8dfd66cdd1f6c",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/ReproduccionPartido.tsx": {
@@ -912,15 +912,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Torneo.tsx": {
-    "mtime": 1793781065.2544909,
-    "seen": 1793781529.6756635,
-    "ast_hash": "61f66662499dfb3794ff01e5b3f42299",
+    "mtime": 1794107671.1356966,
+    "seen": 1794115785.370621,
+    "ast_hash": "70c14719d09289ac31ad70fd310bb75e",
     "semantic_hash": ""
   },
   "apps/web/src/sonido/sonido.ts": {
-    "mtime": 1793742828.9506452,
-    "seen": 1793742911.4924853,
-    "ast_hash": "328ec3332def6206e22a401c5e1bf2cd",
+    "mtime": 1794106481.5498679,
+    "seen": 1794115785.3709033,
+    "ast_hash": "dde93ac8bb05916a806fb298de992152",
     "semantic_hash": ""
   },
   "apps/web/src/textos/niveles.ts": {
@@ -948,15 +948,15 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/avanzar-solo.spec.ts": {
-    "mtime": 1792484980.7806838,
-    "seen": 1792485016.6196704,
-    "ast_hash": "4c1fe2282726e48201d30aec58515e10",
+    "mtime": 1794117584.4730678,
+    "seen": 1794117709.7938478,
+    "ast_hash": "ce3d0e9a4cdef198c27818baad9c52ae",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/ayudas.ts": {
-    "mtime": 1793717975.8063793,
-    "seen": 1793718058.63104,
-    "ast_hash": "36fddc61f6e7a44716aa4b35566a89be",
+    "mtime": 1794117584.47254,
+    "seen": 1794117709.793851,
+    "ast_hash": "a371d7f7780c95180da36d40f3f7875c",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/cartas.spec.ts": {
@@ -990,15 +990,15 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/navegacion.spec.ts": {
-    "mtime": 1793982205.186799,
-    "seen": 1793983527.6208737,
-    "ast_hash": "4cbead69340a19e2ff836fd93afed66d",
+    "mtime": 1794107860.1074357,
+    "seen": 1794115785.3792503,
+    "ast_hash": "19231584daa2a5db808090a128a95e20",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/partido-2d.spec.ts": {
-    "mtime": 1792592850.8160238,
-    "seen": 1792645202.6989987,
-    "ast_hash": "d0c6aa7829b07b4f22a874e76e25be3f",
+    "mtime": 1794106288.7307742,
+    "seen": 1794115785.3792553,
+    "ast_hash": "aa82352ae999d27a3854553051b9d92e",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/partido-rapido.spec.ts": {
@@ -1014,9 +1014,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/torneo.spec.ts": {
-    "mtime": 1793717976.6581168,
-    "seen": 1793718058.6348557,
-    "ast_hash": "4bd6e5830999224faba1973efd9e524a",
+    "mtime": 1794107779.1328714,
+    "seen": 1794115785.3803606,
+    "ast_hash": "71ecaed8497c6d23e2c6947bfa6678a7",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/interpolacion.test.ts": {
@@ -1110,10 +1110,10 @@
     "semantic_hash": "a6e3b22b7943f08d76d862d2253401ef"
   },
   "packages/ai/src/resolverResto.ts": {
-    "mtime": 1792362216.1437993,
-    "seen": 1792367066.0458152,
-    "ast_hash": "3d7a17d92af97fc125176477689d3faa",
-    "semantic_hash": "3d7a17d92af97fc125176477689d3faa"
+    "mtime": 1794108217.7243967,
+    "seen": 1794115785.390361,
+    "ast_hash": "c3ae94302ed9663fd6b55b80f9eda308",
+    "semantic_hash": ""
   },
   "packages/ai/tests/ayudas.ts": {
     "mtime": 1793320533.8009956,
@@ -1248,9 +1248,9 @@
     "semantic_hash": "d0b8bb90e9391ea34e4ef4c667b85194"
   },
   "packages/domain/src/index.ts": {
-    "mtime": 1793873600.7288766,
-    "seen": 1793874490.2723098,
-    "ast_hash": "100c42b62d1fea732df7d56e149c0d98",
+    "mtime": 1794107229.5615509,
+    "seen": 1794115785.4016738,
+    "ast_hash": "d83119aaa6510f7592bb22cb919fdb06",
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/index.ts": {
@@ -1512,9 +1512,9 @@
     "semantic_hash": ""
   },
   "packages/engine/src/acciones/plantel.ts": {
-    "mtime": 1792757964.2163506,
-    "seen": 1792758030.9320192,
-    "ast_hash": "bf532036c6b618679a4918892ae99dce",
+    "mtime": 1794108091.3395693,
+    "seen": 1794115785.418666,
+    "ast_hash": "ed0d458e993cb7598cd324bf04173c8a",
     "semantic_hash": ""
   },
   "packages/engine/src/acciones/tiro.ts": {
@@ -1566,15 +1566,15 @@
     "semantic_hash": "a46e387841b2e3b6c02274fa878c52a8"
   },
   "packages/engine/src/estado/estado.ts": {
-    "mtime": 1792757964.2173512,
-    "seen": 1792758030.932779,
-    "ast_hash": "8c3eae58babc8c75b33950113a98306c",
+    "mtime": 1794107994.1793234,
+    "seen": 1794115785.4215522,
+    "ast_hash": "4403834f6b1293095aefcd8a5b08a3fa",
     "semantic_hash": ""
   },
   "packages/engine/src/index.ts": {
-    "mtime": 1792757964.2183752,
-    "seen": 1792758030.932781,
-    "ast_hash": "74b0b221a59dd19c4699a5d58ef84450",
+    "mtime": 1794108240.1818044,
+    "seen": 1794115785.4215574,
+    "ast_hash": "b13279db3bbbc05a6e5cc1c9c27d5fc9",
     "semantic_hash": ""
   },
   "packages/engine/src/modificadores/atributos.ts": {
@@ -1602,21 +1602,21 @@
     "semantic_hash": ""
   },
   "packages/engine/src/tipos.ts": {
-    "mtime": 1792757964.2193513,
-    "seen": 1792758030.9330509,
-    "ast_hash": "140495e9a9aa93150bb48735ca74e97b",
+    "mtime": 1794108116.0508003,
+    "seen": 1794115785.4236853,
+    "ast_hash": "3c64ad7e9f62aa19f33aabf8b3758a09",
     "semantic_hash": ""
   },
   "packages/engine/src/tramos/avanzar.ts": {
-    "mtime": 1792484980.9234982,
-    "seen": 1792485016.628839,
-    "ast_hash": "5bdb056ff4e14037198c565cba5c4d22",
+    "mtime": 1794108181.931203,
+    "seen": 1794115785.4236913,
+    "ast_hash": "b6c6970ef3e5c8bb27140bf26affbeb4",
     "semantic_hash": ""
   },
   "packages/engine/src/tramos/decisiones.ts": {
-    "mtime": 1792484980.924501,
-    "seen": 1792485016.628841,
-    "ast_hash": "43ae2896a6b4306a7862f5d9aeca6071",
+    "mtime": 1794108116.097481,
+    "seen": 1794115785.4236958,
+    "ast_hash": "ac450bd272510cd6cb8da72abf5ea385",
     "semantic_hash": ""
   },
   "packages/engine/tests/acciones.test.ts": {
@@ -1686,9 +1686,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/reglas.test.ts": {
-    "mtime": 1792757964.2233503,
-    "seen": 1792758030.9351425,
-    "ast_hash": "e7336b2c1f8e9f4c059dcb7f87f6ecde",
+    "mtime": 1794108629.0798361,
+    "seen": 1794115785.4303336,
+    "ast_hash": "52e73acad8d7cc9583abcc9e2b14eb97",
     "semantic_hash": ""
   },
   "packages/engine/tests/version.test.ts": {
@@ -1716,9 +1716,9 @@
     "semantic_hash": ""
   },
   "packages/protocol/src/http/alineacion.ts": {
-    "mtime": 1792757964.2248957,
-    "seen": 1792758030.9359384,
-    "ast_hash": "4eb4d7851c56276fc692084dd3d0cef8",
+    "mtime": 1794107280.238192,
+    "seen": 1794115785.4324555,
+    "ast_hash": "c9ec8f4942ec1410bc7a486d9edc426e",
     "semantic_hash": ""
   },
   "packages/protocol/src/http/base.ts": {
@@ -1734,9 +1734,9 @@
     "semantic_hash": ""
   },
   "packages/protocol/src/http/partidos.ts": {
-    "mtime": 1792757964.2248957,
-    "seen": 1792758030.9361205,
-    "ast_hash": "ef8a5b84f7bfb139fe7b97b5e48bcfde",
+    "mtime": 1794107280.2595398,
+    "seen": 1794115785.433342,
+    "ast_hash": "b0c027bb827773f424695ece0241e453",
     "semantic_hash": ""
   },
   "packages/protocol/src/index.ts": {
@@ -1764,9 +1764,9 @@
     "semantic_hash": "58db4dca479ba77b06943e26adcff86a"
   },
   "packages/protocol/src/ws/partido.ts": {
-    "mtime": 1793872845.7028694,
-    "seen": 1793874490.2901242,
-    "ast_hash": "b1332a92ac89871915cc8eba862dc7ff",
+    "mtime": 1794106521.866734,
+    "seen": 1794115785.4350421,
+    "ast_hash": "9f6bf52fc9e4a96345cb94b570eea066",
     "semantic_hash": ""
   },
   "packages/protocol/src/ws/partido2d.ts": {
@@ -1848,33 +1848,33 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/fixtures/escenarios/empate-eliminatoria.json": {
-    "mtime": 1793537775.6056342,
-    "seen": 1793543274.8947208,
-    "ast_hash": "543939ccd26af484bc289d669253c943",
+    "mtime": 1794114203.6314933,
+    "seen": 1794115785.4438777,
+    "ast_hash": "013b838332a7b0bbd74f185256809f5c",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-grave.json": {
-    "mtime": 1793537775.604853,
-    "seen": 1793543274.8947232,
-    "ast_hash": "ae777bfdc1eb9e95794361cbe03c0193",
+    "mtime": 1794114203.6304936,
+    "seen": 1794115785.4438834,
+    "ast_hash": "3ebf315bcea11a62a8216b0a43301603",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-larga.json": {
-    "mtime": 1793537775.6056342,
-    "seen": 1793543274.8947248,
-    "ast_hash": "fcb6846e9138e6f789a6424ce0e73537",
+    "mtime": 1794114203.6314933,
+    "seen": 1794115785.443888,
+    "ast_hash": "0c195c86faa9c1cc4cff118db9bd87d7",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/roja.json": {
-    "mtime": 1793537775.604634,
-    "seen": 1793543274.8947265,
-    "ast_hash": "e4c6e61964cde503c7a1ef723ac3d2eb",
+    "mtime": 1794114203.6294932,
+    "seen": 1794115785.4438927,
+    "ast_hash": "d02525e3c955008070a1e35ece1c40a3",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/tres-amarillas.json": {
-    "mtime": 1793537775.604853,
-    "seen": 1793543274.8947282,
-    "ast_hash": "92541f8d84146c2224d7ba683b56b365",
+    "mtime": 1794114203.6304936,
+    "seen": 1794115785.443897,
+    "ast_hash": "4e744d1e1348b5eef172b6357bb3934a",
     "semantic_hash": ""
   },
   "tools/fixtures/package.json": {
@@ -2052,9 +2052,9 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1793874300.6940103,
-    "seen": 1793874490.3173997,
-    "ast_hash": "dd69d557782c5e51ba9c9fb84a2a6d4c",
+    "mtime": 1794101732.6270554,
+    "seen": 1794115785.48605,
+    "ast_hash": "e313c4d707519c9c21319e298ccd4511",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2310,9 +2310,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/identidad.ts": {
-    "mtime": 1793872801.1586645,
-    "seen": 1793874490.2357135,
-    "ast_hash": "e6f2ef670762b86690b7cf6bd4eeb8fd",
+    "mtime": 1794106594.5785782,
+    "seen": 1794115785.318515,
+    "ast_hash": "fe559a20fcbec9b96d33018c9ab0c6be",
     "semantic_hash": ""
   },
   "apps/server/src/actores/loteDecisiones.ts": {
@@ -2328,9 +2328,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/perfiles.ts": {
-    "mtime": 1793872765.0143235,
-    "seen": 1793874490.2404778,
-    "ast_hash": "084424eb4ea89ff9014ae16f8cffbcde",
+    "mtime": 1794106594.5247788,
+    "seen": 1794115785.3302305,
+    "ast_hash": "2254aecaa280b7c3a9df48313c4e4b53",
     "semantic_hash": ""
   },
   "apps/server/tests/contract/perfil.test.ts": {
@@ -2364,9 +2364,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/simular-resto.test.ts": {
-    "mtime": 1793055174.896592,
-    "seen": 1793088076.7102184,
-    "ast_hash": "4ba8e7e46d5cdab6a04e76bed3a9b978",
+    "mtime": 1794114150.3011644,
+    "seen": 1794115785.3445504,
+    "ast_hash": "4adf2b46d6352131a898bb6cbdb48454",
     "semantic_hash": ""
   },
   "apps/server/tests/unit/loteDecisiones.test.ts": {
@@ -2382,9 +2382,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BarraPrincipal.tsx": {
-    "mtime": 1792484980.7584083,
-    "seen": 1792485016.6178496,
-    "ast_hash": "f113976ae4046df4b2af2103d6853806",
+    "mtime": 1794107808.5982974,
+    "seen": 1794115785.353468,
+    "ast_hash": "96fd7861e0006d5205cd4735e43c8bb5",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Camiseta.tsx": {
@@ -2394,9 +2394,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CampoEquipo.tsx": {
-    "mtime": 1794074152.0499582,
-    "seen": 1794075087.0651276,
-    "ast_hash": "9921496778d0053eea33aa00f98eda09",
+    "mtime": 1794107705.3409262,
+    "seen": 1794115785.3540618,
+    "ast_hash": "b5006da008dd9ed54c5ed6d6e765033b",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CampoNombreEquipo.tsx": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/GestionEquipo.tsx": {
-    "mtime": 1793055174.9487307,
-    "seen": 1793088076.7153583,
-    "ast_hash": "08ec91a9e8a834b0e41b1bf6e4cbdb1f",
+    "mtime": 1794109605.022249,
+    "seen": 1794115785.357942,
+    "ast_hash": "ccea74c48abd90e24811df305ac3fbe3",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ResultadoPartido.tsx": {
@@ -2454,9 +2454,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/estadoEquipoEnPartido.ts": {
-    "mtime": 1792484980.7664073,
-    "seen": 1792485016.618677,
-    "ast_hash": "b9fbcb30a488afd8896983bd4faba67b",
+    "mtime": 1794109570.5906632,
+    "seen": 1794115785.363416,
+    "ast_hash": "7faa95a54f1ef5f03fe7e687905699c7",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/particulas.ts": {
@@ -2478,9 +2478,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Perfil.tsx": {
-    "mtime": 1793873325.869397,
-    "seen": 1793874490.2580082,
-    "ast_hash": "9ebecf3b15805e608b6604875f3fbec9",
+    "mtime": 1794106968.8710458,
+    "seen": 1794115785.370041,
+    "ast_hash": "f610977c84b5d6a6e791a2ea36e557c9",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/boton-principal.spec.ts": {
@@ -2490,9 +2490,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/gestion-equipo.spec.ts": {
-    "mtime": 1792484980.7844396,
-    "seen": 1792485016.6196852,
-    "ast_hash": "acfec0a67d181da6cc01c81812bd3c64",
+    "mtime": 1794107178.3534126,
+    "seen": 1794115785.378678,
+    "ast_hash": "82647b2f5df8252891cc5ae7b73a31bb",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/identidad.spec.ts": {
@@ -3330,9 +3330,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/equivalencia-005.json": {
-    "mtime": 1792757964.2223504,
-    "seen": 1792758030.9345078,
-    "ast_hash": "b27dd41e7676dca29b11d32a693eedcb",
+    "mtime": 1794108904.03948,
+    "seen": 1794115785.4287863,
+    "ast_hash": "081e3d2afb08f5cb38e68bb933c7b31d",
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/generarEquivalencia005.ts": {
@@ -3342,9 +3342,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/malestar.test.ts": {
-    "mtime": 1792757964.2223504,
-    "seen": 1792758030.9346745,
-    "ast_hash": "c89adaddb8b62aee8e6a7c15dcc9ba32",
+    "mtime": 1794108660.059457,
+    "seen": 1794115785.4291694,
+    "ast_hash": "54a0a504b5087cb413e7a80637d2f9a9",
     "semantic_hash": ""
   },
   "packages/engine/tests/rasgosProbados.test.ts": {
@@ -3366,9 +3366,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/virtudesNuevas.test.ts": {
-    "mtime": 1792757964.2243855,
-    "seen": 1792758030.9356086,
-    "ast_hash": "375f8918a761fc38a5878df1ab2e4292",
+    "mtime": 1794108629.0917969,
+    "seen": 1794115785.4312966,
+    "ast_hash": "ab780a194e6b00625f63cca15517d420",
     "semantic_hash": ""
   },
   "tools/balance/src/checks/disciplina.ts": {
@@ -3612,9 +3612,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Tienda.tsx": {
-    "mtime": 1794074152.0488353,
-    "seen": 1794075087.0760412,
-    "ast_hash": "cc73eb2e926e43af5d9b3b385c360298",
+    "mtime": 1794107822.7117743,
+    "seen": 1794115785.370615,
+    "ast_hash": "f06e19e7daf35f1daeafc90dac7f2c1e",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/coleccion/filtrado.ts": {
@@ -4962,9 +4962,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1793874310.7897282,
-    "seen": 1793874490.317526,
-    "ast_hash": "1b416fc6d6a1e4c0eda8189f1ecdf5ca",
+    "mtime": 1794109758.7240636,
+    "seen": 1794115785.4863164,
+    "ast_hash": "959acde0944f22d9d4ac981893629903",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -5016,8 +5016,8 @@
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/sumario.md": {
-    "mtime": 1793983158.3481975,
-    "seen": 1793983527.690737,
+    "mtime": 1794089416.4430249,
+    "seen": 1794094186.7723851,
     "ast_hash": "d47122786e09ff7c5f21fd69ec42d586",
     "semantic_hash": ""
   },
@@ -5466,38 +5466,38 @@
     "semantic_hash": ""
   },
   "tools/sonidos/generar.py": {
-    "mtime": 1793742806.0459645,
-    "seen": 1793742911.5293474,
-    "ast_hash": "91b53bc069f4cbf1ec0110f560e041a7",
+    "mtime": 1794106463.4088564,
+    "seen": 1794115785.447874,
+    "ast_hash": "645beba88b8c4779f7ae18ec5b67d0e4",
     "semantic_hash": ""
   },
   "docs/juego/sonidos.md": {
-    "mtime": 1793742856.1882584,
-    "seen": 1793742911.5461361,
-    "ast_hash": "ac7d5d813d0e37392ff4ddc268ff06ce",
+    "mtime": 1794109740.8959107,
+    "seen": 1794115785.4873934,
+    "ast_hash": "2bc679e8020409f56ca53c4289026304",
     "semantic_hash": ""
   },
   "apps/web/public/sonidos/calculoDuelo.wav": {
-    "mtime": 1793742806.609452,
-    "seen": 1793742911.613339,
+    "mtime": 1794106463.9407449,
+    "seen": 1794115785.6710396,
     "ast_hash": "d7b3684a666ee4fcb0448bfe04ccf956",
     "semantic_hash": ""
   },
   "apps/web/public/sonidos/goat.wav": {
-    "mtime": 1793742806.3229496,
-    "seen": 1793742911.6136105,
+    "mtime": 1794106463.675488,
+    "seen": 1794115785.671633,
     "ast_hash": "982a0bbed07c2577f8b0783e29816bad",
     "semantic_hash": ""
   },
   "apps/web/public/sonidos/hoverCarta.wav": {
-    "mtime": 1793742806.3021994,
-    "seen": 1793742911.6136127,
+    "mtime": 1794106463.6642919,
+    "seen": 1794115785.6716557,
     "ast_hash": "71177888aaee2f0e85d6d67002c073a2",
     "semantic_hash": ""
   },
   "apps/web/public/sonidos/seleccionCarta.wav": {
-    "mtime": 1793742806.3111017,
-    "seen": 1793742911.613873,
+    "mtime": 1794106463.6652908,
+    "seen": 1794115785.6722867,
     "ast_hash": "cd86d55211b1b30c1518c46794cc6ae0",
     "semantic_hash": ""
   },
@@ -5526,21 +5526,21 @@
     "semantic_hash": ""
   },
   "apps/server/src/http/aspecto.ts": {
-    "mtime": 1793872889.9460583,
-    "seen": 1793874490.2375143,
-    "ast_hash": "b96383f647341c339ca2835d8a01ef82",
+    "mtime": 1794106607.8639984,
+    "seen": 1794115785.322472,
+    "ast_hash": "4ee2d5568a51c35134a946548dbc7024",
     "semantic_hash": ""
   },
   "apps/server/src/http/cosmeticos.ts": {
-    "mtime": 1793872913.924521,
-    "seen": 1793874490.237659,
-    "ast_hash": "2024e66d2a2b71cad0ee063a9fc87313",
+    "mtime": 1794106613.7939112,
+    "seen": 1794115785.3230357,
+    "ast_hash": "a4d783203be67a5a96e775f364167971",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/cosmeticos.ts": {
-    "mtime": 1793872667.3193789,
-    "seen": 1793874490.2392566,
-    "ast_hash": "711835d4c96e0bc308e2ac6c1416a3f3",
+    "mtime": 1794106328.373029,
+    "seen": 1794115785.3270788,
+    "ast_hash": "986e99f83e8aeb4afeb75657c149f7fa",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/cosmeticos.ts": {
@@ -5550,15 +5550,15 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/aspecto.test.ts": {
-    "mtime": 1793873029.661232,
-    "seen": 1793874490.2437174,
-    "ast_hash": "f941a738b064569ac0ba90cdc9fdff19",
+    "mtime": 1794113676.332796,
+    "seen": 1794115785.3369641,
+    "ast_hash": "b8a0a7fb20f24767e8e502d83b30be89",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/cosmeticos.test.ts": {
-    "mtime": 1793873030.5408998,
-    "seen": 1793874490.244284,
-    "ast_hash": "04f6ef7de61a347a1276b0f0de0bcfde",
+    "mtime": 1794113676.332796,
+    "seen": 1794115785.3381624,
+    "ast_hash": "ff31acb0c2a5691d23a366678becce92",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/escudo-partida.test.ts": {
@@ -5598,9 +5598,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/TiendaCosmeticos.tsx": {
-    "mtime": 1794074152.0492008,
-    "seen": 1794075087.0704167,
-    "ast_hash": "1641174ae78521c62502caeb8dcb7001",
+    "mtime": 1794107822.6986372,
+    "seen": 1794115785.3609521,
+    "ast_hash": "9674722791d909d0933d028d4b1f60bd",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/arte/rasgadura.ts": {
@@ -5610,9 +5610,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/chapa.ts": {
-    "mtime": 1793873166.835912,
-    "seen": 1793874490.2547479,
-    "ast_hash": "5adc6b4c23f95c3578985562e9078dd2",
+    "mtime": 1794097161.933722,
+    "seen": 1794115785.3631186,
+    "ast_hash": "959ed8675983bfe1247a55ad9abe5a8b",
     "semantic_hash": ""
   },
   "apps/web/src/estado/aspecto.ts": {
@@ -5628,9 +5628,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/cosmeticos.spec.ts": {
-    "mtime": 1794073184.0213625,
-    "seen": 1794075087.0786734,
-    "ast_hash": "0dba96b7c526f7603e7517a7d444c68c",
+    "mtime": 1794097201.729437,
+    "seen": 1794115785.3733473,
+    "ast_hash": "38afddf6982836387704bbb9b3cb64ae",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/chapa.test.ts": {
@@ -5646,9 +5646,9 @@
     "semantic_hash": ""
   },
   "data/cosmeticos.json": {
-    "mtime": 1793872225.379868,
-    "seen": 1793874490.2660973,
-    "ast_hash": "fcb112d0d000c45e04d043743f355e03",
+    "mtime": 1794106536.1843202,
+    "seen": 1794115785.3866456,
+    "ast_hash": "900cf915438df97a241e06bd430d8352",
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/identidad.ts": {
@@ -5670,15 +5670,15 @@
     "semantic_hash": ""
   },
   "packages/domain/src/cosmeticos/index.ts": {
-    "mtime": 1793872064.471524,
-    "seen": 1793874490.2702851,
-    "ast_hash": "49de2c46c6ce3f19fb558ea1a1fa1a4f",
+    "mtime": 1794106368.4660878,
+    "seen": 1794115785.3971517,
+    "ast_hash": "219d8115a6b1557bbbbfc226b47ebe7e",
     "semantic_hash": ""
   },
   "packages/domain/src/cosmeticos/tipos.ts": {
-    "mtime": 1793872064.452391,
-    "seen": 1793874490.270287,
-    "ast_hash": "320e702a6e81346406db7a2008c893a5",
+    "mtime": 1794106368.4389138,
+    "seen": 1794115785.397159,
+    "ast_hash": "056df0b6373924cf45191216e4509409",
     "semantic_hash": ""
   },
   "packages/domain/tests/catalogo/identidad.test.ts": {
@@ -5700,15 +5700,15 @@
     "semantic_hash": ""
   },
   "packages/protocol/src/http/cosmeticos.ts": {
-    "mtime": 1793872064.5765884,
-    "seen": 1793874490.2893727,
-    "ast_hash": "06e4f3bfb618d1dcb8cef97e3429e6b5",
+    "mtime": 1794106529.3422275,
+    "seen": 1794115785.433048,
+    "ast_hash": "6ca52d006acf8c4fa32ec391786f06e8",
     "semantic_hash": ""
   },
   "tools/fixtures/src/cosmeticos.ts": {
-    "mtime": 1793872196.7534628,
-    "seen": 1793874490.2973754,
-    "ast_hash": "da65450b96939e34cf646f8411ff0bf9",
+    "mtime": 1794097115.7590957,
+    "seen": 1794115785.4447396,
+    "ast_hash": "b53449b4e9965855078b218dcb488c66",
     "semantic_hash": ""
   },
   "specs/011-rework-tienda/checklists/requirements.md": {
@@ -5754,9 +5754,9 @@
     "semantic_hash": ""
   },
   "specs/011-rework-tienda/quickstart.md": {
-    "mtime": 1794074292.2875762,
-    "seen": 1794075087.158262,
-    "ast_hash": "d546ea608ca83fd7661fd53c35cedf92",
+    "mtime": 1794097285.7576442,
+    "seen": 1794115785.5220866,
+    "ast_hash": "52ed8aac16a90097196168339c1ffce5",
     "semantic_hash": ""
   },
   "specs/011-rework-tienda/research.md": {
@@ -5766,15 +5766,15 @@
     "semantic_hash": ""
   },
   "specs/011-rework-tienda/spec.md": {
-    "mtime": 1794074282.2728689,
-    "seen": 1794075087.1583903,
-    "ast_hash": "1176b7ea8416a5161f98834a1c8771ef",
+    "mtime": 1794097285.7560775,
+    "seen": 1794115785.5223603,
+    "ast_hash": "cf40bb2b237ab00abfd3202bd3a2964f",
     "semantic_hash": ""
   },
   "specs/011-rework-tienda/tasks.md": {
-    "mtime": 1794074292.287836,
-    "seen": 1794075087.1583924,
-    "ast_hash": "f2acccd6a1ad71912b214f2d2e595791",
+    "mtime": 1794097285.7570791,
+    "seen": 1794115785.522365,
+    "ast_hash": "6f4c8a1dd782c9151f764086a81a39d9",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/aaron-ramsey.webp": {
@@ -7578,458 +7578,458 @@
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-aguila-estrella-256.webp": {
-    "mtime": 1793872199.478,
-    "seen": 1793874490.3468158,
+    "mtime": 1794097120.731,
+    "seen": 1794115785.6456742,
     "ast_hash": "d2c9596a7cb9c16738a6df8c14a2bcd6",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-aguila-estrella-64.webp": {
-    "mtime": 1793872199.4,
-    "seen": 1793874490.3468184,
+    "mtime": 1794097120.654,
+    "seen": 1794115785.645686,
     "ast_hash": "bf9cc0f6698cdfabb2f86bc1f5bd51bd",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-antorcha-alada-256.webp": {
-    "mtime": 1793872199.114,
-    "seen": 1793874490.3468206,
+    "mtime": 1794097120.04,
+    "seen": 1794115785.6456904,
     "ast_hash": "b69a59800431bcde6faceff71761a2b5",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-antorcha-alada-64.webp": {
-    "mtime": 1793872199.055,
-    "seen": 1793874490.3468225,
+    "mtime": 1794097119.982,
+    "seen": 1794115785.6456988,
     "ast_hash": "52aa3f4fd4540e22fa8bbe0055989c27",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-arbol-de-raices-256.webp": {
-    "mtime": 1793872198.843,
-    "seen": 1793874490.3468242,
+    "mtime": 1794097119.439,
+    "seen": 1794115785.6457043,
     "ast_hash": "e7b99298e1dc92787852854db346e1d2",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-arbol-de-raices-64.webp": {
-    "mtime": 1793872198.779,
-    "seen": 1793874490.346826,
+    "mtime": 1794097119.366,
+    "seen": 1794115785.645713,
     "ast_hash": "350fd96cc41b41608bca654826ca1798",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-balon-lineas-verdes-256.webp": {
-    "mtime": 1793872199.226,
-    "seen": 1793874490.3468277,
+    "mtime": 1794097120.252,
+    "seen": 1794115785.6457171,
     "ast_hash": "e31cefd75da1300ada67fa68b626fca1",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-balon-lineas-verdes-64.webp": {
-    "mtime": 1793872199.156,
-    "seen": 1793874490.3468297,
+    "mtime": 1794097120.177,
+    "seen": 1794115785.645725,
     "ast_hash": "b15b6b0c53ae69c625a8dba8f958390d",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-columna-clasica-256.webp": {
-    "mtime": 1793872198.653,
-    "seen": 1793874490.3468316,
+    "mtime": 1794097119.033,
+    "seen": 1794115785.645729,
     "ast_hash": "fef2c2d13c63e77f88f5c1396ba00c0a",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-columna-clasica-64.webp": {
-    "mtime": 1793872198.58,
-    "seen": 1793874490.346833,
+    "mtime": 1794097118.968,
+    "seen": 1794115785.6457367,
     "ast_hash": "a2a1cf42f4159b1ab317a27470b69606",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-cometa-estelar-256.webp": {
-    "mtime": 1793872199.815,
-    "seen": 1793874490.3468351,
+    "mtime": 1794097121.398,
+    "seen": 1794115785.6457415,
     "ast_hash": "0bc1ff6f149a91e8f26bdbc350ee514e",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-cometa-estelar-64.webp": {
-    "mtime": 1793872199.76,
-    "seen": 1793874490.3468373,
+    "mtime": 1794097121.345,
+    "seen": 1794115785.645751,
     "ast_hash": "1b23ca8da245aa024abd28198f3e412e",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-cruz-heraldica-256.webp": {
-    "mtime": 1793872198.747,
-    "seen": 1793874490.3468392,
+    "mtime": 1794097119.232,
+    "seen": 1794115785.6457562,
     "ast_hash": "da5583959dd89a6593457d67841bfa80",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-cruz-heraldica-64.webp": {
-    "mtime": 1793872198.684,
-    "seen": 1793874490.3468409,
+    "mtime": 1794097119.175,
+    "seen": 1794115785.6457639,
     "ast_hash": "167ad62079746377f0b67d6761cf0f4c",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-estrella-polar-triangular-256.webp": {
-    "mtime": 1793872198.931,
-    "seen": 1793874490.3468423,
+    "mtime": 1794097119.643,
+    "seen": 1794115785.6457682,
     "ast_hash": "f56d6f6a3e481fc92a35a776b346952a",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-estrella-polar-triangular-64.webp": {
-    "mtime": 1793872198.873,
-    "seen": 1793874490.3468442,
+    "mtime": 1794097119.583,
+    "seen": 1794115785.645776,
     "ast_hash": "0d8745a541a861d0d74dd251bec77116",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-faro-marino-circular-256.webp": {
-    "mtime": 1793872198.162,
-    "seen": 1793874490.3468459,
+    "mtime": 1794097118.048,
+    "seen": 1794115785.6457796,
     "ast_hash": "484b9dda5f7f7d06b8781d0187436260",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-faro-marino-circular-64.webp": {
-    "mtime": 1793872198.096,
-    "seen": 1793874490.3468475,
+    "mtime": 1794097117.983,
+    "seen": 1794115785.6457877,
     "ast_hash": "a9152756e936280879b37299b8dde0ae",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-flor-de-lis-azul-oro-256.webp": {
-    "mtime": 1793872198.062,
-    "seen": 1793874490.346849,
+    "mtime": 1794097117.835,
+    "seen": 1794115785.6457915,
     "ast_hash": "aa179d7a92683d660dedf6e06d983e84",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-flor-de-lis-azul-oro-64.webp": {
-    "mtime": 1793872197.998,
-    "seen": 1793874490.3468506,
+    "mtime": 1794097117.767,
+    "seen": 1794115785.6457994,
     "ast_hash": "b6d4c59b5162019827e6390b976ba553",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-fortaleza-granate-256.webp": {
-    "mtime": 1793872198.266,
-    "seen": 1793874490.3468525,
+    "mtime": 1794097118.247,
+    "seen": 1794115785.645803,
     "ast_hash": "7e20ff871619e5bc05a93086f94106d3",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-fortaleza-granate-64.webp": {
-    "mtime": 1793872198.202,
-    "seen": 1793874490.3468547,
+    "mtime": 1794097118.184,
+    "seen": 1794115785.6458118,
     "ast_hash": "8010c45b648a3e834cf5c3dcb8ff6dc2",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-leon-corona-256.webp": {
-    "mtime": 1793872199.354,
-    "seen": 1793874490.346856,
+    "mtime": 1794097120.488,
+    "seen": 1794115785.6458163,
     "ast_hash": "d8c92f672ecfabe4f0b059fcee625aad",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-leon-corona-64.webp": {
-    "mtime": 1793872199.278,
-    "seen": 1793874490.346858,
+    "mtime": 1794097120.408,
+    "seen": 1794115785.6458259,
     "ast_hash": "7942c282942f912d9312c9e3bae015ca",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-lobo-256.webp": {
-    "mtime": 1793872199.612,
-    "seen": 1793874490.34686,
+    "mtime": 1794097120.97,
+    "seen": 1794115785.6458304,
     "ast_hash": "7c9e2b4f17f7f67ab3b68daba734161f",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-lobo-64.webp": {
-    "mtime": 1793872199.534,
-    "seen": 1793874490.3468618,
+    "mtime": 1794097120.895,
+    "seen": 1794115785.6458926,
     "ast_hash": "3095d18cdb079b969ac6d47c7ab3a026",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-montana-rio-azul-256.webp": {
-    "mtime": 1793872198.45,
-    "seen": 1793874490.3468635,
+    "mtime": 1794097118.643,
+    "seen": 1794115785.6459002,
     "ast_hash": "8e58858bb08adabb8f0545b1d42ccec1",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-montana-rio-azul-64.webp": {
-    "mtime": 1793872198.387,
-    "seen": 1793874490.3468654,
+    "mtime": 1794097118.582,
+    "seen": 1794115785.6459093,
     "ast_hash": "48e5a621e9480d5540b97e48fb0ee12f",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-mountain-rayo-256.webp": {
-    "mtime": 1793872199.735,
-    "seen": 1793874490.3468676,
+    "mtime": 1794097121.206,
+    "seen": 1794115785.6459126,
     "ast_hash": "b540bcc7272cddcc2559b730f9edfb2b",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-mountain-rayo-64.webp": {
-    "mtime": 1793872199.658,
-    "seen": 1793874490.346869,
+    "mtime": 1794097121.132,
+    "seen": 1794115785.645921,
     "ast_hash": "f64d39e36a086bcdba223e9edefac52d",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-navio-dorado-256.webp": {
-    "mtime": 1793872198.547,
-    "seen": 1793874490.3468704,
+    "mtime": 1794097118.837,
+    "seen": 1794115785.6459255,
     "ast_hash": "26d1c6b169de78a18b94e7ce9e381af1",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-navio-dorado-64.webp": {
-    "mtime": 1793872198.483,
-    "seen": 1793874490.3468719,
+    "mtime": 1794097118.776,
+    "seen": 1794115785.645933,
     "ast_hash": "3ee04d74fec8f4549f4cd55674a31c7c",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-1-256.webp": {
-    "mtime": 1793872199.965,
-    "seen": 1793874490.3468735,
+    "mtime": 1794097121.639,
+    "seen": 1794115785.6459367,
     "ast_hash": "76cd41d281cd546160a2b286f7d74218",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-1-64.webp": {
-    "mtime": 1793872199.872,
-    "seen": 1793874490.3468754,
+    "mtime": 1794097121.544,
+    "seen": 1794115785.6460211,
     "ast_hash": "93b8e52d78416f7c72d8fa27c96c2cb1",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-10-256.webp": {
-    "mtime": 1793872201.145,
-    "seen": 1793874490.346877,
+    "mtime": 1794097123.925,
+    "seen": 1794115785.6460254,
     "ast_hash": "0a6626a8bba537f9207bd69aa09ffb53",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-10-64.webp": {
-    "mtime": 1793872201.059,
-    "seen": 1793874490.346879,
+    "mtime": 1794097123.844,
+    "seen": 1794115785.6460347,
     "ast_hash": "2a6b663ae4394a7c2f9e3f68ee38d752",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-11-256.webp": {
-    "mtime": 1793872201.268,
-    "seen": 1793874490.3468807,
+    "mtime": 1794097124.173,
+    "seen": 1794115785.6460383,
     "ast_hash": "1540b8eea570964c2cefdd2bfa7fc8cd",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-11-64.webp": {
-    "mtime": 1793872201.19,
-    "seen": 1793874490.3468828,
+    "mtime": 1794097124.102,
+    "seen": 1794115785.646047,
     "ast_hash": "6e701c957fa5afb026e1e4770ca87ce6",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-12-256.webp": {
-    "mtime": 1793872201.404,
-    "seen": 1793874490.3468852,
+    "mtime": 1794097124.404,
+    "seen": 1794115785.6460516,
     "ast_hash": "d42c045526eb1e22994547eada93482f",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-12-64.webp": {
-    "mtime": 1793872201.315,
-    "seen": 1793874490.3468864,
+    "mtime": 1794097124.328,
+    "seen": 1794115785.646059,
     "ast_hash": "a8f396c7c9b000c58bb873ec9b553e03",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-13-256.webp": {
-    "mtime": 1793872201.539,
-    "seen": 1793874490.3468878,
+    "mtime": 1794097124.669,
+    "seen": 1794115785.6460779,
     "ast_hash": "cf29a5485571889508f120862f4ead97",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-13-64.webp": {
-    "mtime": 1793872201.45,
-    "seen": 1793874490.3468897,
+    "mtime": 1794097124.595,
+    "seen": 1794115785.6460865,
     "ast_hash": "b35b27998b6918ca30a270995b67bc39",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-14-256.webp": {
-    "mtime": 1793872201.663,
-    "seen": 1793874490.346891,
+    "mtime": 1794097124.898,
+    "seen": 1794115785.6460905,
     "ast_hash": "5d51a994ac7e3f7a66745c27f49c7692",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-14-64.webp": {
-    "mtime": 1793872201.583,
-    "seen": 1793874490.3468926,
+    "mtime": 1794097124.829,
+    "seen": 1794115785.6460981,
     "ast_hash": "ee3721cbb7c569497b8e1736ee016c22",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-15-256.webp": {
-    "mtime": 1793872201.789,
-    "seen": 1793874490.346894,
+    "mtime": 1794097125.129,
+    "seen": 1794115785.646102,
     "ast_hash": "4a369fb16236028dd93fa1181a7320f4",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-15-64.webp": {
-    "mtime": 1793872201.706,
-    "seen": 1793874490.3468957,
+    "mtime": 1794097125.057,
+    "seen": 1794115785.646109,
     "ast_hash": "992758ae88999c8c1424ceb33665bd21",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-16-256.webp": {
-    "mtime": 1793872201.916,
-    "seen": 1793874490.3468974,
+    "mtime": 1794097125.369,
+    "seen": 1794115785.6461134,
     "ast_hash": "c203530db426e9cb43d7faa4f69ef0a1",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-16-64.webp": {
-    "mtime": 1793872201.834,
-    "seen": 1793874490.346899,
+    "mtime": 1794097125.294,
+    "seen": 1794115785.6461205,
     "ast_hash": "e400c5789b4fe848b9c28ef74997e418",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-17-256.webp": {
-    "mtime": 1793872202.039,
-    "seen": 1793874490.3469002,
+    "mtime": 1794097125.624,
+    "seen": 1794115785.646124,
     "ast_hash": "6eb757c6900d9f40a8aea3512f868754",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-17-64.webp": {
-    "mtime": 1793872201.958,
-    "seen": 1793874490.3469017,
+    "mtime": 1794097125.544,
+    "seen": 1794115785.6461327,
     "ast_hash": "5929fc14358145a32531eaf6963de739",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-18-256.webp": {
-    "mtime": 1793872202.145,
-    "seen": 1793874490.3469036,
+    "mtime": 1794097125.866,
+    "seen": 1794115785.6461377,
     "ast_hash": "9b5fa5b139568164fd8fe8c17eff1b0b",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-18-64.webp": {
-    "mtime": 1793872202.076,
-    "seen": 1793874490.346906,
+    "mtime": 1794097125.798,
+    "seen": 1794115785.6461465,
     "ast_hash": "fbfa00320847a01b81ef05488403ae6c",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-19-256.webp": {
-    "mtime": 1793872202.269,
-    "seen": 1793874490.3469074,
+    "mtime": 1794097126.089,
+    "seen": 1794115785.6461508,
     "ast_hash": "b296ab797119f792c51748457dd957fc",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-19-64.webp": {
-    "mtime": 1793872202.188,
-    "seen": 1793874490.3469095,
+    "mtime": 1794097126.017,
+    "seen": 1794115785.6461601,
     "ast_hash": "f73c9f7b458c0cdaa94f97e092720a77",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-2-256.webp": {
-    "mtime": 1793872200.098,
-    "seen": 1793874490.346911,
+    "mtime": 1794097121.926,
+    "seen": 1794115785.6461644,
     "ast_hash": "2dc2cbe450e818dae1d9423ada1e4781",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-2-64.webp": {
-    "mtime": 1793872200.007,
-    "seen": 1793874490.3469129,
+    "mtime": 1794097121.846,
+    "seen": 1794115785.646172,
     "ast_hash": "fbf92ee3a3b7b2456c654801d94efb58",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-20-256.webp": {
-    "mtime": 1793872202.391,
-    "seen": 1793874490.3469145,
+    "mtime": 1794097126.336,
+    "seen": 1794115785.6461766,
     "ast_hash": "b4c55703e3d50612a3cff86bcc733c98",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-20-64.webp": {
-    "mtime": 1793872202.311,
-    "seen": 1793874490.3469162,
+    "mtime": 1794097126.259,
+    "seen": 1794115785.6462338,
     "ast_hash": "bcb4aa05eca0d8107c8183d76f470059",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-3-256.webp": {
-    "mtime": 1793872200.235,
-    "seen": 1793874490.3469179,
+    "mtime": 1794097122.181,
+    "seen": 1794115785.6462424,
     "ast_hash": "b37a67d4d424bbd2936763310c14793c",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-3-64.webp": {
-    "mtime": 1793872200.147,
-    "seen": 1793874490.3469195,
+    "mtime": 1794097122.104,
+    "seen": 1794115785.6462529,
     "ast_hash": "ef017f38302593068d26a4c7e55dddad",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-4-256.webp": {
-    "mtime": 1793872200.361,
-    "seen": 1793874490.346921,
+    "mtime": 1794097122.442,
+    "seen": 1794115785.6462572,
     "ast_hash": "249b76d893797083f6dab5f2129600ab",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-4-64.webp": {
-    "mtime": 1793872200.28,
-    "seen": 1793874490.346923,
+    "mtime": 1794097122.36,
+    "seen": 1794115785.6462657,
     "ast_hash": "b33e3d6bd674ed6caf979bfecaa036d8",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-5-256.webp": {
-    "mtime": 1793872200.49,
-    "seen": 1793874490.3469248,
+    "mtime": 1794097122.681,
+    "seen": 1794115785.6462708,
     "ast_hash": "487077bf8d7c82b57fd94eff7d9789db",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-5-64.webp": {
-    "mtime": 1793872200.405,
-    "seen": 1793874490.3469265,
+    "mtime": 1794097122.607,
+    "seen": 1794115785.6462793,
     "ast_hash": "cdb1e1d074719590f4040d357b1c0ce3",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-6-256.webp": {
-    "mtime": 1793872200.626,
-    "seen": 1793874490.3469286,
+    "mtime": 1794097122.918,
+    "seen": 1794115785.646334,
     "ast_hash": "af480c9cb41aba4130031b42eec3b13d",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-6-64.webp": {
-    "mtime": 1793872200.544,
-    "seen": 1793874490.3469303,
+    "mtime": 1794097122.844,
+    "seen": 1794115785.6463466,
     "ast_hash": "a49de1b801cee8091abc13bc60ff77a8",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-7-256.webp": {
-    "mtime": 1793872200.75,
-    "seen": 1793874490.346932,
+    "mtime": 1794097123.16,
+    "seen": 1794115785.646351,
     "ast_hash": "58e535089e9c1cff9e9fe9bcfa074623",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-7-64.webp": {
-    "mtime": 1793872200.67,
-    "seen": 1793874490.3469336,
+    "mtime": 1794097123.088,
+    "seen": 1794115785.6463592,
     "ast_hash": "8c9ad4cd4294da1023761200851d2a02",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-8-256.webp": {
-    "mtime": 1793872200.881,
-    "seen": 1793874490.346935,
+    "mtime": 1794097123.41,
+    "seen": 1794115785.6463635,
     "ast_hash": "254b90898f70591087986fc48a9c1fad",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-8-64.webp": {
-    "mtime": 1793872200.797,
-    "seen": 1793874490.3469365,
+    "mtime": 1794097123.334,
+    "seen": 1794115785.6463714,
     "ast_hash": "e91fdba88893e2ead48db6ede578af42",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-9-256.webp": {
-    "mtime": 1793872201.009,
-    "seen": 1793874490.3469381,
+    "mtime": 1794097123.672,
+    "seen": 1794115785.646375,
     "ast_hash": "3792d3f660d1b666ddb5d41f51881b4f",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-premium-9-64.webp": {
-    "mtime": 1793872200.924,
-    "seen": 1793874490.3469396,
+    "mtime": 1794097123.597,
+    "seen": 1794115785.6463964,
     "ast_hash": "ca07c43cb7a922e98a1b21f3b21ec0d9",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-puente-de-piedra-256.webp": {
-    "mtime": 1793872199.024,
-    "seen": 1793874490.346941,
+    "mtime": 1794097119.832,
+    "seen": 1794115785.646401,
     "ast_hash": "4ea09e9c2ed9136763ee560d36357e3c",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-puente-de-piedra-64.webp": {
-    "mtime": 1793872198.962,
-    "seen": 1793874490.3469424,
+    "mtime": 1794097119.77,
+    "seen": 1794115785.6464093,
     "ast_hash": "09299d091166ec500e38598c15d36372",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-trebol-verde-rombo-256.webp": {
-    "mtime": 1793872198.356,
-    "seen": 1793874490.3469439,
+    "mtime": 1794097118.442,
+    "seen": 1794115785.646413,
     "ast_hash": "49786ab0bd5fa20408b3e348ef537bd0",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-trebol-verde-rombo-64.webp": {
-    "mtime": 1793872198.297,
-    "seen": 1793874490.3469455,
+    "mtime": 1794097118.381,
+    "seen": 1794115785.6464264,
     "ast_hash": "40a690e05668c89c25cc44ac5361c0fc",
     "semantic_hash": ""
   },
@@ -8391,6 +8391,564 @@
     "mtime": 1793872204.212,
     "seen": 1793874490.3470945,
     "ast_hash": "782c37cab5f3287970f72e947527efcf",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/bajas-pendientes.test.ts": {
+    "mtime": 1794107543.442368,
+    "seen": 1794115785.3375478,
+    "ast_hash": "94c0b661f3d8f309257e9abfc2617ce9",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/celebraciones.test.ts": {
+    "mtime": 1794106678.4930604,
+    "seen": 1794115785.3378534,
+    "ast_hash": "bbd9f6f1d95a4cf8a060c04ceb339926",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/incidencias.test.ts": {
+    "mtime": 1794115691.8200257,
+    "seen": 1794115785.3411448,
+    "ast_hash": "fc90a526d58692ae6e50ae215916639f",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/migracion-0015.test.ts": {
+    "mtime": 1794106389.0859332,
+    "seen": 1794115785.3420396,
+    "ast_hash": "f99239c16ef466a58cddc0ff9dd2fb3a",
+    "semantic_hash": ""
+  },
+  "apps/web/scripts/generar-celebracion-prueba.mjs": {
+    "mtime": 1794109797.3118422,
+    "seen": 1794115785.3500795,
+    "ast_hash": "4c0054a96b4f871e3619b2ecf2751ee7",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/ListaPestanas.tsx": {
+    "mtime": 1794107104.6312962,
+    "seen": 1794115785.3584843,
+    "ast_hash": "46fc3da652a8764f64c6e3d76acc643a",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/SelectorCelebracion.tsx": {
+    "mtime": 1794106967.335283,
+    "seen": 1794115785.3596969,
+    "ast_hash": "00e1ba4735cae7380b710dd63e13b8af",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/SelectorModoIncidencias.tsx": {
+    "mtime": 1794109560.3892703,
+    "seen": 1794115785.3603272,
+    "ast_hash": "9c1581f3ef8e27502a5848f830d1581a",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/CapaCelebracion.tsx": {
+    "mtime": 1794106815.6895523,
+    "seen": 1794115785.3630877,
+    "ast_hash": "6cf207fdedb72461a74b8c609ecc4b9e",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/Clasica.tsx": {
+    "mtime": 1794106811.5888894,
+    "seen": 1794115785.3630924,
+    "ast_hash": "a70bdde6e6e83c85a4ce65c0eb67d3de",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/Estadio.tsx": {
+    "mtime": 1794106812.4131062,
+    "seen": 1794115785.3630962,
+    "ast_hash": "2565ba091f76eadf26d5abfcc3c934f2",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/Insignia.tsx": {
+    "mtime": 1794106810.762107,
+    "seen": 1794115785.3631,
+    "ast_hash": "4081434ee24e9928177261b6e841a545",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/Neon.tsx": {
+    "mtime": 1794106813.2257323,
+    "seen": 1794115785.3631034,
+    "ast_hash": "60a1c0c1b916919bb10cdcb3806db537",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/Pizarra.tsx": {
+    "mtime": 1794106814.0540462,
+    "seen": 1794115785.363107,
+    "ast_hash": "e86a41184f3c86cfe3b46cc24a64412f",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/registro.ts": {
+    "mtime": 1794106814.8690917,
+    "seen": 1794115785.36311,
+    "ast_hash": "c3d4ff4471b1fdbb4b82c47750edaa33",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/celebraciones/tipos.ts": {
+    "mtime": 1794106809.8909473,
+    "seen": 1794115785.3631134,
+    "ast_hash": "2e0ea83f55a47424b5272dc1aaa69243",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/sonidosPartido.ts": {
+    "mtime": 1794106876.4366615,
+    "seen": 1794115785.364492,
+    "ast_hash": "df918e6fb5616a8a440782ad4ffc91bf",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/textoBloqueoBajas.ts": {
+    "mtime": 1794107611.2150042,
+    "seen": 1794115785.364498,
+    "ast_hash": "cefd0d04d7d4eef581f46132c4da92d9",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/textoParada.ts": {
+    "mtime": 1794109561.2549317,
+    "seen": 1794115785.3645024,
+    "ast_hash": "98262631ae158d9f68238b2fdf760190",
+    "semantic_hash": ""
+  },
+  "apps/web/src/componentes/useDistribucion.ts": {
+    "mtime": 1794107093.5894349,
+    "seen": 1794115785.3647776,
+    "ast_hash": "ebed1fa1c50e93a2d57536cdc68500a1",
+    "semantic_hash": ""
+  },
+  "apps/web/tests/e2e/control-total.spec.ts": {
+    "mtime": 1794109716.6571417,
+    "seen": 1794115785.3733401,
+    "ast_hash": "8a166be20042c67b1f3fec0186a651f8",
+    "semantic_hash": ""
+  },
+  "apps/web/tests/unit/celebracion.test.ts": {
+    "mtime": 1794107056.4209588,
+    "seen": 1794115785.381198,
+    "ast_hash": "63b61410f6beecaed4a1ac926897980a",
+    "semantic_hash": ""
+  },
+  "apps/web/tests/unit/textoBloqueoBajas.test.ts": {
+    "mtime": 1794109570.5899668,
+    "seen": 1794115785.3847558,
+    "ast_hash": "69af6d384d1d15295bee291642d1f26a",
+    "semantic_hash": ""
+  },
+  "packages/domain/src/cosmeticos/celebraciones.ts": {
+    "mtime": 1794106368.465912,
+    "seen": 1794115785.3968308,
+    "ast_hash": "b7913d89032d19a0ffc4b8311a281994",
+    "semantic_hash": ""
+  },
+  "packages/domain/src/equipo/bajas.ts": {
+    "mtime": 1794107228.0115876,
+    "seen": 1794115785.3993368,
+    "ast_hash": "fcb5d17e3dbb1d9a62c84da8ba862499",
+    "semantic_hash": ""
+  },
+  "packages/domain/tests/cosmeticos/celebraciones.test.ts": {
+    "mtime": 1794106368.4889133,
+    "seen": 1794115785.4087734,
+    "ast_hash": "a1dd18534fdd5ed522398d159f765c13",
+    "semantic_hash": ""
+  },
+  "packages/domain/tests/equipo/bajas.test.ts": {
+    "mtime": 1794107265.2380574,
+    "seen": 1794115785.409988,
+    "ast_hash": "ebb2b5274a1016dcc763fa7117236e4b",
+    "semantic_hash": ""
+  },
+  "packages/engine/tests/fixtures/regenerarEquivalencia005.ts": {
+    "mtime": 1794108899.5439043,
+    "seen": 1794115785.4289708,
+    "ast_hash": "3231be0dd968408862d69f4225c925d7",
+    "semantic_hash": ""
+  },
+  "packages/engine/tests/incidencias.test.ts": {
+    "mtime": 1794108300.2671392,
+    "seen": 1794115785.4291658,
+    "ast_hash": "dad7c25ba7c122723cdc882a89072c51",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/balance-antes/LEEME.md": {
+    "mtime": 1794115666.2618432,
+    "seen": 1794115785.5223694,
+    "ast_hash": "050aaddbc4c1f889fc3902712738fc21",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/balance-antes/comprobaciones-despues.txt": {
+    "mtime": 1794115666.2129598,
+    "seen": 1794115785.5223742,
+    "ast_hash": "4855c18e5b80485bfcef6484541c4d83",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/balance-antes/comprobaciones.txt": {
+    "mtime": 1794111031.3953602,
+    "seen": 1794115785.5223777,
+    "ast_hash": "4855c18e5b80485bfcef6484541c4d83",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/balance-antes/informe.html": {
+    "mtime": 1794111031.3723521,
+    "seen": 1794115785.5223813,
+    "ast_hash": "f046012a9ff99e8a706cbac2b4699679",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/checklists/requirements.md": {
+    "mtime": 1794101728.3303907,
+    "seen": 1794115785.5223854,
+    "ast_hash": "4b92766d494dac7e59c6b32fbe9e9eb4",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/contracts/motor.md": {
+    "mtime": 1794105078.4077609,
+    "seen": 1794115785.522389,
+    "ast_hash": "c7ad64809cbad7156a2fa39b9551d99f",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/contracts/protocolo.md": {
+    "mtime": 1794105079.3058045,
+    "seen": 1794115785.5223925,
+    "ast_hash": "ca55bfee59c6ab2e900eabc2bac24491",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/contracts/ui.md": {
+    "mtime": 1794105080.1363728,
+    "seen": 1794115785.522397,
+    "ast_hash": "6b360d40a703ed5252865808f37794e2",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/data-model.md": {
+    "mtime": 1794105026.957579,
+    "seen": 1794115785.5224018,
+    "ast_hash": "4ace0c7b51a7dbefa0b9c2fd279a0e65",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/plan.md": {
+    "mtime": 1794105138.4141026,
+    "seen": 1794115785.5224063,
+    "ast_hash": "fc666a01046c2c7d99912b1296ea62cb",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/quickstart.md": {
+    "mtime": 1794105091.4374032,
+    "seen": 1794115785.5224094,
+    "ast_hash": "f9d21c033571901b8057d02e5849a1f2",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/research.md": {
+    "mtime": 1794105025.959868,
+    "seen": 1794115785.5224128,
+    "ast_hash": "4328bc3f81110ca6af429860c2097cca",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/spec.md": {
+    "mtime": 1794104583.9198976,
+    "seen": 1794115785.522416,
+    "ast_hash": "91df338e433d7bd3fd9c54465b38da69",
+    "semantic_hash": ""
+  },
+  "specs/012-mejoras-simulacion-2d/tasks.md": {
+    "mtime": 1794115666.287594,
+    "seen": 1794115785.5224197,
+    "ast_hash": "f4bf2e15011187479eef5a28a4b62e2e",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-aguila-estrella-512.webp": {
+    "mtime": 1794097120.851,
+    "seen": 1794115785.6456807,
+    "ast_hash": "af66d36dc598bc100ba5662e3a9c5bea",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-antorcha-alada-512.webp": {
+    "mtime": 1794097120.136,
+    "seen": 1794115785.6456943,
+    "ast_hash": "b61614fefd6b51404976c2a43c648dfa",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-arbol-de-raices-512.webp": {
+    "mtime": 1794097119.554,
+    "seen": 1794115785.6457086,
+    "ast_hash": "3e8524fad507375dd5b27fe9299b4198",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-balon-lineas-verdes-512.webp": {
+    "mtime": 1794097120.364,
+    "seen": 1794115785.6457207,
+    "ast_hash": "e683ebf891c0879653c20f856e0611dd",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-columna-clasica-512.webp": {
+    "mtime": 1794097119.146,
+    "seen": 1794115785.6457326,
+    "ast_hash": "a9f5acae0e821181844047ae78de781e",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-cometa-estelar-512.webp": {
+    "mtime": 1794097121.494,
+    "seen": 1794115785.6457458,
+    "ast_hash": "5b749636fd29e574b19ce4871dcfdb0a",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-cruz-heraldica-512.webp": {
+    "mtime": 1794097119.333,
+    "seen": 1794115785.6457598,
+    "ast_hash": "0b88ffbe107b9a8c20da31b6abf04ff2",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-estrella-polar-triangular-512.webp": {
+    "mtime": 1794097119.739,
+    "seen": 1794115785.645772,
+    "ast_hash": "3036def4792bc31bd6351553c4d221c9",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-faro-marino-circular-512.webp": {
+    "mtime": 1794097118.154,
+    "seen": 1794115785.6457837,
+    "ast_hash": "efd98ea318389815920d5388a3acf52b",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-flor-de-lis-azul-oro-512.webp": {
+    "mtime": 1794097117.953,
+    "seen": 1794115785.6457953,
+    "ast_hash": "a2c83b41397b5a69fc9319f888e6f23a",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-fortaleza-granate-512.webp": {
+    "mtime": 1794097118.351,
+    "seen": 1794115785.6458063,
+    "ast_hash": "d871e357be1e77f1ff978c4688f92bc3",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-leon-corona-512.webp": {
+    "mtime": 1794097120.606,
+    "seen": 1794115785.6458201,
+    "ast_hash": "7fc0ea5a5d74818d6a2a34a7a3d154d8",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-lobo-512.webp": {
+    "mtime": 1794097121.088,
+    "seen": 1794115785.645834,
+    "ast_hash": "21c7faa759e8fc7465250d71af84e880",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-montana-rio-azul-512.webp": {
+    "mtime": 1794097118.747,
+    "seen": 1794115785.6459055,
+    "ast_hash": "7c3e5e93c4b0ad07c2615b7876025cf4",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-mountain-rayo-512.webp": {
+    "mtime": 1794097121.321,
+    "seen": 1794115785.645917,
+    "ast_hash": "6aa997010d7e09787c554f5f97ca4dc1",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-navio-dorado-512.webp": {
+    "mtime": 1794097118.934,
+    "seen": 1794115785.645929,
+    "ast_hash": "dbe10a9fb039e2ea73a0641d0849f136",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-1-512.webp": {
+    "mtime": 1794097121.803,
+    "seen": 1794115785.646013,
+    "ast_hash": "34f93a822a4a34de024e69b3d9e642d9",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-10-512.webp": {
+    "mtime": 1794097124.061,
+    "seen": 1794115785.6460295,
+    "ast_hash": "e9545e4e8042f57344b83652a60bbfb0",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-11-512.webp": {
+    "mtime": 1794097124.288,
+    "seen": 1794115785.6460419,
+    "ast_hash": "53246a547d48fb068dbfd1f97b5115e0",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-12-512.webp": {
+    "mtime": 1794097124.554,
+    "seen": 1794115785.6460547,
+    "ast_hash": "e238855a929ab9a281485da08fba3962",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-13-512.webp": {
+    "mtime": 1794097124.791,
+    "seen": 1794115785.6460817,
+    "ast_hash": "aaf3f09ac89116e045e3230d0c00906b",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-14-512.webp": {
+    "mtime": 1794097125.016,
+    "seen": 1794115785.646094,
+    "ast_hash": "fa6e05cb202a6a28c9412e6310138e41",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-15-512.webp": {
+    "mtime": 1794097125.253,
+    "seen": 1794115785.6461053,
+    "ast_hash": "337292bfbb7b2ad68014e11533013d8f",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-16-512.webp": {
+    "mtime": 1794097125.503,
+    "seen": 1794115785.6461165,
+    "ast_hash": "7be9ca0157da5dd3f08ec6787aff5748",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-17-512.webp": {
+    "mtime": 1794097125.762,
+    "seen": 1794115785.6461277,
+    "ast_hash": "e6986525165a277dbeefbc081857d641",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-18-512.webp": {
+    "mtime": 1794097125.977,
+    "seen": 1794115785.646142,
+    "ast_hash": "958dac27cdd1440dbe1ae6836388f1cd",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-19-512.webp": {
+    "mtime": 1794097126.219,
+    "seen": 1794115785.6461546,
+    "ast_hash": "3d53a64a8561bd1fc8dc7b821043d3b1",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-2-512.webp": {
+    "mtime": 1794097122.061,
+    "seen": 1794115785.6461678,
+    "ast_hash": "bcb5e5df9cd1af02aed57333559f22f2",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-20-512.webp": {
+    "mtime": 1794097126.47,
+    "seen": 1794115785.646181,
+    "ast_hash": "9edf9437c205e994763f5afd5a1c70b4",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-3-512.webp": {
+    "mtime": 1794097122.321,
+    "seen": 1794115785.6462479,
+    "ast_hash": "e8877ac0912fe847eda3c0c846633428",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-4-512.webp": {
+    "mtime": 1794097122.567,
+    "seen": 1794115785.646261,
+    "ast_hash": "fee59b419b0c87a5dc884b822c3b9147",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-5-512.webp": {
+    "mtime": 1794097122.803,
+    "seen": 1794115785.6462748,
+    "ast_hash": "56bec828afee5ac0bb81033c1d4480c5",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-6-512.webp": {
+    "mtime": 1794097123.05,
+    "seen": 1794115785.6463406,
+    "ast_hash": "10d5fe3a6f483070ba86e7ad72bdd491",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-7-512.webp": {
+    "mtime": 1794097123.294,
+    "seen": 1794115785.646355,
+    "ast_hash": "eb51d8d33e6dfa699e0bd325e7894ad1",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-8-512.webp": {
+    "mtime": 1794097123.558,
+    "seen": 1794115785.646367,
+    "ast_hash": "78e4923af0ed4cecac5e01ce33883760",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-premium-9-512.webp": {
+    "mtime": 1794097123.802,
+    "seen": 1794115785.6463783,
+    "ast_hash": "69828ba9e1c91295bfc6c41db58621ee",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-puente-de-piedra-512.webp": {
+    "mtime": 1794097119.951,
+    "seen": 1794115785.646405,
+    "ast_hash": "528ebb5010caa0e8ddca97f6048b59fa",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/escudos/escudo-trebol-verde-rombo-512.webp": {
+    "mtime": 1794097118.55,
+    "seen": 1794115785.6464171,
+    "ast_hash": "9d8e73800dcb782c31e4242dbc7991a5",
+    "semantic_hash": ""
+  },
+  "apps/web/public/cosmeticos/celebraciones/celebracion-prueba-secuencia.webm": {
+    "mtime": 1794106996.844899,
+    "seen": 1794115785.6704462,
+    "ast_hash": "a8d93e9a3b2b2bac1f2311bab29f2dce",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/cajaRegistradora.wav": {
+    "mtime": 1794106464.6114366,
+    "seen": 1794115785.6710315,
+    "ast_hash": "3ce5c8da7aff1accd4e47d93a2d7c2be",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/clicPrincipal.wav": {
+    "mtime": 1794106464.6066215,
+    "seen": 1794115785.6713371,
+    "ast_hash": "c3bf101773f63aa6e61967952af5ac4e",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/confirmarEleccion.wav": {
+    "mtime": 1794106464.6027186,
+    "seen": 1794115785.671343,
+    "ast_hash": "347c7814255289867cdd79debb376632",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/golPropio.wav": {
+    "mtime": 1794106464.3900065,
+    "seen": 1794115785.6716392,
+    "ast_hash": "248f01a303fd1c09792c4aa646d69767",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/golRival.wav": {
+    "mtime": 1794106464.3960543,
+    "seen": 1794115785.6716506,
+    "ast_hash": "fb0041ac65c11b0041678904908b4e23",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/latido.wav": {
+    "mtime": 1794106464.6066215,
+    "seen": 1794115785.6716597,
+    "ast_hash": "78438e68e8f9a6ef600cadab9417fc19",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/pitidoDescanso.wav": {
+    "mtime": 1794106464.0203042,
+    "seen": 1794115785.6716647,
+    "ast_hash": "b973d7394acbd5e213a55fccede3754a",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/pitidoFinal.wav": {
+    "mtime": 1794106464.0256424,
+    "seen": 1794115785.6716688,
+    "ast_hash": "0034fe01111ea431b0fbb6cd5ed0763e",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/pitidoInicio.wav": {
+    "mtime": 1794106464.017376,
+    "seen": 1794115785.6716723,
+    "ast_hash": "e2d2a834c377f45aecf684be97486ee1",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/tarjetaAmarilla.wav": {
+    "mtime": 1794106464.487543,
+    "seen": 1794115785.6722932,
+    "ast_hash": "846c3c1e67626d871390067c9834f765",
+    "semantic_hash": ""
+  },
+  "apps/web/public/sonidos/tarjetaRoja.wav": {
+    "mtime": 1794106464.6007164,
+    "seen": 1794115785.6722975,
+    "ast_hash": "2ddaea408facc64c4586d66ff5713801",
     "semantic_hash": ""
   }
 }

@@ -118,7 +118,9 @@ export function Inicio() {
                   Mi perfil
                 </Link>
               )}
-              <button type="button" className="texto" onClick={() => void cerrarSesion()}>
+              {/* Botón con presencia, visible sin desplazarse (spec 012, FR-031). */}
+              <button type="button" className="secundario boton-sesion" onClick={() => void cerrarSesion()}>
+                <Icono nombre="perfil" />
                 Cerrar sesión
               </button>
             </div>
@@ -150,7 +152,8 @@ export function Inicio() {
               <button type="button" className="secundario alternativa" disabled={enviando} onClick={() => void ejecutar(entrarComoInvitado)}>
                 Jugar como invitado
               </button>
-              <button type="button" className="texto" onClick={() => setModo('login')}>
+              <button type="button" className="secundario boton-sesion" onClick={() => setModo('login')}>
+                <Icono nombre="perfil" />
                 Iniciar sesión
               </button>
             </div>
@@ -275,7 +278,8 @@ function FormularioCuenta({
           {modo === 'login' ? 'Entrar' : 'Crear cuenta'}
         </button>
         {onCambiar && (
-          <button type="button" className="texto" onClick={onCambiar}>
+          <button type="button" className="secundario boton-sesion" onClick={onCambiar}>
+            <Icono nombre="perfil" />
             {modo === 'login' ? 'Crear una cuenta' : 'Ya tengo cuenta'}
           </button>
         )}

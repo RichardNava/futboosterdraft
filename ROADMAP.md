@@ -44,7 +44,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
-| [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007 | P1 | Parcial | INI-03, INI-04, INI-08 |
+| [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012 | P1 | Parcial | INI-03, INI-04, INI-08 |
 
 Los ids siguen el orden en que se registran, no el de prioridad: INI-15 se añadió al aparecer la spec 007.
 
@@ -362,8 +362,16 @@ cuesta simular los partidos.
   suaves (−20 %) y cuatro momentos sonoros nuevos (choque y ruleta de forma en los duelos, campeón, derrota), logo
   oficial en SVG, seis fondos de página nuevos, sin tablas de goleadores en el modo Duelos y nuevo sobre con su
   animación. Los recursos de origen están en `temp/`, que debe desaparecer al cerrar la spec (FR-021).
-- **Specs**: [007](specs/007-retoques-visuales/spec.md).
-- **Prioridad / estado**: P1 · **Parcial**. 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
+- **Specs**: [007](specs/007-retoques-visuales/spec.md), [012](specs/012-mejoras-simulacion-2d/spec.md).
+- **Spec 012 (implementada el 2026-11-08, sin validar)**: sonidos del partido, del draft, del botón principal y de la
+  tienda (síntesis propia; público y caja registradora provisionales, a sustituir por CC0), celebraciones de gol como
+  cosmético (4 gratuitas + 1 de prueba de clase secuencia), franja de la 2D de altura fija y tarjetas con su color,
+  «Gestionar equipo» con la mesa de Formación, «Control total» de lesiones y expulsiones contra un NPC (el motor resuelve
+  los lances al terminar el paso: partido 14 de `equivalencia-005.json` regenerado), alineación confirmada respetada
+  con bloqueo `409 BAJA_PENDIENTE` y avisos del equipo, escudos en Plantillas y botones de sesión. Pendiente: los
+  recorridos a mano del [quickstart](specs/012-mejoras-simulacion-2d/quickstart.md), SC-009 con 5 personas y la
+  comparación del informe de `pnpm balance` con `balance-antes/`.
+- **Prioridad / estado**: P1 · **Parcial**. 007: 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
 - **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
   (rarezas y presentación de la carta de la 006).
 - **Evidencia**: sin `checklists/validacion.md`. Sin cerrar:

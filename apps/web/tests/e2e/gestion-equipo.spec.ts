@@ -99,3 +99,37 @@ test('una reproducción entre humanos no tiene «Gestionar equipo»', async ({ p
   await page.goto(`/partidas/${partidaId}/torneo`);
   await expect(page.getByRole('button', { name: 'Gestionar equipo' })).toHaveCount(0);
 });
+
+/**
+ * Spec 012 (US3, FR-015 a FR-017): «Gestionar equipo» con la mesa de Formación. A 1024 px, campo horizontal y
+ * pestañas fijas aunque el panel se desplace; en móvil, vertical. Sin no convocados ni «Personalización»; una
+ * sustitución se aplica.
+ */
+test('gestionar equipo con la distribución de Formación', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await hastaElDescansoRapida(page);
+  await page.getByRole('button', { name: 'Gestionar equipo' }).click();
+  const gestion = page.getByTestId('gestion-equipo');
+  await expect(gestion.locator('.campo-equipo.horizontal')).toBeVisible();
+  const pestanas = gestion.getByRole('tablist', { name: 'Secciones de la gestión' });
+  await expect(pestanas.getByRole('tab')).toHaveText(['Alineación', 'Táctica', 'Lanzadores']);
+  await expect(gestion.getByRole('tab', { name: 'Personalización' })).toHaveCount(0);
+  await expect(gestion.getByTestId('reserva')).toHaveCount(0);
+
+  // Las pestañas siguen a la vista al desplazar el panel lateral.
+  await pestanas.getByRole('tab', { name: 'Táctica' }).click();
+  await gestion.locator('.campo-equipo-lateral').evaluate((el) => el.scrollTo(0, el.scrollHeight));
+  await expect(pestanas).toBeInViewport();
+  await pestanas.getByRole('tab', { name: 'Alineación' }).click();
+
+  // En móvil, el campo en vertical.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(gestion.locator('.campo-equipo.horizontal')).toHaveCount(0);
+  await expect(gestion.getByTestId('campo-equipo')).toBeVisible();
+  await page.setViewportSize({ width: 1024, height: 768 });
+
+  await sustituirEnGestion(page, 'DC');
+  await expect(gestion.getByText('Sustituciones restantes: 4')).toBeVisible();
+  await page.getByRole('button', { name: 'Confirmar cambios' }).click();
+  await expect(gestion).toBeHidden();
+});

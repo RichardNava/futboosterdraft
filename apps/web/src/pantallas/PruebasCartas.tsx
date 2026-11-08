@@ -2,6 +2,46 @@ import type { Jugador, Nivel } from '@fbd/domain';
 import { useEffect, useState } from 'react';
 import { api } from '../api/cliente';
 import { CartaJugador } from '../componentes/CartaJugador';
+import { CapaCelebracion } from '../componentes/celebraciones/CapaCelebracion';
+import type { CelebracionElegida } from '../componentes/celebraciones/tipos';
+import { useCatalogoCosmeticos } from '../estado/cosmeticos';
+
+/** La de prueba de clase secuencia está retirada del catálogo (no se ofrece): solo se ve aquí (spec 012, FR-010a). */
+const SECUENCIA_PRUEBA: CelebracionElegida = { id: 'celebracion-prueba-secuencia', datos: { clase: 'secuencia', duracionMs: 2000 } };
+
+/** Spec 012 (SC-003): cualquier celebración, también la de secuencia, con la misma capa que el partido. */
+function PruebaCelebraciones() {
+  const { catalogo } = useCatalogoCosmeticos();
+  const [vista, setVista] = useState<{ c: CelebracionElegida; n: number } | null>(null);
+  const lista: CelebracionElegida[] = [
+    ...(catalogo?.cosmeticos ?? []).filter((c) => c.tipo === 'celebracion' && c.datos).map((c) => ({ id: c.id, datos: c.datos! })),
+    SECUENCIA_PRUEBA,
+  ];
+  return (
+    <section aria-label="Celebraciones de gol" className="muestra-cartas">
+      <h2>Celebraciones de gol</h2>
+      <div className="opciones-celebracion" role="group" aria-label="Celebración de prueba">
+        {lista.map((c) => (
+          <button key={c.id} type="button" className="secundario" onClick={() => setVista((v) => ({ c, n: (v?.n ?? 0) + 1 }))}>
+            {c.id}
+          </button>
+        ))}
+      </div>
+      <div className="vista-previa-celebracion" data-prueba="celebracion">
+        {vista && (
+          <CapaCelebracion
+            key={vista.n}
+            celebracion={vista.c}
+            equipo={{ nombre: 'Prueba', escudo: null, color: 'var(--color-accion)' }}
+            goleador="Goleador de prueba"
+            velocidad={1}
+            onFin={() => setVista(null)}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
 
 const NIVELES: Nivel[] = ['Superclase', 'Crack', 'Legendario', 'GOAT'];
 
@@ -33,6 +73,7 @@ export function PruebasCartas() {
   return (
     <main className="pantalla">
       <h1>Cartas de la colección Core ({jugadores.length})</h1>
+      <PruebaCelebraciones />
       <section aria-label="Muestra por nivel" className="muestra-cartas">
         <h2>Los cuatro niveles, un GOAT con 4 virtudes y 2 defectos y un Superclase sin rasgos</h2>
         <div className="rejilla-cartas muestra">

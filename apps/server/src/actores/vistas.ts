@@ -8,7 +8,8 @@ import type { ContextoComando } from './actor';
 import { vistaDraft } from './draft';
 import { detalleBajas } from './equipo';
 import type { ControladorPartida } from './partida';
-import { vistaPartido } from './partidoRapido';
+import { equipacionesDe, vistaPartido } from './partidoRapido';
+import { escudoDe } from './identidad';
 import { modalidadPreferida } from './preparacion';
 import { resumenSala } from './sala';
 
@@ -41,6 +42,10 @@ export async function plantillasVisibles(c: ControladorPartida) {
     nivelNPC: p.nivelNPC,
     jugadores: (porParticipante.get(p.id) ?? []).map((id) => catalogo.resumen(id)),
     bajas: detalleBajas(c, p.id),
+    // Chapa de la pestaña (spec 012, FR-026): escudo o, sin él, el color principal de la primera equipación.
+    nombreEquipo: c.nombreDe(p),
+    escudo: escudoDe(c, p.id),
+    color: equipacionesDe(c, p.id).primera.colores[0] ?? null,
   }));
 }
 

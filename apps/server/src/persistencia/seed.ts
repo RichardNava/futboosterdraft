@@ -25,6 +25,8 @@ import {
   type Coleccion,
   type Jugador,
   type TipoCosmetico,
+  type DatosCelebracion,
+  validarDatosCosmetico,
 } from '@fbd/domain';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
@@ -260,6 +262,8 @@ export interface CosmeticoJson {
   precio_fragmentos?: number;
   orden: number;
   activo?: boolean;
+  /** Solo celebraciones (spec 012). */
+  datos?: DatosCelebracion;
 }
 export interface PackJson {
   id: string;
@@ -289,6 +293,7 @@ export function validarCosmeticos(c: CatalogoCosmeticosJson): ErrorSeed[] {
     if (!x.gratuito && !((x.precio_centimos ?? 0) > 0 && (x.precio_fragmentos ?? 0) > 0)) {
       errores.push({ id: x.id, regla: 'cosmetico_precio', mensaje: 'Un cosmético de pago necesita precio_centimos y precio_fragmentos > 0' });
     }
+    for (const mensaje of validarDatosCosmetico(x.tipo, x.datos)) errores.push({ id: x.id, regla: 'cosmetico_datos', mensaje });
   }
   for (const p of c.packs) {
     const validos = new Set(
@@ -317,6 +322,7 @@ export async function cargarCosmeticos(db: BaseDatos, c: CatalogoCosmeticosJson)
         precioFragmentos: x.gratuito ? null : (x.precio_fragmentos ?? null),
         activo: x.activo !== false,
         orden: x.orden,
+        datos: x.datos ?? null,
       };
       await tx.insert(tablaCosmeticos).values(fila).onConflictDoUpdate({ target: tablaCosmeticos.id, set: fila });
     }

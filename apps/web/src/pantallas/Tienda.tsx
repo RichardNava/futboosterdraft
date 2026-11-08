@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router';
 import { Icono, type NombreIcono } from '../componentes/Icono';
 import { comprarColeccion, comprarSobre, ErrorApi, obtenerTienda } from '../api/cliente';
+import { reproducir } from '../sonido/sonido';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { CartaJugador } from '../componentes/CartaJugador';
 import { ConfirmacionCompra } from '../componentes/ConfirmacionCompra';
@@ -245,6 +246,14 @@ function SeccionCosmeticos({ seccion, sub, ruta, invitado }: Navegacion & { invi
         ruta={ruta}
       />
       <TiendaCosmeticos invitado={invitado} tipos={tipos} compacta={seccion === 'todo'} />
+      {/* Spec 012 (FR-013): las celebraciones de gol se eligen gratis en «Mi perfil»; la venta, más adelante. */}
+      {sub !== 'escudos' && sub !== 'sobres' && (
+        <Proximamente
+          titulo="Celebraciones"
+          icono="gol"
+          texto="Celebraciones de gol para tu equipo. De momento, elige una de las gratuitas en «Mi perfil»."
+        />
+      )}
     </section>
   );
 }
@@ -325,6 +334,7 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
     try {
       const r = await comprarSobre(idSobre.current);
       idSobre.current = null;
+      reproducir('cajaRegistradora');
       trasComprar(r);
       // Cada compra de sobre es una apertura: avanza el carrusel (spec 011, US2); si falla, el original.
       setResultado({ tipo: 'sobre', resumen: r, abierto: false, diseno: await prepararSobre() });

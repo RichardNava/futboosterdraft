@@ -1,7 +1,7 @@
 /**
  * Cosméticos, aspecto del perfil y escudo por partida (spec 011, contracts/http-api.md). Pagos en euros simulados.
  */
-import type { TipoCosmetico } from '@fbd/domain';
+import type { DatosCelebracion, ModoIncidencias, TipoCosmetico } from '@fbd/domain';
 import { z } from 'zod';
 import { CuerpoCompra } from './tienda';
 
@@ -14,6 +14,8 @@ export interface Cosmetico {
   precioFragmentos: number | null;
   /** Solo con sesión registrada; los gratuitos siempre `true`. */
   poseido?: boolean;
+  /** Solo celebraciones (spec 012). */
+  datos?: DatosCelebracion;
 }
 
 export interface PackCosmeticos {
@@ -54,6 +56,10 @@ export interface Aspecto {
   sobresMarcados: string[];
   /** Diseño para los sobres decorativos (no avanza la baraja). */
   sobreActual: string;
+  /** Celebración de gol elegida (spec 012, FR-011); null = la del juego. */
+  celebracion: string | null;
+  /** Modo de incidencias contra un NPC (spec 012, FR-020). */
+  modoIncidencias: ModoIncidencias;
 }
 
 const idCosmetico = z.string().min(1).max(80);
@@ -64,6 +70,8 @@ export const CuerpoAspecto = z
     sobreFavorito: idCosmetico,
     sobreCarrusel: z.boolean(),
     sobresMarcados: z.array(idCosmetico).max(100),
+    celebracion: idCosmetico.nullable(),
+    modoIncidencias: z.enum(['automatico', 'control_total']),
   })
   .partial()
   .strict();

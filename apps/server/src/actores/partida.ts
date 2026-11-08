@@ -39,6 +39,8 @@ export class ControladorPartida {
   alTerminarPartido?: (ctx: ContextoComando, p: PartidoEnCurso) => Promise<Baja[]>;
   /** Dorsales dados al empezar un partido que se resolvió sin el participante (aviso `dorsal_asignado`). */
   alAsignarDorsales?: (participanteId: string, asignados: { jugadorId: number; dorsal: number }[]) => Promise<void>;
+  /** Spec 012 (FR-030): se jugó sin una baja de la alineación confirmada; `entra` null si no había con quién cubrirla. */
+  alSustituirBajas?: (participanteId: string, cambios: { sale: number; entra: number | null; motivo: 'lesion' | 'sancion' }[]) => Promise<void>;
   /** Se llama después de anunciar el final: el torneo cierra la jornada y abre la siguiente. */
   trasTerminarPartido?: (ctx: ContextoComando, p: PartidoEnCurso) => Promise<void>;
   /** Estado del torneo (null hasta que termina el draft). */
@@ -48,6 +50,8 @@ export class ControladorPartida {
    * calcularla en cada partido era de lo más caro con carga (T140).
    */
   readonly autoAlineaciones = new Map<string, { bajas: string; alineacion: Alineacion }>();
+  /** Jugadores cuya baja acabó en el último partido de cada participante (aviso «disponible», spec 012 FR-027). En memoria. */
+  readonly disponiblesRecientes = new Map<string, number[]>();
   /**
    * Modo duelos (spec 005): resuelve los cruces de la ronda abierta que ya se pueden resolver y sigue el torneo. Lo
    * engancha el torneo; lo llaman la confirmación del once y la apertura de un cruce.

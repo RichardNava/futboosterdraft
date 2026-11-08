@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { api } from '../api/cliente';
+import type { AvisoEquipo } from '@fbd/protocol';
 import { Icono, type NombreIcono } from './Icono';
+import { textoAvisoEquipo } from './textoBloqueoBajas';
 
 interface Aviso {
   id: string;
-  tipo: 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado';
+  tipo: 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado' | 'baja_sustituida';
   partidaId: string;
   partidoId: string | null;
   texto: string;
@@ -22,13 +24,21 @@ const ICONO_AVISO: Record<Aviso['tipo'], NombreIcono> = {
   partido_auto_resuelto: 'informacion',
   torneo_terminado: 'exito',
   dorsal_asignado: 'informacion',
+  baja_sustituida: 'informacion',
 };
+
+/** Avisos del equipo de la partida que se está viendo (spec 012, FR-027): no se guardan, salen de la vista de equipo. */
+export interface AvisosDelEquipo {
+  partidaId: string;
+  avisos: AvisoEquipo[];
+  nombre: (id: number) => string;
+}
 
 /**
  * Bandeja de avisos del modo asíncrono (T117; FR-056b). Se recarga al montarse, cada minuto y cada vez
  * que cambia `actualizar` (p. ej. al recibir un mensaje `aviso` por la conexión en tiempo real).
  */
-export function BandejaAvisos({ actualizar = 0 }: { actualizar?: number }) {
+export function BandejaAvisos({ actualizar = 0, equipo }: { actualizar?: number; equipo?: AvisosDelEquipo }) {
   const [avisos, setAvisos] = useState<Aviso[]>([]);
   const [abierta, setAbierta] = useState(false);
 
@@ -50,17 +60,29 @@ export function BandejaAvisos({ actualizar = 0 }: { actualizar?: number }) {
     await api(`/api/avisos/${a.id}/leido`, { metodo: 'POST' }).catch(() => undefined);
   };
 
-  const noLeidos = avisos.filter((a) => !a.leido).length;
+  const intervenciones = equipo?.avisos.filter((a) => a.nivel === 'intervencion').length ?? 0;
+  const noLeidos = avisos.filter((a) => !a.leido).length + intervenciones;
 
   return (
     <div className="bandeja-avisos">
       <button type="button" className="secundario" aria-expanded={abierta} onClick={() => setAbierta(!abierta)}>
-        <Icono nombre="informacion" />
+        <Icono nombre={intervenciones > 0 ? 'advertencia' : 'informacion'} />
         Avisos{noLeidos > 0 && <span className="contador" aria-label={`${noLeidos} sin leer`}>{noLeidos}</span>}
       </button>
       {abierta && (
         <ul className="lista-avisos" aria-label="Avisos">
-          {avisos.length === 0 && <li className="nota">No tienes avisos.</li>}
+          {/* Arriba, los del equipo: los que piden intervenir, con enlace a Formación. */}
+          {equipo?.avisos.map((a) => (
+            <li key={`${a.tipo}-${a.jugadorId}`} className={`aviso-equipo aviso-${a.nivel}`} data-aviso-equipo={a.tipo}>
+              <Icono nombre={a.nivel === 'intervencion' ? 'advertencia' : 'informacion'} etiqueta={a.nivel === 'intervencion' ? 'Hay que actuar' : 'Información'} />
+              {a.enlace === 'formacion' ? (
+                <Link to={`/partidas/${equipo.partidaId}/alineacion`}>{textoAvisoEquipo(a, equipo.nombre)}</Link>
+              ) : (
+                <span>{textoAvisoEquipo(a, equipo.nombre)}</span>
+              )}
+            </li>
+          ))}
+          {avisos.length === 0 && !equipo?.avisos.length && <li className="nota">No tienes avisos.</li>}
           {avisos.map((a) => (
             <li key={a.id} className={a.leido ? 'leido' : ''}>
               <Icono nombre={ICONO_AVISO[a.tipo]} etiqueta={a.leido ? 'Leído' : 'Sin leer'} />

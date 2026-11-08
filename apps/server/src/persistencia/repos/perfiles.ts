@@ -3,7 +3,10 @@
  * migración 0008, el nombre de equipo y las equipaciones por defecto (US11). Los invitados no tienen perfil.
  */
 import { eq, sql } from 'drizzle-orm';
-import type { Equipaciones, ModoSimulacion, PreferenciasSobre } from '@fbd/domain';
+import { MODO_INCIDENCIAS_POR_DEFECTO, type Equipaciones, type ModoIncidencias, type ModoSimulacion, type PreferenciasSobre } from '@fbd/domain';
+
+/** Aspecto guardado en el perfil (specs 011 y 012): escudo, sobres, celebración y modo de incidencias. */
+export type AspectoGuardado = { escudo: string | null; celebracion: string | null; modoIncidencias: ModoIncidencias } & PreferenciasSobre;
 import type { BaseDatos } from '../db';
 import { perfilesUsuario, usuarios } from '../esquema/index';
 
@@ -32,7 +35,7 @@ export class RepoPerfiles {
    * Aspecto (spec 011, data-model §4): escudo elegido (null = asignado) y preferencias de sobre, tal como están
    * guardados; quien llama descarta los ids que ya no estén disponibles. `forUpdate` bloquea la fila (carrusel).
    */
-  async obtenerAspecto(usuarioId: string, ejecutor: Ejecutor = this.db, forUpdate = false): Promise<{ escudo: string | null } & PreferenciasSobre> {
+  async obtenerAspecto(usuarioId: string, ejecutor: Ejecutor = this.db, forUpdate = false): Promise<AspectoGuardado> {
     const consulta = ejecutor
       .select({
         escudo: perfilesUsuario.escudo,
@@ -41,18 +44,31 @@ export class RepoPerfiles {
         sobresMarcados: perfilesUsuario.sobresMarcados,
         sobreBaraja: perfilesUsuario.sobreBaraja,
         sobreUltimo: perfilesUsuario.sobreUltimo,
+        celebracion: perfilesUsuario.celebracion,
+        modoIncidencias: perfilesUsuario.modoIncidencias,
       })
       .from(perfilesUsuario)
       .where(eq(perfilesUsuario.usuarioId, usuarioId))
       .limit(1);
     const [fila] = forUpdate ? await consulta.for('update') : await consulta;
-    return fila ?? { escudo: null, sobreFavorito: null, sobreCarrusel: false, sobresMarcados: [], sobreBaraja: [], sobreUltimo: null };
+    return (
+      fila ?? {
+        escudo: null,
+        sobreFavorito: null,
+        sobreCarrusel: false,
+        sobresMarcados: [],
+        sobreBaraja: [],
+        sobreUltimo: null,
+        celebracion: null,
+        modoIncidencias: MODO_INCIDENCIAS_POR_DEFECTO,
+      }
+    );
   }
 
   /** Guarda los campos de aspecto indicados, creando el perfil si no existe. */
   async guardarAspecto(
     usuarioId: string,
-    datos: Partial<{ escudo: string | null } & PreferenciasSobre>,
+    datos: Partial<AspectoGuardado>,
     ahora: number,
     ejecutor: Ejecutor = this.db,
   ): Promise<void> {

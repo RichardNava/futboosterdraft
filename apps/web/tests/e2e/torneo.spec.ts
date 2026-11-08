@@ -67,3 +67,51 @@ test('torneo: clasificación, calendario, bajas y campeón', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Resumen del partido' })).toBeVisible();
   await expect(page.locator('.resultado .fase')).toHaveText('Final');
 });
+
+/**
+ * Spec 012 (US5, FR-026 a FR-029): con un titular de baja en la alineación confirmada, el botón de avanzar se
+ * desactiva con su motivo y «Avisos» pide intervenir; tras sustituirlo, se puede jugar. Plantillas con escudo y nombre.
+ */
+test('baja pendiente: botón bloqueado, aviso de intervención y Plantillas con escudo', async ({ page }) => {
+  test.setTimeout(300_000);
+  const partidaId = await partidaTrasDraft(page, {}, { registrado: true });
+  type Vista = {
+    alineacion: { titulares: { casillaId: string; jugadorId: number }[]; suplentes: number[]; lanzadores: Record<string, unknown> };
+    plantilla: { id: number; apellidos: string }[];
+  };
+  const vista = async () => (await (await page.request.get(`/api/partidas/${partidaId}/alineacion`)).json()) as Vista;
+  const { alineacion } = await vista();
+  expect((await page.request.put(`/api/partidas/${partidaId}/alineacion`, { data: alineacion })).ok()).toBe(true);
+  const lesionado = alineacion.titulares[5]!.jugadorId;
+  expect((await page.request.post(`/api/dev/partidas/${partidaId}/baja`, { data: { jugadorId: lesionado } })).ok()).toBe(true);
+
+  await page.goto(`/partidas/${partidaId}/torneo`);
+  const principal = page.locator('[data-principal]');
+  await expect(principal).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.getByText(/Sustituye a .+ \(lesionado\) para continuar/)).toBeVisible();
+  await page.getByRole('button', { name: /Avisos/ }).click();
+  const aviso = page.locator('[data-aviso-equipo="baja_pendiente"]');
+  await expect(aviso).toBeVisible();
+  await expect(aviso.getByRole('link')).toHaveAttribute('href', `/partidas/${partidaId}/alineacion`);
+
+  // Se sustituye solo al lesionado (por la API, como haría Formación) y el botón se activa.
+  const entra = alineacion.suplentes[0]!;
+  const nueva = {
+    ...alineacion,
+    titulares: alineacion.titulares.map((t) => (t.jugadorId === lesionado ? { ...t, jugadorId: entra } : t)),
+    suplentes: alineacion.suplentes.filter((id) => id !== entra),
+    lanzadores: JSON.parse(JSON.stringify(alineacion.lanzadores).replaceAll(String(lesionado), String(entra))),
+  };
+  expect((await page.request.put(`/api/partidas/${partidaId}/alineacion`, { data: nueva })).ok()).toBe(true);
+  await page.reload();
+  await expect(page.locator('[data-principal]')).not.toHaveAttribute('aria-disabled', 'true');
+
+  // Plantillas: cada pestaña con su chapa (escudo o color) y el nombre del equipo.
+  await page.goto(`/partidas/${partidaId}/plantillas`);
+  const pestanas = page.getByRole('tablist', { name: 'Plantillas de los equipos' }).getByRole('tab');
+  await expect(pestanas).toHaveCount(4);
+  for (let i = 0; i < 4; i++) {
+    await expect(pestanas.nth(i).locator('.chapa')).toHaveCount(1);
+    await expect(pestanas.nth(i).locator('.nombre-recortado')).not.toBeEmpty();
+  }
+});

@@ -1,7 +1,7 @@
 /**
  * Cosméticos (escudos y sobres), packs, posesión y ajustes (spec 011, data-model §1, §2 y §6; migración 0014).
  */
-import type { TipoCosmetico } from '@fbd/domain';
+import type { DatosCelebracion, TipoCosmetico } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import { boolean, check, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { usuarios } from './base';
@@ -18,9 +18,11 @@ export const cosmeticos = pgTable(
     precioFragmentos: integer('precio_fragmentos'),
     activo: boolean('activo').notNull().default(true),
     orden: integer('orden').notNull(),
+    /** Solo celebraciones (spec 012, migración 0015). */
+    datos: jsonb('datos').$type<DatosCelebracion>(),
   },
   (t) => [
-    check('cosmeticos_tipo_ck', sql`${t.tipo} in ('escudo','sobre')`),
+    check('cosmeticos_tipo_ck', sql`${t.tipo} in ('escudo','sobre','celebracion')`),
     check('cosmeticos_precio_ck', sql`${t.gratuito} or (coalesce(${t.precioCentimos}, 0) > 0 and coalesce(${t.precioFragmentos}, 0) > 0)`),
   ],
 );

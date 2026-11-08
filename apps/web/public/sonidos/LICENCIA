@@ -42,3 +42,19 @@ Se regeneran con `python tools/sonidos/generar.py` (necesita numpy):
 - goat.wav          — revelación de una carta GOAT: golpe grave, arpegio y acorde brillante (≈ 1,9 s).
 - hoverCarta.wav    — el cursor pasa por una carta del draft (≈ 0,09 s).
 - seleccionCarta.wav — se elige una carta del draft (≈ 0,3 s).
+
+Spec 012 (obra propia, CC0 1.0, mismo formato y `python tools/sonidos/generar.py`):
+
+- pitidoInicio.wav      — empieza una parte: un pitido corto de silbato (≈ 0,45 s).
+- pitidoDescanso.wav    — descanso: dos pitidos (≈ 1 s).
+- pitidoFinal.wav       — final del partido: tres pitidos, el último largo (≈ 2 s).
+- tarjetaAmarilla.wav   — silbato y «oooh» del público (≈ 1,8 s).
+- tarjetaRoja.wav       — dos pitidos fuertes y un «oooh» más largo (≈ 2,4 s).
+- golPropio.wav         — el público canta el gol (≈ 3,2 s).            PROVISIONAL: sustituir por grabación CC0.
+- golRival.wav          — murmullo grave de la grada (≈ 2,2 s).         PROVISIONAL: sustituir por grabación CC0.
+- confirmarEleccion.wav — se confirma la elección del draft (≈ 0,45 s).
+- latido.wav            — últimos 5 s del turno: latido que se acelera y crece (5 s).
+- clicPrincipal.wav     — botón principal (≈ 0,05 s).
+- cajaRegistradora.wav  — compra de un sobre o un diseño de sobre (≈ 1,2 s). PROVISIONAL: sustituir por grabación CC0.
+
+El «oooh» de las tarjetas también es síntesis (coro con formantes): sustituir por grabación CC0 cuando la haya.

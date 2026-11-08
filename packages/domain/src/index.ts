@@ -23,6 +23,7 @@ export * from './equipo/alineacion';
 export * from './equipo/zonas';
 export * from './equipo/colocacion';
 export * from './equipo/autoAlineacion';
+export * from './equipo/bajas';
 export * from './equipo/dorsales';
 export * from './equipo/equipaciones';
 export * from './equipo/nombreEquipo';

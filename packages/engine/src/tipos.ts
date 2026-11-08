@@ -174,7 +174,11 @@ export type DecisionPartido =
     };
 
 /** Decisión registrada: la del participante más el tick en que se pidió y en que se aplicó. */
-export type DecisionRegistrada = DecisionPartido & { solicitadaEnTick: number; aplicadaEnTick?: number };
+/**
+ * `enIncidencia`: se aplicó en una parada de «control total» (spec 012), antes de resolver las incidencias del paso.
+ * Al reproducir el partido se aplica en ese mismo punto, así que la reproducción no necesita saber el modo.
+ */
+export type DecisionRegistrada = DecisionPartido & { solicitadaEnTick: number; aplicadaEnTick?: number; enIncidencia?: true };
 
 export type ModoAvance = 'parte' | 'interrupcion' | 'final' | 'ticks';
 

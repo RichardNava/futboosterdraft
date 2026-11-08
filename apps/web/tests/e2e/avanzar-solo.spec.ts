@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { sustituirBajas } from './ayudas';
 
 /**
  * Escenario C del quickstart (US2; SC-003, SC-004): partida de 1 humano contra NPC, del draft al final del
@@ -35,6 +36,8 @@ test('en solitario, del draft al campeón sin esperar a ningún temporizador (es
   await expect(page.getByRole('heading', { name: 'Torneo' })).toBeVisible();
 
   for (let jornada = 1; jornada <= 6; jornada++) {
+    // Spec 012 (FR-029): una lesión en la alineación confirmada bloquea hasta sustituirla.
+    if (await sustituirBajas(page, id)) await page.reload();
     await page.getByRole('button', { name: 'Comenzar partido' }).click();
     await expect(page).toHaveURL(/\/partido\//, { timeout: 3000 });
     // Descanso: «Seguir» reanuda al instante.
@@ -44,6 +47,7 @@ test('en solitario, del draft al campeón sin esperar a ningún temporizador (es
     await page.getByRole('button', { name: 'Siguiente', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Torneo' })).toBeVisible({ timeout: 1000 });
     if (jornada < 6) {
+      if (await sustituirBajas(page, id)) await page.reload();
       await page.getByRole('button', { name: 'Siguiente jornada' }).click();
       // La petición resuelve en el momento los partidos entre NPC de la jornada.
       await expect(page.getByRole('button', { name: 'Comenzar partido' })).toBeVisible({ timeout: 3000 });

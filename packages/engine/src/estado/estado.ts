@@ -64,7 +64,29 @@ export interface EquipoEstado {
   sustitucionesUsadas: number;
   /** Ofensividad y amplitud calculadas con la colocación (FR-034b); las de la formación si no se movió nadie. */
   perfil: { ofensividad: number; amplitud: number };
-  /** Lanzadores de la tanda: jugadores en el campo al final del partido, en el orden designado. */
+  /**
+   * «Control total» (spec 012, FR-020 a FR-025): sus lesiones y expulsiones cortan el tramo para que decida el
+   * participante. Lo pone el servidor; no está en `EntradaPartido` ni cambia el partido si no se decide nada.
+   */
+  controlTotal?: boolean;
+}
+
+/**
+ * Lesión o expulsión de un jugador (spec 012, data-model §4; contracts/motor.md). En el lance el jugador solo sale del
+ * campo; al terminar el paso se resuelve en automático o, en «control total», se corta el tramo para que decida el
+ * participante. Se guardan todas (historial).
+ */
+export interface Incidencia {
+  lado: Lado;
+  jugadorId: number;
+  motivo: 'lesion' | 'expulsion';
+  tick: number;
+  minuto: string;
+  /** Casilla, ancla y sitio que dejó (para sustituir al lesionado en su lugar). */
+  casillaId: string | null;
+  ancla?: { x: number; y: number };
+  sitio?: { x: number; y: number };
+  estado: 'pendiente' | 'resuelta_participante' | 'resuelta_automatica';
 }
 
 export interface Balon {
@@ -195,6 +217,8 @@ export interface EstadoMotor {
    * una interrupción propia y una cadena de córners no cabe en una sola jugada.
    */
   cornerPendiente?: Lado | null;
+  /** Lesiones y expulsiones del partido (spec 012); las `pendiente` se resuelven al terminar su paso. */
+  incidencias: Incidencia[];
 }
 
 export const DURACION_PARTE = 45 * 60;
@@ -338,6 +362,7 @@ export function crearPartido(entrada: EntradaPartido): EstadoMotor {
     eventos: [],
     decisionesPendientes: [],
     decisiones: [],
+    incidencias: [],
     derrotaPorInferioridad: null,
     malestar: { local: [], visitante: [] },
     sacoPrimeraParte: 'local',

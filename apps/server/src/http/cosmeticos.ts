@@ -33,6 +33,8 @@ export function registrarRutasCosmeticos(app: FastifyInstance, auth: Auth, econo
         gratuito: c.gratuito,
         precioCentimos: c.precioCentimos,
         precioFragmentos: c.precioFragmentos,
+        // Celebraciones (spec 012): con sus datos, para la vista previa y el selector del perfil.
+        ...(c.datos ? { datos: c.datos } : {}),
         ...(registrado ? { poseido: c.gratuito || poseidos.has(c.id) } : {}),
       })),
       packs: cosmeticos.packs

@@ -131,7 +131,7 @@ export class GestorPartidas {
       );
       // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
       const identidad = await identidadInicial(this.servicios, usuario, []);
-      await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones, identidad.escudo);
+      await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones, identidad);
       const niveles: NivelNPC[] = config.npc.map((n) => n.nivel);
       // En una partida de invitado, el resto de plazas se rellenan con NPC desde el principio.
       const libres = config.numParticipantes - 1 - niveles.length;

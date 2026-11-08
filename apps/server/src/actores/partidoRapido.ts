@@ -11,6 +11,9 @@
  */
 import { decidirNPCEnPausa, type NivelesPartido } from '@fbd/ai';
 import {
+  CELEBRACION_DEL_JUEGO,
+  cubrirBajas,
+  MODO_INCIDENCIAS_POR_DEFECTO,
   escudosEnPartido,
   asignarDorsalesIniciales,
   completarDorsales,
@@ -24,10 +27,12 @@ import {
   VERSION_MAYOR_SOPORTADA,
   versionMayor,
   type Alineacion,
+  type DatosCelebracion,
   type ModoSimulacion,
   type Dorsales,
   type Equipaciones,
   type Jugador,
+  type ModoIncidencias,
   type NivelNPC,
 } from '@fbd/domain';
 import {
@@ -42,7 +47,10 @@ import {
   type EquipoPartido,
   type EstadoMotor,
   type EventoPartido,
+  type Incidencia,
   type ResultadoTramo,
+  maxSustituciones,
+  MAX_PASOS,
 } from '@fbd/engine';
 import type { Ejecutor } from '../persistencia/db';
 import type { FilaPartido } from '../persistencia/repos/partidos';
@@ -60,12 +68,17 @@ export interface PartidoEnCurso {
   inicio: Record<string, unknown> & { t: string };
   eventos: EventoPartido[];
   ultimo: Omit<ResultadoTramo, 'estado'> | null;
-  /** Ventana de decisión abierta; `restanteMs` si la partida de un humano está pausada (research R10). */
-  pausa: { motivo: 'descanso' | 'pre_prorroga'; venceEn: number; restanteMs?: number } | null;
+  /**
+   * Ventana de decisión abierta; `restanteMs` si la partida de un humano está pausada (research R10). Spec 012: también
+   * la parada de «control total» (`incidencia`), con las incidencias que la han provocado.
+   */
+  pausa: { motivo: MotivoPausa; venceEn: number; restanteMs?: number; incidencias?: Incidencia[] } | null;
   listos: Set<string>;
   /** Solo en la 2D en directo contra un NPC: búfer de anticipación y tramos enviados (ver `partido2d.ts`). */
   dosD: Estado2D | null;
 }
+
+export type MotivoPausa = 'descanso' | 'pre_prorroga' | 'incidencia';
 
 export const esHumano = (c: ControladorPartida, pid: string) => c.participante(pid)?.tipo === 'humano' && !c.participante(pid)?.controladoPorNPC;
 
@@ -104,7 +117,19 @@ async function alineacionParaPartido(
   precarga?: Precarga,
 ): Promise<AlineacionDe> {
   const nivel = nivelNPCDe(c, participanteId);
-  if (!nivel) return alineacionVigente(c, participanteId, precarga);
+  if (!nivel) {
+    // Spec 012 (FR-030): si se juega con bajas en la confirmada (plazo vencido o sin nadie con quien cubrirlas), solo
+    // se sustituyen esas bajas y se avisa. Con una baja evitable, el partido no llega aquí (409 BAJA_PENDIENTE).
+    const v = await alineacionVigente(c, participanteId, precarga);
+    if (v.bajasPendientes.length === 0) return v;
+    const alineacion = cubrirBajas(v.alineacion, v.plantilla, v.bajas, parametrosActuales());
+    const motivo = new Map(v.bajasPendientes.map((b) => [b.jugadorId, b.motivo]));
+    const cambios = v.alineacion.titulares
+      .filter((t) => v.bajas.has(t.jugadorId))
+      .map((t) => ({ sale: t.jugadorId, entra: alineacion.titulares.find((x) => x.casillaId === t.casillaId)?.jugadorId ?? null, motivo: motivo.get(t.jugadorId)! }));
+    if (cambios.length) await c.alSustituirBajas?.(participanteId, cambios);
+    return { alineacion, plantilla: v.plantilla };
+  }
   const plantilla = await plantillaDe(c, participanteId, precarga);
   const rival = await plantillaDe(c, rivalId, precarga);
   const alineacion = await c.servicios.calculo.ejecutar(
@@ -205,7 +230,7 @@ export async function dorsalesParaPartido(
   return { dorsales, asignados: completados.asignados };
 }
 
-function equipacionesDe(c: ControladorPartida, pid: string): Equipaciones {
+export function equipacionesDe(c: ControladorPartida, pid: string): Equipaciones {
   return desdeV1(c.participante(pid)?.equipaciones ?? null) ?? equipacionesAleatorias(derivarSemilla(c.partida.semilla, `equipaciones:${pid}`), parametrosActuales());
 }
 
@@ -217,6 +242,23 @@ export function equipacionesDelPartido(c: ControladorPartida, localId: string, v
 /** Escudos que se pintan (spec 011, FR-008): ninguno si coinciden. Sin consultas: salen de los participantes en memoria. */
 export function escudosDelPartido(c: ControladorPartida, localId: string, visitanteId: string) {
   return escudosEnPartido(escudoDe(c, localId), escudoDe(c, visitanteId));
+}
+
+/** Datos de la celebración del juego si el catálogo no la tiene cargada (pruebas sin seed). */
+const DATOS_CELEBRACION_DEL_JUEGO: DatosCelebracion = { clase: 'juego', duracionMs: 2600 };
+
+/**
+ * Celebración de gol de cada equipo (spec 012, FR-012): la copiada del perfil del dueño al unirse; NPC o sin elegir,
+ * la del juego. Sin consultas: sale de los participantes y del catálogo en memoria.
+ */
+export function celebracionesDelPartido(c: ControladorPartida, localId: string, visitanteId: string) {
+  const de = (pid: string) => {
+    const p = c.participante(pid);
+    const id = p?.tipo === 'humano' && p.celebracion ? p.celebracion : CELEBRACION_DEL_JUEGO;
+    const datos = c.servicios.cosmeticos.cosmetico(id)?.datos ?? c.servicios.cosmeticos.cosmetico(CELEBRACION_DEL_JUEGO)?.datos;
+    return datos ? { id, datos } : { id: CELEBRACION_DEL_JUEGO, datos: DATOS_CELEBRACION_DEL_JUEGO };
+  };
+  return { local: de(localId), visitante: de(visitanteId) };
 }
 
 /** Entrada sin los parámetros (se recuperan por versión al reconstruir). */
@@ -270,6 +312,8 @@ export async function iniciarPartido(
     resolucion: opciones.automatico === true ? 'plazo' : sinHumanos(c, fila) ? 'npc' : 'directo',
   });
   const nombre = (pid: string) => (c.participante(pid) ? c.nombreDe(c.participante(pid)!) : pid);
+  const humanos = humanosDe(c, fila);
+  const gestionDisponible = humanos.length === 1;
   const inicio = {
     t: 'partido.inicio',
     partidoId: fila.id,
@@ -280,12 +324,17 @@ export async function iniciarPartido(
     dorsales: { ...local.dorsales, ...visitante.dorsales },
     equipaciones: equipacionesDelPartido(c, fila.localId, fila.visitanteId),
     escudos: escudosDelPartido(c, fila.localId, fila.visitanteId),
+    celebraciones: celebracionesDelPartido(c, fila.localId, fila.visitanteId),
     decisiones: true,
     // En directo solo se juega contra un NPC: se puede gestionar el equipo (FR-027).
-    gestionDisponible: humanosDe(c, fila).length === 1,
+    gestionDisponible,
+    // Spec 012 (FR-020): el modo de incidencias del único humano, que es quien lo ve.
+    ...(gestionDisponible ? { modoIncidencias: c.participante(humanos[0]!)?.modoIncidencias ?? MODO_INCIDENCIAS_POR_DEFECTO } : {}),
     ordenJugadores: ordenJugadores(motor),
     dorsalesAsignados: [...local.asignados, ...visitante.asignados],
   };
+  // Spec 012 (FR-020, FR-024): «control total» solo contra un NPC, según el modo del único humano.
+  if (gestionDisponible) fijarControlTotal(c, motor, humanos[0]!);
   const p: PartidoEnCurso = { fila: { ...fila, estado: 'primera_parte', entrada: guardada }, motor, inicio, eventos: [], ultimo: null, pausa: null, listos: new Set(), dosD: null };
   c.partidosEnCurso.set(fila.id, p);
   metricas.partidosSimuladosTotal.inc();
@@ -305,6 +354,14 @@ export async function iniciarPartido(
   await jugarTramo(c, ctx, p, directo ? 'parte' : 'final', final);
 }
 
+/** Lado del motor de un participante del partido. */
+const ladoDe = (motor: EstadoMotor, participanteId: string) => (motor.equipos.local.participanteId === participanteId ? 'local' : 'visitante');
+
+/** Pone en el motor el modo de incidencias que tiene el participante (spec 012, research R3). */
+function fijarControlTotal(c: ControladorPartida, motor: EstadoMotor, participanteId: string): void {
+  motor.equipos[ladoDe(motor, participanteId)].controlTotal = c.participante(participanteId)?.modoIncidencias === 'control_total';
+}
+
 async function jugarTramo(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, modo: 'parte' | 'final', calculado?: ResultadoTramo): Promise<void> {
   const { calculo } = c.servicios;
   // Sin pausas, los NPC deciden igualmente en el descanso y antes de la prórroga. `p.motor` solo cambia al
@@ -316,7 +373,10 @@ async function jugarTramo(c: ControladorPartida, ctx: ContextoComando, p: Partid
       : await calculo.ejecutar('avanzar', [p.motor, modo], 'humano'));
   await registrarTramo(c, ctx, p, r);
 
-  if (r.fase === 'descanso' || r.fase === 'pre_prorroga') {
+  // Spec 012 (FR-022, research R4): una lesión o expulsión propia en «control total» corta la parte.
+  if (r.incidencias) {
+    abrirPausa(c, ctx, p, 'incidencia', r.incidencias);
+  } else if (r.fase === 'descanso' || r.fase === 'pre_prorroga') {
     abrirPausa(c, ctx, p, r.fase === 'descanso' ? 'descanso' : 'pre_prorroga');
   } else if (r.fase === 'penaltis') {
     await jugarTramo(c, ctx, p, modo);
@@ -379,13 +439,14 @@ export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando
   return tramo;
 }
 
-export function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, motivo: 'descanso' | 'pre_prorroga'): void {
+export function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, motivo: MotivoPausa, incidencias?: Incidencia[]): void {
   const descansoS = (c.partida.tiempos as { descansoS: number }).descansoS;
   const venceEn = c.servicios.reloj.ahora() + descansoS * 1000;
-  p.pausa = { motivo, venceEn };
+  p.pausa = { motivo, venceEn, ...(incidencias ? { incidencias } : {}) };
   p.listos = new Set([p.fila.localId, p.fila.visitanteId].filter((pid) => !esHumano(c, pid)));
-  // El NPC rival decide al empezar la pausa; sus cambios se aplican al reanudar, como los del humano.
-  decidirNPCEnPausa(p.motor, nivelesDe(c, p.fila), p.fila.semilla);
+  // El NPC rival decide al empezar la pausa; sus cambios se aplican al reanudar, como los del humano. En una parada
+  // de incidencia no decide (en automático no existe; spec 012, research R2).
+  if (motivo !== 'incidencia') decidirNPCEnPausa(p.motor, nivelesDe(c, p.fila), p.fila.semilla);
   emitirPausa(c, ctx, p);
   programarVentana(c, p);
 }
@@ -404,12 +465,28 @@ export function programarVentana(c: ControladorPartida, p: PartidoEnCurso): void
 
 export function emitirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): void {
   if (!p.pausa) return;
-  emitirAParticipantes(c, ctx, p.fila, {
-    t: 'partido.pausa_decision',
-    partidoId: p.fila.id,
-    motivo: p.pausa.motivo,
-    venceEn: new Date(p.pausa.venceEn).toISOString(),
-  });
+  emitirAParticipantes(c, ctx, p.fila, { t: 'partido.pausa_decision', partidoId: p.fila.id, ...datosPausa(c, p) });
+}
+
+/**
+ * Motivo y ventana de la pausa; en una parada de incidencia (spec 012, contracts/protocolo.md), las incidencias del
+ * humano y los cambios que le quedan.
+ */
+function datosPausa(c: ControladorPartida, p: PartidoEnCurso) {
+  const pausa = p.pausa!;
+  const humano = humanosDe(c, p.fila)[0];
+  const lado = humano ? ladoDe(p.motor, humano) : null;
+  const propias = (pausa.incidencias ?? []).filter((i) => i.lado === lado);
+  return {
+    motivo: pausa.motivo,
+    venceEn: new Date(pausa.venceEn).toISOString(),
+    ...(pausa.motivo === 'incidencia' && lado
+      ? {
+          incidencias: propias.map((i) => ({ jugadorId: i.jugadorId, motivo: i.motivo, minuto: i.minuto, tick: i.tick })),
+          sustitucionesRestantes: Math.max(0, maxSustituciones(p.motor) - p.motor.equipos[lado].sustitucionesUsadas),
+        }
+      : {}),
+  };
 }
 
 async function reanudar(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): Promise<void> {
@@ -553,6 +630,34 @@ export function procesarDecisionesLote(c: ControladorPartida, participanteId: st
   return r.ok ? { ok: true } : { ok: false, error: { codigo: r.codigo, mensaje: r.mensaje, indice: r.indice } };
 }
 
+/**
+ * `partido.modo_incidencias` (spec 012, FR-020, FR-024): cambia el modo durante el partido. Solo en un partido en
+ * curso contra un NPC del que es el único humano; si no, `SIN_GESTION`. Actualiza el motor en memoria, el
+ * participante y, si es registrado, su perfil. Repetirlo con el mismo modo no cambia nada.
+ */
+export async function procesarModoIncidencias(
+  c: ControladorPartida,
+  ctx: ContextoComando,
+  participanteId: string,
+  partidoId: string,
+  modo: ModoIncidencias,
+): Promise<ResultadoComandoPartido> {
+  const p = partidoDe(c, participanteId, partidoId);
+  if ('ok' in p) return p;
+  if (p.fila.estado === 'finalizado' || humanosDe(c, p.fila).length !== 1 || !esHumano(c, participanteId)) {
+    return fallo('SIN_GESTION', 'El modo de incidencias solo se puede elegir en un partido contra un NPC');
+  }
+  const participante = c.participante(participanteId)!;
+  participante.modoIncidencias = modo;
+  fijarControlTotal(c, p.motor, participanteId);
+  await c.servicios.repoPartidas.cambiarModoIncidencias(participanteId, modo);
+  if (participante.usuarioId && !c.anfitrionEsInvitado) {
+    await c.servicios.repoPerfiles.guardarAspecto(participante.usuarioId, { modoIncidencias: modo }, c.servicios.reloj.ahora());
+  }
+  ctx.emitirA(participanteId, { t: 'partido.modo_incidencias_ok', partidoId, modo });
+  return { ok: true };
+}
+
 /** ¿Está el participante jugando un partido ahora mismo? */
 export function enPartido(c: ControladorPartida, participanteId: string): boolean {
   for (const p of c.partidosEnCurso.values()) {
@@ -571,7 +676,7 @@ export function vistaPartido(c: ControladorPartida, participanteId: string) {
     marcador: p.ultimo?.marcador ?? p.motor.marcador,
     estadisticas: p.ultimo?.estadisticas ?? null,
     fase: p.fila.estado,
-    pausa: p.pausa ? { motivo: p.pausa.motivo, venceEn: new Date(p.pausa.venceEn).toISOString() } : null,
+    pausa: p.pausa ? datosPausa(c, p) : null,
     // 2D en directo: los tramos ya simulados (con fotogramas los que aún no se han visto) y el último tick
     // informado, para seguir reproduciendo desde ahí.
     ...(p.dosD ? { dosD: vista2D(p) } : {}),
@@ -586,7 +691,9 @@ export function reconstruirMotor(fila: FilaPartido): EstadoMotor | null {
   const guardada = fila.entrada as EntradaGuardada;
   const motor = crearPartido({ ...guardada, parametros: parametrosPorVersion(fila.versionParametros) });
   for (const d of fila.decisiones as DecisionRegistrada[]) aplicarDecision(motor, d);
+  // Las decisiones de una parada de incidencia (spec 012) se reproducen dentro de su parte: sin control total no hay
+  // cortes, así que basta llegar a la fase guardada (con el mismo límite de seguridad que el motor).
   let estado = motor;
-  for (let i = 0; i < 6 && estado.fase !== fila.estado && estado.fase !== 'finalizado'; i++) estado = avanzar(estado, 'parte').estado;
+  for (let i = 0; i < MAX_PASOS && estado.fase !== fila.estado && estado.fase !== 'finalizado'; i++) estado = avanzar(estado, 'parte').estado;
   return estado;
 }

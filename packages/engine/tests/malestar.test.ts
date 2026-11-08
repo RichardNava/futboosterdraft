@@ -44,9 +44,12 @@ describe('evento malestar', () => {
       const avisos = malestar(r.eventos);
       // Alterna activo / inactivo, sin repetir el mismo estado dos veces seguidas.
       avisos.forEach((a, k) => expect(a.datos.activo).toBe(k % 2 === 0));
-      // Cada aviso coincide con un cambio de «ir perdiendo»: tras un gol del rival o uno propio.
+      // Cada aviso coincide con un cambio de «ir perdiendo» (tras un gol del rival o uno propio) o con la salida del
+      // Polémico del campo (lesión, expulsión o cambio; spec 012: se resuelve al terminar el paso del lance).
       const goles = r.eventos.filter((x) => x.tipo === 'gol');
-      for (const a of avisos) expect(goles.some((g) => g.tick <= a.tick && a.tick - g.tick <= 2)).toBe(true);
+      const salidas = r.eventos.filter((x) => ['lesion', 'roja', 'sustitucion'].includes(x.tipo));
+      const cerca = (x: { tick: number }, a: { tick: number }) => x.tick <= a.tick && a.tick - x.tick <= 2;
+      for (const a of avisos) expect(goles.some((g) => cerca(g, a)) || (!a.datos.activo && salidas.some((x) => cerca(x, a)))).toBe(true);
       if (avisos.length) comprobados++;
     }
     expect(comprobados).toBeGreaterThan(0);

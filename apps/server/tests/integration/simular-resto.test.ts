@@ -49,7 +49,31 @@ describe('simular el resto del torneo (T099)', () => {
 
   /** Alineación saboteada (portero de jugador de campo y un delantero en la portería) para perder casi seguro. */
   async function sabotear(partidaId: string, u: UsuarioPrueba) {
-    const { alineacion, plantilla } = (await peticion(srv.url, `/api/partidas/${partidaId}/alineacion`, { cookie: u.cookie })).cuerpo;
+    const vista = (await peticion(srv.url, `/api/partidas/${partidaId}/alineacion`, { cookie: u.cookie })).cuerpo;
+    const { plantilla } = vista;
+    // Spec 012 (FR-029): con convocados de baja no se puede jugar; se sustituyen como haría la persona.
+    const bajas = new Set<number>(vista.bajas);
+    const usados = new Set<number>(vista.alineacion.titulares.map((t: any) => t.jugadorId));
+    const relevo = new Map<number, number>();
+    for (const t of vista.alineacion.titulares) {
+      if (!bajas.has(t.jugadorId)) continue;
+      const libre = plantilla.find((j: any) => !usados.has(j.id) && !bajas.has(j.id));
+      if (!libre) continue;
+      usados.add(libre.id);
+      relevo.set(t.jugadorId, libre.id);
+    }
+    const cambiar = (id: number) => relevo.get(id) ?? id;
+    const alineacion = {
+      ...vista.alineacion,
+      titulares: vista.alineacion.titulares.map((t: any) => ({ ...t, jugadorId: cambiar(t.jugadorId) })),
+      suplentes: vista.alineacion.suplentes.filter((id: number) => !bajas.has(id) && ![...relevo.values()].includes(id)),
+      lanzadores: {
+        penaltis: cambiar(vista.alineacion.lanzadores.penaltis),
+        faltas: cambiar(vista.alineacion.lanzadores.faltas),
+        corners: cambiar(vista.alineacion.lanzadores.corners),
+        tanda: vista.alineacion.lanzadores.tanda.map(cambiar),
+      },
+    };
     const dem = (id: number) => plantilla.find((j: any) => j.id === id)?.demarcacion;
     const portero = alineacion.titulares.find((t: any) => t.casillaId === 'POR');
     const delantero = alineacion.titulares.find((t: any) => dem(t.jugadorId) === 'DEL') ?? alineacion.titulares.find((t: any) => t.casillaId !== 'POR');
@@ -73,6 +97,7 @@ describe('simular el resto del torneo (T099)', () => {
           await sabotear(partidaId, u);
           await peticion(srv.url, `/api/partidos/${mio.partidoId}/abrir`, { metodo: 'POST', cookie: u.cookie });
         } else if (!abierta && humanos.length === 1 && t.jornadaActual !== null && !t.campeon) {
+          await sabotear(partidaId, u);
           await peticion(srv.url, `/api/partidas/${partidaId}/siguiente-jornada`, { metodo: 'POST', cookie: u.cookie });
         }
       }

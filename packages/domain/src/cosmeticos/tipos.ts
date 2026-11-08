@@ -3,7 +3,27 @@
  */
 
 /** Añadir un tipo nuevo (FR-022) solo exige ampliar esta unión, el check de la BD y su selector. */
-export type TipoCosmetico = 'escudo' | 'sobre';
+export type TipoCosmetico = 'escudo' | 'sobre' | 'celebracion';
+
+/** Datos propios de una celebración de gol (spec 012, data-model §2). */
+export interface DatosCelebracion {
+  /** `juego`: animada por el cliente (registro de componentes); `secuencia`: vídeo con alfa. */
+  clase: 'juego' | 'secuencia';
+  /** Duración a ×1. Las de juego, ≤ 3000 (FR-009). */
+  duracionMs: number;
+  /** Efecto de sonido propio (solo secuencias); si falta, suena el del gol. */
+  sonido?: string;
+}
+
+/** Celebración por defecto, la de los NPC y la de quien no ha elegido (FR-012). */
+export const CELEBRACION_DEL_JUEGO = 'celebracion-clasica';
+
+/** Duración máxima de una celebración de juego (FR-009). */
+export const DURACION_MAXIMA_CELEBRACION_JUEGO_MS = 3000;
+
+/** Cómo se resuelven las lesiones y expulsiones propias contra un NPC (spec 012, FR-020). */
+export type ModoIncidencias = 'automatico' | 'control_total';
+export const MODO_INCIDENCIAS_POR_DEFECTO: ModoIncidencias = 'automatico';
 
 export interface Cosmetico {
   id: string;
@@ -15,6 +35,8 @@ export interface Cosmetico {
   /** false = retirado: no se vende ni se ofrece a quien no lo tiene. */
   activo: boolean;
   orden: number;
+  /** Solo celebraciones (spec 012). */
+  datos?: DatosCelebracion | null;
 }
 
 export interface PackCosmeticos {

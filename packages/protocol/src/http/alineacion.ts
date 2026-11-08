@@ -51,3 +51,31 @@ export const EquipacionesEntrada = z.object({
   segunda: z.union([EquipacionV2, EquipacionV1]),
 });
 export type EquipacionesEntrada = z.infer<typeof EquipacionesEntrada>;
+
+/** Baja de un convocado de la alineación confirmada (spec 012, data-model §5). */
+export interface BajaPendiente {
+  jugadorId: number;
+  motivo: 'lesion' | 'sancion';
+  partidosRestantes: number;
+}
+
+/**
+ * Aviso del equipo derivado de las bajas (spec 012, FR-027): no se guarda; se calcula con cada vista de equipo.
+ * `intervencion` pide al participante que actúe (con enlace a Formación); `informativo` solo cuenta.
+ */
+export interface AvisoEquipo {
+  nivel: 'intervencion' | 'informativo';
+  tipo: 'baja_pendiente' | 'lesionado' | 'sancionado' | 'disponible' | 'baja_sustituida';
+  jugadorId: number;
+  motivo?: string;
+  partidosRestantes?: number;
+  enlace?: 'formacion';
+}
+
+/** Lo que añade la spec 012 a la vista de equipo (`GET /api/partidas/:id/alineacion`). */
+export interface VistaBajasEquipo {
+  bajasPendientes: BajaPendiente[];
+  /** true ⇒ no queda nadie con quien sustituir: no bloquea (FR-029). */
+  sinSuplentes: boolean;
+  avisosEquipo: AvisoEquipo[];
+}

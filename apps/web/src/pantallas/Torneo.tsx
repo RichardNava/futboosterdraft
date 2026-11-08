@@ -17,6 +17,18 @@ import { Icono } from '../componentes/Icono';
 import { Insignia } from '../componentes/Insignia';
 import { NombreRecortado } from '../componentes/NombreRecortado';
 import { alTeclaPestanas } from '../componentes/pestanas';
+import type { AvisoEquipo, BajaPendiente } from '@fbd/protocol';
+import { nombreCartaDe, type CartaResumen } from '../componentes/CartaJugador';
+import { textoBloqueoBajas } from '../componentes/textoBloqueoBajas';
+
+/** Lo que usa el torneo de la vista de equipo (spec 012, FR-027 a FR-029). */
+interface EquipoBajas {
+  alineacion: { titulares: { jugadorId: number }[] };
+  plantilla: CartaResumen[];
+  bajasPendientes: BajaPendiente[];
+  sinSuplentes: boolean;
+  avisosEquipo: AvisoEquipo[];
+}
 
 type Ref = { id: string; nombre: string; nivelNPC?: string | null } | null;
 type Marcador = { local: number; visitante: number; penaltis?: { local: number; visitante: number } } | null;
@@ -122,6 +134,7 @@ export function Torneo() {
   const [pestana, setPestana] = useState<Pestana | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [avisosNuevos, setAvisosNuevos] = useState(0);
+  const [equipo, setEquipo] = useState<EquipoBajas | null>(null);
   const preparacion = usePreparacionPartido(partidaId ?? '');
   // Pantallas de final de torneo (spec 003, FR-039 a FR-041b): qué se ha cerrado o pedido en esta visita.
   const [derrotaCerrada, setDerrotaCerrada] = useState(false);
@@ -134,6 +147,10 @@ export function Torneo() {
         setPartida(p);
       })
       .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se pudo cargar el torneo'));
+    // Bajas de la alineación confirmada (spec 012): sin ella (p. ej., aún en el draft), sin bloqueo.
+    api<EquipoBajas>(`/api/partidas/${partidaId}/alineacion`)
+      .then(setEquipo)
+      .catch(() => setEquipo(null));
   }, [partidaId]);
 
   useEffect(cargar, [cargar]);
@@ -215,6 +232,29 @@ export function Torneo() {
       ? { etiqueta: 'Confirmar mi once', onClick: () => navegar(`/partidas/${partidaId}/alineacion`) }
       : null;
 
+  // Spec 012 (FR-029): con una baja pendiente evitable, el botón de avanzar se desactiva y dice qué hacer. El
+  // servidor también lo impide (409 BAJA_PENDIENTE): si llega, se recarga para mostrar el motivo.
+  const nombreJugador = (id: number) => {
+    const j = equipo?.plantilla.find((x) => x.id === id);
+    return j ? nombreCartaDe(j) : `#${id}`;
+  };
+  const deBaja = new Set(equipo?.bajasPendientes.map((b) => b.jugadorId) ?? []);
+  const bloqueo =
+    equipo && vista.modo !== 'duelos'
+      ? textoBloqueoBajas(equipo.bajasPendientes, nombreJugador, {
+          sinSuplentes: equipo.sinSuplentes,
+          jugaras: equipo.alineacion.titulares.filter((t) => !deBaja.has(t.jugadorId)).length,
+        })
+      : { motivoDesactivado: null, nota: null };
+  const recargarSiBaja = (accion?: () => unknown) => async () => {
+    try {
+      return await accion?.();
+    } catch (e) {
+      if (e instanceof ErrorApi && e.codigo === 'BAJA_PENDIENTE') cargar();
+      throw e;
+    }
+  };
+
   const finJornada = !vista.campeon && !actual?.estado.startsWith('abierta') && vista.siguienteJornada === 'manual' && vista.jornadaActual !== null;
 
   const mostrarResultado = async (partidoId: string) => {
@@ -238,7 +278,10 @@ export function Torneo() {
           <Link className="boton secundario" to={`/partidas/${partidaId}/plantillas`}>
             Plantillas
           </Link>
-          <BandejaAvisos actualizar={avisosNuevos} />
+          <BandejaAvisos
+            actualizar={avisosNuevos}
+            {...(equipo && vista.modo !== 'duelos' ? { equipo: { partidaId: partidaId!, avisos: equipo.avisosEquipo, nombre: nombreJugador } } : {})}
+          />
         </nav>
       </header>
       {/* En pantallas anchas, la jornada a la izquierda y las tablas a la derecha: todo a la vista sin desplazarse. */}
@@ -372,15 +415,20 @@ export function Torneo() {
       ) : vista.modo === 'duelos' && accionDuelos ? (
         <BarraPrincipal principal={accionDuelos} />
       ) : preparacion && vista.modo !== 'duelos' ? (
-        <BarraPrincipal principal={preparacion.accion} />
+        <BarraPrincipal
+          principal={{ ...preparacion.accion, onClick: recargarSiBaja(preparacion.accion.onClick), motivoDesactivado: bloqueo.motivoDesactivado }}
+          estado={bloqueo.nota}
+        />
       ) : (
         finJornada && (
           <BotonAvanzar
             situacion="fin_jornada"
-            onAvanzar={async () => {
+            motivoDesactivado={bloqueo.motivoDesactivado}
+            estado={bloqueo.nota}
+            onAvanzar={recargarSiBaja(async () => {
               await siguienteJornada(partidaId!);
               cargar();
-            }}
+            })}
           />
         )
       )}

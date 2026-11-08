@@ -583,6 +583,62 @@
       "precio_centimos": 50,
       "precio_fragmentos": 250,
       "orden": 30
+    },
+    {
+      "id": "celebracion-clasica",
+      "tipo": "celebracion",
+      "nombre": "Clásica",
+      "gratuito": true,
+      "orden": 39,
+      "datos": {
+        "clase": "juego",
+        "duracionMs": 2600
+      }
+    },
+    {
+      "id": "celebracion-estadio",
+      "tipo": "celebracion",
+      "nombre": "Estadio",
+      "gratuito": true,
+      "orden": 40,
+      "datos": {
+        "clase": "juego",
+        "duracionMs": 2800
+      }
+    },
+    {
+      "id": "celebracion-neon",
+      "tipo": "celebracion",
+      "nombre": "Neón",
+      "gratuito": true,
+      "orden": 41,
+      "datos": {
+        "clase": "juego",
+        "duracionMs": 2500
+      }
+    },
+    {
+      "id": "celebracion-pizarra",
+      "tipo": "celebracion",
+      "nombre": "Pizarra",
+      "gratuito": true,
+      "orden": 42,
+      "datos": {
+        "clase": "juego",
+        "duracionMs": 2800
+      }
+    },
+    {
+      "id": "celebracion-prueba-secuencia",
+      "tipo": "celebracion",
+      "nombre": "Prueba de secuencia",
+      "gratuito": true,
+      "orden": 43,
+      "datos": {
+        "clase": "secuencia",
+        "duracionMs": 2000
+      },
+      "activo": false
     }
   ],
   "packs": [

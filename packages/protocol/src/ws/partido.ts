@@ -8,6 +8,18 @@ import { AccionVisibleSchema, FotogramaSchema } from './partido2d';
 /** Equipación v2 (spec 003, FR-045). */
 const Equipacion = z.object({ diseno: z.string(), colores: z.array(z.string()) });
 
+/** Datos de una celebración de gol (spec 012, data-model §2). */
+export const DatosCelebracionSchema = z.object({
+  clase: z.enum(['juego', 'secuencia']),
+  duracionMs: z.number().positive(),
+  sonido: z.string().optional(),
+});
+
+/** Modo de gestión de lesiones y expulsiones propias contra un NPC (spec 012, FR-020). */
+export const ModoIncidenciasSchema = z.enum(['automatico', 'control_total']);
+
+const Celebracion = z.object({ id: z.string(), datos: DatosCelebracionSchema });
+
 export const EventoPartidoSchema = z.object({
   tick: z.number(),
   minuto: z.string(),
@@ -57,6 +69,10 @@ export const MsgPartidoInicio = z.object({
   ordenJugadores: z.array(z.number().int()),
   /** Dorsales que se han dado al empezar a convocados que no tenían (FR-038). */
   dorsalesAsignados: z.array(z.object({ jugadorId: z.number().int(), dorsal: z.number().int() })).optional(),
+  /** Celebración de gol de cada equipo (spec 012, FR-012): la del dueño; NPC o sin elegir, la del juego. */
+  celebraciones: z.object({ local: Celebracion, visitante: Celebracion }).optional(),
+  /** Modo de incidencias del espectador, solo con `gestionDisponible` (spec 012, FR-020). */
+  modoIncidencias: ModoIncidenciasSchema.optional(),
 });
 
 export const MsgPartidoTramo = z.object({
@@ -81,9 +97,14 @@ export const MsgPartidoTramo = z.object({
 export const MsgPartidoPausa = z.object({
   t: z.literal('partido.pausa_decision'),
   partidoId: z.string(),
-  motivo: z.enum(['descanso', 'pre_prorroga']),
+  motivo: z.enum(['descanso', 'pre_prorroga', 'incidencia']),
   /** Límite de la ventana frente a un humano ausente; «Seguir» reanuda al instante (FR-012). */
   venceEn: z.string().datetime(),
+  /** Solo con motivo `incidencia` (spec 012, FR-022): lances propios que han parado el partido. */
+  incidencias: z
+    .array(z.object({ jugadorId: z.number().int(), motivo: z.enum(['lesion', 'expulsion']), minuto: z.string(), tick: z.number() }))
+    .optional(),
+  sustitucionesRestantes: z.number().int().optional(),
 });
 
 export const MsgPartidoDecisionAplicada = z.object({
@@ -117,6 +138,18 @@ export const MsgPartidoSeguir = z.object({ t: z.literal('partido.seguir'), reque
  */
 export const MsgPartidoFinalizar = z.object({ t: z.literal('partido.finalizar'), requestId: RequestId, partidoId: z.string() });
 export type MsgPartidoFinalizar = z.infer<typeof MsgPartidoFinalizar>;
+
+/** Cambia el modo de incidencias durante el partido (spec 012, FR-024): solo contra un NPC; si no, `SIN_GESTION`. */
+export const MsgPartidoModoIncidencias = z.object({
+  t: z.literal('partido.modo_incidencias'),
+  requestId: RequestId,
+  partidoId: z.string(),
+  modo: ModoIncidenciasSchema,
+});
+export type MsgPartidoModoIncidencias = z.infer<typeof MsgPartidoModoIncidencias>;
+
+/** Respuesta a `partido.modo_incidencias`. */
+export const MsgPartidoModoIncidenciasOk = z.object({ t: z.literal('partido.modo_incidencias_ok'), modo: ModoIncidenciasSchema });
 
 export const MsgPartidoDecision = z.object({
   t: z.literal('partido.decision'),

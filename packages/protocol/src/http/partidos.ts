@@ -81,3 +81,11 @@ export const PartidoPendienteDeVer = z.object({
   local: z.object({ id: z.string(), nombre: z.string() }),
   visitante: z.object({ id: z.string(), nombre: z.string() }),
 });
+
+/**
+ * `409 BAJA_PENDIENTE` (spec 012, SC-008): al abrir un partido o avanzar de jornada con convocados de baja en la
+ * alineación confirmada, si queda alguien con quien sustituirlos. Va en `error.detalles`.
+ */
+export interface DetallesBajaPendiente {
+  jugadores: { jugadorId: number; motivo: 'lesion' | 'sancion' }[];
+}

@@ -1,7 +1,13 @@
 import { PARAMETROS_V3 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
-import { expulsar } from '../src/acciones/plantel';
+import { expulsar as expulsarEnElLance, resolverIncidencias } from '../src/acciones/plantel';
 import type { Contexto } from '../src/acciones/contexto';
+
+/** Expulsión y final del paso (spec 012): el lance saca al jugador y la incidencia se resuelve al terminar el paso. */
+function expulsar(ctx: Contexto, eq: Parameters<typeof expulsarEnElLance>[1], j: Parameters<typeof expulsarEnElLance>[2]): void {
+  expulsarEnElLance(ctx, eq, j);
+  resolverIncidencias(ctx);
+}
 import { atributo } from '../src/modificadores/atributos';
 import { acumularCansancio } from '../src/modificadores/cansancio';
 import { bonusEquipo, santoActivo } from '../src/modificadores/virtudes';

@@ -62,6 +62,11 @@ export async function avanzar2D(c: ControladorPartida, ctx: ContextoComando, p: 
       await terminarPartido(c, ctx, p);
       return;
     }
+    // Spec 012 (research R5): la parada de «control total» es una parada dura, como el descanso.
+    if (r.incidencias) {
+      abrirPausa(c, ctx, p, 'incidencia', r.incidencias);
+      return;
+    }
     if (r.fase === 'descanso' || r.fase === 'pre_prorroga') {
       abrirPausa(c, ctx, p, r.fase === 'descanso' ? 'descanso' : 'pre_prorroga');
       return;

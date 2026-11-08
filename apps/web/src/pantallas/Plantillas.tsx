@@ -7,6 +7,7 @@ import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { DistintivoBaja, type BajaVista } from '../componentes/DistintivoBaja';
 import { FichaJugador } from '../componentes/FichaJugador';
 import { NombreRecortado } from '../componentes/NombreRecortado';
+import { Chapa } from '../componentes/Marcador';
 import { ETIQUETA_DEMARCACION, etiquetaNPC } from '../textos/niveles';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { PantallaError } from '../componentes/Aviso';
@@ -19,6 +20,10 @@ interface PlantillaParticipante {
   nivelNPC: string | null;
   jugadores: CartaResumen[];
   bajas: BajaVista[];
+  /** Spec 012 (FR-026): escudo o, sin él, el color de la equipación para la chapa de la pestaña. */
+  nombreEquipo?: string;
+  escudo?: string | null;
+  color?: string | null;
 }
 
 const DEMARCACIONES = ['POR', 'DEF', 'MED', 'DEL'] as const;
@@ -74,7 +79,10 @@ export function Plantillas() {
             tabIndex={p.participanteId === seleccion ? 0 : -1}
             onClick={() => setSeleccion(p.participanteId)}
           >
-            <NombreRecortado texto={p.nombre} />
+            <span className="pestana-equipo">
+              <Chapa color={p.color ?? undefined} escudo={p.escudo ?? null} nombre={p.nombreEquipo ?? p.nombre} />
+              <NombreRecortado texto={p.nombreEquipo ?? p.nombre} />
+            </span>
             {p.participanteId === miId ? ' (tú)' : p.nivelNPC ? ` · ${etiquetaNPC(p.nivelNPC)}` : ''}
           </button>
         ))}

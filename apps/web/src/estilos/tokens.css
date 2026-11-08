@@ -59,6 +59,17 @@
   --color-defecto: #ff5a6e;
   --color-defecto-chip: #2b0b12;
 
+  /* Tarjetas en «Lo que ha pasado» (spec 012, FR-019): la roja por doble amarilla usa la roja. */
+  --color-tarjeta-amarilla: #ffd000;
+  --color-tarjeta-roja: #ff3b30;
+
+  /* Celebraciones de gol (spec 012, FR-010): velo sobre el campo, neón, pizarra y tiza. */
+  --celebracion-velo: rgb(5 12 8 / 55%);
+  --celebracion-neon: #ff4fd8;
+  --celebracion-pizarra: #1d3a2a;
+  --celebracion-pizarra-marco: #7a5532;
+  --celebracion-tiza: #f3efe2;
+
   /* Niveles de las cartas fuera de la carta (FR-004): ≥ 4,5:1 como texto */
   --nivel-superclase: #b9c8d8;
   --nivel-crack: #c7a2ff;

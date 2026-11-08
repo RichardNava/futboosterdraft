@@ -2,12 +2,12 @@
  * Composición del servidor: une base de datos, autenticación, actores, pasarela y rutas.
  * La usan `main.ts` y las pruebas de integración (con `RelojFalso` y una base de datos de pruebas).
  */
-import { MsgDraftElegir, MsgPartidaPausar, MsgPartidoDecision, MsgPartidoDecisiones, MsgPartidoFinalizar, MsgPartidoReproduccion, MsgPartidoSeguir } from '@fbd/protocol';
+import { MsgDraftElegir, MsgPartidaPausar, MsgPartidoDecision, MsgPartidoDecisiones, MsgPartidoFinalizar, MsgPartidoModoIncidencias, MsgPartidoReproduccion, MsgPartidoSeguir } from '@fbd/protocol';
 import { procesarPausar } from './actores/pausa';
 import type { FastifyInstance } from 'fastify';
 import { procesarEleccion } from './actores/draft';
 import { procesarReproduccion } from './actores/partido2d';
-import { procesarDecisionesLote, procesarDecisionPartido, procesarFinalizar, procesarSeguir } from './actores/partidoRapido';
+import { procesarDecisionesLote, procesarDecisionPartido, procesarFinalizar, procesarModoIncidencias, procesarSeguir } from './actores/partidoRapido';
 import { GestorPartidas } from './actores/gestor';
 import { randomUUID } from 'node:crypto';
 import { crearAuth, type Auth } from './auth/auth';
@@ -200,6 +200,15 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
       return c.ejecutar(() => procesarDecisionesLote(c, ctx.participanteId, msg.partidoId, msg.decisiones));
     },
   });
+  // Spec 012 (FR-024): «Automático» o «Control total» durante el partido contra un NPC.
+  pasarela.registrarManejador('partido.modo_incidencias', {
+    esquema: MsgPartidoModoIncidencias,
+    conAck: true,
+    manejar: async (ctx, msg) => {
+      const c = await gestor.obtenerOError(ctx.partidaId);
+      return c.ejecutar((cmd) => procesarModoIncidencias(c, cmd, ctx.participanteId, msg.partidoId, msg.modo));
+    },
+  });
   // 2D en directo: reloj de reproducción del cliente (sin requestId: se repite y no cambia el partido).
   pasarela.registrarManejador('partido.reproduccion', {
     esquema: MsgPartidoReproduccion,
@@ -254,6 +263,47 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
       await economia.recompensarTorneo(req.usuario!.id, randomUUID(), fragmentos!);
       return economia.leerSaldo(req.usuario!.id);
     });
+    // Spec 012 (e2e de la US4): lesiones mucho más probables en un partido en directo del que pide (sin tocar los
+    // parámetros compartidos), para ver la parada de «control total» en pocos minutos de juego.
+    app.post<{ Params: { id: string; partidoId: string } }>(
+      '/api/dev/partidas/:id/partidos/:partidoId/lesiones',
+      { preHandler: crearHooksSesion(auth).requiereSesion },
+      async (req) => {
+        const c = await gestor.obtenerOError(req.params.id);
+        if (!c.participanteDeUsuario(req.usuario!.id)) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
+        await c.ejecutar(() => {
+          const p = c.partidosEnCurso.get(req.params.partidoId);
+          if (!p) throw errores.noEncontrado('PARTIDO_NO_ENCONTRADO', 'Ese partido no está en juego');
+          const l = p.motor.parametros.lesiones;
+          p.motor = { ...p.motor, parametros: { ...p.motor.parametros, lesiones: { ...l, probabilidadPorEntrada: 0.6 } } };
+        });
+        return { ok: true };
+      },
+    );
+    // Spec 012 (e2e de la US5): pone de baja a un jugador del participante que pide, como una lesión de un partido.
+    app.post<{ Params: { id: string }; Body: { jugadorId?: number; partidosRestantes?: number } }>(
+      '/api/dev/partidas/:id/baja',
+      { preHandler: crearHooksSesion(auth).requiereSesion },
+      async (req) => {
+        const c = await gestor.obtenerOError(req.params.id);
+        const p = c.participanteDeUsuario(req.usuario!.id);
+        const jugadorId = req.body?.jugadorId;
+        if (!p || !Number.isInteger(jugadorId)) throw errores.validacion('BAJA_INVALIDA', 'Indica "jugadorId" de tu plantilla');
+        await c.ejecutar(async () => {
+          if (!c.torneo) throw errores.conflicto('SIN_TORNEO', 'El torneo no ha empezado');
+          c.torneo.bajas.bajas.push({
+            participanteId: p.id,
+            jugadorId: jugadorId!,
+            motivo: 'lesion',
+            gravedad: 'media',
+            partidoOrigenId: 'dev',
+            partidosRestantes: req.body?.partidosRestantes ?? 2,
+          });
+          await c.servicios.repoTorneo.guardar(c.id, c.torneo);
+        });
+        return { ok: true };
+      },
+    );
   }
 
   app.addHook('onClose', async () => {

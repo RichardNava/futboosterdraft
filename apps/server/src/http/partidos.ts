@@ -14,6 +14,7 @@ import { entreHumanos, reproduccion } from '../actores/partidoEntreHumanos';
 import { equipacionesDelPartido, escudosDelPartido, resumenAlineaciones } from '../actores/partidoRapido';
 import { vistaCruce } from '../actores/duelos';
 import { abrirPartido, emitirTorneo } from '../actores/torneo';
+import { exigirSinBajasPendientes } from '../actores/equipo';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
 import { resueltoAutomaticamente, type FilaPartido } from '../persistencia/repos/partidos';
@@ -65,6 +66,9 @@ export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor:
     if (!cuerpo) throw errores.regla('MODALIDAD_INVALIDA', 'La modalidad debe ser «rapida» o «2d»');
     return medir('apertura', async () => {
       const { fila, c, participanteId } = await partidoDelUsuario(req, true);
+      // Spec 012 (FR-029): un partido por jugar no empieza con una baja pendiente evitable.
+      // Solo lectura: fuera del actor, para no frenar el grupo de aperturas entre humanos (spec 010).
+      if (fila.tipo === 'futbol' && fila.estado === 'programado') await exigirSinBajasPendientes(c, participanteId);
       // Entre humanos y programado: al grupo de aperturas de la partida (spec 010, US2); si no, como siempre.
       const r =
         fila.tipo === 'futbol' && fila.estado === 'programado' && entreHumanos(c, fila)

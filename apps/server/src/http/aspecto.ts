@@ -3,6 +3,7 @@
  *
  * - `GET /api/perfil/aspecto` (sesión): un invitado recibe la respuesta fija del contrato.
  * - `PUT /api/perfil/aspecto` (registrados): cada id debe estar disponible y ser del tipo correcto (FR-009).
+ * - Spec 012: también la celebración de gol (null = la del juego) y el modo de incidencias contra un NPC.
  * - `POST /api/perfil/aspecto/sobre-siguiente` (sesión): avanza la baraja del carrusel con la fila del perfil
  *   bloqueada, así que dos aperturas a la vez no sacan el mismo diseño de la misma vuelta.
  */
@@ -15,6 +16,8 @@ import {
   siguienteSobre,
   SOBRE_ORIGINAL,
   sobreActual,
+  MODO_INCIDENCIAS_POR_DEFECTO,
+  type ModoIncidencias,
   type PreferenciasSobre,
 } from '@fbd/domain';
 import { CuerpoAspecto, type Aspecto, type RespuestaSobreSiguiente } from '@fbd/protocol';
@@ -34,6 +37,8 @@ const ASPECTO_INVITADO: Aspecto = {
   sobreCarrusel: false,
   sobresMarcados: [],
   sobreActual: SOBRE_ORIGINAL,
+  celebracion: null,
+  modoIncidencias: MODO_INCIDENCIAS_POR_DEFECTO,
 };
 
 /** Aspecto guardado con los ids que ya no están disponibles descartados (retirados sin poseerlos). */
@@ -42,11 +47,18 @@ async function leer(deps: Deps, usuarioId: string, ejecutor: Ejecutor = deps.db,
   const guardado = await deps.repoPerfiles.obtenerAspecto(usuarioId, ejecutor, forUpdate);
   const disponibles = await deps.cosmeticos.disponibles(quien, undefined, ejecutor);
   const escudo = guardado.escudo !== null && disponibles.has(guardado.escudo) ? guardado.escudo : null;
-  return { escudo, sobre: limpiarPreferenciasSobre(guardado, disponibles), disponibles };
+  const celebracion = guardado.celebracion !== null && disponibles.has(guardado.celebracion) ? guardado.celebracion : null;
+  return { escudo, celebracion, modoIncidencias: guardado.modoIncidencias, sobre: limpiarPreferenciasSobre(guardado, disponibles), disponibles };
 }
 
-function respuesta(deps: Deps, usuarioId: string, escudo: string | null, sobre: PreferenciasSobre): Aspecto {
+function respuesta(
+  deps: Deps,
+  usuarioId: string,
+  { escudo, sobre, celebracion, modoIncidencias }: { escudo: string | null; sobre: PreferenciasSobre; celebracion: string | null; modoIncidencias: ModoIncidencias },
+): Aspecto {
   return {
+    celebracion,
+    modoIncidencias,
     escudo: escudo ?? escudoAsignado(usuarioId, deps.cosmeticos.gratuitos('escudo')),
     escudoAsignado: escudo === null,
     sobreFavorito: sobre.sobreFavorito ?? SOBRE_ORIGINAL,
@@ -61,8 +73,7 @@ export function registrarRutasAspecto(app: FastifyInstance, auth: Auth, deps: De
 
   app.get('/api/perfil/aspecto', { preHandler: requiereSesion }, async (req): Promise<Aspecto> => {
     if (req.usuario!.tipo !== 'registrado') return ASPECTO_INVITADO;
-    const { escudo, sobre } = await leer(deps, req.usuario!.id);
-    return respuesta(deps, req.usuario!.id, escudo, sobre);
+    return respuesta(deps, req.usuario!.id, await leer(deps, req.usuario!.id));
   });
 
   app.put('/api/perfil/aspecto', { preHandler: requiereSesion }, async (req): Promise<Aspecto> => {
@@ -70,20 +81,23 @@ export function registrarRutasAspecto(app: FastifyInstance, auth: Auth, deps: De
     const cuerpo = CuerpoAspecto.safeParse(req.body);
     if (!cuerpo.success) throw errores.validacion('CUERPO_INVALIDO', 'Aspecto mal formado');
     const usuarioId = req.usuario!.id;
-    const { escudo, sobreFavorito, sobreCarrusel, sobresMarcados } = cuerpo.data;
+    const { escudo, sobreFavorito, sobreCarrusel, sobresMarcados, celebracion, modoIncidencias } = cuerpo.data;
     const { disponibles } = await leer(deps, usuarioId);
     const tipoDe = (id: string) => deps.cosmeticos.cosmetico(id)?.tipo;
-    const exigir = (id: string, tipo: 'escudo' | 'sobre') => {
+    const exigir = (id: string, tipo: 'escudo' | 'sobre' | 'celebracion') => {
       if (tipoDe(id) !== tipo || !disponibles.has(id)) throw errores.regla('COSMETICO_NO_DISPONIBLE', `El cosmético ${id} no está disponible para tu cuenta`, { id });
     };
     if (escudo) exigir(escudo, 'escudo');
     if (sobreFavorito !== undefined) exigir(sobreFavorito, 'sobre');
     for (const id of sobresMarcados ?? []) exigir(id, 'sobre');
+    if (celebracion) exigir(celebracion, 'celebracion');
 
     await deps.repoPerfiles.guardarAspecto(
       usuarioId,
       {
         ...(escudo !== undefined ? { escudo } : {}),
+        ...(celebracion !== undefined ? { celebracion } : {}),
+        ...(modoIncidencias !== undefined ? { modoIncidencias } : {}),
         ...(sobreFavorito !== undefined ? { sobreFavorito } : {}),
         ...(sobreCarrusel !== undefined ? { sobreCarrusel } : {}),
         ...(sobresMarcados !== undefined ? { sobresMarcados: [...new Set(sobresMarcados)] } : {}),
@@ -92,8 +106,7 @@ export function registrarRutasAspecto(app: FastifyInstance, auth: Auth, deps: De
       },
       deps.reloj.ahora(),
     );
-    const leido = await leer(deps, usuarioId);
-    return respuesta(deps, usuarioId, leido.escudo, leido.sobre);
+    return respuesta(deps, usuarioId, await leer(deps, usuarioId));
   });
 
   app.post('/api/perfil/aspecto/sobre-siguiente', { preHandler: requiereSesion }, async (req): Promise<RespuestaSobreSiguiente> => {

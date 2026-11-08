@@ -5,7 +5,7 @@
  * claves que espera la librería; el `apodo` del modelo de datos es el campo `name`, y el `tipo`
  * ('registrado' | 'invitado') se deriva de `isAnonymous`.
  */
-import type { Dificultad } from '@fbd/domain';
+import type { Dificultad, ModoIncidencias } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
@@ -196,6 +196,9 @@ export const participantes = pgTable(
     campeonVistoEn: timestamp('campeon_visto_en', { withTimezone: true }),
     /** Escudo elegido para esta partida (spec 011, data-model §5); null = asignado, de NPC o círculo. Sin FK. */
     escudo: text('escudo'),
+    /** Celebración de gol y modo de incidencias copiados del perfil al unirse (spec 012); FK en la 0015. */
+    celebracion: text('celebracion'),
+    modoIncidencias: text('modo_incidencias').$type<ModoIncidencias>().notNull().default('automatico'),
     unidoEn: timestamp('unido_en', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -213,6 +216,7 @@ export const participantes = pgTable(
       sql`${t.nivelNPC} is null or ${t.nivelNPC} in ('amateur','intermedio','avanzado','PRO')`,
     ),
     check('participantes_modalidad_ck', sql`${t.ultimaModalidad} is null or ${t.ultimaModalidad} in ('rapida','2d')`),
+    check('participantes_modo_incidencias_ck', sql`${t.modoIncidencias} in ('automatico','control_total')`),
   ],
 );
 
@@ -237,9 +241,15 @@ export const perfilesUsuario = pgTable(
     sobresMarcados: text('sobres_marcados').array().notNull().default(sql`'{}'::text[]`),
     sobreBaraja: text('sobre_baraja').array().notNull().default(sql`'{}'::text[]`),
     sobreUltimo: text('sobre_ultimo'),
+    /** Celebración de gol favorita (null = la del juego) y modo de incidencias (spec 012, migración 0015). */
+    celebracion: text('celebracion'),
+    modoIncidencias: text('modo_incidencias').$type<ModoIncidencias>().notNull().default('automatico'),
     actualizadoEn: timestamp('actualizado_en', { withTimezone: true }).notNull(),
   },
-  (t) => [check('perfiles_usuario_modalidad_ck', sql`${t.ultimaModalidad} is null or ${t.ultimaModalidad} in ('rapida','2d')`)],
+  (t) => [
+    check('perfiles_usuario_modalidad_ck', sql`${t.ultimaModalidad} is null or ${t.ultimaModalidad} in ('rapida','2d')`),
+    check('perfiles_usuario_modo_incidencias_ck', sql`${t.modoIncidencias} in ('automatico','control_total')`),
+  ],
 );
 
 /** Peticiones ya procesadas por partida, para descartar duplicados (FR-062). */

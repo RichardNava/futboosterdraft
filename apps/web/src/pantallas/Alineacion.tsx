@@ -12,6 +12,7 @@ import {
   type Lanzadores,
   type Posicion,
   type Tactica,
+  type ModoIncidencias,
 } from '@fbd/domain';
 import { coloresDe } from '../componentes/colores';
 import { EditorEquipacion, equipacionesParecidas } from '../componentes/EditorEquipacion';
@@ -41,7 +42,9 @@ import { Dialogo } from '../componentes/Dialogo';
 import { Icono } from '../componentes/Icono';
 import { Insignia } from '../componentes/Insignia';
 import { colocarJunto } from '../componentes/NombreRecortado';
-import { alTeclaPestanas } from '../componentes/pestanas';
+import { ListaPestanas } from '../componentes/ListaPestanas';
+import { useDistribucion } from '../componentes/useDistribucion';
+import { SelectorModoIncidencias } from '../componentes/SelectorModoIncidencias';
 import { SelectorEscudo } from '../componentes/SelectorEscudo';
 import { useSesion } from '../estado/sesion';
 
@@ -60,6 +63,11 @@ interface DatosEquipo {
   plantilla: CartaResumen[];
   bajas: number[];
   bajasDetalle: BajaVista[];
+  /** Spec 012 (FR-028, FR-029): convocados de la alineación confirmada que están de baja. */
+  bajasPendientes?: { jugadorId: number; motivo: 'lesion' | 'sancion' }[];
+  sinSuplentes?: boolean;
+  /** Spec 012 (FR-020): modo de incidencias de esta partida. */
+  modoIncidencias?: ModoIncidencias;
   dorsales: Record<number, number> | null;
   equipaciones: Equipaciones | null;
   /** Spec 003, FR-042: nombre del equipo, editable hasta que se abre el primer partido. */
@@ -87,41 +95,6 @@ const PESTANAS: { id: Pestana; texto: string }[] = [
   { id: 'lanzadores', texto: 'Lanzadores' },
 ];
 
-const CLAVE_DISTRIBUCION = 'fbd:formacion-distribucion';
-const PANTALLA_ANCHA = '(min-width: 1024px)';
-
-/**
- * Distribución de la Formación (retoques de la spec 011): el campo en horizontal por defecto en pantallas anchas, o
- * el vertical de siempre; la elección se recuerda en este navegador. En pantallas estrechas, siempre vertical.
- */
-function useDistribucion() {
-  const [elegida, setElegida] = useState<'horizontal' | 'vertical'>(() => {
-    try {
-      return localStorage.getItem(CLAVE_DISTRIBUCION) === 'vertical' ? 'vertical' : 'horizontal';
-    } catch {
-      return 'horizontal';
-    }
-  });
-  const [ancha, setAncha] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia?.(PANTALLA_ANCHA).matches === true,
-  );
-  useEffect(() => {
-    const m = window.matchMedia?.(PANTALLA_ANCHA);
-    if (!m) return;
-    const alCambiar = () => setAncha(m.matches);
-    m.addEventListener('change', alCambiar);
-    return () => m.removeEventListener('change', alCambiar);
-  }, []);
-  const elegir = (d: 'horizontal' | 'vertical') => {
-    setElegida(d);
-    try {
-      localStorage.setItem(CLAVE_DISTRIBUCION, d);
-    } catch {
-      // Sin almacenamiento (modo privado): vale para esta visita.
-    }
-  };
-  return { orientacion: ancha ? elegida : ('vertical' as const), elegida, ancha, elegir };
-}
 
 /** Forma canónica de una alineación, para saber si hay cambios sin confirmar (sin depender del orden de claves). */
 function firma(a: AlineacionDominio | null): string {
@@ -410,29 +383,7 @@ export function Alineacion() {
   const pestanasVisibles = PESTANAS.filter(
     (p) => !duelos || p.id === 'alineacion' || p.id === 'personalizacion',
   );
-  const listaPestanas = (
-    <div
-      className="pestanas"
-      role="tablist"
-      aria-label="Secciones de la formación"
-      onKeyDown={alTeclaPestanas}
-    >
-      {pestanasVisibles.map((p) => (
-        <button
-          key={p.id}
-          id={`pestana-${p.id}`}
-          type="button"
-          role="tab"
-          aria-selected={pestana === p.id}
-          aria-controls={`panel-${p.id}`}
-          tabIndex={pestana === p.id ? 0 : -1}
-          onClick={() => setPestana(p.id)}
-        >
-          {p.texto}
-        </button>
-      ))}
-    </div>
-  );
+  const listaPestanas = <ListaPestanas pestanas={pestanasVisibles} activa={pestana} onElegir={setPestana} etiqueta="Secciones de la formación" />;
 
   const panelPersonalizacion = (
     <div className="panel-personalizacion">
@@ -501,6 +452,15 @@ export function Alineacion() {
     pestana === 'tactica' ? (
       <section aria-label="Táctica">
         <PanelTactica tactica={tactica} onCambiar={setTactica} />
+        <SelectorModoIncidencias
+          modo={datos.modoIncidencias ?? 'automatico'}
+          onCambio={(modo) => {
+            setDatos({ ...datos, modoIncidencias: modo });
+            void api(`/api/partidas/${partidaId}/modo-incidencias`, { metodo: 'PUT', cuerpo: { modo } }).catch(() =>
+              setMensaje({ tipo: 'error', texto: 'No se pudo guardar el modo de incidencias' }),
+            );
+          }}
+        />
       </section>
     ) : pestana === 'lanzadores' ? (
       <EditorLanzadores
@@ -604,6 +564,16 @@ export function Alineacion() {
         )}
       </header>
 
+      {/* Spec 012 (FR-029): las bajas de la confirmada, marcadas en el campo y en el banco, y qué hacer. */}
+      {(datos.bajasPendientes?.length ?? 0) > 0 && sinCambios && (
+        <Aviso tipo="advertencia" rol="status">
+          <p>
+            {datos.sinSuplentes
+              ? 'Tienes jugadores de baja en la alineación y nadie con quien sustituirlos: se jugará con los disponibles.'
+              : `Tienes ${datos.bajasPendientes!.length === 1 ? 'un jugador' : `${datos.bajasPendientes!.length} jugadores`} de baja en la alineación: sustitúyelos para poder jugar.`}
+          </p>
+        </Aviso>
+      )}
       {porteroEnPorteria && porteroEnPorteria.demarcacion !== 'POR' && (
         <Aviso tipo="advertencia" rol="alert">
           <p>Has puesto a un jugador de campo en la portería: sus stats bajan un 60 %.</p>

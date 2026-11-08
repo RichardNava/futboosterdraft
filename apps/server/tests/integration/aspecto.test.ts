@@ -54,6 +54,9 @@ describe('aspecto del perfil (spec 011)', () => {
         sobreCarrusel: false,
         sobresMarcados: [],
         sobreActual: 'sobre-original',
+        // Spec 012.
+        celebracion: null,
+        modoIncidencias: 'automatico',
       });
       const otro = gratuitos().find((e) => e !== asignado)!;
       expect((await guardar(u, { escudo: otro })).cuerpo).toMatchObject({ escudo: otro, escudoAsignado: false });
@@ -81,6 +84,9 @@ describe('aspecto del perfil (spec 011)', () => {
         sobreCarrusel: false,
         sobresMarcados: [],
         sobreActual: 'sobre-original',
+        // Spec 012.
+        celebracion: null,
+        modoIncidencias: 'automatico',
       });
       expect((await guardar(g, { escudo: gratuitos()[0] })).estado).toBe(403);
       expect(await siguiente(g)).toBe('sobre-original');

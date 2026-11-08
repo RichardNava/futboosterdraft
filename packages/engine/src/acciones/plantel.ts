@@ -1,11 +1,23 @@
 /**
  * Cambios en los jugadores del campo: sustituciones, retiradas por lesión o expulsión, relevo del
  * portero y la regla de los 7 jugadores (FR-042; Edge Cases de la especificación).
+ *
+ * Spec 012 (research R2; contracts/motor.md): la lesión y la expulsión solo sacan al jugador del campo y anotan una
+ * `Incidencia`; al terminar el paso, `resolverIncidencias` aplica la resolución automática de siempre o, si el
+ * participante decidió en la parada de «control total», solo lo imprescindible (portería y anclas).
  */
-import { anclaDeCasilla, maxSustituciones, rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
+import {
+  anclaDeCasilla,
+  maxSustituciones,
+  minutoMostrable,
+  rival,
+  type EquipoEstado,
+  type Incidencia,
+  type JugadorEnPartido,
+} from '../estado/estado';
 import { repartirAnclas } from '../espacio/geometria';
 import type { Lado } from '../tipos';
-import { emitir, esPortero, type Contexto } from './contexto';
+import { emitir, type Contexto } from './contexto';
 
 export const MINIMO_JUGADORES = 7;
 
@@ -51,22 +63,80 @@ function mejorSuplente(equipo: EquipoEstado, demarcacion: string): JugadorEnPart
   return ordenar(disponibles.filter((j) => j.jugador.demarcacion === demarcacion))[0] ?? ordenar(disponibles.filter((j) => j.jugador.demarcacion !== 'POR'))[0];
 }
 
-/** Retira a un jugador lesionado: si quedan cambios, entra automáticamente el mejor suplente. */
-export function retirarLesionado(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido): void {
-  const casilla = j.casillaId;
-  const suplente = sustitucionesDisponibles(ctx, equipo) > 0 ? mejorSuplente(equipo, j.jugador.demarcacion) : undefined;
-  j.lesionado = true;
-  if (suplente) {
-    sustituir(ctx, equipo, j, suplente, true);
-    return;
-  }
+/** Saca del campo a un lesionado o expulsado y anota la incidencia, con la casilla, el ancla y el sitio que deja. */
+function anotarIncidencia(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido, motivo: Incidencia['motivo']): void {
+  const e = ctx.estado;
+  const sitio = e.espacio.jugadores[j.id];
+  (e.incidencias ??= []).push({
+    lado: equipo.lado,
+    jugadorId: j.id,
+    motivo,
+    tick: e.tick,
+    minuto: minutoMostrable(e.reloj),
+    casillaId: j.casillaId,
+    ...(j.ancla ? { ancla: { ...j.ancla } } : {}),
+    ...(sitio ? { sitio: { x: sitio.x, y: sitio.y } } : {}),
+    estado: 'pendiente',
+  });
   j.enCampo = false;
   j.retirado = true;
   j.casillaId = null;
   quitarDelCampo(ctx, j);
-  if (casilla === 'POR') cubrirPorteria(ctx, equipo);
-  repartirAnclas(equipo);
-  comprobarInferioridad(ctx, equipo.lado);
+  if (e.balon.portadorId === j.id) e.balon.portadorId = 0;
+}
+
+/** Lesión: el jugador sale y queda una incidencia; el cambio se resuelve al terminar el paso. */
+export function retirarLesionado(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido): void {
+  j.lesionado = true;
+  anotarIncidencia(ctx, equipo, j, 'lesion');
+}
+
+/** Lesión pendiente de un jugador (la que se puede resolver con un cambio en su sitio). */
+export function lesionPendiente(ctx: Pick<Contexto, 'estado'>, lado: EquipoEstado['lado'], jugadorId: number): Incidencia | undefined {
+  return (ctx.estado.incidencias ?? []).find((i) => i.estado === 'pendiente' && i.motivo === 'lesion' && i.lado === lado && i.jugadorId === jugadorId);
+}
+
+/** El que entra ocupa la casilla, el ancla y el sitio que dejó el lesionado. */
+export function sustituirLesionado(ctx: Contexto, equipo: EquipoEstado, incidencia: Incidencia, entra: JugadorEnPartido, automatica: boolean): void {
+  const sale = equipo.jugadores.find((j) => j.id === incidencia.jugadorId)!;
+  sale.casillaId = incidencia.casillaId;
+  sale.ancla = incidencia.ancla ? { ...incidencia.ancla } : undefined;
+  if (incidencia.sitio) ctx.estado.espacio.jugadores[sale.id] = { x: incidencia.sitio.x, y: incidencia.sitio.y, vx: 0, vy: 0, papel: -1000 };
+  sustituir(ctx, equipo, sale, entra, automatica);
+}
+
+/**
+ * Resuelve las incidencias pendientes al terminar el paso (o al reanudar tras la parada de «control total»).
+ * `decididos`: equipos que decidieron algo en la parada (sus incidencias, `resuelta_participante`); `recolocados`:
+ * los que además cambiaron la formación o la colocación (no se les reparten las anclas). Para el resto, lo de
+ * siempre: el mejor suplente entra por el lesionado si quedan cambios; si no, o en una expulsión, se cubre la
+ * portería si hace falta, se reparten las anclas y se aplica la regla de los 7.
+ */
+export function resolverIncidencias(ctx: Contexto, decididos: ReadonlySet<string> = new Set(), recolocados: ReadonlySet<string> = new Set()): void {
+  for (const inc of ctx.estado.incidencias ?? []) {
+    if (inc.estado !== 'pendiente') continue;
+    const equipo = ctx.estado.equipos[inc.lado];
+    const j = equipo.jugadores.find((x) => x.id === inc.jugadorId)!;
+    if (decididos.has(inc.lado)) {
+      inc.estado = 'resuelta_participante';
+      // Seguridad, no decisión: nadie en la portería, alguien la cubre; anclas repartidas si no se recolocó.
+      if (!equipo.jugadores.some((x) => x.enCampo && x.casillaId === 'POR')) cubrirPorteria(ctx, equipo);
+      if (!recolocados.has(inc.lado)) repartirAnclas(equipo);
+      comprobarInferioridad(ctx, inc.lado);
+      continue;
+    }
+    inc.estado = 'resuelta_automatica';
+    if (inc.motivo === 'lesion') {
+      const suplente = sustitucionesDisponibles(ctx, equipo) > 0 ? mejorSuplente(equipo, j.jugador.demarcacion) : undefined;
+      if (suplente) {
+        sustituirLesionado(ctx, equipo, inc, suplente, true);
+        continue;
+      }
+    }
+    if (inc.casillaId === 'POR') cubrirPorteria(ctx, equipo);
+    repartirAnclas(equipo);
+    comprobarInferioridad(ctx, inc.lado);
+  }
 }
 
 /** El jugador desaparece de la capa espacial. */
@@ -75,18 +145,13 @@ function quitarDelCampo(ctx: Contexto, j: JugadorEnPartido): void {
   delete ctx.estado.espacio.destinos[j.id];
 }
 
-/** Expulsión: el jugador se va sin sustituto. Si era el portero, alguien tiene que cubrir la portería. */
+/**
+ * Expulsión: el jugador se va sin sustituto y queda una incidencia. Al resolverla, si era el portero, alguien tiene
+ * que cubrir la portería.
+ */
 export function expulsar(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido): void {
-  const eraPortero = esPortero(j);
   j.expulsado = true;
-  j.enCampo = false;
-  j.retirado = true;
-  j.casillaId = null;
-  quitarDelCampo(ctx, j);
-  if (ctx.estado.balon.portadorId === j.id) ctx.estado.balon.portadorId = 0;
-  if (eraPortero) cubrirPorteria(ctx, equipo);
-  repartirAnclas(equipo);
-  comprobarInferioridad(ctx, equipo.lado);
+  anotarIncidencia(ctx, equipo, j, 'expulsion');
 }
 
 /**

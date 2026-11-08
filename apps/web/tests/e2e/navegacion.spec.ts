@@ -117,3 +117,28 @@ test('«Abandonar» en la barra: en cualquier momento de la partida, un NPC ocup
   expect(mias.enCurso.map((p) => p.id)).not.toContain(id);
   expect(mias.terminadas.find((p) => p.id === id)?.fase).toBe('abandonada');
 });
+
+/** Spec 012 (US7, FR-031): los botones de sesión son botones con presencia y se ven sin desplazarse. */
+test('botones de sesión visibles sin desplazarse, en escritorio y en móvil', async ({ page }) => {
+  for (const ancho of [1440, 390]) {
+    await page.setViewportSize({ width: ancho, height: ancho > 1000 ? 900 : 844 });
+    await page.context().clearCookies();
+    await page.goto('/');
+    const iniciar = page.getByRole('button', { name: 'Iniciar sesión' });
+    await expect(iniciar).toHaveClass(/secundario/);
+    await expect(iniciar).toBeInViewport({ ratio: 1 });
+    await iniciar.click();
+    const cambiar = page.getByRole('button', { name: 'Crear una cuenta' });
+    await expect(cambiar).toHaveClass(/secundario/);
+    await cambiar.click();
+    const yaTengo = page.getByRole('button', { name: 'Ya tengo cuenta' });
+    await expect(yaTengo).toHaveClass(/secundario/);
+    await expect(yaTengo).toBeInViewport({ ratio: 1 });
+
+    await registrar(page);
+    await page.goto('/');
+    const cerrar = page.getByRole('button', { name: 'Cerrar sesión' });
+    await expect(cerrar).toHaveClass(/secundario/);
+    await expect(cerrar).toBeInViewport({ ratio: 1 });
+  }
+});

@@ -1,3 +1,4 @@
+import { reproducir } from '../sonido/sonido';
 import { useId, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 
@@ -34,8 +35,10 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const ejecutar = async (a: AccionBarra) => {
+  const ejecutar = async (a: AccionBarra, esPrincipal: boolean) => {
     if (a.motivoDesactivado || ocupado || !a.onClick) return;
+    // Clic suave del botón principal (spec 012, FR-006); los secundarios no suenan.
+    if (esPrincipal) reproducir('clicPrincipal');
     setOcupado(a.etiqueta);
     setError(null);
     try {
@@ -58,13 +61,13 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
     };
     if (a.a && !a.motivoDesactivado) {
       return (
-        <Link key={a.etiqueta} to={a.a} {...comunes} className={`boton ${comunes.className}`}>
+        <Link key={a.etiqueta} to={a.a} {...comunes} className={`boton ${comunes.className}`} onClick={() => esPrincipal && reproducir('clicPrincipal')}>
           {a.etiqueta}
         </Link>
       );
     }
     return (
-      <button key={a.etiqueta} type="button" {...comunes} onClick={() => void ejecutar(a)}>
+      <button key={a.etiqueta} type="button" {...comunes} onClick={() => void ejecutar(a, esPrincipal)}>
         {a.etiqueta}
       </button>
     );

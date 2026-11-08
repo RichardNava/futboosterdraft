@@ -58,9 +58,29 @@ export const vistaTorneo = async (page: Page, id: string) => (await (await page.
 
 /** Alineación saboteada (un delantero en la portería y el portero en su sitio) para perder casi seguro. */
 export async function sabotear(page: Page, id: string) {
-  const { alineacion, plantilla } = (await (await page.request.get(`/api/partidas/${id}/alineacion`)).json()) as {
-    alineacion: { titulares: { casillaId: string; jugadorId: number }[] } & Record<string, unknown>;
+  const vista = (await (await page.request.get(`/api/partidas/${id}/alineacion`)).json()) as {
+    alineacion: { titulares: { casillaId: string; jugadorId: number }[]; suplentes: number[]; lanzadores: { penaltis: number; faltas: number; corners: number; tanda: number[] } } & Record<string, unknown>;
     plantilla: { id: number; demarcacion: string }[];
+    bajas: number[];
+  };
+  const { plantilla } = vista;
+  // Spec 012 (FR-029): con convocados de baja no se puede jugar; se sustituyen como haría la persona.
+  const bajas = new Set(vista.bajas);
+  const usados = new Set(vista.alineacion.titulares.map((t) => t.jugadorId));
+  const relevo = new Map<number, number>();
+  for (const t of vista.alineacion.titulares) {
+    const libre = bajas.has(t.jugadorId) ? plantilla.find((j) => !usados.has(j.id) && !bajas.has(j.id)) : undefined;
+    if (!libre) continue;
+    usados.add(libre.id);
+    relevo.set(t.jugadorId, libre.id);
+  }
+  const cambiar = (jid: number) => relevo.get(jid) ?? jid;
+  const l = vista.alineacion.lanzadores;
+  const alineacion = {
+    ...vista.alineacion,
+    titulares: vista.alineacion.titulares.map((t) => ({ ...t, jugadorId: cambiar(t.jugadorId) })),
+    suplentes: vista.alineacion.suplentes.filter((s) => !bajas.has(s) && ![...relevo.values()].includes(s)),
+    lanzadores: { penaltis: cambiar(l.penaltis), faltas: cambiar(l.faltas), corners: cambiar(l.corners), tanda: l.tanda.map(cambiar) },
   };
   const dem = (jid: number) => plantilla.find((j) => j.id === jid)?.demarcacion;
   const portero = alineacion.titulares.find((t) => t.casillaId === 'POR')!;
@@ -79,7 +99,10 @@ export async function jugarHastaCaer(page: Page, id: string): Promise<VistaTorne
     if (mio) {
       await sabotear(page, id);
       await page.request.post(`/api/partidos/${mio.partidoId}/abrir`);
-    } else if (!abierta) await page.request.post(`/api/partidas/${id}/siguiente-jornada`);
+    } else if (!abierta) {
+      await sabotear(page, id);
+      await page.request.post(`/api/partidas/${id}/siguiente-jornada`);
+    }
     await page.request.post('/api/dev/reloj/avanzar', { data: { ms: 130_000 } });
     await page.waitForTimeout(150);
   }
@@ -93,4 +116,19 @@ export async function registrar(page: Page): Promise<void> {
     data: { email: `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@pruebas.test`, password: 'contraseña-segura', apodo: 'Coleccionista' },
   });
   expect(r.status()).toBe(200);
+}
+
+/**
+ * Spec 012 (FR-029): si la alineación confirmada tiene convocados de baja, los sustituye (como haría la persona en
+ * Formación) para que el botón de avanzar no quede bloqueado. Sin bajas no hace nada.
+ */
+export async function sustituirBajas(page: Page, id: string): Promise<boolean> {
+  const r = await page.request.get(`/api/partidas/${id}/alineacion`);
+  if (!r.ok()) return false;
+  const vista = (await r.json()) as { bajasPendientes?: unknown[]; sinSuplentes?: boolean };
+  if (!vista.bajasPendientes?.length || vista.sinSuplentes) return false;
+  // `sabotear` ya cubre las bajas; aplicado dos veces deja el portero y el delantero en su sitio.
+  await sabotear(page, id);
+  await sabotear(page, id);
+  return true;
 }

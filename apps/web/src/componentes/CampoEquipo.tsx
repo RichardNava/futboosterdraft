@@ -258,7 +258,7 @@ export function CampoEquipo(props: Props) {
       <VistaCarta key={jugadorId} jugador={j} arrastrando={arrastrando} dorsal={dorsales?.[jugadorId]}>
         <button
           type="button"
-          className={`ficha-equipo ${sel ? 'seleccionada' : ''} ${moviendo ? 'arrastrando' : ''} ${penal > 0 ? 'fuera' : ''}`}
+          className={`ficha-equipo ${sel ? 'seleccionada' : ''} ${moviendo ? 'arrastrando' : ''} ${penal > 0 ? 'fuera' : ''} ${bloqueados?.has(jugadorId) ? 'de-baja' : ''}`}
           style={sitio(x, y)}
           data-jugador={jugadorId}
           data-casilla={casillaId}

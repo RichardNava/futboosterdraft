@@ -59,6 +59,8 @@ export function estadoEquipoEnPartido(
   tickActual: number,
   decisiones: readonly DecisionAplicada[] = [],
   prorroga = false,
+  /** Lesionados de una parada de «control total» (spec 012): siguen en su casilla para poder sustituirlos ahí. */
+  enSuCasilla: ReadonlySet<number> = new Set(),
 ): EstadoEquipo {
   const asignacion: Record<string, number | undefined> = Object.fromEntries(alineacion.titulares.map((t) => [t.casillaId, t.jugador.id]));
   const puntos: Record<number, { x: number; y: number }> = Object.fromEntries(
@@ -119,7 +121,7 @@ export function estadoEquipoEnPartido(
         } else if (e.tipo === 'lesion') {
           const autor = id('autor')!;
           estado.lesionados.add(autor);
-          quitarDelCampo(autor);
+          if (!enSuCasilla.has(autor)) quitarDelCampo(autor);
         } else if (e.tipo === 'amarilla') {
           const autor = id('autor')!;
           estado.amarillas.set(autor, (estado.amarillas.get(autor) ?? 0) + 1);

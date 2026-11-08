@@ -14,10 +14,12 @@ import {
   desdeV1,
   escudoAsignado,
   escudoNpc,
+  MODO_INCIDENCIAS_POR_DEFECTO,
   nombrePorDefecto,
   normalizarNombre,
   validarNombre,
   type Equipaciones,
+  type ModoIncidencias,
 } from '@fbd/domain';
 import { errores } from '../http/errores';
 import type { ContextoComando } from './actor';
@@ -29,6 +31,9 @@ export interface IdentidadInicial {
   equipaciones: Equipaciones | null;
   /** Escudo elegido en el perfil, si sigue disponible; null = asignado al leerlo. */
   escudo: string | null;
+  /** Celebración de gol del perfil, si sigue disponible (null = la del juego) y modo de incidencias (spec 012). */
+  celebracion: string | null;
+  modoIncidencias: ModoIncidencias;
   /** El nombre del perfil estaba ocupado y se le ha dado otro. */
   ajustado: boolean;
 }
@@ -42,12 +47,17 @@ export async function identidadInicial(
   const registrado = usuario.tipo !== 'invitado';
   const perfil = registrado ? await servicios.repoPerfiles.obtener(usuario.id) : null;
   const equipaciones = desdeV1(perfil?.equipaciones ?? null);
-  const elegido = registrado ? (await servicios.repoPerfiles.obtenerAspecto(usuario.id)).escudo : null;
+  const aspecto = registrado ? await servicios.repoPerfiles.obtenerAspecto(usuario.id) : null;
   const quien = { id: usuario.id, tipo: 'registrado' as const };
-  const escudo = elegido && (await servicios.cosmeticos.estaDisponible(quien, elegido, 'escudo')) ? elegido : null;
+  const disponible = async (id: string | null | undefined, tipo: 'escudo' | 'celebracion') =>
+    id && (await servicios.cosmeticos.estaDisponible(quien, id, tipo)) ? id : null;
+  const escudo = await disponible(aspecto?.escudo, 'escudo');
+  const celebracion = await disponible(aspecto?.celebracion, 'celebracion');
+  const modoIncidencias = aspecto?.modoIncidencias ?? MODO_INCIDENCIAS_POR_DEFECTO;
+  const comun = { equipaciones, escudo, celebracion, modoIncidencias };
   const propio = perfil?.nombreEquipo ? normalizarNombre(perfil.nombreEquipo) : null;
-  if (propio && validarNombre(propio, usados).length === 0) return { nombre: propio, equipaciones, escudo, ajustado: false };
-  return { nombre: nombrePorDefecto(usuario.apodo, usados), equipaciones, escudo, ajustado: propio !== null };
+  if (propio && validarNombre(propio, usados).length === 0) return { nombre: propio, ...comun, ajustado: false };
+  return { nombre: nombrePorDefecto(usuario.apodo, usados), ...comun, ajustado: propio !== null };
 }
 
 /** ¿Es el participante un invitado? Un invitado solo juega solo y es el anfitrión (FR-000). */

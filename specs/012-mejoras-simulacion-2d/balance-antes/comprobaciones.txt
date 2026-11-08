@@ -1,0 +1,47 @@
+✔ 003/SC-001     Serie sintética: media de 2,6–3,4 goles, hay 0-0 y partidos de ≥ 6 goles, ningún resultado > 20 %
+✔ 003/SC-002     Goles desde fuera del área: entre el 22 % y el 28 %, la mayoría a ≤ 25 m y ≤ 0,5 % desde el propio campo
+✔ 003/SC-003     Variedad de goles: penaltis 6–12 %, cabeza 10–18 %, falta directa 5–10 % y propia puerta 1–3 %
+✔ 003/SC-004     Pases largos: ≤ 15 % de los pases y ≤ 0,5 largos hacia atrás por equipo y partido
+✔ 003/SC-005     Juego combinado: ≥ 22.0 conducciones por equipo y partido (+30 % sobre 16.9) y ≥ 60 % de pases de menos de 20 m
+✔ 003/SC-006     Stats en la elección: +15 de regate, tiro y defensa dan ≥ 25 %, ≥ 25 % y ≥ 20 % más de su acción; +15 de pase, ≥ 15 % más pases que rompen líneas; +15 de físico y velocidad, ≥ 15 % más duelos ganados y conducciones largas; cuota ≤ 60 %
+✔ 003/SC-007     Virtudes con efecto: Lanzador de faltas ≥ 30 % más goles de falta directa; el resto, diferencia significativa en su acción
+✔ 003/SC-023     Extremos y mediapuntas (ED, EI, MCO) marcan entre el 25 % y el 50 % de los goles en 3-4-3, 4-2-3-1 y 4-3-3
+✔ SC-004         +5 de media: el mejor gana ≥ 60 % y el peor ≥ 10 %
+✔ SC-006a        Formación: goles a favor y en contra crecen con la ofensividad (3-4-3 > 4-4-2 > 5-4-1)
+✔ SC-006b        Presión alta: más recuperaciones en campo rival y más cansancio que Bloque medio
+✔ SC-006c        Catenaccio: menos posesión en campo rival y menos goles en contra que Bloque medio
+✔ SC-006d        Línea adelantada: más fueras de juego provocados
+✔ SC-006e        Contraataque: menos posesión; Juego combinativo: más
+✔ SC-007         Entre equipos equilibrados: 2,0–3,5 goles por partido y < 2 % con 8 o más
+✔ SC-015         Robusto reduce las lesiones un 30 % o más
+✔ 002/SC-007a    Partido 2D entre equipos equilibrados: ≥ 150 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques
+✔ 002/SC-007b    Al menos el 30 % de las posesiones con 3 o más pases seguidos
+✔ 002/SC-008     +10 de pase en los centrocampistas titulares: ≥ 10 % más pases completados
+✔ SC-011         Naturales frente a 3 titulares con −40 %: ganan ≥ 60 %
+✔ SC-011b        Naturales frente a 3 titulares con −10 %: diferencia de goles media > 0
+✔ 002/SC-018     Colocación con un delantero más y un defensa menos: marca y recibe más goles que la formación de partida
+✔ 005/SC-004/Agresivo Agresivo (rojas directas por falta): magnitud medida dentro de ±20 % del objetivo (2)
+✔ 005/SC-004/Impulsivo Impulsivo (amarillas por falta): magnitud medida dentro de ±20 % del objetivo (2)
+✔ 005/SC-004/Canchero Canchero (faltas cometidas): magnitud medida dentro de ±20 % del objetivo (1.5)
+✔ 005/SC-004/Fragil Frágil (lesiones por minuto en el campo): magnitud medida dentro de ±20 % del objetivo (3)
+✔ 005/SC-004/DeCristal De cristal (proporción de lesiones largas): magnitud medida dentro de ±20 % del objetivo (1)
+✔ 005/SC-004/Torpe Torpe (autogoles): magnitud medida dentro de ±20 % del objetivo (2)
+✔ 005/SC-004/Fatigado Fatigado (minuto en que empieza a cansarse): magnitud medida dentro de ±20 % del objetivo (46)
+✔ 005/SC-004/Indisciplinado Indisciplinado (cansancio acumulado frente a un compañero): magnitud medida dentro de ±20 % del objetivo (1.5)
+✔ 005/SC-004/Polemico Polémico (bajada de la media del equipo yendo por detrás): magnitud medida dentro de ±20 % del objetivo (0.05)
+✔ 005/SC-004/Rebelde Rebelde (bajada de la media del equipo desde el banquillo): magnitud medida dentro de ±20 % del objetivo (0.05)
+✔ 005/SC-004/Estrellita Estrellita (bajada de su media sin ser el mejor): magnitud medida dentro de ±20 % del objetivo (0.1)
+✔ 005/SC-004/Provocador Provocador (puntos que gana un GOAT rival): magnitud medida dentro de ±20 % del objetivo (1)
+✔ 005/SC-004/Chupon Chupón (peso de los pases frente al resto de acciones): magnitud medida dentro de ±20 % del objetivo (0.5)
+✔ 005/SC-004/MalDefensor Mal defensor (intercepciones y entradas ganadas): magnitud medida dentro de ±20 % del objetivo (0.5)
+✔ 005/SC-004/Inflexible Inflexible (puntos de penalización fuera de posición): magnitud medida dentro de ±20 % del objetivo (5)
+✔ 005/SC-005     De acero: 0 lesiones; Fair player: 0 rojas; De cristal: 100 % de lesiones largas
+✔ 005/SC-004/Versatil Versátil (puntos de penalización fuera de posición): magnitud medida dentro de ±20 % del objetivo (5)
+✔ 005/SC-004/Revulsivo Revulsivo (subida de sus stats al entrar desde el banquillo): magnitud medida dentro de ±20 % del objetivo (0.05)
+✔ 005/SC-011     Serie sintética, parámetros 6.1.0: amarillas 4, rojas 0,20, penaltis 0,35 y lesiones 0,35 por partido (±20 %); actual 3.0.0 / medido / objetivo
+✔ 005/FR-051     Virtudes: ningún rasgo con un efecto claramente mayor que otro (> 4 errores estándar en la diferencia de goles) tiene menos impacto
+✔ 005/FR-051b    Defectos: ningún rasgo con un efecto claramente mayor que otro (> 4 errores estándar en la diferencia de goles) tiene menos impacto
+✔ 005/SC-013     Los stats mandan: +5 de media en el equipo pesa más en la diferencia de goles que cualquier virtud sola
+✔ colecciones/SC-003 Mesas de 8 sobre colecciones activas al azar que cumplen el mínimo: ninguna carta fuera del pool y todos los sobres con sus cupos
+✔ colecciones/SC-005 Sobres de la tienda sobre colecciones poseídas al azar: sin repetidas, sin cartas ya poseídas y con el reparto de niveles del draft
+✔ 003/SC-009     Sin regresiones: 001/SC-004 (+5 de media gana ≥ 60 %) y los SC de la 002 siguen cumpliéndose con el motor 3.0.0

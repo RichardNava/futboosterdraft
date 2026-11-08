@@ -148,7 +148,10 @@ export function Draft() {
       });
       // Si el turno ya avanzó (fuimos los últimos en elegir), el ack llega después del sobre nuevo.
       if (turnoActual.current !== clave) return;
-      if (ack.ok) setConfirmada(jugadorId);
+      if (ack.ok) {
+        setConfirmada(jugadorId);
+        reproducir('confirmarEleccion');
+      }
       else setError(ack.error?.mensaje ?? 'No se pudo elegir');
     } catch (e) {
       setError((e as Error).message);
@@ -183,6 +186,19 @@ export function Draft() {
     if (duracion.current.clave !== claveTurno) duracion.current = { clave: claveTurno, segundos: restante };
     else duracion.current.segundos = Math.max(duracion.current.segundos, restante);
   }
+
+  // Latido de los últimos 5 s sin elegir (spec 012, FR-005): suena una vez por turno y se corta al confirmar, al
+  // cambiar de turno o al salir de la pantalla. El fichero ya lleva la aceleración y el crescendo.
+  const latido = useRef<{ clave: string; parar: () => void } | null>(null);
+  const tocaLatido = restante !== null && restante > 0 && restante <= 5 && confirmada === null && !terminado;
+  useEffect(() => {
+    if (latido.current && (latido.current.clave !== claveTurno || confirmada !== null)) {
+      latido.current.parar();
+      latido.current = null;
+    }
+    if (tocaLatido && latido.current === null) latido.current = { clave: claveTurno, parar: reproducir('latido') };
+  }, [tocaLatido, claveTurno, confirmada]);
+  useEffect(() => () => latido.current?.parar(), []);
 
   if (terminado) {
     return (

@@ -37,7 +37,11 @@ export function resolverResto(
 ): ResultadoResolverResto {
   const tramos: Omit<ResultadoTramo, 'estado'>[] = [];
   const eventos: EventoPartido[] = [];
-  let actual = estado;
+  // Sin nadie a quien preguntar, las lesiones y expulsiones se resuelven en automático (spec 012): sin «control total».
+  let actual: EstadoMotor = {
+    ...estado,
+    equipos: { local: { ...estado.equipos.local, controlTotal: false }, visitante: { ...estado.equipos.visitante, controlTotal: false } },
+  };
   for (let i = 0; i < MAX_TRAMOS && actual.fase !== 'finalizado'; i++) {
     const resultado = avanzar(actual, actual.puntoDecision ? 'parte' : 'interrupcion');
     const { estado: siguiente, ...tramo } = resultado;

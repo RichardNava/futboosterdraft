@@ -1,7 +1,7 @@
 /**
  * Repositorio de partidas y participantes.
  */
-import { plazasHumanasEfectivas, VERSION_CATALOGO_ACTUAL, type ConfigDuelos, type ConfigPartida, type Equipaciones, type Identidad, type EstadoPartida, type ModoSimulacion, type NivelNPC } from '@fbd/domain';
+import { plazasHumanasEfectivas, VERSION_CATALOGO_ACTUAL, type ConfigDuelos, type ConfigPartida, type Equipaciones, type Identidad, type EstadoPartida, type ModoSimulacion, type ModoIncidencias, type NivelNPC } from '@fbd/domain';
 import { errores } from '../../http/errores';
 import { and, asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import type { BaseDatos } from '../db';
@@ -97,13 +97,19 @@ export class RepoPartidas {
     nombreEquipo: string,
     ejecutor: Ejecutor = this.db,
     equipaciones: Equipaciones | null = null,
-    escudo: string | null = null,
+    aspecto: { escudo?: string | null; celebracion?: string | null; modoIncidencias?: ModoIncidencias } = {},
   ): Promise<FilaParticipante> {
+    const { escudo = null, celebracion = null, modoIncidencias = 'automatico' } = aspecto;
     const [fila] = await ejecutor
       .insert(participantes)
-      .values({ partidaId, tipo: 'humano', usuarioId, nombreEquipo, equipaciones, escudo })
+      .values({ partidaId, tipo: 'humano', usuarioId, nombreEquipo, equipaciones, escudo, celebracion, modoIncidencias })
       .returning();
     return fila!;
+  }
+
+  /** Modo de incidencias del participante (spec 012, FR-020). */
+  async cambiarModoIncidencias(participanteId: string, modo: ModoIncidencias, ejecutor: Ejecutor = this.db): Promise<void> {
+    await ejecutor.update(participantes).set({ modoIncidencias: modo }).where(eq(participantes.id, participanteId));
   }
 
   /** Escudo de esta partida (spec 011, data-model §5); null = el del perfil, el asignado o el círculo. */

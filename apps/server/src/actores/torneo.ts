@@ -47,6 +47,7 @@ import type { ControladorPartida } from './partida';
 import { entreHumanos, resolverPartidoEntreHumanos, terminarPartidoEntreHumanosEnJuego } from './partidoEntreHumanos';
 import { esHumano, forzarFinal, iniciarPartido, nivelNPCDe, sinHumanos, type PartidoEnCurso } from './partidoRapido';
 import { cartasDelCruce, resolverCrucesDuelos } from './duelos';
+import { exigirSinBajasPendientes } from './equipo';
 import { crearPartidosJornada, emitirPreparacion, resolverPartidosSinHumanos } from './preparacion';
 import type { ResultadoCruce } from '@fbd/domain';
 
@@ -78,6 +79,17 @@ export function engancharTorneo(c: ControladorPartida, deps: DependenciasTorneo)
   c.alAsignarDorsales = async (pid, asignados) => {
     const texto = `Nuevos dorsales en tu equipo: ${asignados.map((a) => `${c.catalogo.resumen(a.jugadorId).apellidos.split(' ')[0]} lleva el ${a.dorsal}`).join(', ')}.`;
     await avisarHumanos(c, deps, [pid], 'dorsal_asignado', texto);
+  };
+  c.alSustituirBajas = async (pid, cambios) => {
+    const apellido = (id: number) => c.catalogo.resumen(id).apellidos.split(' ')[0];
+    const texto = cambios
+      .map(
+        (x) =>
+          `${apellido(x.sale)} (${x.motivo === 'lesion' ? 'lesionado' : 'sancionado'}) no jugaba: ` +
+          (x.entra === null ? 'no había nadie para sustituirlo.' : `entró ${apellido(x.entra)} en su lugar.`),
+      )
+      .join(' ');
+    await avisarHumanos(c, deps, [pid], 'baja_sustituida', texto);
   };
   c.programarPrimeraJornada ??= (ctx) => iniciarTorneo(c, ctx, deps);
   c.resolverDuelos = (ctx, opciones) => resolverDuelos(c, ctx, deps, opciones);
@@ -317,6 +329,8 @@ export async function siguienteJornada(c: ControladorPartida, ctx: ContextoComan
   const j = jornadaActual(t);
   if (!j) return { error: 'TORNEO_TERMINADO' };
   if (j.estado === 'abierta') return { error: 'JORNADA_ABIERTA' };
+  // Spec 012 (FR-029): con una baja pendiente evitable, no se avanza (lanza 409 BAJA_PENDIENTE).
+  for (const h of c.humanos()) if (!h.controladoPorNPC) await exigirSinBajasPendientes(c, h.id);
   await abrirSiguienteJornada(c, ctx, deps);
   return { ok: true };
 }
@@ -344,7 +358,7 @@ export function anotarResultado(c: ControladorPartida, t: EstadoTorneo, p: Parti
   const indice = c.jornada.cruces.findIndex((x) => x.partidoId === p.fila.id);
   if (indice < 0) return null;
   const marcador = p.ultimo?.marcador ?? p.motor.marcador;
-  return registrarResultado(t, {
+  const r = registrarResultado(t, {
     jornada: c.jornada.numero,
     indice,
     local: p.fila.localId,
@@ -356,6 +370,15 @@ export function anotarResultado(c: ControladorPartida, t: EstadoTorneo, p: Parti
     eventos: p.eventos as EventoPartido[],
     ...titularesIniciales(p),
   });
+  // Spec 012 (FR-027): bajas de los dos equipos que se han cumplido con este partido.
+  for (const pid of [p.fila.localId, p.fila.visitanteId]) {
+    const siguen = new Set(r.torneo.bajas.bajas.filter((b) => b.participanteId === pid).map((b) => b.jugadorId));
+    c.disponiblesRecientes.set(
+      pid,
+      t.bajas.bajas.filter((b) => b.participanteId === pid && b.partidosRestantes === 1 && !siguen.has(b.jugadorId)).map((b) => b.jugadorId),
+    );
+  }
+  return r;
 }
 
 /** Tras anunciar el final de un partido: actualización, cierre de jornada y lo que venga después. */

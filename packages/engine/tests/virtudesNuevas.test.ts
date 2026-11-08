@@ -5,6 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { amarilla, falta } from '../src/acciones/balonParado';
 import { comprobarLesion } from '../src/acciones/lesiones';
+import { resolverIncidencias } from '../src/acciones/plantel';
 import { multiplicadorIndividual } from '../src/modificadores/defectos';
 import { aplicarDecision, avanzar, crearPartido } from '../src/index';
 import { contextoDe, entrada, ponerRasgos, situar, titularEn } from './ayudas';
@@ -88,7 +89,10 @@ describe('Revulsivo', () => {
     const e = partido4('revulsivo-lesion', q);
     const eq = e.equipos.local;
     for (const j of eq.jugadores) if (!j.enCampo) ponerRasgos(j, { virtudes: ['Revulsivo'] });
-    comprobarLesion(contextoDe(e), eq, titularEn(e, 'local', 'DC'));
+    const ctx = contextoDe(e);
+    comprobarLesion(ctx, eq, titularEn(e, 'local', 'DC'));
+    // El cambio por el lesionado llega al terminar el paso (spec 012).
+    resolverIncidencias(ctx);
     const entro = eq.jugadores.find((j) => j.enCampo && j.entroDesdeBanquillo)!;
     expect(entro).toBeDefined();
     expect(multiplicadorIndividual(e, eq, entro)).toBeCloseTo(1 + P4.virtudes.revulsivo!);

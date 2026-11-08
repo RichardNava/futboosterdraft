@@ -2,7 +2,10 @@ import { nombreCartaDe } from '../componentes/CartaJugador';
 import { useEffect, useMemo, useState } from 'react';
 import { coloresDe } from '../componentes/colores';
 import { chapasDelPartido, equipoMarcador } from '../componentes/chapa';
-import type { Equipacion } from '@fbd/domain';
+import type { Equipacion, ModoIncidencias } from '@fbd/domain';
+import type { CelebracionElegida } from '../componentes/celebraciones/tipos';
+import { SelectorModoIncidencias } from '../componentes/SelectorModoIncidencias';
+import { textoParada, type IncidenciaVista } from '../componentes/textoParada';
 import { useParams } from 'react-router';
 import { api } from '../api/cliente';
 import { AvisoDorsales } from '../componentes/AvisoDorsales';
@@ -36,6 +39,10 @@ export interface Inicio {
   dorsalesAsignados?: { jugadorId: number; dorsal: number }[];
   /** Se puede gestionar el equipo: solo contra un NPC (spec 003, FR-027, FR-031). */
   gestionDisponible?: boolean;
+  /** Celebración de gol de cada equipo (spec 012, FR-012). */
+  celebraciones?: Record<'local' | 'visitante', CelebracionElegida>;
+  /** Modo de incidencias del espectador, solo con `gestionDisponible` (spec 012, FR-020). */
+  modoIncidencias?: ModoIncidencias;
 }
 
 export type Marcador = { local: number; visitante: number; penaltis?: { local: number; visitante: number } };
@@ -75,7 +82,8 @@ export function PartidoRapido() {
   const [marcador, setMarcador] = useState<Marcador>({ local: 0, visitante: 0 });
   const [estadisticas, setEstadisticas] = useState<unknown>(null);
   const [fase, setFase] = useState('primera_parte');
-  const [pausa, setPausa] = useState<{ motivo: string; venceEn: string } | null>(null);
+  const [pausa, setPausa] = useState<{ motivo: string; venceEn: string; incidencias?: IncidenciaVista[]; sustitucionesRestantes?: number } | null>(null);
+  const [modo, setModo] = useState<ModoIncidencias | null>(null);
   const [miId, setMiId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [gestion, setGestion] = useState(false);
@@ -96,7 +104,11 @@ export function PartidoRapido() {
         setPausa(null);
         break;
       case 'partido.pausa_decision':
-        setPausa({ motivo: m.motivo as string, venceEn: m.venceEn as string });
+        setPausa({
+          motivo: m.motivo as string,
+          venceEn: m.venceEn as string,
+          ...(m.incidencias ? { incidencias: m.incidencias as IncidenciaVista[], sustitucionesRestantes: (m.sustitucionesRestantes as number | undefined) ?? 0 } : {}),
+        });
         break;
       case 'partido.decision_aplicada':
         if (m.participanteId === miId) setAplicadas((a) => [...a, { aplicadaEnTick: m.aplicadaEnTick as number, tipo: m.tipo as string, datos: m.datos as Record<string, unknown> }]);
@@ -189,12 +201,16 @@ export function PartidoRapido() {
   const accionSeguir: AccionBarra = { etiqueta: 'Seguir', onClick: seguir };
   const accionFinalizar: AccionBarra = { etiqueta: 'Finalizar partido', onClick: finalizar };
   const enPausa = pausa !== null && miLado !== null;
-  const principal = enPausa ? accionSeguir : miLado ? accionFinalizar : null;
-  const principalIzquierda = enPausa && gestionDisponible ? abrirGestion : null;
-  const secundarios = enPausa ? [accionFinalizar] : [];
+  // Parada de «control total» (spec 012, FR-022): el resumen llega hasta el lance; «Gestionar equipo» es lo principal.
+  const incidencia = enPausa && pausa.motivo === 'incidencia' && gestionDisponible;
+  const avisoParada = incidencia && pausa.incidencias ? textoParada(pausa.incidencias, nombre, pausa.sustitucionesRestantes ?? 0) : null;
+  const principal = incidencia ? abrirGestion : enPausa ? accionSeguir : miLado ? accionFinalizar : null;
+  const principalIzquierda = !incidencia && enPausa && gestionDisponible ? abrirGestion : null;
+  const secundarios = incidencia ? [accionSeguir, accionFinalizar] : enPausa ? [accionFinalizar] : [];
 
   if (gestion && miLado) {
-    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], eventos, miLado, Number.POSITIVE_INFINITY, aplicadas, fase === 'pre_prorroga' || fase === 'prorroga');
+    const lesionadosParada = new Set(incidencia ? (pausa.incidencias ?? []).filter((i) => i.motivo === 'lesion').map((i) => i.jugadorId) : []);
+    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], eventos, miLado, Number.POSITIVE_INFINITY, aplicadas, fase === 'pre_prorroga' || fase === 'prorroga', lesionadosParada);
     const jugadores = new Map([...inicio.alineaciones[miLado].titulares.map((t) => t.jugador), ...inicio.alineaciones[miLado].suplentes].map((j) => [j.id, j]));
     return (
       <GestionEquipo
@@ -204,6 +220,7 @@ export function PartidoRapido() {
         colores={coloresDe(inicio.equipaciones[miLado])}
         enviar={enviarLote}
         onCerrar={() => setGestion(false)}
+        aviso={avisoParada}
       />
     );
   }
@@ -219,6 +236,21 @@ export function PartidoRapido() {
       />
 
       <AvisoDorsales inicio={inicio} miId={miId} />
+
+      {avisoParada && (
+        <p className="aviso-parada" role="status">
+          {avisoParada}
+        </p>
+      )}
+      {gestionDisponible && (
+        <SelectorModoIncidencias
+          modo={modo ?? inicio.modoIncidencias ?? 'automatico'}
+          onCambio={(m) => {
+            setModo(m);
+            void conexion?.enviar({ t: 'partido.modo_incidencias', partidoId: inicio.partidoId, modo: m }).catch(() => undefined);
+          }}
+        />
+      )}
 
       {error && (
         <p className="error" role="alert">
@@ -247,7 +279,7 @@ export function PartidoRapido() {
         principal={principal}
         principalIzquierda={principalIzquierda}
         secundarios={secundarios}
-        estado={enPausa ? `${ETIQUETA_FASE[fase] ?? 'Pausa'}: el partido se reanuda en ${restante ?? '–'} s si no pulsas «Seguir».` : undefined}
+        estado={enPausa ? `${incidencia ? 'Partido detenido' : (ETIQUETA_FASE[fase] ?? 'Pausa')}: el partido se reanuda en ${restante ?? '–'} s si no pulsas «Seguir».` : undefined}
       />
     </main>
   );

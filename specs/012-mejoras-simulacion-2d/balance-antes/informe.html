@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informe de equilibrado</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px; color: #1c1c1c; background: #fafafa; }
+  h1 { font-size: 1.4rem; margin: 0 0 8px; }
+  .cabecera { color: #555; margin-bottom: 16px; }
+  .resumen { font-weight: 600; margin-bottom: 16px; }
+  table { border-collapse: collapse; width: 100%; background: #fff; }
+  th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: left; vertical-align: top; font-size: 0.95rem; }
+  th { background: #eee; }
+  tr.ko td { background: #fdecec; }
+  td:last-child { text-align: center; font-size: 1.1rem; }
+</style>
+</head>
+<body>
+<h1>Informe de equilibrado</h1>
+<div class="cabecera">Fecha: 2026-11-08T04:10:20.945Z · Semilla: 1 · Partidos por serie (n): 1000 · Serie: sintetica · Duración: 4857.6 s</div>
+<div class="resumen">47 de 47 comprobaciones superadas</div>
+<table>
+<thead><tr><th>Id</th><th>Qué se comprueba</th><th>Objetivo</th><th>Valor medido</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr class="ok" data-id="003/SC-001"><td>003/SC-001</td><td>Serie sintética</td><td>media de 2,6–3,4 goles, hay 0-0 y partidos de ≥ 6 goles, ningún resultado &gt; 20 %</td><td>2.81 goles por partido; 41 0-0 y 56 partidos de ≥ 6 goles en 1000; más frecuente 1-1 (12.0 %)</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-002"><td>003/SC-002</td><td>Goles desde fuera del área</td><td>entre el 22 % y el 28 %, la mayoría a ≤ 25 m y ≤ 0,5 % desde el propio campo</td><td>24.2 % fuera del área (de ellos 67.3 % a ≤ 25 m); 0.3 % desde el propio campo; 2808 goles</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-003"><td>003/SC-003</td><td>Variedad de goles</td><td>penaltis 6–12 %, cabeza 10–18 %, falta directa 5–10 % y propia puerta 1–3 %</td><td>penalti 8.9 % · cabeza 14.3 % · falta directa 9.4 % · propia puerta 2.1 % · jugada 65.3 %</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-004"><td>003/SC-004</td><td>Pases largos</td><td>≤ 15 % de los pases y ≤ 0,5 largos hacia atrás por equipo y partido</td><td>12.8 % de pases largos; 0.00 largos hacia atrás por equipo y partido</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-005"><td>003/SC-005</td><td>Juego combinado</td><td>≥ 22.0 conducciones por equipo y partido (+30 % sobre 16.9) y ≥ 60 % de pases de menos de 20 m</td><td>23.4 conducciones por equipo y partido; 61.4 % de pases cortos</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-006"><td>003/SC-006</td><td>Stats en la elección</td><td>+15 de regate, tiro y defensa dan ≥ 25 %, ≥ 25 % y ≥ 20 % más de su acción; +15 de pase, ≥ 15 % más pases que rompen líneas; +15 de físico y velocidad, ≥ 15 % más duelos ganados y conducciones largas; cuota ≤ 60 %</td><td>+15 regate: regates y conducciones 0.91 → 1.16 (+28 %, objetivo +25 %; cuota 4.9 %) · +15 tiro: tiros 0.07 → 0.67 (+923 %, objetivo +25 %; cuota 9.3 %) · +15 defensa: acciones defensivas 5.46 → 7.77 (+42 %, objetivo +20 %; cuota 16.7 %) · +15 pase: pases que rompen líneas 6.76 → 9.42 (+39 %, objetivo +15 %; cuota 23.7 %) · +15 físico y velocidad: duelos ganados 1.73 → 3.10 (+79 %, objetivo +15 %; cuota 15.3 %) · +15 físico y velocidad: conducciones largas 0.75 → 1.02 (+37 %, objetivo +15 %; cuota 9.2 %)</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-007"><td>003/SC-007</td><td>Virtudes con efecto</td><td>Lanzador de faltas ≥ 30 % más goles de falta directa; el resto, diferencia significativa en su acción</td><td>LanzadorFaltas: goles de falta directa 0.128 → 0.206 (+61 %) · Cabeceador: goles de cabeza del jugador 0.072 → 0.251 (+249 %) · Matador: goles del jugador 0.590 → 0.702 (+19 %) · Rematador: goles del jugador 0.590 → 0.764 (+29 %) · Llegador: goles del jugador 0.004 → 0.022 (+450 %) · Desbordante: regates intentados 0.266 → 0.332 (+25 %) · Filigranas: regates ganados 0.129 → 0.198 (+53 %)</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-023"><td>003/SC-023</td><td>Extremos y mediapuntas (ED, EI, MCO) marcan entre el 25 % y el 50 % de los goles en 3-4-3, 4-2-3-1 y 4-3-3</td><td>—</td><td>3-4-3: 35.0 % de 2120 goles · 4-2-3-1: 40.4 % de 1472 goles · 4-3-3: 42.0 % de 1677 goles</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-004"><td>SC-004</td><td>+5 de media</td><td>el mejor gana ≥ 60 % y el peor ≥ 10 %</td><td>mejor 72.5 %, empates 16.1 %, peor 11.4 %</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-006a"><td>SC-006a</td><td>Formación</td><td>goles a favor y en contra crecen con la ofensividad (3-4-3 &gt; 4-4-2 &gt; 5-4-1)</td><td>3-4-3 GF 1.84 / GC 2.38 · 4-4-2 GF 1.57 / GC 1.52 · 5-4-1 GF 1.17 / GC 0.94</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-006b"><td>SC-006b</td><td>Presión alta</td><td>más recuperaciones en campo rival y más cansancio que Bloque medio</td><td>recuperaciones en campo rival 11.5 vs 8.6; cansancio 0.189 vs 0.111</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-006c"><td>SC-006c</td><td>Catenaccio</td><td>menos posesión en campo rival y menos goles en contra que Bloque medio</td><td>posesión en campo rival 19.9 % vs 22.9 %; GC 1.17 vs 1.52</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-006d"><td>SC-006d</td><td>Línea adelantada</td><td>más fueras de juego provocados</td><td>3.18 vs 0.83 por partido</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-006e"><td>SC-006e</td><td>Contraataque</td><td>menos posesión; Juego combinativo: más</td><td>contraataque 45.9 % · equilibrado 49.9 % · combinativo 52.5 %</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-007"><td>SC-007</td><td>Entre equipos equilibrados</td><td>2,0–3,5 goles por partido y &lt; 2 % con 8 o más</td><td>2.84 goles por partido; 0.0 % con 8 o más</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-015"><td>SC-015</td><td>Robusto reduce las lesiones un 30 % o más</td><td>—</td><td>lesiones con Robusto 401, sin Robusto 726 (reducción 45 %)</td><td>✅</td></tr>
+<tr class="ok" data-id="002/SC-007a"><td>002/SC-007a</td><td>Partido 2D entre equipos equilibrados</td><td>≥ 150 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques</td><td>pases completados 165.6 · centros 9.5 · tiros 15.3 · conducciones 47.3 · paredes 52.9 · cambios de orientación 6.6 · contraataques 2.5</td><td>✅</td></tr>
+<tr class="ok" data-id="002/SC-007b"><td>002/SC-007b</td><td>Al menos el 30 % de las posesiones con 3 o más pases seguidos</td><td>—</td><td>40.3 % de 63892 posesiones</td><td>✅</td></tr>
+<tr class="ok" data-id="002/SC-008"><td>002/SC-008</td><td>+10 de pase en los centrocampistas titulares</td><td>≥ 10 % más pases completados</td><td>92.5 frente a 83.6 pases completados por partido (+10.5 %)</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-011"><td>SC-011</td><td>Naturales frente a 3 titulares con −40 %</td><td>ganan ≥ 60 %</td><td>naturales 67.7 %, empates 16.5 %, penalizados 15.8 %</td><td>✅</td></tr>
+<tr class="ok" data-id="SC-011b"><td>SC-011b</td><td>Naturales frente a 3 titulares con −10 %</td><td>diferencia de goles media &gt; 0</td><td>diferencia 0.668 goles por partido (naturales 53.4 %, penalizados 27.7 %)</td><td>✅</td></tr>
+<tr class="ok" data-id="002/SC-018"><td>002/SC-018</td><td>Colocación con un delantero más y un defensa menos</td><td>marca y recibe más goles que la formación de partida</td><td>colocación GF 2.28 / GC 2.87 · formación GF 1.81 / GC 1.62</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Agresivo"><td>005/SC-004/Agresivo</td><td>Agresivo (rojas directas por falta)</td><td>magnitud medida dentro de ±20 % del objetivo (2)</td><td>69/717 → 115/696 rojas por falta → 1.717 (objetivo 2)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Impulsivo"><td>005/SC-004/Impulsivo</td><td>Impulsivo (amarillas por falta)</td><td>magnitud medida dentro de ±20 % del objetivo (2)</td><td>por falta 0.153 → 0.302 → 1.979 (objetivo 2)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Canchero"><td>005/SC-004/Canchero</td><td>Canchero (faltas cometidas)</td><td>magnitud medida dentro de ±20 % del objetivo (1.5)</td><td>faltas 516 → 770 → 1.492 (objetivo 1.5)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Fragil"><td>005/SC-004/Fragil</td><td>Frágil (lesiones por minuto en el campo)</td><td>magnitud medida dentro de ±20 % del objetivo (3)</td><td>lesiones 18 → 57 → 3.261 (objetivo 3)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/DeCristal"><td>005/SC-004/DeCristal</td><td>De cristal (proporción de lesiones largas)</td><td>magnitud medida dentro de ±20 % del objetivo (1)</td><td>25 de 25 lesiones → 1.000 (objetivo 1)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Torpe"><td>005/SC-004/Torpe</td><td>Torpe (autogoles)</td><td>magnitud medida dentro de ±20 % del objetivo (2)</td><td>autogoles 55 → 131 → 2.382 (objetivo 2)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Fatigado"><td>005/SC-004/Fatigado</td><td>Fatigado (minuto en que empieza a cansarse)</td><td>magnitud medida dentro de ±20 % del objetivo (46)</td><td>94 partidos; inicio general 65 → 46.000 (objetivo 46)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Indisciplinado"><td>005/SC-004/Indisciplinado</td><td>Indisciplinado (cansancio acumulado frente a un compañero)</td><td>magnitud medida dentro de ±20 % del objetivo (1.5)</td><td>93 muestras al minuto 89 → 1.516 (objetivo 1.5)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Polemico"><td>005/SC-004/Polemico</td><td>Polémico (bajada de la media del equipo yendo por detrás)</td><td>magnitud medida dentro de ±20 % del objetivo (0.05)</td><td>4278 muestras → 0.050 (objetivo 0.05)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Rebelde"><td>005/SC-004/Rebelde</td><td>Rebelde (bajada de la media del equipo desde el banquillo)</td><td>magnitud medida dentro de ±20 % del objetivo (0.05)</td><td>9472 muestras → 0.050 (objetivo 0.05)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Estrellita"><td>005/SC-004/Estrellita</td><td>Estrellita (bajada de su media sin ser el mejor)</td><td>magnitud medida dentro de ±20 % del objetivo (0.1)</td><td>8964 muestras → 0.100 (objetivo 0.1)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Provocador"><td>005/SC-004/Provocador</td><td>Provocador (puntos que gana un GOAT rival)</td><td>magnitud medida dentro de ±20 % del objetivo (1)</td><td>9377 muestras → 0.985 (objetivo 1)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Chupon"><td>005/SC-004/Chupon</td><td>Chupón (peso de los pases frente al resto de acciones)</td><td>magnitud medida dentro de ±20 % del objetivo (0.5)</td><td>momios 3.64 → 1.85 → 0.508 (objetivo 0.5)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/MalDefensor"><td>005/SC-004/MalDefensor</td><td>Mal defensor (intercepciones y entradas ganadas)</td><td>magnitud medida dentro de ±20 % del objetivo (0.5)</td><td>acciones 533 → 287 → 0.538 (objetivo 0.5)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Inflexible"><td>005/SC-004/Inflexible</td><td>Inflexible (puntos de penalización fuera de posición)</td><td>magnitud medida dentro de ±20 % del objetivo (5)</td><td>penalización 20 → 25 puntos → 5.000 (objetivo 5)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-005"><td>005/SC-005</td><td>De acero</td><td>0 lesiones; Fair player: 0 rojas; De cristal: 100 % de lesiones largas</td><td>De acero 0 lesiones (sin la virtud, 53) · Fair player 0 rojas (sin la virtud, 103) · De cristal: 25 de 25 lesiones → 1.000 (objetivo 1)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Versatil"><td>005/SC-004/Versatil</td><td>Versátil (puntos de penalización fuera de posición)</td><td>magnitud medida dentro de ±20 % del objetivo (5)</td><td>penalización 20 → 15 puntos → 5.000 (objetivo 5)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-004/Revulsivo"><td>005/SC-004/Revulsivo</td><td>Revulsivo (subida de sus stats al entrar desde el banquillo)</td><td>magnitud medida dentro de ±20 % del objetivo (0.05)</td><td>2685 muestras → 0.050 (objetivo 0.05)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-011"><td>005/SC-011</td><td>Serie sintética, parámetros 6.1.0</td><td>amarillas 4, rojas 0,20, penaltis 0,35 y lesiones 0,35 por partido (±20 %); actual 3.0.0 / medido / objetivo</td><td>amarillas 0.94 / 3.63 / 4 ✅ · rojas 0.04 / 0.17 / 0.2 ✅ · penaltis 0.54 / 0.41 / 0.35 ✅ · lesiones 0.06 / 0.38 / 0.35 ✅</td><td>✅</td></tr>
+<tr class="ok" data-id="005/FR-051"><td>005/FR-051</td><td>Virtudes</td><td>ningún rasgo con un efecto claramente mayor que otro (&gt; 4 errores estándar en la diferencia de goles) tiene menos impacto</td><td>ningún par incoherente · ρ = 0.41 con 39 rasgos (referencia) · más fuera de orden: Todocampista (+0.000), RecuperadorTrasPerdida (+0.410), Llegador (-0.025), MuroDefensivo (-0.020), JugadorEntreLineas (+0.340)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/FR-051b"><td>005/FR-051b</td><td>Defectos</td><td>ningún rasgo con un efecto claramente mayor que otro (&gt; 4 errores estándar en la diferencia de goles) tiene menos impacto</td><td>ningún par incoherente · ρ = 0.71 con 15 rasgos (referencia) · más fuera de orden: Chupon (-0.015), Indisciplinado (+0.050), Agresivo (+0.005), Canchero (-0.025), Impulsivo (+0.025)</td><td>✅</td></tr>
+<tr class="ok" data-id="005/SC-013"><td>005/SC-013</td><td>Los stats mandan</td><td>+5 de media en el equipo pesa más en la diferencia de goles que cualquier virtud sola</td><td>+5 de media +1.895 goles por partido · virtud con más efecto Capitania +0.485</td><td>✅</td></tr>
+<tr class="ok" data-id="colecciones/SC-003"><td>colecciones/SC-003</td><td>Mesas de 8 sobre colecciones activas al azar que cumplen el mínimo</td><td>ninguna carta fuera del pool y todos los sobres con sus cupos</td><td>100 mesas (pool medio 300 cartas): sobres con cartas fuera del pool 0 · sobres sin sus cupos 0</td><td>✅</td></tr>
+<tr class="ok" data-id="colecciones/SC-005"><td>colecciones/SC-005</td><td>Sobres de la tienda sobre colecciones poseídas al azar</td><td>sin repetidas, sin cartas ya poseídas y con el reparto de niveles del draft</td><td>1000 sobres: con repetidas 0 · con cartas poseídas 0 · sin el reparto de niveles 0</td><td>✅</td></tr>
+<tr class="ok" data-id="003/SC-009"><td>003/SC-009</td><td>Sin regresiones</td><td>001/SC-004 (+5 de media gana ≥ 60 %) y los SC de la 002 siguen cumpliéndose con el motor 3.0.0</td><td>SC-004 ✔ · 002/SC-007a ✔ · 002/SC-007b ✔ · 002/SC-008 ✔ · SC-011 ✔ · SC-011b ✔ · 002/SC-018 ✔</td><td>✅</td></tr>
+</tbody>
+</table>
+</body>
+</html>

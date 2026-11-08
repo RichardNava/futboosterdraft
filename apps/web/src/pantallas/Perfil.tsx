@@ -12,6 +12,7 @@ import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
 import { Dialogo } from '../componentes/Dialogo';
 import { SelectorEscudo } from '../componentes/SelectorEscudo';
+import { SelectorCelebracion } from '../componentes/SelectorCelebracion';
 import { SelectorSobre } from '../componentes/SelectorSobre';
 import { useAspecto } from '../estado/aspecto';
 import type { CuerpoAspecto } from '@fbd/protocol';
@@ -113,7 +114,7 @@ export function Perfil() {
   );
 }
 
-/** Escudo y sobre de la cuenta (spec 011): cada elección se guarda al momento. */
+/** Escudo, sobre y celebración de gol de la cuenta (specs 011 y 012): cada elección se guarda al momento. */
 function AspectoPerfil() {
   const { aspecto, cargar, actualizar } = useAspecto();
   const [guardando, setGuardando] = useState(false);
@@ -141,6 +142,16 @@ function AspectoPerfil() {
       <section aria-labelledby="titulo-sobre">
         <h2 id="titulo-sobre">Sobre</h2>
         <SelectorSobre aspecto={aspecto} onCambiar={(cambios) => void guardar(cambios)} desactivado={guardando} />
+      </section>
+      <section aria-labelledby="titulo-celebracion">
+        <h2 id="titulo-celebracion">Celebración de gol</h2>
+        <p className="nota">Se ve en el campo cada vez que marcas en la simulación 2D. Vale para las partidas nuevas.</p>
+        <SelectorCelebracion
+          elegida={aspecto.celebracion}
+          escudo={aspecto.escudo}
+          onElegir={(celebracion) => void guardar({ celebracion })}
+          desactivado={guardando}
+        />
       </section>
     </div>
   );

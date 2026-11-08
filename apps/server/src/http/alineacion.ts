@@ -7,6 +7,9 @@
 import { desdeV1, parametrosActuales, previsualizar, validarAlineacion } from '@fbd/domain';
 import { AlineacionEntrada, DorsalesEntrada, EquipacionesEntrada } from '@fbd/protocol';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
+import { z } from 'zod';
+
+const CuerpoModoIncidencias = z.object({ modo: z.enum(['automatico', 'control_total']) }).strict();
 import {
   alineacionVigente,
   cambiarDorsal,
@@ -38,7 +41,14 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
     const equipaciones = desdeV1(c.participante(participanteId)?.equipaciones ?? null);
     // Nombre del equipo, editable hasta que se abre el primer partido (spec 003, FR-042).
     const p = c.participante(participanteId);
-    return { ...vistaEquipo(c, datos, dorsales, equipaciones), nombreEquipo: p ? c.nombreDe(p) : '', escudo: escudoDe(c, participanteId), nombreEditable: !(await torneoIniciado(c)) };
+    return {
+      ...vistaEquipo(c, participanteId, datos, dorsales, equipaciones),
+      nombreEquipo: p ? c.nombreDe(p) : '',
+      escudo: escudoDe(c, participanteId),
+      nombreEditable: !(await torneoIniciado(c)),
+      // Spec 012 (FR-020): modo de incidencias de esta partida.
+      modoIncidencias: p?.modoIncidencias ?? 'automatico',
+    };
   }
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id/alineacion', { preHandler: requiereSesion }, async (req) => {
@@ -73,6 +83,20 @@ export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gesto
       // Duelos (spec 005): con el once ya bloqueado, sus cruces de la ronda abierta se pueden resolver.
       if (c.partida.modo === 'duelos') await c.resolverDuelos?.(ctx);
       return vista(c, participanteId);
+    });
+  });
+
+  // Spec 012 (FR-020): modo de incidencias desde Formación; vale para esta partida y, con cuenta, para las siguientes.
+  app.put<{ Params: { id: string } }>('/api/partidas/:id/modo-incidencias', { preHandler: requiereSesion }, async (req) => {
+    const r = CuerpoModoIncidencias.safeParse(req.body);
+    if (!r.success) throw errores.validacion('CUERPO_INVALIDO', 'El modo debe ser «automatico» o «control_total»');
+    const { c, participanteId } = await contexto(req);
+    return c.ejecutar(async () => {
+      const p = c.participante(participanteId)!;
+      p.modoIncidencias = r.data.modo;
+      await c.servicios.repoPartidas.cambiarModoIncidencias(participanteId, r.data.modo);
+      if (req.usuario!.tipo === 'registrado') await c.servicios.repoPerfiles.guardarAspecto(req.usuario!.id, { modoIncidencias: r.data.modo }, c.servicios.reloj.ahora());
+      return { modoIncidencias: r.data.modo };
     });
   });
 

@@ -10,7 +10,17 @@ import { Icono } from './Icono';
 import type { EstadoEquipo } from './estadoEquipoEnPartido';
 import { PanelTactica } from './PanelTactica';
 import { Dialogo } from './Dialogo';
+import { ListaPestanas } from './ListaPestanas';
+import { useDistribucion } from './useDistribucion';
 import { mostrarAviso } from '../estado/avisos';
+
+/** Sin «Personalización»: en el partido solo se cambia lo que afecta al juego (spec 012, FR-017). */
+type PestanaGestion = 'alineacion' | 'tactica' | 'lanzadores';
+const PESTANAS_GESTION: { id: PestanaGestion; texto: string }[] = [
+  { id: 'alineacion', texto: 'Alineación' },
+  { id: 'tactica', texto: 'Táctica' },
+  { id: 'lanzadores', texto: 'Lanzadores' },
+];
 
 const P = parametrosActuales();
 
@@ -77,14 +87,19 @@ interface Props {
   enviar: (decisiones: DecisionGestion[]) => Promise<{ ok: boolean; error?: { mensaje?: string; indice?: number } }>;
   /** Se cierra la pantalla; `aplicado` si se confirmaron cambios. */
   onCerrar: (aplicado: boolean) => void;
+  /** Parada de «control total» (spec 012): qué ha pasado y cuántos cambios quedan. */
+  aviso?: string | null;
 }
 
 /**
  * Gestión del equipo durante el partido (spec 003, US5; FR-027 a FR-031; contracts/ui.md): a pantalla completa,
  * sobre el mismo campo de «Formación», con el banquillo, el contador de sustituciones, la táctica y los
  * lanzadores. Nada se envía hasta «Confirmar cambios», que manda todo en un lote atómico.
+ *
+ * Spec 012 (FR-015 a FR-017): la misma mesa que Formación (`useDistribucion`, pestañas fijas sobre el lateral), con
+ * solo los titulares y el banquillo convocado, y sin «Personalización».
  */
-export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, onCerrar }: Props) {
+export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, onCerrar, aviso = null }: Props) {
   const inicial = useMemo<Borrador>(
     () => ({ campo: { formacion: estado.formacion, asignacion: { ...estado.asignacion }, puntos: { ...estado.puntos }, banquillo: [...estado.banquillo] }, tactica: estado.tactica, lanzadores: estado.lanzadores }),
     [estado],
@@ -93,6 +108,8 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [confirmarSalida, setConfirmarSalida] = useState(false);
   const [formacionPendiente, setFormacionPendiente] = useState<FormacionId | null>(null);
+  const [pestana, setPestana] = useState<PestanaGestion>('alineacion');
+  const distribucion = useDistribucion();
 
   const posicionesDe = useCallback((id: number) => (jugadores.get(id)?.posicion ?? []) as Posicion[], [jugadores]);
   const bloqueados = useMemo(() => new Set([...estado.sustituidos, ...estado.expulsados]), [estado]);
@@ -137,6 +154,7 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
   const volver = () => (hayCambios ? setConfirmarSalida(true) : onCerrar(false));
 
   const titulares = titularesDe(borrador.campo).map((t) => jugadores.get(t.jugadorId)!).filter(Boolean);
+  const pestanas = PESTANAS_GESTION.filter((p) => p.id !== 'lanzadores' || borrador.lanzadores !== null);
   const nombre = (id: number) => {
     const j = jugadores.get(id);
     return j ? `${dorsales?.[id] ? `#${dorsales[id]} ` : ''}${nombreCartaDe(j)}` : String(id);
@@ -176,6 +194,11 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
           </select>
         </label>
       </header>
+      {aviso && (
+        <p className="aviso-parada" role="status">
+          <Icono nombre="lesion" /> {aviso} Arrastra un suplente sobre el lesionado para sustituirlo.
+        </p>
+      )}
       {mensaje && (
         <p className="error" role="alert">
           {mensaje}
@@ -191,14 +214,28 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
         modo="partido"
         bloqueados={bloqueados}
         distintivos={distintivos}
+        pestanas={{
+          lista: <ListaPestanas pestanas={pestanas} activa={pestana} onElegir={setPestana} etiqueta="Secciones de la gestión" />,
+          activa: pestana,
+          panel:
+            pestana === 'tactica' ? (
+              <section aria-label="Táctica">
+                <PanelTactica tactica={borrador.tactica} onCambiar={(tactica) => setBorrador({ ...borrador, tactica })} />
+              </section>
+            ) : pestana === 'lanzadores' && borrador.lanzadores ? (
+              <EditorLanzadores
+                lanzadores={borrador.lanzadores}
+                titulares={titulares}
+                nombre={nombre}
+                onCambiar={(lanzadores) => setBorrador({ ...borrador, lanzadores })}
+                conTitulo={false}
+              />
+            ) : undefined,
+        }}
+        orientacion={distribucion.orientacion}
         onSoltar={alSoltar}
         onMover={alMover}
       />
-      <section aria-label="Táctica">
-        <h2>Táctica</h2>
-        <PanelTactica tactica={borrador.tactica} onCambiar={(tactica) => setBorrador({ ...borrador, tactica })} />
-      </section>
-      {borrador.lanzadores && <EditorLanzadores lanzadores={borrador.lanzadores} titulares={titulares} nombre={nombre} onCambiar={(lanzadores) => setBorrador({ ...borrador, lanzadores })} />}
 
       {formacionPendiente && (
         <Dialogo rol="alertdialog" etiquetadoPor="titulo-formacion-gestion" alEscape={() => setFormacionPendiente(null)}>

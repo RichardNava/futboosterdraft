@@ -7,7 +7,7 @@ import { autoAlineacion, esFormacionId, FORMACIONES, Rng, validarColocacion, val
 import { colocar, maxSustituciones, type EquipoEstado, type EstadoMotor } from '../estado/estado';
 import type { DecisionPartido, DecisionRegistrada } from '../tipos';
 import { emitir, type Contexto } from '../acciones/contexto';
-import { sustituir } from '../acciones/plantel';
+import { lesionPendiente, sustituir, sustituirLesionado } from '../acciones/plantel';
 
 export type ResultadoDecision = { ok: true } | { ok: false; codigo: string; mensaje: string };
 
@@ -48,7 +48,9 @@ export function validarDecision(estado: EstadoMotor, d: DecisionPartido): Result
       const sale = equipo.jugadores.find((j) => j.id === d.datos.sale);
       const entra = equipo.jugadores.find((j) => j.id === d.datos.entra);
       const yaPedidos = pendientes.flatMap((x) => (x.tipo === 'sustitucion' ? [x.datos.sale, x.datos.entra] : []));
-      if (!sale?.enCampo || yaPedidos.includes(sale.id)) return error('JUGADOR_NO_EN_CAMPO', 'El jugador que sale no está en el campo');
+      // Spec 012 (FR-022): también el lesionado de una incidencia pendiente; el expulsado, nunca.
+      const lesionado = sale && !sale.enCampo && lesionPendiente({ estado }, equipo.lado, sale.id) !== undefined;
+      if (!sale || (!sale.enCampo && !lesionado) || yaPedidos.includes(sale.id)) return error('JUGADOR_NO_EN_CAMPO', 'El jugador que sale no está en el campo');
       if (!entra || entra.enCampo || entra.retirado || yaPedidos.includes(entra.id)) {
         return error('JUGADOR_NO_DISPONIBLE', 'El jugador que entra no está disponible en el banquillo');
       }
@@ -119,17 +121,37 @@ export function encolarLote(estado: EstadoMotor, decisiones: readonly DecisionPa
   return { ok: true };
 }
 
-/** Aplica las decisiones pendientes que tocan en este punto (todas, o las de `aplicadaEnTick` ≤ tick). */
-export function aplicarPendientes(ctx: Contexto): void {
+/**
+ * Aplica las decisiones pendientes que tocan en este punto (todas, o las de `aplicadaEnTick` ≤ tick) y devuelve las
+ * aplicadas. `cual` filtra (spec 012): solo las de una parada de incidencia, o solo las demás. `enIncidencia` las
+ * registra como tomadas en una parada de «control total».
+ */
+export function aplicarPendientes(ctx: Contexto, opciones: { cual?: 'incidencia' | 'resto'; enIncidencia?: boolean } = {}): DecisionRegistrada[] {
   const e = ctx.estado;
-  const aplicar = e.decisionesPendientes.filter((d) => d.aplicadaEnTick === undefined || d.aplicadaEnTick <= e.tick);
+  const toca = (d: DecisionRegistrada) =>
+    (d.aplicadaEnTick === undefined || d.aplicadaEnTick <= e.tick) &&
+    (opciones.cual === undefined || (opciones.cual === 'incidencia') === (d.enIncidencia === true));
+  const aplicar = e.decisionesPendientes.filter(toca);
   e.decisionesPendientes = e.decisionesPendientes.filter((d) => !aplicar.includes(d));
+  const aplicadas: DecisionRegistrada[] = [];
   for (const d of aplicar) {
     const equipo = equipoDe(e, d.participanteId);
     if (!equipo || validarDecision(e, d).ok === false) continue;
     aplicarUna(ctx, equipo, d);
-    e.decisiones.push({ ...d, aplicadaEnTick: e.tick });
+    const registrada: DecisionRegistrada = { ...d, aplicadaEnTick: e.tick, ...(opciones.enIncidencia || d.enIncidencia ? { enIncidencia: true as const } : {}) };
+    e.decisiones.push(registrada);
+    aplicadas.push(registrada);
   }
+  return aplicadas;
+}
+
+/** Equipos que decidieron (y los que cambiaron formación o colocación) entre las decisiones dadas. */
+export function equiposQueDecidieron(estado: EstadoMotor, decisiones: readonly DecisionRegistrada[]): { decididos: Set<string>; recolocados: Set<string> } {
+  const lado = (d: DecisionRegistrada) => equipoDe(estado, d.participanteId)?.lado;
+  return {
+    decididos: new Set(decisiones.flatMap((d) => lado(d) ?? [])),
+    recolocados: new Set(decisiones.filter((d) => d.tipo === 'formacion' || d.tipo === 'recolocacion').flatMap((d) => lado(d) ?? [])),
+  };
 }
 
 function aplicarUna(ctx: Contexto, equipo: EquipoEstado, d: DecisionRegistrada): void {
@@ -137,7 +159,10 @@ function aplicarUna(ctx: Contexto, equipo: EquipoEstado, d: DecisionRegistrada):
     case 'sustitucion': {
       const sale = equipo.jugadores.find((j) => j.id === d.datos.sale)!;
       const entra = equipo.jugadores.find((j) => j.id === d.datos.entra)!;
-      sustituir(ctx, equipo, sale, entra);
+      // El lesionado de una incidencia: el que entra ocupa su casilla y su ancla (spec 012).
+      const incidencia = sale.enCampo ? undefined : lesionPendiente(ctx, equipo.lado, sale.id);
+      if (incidencia) sustituirLesionado(ctx, equipo, incidencia, entra, false);
+      else sustituir(ctx, equipo, sale, entra);
       return;
     }
     case 'tactica':

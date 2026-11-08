@@ -20,10 +20,38 @@ export type Efecto =
   | 'trompetas'
   | 'goat'
   | 'hoverCarta'
-  | 'seleccionCarta';
+  | 'seleccionCarta'
+  // Spec 012: partido 2D (FR-001 a FR-003), draft (FR-004, FR-005), interfaz (FR-006) y tienda (FR-007).
+  | 'pitidoInicio'
+  | 'pitidoDescanso'
+  | 'pitidoFinal'
+  | 'golPropio'
+  | 'golRival'
+  | 'tarjetaAmarilla'
+  | 'tarjetaRoja'
+  | 'confirmarEleccion'
+  | 'latido'
+  | 'clicPrincipal'
+  | 'cajaRegistradora';
 
 /** Los sintetizados van en WAV; el resto, en MP3. */
-const WAV: ReadonlySet<Efecto> = new Set(['calculoDuelo', 'goat', 'hoverCarta', 'seleccionCarta']);
+const WAV: ReadonlySet<Efecto> = new Set([
+  'calculoDuelo',
+  'goat',
+  'hoverCarta',
+  'seleccionCarta',
+  'pitidoInicio',
+  'pitidoDescanso',
+  'pitidoFinal',
+  'golPropio',
+  'golRival',
+  'tarjetaAmarilla',
+  'tarjetaRoja',
+  'confirmarEleccion',
+  'latido',
+  'clicPrincipal',
+  'cajaRegistradora',
+]);
 
 /**
  * Ganancia de cada fichero, calculada con su sonoridad medida (EBU R128, LUFS) para que, ya con `FACTOR_VOLUMEN`,
@@ -44,6 +72,18 @@ const BASE: Record<Efecto, number> = {
   goat: 0.5,
   hoverCarta: 0.12,
   seleccionCarta: 0.22,
+  // Spec 012 (FR-008), de oído: los pitidos y el público, presentes sin tapar; el clic y el latido, muy discretos.
+  pitidoInicio: 0.3,
+  pitidoDescanso: 0.3,
+  pitidoFinal: 0.32,
+  golPropio: 0.45,
+  golRival: 0.3,
+  tarjetaAmarilla: 0.32,
+  tarjetaRoja: 0.38,
+  confirmarEleccion: 0.25,
+  latido: 0.35,
+  clicPrincipal: 0.1,
+  cajaRegistradora: 0.3,
 };
 
 /** Volumen general: un 20 % más bajo en la spec 007 (FR-011) y otro poco más en noviembre de 2026 (0,8 → 0,65). */
