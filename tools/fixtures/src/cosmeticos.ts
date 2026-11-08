@@ -1,7 +1,7 @@
 /**
  * Adapta las imágenes de los cosméticos y completa `data/cosmeticos.json` (spec 011, research R3 y R4).
  *
- * - Escudos: `apps/web/public/cosmeticos/escudos/<id>-64.webp` y `<id>-256.webp`.
+ * - Escudos: `apps/web/public/cosmeticos/escudos/<id>-64.webp`, `<id>-256.webp` y `<id>-512.webp` (previsualización de la tienda).
  * - Sobres: `apps/web/public/cosmeticos/sobres/<id>.webp` (512 × 768) y `<id>-mini.webp` (192 × 288).
  *
  * Los ids son *slugs* sin tildes con el prefijo del tipo (`escudo-flor-de-lis-azul-oro`, `escudo-premium-3`, que
@@ -77,7 +77,14 @@ function leerOrigen(dir: string, tipo: Tipo): Origen[] {
       if (numerado) {
         const n = Number(numerado[1]);
         const id = tipo === 'escudo' ? `escudo-premium-${n}` : `sobre-${n}`;
-        return { fichero: join(dir, f), id, nombre: tipo === 'escudo' ? `Premium ${n}` : `Sobre ${n}`, gratuito: false, numerado: true, n };
+        return {
+          fichero: join(dir, f),
+          id,
+          nombre: tipo === 'escudo' ? `Premium ${n}` : `Sobre ${n}`,
+          gratuito: false,
+          numerado: true,
+          n,
+        };
       }
       const conNombre = /^(\d+)_(.+)$/.exec(base);
       if (!conNombre) throw new Error(`Nombre de fichero no reconocido: ${f}`);
@@ -100,8 +107,15 @@ async function generar(origen: Origen, tipo: Tipo): Promise<string[]> {
   mkdirSync(dir, { recursive: true });
   const salidas: [string, number, number][] =
     tipo === 'escudo'
-      ? [[`${origen.id}-64.webp`, 64, 64], [`${origen.id}-256.webp`, 256, 256]]
-      : [[`${origen.id}.webp`, 512, 768], [`${origen.id}-mini.webp`, 192, 288]];
+      ? [
+          [`${origen.id}-64.webp`, 64, 64],
+          [`${origen.id}-256.webp`, 256, 256],
+          [`${origen.id}-512.webp`, 512, 512],
+        ]
+      : [
+          [`${origen.id}.webp`, 512, 768],
+          [`${origen.id}-mini.webp`, 192, 288],
+        ];
   for (const [nombre, ancho, alto] of salidas) {
     await sharp(origen.fichero)
       .resize(ancho, alto, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
@@ -153,7 +167,9 @@ async function main(): Promise<void> {
           tipo,
           nombre: o.nombre,
           gratuito: o.gratuito,
-          ...(o.gratuito ? {} : { precio_centimos: PRECIOS[tipo].centimos, precio_fragmentos: PRECIOS[tipo].fragmentos }),
+          ...(o.gratuito
+            ? {}
+            : { precio_centimos: PRECIOS[tipo].centimos, precio_fragmentos: PRECIOS[tipo].fragmentos }),
           orden,
         });
         existentes.add(o.id);
@@ -162,7 +178,9 @@ async function main(): Promise<void> {
     }
     // Packs fijos de 5 en 5 en el orden del catálogo (research R10), solo si aún no hay packs de este tipo.
     if (!catalogo.packs.some((p) => p.tipo === tipo)) {
-      const dePago = catalogo.cosmeticos.filter((c) => c.tipo === tipo && !c.gratuito).sort((a, b) => a.orden - b.orden);
+      const dePago = catalogo.cosmeticos
+        .filter((c) => c.tipo === tipo && !c.gratuito)
+        .sort((a, b) => a.orden - b.orden);
       for (let i = 0; i + 5 <= dePago.length; i += 5) {
         const n = i / 5 + 1;
         catalogo.packs.push({
@@ -178,7 +196,10 @@ async function main(): Promise<void> {
   }
 
   writeFileSync(JSON_COSMETICOS, `${JSON.stringify(catalogo, null, 2)}\n`);
-  const publicado = pesoDir(PUBLICO);
+  // Solo los tipos procesados en esta ejecución: con --escudos solo, los sobres no tienen originales con que compararse.
+  const publicado = (['escudo', 'sobre'] as const)
+    .filter((t) => dirs[t])
+    .reduce((t, tipo) => t + pesoDir(resolve(PUBLICO, tipo === 'escudo' ? 'escudos' : 'sobres')), 0);
   const mb = (b: number): string => `${(b / 1024 / 1024).toFixed(2)} MB`;
   console.log(`imagenes: publicado ${mb(publicado)} frente a ${mb(pesoOrigen)} de originales.`);
   if (pesoOrigen > 0 && publicado > pesoOrigen * 0.1) {

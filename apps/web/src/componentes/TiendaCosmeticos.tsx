@@ -48,14 +48,16 @@ function Miniatura({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
 }
 
 type Vista =
-  { tipo: 'cosmetico'; lista: Cosmetico[]; indice: number } | { tipo: 'pack'; pack: PackCosmeticos };
+  /** Con `pack`, el cosmético se abrió desde la previsualización del pack: se navega por sus 5 y se puede volver. */
+  | { tipo: 'cosmetico'; lista: Cosmetico[]; indice: number; pack?: PackCosmeticos }
+  | { tipo: 'pack'; pack: PackCosmeticos };
 
 /** El cosmético a tamaño grande: el escudo como se ve en el juego y el sobre cerrado y abierto. */
 function ArteGrande({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
   if (tipo === 'escudo')
     return (
       <figure className="previsualizacion-escudo">
-        <img src={urlEscudo(id, 256)} alt="" width={256} height={256} />
+        <img src={urlEscudo(id, 512)} alt="" width={512} height={512} />
         <figcaption>
           <span className="nota">En el juego:</span>
           {[96, 40, 24].map((t) => (
@@ -82,12 +84,15 @@ function Previsualizacion({
   titulo,
   subtitulo,
   onCerrar,
+  onVolver,
   navegar,
   children,
 }: {
   titulo: string;
   subtitulo: string;
   onCerrar: () => void;
+  /** Vuelve a la previsualización del pack (también con Escape). */
+  onVolver?: () => void;
   navegar?: { anterior: () => void; siguiente: () => void; posicion: string };
   children: ReactNode;
 }) {
@@ -103,8 +108,14 @@ function Previsualizacion({
     return () => window.removeEventListener('keydown', alTecla);
   }, []);
   return (
-    <Dialogo etiquetadoPor="titulo-previsualizacion" alEscape={onCerrar} alPulsarFondo={onCerrar}>
+    <Dialogo etiquetadoPor="titulo-previsualizacion" alEscape={onVolver ?? onCerrar} alPulsarFondo={onCerrar}>
       <div className="previsualizacion-cosmetico">
+        {onVolver && (
+          <button type="button" className="texto modal-volver" onClick={onVolver}>
+            <Icono nombre="flecha" tamano={20} />
+            Volver al pack
+          </button>
+        )}
         <button type="button" className="texto modal-cerrar" onClick={onCerrar} aria-label="Cerrar">
           <Icono nombre="cerrar" tamano={20} />
         </button>
@@ -287,8 +298,12 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
           return (
             <Previsualizacion
               titulo={c.nombre}
-              subtitulo={c.tipo === 'escudo' ? 'Escudo' : 'Diseño de sobre'}
+              subtitulo={
+                (c.tipo === 'escudo' ? 'Escudo' : 'Diseño de sobre') +
+                (vista.pack ? ` · ${vista.pack.nombre}` : '')
+              }
               onCerrar={() => setVista(null)}
+              {...(vista.pack && { onVolver: () => setVista({ tipo: 'pack', pack: vista.pack! }) })}
               navegar={{
                 anterior: () => ir(-1),
                 siguiente: () => ir(1),
@@ -307,14 +322,28 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
           onCerrar={() => setVista(null)}
         >
           <ul className={`previsualizacion-pack ${vista.pack.tipo}`}>
-            {vista.pack.cosmeticos.map((id) => (
+            {vista.pack.cosmeticos.map((id, i, ids) => (
               <li key={id}>
-                {vista.pack.tipo === 'escudo' ? (
-                  <img src={urlEscudo(id, 256)} alt="" width={160} height={160} />
-                ) : (
-                  <SobreArte diseno={id} />
-                )}
-                <span>{porId.get(id)?.nombre ?? id}</span>
+                <button
+                  type="button"
+                  className="boton-previsualizar"
+                  aria-label={`Ver ${porId.get(id)?.nombre ?? id} en grande`}
+                  onClick={() =>
+                    setVista({
+                      tipo: 'cosmetico',
+                      lista: ids.flatMap((x) => porId.get(x) ?? []),
+                      indice: i,
+                      pack: vista.pack,
+                    })
+                  }
+                >
+                  {vista.pack.tipo === 'escudo' ? (
+                    <img src={urlEscudo(id, 256)} alt="" width={160} height={160} />
+                  ) : (
+                    <SobreArte diseno={id} />
+                  )}
+                  <span>{porId.get(id)?.nombre ?? id}</span>
+                </button>
               </li>
             ))}
           </ul>

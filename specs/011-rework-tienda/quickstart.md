@@ -53,7 +53,7 @@ pnpm typecheck && pnpm lint
 | 15 | Formación a 1366 × 657 y a 1920 × 1080: campo horizontal, desplazar «Personalización», cambiar el interruptor y recargar | Campo tumbado sin fichas amontonadas; las pestañas siguen arriba; la distribución elegida se recuerda | FR-024, FR-025 |
 | 16 | «Personalización» → abrir «Dorsales», cambiar uno con Intro, otro con ✓ y descartar un tercero con Escape | Lista compacta al final; las filas no saltan; el conflicto de número pide confirmación | FR-026 |
 | 17 | Carrusel con 3 diseños: hacer un draft completo y 3 aperturas en la tienda | Ningún cambio de sobre durante la animación; marcador y resultado con el escudo grande | FR-027, FR-028 |
-| 18 | Tienda: pulsar la miniatura de un escudo, pasar con → y ←, comprar desde la previsualización; abrir un sobre y un pack | Escudo grande y a los tamaños del juego; sobre cerrado y abierto; los 5 del pack; al comprar se cierra y la ficha dice «Comprado» | FR-029 |
+| 18 | Tienda: pulsar la miniatura de un escudo, pasar con → y ←, comprar desde la previsualización; abrir un sobre y un pack, y dentro del pack uno de sus cosméticos | Escudo grande (512 px) y a los tamaños del juego; sobre cerrado y abierto; los 5 del pack, cada uno en grande con «Volver al pack»; al comprar se cierra y la ficha dice «Comprado» | FR-029 |
 
 ## Cierre
 

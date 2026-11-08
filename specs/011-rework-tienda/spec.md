@@ -294,9 +294,11 @@ ambos modos y comprobar que el resultado es idéntico.
 #### Previsualización en la tienda (2026-11-08)
 
 - **FR-029**: Cada escudo, sobre y pack de la tienda DEBE poder verse a tamaño grande antes de comprarlo: al pulsar su
-  miniatura se abre una previsualización con el escudo a 256 px y a los tamaños del juego (marcador, franja y
-  resumen), el sobre cerrado y abierto, o los cinco cosméticos del pack. Desde ella se compra con los mismos precios,
-  y ← y → (o sus botones) pasan al cosmético anterior o siguiente del mismo tipo. Las miniaturas de la rejilla crecen
+  miniatura se abre una previsualización con el escudo lo más grande que quepa (imagen de 512 px) y a los tamaños del
+  juego (marcador, franja y resumen), el sobre cerrado y abierto (uno debajo del otro en el móvil), o los cinco
+  cosméticos del pack, y cada uno de estos se abre a su vez en grande («Volver al pack» o Escape regresan). Desde ella
+  se compra con los mismos precios, y ← y → (o sus botones) pasan al cosmético anterior o siguiente del mismo tipo o
+  del mismo pack. Las miniaturas de la rejilla crecen
   (escudo 96 px, sobre 72 px).
 
 ### Key Entities

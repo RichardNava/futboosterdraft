@@ -47,4 +47,4 @@ export function equipoMarcador(
 }
 
 /** Imagen del escudo a tamaño de chapa (research R3). */
-export const urlEscudo = (id: string, tamano: 64 | 256 = 64): string => `/cosmeticos/escudos/${id}-${tamano}.webp`;
+export const urlEscudo = (id: string, tamano: 64 | 256 | 512 = 64): string => `/cosmeticos/escudos/${id}-${tamano}.webp`;

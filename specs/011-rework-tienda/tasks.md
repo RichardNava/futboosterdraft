@@ -251,6 +251,8 @@ description: "Tareas de la spec 011: rework de la tienda (derechos de imagen, es
 - [X] T086 Previsualización (FR-029): `Previsualizacion`, `ArteGrande` y la miniatura como botón en apps/web/src/componentes/TiendaCosmeticos.tsx (precios compartidos entre la ficha y la previsualización); estilos en apps/web/src/estilos/coleccion.css; e2e en cosmeticos.spec.ts
 - [X] T087 [P] Cerrar la spec: estado «Implementada» en spec.md, recorrido 18 en quickstart.md, INI-11 e INI-14 en ROADMAP.md y CLAUDE.md sin spec en curso
 - [X] T088 Ejecutar typecheck, lint, tests unitarios y los e2e de la tienda; `graphify update .`
+- [X] T089 Escudos a 512 px (`<id>-512.webp`) en tools/fixtures/src/cosmeticos.ts, regenerados desde `escudos/`; la comprobación de SC-005 compara solo los tipos procesados; la previsualización usa esa imagen
+- [X] T090 Previsualización individual dentro de la del pack (FR-029): navegación por sus 5, «Volver al pack» y Escape; e2e en cosmeticos.spec.ts
 
 ---
 

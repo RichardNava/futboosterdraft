@@ -160,6 +160,17 @@ test.describe('tienda', () => {
       .locator('[data-pack="pack-escudos-2"]')
       .getByRole('button', { name: /en grande$/ })
       .click();
+    const pack = page.getByRole('dialog');
+    await expect(pack.locator('.previsualizacion-pack li')).toHaveCount(5);
+    // Dentro del pack, cada cosmético se abre en grande; se navega por los 5 y Escape vuelve al pack.
+    await pack.locator('.previsualizacion-pack li').first().getByRole('button').click();
+    await expect(page.getByRole('dialog').getByText('1 de 5')).toBeVisible();
+    expect(
+      (await page.getByRole('dialog').locator('.previsualizacion-escudo > img').getAttribute('src'))!,
+    ).toMatch(/-512\.webp$/);
+    await page.keyboard.press('ArrowLeft');
+    await expect(page.getByRole('dialog').getByText('5 de 5')).toBeVisible();
+    await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog').locator('.previsualizacion-pack li')).toHaveCount(5);
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toBeHidden();
