@@ -1,9 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.3.1 → 1.4.0 (MINOR: regla de derechos de imagen en el Principio VII; decisión de la 011)
-- Principios modificados: VII (el dinero real no compra cartas, sobres, colecciones ni fragmentos sin licencia de imagen)
+- Version change: 1.4.0 → 1.5.0 (MINOR: el dinero real puede comprar opciones de partida comunes; decisión de la 013)
+- Principios modificados: VII (además de cosméticos, el dinero real puede comprar acceso a opciones de partida que se
+  aplican por igual a todos sus participantes, como el pase premium y los niveles de rareza del draft)
 - Principios añadidos: ninguno
-- Secciones modificadas: Decisiones resueltas (entrada de specs/011-rework-tienda/)
+- Secciones modificadas: Decisiones resueltas (entrada de specs/013-mejora-cartas-rareza-draft/)
 - Secciones añadidas: ninguna
 - Secciones eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
@@ -141,7 +142,11 @@ dos modalidades DEBEN reflejar el mismo desarrollo subyacente del partido.
 - Toda decisión futura de monetización DEBE preservar la integridad competitiva y NO DEBE introducir
   ventajas que eludan las reglas comunes de draft.
 - Mientras no haya licencia de imagen de los futbolistas, el dinero real NO DEBE comprar cartas, sobres,
-  colecciones ni fragmentos: solo cosméticos propios (escudos, diseños de sobre…) que no cambian el juego.
+  colecciones ni fragmentos. Solo PUEDE comprar:
+  - cosméticos propios (escudos, diseños de sobre…) que no cambian el juego;
+  - acceso a **opciones de partida** (p. ej. el nivel de rareza del draft, mediante el pase premium) que quedan
+    fijadas al crear la partida, se aplican por igual a todos sus participantes, humanos y NPC, se muestran a todos y
+    no entregan cartas, sobres, colecciones ni fragmentos a ninguna cuenta.
 
 ### VIII. La arquitectura debe favorecer la modularidad
 
@@ -284,6 +289,13 @@ Resuelta en `specs/011-rework-tienda/`:
   fragmentos. Hay un plan B de identidad alternativa de las cartas (nombres y retratos genéricos) que se
   activa con un ajuste, sin reiniciar y sin cambiar el juego → `spec.md` (FR-001, FR-002, FR-017 a FR-021).
 
+Resuelta en `specs/013-mejora-cartas-rareza-draft/`:
+
+- **Pase premium y opciones de partida de pago**: el pase premium (fragmentos o euros) y el cobro por partida dan
+  acceso a los niveles de rareza del draft, que son de la partida y comunes a todos sus participantes; el pase no
+  entrega cartas, sobres, colecciones ni fragmentos → `spec.md` (FR-011 a FR-021, FR-033 a FR-036) y `plan.md`
+  (Complexity Tracking).
+
 ### Decisiones aún pendientes
 
 Lo siguiente NO está aprobado como requisito y DEBE concretarse en una especificación propia antes de
@@ -331,4 +343,4 @@ persona, que revisa los cambios antes de confirmarlos.
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.4.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-05
+**Version**: 1.5.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-10
