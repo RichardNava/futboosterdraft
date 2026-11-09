@@ -3,7 +3,7 @@
  */
 import { autoAlineacion, calcularMedia, CLAVES_STATS, FORMACIONES, PARAMETROS_V3, type Demarcacion, type Jugador, type Posicion } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
-import { cambiarFormacion, colocacionDe, RADIO_FICHA, soltar, type EstadoCampo, type OpcionesSoltar } from '../../src/componentes/campoEquipoEstado';
+import { cambiarFormacion, colocacionDe, RADIO_FICHA, rellenarBanquillo, soltar, type EstadoCampo, type OpcionesSoltar } from '../../src/componentes/campoEquipoEstado';
 
 const DEM: Record<string, Demarcacion> = { POR: 'POR', LI: 'DEF', LD: 'DEF', DCI: 'DEF', DCD: 'DEF', MC: 'MED', EI: 'DEL', ED: 'DEL', DC: 'DEL', SD: 'DEL', MCO: 'MED' };
 let siguiente = 1;
@@ -200,5 +200,29 @@ describe('banquillo y resto de la plantilla (hallazgo H4)', () => {
   it('un jugador no disponible no entra al banquillo', () => {
     const e = conHueco();
     expect(soltar(e, resto.id, { tipo: 'banquillo' }, { ...o, bloqueados: new Set([resto.id]) })).toBe(e);
+  });
+});
+
+describe('relleno del banquillo (spec 012, ronda 3)', () => {
+  // La plantilla de prueba tiene 18 (11 + 7): 98 y 99 hacen de resto de la plantilla.
+  it('el hueco que deja una baja sustituida lo ocupa el primer candidato libre', () => {
+    const e = inicial();
+    const [cas, deBaja] = Object.entries(e.asignacion).find(([, x]) => x !== undefined)!;
+    const suplente = e.banquillo[0]!;
+    const r = soltar(e, deBaja!, { tipo: 'banquillo', sobre: suplente }, { ...o, bloqueados: new Set([deBaja!]) });
+    expect(r.asignacion[cas]).toBe(suplente);
+    expect(r.banquillo).toHaveLength(6);
+    // Los que ya juegan se saltan; entra el primero libre.
+    const relleno = rellenarBanquillo(r, [suplente, e.banquillo[1]!, 99, 98], 7, suplente);
+    expect(relleno.banquillo).toEqual([...r.banquillo, 99]);
+  });
+
+  it('no vuelve a meter al que se acaba de sacar y no toca un banquillo lleno', () => {
+    const e = inicial();
+    expect(rellenarBanquillo(e, [98, 99])).toBe(e);
+    const sacado = e.banquillo[0]!;
+    const r = soltar(e, sacado, { tipo: 'reserva' }, o);
+    const relleno = rellenarBanquillo(r, [sacado, 98], 7, sacado);
+    expect(relleno.banquillo).toEqual([...r.banquillo, 98]);
   });
 });

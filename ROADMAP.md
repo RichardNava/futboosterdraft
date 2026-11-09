@@ -376,6 +376,17 @@ cuesta simular los partidos.
   control total en la simulación rápida; arreglo del bloqueo de «Confirmar alineación» con bajas en el banquillo;
   avisos arriba a la derecha; ficha del equipo en Plantillas; motor 6.2.0 (el que gana de mucho baja la intensidad y
   salen más porteros en los sobres) tras un 41-5 en 5 partidos. Pendiente: T089 (recorrido a mano).
+- **Spec 012, ronda 3 (2026-11-09)**: Formación con los 7 suplentes a la vista a 17" y sin huecos en el banquillo;
+  letras de Estadio y Pizarra; modo de «eventos trascendentales» con ayuda tras el icono, anclado y con «Lo que ha
+  pasado» siguiendo al último evento; ambiente de público sintetizado en la 2D; tarjetas con color en «Gestionar
+  equipo»; ayuda resumida en la barra principal y cronómetro en la de la 2D; Estadio y Neón a la venta en la tienda;
+  retratos en las chapas de la 2D. Las 300 imágenes de fondo de las cartas, a una spec nueva. Pendiente: T100
+  (recorrido a mano).
+- **Spec 012, ronda 4 (2026-11-09)**: ambiente de público con grabaciones CC0 (rumor del Millerntor, bombo, cánticos
+  y vuvuzelas) en lugar del sintetizado; celebraciones nuevas Discoteca y Fuegos artificiales, de pago en la tienda
+  (Estadio y Neón vuelven a ser gratis); selector de modo de la 2D con aspecto de panel; ayuda de la barra con letra
+  más grande y en los enlaces; «Nueva partida» en cuatro recuadros sin desplazar, con las explicaciones en la barra.
+  Pendiente: T106 (recorrido a mano).
 - **Prioridad / estado**: P1 · **Parcial**. 007: 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
 - **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
   (rarezas y presentación de la carta de la 006).

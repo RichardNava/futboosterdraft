@@ -710,6 +710,21 @@
   width: 72px;
 }
 
+/* Celebraciones (spec 012, ronda 3): un balón sobre césped; la animación, en la previsualización. */
+.miniatura-celebracion {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radio-panel);
+  background: var(--cesped-textura, var(--cesped));
+  color: var(--color-oro);
+}
+
+.previsualizacion-cosmetico .vista-previa-celebracion {
+  width: min(100%, 640px);
+}
+
 .tienda-cosmetico:is(:hover, :focus-within) .sobre-rasgado-mini {
   opacity: 1;
 }

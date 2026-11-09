@@ -191,6 +191,17 @@ export function soltar(e: EstadoCampo, jugadorId: number, destino: DestinoSoltar
   };
 }
 
+/**
+ * Completa el banquillo hasta `max` con los `candidatos` (en orden de preferencia) que no son titulares ni suplentes
+ * ya, salvo `excluido` (el que se acaba de sacar a mano). Spec 012, ronda 3: sustituir a una baja no deja un hueco.
+ */
+export function rellenarBanquillo(e: EstadoCampo, candidatos: readonly number[], max = 7, excluido?: number): EstadoCampo {
+  if (e.banquillo.length >= max) return e;
+  const ocupados = new Set([...e.banquillo, ...Object.values(e.asignacion).filter((x): x is number => x !== undefined)]);
+  const entran = candidatos.filter((id) => id !== excluido && !ocupados.has(id)).slice(0, max - e.banquillo.length);
+  return entran.length ? { ...e, banquillo: [...e.banquillo, ...entran] } : e;
+}
+
 /** Mueve un titular `dx`, `dy` unidades (teclado). */
 export function mover(e: EstadoCampo, jugadorId: number, dx: number, dy: number, o: OpcionesSoltar): EstadoCampo {
   const t = colocacionDe(e, o.parametros, o.posicionesDe).titulares.find((x) => x.jugadorId === jugadorId);

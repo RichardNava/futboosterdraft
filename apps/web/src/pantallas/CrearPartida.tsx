@@ -2,14 +2,26 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
+import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Icono } from '../componentes/Icono';
 import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { useSesion } from '../estado/sesion';
-import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, type Dificultad, type NivelNPC } from '../textos/niveles';
+import {
+  DESCRIPCION_DIFICULTAD,
+  ETIQUETA_DIFICULTAD,
+  ETIQUETA_NIVEL_NPC,
+  type Dificultad,
+  type NivelNPC,
+} from '../textos/niveles';
 
 type Modo = 'liga' | 'playoff' | 'mixto' | 'duelos';
 
-const PARTICIPANTES: Record<Modo, number[]> = { liga: [4, 5, 6, 7, 8], playoff: [4, 8, 16], mixto: [8], duelos: [4, 8, 16] };
+const PARTICIPANTES: Record<Modo, number[]> = {
+  liga: [4, 5, 6, 7, 8],
+  playoff: [4, 8, 16],
+  mixto: [8],
+  duelos: [4, 8, 16],
+};
 
 /** Formulario de creación de partida (T052; FR-001). */
 export function CrearPartida() {
@@ -34,8 +46,8 @@ export function CrearPartida() {
 
   const plazoInvalido = !esInvitado && (!Number.isInteger(plazo) || plazo < 1 || plazo > 336);
 
-  const enviar = async (e: FormEvent) => {
-    e.preventDefault();
+  const enviar = async (e?: FormEvent) => {
+    e?.preventDefault();
     if (enviando || plazoInvalido) return;
     setError(null);
     setEnviando(true);
@@ -53,7 +65,11 @@ export function CrearPartida() {
       });
       navegar(`/partidas/${partida.id}/sala`);
     } catch (err) {
-      setError(err instanceof ErrorApi ? err.message : 'No se ha podido crear la partida. Comprueba la conexión y vuelve a intentarlo.');
+      setError(
+        err instanceof ErrorApi
+          ? err.message
+          : 'No se ha podido crear la partida. Comprueba la conexión y vuelve a intentarlo.',
+      );
     } finally {
       setEnviando(false);
     }
@@ -63,25 +79,28 @@ export function CrearPartida() {
     <main className="pantalla crear-partida">
       <header className="cabecera-pantalla">
         <h1>Nueva partida</h1>
-        <p className="entradilla">Elige el formato del torneo, cuántos equipos juegan y el nivel de los rivales.</p>
+        <p className="entradilla">
+          Elige el formato del torneo, cuántos equipos juegan y el nivel de los rivales.
+        </p>
       </header>
       <div className="crear-partida-rejilla">
-        <form className="formulario ancho crear-formulario" onSubmit={(e) => void enviar(e)}>
-          <fieldset className="losetas">
+        {/* Spec 012, ronda 4: desde 720 px, las explicaciones van en la barra principal (`data-ayuda`) y caben sin desplazar; en estrecho (sin cursor), en su sitio. */}
+        <form className="formulario crear-formulario" onSubmit={(e) => void enviar(e)}>
+          <fieldset className="losetas crear-modo">
             <legend>Modo de juego</legend>
             {(['liga', 'playoff', 'mixto', 'duelos'] as const).map((m) => (
-              <label key={m} className="loseta">
+              <label key={m} className="loseta" data-ayuda={DETALLE_MODO[m]}>
                 <input type="radio" name="modo" checked={modo === m} onChange={() => cambiarModo(m)} />
                 <Icono nombre={ICONO_MODO[m]} tamano={26} className="loseta-icono" />
                 <span className="loseta-texto">
                   <strong>{ETIQUETA_MODO[m]}</strong>{' '}
-                  <span className="nota">{DETALLE_MODO[m]}</span>
+                  <span className="nota ayuda-en-sitio">{DETALLE_MODO[m]}</span>
                 </span>
               </label>
             ))}
           </fieldset>
 
-          <fieldset>
+          <fieldset className="crear-equipos" data-ayuda={AYUDA_EQUIPOS}>
             <legend>Equipos</legend>
             <label>
               Participantes
@@ -96,25 +115,26 @@ export function CrearPartida() {
             </label>
           </fieldset>
 
-          <fieldset>
+          <fieldset className="crear-rivales" data-ayuda={AYUDA_RIVALES}>
             <legend>Rivales controlados por la IA</legend>
-            {esInvitado ? (
-              <p className="nota">Como invitado, las {maxNpc} plazas restantes serán NPC. Puedes elegir sus niveles.</p>
-            ) : (
-              <p className="nota">Las plazas que no ocupen personas al empezar se rellenarán con NPC al azar.</p>
-            )}
+            <p className="nota ayuda-en-sitio">{AYUDA_RIVALES}</p>
             <fieldset className="losetas compactas">
               <legend>Dificultad</legend>
               {(Object.keys(ETIQUETA_DIFICULTAD) as Dificultad[]).map((d) => (
-                <label key={d} className="loseta">
-                  <input type="radio" name="dificultad" checked={dificultad === d} onChange={() => setDificultad(d)} />
+                <label key={d} className="loseta" data-ayuda={DESCRIPCION_DIFICULTAD[d]}>
+                  <input
+                    type="radio"
+                    name="dificultad"
+                    checked={dificultad === d}
+                    onChange={() => setDificultad(d)}
+                  />
                   <span className="loseta-texto">
-                    <strong>{ETIQUETA_DIFICULTAD[d]}</strong> <span className="nota">({DESCRIPCION_DIFICULTAD[d]})</span>
+                    <strong>{ETIQUETA_DIFICULTAD[d]}</strong>{' '}
+                    <span className="nota ayuda-en-sitio">{DESCRIPCION_DIFICULTAD[d]}</span>
                   </span>
                 </label>
               ))}
             </fieldset>
-            <p className="nota">Decide el nivel de los NPC que rellenan plazas; los que añadas tú conservan su nivel. El relleno automático nunca usa el nivel PRO: solo tú, como anfitrión, puedes elegirlo.</p>
             {npc.length > 0 && (
               <ul className="lista-npc">
                 {npc.map((nivel, i) => (
@@ -125,7 +145,9 @@ export function CrearPartida() {
                     <select
                       aria-label={`Nivel del NPC ${i + 1}`}
                       value={nivel}
-                      onChange={(e) => setNpc(npc.map((n, j) => (j === i ? (e.target.value as NivelNPC) : n)))}
+                      onChange={(e) =>
+                        setNpc(npc.map((n, j) => (j === i ? (e.target.value as NivelNPC) : n)))
+                      }
                     >
                       {(Object.keys(ETIQUETA_NIVEL_NPC) as NivelNPC[]).map((n) => (
                         <option key={n} value={n}>
@@ -133,24 +155,35 @@ export function CrearPartida() {
                         </option>
                       ))}
                     </select>
-                    <button type="button" className="secundario" onClick={() => setNpc(npc.filter((_, j) => j !== i))}>
+                    <button
+                      type="button"
+                      className="secundario"
+                      onClick={() => setNpc(npc.filter((_, j) => j !== i))}
+                    >
                       Quitar
                     </button>
                   </li>
                 ))}
               </ul>
             )}
-            <button type="button" className="secundario" disabled={npc.length >= maxNpc} onClick={() => setNpc([...npc, 'intermedio'])}>
+            <button
+              type="button"
+              className="secundario"
+              disabled={npc.length >= maxNpc}
+              data-ayuda={
+                esInvitado
+                  ? `Como invitado, las ${maxNpc} plazas restantes son NPC: aquí eliges sus niveles.`
+                  : 'Añade un NPC con el nivel que elijas; las plazas que nadie ocupe al empezar se rellenan solas.'
+              }
+              onClick={() => setNpc([...npc, 'intermedio'])}
+            >
               Añadir NPC
             </button>
           </fieldset>
 
-          <fieldset>
+          <fieldset className="crear-ritmo" data-ayuda={AYUDA_RITMO}>
             <legend>Ritmo del torneo</legend>
-            <p className="nota">
-              Solo el draft se juega a la vez. Si eres la única persona, cada jornada empieza cuando tú quieras; con más
-              personas, cada uno juega sus partidos cuando quiere dentro del plazo de la jornada.
-            </p>
+            <p className="nota ayuda-en-sitio">{AYUDA_RITMO}</p>
             {esInvitado ? (
               <p className="nota">Regístrate para jugar torneos con otras personas.</p>
             ) : (
@@ -166,7 +199,9 @@ export function CrearPartida() {
                   aria-describedby="plazo-ayuda"
                 />
                 <span id="plazo-ayuda" className={plazoInvalido ? 'error ayuda-campo' : 'nota ayuda-campo'}>
-                  {plazoInvalido ? 'El plazo debe estar entre 1 y 336 horas (dos semanas).' : 'Entre 1 y 336 horas.'}
+                  {plazoInvalido
+                    ? 'El plazo debe estar entre 1 y 336 horas (dos semanas).'
+                    : 'Entre 1 y 336 horas.'}
                 </span>
               </label>
             )}
@@ -177,23 +212,6 @@ export function CrearPartida() {
               <p>{error}</p>
             </Aviso>
           )}
-          <div className="barra-principal barra-formulario">
-            <span className="barra-principal-estado" id="motivo-crear">
-              {plazoInvalido ? 'Corrige el plazo por jornada para crear la partida.' : null}
-            </span>
-            <div className="barra-principal-botones">
-              <button
-                type="submit"
-                className="boton-principal"
-                data-principal=""
-                aria-disabled={enviando || plazoInvalido || undefined}
-                aria-describedby={plazoInvalido ? 'motivo-crear' : undefined}
-                aria-busy={enviando || undefined}
-              >
-                Crear partida
-              </button>
-            </div>
-          </div>
         </form>
 
         {/* Resumen del torneo que se va a crear, con el sobre ilustrado. */}
@@ -219,11 +237,27 @@ export function CrearPartida() {
           </dl>
         </aside>
       </div>
+      <BarraPrincipal
+        principal={{
+          etiqueta: 'Crear partida',
+          onClick: () => enviar(),
+          motivoDesactivado: plazoInvalido ? 'Corrige el plazo por jornada para crear la partida.' : null,
+          ayuda: 'Crea la partida y abre la sala, donde esperas a los demás o empiezas el draft.',
+        }}
+        estado={
+          <span className="solo-ancho">Pasa el cursor por cada opción para ver aquí qué significa.</span>
+        }
+      />
     </main>
   );
 }
 
-const ETIQUETA_MODO = { liga: 'Liga', playoff: 'Playoff', mixto: 'Mixto', duelos: 'Duelo de jugadores' } as const;
+const ETIQUETA_MODO = {
+  liga: 'Liga',
+  playoff: 'Playoff',
+  mixto: 'Mixto',
+  duelos: 'Duelo de jugadores',
+} as const;
 
 /** Icono de cada modo (spec 005, FR-060): todos tienen el suyo, con el mismo trazo. */
 const ICONO_MODO = { liga: 'partidas', playoff: 'trofeo', mixto: 'escudo', duelos: 'duelo' } as const;
@@ -234,3 +268,9 @@ const DETALLE_MODO = {
   mixto: 'Liga de 8 y después semifinales y final.',
   duelos: 'Eliminatorias por duelos entre jugadores, puesto por puesto.',
 } as const;
+
+const AYUDA_EQUIPOS = 'Cuántos equipos juegan el torneo; con 16, el draft se hace en dos grupos de 8.';
+const AYUDA_RIVALES =
+  'Decide el nivel de los NPC que rellenan plazas; los que añadas tú conservan su nivel. El relleno automático nunca usa el nivel PRO: solo tú, como anfitrión, puedes elegirlo.';
+const AYUDA_RITMO =
+  'Solo el draft se juega a la vez. Si eres la única persona, cada jornada empieza cuando tú quieras; con más personas, cada uno juega sus partidos cuando quiere dentro del plazo de la jornada.';

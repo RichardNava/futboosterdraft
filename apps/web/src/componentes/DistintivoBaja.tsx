@@ -17,7 +17,8 @@ export function DistintivoBaja({ baja }: { baja: BajaVista | undefined }) {
   const partidos = baja.partidosRestantes === 1 ? '1 partido' : `${baja.partidosRestantes} partidos`;
   return (
     <span className={`etiqueta baja ${baja.motivo === 'lesion' ? 'lesion' : 'sancion'}`} title={`${ETIQUETA_MOTIVO[baja.motivo]}: ${partidos}`}>
-      <Icono nombre={baja.motivo === 'lesion' ? 'lesion' : baja.motivo === 'roja' ? 'roja' : 'amarilla'} />
+      {/* Las tarjetas con su color, no con el del texto (spec 012, ronda 3). */}
+      <Icono nombre={baja.motivo === 'lesion' ? 'lesion' : baja.motivo === 'roja' ? 'roja' : 'amarilla'} className={baja.motivo === 'lesion' ? undefined : `icono-${baja.motivo === 'roja' ? 'roja' : 'amarilla'}`} />
       {ETIQUETA_MOTIVO[baja.motivo]} · {partidos}
     </span>
   );

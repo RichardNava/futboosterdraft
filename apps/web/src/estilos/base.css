@@ -127,7 +127,12 @@ html {
 .portada .cartel {
   font-size: clamp(60px, 8.6vw, 132px);
   /* El titular se ilumina desde arriba, como bajo los focos. */
-  background: linear-gradient(180deg, var(--color-texto) 0%, var(--color-texto) 55%, var(--color-texto-suave) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--color-texto) 0%,
+    var(--color-texto) 55%,
+    var(--color-texto-suave) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -206,7 +211,9 @@ html {
   bottom: 0;
   width: clamp(120px, 12.5vw, 190px);
   transform-origin: 50% 130%;
-  transform: translateX(-50%) translateX(calc(var(--desplazamiento) * 50%)) rotate(calc(var(--desplazamiento) * 11deg)) translateY(calc((var(--desplazamiento) * var(--desplazamiento)) * 5%));
+  transform: translateX(-50%) translateX(calc(var(--desplazamiento) * 50%))
+    rotate(calc(var(--desplazamiento) * 11deg))
+    translateY(calc((var(--desplazamiento) * var(--desplazamiento)) * 5%));
   filter: var(--sombra-carta-escena);
   animation: carta-sale var(--duracion-cartel) var(--curva-rebote) both;
   animation-delay: calc(250ms + var(--i) * 110ms);
@@ -1053,9 +1060,16 @@ html {
   box-shadow: var(--sombra-panel);
 }
 
+/* Estrellas y, debajo, los datos de la colocación (Formación): a la izquierda de la cifra. */
+.media-equipo-izquierda {
+  flex: 1;
+  display: grid;
+  gap: var(--espacio-1);
+  min-width: 0;
+}
+
 .media-equipo-estrellas {
   display: flex;
-  flex: 1;
   gap: 2px;
   min-width: 0;
 }
@@ -1466,6 +1480,19 @@ html {
 .alineacion .colocacion-resumen {
   margin: 0;
   font-size: var(--texto-pequeno);
+  line-height: 1.3;
+}
+
+/* Spec 012, ronda 3: aire entre el título, la ayuda y «Torneo», y entre «Formación» y su selector. */
+.alineacion .titulo-con-ayuda {
+  gap: var(--espacio-3);
+  margin-right: var(--espacio-4);
+}
+
+.campo-formacion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
 }
 
 .alineacion .colocacion-resumen p {
@@ -1485,7 +1512,8 @@ html {
  */
 @media (min-width: 1024px) {
   :is(.alineacion, .gestion-equipo) {
-    --alineacion-reserva: 21.5rem;
+    /* Ronda 3 de la spec 012: el resumen va dentro de la media y la barra es más baja (antes, 21,5rem). */
+    --alineacion-reserva: 18.5rem;
     padding-top: var(--espacio-4);
   }
 
@@ -1494,7 +1522,10 @@ html {
   }
 
   :is(.alineacion, .gestion-equipo) .campo-equipo {
-    grid-template-columns: clamp(300px, calc((100dvh - var(--alineacion-reserva)) * 64 / 100), 520px) minmax(0, 1fr);
+    grid-template-columns: clamp(300px, calc((100dvh - var(--alineacion-reserva)) * 64 / 100), 520px) minmax(
+        0,
+        1fr
+      );
     align-items: stretch;
   }
 
@@ -1514,8 +1545,19 @@ html {
     overflow-y: auto;
   }
 
+  /* Más baja que en el resto de pantallas: el alto que gana es para el banquillo (spec 012, ronda 3). */
   .alineacion .barra-principal {
-    margin-top: var(--espacio-4);
+    min-height: 0;
+    margin-top: var(--espacio-2);
+    padding-block: var(--espacio-2) calc(var(--espacio-2) + env(safe-area-inset-bottom));
+  }
+
+  :is(.alineacion, .gestion-equipo) .campo-equipo-lateral .banquillo h2 {
+    margin-bottom: var(--espacio-1);
+  }
+
+  :is(.alineacion, .gestion-equipo) .campo-equipo-secciones {
+    gap: var(--espacio-3);
   }
 }
 
@@ -1558,7 +1600,11 @@ html {
   }
 
   :is(.alineacion, .gestion-equipo) .campo-equipo.horizontal {
-    grid-template-columns: clamp(520px, calc((100dvh - var(--alineacion-reserva-horizontal)) * 100 / 64), 60%) minmax(400px, 1fr);
+    grid-template-columns: clamp(
+        520px,
+        calc((100dvh - var(--alineacion-reserva-horizontal)) * 100 / 64),
+        60%
+      ) minmax(400px, 1fr);
     /* El portero y los extremos asoman por los lados del campo: margen para que no se corten. */
     overflow-clip-margin: var(--espacio-12);
   }
@@ -1847,9 +1893,118 @@ html {
 }
 
 .crear-formulario {
-  max-width: 720px;
+  max-width: none;
   gap: var(--espacio-5);
   margin-top: 0;
+}
+
+/*
+ * Spec 012, ronda 4: cuatro recuadros sin desplazar (modo y rivales a la izquierda, equipos y ritmo a la derecha);
+ * las explicaciones van en la barra principal. En estrecho, uno debajo de otro.
+ */
+@media (min-width: 900px) {
+  .crear-formulario {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    grid-template-areas:
+      'modo equipos'
+      'rivales ritmo'
+      'error error';
+    align-items: stretch;
+  }
+
+  .crear-modo {
+    grid-area: modo;
+  }
+
+  .crear-equipos {
+    grid-area: equipos;
+  }
+
+  .crear-rivales {
+    grid-area: rivales;
+  }
+
+  .crear-ritmo {
+    grid-area: ritmo;
+  }
+
+  .crear-formulario > .aviso {
+    grid-area: error;
+  }
+}
+
+.crear-formulario > fieldset {
+  align-content: start;
+}
+
+.crear-modo .loseta {
+  min-height: 0;
+  padding-block: var(--espacio-3);
+}
+
+/*
+ * Explicaciones en su sitio solo en estrecho (sin cursor no hay ayuda en la barra); desde 720 px, para los lectores de
+ * pantalla, y la barra las muestra al pasar por encima.
+ */
+@media (min-width: 720px) {
+  .crear-partida .ayuda-en-sitio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 719.98px) {
+  .crear-partida .solo-ancho {
+    display: none;
+  }
+}
+
+/* Dificultad: desde 720 px, una fila de cuatro, como un selector, sin caja propia (el recuadro de los rivales ya la enmarca). */
+@media (min-width: 720px) {
+  .crear-rivales .losetas.compactas {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--espacio-2);
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .crear-rivales .losetas.compactas > legend {
+    margin-bottom: var(--espacio-2);
+    padding: 0;
+  }
+
+  .crear-rivales .losetas.compactas .loseta {
+    justify-items: center;
+    padding: var(--espacio-3) var(--espacio-2);
+    text-align: center;
+  }
+
+  /* El círculo de la opción sobra: la marcada ya lleva la luz lima. Sigue ahí, invisible, para el teclado y los lectores. */
+  .crear-rivales .losetas.compactas .loseta input {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .crear-rivales .losetas.compactas .loseta:has(input:focus-visible) {
+    outline: var(--contorno-foco) solid var(--color-accion);
+    outline-offset: 2px;
+  }
+
+  .crear-rivales .losetas.compactas .loseta-texto {
+    padding-right: 0;
+  }
 }
 
 .crear-formulario > fieldset > legend {
@@ -1979,9 +2134,13 @@ html {
   border-radius: var(--radio-grande);
   background-color: var(--vidrio);
   background-image: var(--halo-foco), var(--brillo-superior);
-  background-size: 160% 70%, auto;
+  background-size:
+    160% 70%,
+    auto;
   background-repeat: no-repeat;
-  background-position: 50% -20%, 0 0;
+  background-position:
+    50% -20%,
+    0 0;
   box-shadow: var(--sombra-panel);
   -webkit-backdrop-filter: var(--desenfoque);
   backdrop-filter: var(--desenfoque);
@@ -2420,6 +2579,30 @@ html {
   white-space: nowrap;
 }
 
+/* Barra de la 2D (spec 012, ronda 3): el cronómetro con la fase y, a su lado, quién lleva el balón. */
+.estado-2d {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2) var(--espacio-5);
+}
+
+.cronometro-2d {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--espacio-2);
+  white-space: nowrap;
+}
+
+.cronometro-2d strong {
+  min-width: 3.5ch;
+  color: var(--color-texto);
+  font-family: var(--letra-cartel);
+  font-size: var(--titulo-pequeno);
+  font-style: var(--inclinacion-cartel);
+  font-variant-numeric: tabular-nums;
+}
+
 .poseedor-2d .chapa {
   width: 18px;
   height: 18px;
@@ -2453,7 +2636,9 @@ html {
   border-radius: var(--radio-grande);
   background-color: var(--vidrio-fuerte);
   background-image: var(--trama), var(--brillo-superior);
-  background-size: 14px 14px, auto;
+  background-size:
+    14px 14px,
+    auto;
   box-shadow: var(--sombra-elevada);
 }
 
@@ -2796,7 +2981,9 @@ html {
   border-radius: var(--radio-grande);
   background-color: var(--vidrio-fuerte);
   background-image: var(--trama), var(--degradado-panel-destacado);
-  background-size: 14px 14px, auto;
+  background-size:
+    14px 14px,
+    auto;
   box-shadow: var(--sombra-elevada);
 }
 
@@ -3332,6 +3519,34 @@ html {
   font-size: var(--texto-pequeno);
 }
 
+/*
+ * Ayuda resumida del control bajo el cursor o con el foco (spec 012, ronda 3). Dos líneas como mucho: caben en el alto
+ * del botón principal, así que la barra no crece al aparecer (y no tapa lo que está debajo del cursor).
+ */
+.barra-principal-estado .ayuda-barra {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-width: 0;
+  color: var(--color-texto);
+  /* Ronda 4: letra de cuerpo, no la pequeña del estado, para leerla bien de un vistazo. */
+  font-size: var(--texto-cuerpo);
+  font-weight: 500;
+}
+
+.barra-principal-estado .ayuda-barra > span {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  line-height: 1.35;
+}
+
+.barra-principal-estado .ayuda-barra .icono {
+  flex: none;
+}
+
 .barra-principal-estado .motivo {
   color: var(--color-texto);
   font-weight: 500;
@@ -3550,14 +3765,6 @@ html {
 
 .contador-sustituciones {
   margin: 0;
-}
-
-/* Barra del botón principal dentro de un formulario (Nueva partida): mismo aspecto, a lo ancho del formulario. */
-.formulario .barra-principal.barra-formulario {
-  margin-inline: 0;
-  padding-inline: var(--espacio-4);
-  border: 1px solid var(--borde-vidrio-fuerte);
-  border-radius: var(--radio-panel);
 }
 
 .equipos-2d {
@@ -3787,4 +3994,37 @@ html {
 .selector-modo-incidencias {
   display: grid;
   gap: var(--espacio-1);
+}
+
+.selector-modo-fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+/* En el carril de la 2D, anclado arriba: se cambia de modo aunque se baje por «Lo que ha pasado» (ronda 3). */
+.partido-2d-lateral > .selector-modo-incidencias {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio-panel);
+  background-color: var(--vidrio-fuerte);
+  background-image: var(--brillo-superior);
+  box-shadow: var(--sombra-panel);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+.partido-2d-lateral > .selector-modo-incidencias .segmentado {
+  flex: 1;
+  flex-wrap: nowrap;
+}
+
+.partido-2d-lateral > .selector-modo-incidencias .segmentado > button {
+  flex: 1;
 }

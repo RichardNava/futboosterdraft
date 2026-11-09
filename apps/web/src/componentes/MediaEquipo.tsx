@@ -5,7 +5,7 @@
  * media efectiva que muestra cada ficha del campo. Se recalcula en cada cambio del once.
  */
 import { statsEfectivos, type Jugador, type ParametrosEquilibrado, type ResultadoColocacion } from '@fbd/domain';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { CartaResumen } from './CartaJugador';
 
 const ESTRELLAS = 10;
@@ -54,19 +54,23 @@ function Estrella({ relleno }: { relleno: number }) {
   );
 }
 
-export function MediaEquipo({ media }: { media: number | null }) {
+/** `children`: datos de la colocación bajo las estrellas, dentro de la misma caja (Formación, spec 012, ronda 3). */
+export function MediaEquipo({ media, children }: { media: number | null; children?: ReactNode }) {
   const valor = media ?? 0;
   const cifra = media === null ? '–' : String(Math.round(media));
   return (
-    <div className="media-equipo" data-testid="media-equipo">
+    <div className="media-equipo" data-testid="media-equipo" data-ayuda="Media del once en estrellas y en cifra, con la penalización de quien juega fuera de su posición.">
       <p className="solo-lectores" aria-live="polite">
         {media === null ? 'Sin titulares: no hay media del equipo.' : `Media del equipo: ${cifra} de 100.`}
       </p>
-      <span className="media-equipo-estrellas" aria-hidden="true">
-        {rellenoEstrellas(valor).map((r, i) => (
-          <Estrella key={i} relleno={r} />
-        ))}
-      </span>
+      <div className="media-equipo-izquierda">
+        <span className="media-equipo-estrellas" aria-hidden="true">
+          {rellenoEstrellas(valor).map((r, i) => (
+            <Estrella key={i} relleno={r} />
+          ))}
+        </span>
+        {children}
+      </div>
       <span className="media-equipo-cifra" aria-hidden="true">
         <svg viewBox="0 0 24 24" className="media-equipo-marco" focusable="false">
           <path d={TRAZO_ESTRELLA} />

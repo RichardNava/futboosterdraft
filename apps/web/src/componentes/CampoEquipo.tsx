@@ -328,8 +328,7 @@ export function CampoEquipo(props: Props) {
   // En Formación, la media del once en estrellas y en cifra (spec 004, FR-060) y el resumen de la colocación.
   const cabecera = (
     <>
-      {modo === 'preparacion' && <MediaEquipo media={mediaEquipo(colocacion, jugadores, parametros)} />}
-      {bajoMedia}
+      {modo === 'preparacion' ? <MediaEquipo media={mediaEquipo(colocacion, jugadores, parametros)}>{bajoMedia}</MediaEquipo> : bajoMedia}
     </>
   );
   const lateral = (
@@ -348,7 +347,13 @@ export function CampoEquipo(props: Props) {
         {pestanas?.panel ?? (
           <>
             {!sinBanquillo && (
-              <section ref={banquillo} aria-label="Banquillo" className="banquillo" data-testid="banquillo">
+              <section
+                ref={banquillo}
+                aria-label="Banquillo"
+                className="banquillo"
+                data-testid="banquillo"
+                data-ayuda="Los suplentes: suéltalos sobre un titular para hacer el cambio."
+              >
                 <h2>
                   Banquillo ({estado.banquillo.length}/{maxBanquillo})
                 </h2>
@@ -356,7 +361,12 @@ export function CampoEquipo(props: Props) {
               </section>
             )}
             {reserva.length > 0 && (
-              <section ref={restoPlantilla} aria-label="Resto de la plantilla" data-testid="reserva">
+              <section
+                ref={restoPlantilla}
+                aria-label="Resto de la plantilla"
+                data-testid="reserva"
+                data-ayuda="No juegan este partido: arrástralos al banquillo o al campo para convocarlos."
+              >
                 <h2>Resto de la plantilla</h2>
                 <div className="lista-compacta">{reserva.map(fichaLista)}</div>
               </section>
@@ -376,6 +386,7 @@ export function CampoEquipo(props: Props) {
           className={`campo campo-unico${horizontal ? ' horizontal' : ''}`}
           aria-label="Campo del equipo"
           data-testid="campo-equipo"
+          data-ayuda="Arrastra a un titular para recolocarlo o suéltalo sobre otro para intercambiarlos."
         >
           <LineasCampo horizontal={horizontal} />
           {colocacion.titulares.map((t) =>

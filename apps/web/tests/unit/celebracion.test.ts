@@ -76,6 +76,9 @@ describe('CapaCelebracion', () => {
     expect(pintar('celebracion-estadio', juego)).toContain('particulas-flash');
     expect(pintar('celebracion-neon', juego)).toContain('particulas-chispa');
     expect(pintar('celebracion-pizarra', juego)).toContain('celebracion-flecha');
+    expect(pintar('celebracion-discoteca', juego)).toContain('discoteca-bola');
+    expect(pintar('celebracion-discoteca', juego).match(/class="bailarin"/g)).toHaveLength(7);
+    expect(pintar('celebracion-fuegos', juego).match(/class="fuego"/g)).toHaveLength(7);
   });
 
   it('una secuencia es un vídeo silenciado con WebM y MOV', () => {

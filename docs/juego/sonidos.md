@@ -49,6 +49,24 @@ añade filas en «Pendientes» con las acciones que deberían sonar, y pide que 
   al entrar o al reconectar no suena. Tras «Finalizar partido» (se ve todo de golpe) tampoco suena nada.
 - La simulación rápida no tiene sonidos de partido.
 
+### Ambiente de público (spec 012, ronda 4)
+
+La 2D (en directo y en la repetición) tiene un ambiente de fondo con grabaciones CC0 de estadios reales
+(`apps/web/src/sonido/ambiente.ts`; procedencia en `LICENCIA`; montaje con `python tools/sonidos/ambiente.py`). Sustituye
+al sintetizado de la ronda 3, que sonaba a ruido. Los ficheros se piden al entrar en la 2D.
+
+| Capa | Fichero | Cuándo | Volumen relativo |
+| --- | --- | --- | --- |
+| Rumor de la grada (Millerntor) | ambienteGrada.mp3 (44 s en bucle) | Siempre, desde un punto al azar | 1 |
+| Hinchada con bombo | ambienteBombo1.mp3, ambienteBombo2.mp3 (14–16 s) | Cada 14–30 s | 0,75 |
+| Cánticos | ambienteCantico1.mp3, ambienteCantico2.mp3 (13–18 s) | Cada 25–50 s | 0,75 |
+| Vuvuzela | ambienteVuvuzela1.mp3, ambienteVuvuzela2.mp3 (1,5–4,4 s) | Cada 9–24 s | 0,40 |
+
+Las tomas se alternan (nunca la misma dos veces seguidas). El bombo y los cánticos no coinciden; la vuvuzela puede
+sonar sobre ellos. Los ficheros van igualados (el fondo a −24 dBFS RMS y los momentos a −20); volumen general del
+ambiente: 0,5 por el factor general, por debajo de los efectos. Con el balón en juego suena entero; en las pausas (descanso, «Gestionar equipo», cargando),
+al 35 %; al acabar el partido, callado. El interruptor de sonido lo silencia al momento.
+
 ### Celebraciones de gol
 
 Las celebraciones (spec 012) se eligen en «Mi perfil». En la 2D, cada gol muestra la celebración del equipo que
@@ -56,7 +74,7 @@ marca, también los del rival.
 
 | Celebración | Clase | Sonido propio |
 | --- | --- | --- |
-| Clásica (por defecto), Estadio, Neón, Pizarra | `juego` (animación CSS: confeti, ondas, focos, chispas, tiza…) | No: solo suena el efecto del gol (`golPropio` o `golRival`) |
+| Clásica (por defecto), Estadio, Neón, Pizarra; Discoteca y Fuegos artificiales, de pago en la tienda (ronda 4) | `juego` (animación CSS: confeti, ondas, focos, chispas, tiza…) | No: solo suena el efecto del gol (`golPropio` o `golRival`) |
 | Prueba de secuencia (inactiva, solo para pruebas) | `secuencia` (vídeo WebM con transparencia) | No tiene |
 
 Una celebración de clase `secuencia` puede traer su propio efecto en `datos.sonido` (en `data/cosmeticos.json`).

@@ -4,7 +4,9 @@
  */
 import type { ComponentType } from 'react';
 import { Clasica } from './Clasica';
+import { Discoteca } from './Discoteca';
 import { Estadio } from './Estadio';
+import { Fuegos } from './Fuegos';
 import { Neon } from './Neon';
 import { Pizarra } from './Pizarra';
 import type { PropsJuego } from './tipos';
@@ -14,6 +16,8 @@ export const CELEBRACIONES_JUEGO: Record<string, ComponentType<PropsJuego>> = {
   'celebracion-estadio': Estadio,
   'celebracion-neon': Neon,
   'celebracion-pizarra': Pizarra,
+  'celebracion-discoteca': Discoteca,
+  'celebracion-fuegos': Fuegos,
 };
 
 export const IDS_CELEBRACIONES_JUEGO: ReadonlySet<string> = new Set(Object.keys(CELEBRACIONES_JUEGO));

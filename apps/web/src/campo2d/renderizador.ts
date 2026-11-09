@@ -1,7 +1,7 @@
 /**
  * Dibujo del partido 2D en un Canvas (FR-048, FR-023): el campo, los jugadores como chapas con los colores
- * de la equipación que usa su equipo en este partido (de `partido.inicio.equipaciones`), con el dorsal
- * dentro, el nombre debajo y una muesca hacia donde corren; el balón con su sombra y un tamaño según su
+ * de la equipación que usa su equipo en este partido (de `partido.inicio.equipaciones`), con el retrato rodeado del
+ * color del equipo (spec 012, ronda 3) o, sin él, el dorsal dentro, el nombre debajo y una muesca hacia donde corren; el balón con su sombra y un tamaño según su
  * altura; el marcador, el minuto, el rótulo breve de la acción en curso y los avisos («¡Gol!», descanso…).
  * En la tanda de penaltis solo se ven el lanzador, el portero y el balón.
  *
@@ -18,6 +18,70 @@ export interface JugadorDibujo {
   lado: 'local' | 'visitante';
   dorsal: number | null;
   nombre: string;
+  /** Retrato propio (spec 012, ronda 3): la chapa lo muestra rodeado del color del equipo; sin él, el dorsal. */
+  imagen?: string | null;
+}
+
+/** Retratos (url → imagen, cargada una vez) y chapas con retrato ya compuestas (spec 012, ronda 3). */
+const retratos = new Map<string, HTMLImageElement>();
+const chapasRetrato = new Map<string, { lienzo: HTMLCanvasElement; mitad: number }>();
+
+function retratoCargado(url: string): HTMLImageElement | null {
+  let im = retratos.get(url);
+  if (!im) {
+    if (typeof Image === 'undefined') return null;
+    im = new Image();
+    im.decoding = 'async';
+    im.src = url;
+    retratos.set(url, im);
+  }
+  return im.complete && im.naturalWidth > 0 ? im : null;
+}
+
+/**
+ * Chapa con el retrato recortado en círculo y un aro del color del equipo, compuesta una sola vez en un lienzo aparte
+ * por retrato, tamaño y colores: en cada fotograma solo se copia (un `drawImage`), así que no frena el dibujo. Mientras
+ * el retrato no ha cargado, `null` (se dibuja la chapa con el dorsal).
+ */
+export function chapaConRetrato(url: string, radio: number, aro: string, contorno: string | null): { lienzo: HTMLCanvasElement; mitad: number } | null {
+  const im = retratoCargado(url);
+  if (!im || typeof document === 'undefined') return null;
+  const ratio = globalThis.devicePixelRatio || 1;
+  const clave = `${url}|${Math.round(radio * ratio)}|${aro}|${contorno ?? ''}`;
+  let hecha = chapasRetrato.get(clave);
+  if (hecha) return hecha;
+  const grosor = Math.max(1.5, radio * 0.16);
+  const mitad = radio + grosor;
+  const lienzo = document.createElement('canvas');
+  lienzo.width = lienzo.height = Math.ceil(2 * mitad * ratio);
+  const g = lienzo.getContext('2d');
+  if (!g) return null;
+  g.scale(ratio, ratio);
+  g.beginPath();
+  g.arc(mitad, mitad, radio, 0, Math.PI * 2);
+  g.fillStyle = aro;
+  g.fill();
+  // El retrato, cuadrado y algo hacia arriba (la cara), dentro del aro.
+  const dentro = radio - grosor;
+  g.save();
+  g.beginPath();
+  g.arc(mitad, mitad, dentro, 0, Math.PI * 2);
+  g.clip();
+  const lado = Math.min(im.naturalWidth, im.naturalHeight);
+  g.drawImage(im, (im.naturalWidth - lado) / 2, (im.naturalHeight - lado) * 0.15, lado, lado, mitad - dentro, mitad - dentro, 2 * dentro, 2 * dentro);
+  g.restore();
+  if (contorno) {
+    g.beginPath();
+    g.arc(mitad, mitad, radio + grosor * 0.5, 0, Math.PI * 2);
+    g.lineWidth = grosor;
+    g.strokeStyle = contorno;
+    g.stroke();
+  }
+  // Al cambiar de tamaño la ventana se componen de nuevo: sin dejar crecer la caché.
+  if (chapasRetrato.size > 160) chapasRetrato.clear();
+  hecha = { lienzo, mitad };
+  chapasRetrato.set(clave, hecha);
+  return hecha;
 }
 
 export interface Escena {
@@ -233,11 +297,50 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
   const tamDorsal = Math.max(8, radio * 0.95);
   // Spec 008: el nombre se lee con el zoom al 100 % (antes 11 * e, unos 10 px).
   const tamNombre = Math.max(11, 16 * e);
+  // Con retrato, la chapa es algo mayor para que se reconozca la cara (spec 012, ronda 3).
+  const radioRetrato = radio * 1.2;
+  // Muesca hacia donde corre (solo si se mueve de verdad, para que no baile parado).
+  const muesca = (x: number, y: number, vx: number, vy: number, r: number, color: string) => {
+    const rapidez = Math.hypot(vx, vy);
+    if (rapidez <= 0.4) return;
+    const [ux, uy] = [vx / rapidez, vy / rapidez];
+    const [cx, cy] = [x * e + ux * r, y * e + uy * r];
+    const w = r * 0.45;
+    ctx.beginPath();
+    ctx.moveTo(cx + ux * w * 0.9, cy + uy * w * 0.9);
+    ctx.lineTo(cx - uy * w, cy + ux * w);
+    ctx.lineTo(cx + uy * w, cy - ux * w);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  };
   const chapa = (id: number, x: number, y: number, vx: number, vy: number) => {
     const j = escena.jugadores.get(id);
     if (!j) return;
     const equipacion = escena.equipaciones[j.lado];
     const colores = { principal: principal(equipacion), secundario: colorDorsal(equipacion) };
+    const conRetrato = j.imagen ? chapaConRetrato(j.imagen, radioRetrato, colores.principal, necesitaContorno(colores.principal, CESPED) ? interfaz.contorno : null) : null;
+    if (conRetrato) {
+      const { lienzo, mitad } = conRetrato;
+      ctx.drawImage(lienzo, x * e - mitad, y * e - mitad, 2 * mitad, 2 * mitad);
+      muesca(x, y, vx, vy, radioRetrato, colores.principal);
+      // El dorsal, en una chapita abajo a la derecha.
+      if (j.dorsal !== null) {
+        const [dx, dy, r] = [x * e + radioRetrato * 0.72, y * e + radioRetrato * 0.72, Math.max(5, radioRetrato * 0.44)];
+        ctx.beginPath();
+        ctx.arc(dx, dy, r, 0, Math.PI * 2);
+        ctx.fillStyle = colores.principal;
+        ctx.fill();
+        ctx.lineWidth = Math.max(1, r * 0.18);
+        ctx.strokeStyle = colores.secundario;
+        ctx.stroke();
+        ctx.font = `700 ${Math.max(6, r * 1.1)}px ${interfaz.letra}`;
+        ctx.fillStyle = colores.secundario;
+        ctx.fillText(String(j.dorsal), dx, dy + 0.5);
+      }
+      if (ancho >= 480) texto(ctx, j.nombre, x * e, y * e + radioRetrato + tamNombre * 0.8, tamNombre, interfaz);
+      return;
+    }
     // Círculo con el patrón del diseño recortado dentro (el mismo de la vista previa, `patronDiseno`).
     ctx.save();
     ctx.beginPath();
@@ -265,20 +368,7 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
       ctx.strokeStyle = interfaz.contorno;
       ctx.stroke();
     }
-    // Muesca hacia donde corre (solo si se mueve de verdad, para que no baile parado).
-    const rapidez = Math.hypot(vx, vy);
-    if (rapidez > 0.4) {
-      const [ux, uy] = [vx / rapidez, vy / rapidez];
-      const [cx, cy] = [x * e + ux * radio, y * e + uy * radio];
-      const w = radio * 0.45;
-      ctx.beginPath();
-      ctx.moveTo(cx + ux * w * 0.9, cy + uy * w * 0.9);
-      ctx.lineTo(cx - uy * w, cy + ux * w);
-      ctx.lineTo(cx + uy * w, cy - ux * w);
-      ctx.closePath();
-      ctx.fillStyle = colores.secundario;
-      ctx.fill();
-    }
+    muesca(x, y, vx, vy, radio, colores.secundario);
     if (j.dorsal !== null) {
       ctx.font = `600 ${tamDorsal}px ${interfaz.letra}`;
       // Contorno con el principal: el dorsal se lee también sobre las rayas o franjas del segundo color (T129).

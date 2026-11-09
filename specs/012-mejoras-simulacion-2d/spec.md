@@ -73,6 +73,36 @@ Términos:
 - Q: Plantillas → A: Nombre, escudo y estrellas con la media **del mejor once** (el mejor portero y los diez mejores de
   campo) en la primera columna, fuera de las pestañas; los porteros pasan arriba de la columna de los defensas.
 
+### Ronda 3 (2026-11-09, tras probar la ronda 2)
+
+- Q: En Formación, a 17", el séptimo suplente se corta por muy poco. ¿De dónde se saca el alto? → A: De las tres
+  opciones señaladas: el resumen táctico (formación, ofensividad y amplitud) pasa dentro de la caja de las estrellas,
+  la barra principal es más baja en Formación y el título «Banquillo (7/7)» pierde margen. Además, más aire entre el
+  título, la ayuda y «Torneo», y entre «Formación» y su selector.
+- Q: ¿Qué celebraciones van a la tienda? → A: Dos de las cuatro: **Estadio y Neón** (0,99 € o 500 fragmentos).
+  Clásica (la del juego) y Pizarra siguen gratis. Quien tuviera elegida una de las de pago sin comprarla vuelve a la
+  del juego (el aspecto ya filtra por las disponibles).
+- Q: ¿Retrato en la chapa de la 2D sin ralentizar el motor? → A: Sí: el motor no cambia (solo dibuja el cliente) y
+  cada chapa con retrato se compone una vez en un lienzo aparte, así que cada fotograma solo la copia. Solo con
+  retrato propio; sin él, la chapa de siempre con el dorsal.
+- Q: Las 300 imágenes de fondo de las cartas, ¿en esta spec? → A: No: en una spec propia (proceso por lotes,
+  validación del catálogo, revisión de legibilidad y del plan B de identidad).
+
+### Ronda 4 (2026-11-09, tras probar la ronda 3)
+
+- Q: El ambiente sintetizado suena a ruido blanco y no se distinguen bombos, cánticos ni vuvuzelas. → A: Grabaciones
+  CC0 de Freesound: el rumor del Millerntor en bucle, una hinchada chilena con bombo, cánticos (Brighton y un estadio
+  cantando) y dos vuvuzelas, igualados de sonoridad.
+- Q: ¿Qué celebraciones se venden? → A: Dos nuevas, de muestra provisional: **Discoteca** (bola de espejos, focos y
+  muñequitos bailando) y **Fuegos artificiales**, a 0,99 € o 500 fragmentos. Estadio y Neón vuelven a ser gratis. (En
+  la tienda no salían porque el catálogo se lee de la base de datos: hay que ejecutar `pnpm seed` y reiniciar el
+  servidor tras cambiar `data/cosmeticos.json`.)
+- Q: ¿Cómo debe verse el selector Automático/Control total en la 2D? → A: Como un panel más (bordes redondeados,
+  vidrio y sombra), con la etiqueta y los botones en una fila.
+- Q: ¿Más ayuda en la barra? → A: Sí, con letra de cuerpo. En «Nueva partida» las explicaciones salen de la pantalla
+  y van a la barra, que ocupa todo el ancho; los recuadros se ordenan en dos columnas (modo y rivales a la
+  izquierda, equipos y ritmo a la derecha) para no desplazar. También, ayuda en los enlaces de navegación.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Partido con sonido y celebración de gol (Priority: P1)
@@ -411,6 +441,41 @@ sin desplazarse y con la importancia acordada.
   versiones anteriores se reproducen igual.
 - **FR-042**: Desde los parámetros 6.2.0, el hueco «POR o DEF» de cada sobre DEBE ser un portero el 70 % de las veces
   (antes, el 50 %); si en el pool ya no quedan porteros, un defensa.
+
+**Ronda 3 (2026-11-09)**:
+
+- **FR-043**: En Formación, a 1366 × 768 o más, los siete suplentes DEBEN verse enteros sin desplazar el lateral; solo
+  «Resto de la plantilla» puede quedar debajo. El resumen de la colocación va dentro de la caja de la media.
+- **FR-044**: En Formación, sustituir a una baja (o sacar a un suplente) NO DEBE dejar un hueco en el banquillo: lo
+  ocupa al momento el mejor disponible del resto de la plantilla (sin bajas y sin volver a meter al que se acaba de
+  sacar).
+- **FR-045**: Las celebraciones Estadio y Pizarra NO DEBEN recortar las letras de «¡GOL!».
+- **FR-046**: El selector de modo DEBE hablar de «eventos trascendentales» (goles, lesiones y expulsiones) y dar el
+  detalle tras el icono de información; en la 2D, DEBE quedar anclado arriba del carril y «Lo que ha pasado» DEBE
+  bajar solo hasta el último evento.
+- **FR-047**: La 2D (en directo y en la repetición) DEBE tener ambiente de público: rumor continuo y, de vez en
+  cuando, bombo, cánticos y vuvuzelas; más bajo en las pausas, callado al acabar y con el interruptor de sonido.
+- **FR-048**: En «Gestionar equipo» y en los distintivos de baja, las tarjetas DEBEN verse con su color.
+- **FR-049**: Desde 720 px, la barra principal DEBE mostrar una ayuda resumida (dos líneas como mucho) del control
+  bajo el cursor o con el foco (`data-ayuda`); los iconos de información amplían. En la 2D, la barra DEBE mostrar el
+  cronómetro, la fase (descanso, prórroga…) y quién lleva el balón.
+- **FR-050**: La tienda DEBE vender celebraciones (sueltas, sin packs, con vista previa animada); «Mi perfil» DEBE
+  enlazar a la tienda mientras falte alguna. Desde la ronda 4, las de pago son Discoteca y Fuegos artificiales.
+- **FR-051**: En la 2D, la chapa de un jugador con retrato propio DEBE mostrar el retrato rodeado del color del
+  equipo, con el dorsal en una chapita, sin componer la imagen en cada fotograma.
+
+**Ronda 4 (2026-11-09)**:
+
+- **FR-052**: El ambiente de público de la 2D DEBE salir de grabaciones reales con licencia CC0 (procedencia en
+  `public/sonidos/LICENCIA`), con el rumor en bucle y, de vez en cuando, bombo, cánticos y vuvuzelas reconocibles.
+- **FR-053**: Las celebraciones Discoteca (bola de espejos, focos de colores y muñequitos bailando) y Fuegos
+  artificiales DEBEN existir como celebraciones de juego de 3 s y venderse en la tienda; Estadio y Neón, gratis.
+- **FR-054**: En el carril de la 2D, el selector de modo DEBE verse como los demás paneles (bordes redondeados,
+  vidrio, sombra) sin dejar de estar anclado.
+- **FR-055**: La ayuda de la barra principal DEBE usar la letra de cuerpo. En «Nueva partida», desde 720 px, las
+  explicaciones (modos, rivales, dificultades, ritmo) DEBEN ir solo en la barra, que ocupa todo el ancho, y los cuatro
+  recuadros DEBEN caber sin desplazar a 1366 × 768; en estrecho, las explicaciones siguen en su sitio. Los enlaces de
+  navegación DEBEN tener su ayuda.
 
 ### Key Entities
 

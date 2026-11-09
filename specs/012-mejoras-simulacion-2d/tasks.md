@@ -250,6 +250,37 @@ FR-008).
 
 ---
 
+---
+
+## Phase 12: Ronda 3 (2026-11-09, tras probar la ronda 2)
+
+**Purpose**: pulido tras probar la ronda 2 (spec, «Ronda 3»: FR-043 a FR-051).
+
+- [X] T090 [P] Formación a 17" (FR-043): resumen dentro de `MediaEquipo` (`children`), barra más baja y `--alineacion-reserva` 18,5rem en `apps/web/src/estilos/base.css`; aire en el título y en el selector de formación (`Alineacion.tsx`)
+- [X] T091 [P] Hueco del banquillo (FR-044): `rellenarBanquillo` en `componentes/campoEquipoEstado.ts`, aplicado en `alSoltar` de `Alineacion.tsx`; pruebas en `tests/unit/campoEquipoEstado.test.ts`
+- [X] T092 [P] Letras de Estadio y Pizarra (FR-045) en `estilos/celebraciones.css`
+- [X] T093 Selector de modo (FR-046): «eventos trascendentales» e icono de información en `SelectorModoIncidencias.tsx`; anclado y desplazamiento automático en `Partido2D.tsx` y `base.css`
+- [X] T094 [P] Ambiente de público (FR-047): `apps/web/src/sonido/ambiente.ts` (síntesis Web Audio) y `useAmbiente` en `Partido2D.tsx` y `ReproduccionPartido.tsx`; prueba en `tests/unit/ambiente.test.ts`; `docs/juego/sonidos.md`
+- [X] T095 [P] Tarjetas con color (FR-048): `GestionEquipo.tsx` y `DistintivoBaja.tsx`
+- [X] T096 Ayuda en la barra (FR-049): `data-ayuda` y `AYUDA_ACCION` en `BarraPrincipal.tsx`; anotaciones en Formación (`Alineacion.tsx`, `CampoEquipo.tsx`, `MediaEquipo.tsx`, `ListaPestanas.tsx`) y en la 2D; cronómetro y fase en la barra de `Partido2D.tsx`
+- [X] T097 Celebraciones en la tienda (FR-050): `data/cosmeticos.json`, bloque de celebraciones en `TiendaCosmeticos.tsx` y `Tienda.tsx`, enlace en `SelectorCelebracion.tsx`; `apps/server/tests/integration/celebraciones.test.ts`
+- [X] T098 [P] Retratos en la 2D (FR-051): `chapaConRetrato` en `campo2d/renderizador.ts` e `imagen` en `jugadoresDe` (`Lienzo2D.tsx`)
+- [X] T099 Pruebas: `pnpm typecheck`, `pnpm lint`, `pnpm test`, integración de celebraciones y tienda, e2e
+- [ ] T100 Recorrido manual de la ronda 3: Formación a 17", sustituir una baja, celebraciones en la 2D y en la tienda, ambiente, ayuda de la barra y retratos
+
+---
+
+## Phase 13: Ronda 4 (2026-11-09, tras probar la ronda 3)
+
+**Purpose**: pulido tras probar la ronda 3 (spec, «Ronda 4»: FR-052 a FR-055).
+
+- [X] T101 [P] Ambiente con grabaciones CC0 (FR-052): `tools/sonidos/ambiente.py` y `apps/web/public/sonidos/ambiente*.mp3` (procedencia en `LICENCIA`); `apps/web/src/sonido/ambiente.ts` reproduce el bucle y las tomas; `tests/unit/ambiente.test.ts`
+- [X] T102 [P] Celebraciones Discoteca y Fuegos artificiales (FR-053): `componentes/celebraciones/Discoteca.tsx` y `Fuegos.tsx`, `registro.ts`, `estilos/celebraciones.css`; de pago en `data/cosmeticos.json` (Estadio y Neón, gratis); `tests/unit/celebracion.test.ts` y `apps/server/tests/integration/celebraciones.test.ts`
+- [X] T103 [P] Selector de modo como panel (FR-054) en `estilos/base.css`
+- [X] T104 Ayuda en la barra (FR-055): letra de cuerpo en `.ayuda-barra`; «Nueva partida» con `BarraPrincipal`, `data-ayuda` y rejilla de cuatro recuadros (`CrearPartida.tsx`, `base.css`); ayuda de los enlaces en `app/Marco.tsx`
+- [X] T105 Pruebas: `pnpm typecheck`, `pnpm lint`, `pnpm test`, integración de celebraciones y tienda, e2e de dificultad y apertura; capturas a 1897 × 911, 1366 × 768 y 390 × 844
+- [ ] T106 Recorrido manual de la ronda 4 (tras `pnpm seed` y reiniciar el servidor): ambiente en la 2D, Discoteca y Fuegos en la tienda y en un gol, selector de modo, «Nueva partida»
+
 ## Dependencies & Execution Order
 
 ### Phases

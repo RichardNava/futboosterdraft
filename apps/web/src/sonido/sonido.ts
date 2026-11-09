@@ -115,6 +115,17 @@ export function cambiarSonido(valor: boolean): void {
   for (const o of oyentes) o();
 }
 
+/** Avisa de cada cambio del interruptor (el ambiente de la 2D se calla al silenciar); devuelve cómo dejar de oír. */
+export function suscribirSonido(o: () => void): () => void {
+  oyentes.add(o);
+  return () => oyentes.delete(o);
+}
+
+/** El contexto de audio compartido (null sin Web Audio), para lo que se sintetiza en directo. */
+export function contextoAudio(): AudioContext | null {
+  return obtenerContexto();
+}
+
 /** Estado del interruptor para React (🔊/🔇). */
 export function useSonido(): [boolean, (v: boolean) => void] {
   const valor = useSyncExternalStore(

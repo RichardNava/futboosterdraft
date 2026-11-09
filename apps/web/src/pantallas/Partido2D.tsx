@@ -23,6 +23,7 @@ import { CapaCelebracion } from '../componentes/celebraciones/CapaCelebracion';
 import type { CelebracionElegida } from '../componentes/celebraciones/tipos';
 import { efectoDeEvento, goleadorDe } from '../componentes/sonidosPartido';
 import { reproducir } from '../sonido/sonido';
+import { useAmbiente } from '../sonido/ambiente';
 import { SelectorModoIncidencias } from '../componentes/SelectorModoIncidencias';
 import { textoParada, type IncidenciaVista } from '../componentes/textoParada';
 import type { ModoIncidencias } from '@fbd/domain';
@@ -241,10 +242,19 @@ export function Partido2D() {
   const aviso = (alFinal || estadoReloj !== 'fin' ? AVISO[estadoReloj] : null) ?? (estadoReloj === 'reproduciendo' ? rotuloPenalti : null);
   const malestar = malestarActivo(eventosVistos);
 
+  // Público de fondo (spec 012, ronda 3): pleno con el balón en juego, más bajo en las pausas y callado al acabar.
+  useAmbiente(alFinal ? 0 : !gestion && (estadoReloj === 'reproduciendo' || estadoReloj === 'gol') ? 1 : 0.35);
+
   const superposicion = useRef<Superposicion>({ marcador, minuto, aviso });
   superposicion.current = { marcador, minuto, aviso: estadoReloj === 'cargando' && tramos.length === 0 ? null : aviso };
 
   const jugadores = useMemo(() => (inicio ? jugadoresDe(inicio) : new Map<number, JugadorDibujo>()), [inicio]);
+
+  // «Lo que ha pasado» sigue a la última acción: el carril baja solo con cada evento nuevo (spec 012, ronda 3).
+  const lateral = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    lateral.current?.scrollTo({ top: lateral.current.scrollHeight, behavior: movimientoReducido() ? 'auto' : 'smooth' });
+  }, [eventosVistos.length, gestion]);
 
   if (!inicio) return <PantallaCargando forma="campo" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} />;
 
@@ -381,7 +391,7 @@ export function Partido2D() {
         </p>
         <div className="velocidades segmentado" role="group" aria-label="Velocidad de reproducción">
           {VELOCIDADES.map((v) => (
-            <button key={v} type="button" aria-pressed={v === velocidad} onClick={() => elegirVelocidad(v)}>
+            <button key={v} type="button" aria-pressed={v === velocidad} onClick={() => elegirVelocidad(v)} data-ayuda={`Ver el partido ${v} veces más rápido que el tiempo real.`}>
               x{v}
             </button>
           ))}
@@ -415,7 +425,7 @@ export function Partido2D() {
             />
           )}
         </div>
-        <div className="partido-2d-lateral">
+        <div className="partido-2d-lateral" ref={lateral}>
           <AvisoDorsales inicio={inicio} miId={miId} />
           {/* Spec 012 (FR-020, FR-024): el modo de incidencias, solo contra un NPC. */}
           {gestionDisponible && (
@@ -464,13 +474,18 @@ export function Partido2D() {
         principalIzquierda={principalIzquierda}
         secundarios={secundarios}
         estado={
-          poseedor &&
-          idPoseedor !== undefined && (
-            <span className="poseedor-2d" aria-hidden="true">
-              <Chapa {...equipoMarcador(inicio, poseedor.lado)} />
-              {nombre(idPoseedor)}
+          // Cronómetro y fase (descanso, prórroga…) y, con el balón en juego, quién lo lleva (spec 012, ronda 3).
+          <span className="estado-2d" aria-hidden="true">
+            <span className="cronometro-2d">
+              <strong>{minuto}</strong> {aviso ?? ETIQUETA_FASE[fase] ?? fase}
             </span>
-          )
+            {poseedor && idPoseedor !== undefined && (
+              <span className="poseedor-2d">
+                <Chapa {...equipoMarcador(inicio, poseedor.lado)} />
+                {nombre(idPoseedor)}
+              </span>
+            )}
+          </span>
         }
       />
     </main>

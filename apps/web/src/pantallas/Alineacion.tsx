@@ -26,6 +26,7 @@ import {
   colocacionDe,
   mover,
   RADIO_FICHA,
+  rellenarBanquillo,
   soltar,
   type DestinoSoltar,
   type EstadoCampo,
@@ -88,11 +89,11 @@ const NOMBRE_FORMACION: Record<FormacionId, string> = Object.fromEntries(
 const P = parametrosActuales();
 
 type Pestana = 'alineacion' | 'tactica' | 'personalizacion' | 'lanzadores';
-const PESTANAS: { id: Pestana; texto: string }[] = [
-  { id: 'alineacion', texto: 'Alineación' },
-  { id: 'tactica', texto: 'Táctica' },
-  { id: 'personalizacion', texto: 'Personalización' },
-  { id: 'lanzadores', texto: 'Lanzadores' },
+const PESTANAS: { id: Pestana; texto: string; ayuda: string }[] = [
+  { id: 'alineacion', texto: 'Alineación', ayuda: 'Banquillo y resto de la plantilla: arrastra a un suplente sobre un titular para cambiarlos.' },
+  { id: 'tactica', texto: 'Táctica', ayuda: 'Sistema defensivo, altura del bloque, estilo con balón y cómo se resuelven los eventos trascendentales.' },
+  { id: 'personalizacion', texto: 'Personalización', ayuda: 'Nombre, escudo, equipaciones y dorsales del equipo.' },
+  { id: 'lanzadores', texto: 'Lanzadores', ayuda: 'Quién tira los penaltis, las faltas, los córneres y la tanda.' },
 ];
 
 
@@ -238,11 +239,16 @@ export function Alineacion() {
   // En el modo duelos no hay colocación libre: solo se cambia quién ocupa cada casilla, y con el once bloqueado, nada.
   const duelos = datos?.soloTitulares === true;
   const bloqueada = datos?.bloqueada === true;
+  // Candidatos para un hueco del banquillo: los disponibles, de mayor a menor media (spec 012, ronda 3).
+  const candidatosBanquillo = useMemo(
+    () => (datos?.plantilla ?? []).filter((j) => !bajas.has(j.id)).sort((a, b) => b.media - a.media).map((j) => j.id),
+    [datos, bajas],
+  );
   const alSoltar = (jugadorId: number, destino: DestinoSoltar) =>
     setCampo((c) => {
       if (!c || bloqueada) return c;
       const n = soltar(c, jugadorId, destino, opcionesCampo);
-      return duelos ? { ...n, puntos: {} } : n;
+      return duelos ? { ...n, puntos: {} } : rellenarBanquillo(n, candidatosBanquillo, 7, jugadorId);
     });
   const alMover = (jugadorId: number, dx: number, dy: number) =>
     setCampo((c) => (c && !duelos ? mover(c, jugadorId, dx, dy, opcionesCampo) : c));
@@ -475,7 +481,11 @@ export function Alineacion() {
     ) : undefined;
 
   const resumen = !duelos && (
-    <div className="colocacion-resumen" aria-live="polite">
+    <div
+      className="colocacion-resumen"
+      aria-live="polite"
+      data-ayuda="Ofensividad y amplitud salen de dónde colocas a los titulares: más arriba, más ataque; más abiertos, más amplitud."
+    >
       <p>
         <strong>
           {resultadoColocacion.personalizada
@@ -530,11 +540,11 @@ export function Alineacion() {
             {ayuda}
           </div>
         </div>
-        <Link className="boton secundario" to={`/partidas/${partidaId}/torneo`}>
+        <Link className="boton secundario" to={`/partidas/${partidaId}/torneo`} data-ayuda="Vuelve al torneo sin confirmar los cambios.">
           Torneo
         </Link>
         {distribucion.ancha && (
-          <label className="interruptor interruptor-distribucion">
+          <label className="interruptor interruptor-distribucion" data-ayuda="Gira el campo para verlo en horizontal, con el lateral a la derecha.">
             <input
               type="checkbox"
               role="switch"
@@ -551,8 +561,8 @@ export function Alineacion() {
             {bloqueada && <Insignia texto="Once confirmado" />}
           </p>
         ) : (
-          <label>
-            Formación{' '}
+          <label className="campo-formacion" data-ayuda="Cambia el dibujo del equipo: los titulares se reparten por las casillas nuevas.">
+            Formación
             <select value={campo.formacion} onChange={(e) => cambiarFormacion(e.target.value as FormacionId)}>
               {FORMACIONES_IDS.map((id) => (
                 <option key={id} value={id}>

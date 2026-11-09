@@ -1,53 +1,53 @@
-# Graph Report - futboosterdraft  (2026-11-08)
+# Graph Report - futboosterdraft  (2026-11-09)
 
 ## Corpus Check
-- 909 files · ~5,935,466 words
+- 914 files · ~1,453,700 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 21 file(s) not represented in the graph (top: (none) 9, .css 6, .woff2 5)
 
 ## Summary
-- 8045 nodes · 19706 edges · 333 communities (304 shown, 29 thin omitted)
-- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 1647 edges (avg confidence: 0.92)
+- 8089 nodes · 19835 edges · 336 communities (302 shown, 34 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 1652 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6ca390c3`
+- Built from commit: `836b8d2f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- peticion
-- partido003.ts
+- .participante
+- checks/partido.ts
 - npc.ts
-- Catalogo
-- catalogo/tipos.ts
+- escudoAsignado
+- partidoEntreHumanos.ts
 - Migracion 0004_mejoras.sql
 - juego.ts
 - actores/equipo.ts
-- autoAlineacion
+- gestor.ts
 - Constitution Principles
 - Partido2D.tsx
-- semillaDesdeTexto
-- http/app.ts
+- domain/src/index.ts
+- servidor.ts
 - geometria.ts
 - Data Model 001
 - package.json
 - partidoRapido.ts
 - defectos.ts
-- iniciarPartido
+- partido003.ts
 - Speckit Scripts
 - Server Dependencies
 - GrupoHilos
 - RegistroActores
 - torneo/torneo.ts
-- decisiones.ts
-- protocol/src/http/partidas.ts
+- equipo/alineacion.ts
+- crearServidor
 - Write Swift
 - ParametrosEquilibrado 3.0.0 (v3.json)
-- RepoPartidas
+- actores/identidad.ts
 - Expo Animation Recipes
 - engine/src/index.ts
-- generarCore.ts
+- server/package.json
 - Resultado de prueba de carga — 1 partida
 - Spec 001: Fútboosterdraft MVP
 - Escenarios de validación manual
@@ -55,41 +55,41 @@
 - Spec 003 NPC Difficulty
 - CI & Docker Infra
 - Hardening Controls
-- seed.ts
+- http/catalogo.ts
 - Duelos.tsx
 - seed.ts
 - Tasks: Mejoras de interfaz, simulación y experiencia de juego
 - Hardening Controls
 - Alineacion.tsx
-- emitirTorneo
+- Diagnóstico: latencia de apertura y de entrega de sobres
 - Expo Animation Recipes
 - Marco.tsx
 - checks/rasgos.ts
 - Load Test (k6)
 - actores/torneo.ts
-- Roadmap de Fútboosterdraft
+- main
 - Tabla perfiles_usuario
-- partida/partida.ts
+- Jugador
 - Torneo.tsx
-- aperturas-grupo.test.ts
-- helpers/app.ts
+- src/cli.ts
+- vitest
 - Balance Package
 - Functional Requirements
 - react
 - defectosJuego.test.ts
-- filtrado.ts
-- api
-- tiro.ts
+- Calibración del motor 3.0.0 (T033)
+- Coleccion.tsx
+- generarCore.ts
 - TS Base Config
 - Speckit Skills
 - e2e/ayudas.ts
 - User Scenarios & Testing *(mandatory)*
-- checks/rasgos.ts
+- Tienda.tsx
 - 009-simulacion-hilos-trabajo/spec.md
 - ServicioEconomia
+- tiro.ts
+- catalogo/rasgos.ts
 - opciones.ts
-- catalogo/tipos.ts
-- Implementation Plan: Simulación de partidos en hilos de trabajo
 - Fixtures Package
 - ws/partido.ts
 - Protocol Package
@@ -98,33 +98,33 @@
 - balonParado.ts
 - AI Package
 - inventario.spec.ts
-- ref_node_fs
-- colecciones.ts
+- generarCore.ts
+- Research — Fase 0: Colecciones, fragmentos y tienda
 - Engine Package
 - Home — Style Reference
-- contexto.ts
-- Resultado de prueba de carga — 1 partida (entorno de referencia)
+- estado.ts
+- EstadoMotor
 - Web Package
 - Contrato HTTP/JSON — cambios de la spec 003
-- CLAUDE.md (instrucciones del proyecto)
+- Contrato de interfaz — spec 003
 - Tasks: Virtudes, defectos y nuevo modo de juego
 - Feature Specification: Latencia de apertura de partidos y de entrega de sobres
 - @playwright/test
 - Research — Fase 0: Retoques visuales
-- sonido.ts
+- EntradaPartido
 - Domain Package
 - Tasks: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos
 - celebraciones/tipos.ts
-- Jugador
+- autoAlineacion
 - NombreRecortado
-- particulas.ts
+- ActorPartida
 - Code Review and Quality
 - Web TS Config
-- servidor.ts
+- partida/partida.ts
 - Feature Specification: Simulación de partidos en hilos de trabajo
-- protocol/src/http/tienda.ts
+- animaciones.ts
 - HTTP
-- cuadro.ts
+- parametros.ts
 - Feature Specification: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos
 - Data Model — Mejoras de interfaz, simulación y experiencia de juego
 - Spec 002 Engine Ops
@@ -143,7 +143,7 @@
 - Test-Driven Development
 - torneo-asincrono.spec.ts
 - Animation Recipes
-- catalogo/tipos.ts
+- Resultado de prueba de carga — 1 partida (entorno de referencia)
 - Pause & My Games
 - Shirt Numbers (Spec 002)
 - Spec 003 Card & Pack UI
@@ -166,19 +166,19 @@
 - T086 Engine Perf
 - T159 Validation
 - DESIGN.md
-- main
+- Components
 - Code Review and Quality
-- crearServidor
-- http/aspecto.ts
-- Validación de la spec 004 con personas (SC-003, SC-004, SC-010)
+- ControladorPartida
+- Contrato de interfaz — spec 004
+- ServicioAvisos
 - Animation Recipes
 - Data Model (Fase 1): Rework de la tienda
-- Tasks: Latencia de apertura de partidos y de entrega de sobres
+- Implementation Strategy
 - Test-Driven Development
-- juego
+- main.tsx
 - Context Engineering
 - Context Engineering
-- Functional Requirements
+- User Scenarios & Testing *(mandatory)*
 - Servidor → cliente
 - Worst-Case Catalog
 - equipaciones.ts
@@ -187,22 +187,22 @@
 - Frontend Design
 - Implementation Plan: Virtudes, defectos y nuevo modo de juego
 - Frontend Design
-- asignarRasgos.ts
-- Data Model: Latencia de apertura de partidos y de entrega de sobres
+- Data Model — Virtudes, defectos y nuevo modo de juego
+- Virtudes y defectos
 - Implementation Plan: Mejoras de interfaz, simulación y experiencia de juego
 - Rng
 - Resultado de prueba de carga — 10 partidas (entorno de referencia)
 - Worst-Case Catalog
 - Git Workflow and Versioning
 - Recorridos manuales
-- Implementation Plan: Datos reales de la colección Core (fase 0.1)
+- calculoEquivalencia.test.ts
 - Tasks: Mejoras visuales y de diseño (GUI + UX)
 - Animation Standards Reference
 - Animation Standards Reference
 - Optimization Patterns
 - Data Model — Fase 1: Retoques visuales
 - Animation Audit Playbook
-- Contrato de interfaz — spec 004
+- Pruebas con personas (2026-10-19)
 - Animation Audit Playbook
 - Quickstart — Validación de la spec 007
 - Git Workflow and Versioning
@@ -264,7 +264,7 @@
 - Finding Animation Opportunities
 - Refinement & Evaluation Criteria
 - Finding Animation Opportunities
-- Sumario — Colección Core real (spec 008, fase 0.1)
+- Data Model — Datos reales de la colección Core
 - Ideation Frameworks Reference
 - Working With Sonner
 - Ideation Frameworks Reference
@@ -272,19 +272,18 @@
 - numpy
 - The list
 - The list
-- User Scenarios & Testing *(mandatory)*
-- escudoAsignado
+- RepoDraft
 - 007-retoques-visuales/tasks.md
 - Quickstart: validar la latencia de apertura y de entrega de sobres
 - Design Engineering
-- Implementation Plan: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos
+- Feature Specification: Mejoras visuales y de diseño (GUI + UX)
 - Design Engineering
 - Feature Specification: Retoques visuales
 - .agents/skills/idea-refine/scripts/idea-refine.sh
 - .claude/skills/idea-refine/scripts/idea-refine.sh
 - Component Building Principles
 - Component Building Principles
-- coleccion
+- validar.ts
 - TOTAL RESULTS
 - Contrato HTTP y WS: Rework de la tienda
 - The Animation Decision Framework
@@ -295,9 +294,9 @@
 - clip-path for Animation
 - Performance Rules
 - Gesture and Drag Interactions
-- plantel.ts
+- decisiones.ts
 - Functional Requirements
-- tema.spec.ts
+- Clarifications
 - CSS Transform Mastery
 - The Sonner Principles (Building Loved Components)
 - Spring Animations
@@ -309,44 +308,47 @@
 - Debugging Animations
 - Core Philosophy
 - Debugging Animations
-- vitest
+- Data Model: Latencia de apertura de partidos y de entrega de sobres
 - Tasks: Mejoras de la simulación 2D, control de bajas y retoques del torneo
 - scripts
 - scripts
-- Orden de entrega
+- EditorEquipacion.tsx
 - R24 Equipaciones v2 (diseno + hasta 3 colores)
 - 006-preparacion-bd-cartas/spec.md
-- crearInvitado
-- servicios.ts
+- Specification Quality Checklist: Latencia de apertura de partidos y de entrega de sobres
+- aperturas.ts
 - Partidas
-- CapaCelebracion
+- TiendaCosmeticos.tsx
+- Tokens — Spacing & Shapes
 - colores.ts
-- clienteWs.ts
+- Specification Quality Checklist: Virtudes, defectos y nuevo modo de juego
+- Do's and Don'ts
 - 012-mejoras-simulacion-2d/spec.md
 - Research — Fase 0: Virtudes, defectos y nuevo modo de juego
 - GestionEquipo (gestion durante el partido)
-- EditorEquipacion.tsx
+- Perfil.tsx
 - ROADMAP.md
-- User Scenarios & Testing *(mandatory)*
+- Quickstart: validar el rework de la tienda
 - renderizador.ts
-- controlTotal
+- Contrato: desglose por fases y grupo de aperturas
+- Implementation Strategy
+- Phase 8: User Story 5 - Duelos sin tablas de goleadores (Priority: P3)
 - interpolacion.ts
 - Functional Requirements
 - 011-rework-tienda/spec.md
-- Reloj
+- Functional Requirements
 - Dependencies & Execution Order
+- Tokens — Typography
 - `PUT /api/partidas/:id/nombre-equipo` (✚)
 - Cambios propuestos
-- parametros.ts
-- Diagnóstico: latencia de apertura y de entrega de sobres
-- Sumario — Colección Core real (spec 008, fase 0.1)
-- integration/desglose.test.ts
-- Implementation Plan: Mejoras de la simulación 2D, control de bajas y retoques del torneo
+- Contrato — Motor y parámetros 4.0.0
+- visibilidadInicio.test.ts
+- parametros/index.ts
+- basico.ts
 - Línea base de la spec 012 (T001, T002)
-- Phase 5: User Story 3 - Nuevo logo oficial (Priority: P2)
 
 ## God Nodes (most connected - your core abstractions)
-1. `vitest` - 163 edges
+1. `vitest` - 164 edges
 2. `Jugador` - 91 edges
 3. `parametrosActuales()` - 89 edges
 4. `crearPartido()` - 85 edges
@@ -354,7 +356,7 @@
 6. `Rng` - 84 edges
 7. `peticion()` - 78 edges
 8. `semillaDesdeTexto()` - 76 edges
-9. `react` - 71 edges
+9. `react` - 75 edges
 10. `EstadoMotor` - 69 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -392,83 +394,83 @@
 - **Identidad del equipo: nombre y equipacion v2** — specs_003_mejoras_ux_simulacion_data_model_nombreequipo, specs_003_mejoras_ux_simulacion_data_model_equipacion_v2, specs_003_mejoras_ux_simulacion_research_perfiles_usuario, specs_003_mejoras_ux_simulacion_contracts_http_api_put_api_partidas_id_nombre_equipo, specs_003_mejoras_ux_simulacion_contracts_http_api_perfil, specs_003_mejoras_ux_simulacion_contracts_ui_editorequipacion [INFERRED 0.85]
 - **Flujo de derrota, campeon y simular el resto** — specs_003_mejoras_ux_simulacion_data_model_eliminacion, specs_003_mejoras_ux_simulacion_data_model_vista_torneo_participante, specs_003_mejoras_ux_simulacion_contracts_http_api_post_api_partidas_id_simular_resto, specs_003_mejoras_ux_simulacion_contracts_http_api_post_api_partidas_id_pantalla_vista, specs_003_mejoras_ux_simulacion_plan_pantallas_derrota_campeon, specs_003_mejoras_ux_simulacion_contracts_realtime_protocol_torneo_actualizado [INFERRED 0.95]
 
-## Communities (333 total, 29 thin omitted)
+## Communities (336 total, 34 thin omitted)
 
-### Community 0 - "peticion"
-Cohesion: 0.18
-Nodes (21): ServidorPruebas, BdPruebas, ClienteWs, Mensaje, avanzarHasta(), espera(), jugarSolo(), seguirSiempre() (+13 more)
+### Community 0 - ".participante"
+Cohesion: 0.15
+Nodes (25): pendientesDeMesa(), vistaDraft(), cambiarEscudo(), escudoDe(), esInvitado(), torneoIniciado(), equipacionesDe(), vistaPartido() (+17 more)
 
-### Community 1 - "partido003.ts"
-Cohesion: 0.05
-Nodes (113): calcularMedia(), Virtud, CASILLA_CENTRAL, proponerLanzadores(), EquipoPartido, EstadisticasEquipo, comprobacionesColocacion(), comprobarSC011() (+105 more)
+### Community 1 - "checks/partido.ts"
+Cohesion: 0.17
+Nodes (34): comprobacionesColocacion(), comprobarSC011(), comprobarSC018(), pct(), CASILLA, comprobacionesImpacto(), comprobacionTipo(), comprobarStatsMandan() (+26 more)
 
 ### Community 2 - "npc.ts"
-Cohesion: 0.11
-Nodes (40): decidirAlineacion(), ErrorEleccion, jugarHastaElFinal(), FamiliaError, equipoDesdeAlineacion(), TURNOS_POR_RONDA, FamiliaErrorNPC, NivelNPC (+32 more)
+Cohesion: 0.07
+Nodes (65): decidirAlineacion(), decidirAlineacionDetallada(), elegirCarta(), elegirCartaDetallada(), ErrorEleccion, inicioDudosa(), jugarHastaElFinal(), FamiliaError (+57 more)
 
-### Community 3 - "Catalogo"
-Cohesion: 0.10
-Nodes (16): Catalogo, Summary, R11. Fragmentos y venta de cartas tras Q4 = A (FR-002), R12. Ajuste de identidad sin reiniciar (FR-018, SC-008), R13. Identidad alternativa en los datos (FR-017, FR-020), R15. Registro de la decisión (FR-001, SC-009), R1. Punto de partida en el código, R2. Catálogo de cosméticos: datos versionados y tabla (+8 more)
+### Community 3 - "escudoAsignado"
+Cohesion: 0.44
+Nodes (7): escudoAsignado(), escudoNpc(), escudosEnPartido(), fnv1a32(), GRATUITOS, R6. Escudo de cada participante, Implementación de US1
 
-### Community 4 - "catalogo/tipos.ts"
+### Community 4 - "partidoEntreHumanos.ts"
 Cohesion: 0.06
-Nodes (46): Filtros, DISTRIBUCION_CORE, RecuentoCatalogo, Demarcacion, DEMARCACIONES, Nivel, NIVELES, POSICIONES (+38 more)
+Nodes (59): cacheReproducciones, reproduccion(), terminarPartidoEntreHumanosEnJuego(), EntradaGuardada, equipacionesDelPartido(), escudosDelPartido(), procesarFinalizar(), reconstruirMotor() (+51 more)
 
 ### Community 5 - "Migracion 0004_mejoras.sql"
 Cohesion: 0.05
-Nodes (33): Alineacion.colocacion { jugadorId, x, y }, EstadisticasEquipo (pases, centros, precisionPase, secuencias), EstadoMotor: ancla, posicion, perfil, espacio, posesion, EstadoTorneo.aportaciones y tablaGoleadores/tablaAsistentes, Fotograma v2 y AccionVisible, MesaDraft.pausadaEn / restanteMs, ParametrosEquilibrado 2.0.0 (v2.json), Partido.resolucion ('directo'|'apertura'|'plazo'|'npc') y abiertoPorId (+25 more)
+Nodes (36): Alineacion.colocacion { jugadorId, x, y }, Data Model spec 002 (cambios sobre 001), EstadisticasEquipo (pases, centros, precisionPase, secuencias), EstadoMotor: ancla, posicion, perfil, espacio, posesion, EstadoTorneo.aportaciones y tablaGoleadores/tablaAsistentes, Fotograma v2 y AccionVisible, MesaDraft.pausadaEn / restanteMs, ParametrosEquilibrado 2.0.0 (v2.json) (+28 more)
 
 ### Community 6 - "juego.ts"
-Cohesion: 0.09
-Nodes (69): abrir(), BALON_DE, balonCon(), cerrar(), conducir(), controlar(), hasta(), posicion() (+61 more)
+Cohesion: 0.10
+Nodes (55): candidatoDefensivo(), cercanoACelda(), elegirPonderado(), esPortero(), holgura(), jugadorPorId(), radioDe(), radioIntervencion() (+47 more)
 
 ### Community 7 - "actores/equipo.ts"
 Cohesion: 0.08
-Nodes (58): humanoActivo(), onceDe(), resolverCrucesDuelos(), alineacionAutomatica(), AlineacionVigente, avisosEquipo(), bajasActivas(), bloquearOnceDuelos() (+50 more)
+Nodes (55): cartasDelCruce(), humanoActivo(), onceDe(), resolverCrucesDuelos(), vistaCruce(), alineacionAutomatica(), AlineacionVigente, avisosEquipo() (+47 more)
 
-### Community 8 - "autoAlineacion"
-Cohesion: 0.07
-Nodes (38): DecisionLote, DEM, enDescanso(), equipo(), jugador(), lote(), DEM, inicial() (+30 more)
+### Community 8 - "gestor.ts"
+Cohesion: 0.04
+Nodes (52): Destino, Difusor, ESTADOS_ACTIVOS, NuevoAviso, contarConsulta(), fase, BaseDatos, medirConsultas() (+44 more)
 
 ### Community 9 - "Constitution Principles"
-Cohesion: 0.08
-Nodes (25): Simulación 2D en tiempo real, Simulación rápida, AccionVisible, avanzar modo 'ticks' con hastaTick, Contrato del motor de simulación (spec 002), decidirNPCEnPausa, Invariante 6b: cortes por ticks inocuos, Invariante 5: finalizar es equivalente (+17 more)
+Cohesion: 0.09
+Nodes (24): Simulación 2D en tiempo real, Simulación rápida, AccionVisible, avanzar modo 'ticks' con hastaTick, decidirNPCEnPausa, Invariante 6b: cortes por ticks inocuos, Invariante 5: finalizar es equivalente, Invariante 7: fotogramas inocuos (+16 more)
 
 ### Community 10 - "Partido2D.tsx"
 Cohesion: 0.04
-Nodes (98): Fotograma, accionEn(), AccionVista, DatosReproduccion, ETIQUETA_ACCION, jugadoresDe(), LanzamientoVista, Lienzo2D() (+90 more)
+Nodes (102): Fotograma, accionEn(), AccionVista, DatosReproduccion, ETIQUETA_ACCION, jugadoresDe(), LanzamientoVista, Lienzo2D() (+94 more)
 
-### Community 11 - "semillaDesdeTexto"
-Cohesion: 0.06
-Nodes (29): enHilos, enProceso, N, NIVELES, partido(), NivelDecisiones, estadoDesdeSemilla(), hash128() (+21 more)
+### Community 11 - "domain/src/index.ts"
+Cohesion: 0.05
+Nodes (58): Filtros, DISTRIBUCION_CORE, MINIMO_EQUILIBRADO_CORE, RecuentoCatalogo, Demarcacion, DEMARCACIONES, IdentidadAlternativa, Nivel (+50 more)
 
-### Community 12 - "http/app.ts"
-Cohesion: 0.03
-Nodes (57): exports, @fbd/ai, @fbd/domain, @fbd/engine, @fbd/protocol, zod, name, private (+49 more)
+### Community 12 - "servidor.ts"
+Cohesion: 0.08
+Nodes (46): procesarDecisionPartido(), apodoValido(), aUsuarioSesion(), Auth, crearAuth(), OpcionesAuth, UsuarioSesion, cabecerasWeb() (+38 more)
 
 ### Community 13 - "geometria.ts"
-Cohesion: 0.11
-Nodes (46): acotar(), dividir(), escalar(), isqrt(), limitar(), norma(), destinoBalon(), esVuelo() (+38 more)
+Cohesion: 0.10
+Nodes (48): PlanPase, OpcionesReceptor, OpcionesTiro, acotar(), dividir(), escalar(), isqrt(), norma() (+40 more)
 
 ### Community 14 - "Data Model 001"
-Cohesion: 0.12
-Nodes (28): aplicarDecision(), crearPartido(), Contrato del motor (engine-api), EntradaPartido, GET /api/partidas/:id/torneo, Mensaje draft.elegir, Entidad Alineacion, Entidad Aviso (+20 more)
+Cohesion: 0.16
+Nodes (23): aplicarDecision(), GET /api/partidas/:id/torneo, Entidad Alineacion, Entidad Aviso, Entidad Baja y ContadorAmarillas, Entidad DecisionPartido, Data Model 001, Entidad Eleccion (+15 more)
 
 ### Community 15 - "package.json"
 Cohesion: 0.05
 Nodes (41): sinNoDeterminismo, devDependencies, eslint, @eslint/js, fast-check, globals, prettier, tsx (+33 more)
 
 ### Community 16 - "partidoRapido.ts"
-Cohesion: 0.05
-Nodes (74): aplicarLote(), avanzar2D(), crearEstado2D(), Estado2D, olvidarVistos(), procesarReproduccion(), Resultado, Tramo2D (+66 more)
+Cohesion: 0.08
+Nodes (57): mensajeTurno(), programarTurno(), Precarga, aplicarLote(), DecisionLote, ResultadoLote, avanzar2D(), crearEstado2D() (+49 more)
 
 ### Community 17 - "defectos.ts"
-Cohesion: 0.10
-Nodes (55): parametrosEfectivos(), ajusteVirtudesAccion(), comprobarLesion(), ORDEN, sortearGravedad(), minutoDeJuego(), atributoConBonus(), cacheAtributos (+47 more)
+Cohesion: 0.11
+Nodes (51): GravedadLesion, comprobarLesion(), ORDEN, sortearGravedad(), retirarLesionado(), atributoConBonus(), cacheAtributos, entradaAtributos() (+43 more)
 
-### Community 18 - "iniciarPartido"
-Cohesion: 0.10
-Nodes (38): resolverAperturas(), cartasDelCruce(), entreHumanos(), calcularPartido(), celebracionesDelPartido(), enDirecto(), esHumano(), fallo() (+30 more)
+### Community 18 - "partido003.ts"
+Cohesion: 0.18
+Nodes (29): core(), ambos(), cache, cacheCore, comprobarSC001(), comprobarSC001c(), comprobarSC002(), comprobarSC003() (+21 more)
 
 ### Community 19 - "Speckit Scripts"
 Cohesion: 0.11
@@ -479,44 +481,44 @@ Cohesion: 0.10
 Nodes (20): dependencies, ajv, ajv-formats, better-auth, drizzle-orm, fastify, @fastify/compress, @fastify/cookie (+12 more)
 
 ### Community 21 - "GrupoHilos"
-Cohesion: 0.09
-Nodes (21): ErrorCalculo, GrupoHilos, Tarea, Dependencies & Execution Order, Format: `[ID] [P?] [Story] Description`, Implementation Strategy, Incremental Delivery, MVP First (User Story 1 Only) (+13 more)
+Cohesion: 0.07
+Nodes (37): ServiciosPartida, Funciones, NombreCalculo, Calculo, crearCalculo(), ErrorCalculo, GrupoHilos, Hilo (+29 more)
 
 ### Community 23 - "torneo/torneo.ts"
-Cohesion: 0.09
-Nodes (37): Modo, aplicarConsecuencias(), autor(), Baja, EstadoBajas, estadoBajasVacio(), EventoConsecuencia, MotivoBaja (+29 more)
+Cohesion: 0.05
+Nodes (61): OpcionesDraft, Modo, estadoDesdeSemilla(), hash128(), rotl(), Semilla, semillaDesdeEstado(), aplicarConsecuencias() (+53 more)
 
-### Community 24 - "decisiones.ts"
+### Community 24 - "equipo/alineacion.ts"
 Cohesion: 0.06
-Nodes (51): ResultadoLote, calcularColocacion(), dispersion(), media(), PESO, posicionEn(), separar(), TitularColocado (+43 more)
+Nodes (46): Posicion, CodigoErrorAlineacion, ErrorAlineacion, Previsualizacion, TitularPrevisualizado, calcularColocacion(), dispersion(), media() (+38 more)
 
-### Community 25 - "protocol/src/http/partidas.ts"
-Cohesion: 0.07
-Nodes (28): AnadirNPC, ConfigDuelosEntrada, CrearPartida, CuerpoNombreEquipo, CuerpoPantallaVista, Dificultad, MisPartidas, ModoPartida (+20 more)
+### Community 25 - "crearServidor"
+Cohesion: 0.06
+Nodes (28): Limitador, configurarDesglose(), Desglose, FASES, medir(), observar(), Operacion, renombrar() (+20 more)
 
 ### Community 26 - "Write Swift"
 Cohesion: 0.04
 Nodes (45): 10. ARC and object lifetime, 11. Testing — Swift Testing by default, 12. Macros, 13. Logging and debugging, 14. Unsafe code and interop, 15. Modern syntax you should be using, 16. Migrating an existing codebase to Swift 6, 1. Model data with value types (+37 more)
 
 ### Community 27 - "ParametrosEquilibrado 3.0.0 (v3.json)"
-Cohesion: 0.05
-Nodes (37): Rutas /api/partidas/:id/alineacion, POST /api/auth/invitado, Contrato HTTP/JSON, GET /api/partidas/:id/plantillas, POST /api/partidas, Modo invitado (FR-000), Contrato HTTP/JSON (spec 002), Protocolo en tiempo real (spec 002) (+29 more)
+Cohesion: 0.07
+Nodes (28): Rutas /api/partidas/:id/alineacion, POST /api/auth/invitado, Contrato HTTP/JSON, GET /api/partidas/:id/plantillas, POST /api/partidas, Modo invitado (FR-000), Contrato HTTP/JSON (spec 002), Protocolo en tiempo real (spec 002) (+20 more)
 
-### Community 28 - "RepoPartidas"
-Cohesion: 0.06
-Nodes (16): perfilesUsuario, RepoEquipo, RepoPartidas, AspectoGuardado, Ejecutor, RepoPerfiles, Tx, DatosEquipo (+8 more)
+### Community 28 - "actores/identidad.ts"
+Cohesion: 0.05
+Nodes (33): identidadInicial, NUCLEOS, PREFIJOS, registrarRutasPerfil(), perfilesUsuario, RepoPartidas, AspectoGuardado, Ejecutor (+25 more)
 
 ### Community 29 - "Expo Animation Recipes"
 Cohesion: 0.06
 Nodes (33): Bottom sheet you can drag to dismiss, Collapsing header on scroll, Expo Animation Recipes, Firing something once at a threshold, Keyboard-synced UI, List entrances, Press feedback, Screen transitions (Expo Router) (+25 more)
 
 ### Community 30 - "engine/src/index.ts"
-Cohesion: 0.05
-Nodes (89): PartidoCalculado, PartidoEnCurso, rehacer(), aFormato004(), arrayPg(), baseDatos004, cartasCore004(), CLAVE_004 (+81 more)
+Cohesion: 0.07
+Nodes (43): partido(), enDescanso(), hasta(), semilla, ContextoStats, semillaDesdeTexto(), crearPartido(), DecisionRegistrada (+35 more)
 
-### Community 31 - "generarCore.ts"
-Cohesion: 0.09
-Nodes (35): VIRTUDES_GENERICAS, VIRTUDES_POR_DEMARCACION, validarColeccion(), R7 — Fuente de verdad y fusión con Core, celdas(), generarColeccionesPrueba(), mejores(), ordenNivel() (+27 more)
+### Community 31 - "server/package.json"
+Cohesion: 0.06
+Nodes (26): exports, @fbd/ai, @fbd/domain, @fbd/engine, @fbd/protocol, zod, name, private (+18 more)
 
 ### Community 32 - "Resultado de prueba de carga — 1 partida"
 Cohesion: 0.13
@@ -524,15 +526,15 @@ Nodes (14): Advertencia, Comando ejecutado, CUSTOM, Desglose por fases, Ejecuci�
 
 ### Community 33 - "Spec 001: Fútboosterdraft MVP"
 Cohesion: 0.04
-Nodes (65): Clarificaciones y ajustes de la spec (2026-10-15), Checklist de calidad de la spec, Resultados balance --n 1000, Resultados de carga SC-017, Validación del MVP (T144), avanzar(estado, modo), Invariante: equivalencia entre modalidades, ResultadoTramo (+57 more)
+Nodes (70): Clarificaciones y ajustes de la spec (2026-10-15), Checklist de calidad de la spec, Resultados balance --n 1000, Resultados de carga SC-017, Validación del MVP (T144), avanzar(estado, modo), crearPartido(), Contrato del motor (engine-api) (+62 more)
 
 ### Community 34 - "Escenarios de validación manual"
 Cohesion: 0.12
 Nodes (17): A. Simulación 2D que parece fútbol (US1; SC-001 a SC-008), B. «Formación» con un único campo (US2; SC-014, SC-015), C. Modo de simulación por partido (US3; SC-018), D. Botón principal (US4; SC-013), E. Gestión del equipo en el descanso y durante la 2D (US5; SC-016), Escenarios de validación manual, F. Finalizar partido (US6; SC-017), G. Cartas (US7; SC-012) (+9 more)
 
 ### Community 35 - "CartaJugador.tsx"
-Cohesion: 0.07
-Nodes (45): Props, Bandera(), CartaJugador(), CartaResumen, ContenidoCompacto(), ContenidoCompleto(), desborda(), Escudo() (+37 more)
+Cohesion: 0.03
+Nodes (80): AperturaSobre(), calendarioApertura(), COLOR_PARTICULAS, DURACION_MAXIMA_MS, DURACION_SOBRE_MS, ESCALONADO_MS, especial(), EstadoCarta (+72 more)
 
 ### Community 36 - "Spec 003 NPC Difficulty"
 Cohesion: 0.08
@@ -546,21 +548,21 @@ Nodes (26): CI workflow (GitHub Actions), Paso pnpm balance --n 500, Paso umbral
 Cohesion: 0.05
 Nodes (42): Broken Access Control, Broken Authentication, Cross-Site Scripting (XSS), Data Classification, Dependency Audit Triage, Destructive Operations on Derived Paths, File Upload Safety, Hardening Patterns (+34 more)
 
-### Community 39 - "seed.ts"
-Cohesion: 0.07
-Nodes (42): principal(), CLAVE_IDENTIDAD, ruta, principal(), conectar(), urlBaseDatos(), aplicarMigraciones(), CARPETA_MIGRACIONES (+34 more)
+### Community 39 - "http/catalogo.ts"
+Cohesion: 0.08
+Nodes (21): principal(), CLAVE_IDENTIDAD, ServicioAjustes, filaAJugador(), pertenencia(), registrarRutasCatalogo(), versionPedida(), principal() (+13 more)
 
 ### Community 40 - "Duelos.tsx"
-Cohesion: 0.11
-Nodes (31): DURACION_FASE, DURACION_RULETA_MS, duracionDuelo(), FaseDuelo, FASES, FUNDIDO_REDUCIDO_MS, instante, marcadorEn() (+23 more)
+Cohesion: 0.10
+Nodes (33): DURACION_FASE, DURACION_RULETA_MS, duracionDuelo(), FaseDuelo, FASES, FUNDIDO_REDUCIDO_MS, instante, marcadorEn() (+25 more)
 
 ### Community 41 - "seed.ts"
 Cohesion: 0.04
-Nodes (74): ServicioAjustes, NuevoAviso, Ejecutor, FilaCarta, Moneda, MotivoCargo, ResumenCompraInterno, TipoProducto (+66 more)
+Nodes (67): Ejecutor, FilaCarta, Moneda, MotivoCargo, ResumenCompraInterno, TipoProducto, Tx, leer() (+59 more)
 
 ### Community 42 - "Tasks: Mejoras de interfaz, simulación y experiencia de juego"
-Cohesion: 0.06
-Nodes (36): Dependencies & Execution Order, Entrega incremental, Equipo en paralelo, Format: `[ID] [P?] [Story] Description`, Grafo de historias, Implementation for User Story 4, Implementation for User Story 7, Implementation for User Story 8 (+28 more)
+Cohesion: 0.05
+Nodes (38): Dependencies & Execution Order, Entrega incremental, Equipo en paralelo, Format: `[ID] [P?] [Story] Description`, Grafo de historias, Implementation for User Story 4, Implementation for User Story 7, Implementation for User Story 8 (+30 more)
 
 ### Community 43 - "Hardening Controls"
 Cohesion: 0.05
@@ -568,55 +570,55 @@ Nodes (42): Broken Access Control, Broken Authentication, Cross-Site Scripting (
 
 ### Community 44 - "Alineacion.tsx"
 Cohesion: 0.06
-Nodes (66): Arrastre, CampoEquipo(), LineasCampo(), Props, acotar(), cambiarFormacion(), casillaDe(), colocacionDe() (+58 more)
+Nodes (71): AlineacionGuardada, Arrastre, CampoEquipo(), LineasCampo(), Props, acotar(), cambiarFormacion(), casillaDe() (+63 more)
 
-### Community 45 - "emitirTorneo"
-Cohesion: 0.10
-Nodes (31): datosComunesTorneo(), despuesDePartido(), emitirTorneo(), vistaTorneo(), Implementation for User Story 10, Reglas, Qué dicen los datos, Complexity Tracking (+23 more)
+### Community 45 - "Diagnóstico: latencia de apertura y de entrega de sobres"
+Cohesion: 0.09
+Nodes (23): compartido(), Apertura con 10 partidas (Docker Desktop; mediana / p95, ms), Apertura en el entorno de referencia (mediana / p95, ms), Apertura en el entorno de referencia (mediana / p95, ms), Apertura (`POST /api/partidos/:id/abrir`), Cobertura del desglose (FR-001, SC-004), Conclusión tras US2, Conclusión tras US3 (+15 more)
 
 ### Community 46 - "Expo Animation Recipes"
 Cohesion: 0.06
 Nodes (33): Bottom sheet you can drag to dismiss, Collapsing header on scroll, Expo Animation Recipes, Firing something once at a threshold, Keyboard-synced UI, List entrances, Press feedback, Screen transitions (Expo Router) (+25 more)
 
 ### Community 47 - "Marco.tsx"
-Cohesion: 0.06
-Nodes (43): Ambiente(), Enlace, ENLACES, fondoDeVista, fondoPantalla(), Marco(), partidaDeRuta(), Salida (+35 more)
+Cohesion: 0.14
+Nodes (20): Ambiente(), AYUDA_ENLACE, Enlace, ENLACES, fondoDeVista, fondoPantalla(), Marco(), partidaDeRuta() (+12 more)
 
 ### Community 48 - "checks/rasgos.ts"
-Cohesion: 0.19
-Nodes (20): casilla, penalizacionPorPosicion(), Preparación, Pruebas automáticas, Quickstart — Validación de la spec 005, autogoles(), comprobacion(), comprobacionesDefectos() (+12 more)
+Cohesion: 0.11
+Nodes (38): Ambiente de público (spec 012, ronda 4), Celebraciones de gol, Reglas de la 2D, Sonidos actuales, Celebraciones: cliente, Celebraciones: datos y servidor, Phase 4: User Story 1 - Partido con sonido y celebración de gol (Priority: P1), autogoles() (+30 more)
 
 ### Community 49 - "Load Test (k6)"
 Cohesion: 0.12
 Nodes (22): apertura, bloqueadas, cabeceras(), cookieDe(), descanso, enLotes(), entregaSobre, erroresWs (+14 more)
 
 ### Community 50 - "actores/torneo.ts"
-Cohesion: 0.11
-Nodes (38): nivelNPCDe(), crearPartidosJornada(), abrirSiguienteJornada(), anotarResultado(), avisarHumanos(), AVISO_PLAZO_MS, construirVistaTorneo(), eliminacionVista() (+30 more)
+Cohesion: 0.08
+Nodes (58): entreHumanos(), forzarFinal(), nivelNPCDe(), sinHumanos(), resolverPartidosSinHumanos(), abandonar(), abrirSiguienteJornada(), avisarHumanos() (+50 more)
 
-### Community 51 - "Roadmap de Fútboosterdraft"
-Cohesion: 0.10
-Nodes (20): Comprobaciones pendientes (resumen), Cómo leerlo, Decisiones tomadas en esta propuesta, Dependencias, INI-01 Ciclo central del juego, INI-02 Experiencia de juego y ritmo, INI-03 Identidad visual y accesibilidad, INI-04 Virtudes, defectos y modo Duelo (+12 more)
+### Community 51 - "main"
+Cohesion: 0.04
+Nodes (50): Comprobaciones pendientes (resumen), Cómo leerlo, Decisiones tomadas en esta propuesta, Dependencias, INI-01 Ciclo central del juego, INI-02 Experiencia de juego y ritmo, INI-03 Identidad visual y accesibilidad, INI-04 Virtudes, defectos y modo Duelo (+42 more)
 
 ### Community 52 - "Tabla perfiles_usuario"
 Cohesion: 0.25
 Nodes (11): POST /api/partidos/:id/abrir (modalidad), `preparacion.inicio` (✎), Migraciones 0006 a 0008, ModoSimulacion ('rapida' | '2d'), Tabla participantes (ultima_modalidad, pantallas vistas), partidos.modalidades (por participante), Migraciones 0006_modo_simulacion, 0007_pantallas_torneo, 0008_identidad, SelectorModo (+3 more)
 
-### Community 53 - "partida/partida.ts"
-Cohesion: 0.10
-Nodes (26): Props, ConfigDuelos, CONFIG_DUELOS_POR_DEFECTO, configDuelosValida(), ConfigPartida, configPorDefecto(), debeAbandonarsePorDesconexion(), DIFICULTADES (+18 more)
+### Community 53 - "Jugador"
+Cohesion: 0.06
+Nodes (52): Props, Estrella(), MediaEquipo, rellenoEstrellas(), OpcionesAlineacion, CartaValorada, ajustarAlineacionPorRasgos(), FACTOR_UMBRAL_CANSANCIO (+44 more)
 
 ### Community 54 - "Torneo.tsx"
-Cohesion: 0.04
-Nodes (87): abrirPartido(), api(), comprarColeccion(), comprarSobre(), marcarPantallaVista(), marcarVisto(), obtenerReproduccion(), obtenerTienda() (+79 more)
+Cohesion: 0.05
+Nodes (61): abrirPartido(), api(), cambiarActiva(), desfragmentar(), marcarVisto(), obtenerColeccion(), obtenerMovimientos(), obtenerReproduccion() (+53 more)
 
-### Community 55 - "aperturas-grupo.test.ts"
-Cohesion: 0.25
-Nodes (4): aperturasEnBuzon(), bloquear(), Cruce, esperarBuzon()
+### Community 55 - "src/cli.ts"
+Cohesion: 0.12
+Nodes (26): catalogo(), comprobarSC003(), comprobarSC005(), cumpleCupos(), cumpleNiveles(), gruposColecciones(), leer(), Comprobacion (+18 more)
 
-### Community 56 - "helpers/app.ts"
-Cohesion: 0.14
-Nodes (28): CADUCIDAD_MS, base, iniciarServidorPruebas(), crearRegistradoConColeccion(), darCartas(), fijarSaldo(), saldoYSuma(), espera() (+20 more)
+### Community 56 - "vitest"
+Cohesion: 0.06
+Nodes (104): aperturasEnBuzon(), programarJornada(), CADUCIDAD_MS, conectar(), ConexionBD, aplicarMigraciones(), CARPETA_MIGRACIONES, cargarCatalogo() (+96 more)
 
 ### Community 57 - "Balance Package"
 Cohesion: 0.11
@@ -627,24 +629,24 @@ Cohesion: 0.07
 Nodes (29): Assumptions, Clarifications, Constitución, Contexto, Defectos, Documento de referencia e integración de futuros atributos, Edge Cases, Feature Specification: Virtudes, defectos y nuevo modo de juego (+21 more)
 
 ### Community 59 - "react"
-Cohesion: 0.04
-Nodes (93): AperturaSobre(), calendarioApertura(), COLOR_PARTICULAS, DURACION_MAXIMA_MS, DURACION_SOBRE_MS, ESCALONADO_MS, especial(), EstadoCarta (+85 more)
+Cohesion: 0.05
+Nodes (55): marcarPantallaVista(), Estadio(), Trofeo(), EstadoPreparacion, Preparacion, AccionBarra, AYUDA_ACCION, Props (+47 more)
 
 ### Community 60 - "defectosJuego.test.ts"
-Cohesion: 0.20
-Nodes (26): PARAMETROS_V4, candidatoDefensivo(), radioDe(), radioIntervencion(), rivalCercano(), interceptorDePase(), contextoDe(), darBalon() (+18 more)
-
-### Community 61 - "filtrado.ts"
-Cohesion: 0.17
-Nodes (17): Props, Props, CLAVES, CriterioOrden, filtrarCartas(), FILTROS_INICIALES, normalizar(), ordenarCartas() (+9 more)
-
-### Community 62 - "api"
-Cohesion: 0.05
-Nodes (62): cambiarActiva(), desfragmentar(), ErrorApi, obtenerColeccion(), obtenerMovimientos(), ConSesion(), ConSesionRegistrada(), router (+54 more)
-
-### Community 63 - "tiro.ts"
 Cohesion: 0.16
-Nodes (25): lanzadorEfectivo(), faltaDirecta(), probabilidadTiroDirecto(), desplazamientoTiro(), pesoTiro(), defensaDe(), despejeEnPropia(), GRUPO (+17 more)
+Nodes (29): PARAMETROS_V3, PARAMETROS_V4, contextoDe(), darBalon(), DEM, jugador(), partido(), ponerRasgos() (+21 more)
+
+### Community 61 - "Calibración del motor 3.0.0 (T033)"
+Cohesion: 0.14
+Nodes (14): Calibración del motor 3.0.0 (T033), Configuración final: la de la ronda 7, Línea base (motor 2.0.0, `c8a1627`), Pendiente *(resuelto en la ronda 14)*, Ronda 10 (`--serie todas`, n = 500): ronda 7 más el peso del centro 3,9 / 2,8, Ronda 11 (tras H8, H11 y H13; `--serie todas`, n = 500), Ronda 12 y 13: llegada orgánica y regate hacia dentro (H11, decisión del 2026-10-20), Ronda 14: parámetros 5.0.0 y criterios revisados (INI-05, 2026-11-01) (+6 more)
+
+### Community 62 - "Coleccion.tsx"
+Cohesion: 0.10
+Nodes (35): Rutas(), FichaCartaColeccion(), Props, InterruptorActiva(), Props, clavePreferencias(), Coleccion(), CLAVES (+27 more)
+
+### Community 63 - "generarCore.ts"
+Cohesion: 0.08
+Nodes (35): formacionObjetivo(), errorDraft(), CODIGOS_SELECCION, VIRTUDES_GENERICAS, VIRTUDES_POR_DEMARCACION, celdas(), generarColeccionesPrueba(), mejores() (+27 more)
 
 ### Community 64 - "TS Base Config"
 Cohesion: 0.12
@@ -655,60 +657,60 @@ Cohesion: 0.24
 Nodes (11): speckit-analyze skill, speckit-checklist skill, speckit-clarify skill, speckit-constitution skill, speckit-converge skill, speckit-implement skill, speckit-plan skill, speckit-specify skill (+3 more)
 
 ### Community 66 - "e2e/ayudas.ts"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (9): abrirFormacion(), arrastrarSobre(), partidaTrasDraft(), registrar(), sustituirEnGestion(), Carta, hastaElDescansoRapida(), Torneo (+1 more)
 
 ### Community 67 - "User Scenarios & Testing *(mandatory)*"
 Cohesion: 0.05
 Nodes (38): Apertura de los sobres (US8), Assumptions, Botones principales (US4), Clarifications, Dificultad de los NPC (US9), Diseño de las cartas (US7), Edge Cases, Feature Specification: Mejoras de interfaz, simulación y experiencia de juego (+30 more)
 
-### Community 68 - "checks/rasgos.ts"
-Cohesion: 0.18
-Nodes (14): autor(), con(), contarEventos(), IDS_RASGOS_DEFECTOS, IDS_RASGOS_VIRTUDES, Lado, P, P_AUTOGOLES (+6 more)
+### Community 68 - "Tienda.tsx"
+Cohesion: 0.11
+Nodes (29): comprarColeccion(), comprarSobre(), urlSobre(), EstadoVacio(), Props, Opciones, useEscalaRejilla(), EstadoAspecto (+21 more)
 
 ### Community 69 - "009-simulacion-hilos-trabajo/spec.md"
-Cohesion: 0.13
-Nodes (15): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Simulación de partidos en hilos de trabajo, Data Model: Simulación de partidos en hilos de trabajo, Estados de partido afectados (sin cambios de esquema), Grupo de hilos (+7 more)
+Cohesion: 0.10
+Nodes (20): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Simulación de partidos en hilos de trabajo, Complexity Tracking, Constitution Check, Documentation (this feature) (+12 more)
 
 ### Community 70 - "ServicioEconomia"
-Cohesion: 0.14
-Nodes (11): ServicioEconomia, idCarta(), registrarRutasColeccion(), cuerpo(), registrarRutasTienda(), ResultadoCompraGuardado, estadoMinimo, valorDesfragmentar() (+3 more)
+Cohesion: 0.05
+Nodes (58): ServicioEconomia, idCarta(), registrarRutasColeccion(), cuerpo(), registrarRutasTienda(), ResultadoCompraGuardado, Catalogo, comprobarMinimoActivo() (+50 more)
 
-### Community 71 - "opciones.ts"
-Cohesion: 0.16
-Nodes (23): esPortero(), CERCA_REMATE, factorConduccion(), factorPaseLargo(), factorStat(), lineaDeTiroDespejada(), MotivoPaseLargo, motivosPaseLargo() (+15 more)
+### Community 71 - "tiro.ts"
+Cohesion: 0.13
+Nodes (35): portero(), Duelo, probabilidad(), sigmoide(), pesoTiroDesde(), porteroAdelantado(), desplazamientoTiro(), pesoTiro() (+27 more)
 
-### Community 72 - "catalogo/tipos.ts"
+### Community 72 - "catalogo/rasgos.ts"
 Cohesion: 0.06
-Nodes (53): TextoRasgo, ruta, AMBITO, celda(), decimal(), generarDocumentoRasgos(), NIVEL, pct() (+45 more)
+Nodes (56): TextoRasgo, TEXTOS_RASGOS, AMBITO, celda(), decimal(), generarDocumentoRasgos(), NIVEL, pct() (+48 more)
 
-### Community 73 - "Implementation Plan: Simulación de partidos en hilos de trabajo"
-Cohesion: 0.25
-Nodes (8): Complexity Tracking, Constitution Check, Documentation (this feature), Implementation Plan: Simulación de partidos en hilos de trabajo, Project Structure, Source Code (repository root), Summary, Technical Context
+### Community 73 - "opciones.ts"
+Cohesion: 0.08
+Nodes (31): CERCA_REMATE, factorConduccion(), factorPaseLargo(), factorStat(), lineaDeTiroDespejada(), MotivoPaseLargo, pesosConEspacio(), PUNTO_REMATE (+23 more)
 
 ### Community 74 - "Fixtures Package"
 Cohesion: 0.09
 Nodes (22): sharp, dependencies, @fbd/domain, @fbd/engine, devDependencies, sharp, exports, @fbd/domain (+14 more)
 
 ### Community 75 - "ws/partido.ts"
-Cohesion: 0.06
-Nodes (35): ConsultaReproduccion, CuerpoAbrir, DetallesBajaPendiente, LadoDuelo, Marcador, Modalidad, PartidoPendienteDeVer, RespuestaAbrir (+27 more)
+Cohesion: 0.03
+Nodes (80): AlineacionDuelos, AlineacionEntrada, Color, DorsalesEntrada, EquipacionesEntrada, EquipacionV1, EquipacionV2, TacticaEntrada (+72 more)
 
 ### Community 76 - "Protocol Package"
 Cohesion: 0.14
 Nodes (13): dependencies, @fbd/domain, zod, exports, ./schemas/*, @fbd/domain, zod, name (+5 more)
 
 ### Community 77 - "actores/draft.ts"
-Cohesion: 0.07
+Cohesion: 0.09
 Nodes (54): abandonarDraft(), abrirTurno(), anotarElecciones(), aplicar(), dudosasHechas, eleccionNPC(), emitirProgreso(), Escrituras (+46 more)
 
 ### Community 78 - "ROADMAP.md"
-Cohesion: 0.05
-Nodes (36): Calibración del motor 3.0.0 (T033), Configuración final: la de la ronda 7, Línea base (motor 2.0.0, `c8a1627`), Pendiente *(resuelto en la ronda 14)*, Ronda 10 (`--serie todas`, n = 500): ronda 7 más el peso del centro 3,9 / 2,8, Ronda 11 (tras H8, H11 y H13; `--serie todas`, n = 500), Ronda 12 y 13: llegada orgánica y regate hacia dentro (H11, decisión del 2026-10-20), Ronda 14: parámetros 5.0.0 y criterios revisados (INI-05, 2026-11-01) (+28 more)
+Cohesion: 0.08
+Nodes (19): Fútboosterdraft Constitution, CLAUDE.md (instrucciones del proyecto), Calibración de los errores de los NPC (T097), Ronda 1: valores iniciales de data-model §6 (30 torneos por nivel), Ronda 2: amateur 700 / 12, intermedio 450 / 9, avanzado 250 / 5, PRO 25 / 1,5 (100 torneos por nivel), Ronda 3: intermedio 500 / 10, Ronda 4 (valores finales): +100 milésimas por familia (H13), Sonda (`tools/balance/src/sondaNPC.ts`, 20 torneos) (+11 more)
 
 ### Community 79 - "balonParado.ts"
-Cohesion: 0.06
-Nodes (39): gol(), penalti(), TipoTiro, factorFaltaArea(), TipoAccion, malestar(), Salida: eventos, 7.3 Eventos de tiro y gol — `datos` ampliados (+31 more)
+Cohesion: 0.10
+Nodes (35): Efecto, lanzadorEfectivo(), gol(), amarilla(), falta(), faltaDirecta(), penalti(), probabilidadTiroDirecto() (+27 more)
 
 ### Community 80 - "AI Package"
 Cohesion: 0.15
@@ -718,29 +720,29 @@ Nodes (12): dependencies, @fbd/domain, @fbd/engine, exports, @fbd/domain, @fbd/e
 Cohesion: 0.16
 Nodes (4): jugarHastaCaer(), sabotear(), sustituirBajas(), vistaTorneo
 
-### Community 82 - "ref_node_fs"
-Cohesion: 0.07
-Nodes (34): FUNCIONES, CARPETAS_EXCEPTUADAS, EXCEPCIONES, fallos, raiz, recorrer(), REGLAS, datos (+26 more)
+### Community 82 - "generarCore.ts"
+Cohesion: 0.05
+Nodes (45): ruta, FUNCIONES, CARPETAS_EXCEPTUADAS, EXCEPCIONES, fallos, raiz, recorrer(), REGLAS (+37 more)
 
-### Community 83 - "colecciones.ts"
-Cohesion: 0.07
-Nodes (40): recuentoPorDemarcacionYNivel(), generarMesa(), Complexity Tracking, Constitution Check, Implementation Plan: Preparación de la base de datos de las cartas, colecciones, fragmentos y tienda, Summary, Technical Context, R10. Persistencia e integridad de las operaciones (FR-017, FR-018, FR-032, SC-006, SC-007) (+32 more)
+### Community 83 - "Research — Fase 0: Colecciones, fragmentos y tienda"
+Cohesion: 0.04
+Nodes (53): informeColecciones(), informeDistribucion(), recuentoPorDemarcacionYNivel(), proporcionDefectosPorNivel(), validarCatalogo(), cartas, { colecciones, errores }, R10. Persistencia e integridad de las operaciones (FR-017, FR-018, FR-032, SC-006, SC-007) (+45 more)
 
 ### Community 84 - "Engine Package"
 Cohesion: 0.17
 Nodes (11): dependencies, @fbd/domain, exports, @fbd/domain, name, private, scripts, bench (+3 more)
 
 ### Community 85 - "Home — Style Reference"
-Cohesion: 0.05
-Nodes (38): Agent Prompt Guide, Border Radius, Cartas, sobre y logo en Fútboosterdraft (spec 007), Components, Cookie Settings Modal, CSS Custom Properties, Dark Card, Do (+30 more)
+Cohesion: 0.17
+Nodes (12): Agent Prompt Guide, CSS Custom Properties, Elevation, Gradient System, Home — Style Reference, Imagery, Layout, Quick Start (+4 more)
 
-### Community 86 - "contexto.ts"
-Cohesion: 0.11
-Nodes (31): Contexto, elegirPonderado(), holgura(), portero(), PlanPase, entorno, callejonSinSalida(), factorDireccion() (+23 more)
+### Community 86 - "estado.ts"
+Cohesion: 0.09
+Nodes (31): Contexto, fotograma(), pasoEspacial(), AccionEnCurso, Balon, crearEquipo(), EquipoEstado, estadisticasVacias() (+23 more)
 
-### Community 87 - "Resultado de prueba de carga — 1 partida (entorno de referencia)"
-Cohesion: 0.14
-Nodes (13): Advertencia, Comando ejecutado, CUSTOM, Desglose por fases, Ejecución, EXECUTION, Finalización, HTTP (+5 more)
+### Community 87 - "EstadoMotor"
+Cohesion: 0.13
+Nodes (27): PartidoCalculado, PartidoEnCurso, aFormato004(), arrayPg(), baseDatos004, cartasCore004(), CLAVE_004, equipo() (+19 more)
 
 ### Community 88 - "Web Package"
 Cohesion: 0.11
@@ -750,25 +752,25 @@ Nodes (17): devDependencies, @axe-core/playwright, @playwright/test, @types/reac
 Cohesion: 0.18
 Nodes (11): Contrato HTTP/JSON — cambios de la spec 003, `GET /api/partidas/:id/alineacion` (✎), `GET /api/partidos/:id` (✎), `GET /api/partidos/:id/reproduccion?modalidad=rapida|2d` (✎), `GET /api/perfil`, Partidos, Perfil de usuario (✚), Plantilla, alineación y equipaciones (+3 more)
 
-### Community 90 - "CLAUDE.md (instrucciones del proyecto)"
+### Community 90 - "Contrato de interfaz — spec 003"
 Cohesion: 0.07
-Nodes (24): Fútboosterdraft Constitution, CLAUDE.md (instrucciones del proyecto), Pendientes (ideas para añadir), Sonidos del juego, Cómo se lee el impacto, Defectos (15), Incompatibilidades, Qué son (+16 more)
+Nodes (27): Checklist de requisitos: Simulación 2D y finalización, Presión coordinada (excepción a máx. 2 jugadores al balón), Prueba de carga k6 beta-100 (no validada), Desviación: motor ~80 ms por partido, no cumple FR-028a, Herramienta de equilibrado pnpm balance, Validación de la spec 002 (T159), Contrato del motor de simulación (spec 002), Invariante 6: cinemática (sustituto automático de SC-007a) (+19 more)
 
 ### Community 91 - "Tasks: Virtudes, defectos y nuevo modo de juego"
-Cohesion: 0.09
-Nodes (23): Dependencies & Execution Order, Format: `[ID] [P?] [Story] Description`, Implementation Strategy, Incremental Delivery, MVP First (User Story 1), Notes, Orden especial de esta spec, Parallel Example: User Story 2 (+15 more)
+Cohesion: 0.10
+Nodes (20): Format: `[ID] [P?] [Story] Description`, Implementation Strategy, Incremental Delivery, MVP First (User Story 1), Notes, Orden especial de esta spec, Parallel Example: User Story 2, Parallel Example: User Story 3 (+12 more)
 
 ### Community 92 - "Feature Specification: Latencia de apertura de partidos y de entrega de sobres"
 Cohesion: 0.11
 Nodes (19): Apertura de partidos, Assumptions, Clarifications, Contexto, Diagnóstico, Edge Cases, Entrega del sobre y difusión, Feature Specification: Latencia de apertura de partidos y de entrega de sobres (+11 more)
 
 ### Community 94 - "Research — Fase 0: Retoques visuales"
-Cohesion: 0.17
-Nodes (13): Efecto de sonido, Corrección a la spec, Estado de partida (comprobado en el código), R10 — Pestañas del torneo y fondos, R1 — SVG con imagen incrustada y script de preparación de un solo uso, R2 — La carta compone sus datos sobre el marco, con proporción fija 2 : 3, R3 — Texto, contraste y carta compacta, R4 — Logo y sobre por sus componentes actuales (+5 more)
+Cohesion: 0.20
+Nodes (10): Corrección a la spec, Estado de partida (comprobado en el código), R1 — SVG con imagen incrustada y script de preparación de un solo uso, R2 — La carta compone sus datos sobre el marco, con proporción fija 2 : 3, R3 — Texto, contraste y carta compacta, R4 — Logo y sobre por sus componentes actuales, R5 — Origen de los sonidos (CC0), R6 — Formato, recorte y volumen de los ficheros de audio (+2 more)
 
-### Community 95 - "sonido.ts"
-Cohesion: 0.13
-Nodes (21): activado, BASE, buferes, cambiarSonido(), cargar(), CLAVE_SONIDO, Efecto, FACTOR_VOLUMEN (+13 more)
+### Community 95 - "EntradaPartido"
+Cohesion: 0.08
+Nodes (29): EntradaPartido, controlTotal(), Comportamiento (reglas comprobables), Contrato del motor de simulación — cambios de la spec 003, Entrada, Invariantes comprobados por pruebas, Operaciones, Rendimiento (+21 more)
 
 ### Community 96 - "Domain Package"
 Cohesion: 0.22
@@ -776,23 +778,23 @@ Nodes (8): exports, name, private, scripts, rasgos:doc, typecheck, type, version
 
 ### Community 97 - "Tasks: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos"
 Cohesion: 0.08
-Nodes (25): Decisión de derechos (FR-001, SC-009) — puerta, Dentro de cada historia, Dependencies & Execution Order, Entrega incremental, Equipo en paralelo, Format: `[ID] [P?] [Story] Description`, Implementation Strategy, MVP (solo US1) (+17 more)
+Nodes (24): Dentro de cada historia, Dependencies & Execution Order, Entrega incremental, Equipo en paralelo, Format: `[ID] [P?] [Story] Description`, Implementation Strategy, MVP (solo US1), Parallel Example: User Story 1 (+16 more)
 
 ### Community 98 - "celebraciones/tipos.ts"
-Cohesion: 0.17
-Nodes (23): movimientoReducido(), PropsCapaCelebracion, Clasica(), azar(), ClaseParticula, Ondas(), Particulas(), TituloLetras() (+15 more)
+Cohesion: 0.15
+Nodes (27): movimientoReducido(), PropsCapaCelebracion, Clasica(), Bailarin(), Discoteca(), azar(), ClaseParticula, Ondas() (+19 more)
 
-### Community 99 - "Jugador"
-Cohesion: 0.03
-Nodes (93): OpcionesSoltar, OpcionesAlineacion, decidirAlineacionDuelos(), CartaValorada, suma(), Jugador, Posicion, PuntuacionBase (+85 more)
+### Community 99 - "autoAlineacion"
+Cohesion: 0.07
+Nodes (47): DEM, equipo(), jugador(), lote(), DEM, jugador(), plantilla(), calcularMedia() (+39 more)
 
 ### Community 100 - "NombreRecortado"
-Cohesion: 0.08
-Nodes (34): BajaVista, DistintivoBaja(), ETIQUETA_MOTIVO, Esqueleto(), FormaEsqueleto, EstadoVacio(), edad(), FichaJugador() (+26 more)
+Cohesion: 0.07
+Nodes (46): ConSesion(), ConSesionRegistrada(), router, PantallaError(), TarjetaPreparacion(), BajaVista, DistintivoBaja(), ETIQUETA_MOTIVO (+38 more)
 
-### Community 101 - "particulas.ts"
-Cohesion: 0.17
-Nodes (6): FPS_MINIMO, OpcionesParticulas, Particula, PRESUPUESTO_MS, SistemaParticulas, VENTANA_FPS_MS
+### Community 101 - "ActorPartida"
+Cohesion: 0.07
+Nodes (21): ActorPartida, Complexity Tracking, Constitution Check, Documentation (this feature), Implementation Plan: Latencia de apertura de partidos y de entrega de sobres, Orden de implementación sugerido, Project Structure, Source Code (repository root) (+13 more)
 
 ### Community 102 - "Code Review and Quality"
 Cohesion: 0.07
@@ -802,41 +804,41 @@ Nodes (29): 1. Correctness, 2. Readability & Simplicity, 3. Architecture, 4. Sec
 Cohesion: 0.29
 Nodes (6): compilerOptions, jsx, lib, extends, include, ../../tsconfig.base.json
 
-### Community 104 - "servidor.ts"
-Cohesion: 0.07
-Nodes (56): vistaCruce(), escudosDelPartido(), abandonar(), marcarPantallaVista(), apodoValido(), aUsuarioSesion(), Auth, crearAuth() (+48 more)
+### Community 104 - "partida/partida.ts"
+Cohesion: 0.11
+Nodes (23): CONFIG_DUELOS_POR_DEFECTO, configDuelosValida(), configPorDefecto(), debeAbandonarsePorDesconexion(), Dificultad, DIFICULTADES, ErrorConfig, EventoPartida (+15 more)
 
 ### Community 105 - "Feature Specification: Simulación de partidos en hilos de trabajo"
 Cohesion: 0.14
 Nodes (14): Assumptions, Clarifications, Edge Cases, Feature Specification: Simulación de partidos en hilos de trabajo, Functional Requirements, Key Entities, Measurable Outcomes, Requirements *(mandatory)* (+6 more)
 
-### Community 106 - "protocol/src/http/tienda.ts"
-Cohesion: 0.15
-Nodes (17): Props, CartaResumen, CuerpoCambiarActiva, EstadoMinimo, MovimientoFragmentos, RespuestaCambiarActiva, RespuestaDesfragmentar, RespuestaMovimientos (+9 more)
+### Community 106 - "animaciones.ts"
+Cohesion: 0.23
+Nodes (23): abrir(), BALON_DE, balonCon(), cerrar(), conducir(), controlar(), hasta(), posicion() (+15 more)
 
 ### Community 107 - "HTTP"
 Cohesion: 0.17
 Nodes (11): Contrato cliente-servidor (spec 012), `GET /api/avisos` — amplía, `GET /api/cosmeticos` — amplía, `GET /api/partidas/:id/plantillas` — amplía, `GET/PUT /api/perfil/aspecto` — amplía (011), HTTP, `partido.inicio` (servidor → cliente) — amplía, `partido.modo_incidencias` (cliente → servidor) — nuevo (+3 more)
 
-### Community 108 - "cuadro.ts"
-Cohesion: 0.26
-Nodes (9): avanzarCuadro(), Cruce, cuadroMixto(), cuadroPlayoff(), rondaActual(), rondasVacias(), TipoRonda, TIPOS (+1 more)
+### Community 108 - "parametros.ts"
+Cohesion: 0.22
+Nodes (11): CodigoSeleccion, esSeleccion(), SELECCIONES, PaqueteFragmentos, PARAMETROS_ECONOMIA, ParametrosEconomia, validarParametrosEconomia(), valorEsperadoSobre() (+3 more)
 
 ### Community 109 - "Feature Specification: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos"
-Cohesion: 0.11
-Nodes (19): Assumptions, Clarifications, Contexto, Edge Cases, Feature Specification: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos, Functional Requirements, Key Entities, Measurable Outcomes (+11 more)
+Cohesion: 0.14
+Nodes (14): Assumptions, Clarifications, Contexto, Edge Cases, Feature Specification: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos, Measurable Outcomes, Session 2026-11-04, Session 2026-11-05 (+6 more)
 
 ### Community 110 - "Data Model — Mejoras de interfaz, simulación y experiencia de juego"
-Cohesion: 0.13
-Nodes (15): 10. Resumen de relaciones (añadidos), 2. Partida (`ConfigPartida`, tabla `partidas`), 5. Perfil de usuario (✚ tabla `perfiles_usuario`), 6. Perfil de NPC (`PerfilNPC`, `@fbd/ai`), 7.1 Partido (tabla `partidos`), 7.2 Estadísticas de equipo (`EstadisticasEquipo`) — añadidos, 7.4 Métricas por jugador (`MetricasJugador`) — ✚, no se guardan, 7.5 Lote de decisiones (`partido.decisiones`) — mensaje, no entidad (+7 more)
+Cohesion: 0.11
+Nodes (18): 10. Resumen de relaciones (añadidos), 2. Partida (`ConfigPartida`, tabla `partidas`), 3.1 Nombre de equipo (regla de dominio), 3. Participante (tabla `participantes`), 4. Equipación (`Equipacion` v2), 5. Perfil de usuario (✚ tabla `perfiles_usuario`), 6. Perfil de NPC (`PerfilNPC`, `@fbd/ai`), 7.1 Partido (tabla `partidos`) (+10 more)
 
 ### Community 111 - "Spec 002 Engine Ops"
 Cohesion: 0.40
 Nodes (6): penalizacionPorPosicion(j, destino, p), previsualizar(alineacion) -> Previsualizacion, statsEfectivos(j, destino, p, ctx), zonaEn(x, y), POST /api/partidas/:id/alineacion/previsualizar, Colocación libre (FR-034)
 
 ### Community 112 - "coleccion"
-Cohesion: 0.08
-Nodes (25): Assumptions, Catálogo y colecciones, Clarifications, Colección propia y colección activa, Contexto, Datos y presentación de las cartas, Edge Cases, Feature Specification: Preparación de la base de datos de las cartas, colecciones, fragmentos y tienda (+17 more)
+Cohesion: 0.05
+Nodes (51): coleccion(), 1.1 Carta (`data/core.json`, `data/cartas-prueba.json`), 1.2 Colecciones (`data/colecciones.json`), 1. Ficheros de datos, 2. Dominio (`packages/domain`), 3.1 Tablas modificadas, 3.2 Tablas nuevas, 3.3 Invariantes (+43 more)
 
 ### Community 113 - "Server TS Config"
 Cohesion: 0.40
@@ -882,9 +884,9 @@ Nodes (29): Browser Testing with DevTools, Common Rationalizations, DAMP Over DR
 Cohesion: 0.06
 Nodes (31): Accordion / collapse, Animation Recipes, Button press, Drag to dismiss, Drawer / sheet, Dropdown, popover, menu, select, Hold to confirm, Masking a crossfade that won't settle (+23 more)
 
-### Community 127 - "catalogo/tipos.ts"
-Cohesion: 0.05
-Nodes (41): IDENTIDADES, NOMBRE_DEMARCACION, nombreGenerico(), siluetaDe(), Coleccion, IdentidadAlternativa, MAX_DEFECTOS, MAX_VIRTUDES (+33 more)
+### Community 127 - "Resultado de prueba de carga — 1 partida (entorno de referencia)"
+Cohesion: 0.14
+Nodes (13): Advertencia, Comando ejecutado, CUSTOM, Desglose por fases, Ejecución, EXECUTION, Finalización, HTTP (+5 more)
 
 ### Community 128 - "Pause & My Games"
 Cohesion: 0.67
@@ -902,33 +904,29 @@ Nodes (3): BarraPrincipal (boton principal sticky), R16 Boton principal fijo y c
 Cohesion: 0.67
 Nodes (3): ResultadoPartido (resultado comun rapida/2D), R18 Pantalla de resultado al finalizar, US6 Finalizar el partido y ver resultado (P2)
 
-### Community 149 - "Consultas del grupo de aperturas"
-Cohesion: 0.33
-Nodes (3): JornadaTorneo, Consultas del grupo de aperturas, Tras los recortes (T043–T046)
-
 ### Community 153 - "DESIGN.md"
-Cohesion: 0.06
-Nodes (28): Apertura de sobre (`AperturaSobre`, FR-011 a FR-015; research R21), Barra principal (`BarraPrincipal`, FR-006, FR-007; research R16), Carta de jugador (`CartaJugador`, FR-008 a FR-010; research R20), Contrato de interfaz — spec 003, Derrota y campeón (`PantallaDerrota`, `PantallaCampeon`, FR-039 a FR-041b; research R22), «Formación» (`Alineacion` sobre `CampoEquipo`, FR-001 a FR-003; research R14), Gestión del equipo durante el partido (`GestionEquipo`, FR-027 a FR-031; research R17), Nombre y equipación (`Sala`, `EditorEquipacion`, `Perfil`, FR-042 a FR-047; research R23, R24) (+20 more)
+Cohesion: 0.07
+Nodes (25): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Mejoras visuales y de diseño (GUI + UX), Hallazgos, Preparación, Pruebas automáticas previas (+17 more)
 
-### Community 154 - "main"
-Cohesion: 0.10
-Nodes (25): Assumptions, Clarifications, Contexto, Feature Specification: Datos reales de la colección Core (fase 0.1), Functional Requirements, Key Entities, Measurable Outcomes, Requirements *(mandatory)* (+17 more)
+### Community 154 - "Components"
+Cohesion: 0.17
+Nodes (12): Components, Cookie Settings Modal, Dark Card, Footer, Ghost Navigation Button, Hero Headline, Image Card, Marquee Display Section (+4 more)
 
 ### Community 155 - "Code Review and Quality"
 Cohesion: 0.07
 Nodes (29): 1. Correctness, 2. Readability & Simplicity, 3. Architecture, 4. Security, 5. Performance, Change Descriptions, Change Sizing, Code Review and Quality (+21 more)
 
-### Community 156 - "crearServidor"
-Cohesion: 0.05
-Nodes (73): ActorPartida, ContextoComando, Destino, pendientesDeMesa(), vistaDraft(), ESTADOS_ACTIVOS, GestorPartidas, cambiarEscudo() (+65 more)
+### Community 156 - "ControladorPartida"
+Cohesion: 0.08
+Nodes (31): ContextoComando, reprogramarTurnos(), GestorPartidas, cambiarNombreEquipo(), clavesUsadas(), marcarNombreAjustado(), nombresAjustados, nombresUsados() (+23 more)
 
-### Community 157 - "http/aspecto.ts"
+### Community 157 - "Contrato de interfaz — spec 004"
+Cohesion: 0.17
+Nodes (12): 10. Nombres recortados (Edge Cases; research R9), 11. Textos renombrados durante la implementación (FR-035, FR-036), 1. Reglas globales (todas las pantallas del inventario), 2. Barra de navegación (FR-012a; research R8), 3. Inicio (FR-014, FR-015), 4. Marcadores (FR-016, FR-034), 5. Pantallas finales (FR-017), 6. Jerarquía de las pantallas de juego (FR-018 a FR-023) (+4 more)
+
+### Community 158 - "ServicioAvisos"
 Cohesion: 0.24
-Nodes (11): favorito(), limpiarPreferenciasSobre(), siguienteSobre(), sobreActual(), usaCarrusel(), validarDatosCosmetico(), DURACION_MAXIMA_CELEBRACION_JUEGO_MS, PreferenciasSobre (+3 more)
-
-### Community 158 - "Validación de la spec 004 con personas (SC-003, SC-004, SC-010)"
-Cohesion: 0.22
-Nodes (8): Hallazgos, Preparación, Pruebas automáticas previas, Resultado, SC-003 — Prueba de cinco segundos, SC-004 — Valoración «se ve profesional y moderna», SC-010 — Tiempos de decisión, Validación de la spec 004 con personas (SC-003, SC-004, SC-010)
+Nodes (4): DependenciasTorneo, ServicioAvisos, Pruebas automáticas, Validación de la spec 003 (T133)
 
 ### Community 159 - "Animation Recipes"
 Cohesion: 0.06
@@ -938,17 +936,13 @@ Nodes (31): Accordion / collapse, Animation Recipes, Button press, Drag to dismi
 Cohesion: 0.15
 Nodes (13): 1. Catálogo de cosméticos (`data/cosmeticos.json` → tablas), 2. Posesión: `cosmeticos_usuario`, 3. Compras y movimientos (cambios en tablas de la 006), 5. Escudo del participante: `participantes.escudo`, 6. Identidad de las cartas, 7. Parámetros de economía (cambios), Data Model (Fase 1): Rework de la tienda, `jugadores`: columnas nuevas (nulables) (+5 more)
 
-### Community 161 - "Tasks: Latencia de apertura de partidos y de entrega de sobres"
-Cohesion: 0.12
-Nodes (17): Dependencies & Execution Order, Diagnóstico (FR-004, SC-004) — puerta de US2 y US3, Format: `[ID] [P?] [Story] Description`, Implementation Strategy, Incremental Delivery, MVP First (User Story 1 Only), Parallel Example: User Story 1, Parallel Example: User Story 2 (+9 more)
+### Community 161 - "Implementation Strategy"
+Cohesion: 0.67
+Nodes (3): Implementation Strategy, Incremental Delivery, MVP First (User Story 1 Only)
 
 ### Community 162 - "Test-Driven Development"
 Cohesion: 0.07
 Nodes (29): Browser Testing with DevTools, Common Rationalizations, DAMP Over DRY in Tests, Decision Guide, Discover the Stack First, Name Tests Descriptively, One Assertion Per Concept, Overview (+21 more)
-
-### Community 163 - "juego"
-Cohesion: 0.36
-Nodes (7): Celebraciones de gol, Reglas de la 2D, Sonidos actuales, Celebraciones: cliente, Celebraciones: datos y servidor, Phase 4: User Story 1 - Partido con sonido y celebración de gol (Priority: P1), juego()
 
 ### Community 164 - "Context Engineering"
 Cohesion: 0.07
@@ -958,9 +952,9 @@ Nodes (28): Anti-Patterns, Common Rationalizations, Compress before dropping, Co
 Cohesion: 0.07
 Nodes (28): Anti-Patterns, Common Rationalizations, Compress before dropping, Confusion Management, Context Budget Management, Context Engineering, Context Packing Strategies, Level 1: Rules Files (+20 more)
 
-### Community 166 - "Functional Requirements"
-Cohesion: 0.11
-Nodes (18): Assumptions, Clarifications, Edge Cases, Feature Specification: Mejoras visuales y de diseño (GUI + UX), Measurable Outcomes, Session 2026-10-20, Session 2026-10-21 — Revisión de la primera ronda (no aprobada), Session 2026-10-21 — Ronda 3 (pequeñas mejoras) (+10 more)
+### Community 166 - "User Scenarios & Testing *(mandatory)*"
+Cohesion: 0.29
+Nodes (7): Edge Cases, User Scenarios & Testing *(mandatory)*, User Story 1 - Una identidad visual coherente en todas las pantallas (Priority: P1), User Story 2 - Saber siempre qué hacer a continuación (Priority: P1), User Story 3 - Una portada y unos momentos clave con carácter (Priority: P2), User Story 4 - Cómoda en el móvil y accesible para todos (Priority: P2), User Story 5 - Tablero de juego legible: draft, formación, partido y torneo (Priority: P2)
 
 ### Community 167 - "Servidor → cliente"
 Cohesion: 0.18
@@ -972,7 +966,7 @@ Nodes (29): Collections, Emails, URLs, identifiers, Environment, Images and medi
 
 ### Community 169 - "equipaciones.ts"
 Cohesion: 0.14
-Nodes (29): equipacionesDe(), equipacionesDelPartido(), chocan(), CodigoErrorEquipaciones, colorDeContraste(), desdeV1(), DISENOS_CAMISETA, distanciaColor() (+21 more)
+Nodes (24): CodigoErrorEquipaciones, colorDeContraste(), distanciaColor(), equipacionDesdeV1(), equipacionEnPartido(), equipacionesAleatorias(), EquipacionV1, ErrorEquipaciones (+16 more)
 
 ### Community 170 - "Contrato — HTTP"
 Cohesion: 0.14
@@ -994,21 +988,21 @@ Nodes (9): Complexity Tracking, Constitution Check, Documentation (this feature)
 Cohesion: 0.29
 Nodes (6): Design principles, Frontend Design, Ground your designs in the subject matter, More on writing in design, Process: plan, review against the brief, build, critique, Restraint and self-critique
 
-### Community 175 - "asignarRasgos.ts"
+### Community 175 - "Data Model — Virtudes, defectos y nuevo modo de juego"
 Cohesion: 0.15
-Nodes (18): 2.1 Versión de catálogo, 2. Jugador (carta), 3. Persistencia (migración `0010_virtudes_defectos`), 5. Parámetros de equilibrado 4.0.0, 6.1 `ConfigDuelos`, 6.2 Ciclo de vida de la partida (modo `duelos`), 6.3 Cruce de duelos (`partidos` con `tipo = 'duelos'`), 6.4 Alineación bloqueada (+10 more)
+Nodes (13): 1.1 `Virtud` (antes `Special`), 1.4 `REPARTO_DEFECTOS` (nuevo), 1. Rasgos (dominio), 2.1 Versión de catálogo, 2. Jugador (carta), 3. Persistencia (migración `0010_virtudes_defectos`), 5. Parámetros de equilibrado 4.0.0, 6.1 `ConfigDuelos` (+5 more)
 
-### Community 176 - "Data Model: Latencia de apertura de partidos y de entrega de sobres"
-Cohesion: 0.33
-Nodes (5): Data Model: Latencia de apertura de partidos y de entrega de sobres, Datos comunes de una emisión de `torneo.actualizado` (en memoria, por emisión), Desglose de una operación (en memoria, por petición), Grupo de aperturas (en memoria, por partida), Transiciones de un partido entre humanos (sin cambios en sus estados)
+### Community 176 - "Virtudes y defectos"
+Cohesion: 0.25
+Nodes (8): Cómo se lee el impacto, Defectos (15), Incompatibilidades, Qué son, Reglas de acumulación, Todo rasgo tiene un efecto probado, Virtudes (39), Virtudes y defectos
 
 ### Community 177 - "Implementation Plan: Mejoras de interfaz, simulación y experiencia de juego"
 Cohesion: 0.16
 Nodes (15): Complexity Tracking, Constitution Check, Documentation (this feature), Implementation Plan: Mejoras de interfaz, simulación y experiencia de juego, Implementation Plan 003: Mejoras UX y simulacion, Project Structure, Riesgos y mitigaciones, Source Code (repository root) (+7 more)
 
 ### Community 178 - "Rng"
-Cohesion: 0.06
-Nodes (81): alineacionCorrecta(), conErrores(), decidirAlineacionDetallada(), LIMITE_PRO_MS, TACTICA_DEFENSIVA, TACTICA_OFENSIVA, tacticaSegunRival(), elegirCarta() (+73 more)
+Cohesion: 0.08
+Nodes (63): alineacionCorrecta(), conErrores(), LIMITE_PRO_MS, TACTICA_DEFENSIVA, TACTICA_OFENSIVA, tacticaSegunRival(), ContextoErrores, CRUCE_MAXIMO (+55 more)
 
 ### Community 179 - "Resultado de prueba de carga — 10 partidas (entorno de referencia)"
 Cohesion: 0.15
@@ -1023,16 +1017,16 @@ Cohesion: 0.07
 Nodes (26): 1. Commit Early, Commit Often, 2. Atomic Commits, 3. Descriptive Messages, 4. Keep Concerns Separate, 5. Size Your Changes, Branch Naming, Branching Strategy, Change Summaries (+18 more)
 
 ### Community 182 - "Recorridos manuales"
-Cohesion: 0.25
-Nodes (8): A. Virtudes en lugar de specials (US1), B. Defectos en las cartas (US2, FR-020 a FR-024), C. Torneo antiguo (FR-036), D. Duelo de jugadores (US3), E. Frecuencias en partidos reales (US4), F. Efectos colectivos visibles (FR-044), G. Documento de referencia (US6), Recorridos manuales
+Cohesion: 0.18
+Nodes (11): A. Virtudes en lugar de specials (US1), B. Defectos en las cartas (US2, FR-020 a FR-024), C. Torneo antiguo (FR-036), D. Duelo de jugadores (US3), E. Frecuencias en partidos reales (US4), F. Efectos colectivos visibles (FR-044), G. Documento de referencia (US6), Preparación (+3 more)
 
-### Community 183 - "Implementation Plan: Datos reales de la colección Core (fase 0.1)"
+### Community 183 - "calculoEquivalencia.test.ts"
 Cohesion: 0.25
-Nodes (8): Complexity Tracking, Constitution Check, Documentation (this feature), Implementation Plan: Datos reales de la colección Core (fase 0.1), Project Structure, Source Code (repository root), Summary, Technical Context
+Nodes (5): enHilos, enProceso, N, NIVELES, NivelDecisiones
 
 ### Community 184 - "Tasks: Mejoras visuales y de diseño (GUI + UX)"
 Cohesion: 0.08
-Nodes (26): Dependencias concretas entre tareas, Dependencies & Execution Order, Entrega incremental, Formato: `[ID] [P?] [Story] Descripción`, Implementation for User Story 1, Implementation for User Story 3, Implementation Strategy, MVP First (User Story 1) (+18 more)
+Nodes (24): Dependencias concretas entre tareas, Dependencies & Execution Order, Entrega incremental, Formato: `[ID] [P?] [Story] Descripción`, Implementation for User Story 1, Implementation for User Story 3, Implementation Strategy, MVP First (User Story 1) (+16 more)
 
 ### Community 185 - "Animation Standards Reference"
 Cohesion: 0.07
@@ -1047,16 +1041,16 @@ Cohesion: 0.07
 Nodes (25): Connection Pool Exhaustion, Large Bundle Size, Missing Caching (Backend), Missing Image Optimization (Frontend), N+1 Queries (Backend), Optimization Patterns, Queries That Ignore Their Index, Unbounded Data Fetching (+17 more)
 
 ### Community 188 - "Data Model — Fase 1: Retoques visuales"
-Cohesion: 0.33
-Nodes (6): Data Model — Fase 1: Retoques visuales, Fondo de página, Logo, Marco de rareza, Ruleta del estado de forma (estado de presentación), Sobre
+Cohesion: 0.29
+Nodes (7): Data Model — Fase 1: Retoques visuales, Efecto de sonido, Fondo de página, Logo, Marco de rareza, Ruleta del estado de forma (estado de presentación), Sobre
 
 ### Community 189 - "Animation Audit Playbook"
 Cohesion: 0.08
 Nodes (22): 1. Purpose & frequency, 2. Easing & duration, 3. Physicality & origin, 4. Interruptibility, 5. Performance, 6. Accessibility, 7. Cohesion & tokens, 8. Missed opportunities (+14 more)
 
-### Community 190 - "Contrato de interfaz — spec 004"
-Cohesion: 0.08
-Nodes (25): INI-11 Catálogo de cartas definitivo, Aclaraciones sobre la dificultad (H13, H14), Batería e2e tras los cambios (2026-10-20), Cambios de requisito H5, H6, H7 y H9, Correcciones de los defectos H1, H2 y H10, Criterios de éxito con personas, Decisiones sobre H11 y H14 (2026-10-20), H11 cerrado: llegada orgánica y regate hacia dentro (+17 more)
+### Community 190 - "Pruebas con personas (2026-10-19)"
+Cohesion: 0.18
+Nodes (11): Aclaraciones sobre la dificultad (H13, H14), Batería e2e tras los cambios (2026-10-20), Cambios de requisito H5, H6, H7 y H9, Correcciones de los defectos H1, H2 y H10, Criterios de éxito con personas, Decisiones sobre H11 y H14 (2026-10-20), H11 cerrado: llegada orgánica y regate hacia dentro, H11: llegada al área de extremos y mediapunta (+3 more)
 
 ### Community 191 - "Animation Audit Playbook"
 Cohesion: 0.08
@@ -1119,8 +1113,8 @@ Cohesion: 0.08
 Nodes (24): Accessibility (WCAG 2.1 AA), ARIA Labels, Avoid the AI Aesthetic, Color, Common Rationalizations, Component Architecture, Component Patterns, Design System Adherence (+16 more)
 
 ### Community 206 - "Tasks: Preparación de la base de datos de las cartas, colecciones, fragmentos y tienda"
-Cohesion: 0.08
-Nodes (24): Dentro de cada historia, Dependencies & Execution Order, Entrega incremental (plan, «Orden de entrega»), Format: `[ID] [P?] [Story] Description`, Grafo de historias, Implementation for User Story 6, Implementation Strategy, MVP First (Fase 2 + US1) (+16 more)
+Cohesion: 0.10
+Nodes (21): Dentro de cada historia, Dependencies & Execution Order, Entrega incremental (plan, «Orden de entrega»), Format: `[ID] [P?] [Story] Description`, Grafo de historias, Implementation for User Story 6, Implementation Strategy, MVP First (Fase 2 + US1) (+13 more)
 
 ### Community 207 - "API and Interface Design"
 Cohesion: 0.08
@@ -1259,8 +1253,8 @@ Cohesion: 0.13
 Nodes (14): 1. Surface Assumptions, 2. Manage Confusion Actively, 3. Push Back When Warranted, 4. Enforce Simplicity, 5. Maintain Scope Discipline, 6. Verify, Don't Assume, Core Operating Behaviors, Failure Modes to Avoid (+6 more)
 
 ### Community 241 - "Tasks: Retoques visuales"
-Cohesion: 0.12
-Nodes (17): Convenciones que aplican a todas las tareas, Entrega incremental, Format: `[ID] [P?] [Story] Description`, Implementación de User Story 5, Implementación de User Story 6, Implementation Strategy, MVP primero (solo US1), Parallel Example (+9 more)
+Cohesion: 0.14
+Nodes (14): Convenciones que aplican a todas las tareas, Format: `[ID] [P?] [Story] Description`, Implementación de User Story 3, Implementación de User Story 6, Parallel Example, Phase 10: Segunda ronda (bugs y mejoras tras probar la spec), Phase 1: Setup (infraestructura compartida), Phase 2: Foundational (recursos gráficos que bloquean US1, US3, US4 y US6) (+6 more)
 
 ### Community 242 - "Spec-Driven Development"
 Cohesion: 0.14
@@ -1302,9 +1296,9 @@ Nodes (11): 1. User Value, 2. Feasibility, 3. Differentiation, Assumption Audit,
 Cohesion: 0.12
 Nodes (16): 1. Frequency — how often will a user see this?, 2. Purpose — why does this animate?, 3. Speed — can it stay inside budget?, 4. Function — does motion help or hinder here?, Finding Animation Opportunities, Hard Rules, Initial Response, Operating Posture (+8 more)
 
-### Community 252 - "Sumario — Colección Core real (spec 008, fase 0.1)"
-Cohesion: 0.07
-Nodes (21): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Datos reales de la colección Core (fase 0.1), 1. Ficha de jugador real (`Jugador`, sin cambios de forma), 2. Retrato, 3. Selección (+13 more)
+### Community 252 - "Data Model — Datos reales de la colección Core"
+Cohesion: 0.05
+Nodes (36): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Datos reales de la colección Core (fase 0.1), 2. Retrato, 3. Selección, 4. Duda (`dudas.md`) (+28 more)
 
 ### Community 253 - "Ideation Frameworks Reference"
 Cohesion: 0.22
@@ -1323,8 +1317,8 @@ Cohesion: 0.15
 Nodes (11): Functions, Sonner API Reference, `toast()` options, `<Toaster />`, Initial Response, Picking the right call, Recipes, Setup (+3 more)
 
 ### Community 257 - "numpy"
-Cohesion: 0.19
-Nodes (10): envolvente(), guardar(), mezclar(), nota(), tic(), tiempo(), fundidos(), guardar() (+2 more)
+Cohesion: 0.12
+Nodes (17): R7 — `sonido.ts`: solo ficheros y la reproducción se puede detener, 5. Métricas (`GET /metrics`), R7. Configuración y observabilidad, bucle(), fundidos(), guardar(), leer(), envolvente() (+9 more)
 
 ### Community 258 - "The list"
 Cohesion: 0.18
@@ -1334,37 +1328,29 @@ Nodes (10): Charts, Common mismatches to catch, How to use this, Initial Respons
 Cohesion: 0.18
 Nodes (10): Charts, Common mismatches to catch, How to use this, Initial Response, Interaction & performance, Motion & visuals, Picking The Right Library, State & styling (+2 more)
 
-### Community 260 - "User Scenarios & Testing *(mandatory)*"
-Cohesion: 0.25
-Nodes (8): Edge Cases, User Scenarios & Testing *(mandatory)*, User Story 1 - Cartas con el nuevo diseño por rareza (Priority: P1), User Story 2 - Sonidos más agradables y momentos sonoros nuevos (Priority: P2), User Story 3 - Nuevo logo oficial (Priority: P2), User Story 4 - Más variedad de fondos de página (Priority: P3), User Story 5 - Duelos sin tablas de goleadores (Priority: P3), User Story 6 - Nuevo sobre de cartas (Priority: P2)
-
-### Community 261 - "escudoAsignado"
-Cohesion: 0.16
-Nodes (15): generador(), POLIGONO_ORIGINAL, rasgaduraDe(), redondear(), catalogo, sobres, escudoAsignado(), escudoNpc() (+7 more)
-
 ### Community 262 - "007-retoques-visuales/tasks.md"
 Cohesion: 0.31
 Nodes (3): 1. Recursos estáticos, 2. API del módulo de sonido (`apps/web/src/sonido/sonido.ts`), Contrato: recursos estáticos, API de sonido y presentación
 
 ### Community 263 - "Quickstart: validar la latencia de apertura y de entrega de sobres"
-Cohesion: 0.13
-Nodes (15): API interna: buzón de aperturas (`actores/aperturas.ts`), API interna: `observabilidad/desglose.ts`, Configuración, Contrato: desglose por fases y grupo de aperturas, Métricas nuevas en `GET /metrics` (FR-002), Respuesta HTTP, 1. Sin regresiones (FR-014, FR-015, SC-006), 2. Desglose por fases (US1, FR-001 a FR-003) (+7 more)
+Cohesion: 0.25
+Nodes (8): 1. Sin regresiones (FR-014, FR-015, SC-006), 2. Desglose por fases (US1, FR-001 a FR-003), 3. Diagnóstico (FR-004, SC-004) — antes de US2 y US3, 4. Grupo de aperturas (US2, SC-002, SC-005), 5. Entrega del sobre (US3), 6. Tres máquinas (SC-001, SC-003), Quickstart: validar la latencia de apertura y de entrega de sobres, Requisitos
 
 ### Community 264 - "Design Engineering"
 Cohesion: 0.22
 Nodes (8): Accessibility, Design Engineering, Initial Response, prefers-reduced-motion, Review Checklist, Review Format (Required), Stagger Animations, Touch device hover states
 
-### Community 265 - "Implementation Plan: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos"
-Cohesion: 0.25
-Nodes (8): Complexity Tracking, Constitution Check, Documentation (this feature), Implementation Plan: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos, Project Structure, Riesgos, Source Code (repository root), Technical Context
+### Community 265 - "Feature Specification: Mejoras visuales y de diseño (GUI + UX)"
+Cohesion: 0.29
+Nodes (7): Assumptions, Feature Specification: Mejoras visuales y de diseño (GUI + UX), Key Entities *(include if feature involves data)*, Measurable Outcomes, Requirements *(mandatory)*, Requisitos de specs anteriores afectados, Success Criteria *(mandatory)*
 
 ### Community 266 - "Design Engineering"
 Cohesion: 0.22
 Nodes (8): Accessibility, Design Engineering, Initial Response, prefers-reduced-motion, Review Checklist, Review Format (Required), Stagger Animations, Touch device hover states
 
 ### Community 267 - "Feature Specification: Retoques visuales"
-Cohesion: 0.22
-Nodes (9): Assumptions, Clarifications, Feature Specification: Retoques visuales, Functional Requirements, Key Entities, Measurable Outcomes, Requirements *(mandatory)*, Session 2026-10-27 (+1 more)
+Cohesion: 0.12
+Nodes (17): Assumptions, Clarifications, Edge Cases, Feature Specification: Retoques visuales, Functional Requirements, Key Entities, Measurable Outcomes, Requirements *(mandatory)* (+9 more)
 
 ### Community 270 - "Component Building Principles"
 Cohesion: 0.25
@@ -1374,9 +1360,9 @@ Nodes (8): Animate enter states with @starting-style, Buttons must feel responsi
 Cohesion: 0.25
 Nodes (8): Animate enter states with @starting-style, Buttons must feel responsive, Component Building Principles, Make popovers origin-aware, Never animate from scale(0), Tooltips: skip delay on subsequent hovers, Use blur to mask imperfect transitions, Use CSS transitions over keyframes for interruptible UI
 
-### Community 272 - "coleccion"
-Cohesion: 0.05
-Nodes (53): esFechaIsoValida(), incluye(), validarCatalogo(), validarJugador(), reglas(), coleccion(), JugadorResumen, Catálogo (+45 more)
+### Community 272 - "validar.ts"
+Cohesion: 0.09
+Nodes (28): conIdentidad(), NOMBRE_DEMARCACION, nombreGenerico(), siluetaDe(), Coleccion, VERSIONES_CARTA, virtudesPermitidas(), CAMPOS (+20 more)
 
 ### Community 273 - "TOTAL RESULTS"
 Cohesion: 0.22
@@ -1418,13 +1404,17 @@ Nodes (6): CSS animations beat JS under load, CSS variables are inheritable, Fra
 Cohesion: 0.33
 Nodes (6): Damping at boundaries, Friction instead of hard stops, Gesture and Drag Interactions, Momentum-based dismissal, Multi-touch protection, Pointer capture for drag
 
-### Community 283 - "plantel.ts"
-Cohesion: 0.17
-Nodes (28): amarilla(), falta(), tarjetaRoja(), emitir(), anotarIncidencia(), comprobarInferioridad(), cubrirPorteria(), expulsar() (+20 more)
+### Community 283 - "decisiones.ts"
+Cohesion: 0.09
+Nodes (51): validarColocacion(), esFormacionId(), fueraDeJuego(), emitir(), interrumpir(), anotarIncidencia(), comprobarInferioridad(), cubrirPorteria() (+43 more)
 
 ### Community 284 - "Functional Requirements"
-Cohesion: 0.15
-Nodes (13): Accesibilidad y adaptación (US4), Componentes comunes (US1, US2), Estados y retroalimentación (US2), Functional Requirements, Fundamentos visuales (US1), Inventario de pantallas (US1, US3, US5), Jerarquía de las pantallas de juego (US5), Key Entities *(include if feature involves data)* (+5 more)
+Cohesion: 0.20
+Nodes (10): Accesibilidad y adaptación (US4), Componentes comunes (US1, US2), Estados y retroalimentación (US2), Functional Requirements, Fundamentos visuales (US1), Inventario de pantallas (US1, US3, US5), Jerarquía de las pantallas de juego (US5), Mantenimiento y no regresión (+2 more)
+
+### Community 285 - "Clarifications"
+Cohesion: 0.29
+Nodes (7): Clarifications, Session 2026-10-20, Session 2026-10-21 — Revisión de la primera ronda (no aprobada), Session 2026-10-21 — Ronda 3 (pequeñas mejoras), Session 2026-10-21 — Ronda 4 (últimos ajustes), Session 2026-10-21 — Ronda 5 (correcciones), Session 2026-10-21 — Ronda 6 (último ajuste y media del once)
 
 ### Community 286 - "CSS Transform Mastery"
 Cohesion: 0.40
@@ -1470,13 +1460,13 @@ Nodes (4): Beauty is leverage, Core Philosophy, Taste is trained, not innate, Un
 Cohesion: 0.50
 Nodes (4): Debugging Animations, Frame-by-frame inspection, Slow motion testing, Test on real devices
 
-### Community 297 - "vitest"
-Cohesion: 0.19
-Nodes (8): ConexionBD, bdHasta(), BdParcial, carpetaHasta(), crear(), elegirCartaBasico(), drizzle-orm, vitest
+### Community 297 - "Data Model: Latencia de apertura de partidos y de entrega de sobres"
+Cohesion: 0.33
+Nodes (5): Data Model: Latencia de apertura de partidos y de entrega de sobres, Datos comunes de una emisión de `torneo.actualizado` (en memoria, por emisión), Desglose de una operación (en memoria, por petición), Grupo de aperturas (en memoria, por partida), Transiciones de un partido entre humanos (sin cambios en sus estados)
 
 ### Community 298 - "Tasks: Mejoras de la simulación 2D, control de bajas y retoques del torneo"
-Cohesion: 0.13
-Nodes (15): Dependencies & Execution Order, Entrega incremental, Ficheros compartidos (no paralelizar entre sí), Format: `[ID] [P?] [Story] Description`, Implementation Strategy, MVP, Parallel Example, Phase 10: Polish & cierre (+7 more)
+Cohesion: 0.09
+Nodes (20): mediaMejorOnce(), Cliente, Dependencies & Execution Order, Entrega incremental, Ficheros compartidos (no paralelizar entre sí), Format: `[ID] [P?] [Story] Description`, Implementation Strategy, MVP (+12 more)
 
 ### Community 299 - "scripts"
 Cohesion: 0.18
@@ -1486,9 +1476,9 @@ Nodes (11): scripts, ajuste, build, db:generate, db:migrate, dev, seed, start (+
 Cohesion: 0.29
 Nodes (7): scripts, build, dev, e2e, lint:tokens, preview, typecheck
 
-### Community 301 - "Orden de entrega"
-Cohesion: 0.50
-Nodes (4): Documentation (this feature), Orden de entrega, Project Structure, Source Code (repository root)
+### Community 301 - "EditorEquipacion.tsx"
+Cohesion: 0.33
+Nodes (5): COLOR_NUEVO, ETIQUETA_DISENO, Props, DisenoCamiseta, DISENOS_CAMISETA
 
 ### Community 302 - "R24 Equipaciones v2 (diseno + hasta 3 colores)"
 Cohesion: 0.33
@@ -1498,81 +1488,101 @@ Nodes (6): EditorEquipacion y Camiseta SVG, Regla de parecido de equipaciones (u
 Cohesion: 0.12
 Nodes (13): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Preparación de la base de datos de las cartas, colecciones, fragmentos y tienda, Carta, Colecciones, Comando de carga (+5 more)
 
-### Community 304 - "crearInvitado"
-Cohesion: 0.20
-Nodes (13): partidaDeOcho(), iniciarConCliente(), siguienteTurno(), empezar(), espera(), reproducirHasta(), abrir(), hastaPreparacion() (+5 more)
+### Community 304 - "Specification Quality Checklist: Latencia de apertura de partidos y de entrega de sobres"
+Cohesion: 0.33
+Nodes (5): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Latencia de apertura de partidos y de entrega de sobres
 
-### Community 305 - "servicios.ts"
-Cohesion: 0.04
-Nodes (54): Difusor, abrirEntreHumanos(), Apertura, buzones, Entrada, Grupo, resolverGrupo(), Salida (+46 more)
+### Community 305 - "aperturas.ts"
+Cohesion: 0.12
+Nodes (29): abrirEntreHumanos(), Apertura, buzones, Entrada, Grupo, resolverAperturas(), resolverGrupo(), Salida (+21 more)
 
 ### Community 306 - "Partidas"
 Cohesion: 0.38
 Nodes (7): `GET /api/partidas/:id/torneo` (✎), Partidas, `POST /api/partidas` (✎), `POST /api/partidas/:id/pantalla-vista` (✚), `POST /api/partidas/:id/simular-resto` (✚), Eliminacion (eliminaciones, humanosEnCompeticion), PantallaDerrota y PantallaCampeon
 
-### Community 307 - "CapaCelebracion"
-Cohesion: 0.08
-Nodes (41): Props, CapaCelebracion(), Props, SelectorCelebracion(), moverFoco(), ordenarCosmeticos(), Props, SelectorEscudo() (+33 more)
+### Community 307 - "TiendaCosmeticos.tsx"
+Cohesion: 0.05
+Nodes (70): generador(), POLIGONO_ORIGINAL, rasgaduraDe(), redondear(), Props, SobreArte(), CapaCelebracion(), urlEscudo() (+62 more)
+
+### Community 308 - "Tokens — Spacing & Shapes"
+Cohesion: 0.40
+Nodes (5): Border Radius, Layout, Shadows, Spacing Scale, Tokens — Spacing & Shapes
 
 ### Community 309 - "colores.ts"
-Cohesion: 0.14
-Nodes (16): ColoresChapa, contornoSobreLienzo(), contraste(), luminancia(), necesitaContorno(), TOKENS_SIN_DOCUMENTO, css, fondos (+8 more)
+Cohesion: 0.20
+Nodes (13): ColoresChapa, contornoSobreLienzo(), contraste(), luminancia(), necesitaContorno(), TOKENS_SIN_DOCUMENTO, Complexity Tracking, Constitution Check (+5 more)
 
-### Community 311 - "clienteWs.ts"
-Cohesion: 0.18
-Nodes (9): programarJornada(), empezar(), comenzar(), espera(), hastaPreparacion(), claves(), Mensaje, TIPOS_DRAFT (+1 more)
+### Community 310 - "Specification Quality Checklist: Virtudes, defectos y nuevo modo de juego"
+Cohesion: 0.33
+Nodes (5): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Virtudes, defectos y nuevo modo de juego
+
+### Community 311 - "Do's and Don'ts"
+Cohesion: 0.40
+Nodes (5): Cartas, sobre y logo en Fútboosterdraft (spec 007), Do, Do's and Don'ts, Don't, Excepción en Fútboosterdraft: colores de información de juego (spec 004, FR-003; spec 005, FR-021)
 
 ### Community 312 - "012-mejoras-simulacion-2d/spec.md"
-Cohesion: 0.08
-Nodes (24): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Mejoras de la simulación 2D, control de bajas y retoques del torneo, `CapaCelebracion` (nuevo, `apps/web/src/componentes/celebraciones/`), Contrato de interfaz (spec 012), Gestionar equipo (+16 more)
+Cohesion: 0.07
+Nodes (26): Pendientes (ideas para añadir), Sonidos del juego, Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Mejoras de la simulación 2D, control de bajas y retoques del torneo, `CapaCelebracion` (nuevo, `apps/web/src/componentes/celebraciones/`) (+18 more)
 
 ### Community 313 - "Research — Fase 0: Virtudes, defectos y nuevo modo de juego"
-Cohesion: 0.12
-Nodes (17): descripcion(), Ajuste tras la medición (T099, 2026-10-22), Contrato — Tabla de rasgos (`packages/domain/src/catalogo/rasgos.ts`), Defectos, Forma, Impactos iniciales, Incompatibilidades (simétricas), Textos de las virtudes nuevas y de los defectos (+9 more)
+Cohesion: 0.07
+Nodes (31): descripcion(), impacto(), Ajuste tras la medición (T099, 2026-10-22), Contrato — Tabla de rasgos (`packages/domain/src/catalogo/rasgos.ts`), Defectos, Forma, Impactos iniciales, Incompatibilidades (simétricas) (+23 more)
 
 ### Community 314 - "GestionEquipo (gestion durante el partido)"
 Cohesion: 0.12
 Nodes (16): Formacion: Alineacion sobre CampoEquipo, BarraPrincipal (un boton principal por pantalla), CampoEquipo (campo unico compartido), GestionEquipo (gestion durante el partido), humanosEnCompeticion, Lote atomico partido.decisiones, R14 Formacion con un unico campo, R17 Gestion del equipo durante el partido (+8 more)
 
-### Community 315 - "EditorEquipacion.tsx"
-Cohesion: 0.22
-Nodes (14): dibujar(), Camiseta(), Props, COLOR_NUEVO, ETIQUETA_DISENO, Props, colorDorsal(), DisenoCamiseta (+6 more)
+### Community 315 - "Perfil.tsx"
+Cohesion: 0.06
+Nodes (56): ErrorApi, Aviso(), ETIQUETA_TIPO, Props, RegionAvisos(), TipoAviso, CampoNombreEquipo(), errorNombre() (+48 more)
 
 ### Community 316 - "ROADMAP.md"
-Cohesion: 0.06
-Nodes (32): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Latencia de apertura de partidos y de entrega de sobres, Comando ejecutado, Desglose por fases, Resultado de prueba de carga — 100 partidas (Docker Desktop y Wi-Fi) (+24 more)
+Cohesion: 0.07
+Nodes (27): Comando ejecutado, Desglose por fases, Resultado de prueba de carga — 100 partidas (Docker Desktop y Wi-Fi), Resumen de k6, Comando ejecutado, Desglose por fases, Resultado de prueba de carga — 10 partidas tras US2 (Docker Desktop), Salida de k6 (+19 more)
 
-### Community 317 - "User Scenarios & Testing *(mandatory)*"
+### Community 317 - "Quickstart: validar el rework de la tienda"
 Cohesion: 0.40
-Nodes (5): Edge Cases, User Scenarios & Testing *(mandatory)*, User Story 1 - Fichas reales de los 250 jugadores (Priority: P1), User Story 2 - Retratos listos para las cartas (Priority: P2), User Story 3 - Sumario para elegir los 50 jugadores que faltan (Priority: P3)
+Nodes (5): Cierre, Pruebas automáticas, Quickstart: validar el rework de la tienda, Recorridos manuales (criterios de éxito), Requisitos previos
 
 ### Community 318 - "renderizador.ts"
-Cohesion: 0.17
-Nodes (14): Posiciones, ANCHO, campo(), ColoresInterfaz, Escena, fondoCampo(), INTERFAZ_POR_DEFECTO, JugadorDibujo (+6 more)
+Cohesion: 0.13
+Nodes (25): Posiciones, ANCHO, campo(), chapaConRetrato(), chapasRetrato, ColoresInterfaz, dibujar(), Escena (+17 more)
 
-### Community 319 - "controlTotal"
+### Community 319 - "Contrato: desglose por fases y grupo de aperturas"
 Cohesion: 0.33
-Nodes (7): controlTotal(), `avanzar(estado, modo, opciones)`, Contrato del motor: incidencias (spec 012), Decisiones, Estado, Invariantes (pruebas), 4. Incidencia de partido (motor)
+Nodes (6): API interna: buzón de aperturas (`actores/aperturas.ts`), API interna: `observabilidad/desglose.ts`, Configuración, Contrato: desglose por fases y grupo de aperturas, Métricas nuevas en `GET /metrics` (FR-002), Respuesta HTTP
+
+### Community 320 - "Implementation Strategy"
+Cohesion: 0.67
+Nodes (3): Entrega incremental, Implementation Strategy, MVP primero (solo US1)
+
+### Community 321 - "Phase 8: User Story 5 - Duelos sin tablas de goleadores (Priority: P3)"
+Cohesion: 0.67
+Nodes (3): Implementación de User Story 5, Phase 8: User Story 5 - Duelos sin tablas de goleadores (Priority: P3), Tests de User Story 5
 
 ### Community 322 - "interpolacion.ts"
 Cohesion: 0.32
 Nodes (9): agregarFotogramas(), fuera(), hermite(), indiceFotograma(), parabola(), pendiente(), posicionesEn(), RADIO_CHAPA (+1 more)
 
 ### Community 323 - "Functional Requirements"
-Cohesion: 0.08
-Nodes (26): Assumptions, Barra superior y tarjetas (punto 3), Celebración de gol (punto 1), Clarifications, Contexto, Edge Cases, Feature Specification: Mejoras de la simulación 2D, control de bajas y retoques del torneo, Functional Requirements (+18 more)
+Cohesion: 0.07
+Nodes (28): Assumptions, Barra superior y tarjetas (punto 3), Celebración de gol (punto 1), Clarifications, Contexto, Edge Cases, Feature Specification: Mejoras de la simulación 2D, control de bajas y retoques del torneo, Functional Requirements (+20 more)
 
 ### Community 324 - "011-rework-tienda/spec.md"
-Cohesion: 0.09
-Nodes (19): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos, 1. Qué protege la ley (España, donde reside el desarrollador), 2. Cómo se licencia, 3. Riesgos que no son FIFPRO (y suelen llegar antes) (+11 more)
-
-### Community 325 - "Reloj"
 Cohesion: 0.12
-Nodes (6): DependenciasTorneo, ServicioAvisos, Pendiente, Reloj, RelojFalso, Temporizadores
+Nodes (14): Content Quality, Feature Readiness, Notes, Requirement Completeness, Specification Quality Checklist: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos, 1. Qué protege la ley (España, donde reside el desarrollador), 2. Cómo se licencia, 3. Riesgos que no son FIFPRO (y suelen llegar antes) (+6 more)
+
+### Community 325 - "Functional Requirements"
+Cohesion: 0.40
+Nodes (5): Functional Requirements, Key Entities, Previsualización en la tienda (2026-11-08), Requirements *(mandatory)*, Retoques tras la prueba manual (2026-11-07)
 
 ### Community 326 - "Dependencies & Execution Order"
 Cohesion: 0.50
 Nodes (4): Dentro de cada historia, Dependencias entre fases, Dependencias entre historias, Dependencies & Execution Order
+
+### Community 327 - "Tokens — Typography"
+Cohesion: 0.50
+Nodes (4): Font Roobert — Primary brand typeface across all contexts — nav, body, headings, display. The custom font's compressed, geometric construction at 110px / 0.85 line-height creates the poster-scale headlines; its 400/500/700 range covers body through display without needing a second family. The extreme compression in display weights is signature — line-height under 1.0 makes headlines overlap slightly, producing a stacked, aggressive tournament-poster feel that system sans-serifs cannot replicate. · `--font-font-roobert`, Tokens — Typography, Type Scale, ui-sans-serif — System fallback for generic UI elements where custom font loading isn't needed — secondary links, inline labels, small helper copy. Same weight range as Roobert to ensure graceful degradation. · `--font-ui-sans-serif`
 
 ### Community 328 - "`PUT /api/partidas/:id/nombre-equipo` (✚)"
 Cohesion: 0.22
@@ -1582,33 +1592,17 @@ Nodes (10): GET/PUT /api/perfil, `PUT /api/partidas/:id/nombre-equipo` (✚), PU
 Cohesion: 0.25
 Nodes (8): 1. Vocabulario: «habilidades especiales» → «virtudes y defectos», 2. Principio V: alcance del motor único, 3. Decisiones resueltas, 4. Informe de impacto de la cabecera, Cambios propuestos, Propuesta de modificación de la constitución: 1.1.0 → 1.2.0, Razón, Tipo de cambio
 
-### Community 332 - "parametros.ts"
-Cohesion: 0.20
-Nodes (11): CODIGOS_SELECCION, CodigoSeleccion, SELECCIONES, PaqueteFragmentos, PARAMETROS_ECONOMIA, ParametrosEconomia, validarParametrosEconomia(), valorEsperadoSobre() (+3 more)
+### Community 330 - "Contrato — Motor y parámetros 4.0.0"
+Cohesion: 0.50
+Nodes (4): Contrato — Motor y parámetros 4.0.0, Garantías, Parámetros 4.0.0 (`packages/domain/src/parametros/v4.json`), Tipos
 
-### Community 333 - "Diagnóstico: latencia de apertura y de entrega de sobres"
-Cohesion: 0.09
-Nodes (22): Apertura con 10 partidas (Docker Desktop; mediana / p95, ms), Apertura en el entorno de referencia (mediana / p95, ms), Apertura en el entorno de referencia (mediana / p95, ms), Apertura (`POST /api/partidos/:id/abrir`), Cobertura del desglose (FR-001, SC-004), Conclusión tras US2, Conclusión tras US3, Decisión (+14 more)
-
-### Community 335 - "Sumario — Colección Core real (spec 008, fase 0.1)"
-Cohesion: 0.25
-Nodes (8): 1. Demarcación × nivel, 2. Posiciones, 3. Nacionalidades, 4. Reparto de defectos por nivel, 5. Excesos y propuestas de recolocación, 6. Necesidades para la distribución objetivo, 7. Identidad y retratos (spec 011), Sumario — Colección Core real (spec 008, fase 0.1)
-
-### Community 336 - "integration/desglose.test.ts"
-Cohesion: 0.36
-Nodes (7): comprobarDesglose(), consultas(), cuantil(), desglose(), FASES, partidoEntreHumanos(), servidor()
-
-### Community 340 - "Implementation Plan: Mejoras de la simulación 2D, control de bajas y retoques del torneo"
-Cohesion: 0.29
-Nodes (7): Complexity Tracking, Documentation (this feature), Implementation Plan: Mejoras de la simulación 2D, control de bajas y retoques del torneo, Project Structure, Riesgos, Source Code (repository root), Technical Context
+### Community 332 - "parametros/index.ts"
+Cohesion: 0.08
+Nodes (20): POSICIONES, POSICIONES_POR_DEMARCACION, casilla, CARRILEROS_6_1, completos, DEFECTOS_NEUTROS, DUELOS_NEUTROS, FactorDecision (+12 more)
 
 ### Community 342 - "Línea base de la spec 012 (T001, T002)"
 Cohesion: 0.50
 Nodes (3): Comparación (T039), Línea base de la spec 012 (T001, T002), Ronda 2: parámetros 6.2.0 (T082)
-
-### Community 353 - "Phase 5: User Story 3 - Nuevo logo oficial (Priority: P2)"
-Cohesion: 0.67
-Nodes (3): Implementación de User Story 3, Phase 5: User Story 3 - Nuevo logo oficial (Priority: P2), Tests de User Story 3
 
 ## Ambiguous Edges - Review These
 - `Guardarrail esErrorAdmisible` → `equipacionEnPartido (resolucion de choque de colores)`  [AMBIGUOUS]
@@ -1616,22 +1610,22 @@ Nodes (3): Implementación de User Story 3, Phase 5: User Story 3 - Nuevo logo o
 
 ## Knowledge Gaps
 - **129 isolated node(s):** `@fbd/ai`, `@fbd/domain`, `@fbd/engine`, `@fbd/protocol`, `zod` (+124 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3706 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **29 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 3718 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **34 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vitest` connect `vitest` to `peticion`, `partido003.ts`, `npc.ts`, `catalogo/tipos.ts`, `escudoAsignado`, `actores/equipo.ts`, `autoAlineacion`, `Partido2D.tsx`, `semillaDesdeTexto`, `http/app.ts`, `geometria.ts`, `package.json`, `partidoRapido.ts`, `defectos.ts`, `RegistroActores`, `torneo/torneo.ts`, `decisiones.ts`, `protocol/src/http/partidas.ts`, `crearServidor`, `http/aspecto.ts`, `engine/src/index.ts`, `CartaJugador.tsx`, `seed.ts`, `Duelos.tsx`, `seed.ts`, `equipaciones.ts`, `crearInvitado`, `servicios.ts`, `actores/torneo.ts`, `Rng`, `colores.ts`, `Torneo.tsx`, `aperturas-grupo.test.ts`, `helpers/app.ts`, `clienteWs.ts`, `partida/partida.ts`, `react`, `defectosJuego.test.ts`, `filtrado.ts`, `tiro.ts`, `interpolacion.ts`, `Reloj`, `opciones.ts`, `catalogo/tipos.ts`, `parametros.ts`, `actores/draft.ts`, `integration/desglose.test.ts`, `ref_node_fs`, `celebraciones/tipos.ts`, `Jugador`, `NombreRecortado`, `particulas.ts`, `cuadro.ts`, `catalogo/tipos.ts`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+- **Why does `vitest` connect `vitest` to `npc.ts`, `escudoAsignado`, `partidoEntreHumanos.ts`, `actores/equipo.ts`, `Partido2D.tsx`, `domain/src/index.ts`, `servidor.ts`, `geometria.ts`, `package.json`, `validar.ts`, `partido003.ts`, `GrupoHilos`, `RegistroActores`, `torneo/torneo.ts`, `equipo/alineacion.ts`, `crearServidor`, `actores/identidad.ts`, `engine/src/index.ts`, `CartaJugador.tsx`, `http/catalogo.ts`, `Duelos.tsx`, `seed.ts`, `Tasks: Mejoras de la simulación 2D, control de bajas y retoques del torneo`, `equipaciones.ts`, `Alineacion.tsx`, `actores/torneo.ts`, `TiendaCosmeticos.tsx`, `Rng`, `colores.ts`, `Torneo.tsx`, `calculoEquivalencia.test.ts`, `Jugador`, `react`, `defectosJuego.test.ts`, `Coleccion.tsx`, `interpolacion.ts`, `tiro.ts`, `catalogo/rasgos.ts`, `visibilidadInicio.test.ts`, `parametros/index.ts`, `actores/draft.ts`, `basico.ts`, `ws/partido.ts`, `generarCore.ts`, `Research — Fase 0: Colecciones, fragmentos y tienda`, `EstadoMotor`, `celebraciones/tipos.ts`, `autoAlineacion`, `NombreRecortado`, `partida/partida.ts`, `parametros.ts`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
 - **Are the 5 inferred relationships involving `Jugador` (e.g. with `2. Dominio (`packages/domain`)` and `Datos`) actually correct?**
   _`Jugador` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fbd/ai`, `@fbd/domain`, `@fbd/engine` to the rest of the system?**
   _129 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `partido003.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0477440319960005 - nodes in this community are weakly interconnected._
-- **Why does `main()` connect `main` to `Git Workflow and Versioning`, `Functional Requirements`, `Functional Requirements`, `Implementation Plan: Simulación de partidos en hilos de trabajo`, `Feature Specification: Simulación de partidos en hilos de trabajo`, `Implementation Plan: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos`, `emitirTorneo`, `Feature Specification: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos`, `Roadmap de Fútboosterdraft`, `Implementation Plan: Mejoras de la simulación 2D, control de bajas y retoques del torneo`, `Git Workflow and Versioning`, `Implementation Plan: Datos reales de la colección Core (fase 0.1)`, `Feature Specification: Latencia de apertura de partidos y de entrega de sobres`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Should `.participante` be split into smaller, more focused modules?**
+  _Cohesion score 0.14623655913978495 - nodes in this community are weakly interconnected._
+- **Why does `main()` connect `main` to `Git Workflow and Versioning`, `Functional Requirements`, `009-simulacion-hilos-trabajo/spec.md`, `ActorPartida`, `ServicioEconomia`, `Feature Specification: Mejoras visuales y de diseño (GUI + UX)`, `Feature Specification: Simulación de partidos en hilos de trabajo`, `Feature Specification: Rework de la tienda — derechos de imagen, escudos y sobres cosméticos`, `Feature Specification: Latencia de apertura de partidos y de entrega de sobres`, `Git Workflow and Versioning`, `012-mejoras-simulacion-2d/spec.md`, `Data Model — Datos reales de la colección Core`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Are the 4 inferred relationships involving `parametrosActuales()` (e.g. with `Implementation` and `R7. Parámetros 4.0.0 y reproducibilidad (FR-017, FR-072, SC-003)`) actually correct?**
   _`parametrosActuales()` has 4 INFERRED edges - model-reasoned connections that need verification._
 

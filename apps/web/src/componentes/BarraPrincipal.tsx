@@ -1,5 +1,6 @@
 import { reproducir } from '../sonido/sonido';
-import { useId, useState, type ReactNode } from 'react';
+import { Icono } from './Icono';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 
 export interface AccionBarra {
@@ -10,7 +11,38 @@ export interface AccionBarra {
   a?: string;
   /** Motivo por el que no se puede pulsar: el botón queda visible con `aria-disabled` y el motivo a su lado. */
   motivoDesactivado?: string | null;
+  /** Ayuda resumida al pasar el cursor o enfocar el botón; sin ella, la de `AYUDA_ACCION` para su etiqueta. */
+  ayuda?: string;
 }
+
+/**
+ * Ayuda resumida de las acciones habituales de la barra (spec 012, ronda 3). Se muestra en la propia barra al pasar el
+ * cursor o enfocar el botón; el icono de información de cada pantalla da el detalle cuando hace falta.
+ */
+export const AYUDA_ACCION: Record<string, string> = {
+  'Confirmar alineación': 'Guarda la alineación y vuelve al torneo para preparar el partido.',
+  'Confirmar once': 'Fija tu once para todo el torneo: después no se puede cambiar.',
+  'Confirmar mi once': 'Ve a Formación a elegir y fijar tu once para los duelos.',
+  'Confirmar elección': 'Te quedas con la carta seleccionada y pasa el turno.',
+  'Confirmar cambios': 'Aplica los cambios en la próxima interrupción del partido.',
+  'Volver sin cambios': 'Vuelve al partido sin aplicar nada de lo que has tocado.',
+  'Gestionar equipo': 'Detiene el partido para hacer cambios, mover a tus jugadores o tocar la táctica.',
+  'Finalizar partido': 'Simula lo que queda y salta directamente al resultado.',
+  Seguir: 'Reanuda el partido.',
+  'Comenzar partido': 'Empieza el partido de esta jornada.',
+  'Ver partido': 'Entra a ver el partido contra tu rival.',
+  'Preparar equipo': 'Pasa a Formación para preparar tu equipo para el torneo.',
+  Siguiente: 'Pasa a lo siguiente del torneo.',
+  'Siguiente jornada': 'Pasa a la siguiente jornada del torneo.',
+  'Simular resto del torneo': 'Simula todos los partidos que quedan, sin verlos.',
+  'Ver torneo': 'Vuelve a la clasificación y al cuadro del torneo.',
+  'Volver al torneo': 'Vuelve a la clasificación y al cuadro del torneo.',
+  'Ver campeón': 'Muestra quién ha ganado el torneo.',
+  'Ver duelos': 'Mira los duelos de tu cruce, casilla a casilla.',
+  'Ver las plantillas': 'Compara las plantillas de todos los equipos.',
+  'Volver al menú': 'Sal de la partida y vuelve al inicio.',
+  'Saltar al resultado': 'Deja de ver el partido y pasa al resultado.',
+};
 
 interface Props {
   principal: AccionBarra | null;
@@ -34,6 +66,23 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
   const idMotivo = useId();
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Ayuda del control bajo el cursor o con el foco, en cualquier parte de la pantalla (`data-ayuda`; spec 012, ronda 3).
+  const [ayuda, setAyuda] = useState<string | null>(null);
+  useEffect(() => {
+    // Solo con sitio (desde 720 px): en estrecho la ayuda haría crecer la barra, que tapa lo que hay debajo.
+    const ancha = window.matchMedia?.('(min-width: 720px)');
+    const leer = (e: Event) =>
+      setAyuda((ancha?.matches !== false && e.target instanceof Element && e.target.closest('[data-ayuda]')?.getAttribute('data-ayuda')) || null);
+    const quitar = () => setAyuda(null);
+    document.addEventListener('pointerover', leer);
+    document.addEventListener('focusin', leer);
+    document.documentElement.addEventListener('pointerleave', quitar);
+    return () => {
+      document.removeEventListener('pointerover', leer);
+      document.removeEventListener('focusin', leer);
+      document.documentElement.removeEventListener('pointerleave', quitar);
+    };
+  }, []);
 
   const ejecutar = async (a: AccionBarra, esPrincipal: boolean) => {
     if (a.motivoDesactivado || ocupado || !a.onClick) return;
@@ -58,6 +107,8 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
       'aria-disabled': desactivado ? ('true' as const) : undefined,
       'aria-describedby': esPrincipal && a.motivoDesactivado ? idMotivo : undefined,
       'aria-busy': ocupado === a.etiqueta || undefined,
+      // Desactivado, la ayuda es el motivo, que ya está en la barra.
+      'data-ayuda': a.motivoDesactivado ? undefined : (a.ayuda ?? AYUDA_ACCION[a.etiqueta]),
     };
     if (a.a && !a.motivoDesactivado) {
       return (
@@ -77,12 +128,19 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
   return (
     <div className="barra-principal" role="region" aria-label="Acciones">
       <div className="barra-principal-estado">
+        {/* La ayuda tapa el estado (y el motivo, que sigue en el DOM para `aria-describedby`) mientras dura. */}
+        {ayuda && (
+          <span className="ayuda-barra" aria-hidden="true">
+            <Icono nombre="informacion" />
+            <span>{ayuda}</span>
+          </span>
+        )}
         {motivo ? (
-          <span id={idMotivo} className="motivo">
+          <span id={idMotivo} className="motivo" hidden={ayuda !== null}>
             {motivo}
           </span>
         ) : (
-          estado
+          !ayuda && estado
         )}
         {error && (
           <span className="error" role="alert">

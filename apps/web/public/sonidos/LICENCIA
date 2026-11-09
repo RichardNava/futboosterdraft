@@ -52,6 +52,24 @@ Cambios comunes a todos: recorte al momento útil, mezcla a mono, remuestreo a 2
                       Los montajes (pitidos encadenados, pitido + «oooh») se hacen con
                       `python tools/sonidos/grabaciones.py <descargas> [ffmpeg]`.
 
+- ambiente*.mp3 (spec 012, ronda 4) — ambiente de público de la 2D. Montaje con
+                      `python tools/sonidos/ambiente.py <descargas> [ffmpeg]` (mono a 22.050 Hz, paso bajo a 8 kHz,
+                      sonoridad igualada por RMS, MP3 CBR a 48 kbps).
+                      ambienteGrada.mp3: Philipp Feit (itmightgetloud), «Millerntor Stadium Crowd Reaction General
+                      Ambience 01» (Freesound #829454), recorte 0–46 s en bucle con fundido cruzado de 2 s.
+                      https://freesound.org/people/itmightgetloud/sounds/829454/ — CC0 1.0.
+                      ambienteBombo1.mp3 y ambienteBombo2.mp3: felix.blume, «Soccer fans screaming and playing drums
+                      in a small stadium of Chile» (Freesound #500250), recortes 150–166 s y 32–46 s.
+                      https://freesound.org/people/felix.blume/sounds/500250/ — CC0 1.0.
+                      ambienteCantico1.mp3: Urkki69, «Football Fans Chanting in Brighton» (Freesound #588617), 0–13,4 s.
+                      https://freesound.org/people/Urkki69/sounds/588617/ — CC0 1.0.
+                      ambienteCantico2.mp3: AxelTheCocker02, «stadium crowd sing» (Freesound #733614), 0–18 s.
+                      https://freesound.org/people/AxelTheCocker02/sounds/733614/ — CC0 1.0.
+                      ambienteVuvuzela1.mp3: Audioflow, «VUVUZELA 2» (Freesound #157746), 0–4,4 s.
+                      https://freesound.org/people/Audioflow/sounds/157746/ — CC0 1.0.
+                      ambienteVuvuzela2.mp3: nomerodin1, «Vuvuzela» (Freesound #557276), 0–1,5 s.
+                      https://freesound.org/people/nomerodin1/sounds/557276/ — CC0 1.0.
+
 Sintetizados (obra propia, CC0 1.0), WAV mono de 16 bits a 22.050 Hz con el pico a −3 dBFS.
 Se regeneran con `python tools/sonidos/generar.py` (necesita numpy):
 

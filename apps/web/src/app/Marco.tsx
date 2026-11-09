@@ -72,6 +72,17 @@ interface Enlace {
   icono: NombreIcono;
 }
 
+/** Ayuda resumida de cada destino, en la barra principal de la pantalla (spec 012, ronda 4). */
+const AYUDA_ENLACE: Record<string, string> = {
+  Inicio: 'Vuelve a la portada: tus partidas en curso y cómo empezar una nueva.',
+  'Mis partidas': 'Las partidas en las que juegas o has jugado, con su estado.',
+  'Nueva partida': 'Crea un torneo: modo, número de equipos y nivel de los rivales.',
+  Colección: 'Todas las cartas que has conseguido en los drafts y en los sobres.',
+  Tienda: 'Sobres de cartas, escudos, diseños de sobre y celebraciones de gol.',
+  'Mi perfil': 'Tu nombre, tu escudo, tu celebración de gol y tus preferencias.',
+  'Iniciar sesión': 'Entra con tu cuenta para guardar tu colección y jugar con otras personas.',
+};
+
 const ENLACES: Enlace[] = [
   { a: '/', texto: 'Inicio', icono: 'inicio' },
   { a: '/mis-partidas', texto: 'Mis partidas', icono: 'partidas' },
@@ -178,6 +189,7 @@ export function Marco() {
       aria-label={conTexto ? undefined : textoSonido}
       aria-pressed={!sonido}
       title={conTexto ? undefined : textoSonido}
+      data-ayuda={textoSonido}
       onClick={() => setSonido(!sonido)}
     >
       <Icono nombre={sonido ? 'sonido' : 'sinSonido'} tamano={20} />
@@ -187,7 +199,7 @@ export function Marco() {
   const listaEnlaces = (soloIconos: boolean) =>
     enlaces.map((e) => (
       <li key={e.texto}>
-        <NavLink to={e.a} end={e.a === '/'} aria-current={e.a.includes('?') ? false : undefined} aria-label={soloIconos ? e.texto : undefined} title={soloIconos ? e.texto : undefined}>
+        <NavLink to={e.a} end={e.a === '/'} aria-current={e.a.includes('?') ? false : undefined} aria-label={soloIconos ? e.texto : undefined} title={soloIconos ? e.texto : undefined} data-ayuda={AYUDA_ENLACE[e.texto]}>
           <Icono nombre={e.icono} tamano={soloIconos ? 20 : 18} />
           {!soloIconos && e.texto}
         </NavLink>

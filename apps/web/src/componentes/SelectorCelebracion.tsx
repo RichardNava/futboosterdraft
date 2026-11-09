@@ -4,6 +4,7 @@
  */
 import { CELEBRACION_DEL_JUEGO } from '@fbd/domain';
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { useCatalogoCosmeticos } from '../estado/cosmeticos';
 import { CapaCelebracion } from './celebraciones/CapaCelebracion';
 import { moverFoco } from './SelectorEscudo';
@@ -49,6 +50,12 @@ export function SelectorCelebracion({ elegida, onElegir, escudo = null, desactiv
             </li>
           ))}
         </ul>
+        {/* Las de pago que faltan, en la tienda (spec 012, ronda 3). */}
+        {catalogo.cosmeticos.some((c) => c.tipo === 'celebracion' && !c.gratuito && !c.poseido) && (
+          <Link className="nota" to="/tienda?seccion=cosmeticos&sub=celebraciones">
+            Más celebraciones en la tienda
+          </Link>
+        )}
       </div>
       <div className="vista-previa-celebracion" aria-label="Vista previa de la celebración">
         {enVista ? (

@@ -1,5 +1,5 @@
 /**
- * Escudos y sobres en la tienda (spec 011, US3; contracts/ui.md §5): packs arriba y, debajo, cada cosmético de pago
+ * Escudos, sobres y celebraciones de gol (spec 012, ronda 3) en la tienda (spec 011, US3; contracts/ui.md §5): packs arriba y, debajo, cada cosmético de pago
  * con sus dos precios (fragmentos o euros simulados) o «Comprado». Los sobres se ven cerrados y, al pasar el ratón,
  * rasgados. Un invitado ve el catálogo y, al comprar, la invitación a crear cuenta. Al pulsar una miniatura se abre
  * la previsualización a tamaño grande (con ← y → para pasar al siguiente) y desde ella se puede comprar.
@@ -18,6 +18,13 @@ import { urlEscudo } from './chapa';
 import { Dialogo } from './Dialogo';
 import { Icono } from './Icono';
 import { DialogoPagoPrueba, formatoEuros, formatoFragmentos } from './DialogoPagoPrueba';
+import { CapaCelebracion } from './celebraciones/CapaCelebracion';
+import type { CelebracionElegida } from './celebraciones/tipos';
+
+type TipoTienda = 'escudo' | 'sobre' | 'celebracion';
+
+/** Qué es cada cosmético, para los subtítulos y el resumen de la compra. */
+const NOMBRE_TIPO: Record<TipoTienda, string> = { escudo: 'Escudo', sobre: 'Diseño de sobre', celebracion: 'Celebración de gol' };
 
 type Compra =
   | { tipo: 'cosmetico'; cosmetico: Cosmetico; moneda: 'eur' | 'fragmentos' }
@@ -26,9 +33,16 @@ type Compra =
 const BLOQUES = [
   { tipo: 'escudo', id: 'escudos', titulo: 'Escudos' },
   { tipo: 'sobre', id: 'sobres', titulo: 'Sobres' },
+  { tipo: 'celebracion', id: 'celebraciones', titulo: 'Celebraciones' },
 ] as const;
 
-function Miniatura({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
+function Miniatura({ id, tipo }: { id: string; tipo: TipoTienda }) {
+  if (tipo === 'celebracion')
+    return (
+      <span className="miniatura-celebracion">
+        <Icono nombre="gol" tamano={36} />
+      </span>
+    );
   if (tipo === 'escudo')
     return (
       <img
@@ -53,8 +67,40 @@ type Vista =
   | { tipo: 'cosmetico'; lista: Cosmetico[]; indice: number; pack?: PackCosmeticos }
   | { tipo: 'pack'; pack: PackCosmeticos };
 
-/** El cosmético a tamaño grande: el escudo como se ve en el juego y el sobre cerrado y abierto. */
-function ArteGrande({ id, tipo }: { id: string; tipo: 'escudo' | 'sobre' }) {
+/** La celebración en marcha, como en «Mi perfil»; al acabar, se puede volver a ver. */
+function PreviaCelebracion({ celebracion }: { celebracion: CelebracionElegida }) {
+  const [vez, setVez] = useState(1);
+  const [enCurso, setEnCurso] = useState(true);
+  return (
+    <div className="vista-previa-celebracion" aria-label="Vista previa de la celebración">
+      {enCurso ? (
+        <CapaCelebracion
+          key={vez}
+          celebracion={celebracion}
+          equipo={{ nombre: 'Tu equipo', escudo: null, color: 'var(--color-accion)' }}
+          goleador="Tu goleador"
+          vistaPrevia
+          onFin={() => setEnCurso(false)}
+        />
+      ) : (
+        <button
+          type="button"
+          className="secundario"
+          onClick={() => {
+            setVez((n) => n + 1);
+            setEnCurso(true);
+          }}
+        >
+          Ver otra vez
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** El cosmético a tamaño grande: el escudo como se ve en el juego, el sobre cerrado y abierto, la celebración en marcha. */
+function ArteGrande({ id, tipo, datos }: { id: string; tipo: TipoTienda; datos?: Cosmetico['datos'] }) {
+  if (tipo === 'celebracion') return datos ? <PreviaCelebracion key={id} celebracion={{ id, datos } as CelebracionElegida} /> : null;
   if (tipo === 'escudo')
     return (
       <figure className="previsualizacion-escudo">
@@ -150,13 +196,13 @@ function Previsualizacion({
 
 interface Props {
   invitado?: boolean;
-  /** Tipos que se muestran (la subsección elegida de la tienda); por defecto, escudos y sobres. */
-  tipos?: readonly ('escudo' | 'sobre')[];
+  /** Tipos que se muestran (la subsección elegida de la tienda); por defecto, todos. */
+  tipos?: readonly TipoTienda[];
   /** En «Todo»: los sueltos se desplazan dentro de su rejilla para no alargar la página. */
   compacta?: boolean;
 }
 
-export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre'], compacta = false }: Props) {
+export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre', 'celebracion'], compacta = false }: Props) {
   const { catalogo, error } = useCatalogoCosmeticos();
   const [compra, setCompra] = useState<Compra | null>(null);
   const [pedirCuenta, setPedirCuenta] = useState(false);
@@ -250,6 +296,8 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
                 </span>
               )}
             </header>
+            {packs.length > 0 && (
+              <>
             <h4 className="tienda-bloque-subtitulo">Packs: 5 a mejor precio</h4>
             <ul className="tienda-packs" aria-label={`Packs de ${b.titulo.toLowerCase()}`}>
               {packs.map((p) => (
@@ -269,7 +317,9 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
                 </li>
               ))}
             </ul>
-            <h4 className="tienda-bloque-subtitulo">Sueltos</h4>
+              </>
+            )}
+            {packs.length > 0 && <h4 className="tienda-bloque-subtitulo">Sueltos</h4>}
             <ul
               className={`rejilla-tienda-cosmeticos${compacta ? ' tienda-bloque-desplazable' : ''}`}
               aria-label={`${b.titulo} sueltos`}
@@ -302,7 +352,7 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
             <Previsualizacion
               titulo={c.nombre}
               subtitulo={
-                (c.tipo === 'escudo' ? 'Escudo' : 'Diseño de sobre') +
+                NOMBRE_TIPO[c.tipo as TipoTienda] +
                 (vista.pack ? ` · ${vista.pack.nombre}` : '')
               }
               onCerrar={() => setVista(null)}
@@ -313,7 +363,7 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
                 posicion: `${vista.indice + 1} de ${n}`,
               }}
             >
-              <ArteGrande id={c.id} tipo={c.tipo as 'escudo' | 'sobre'} />
+              <ArteGrande id={c.id} tipo={c.tipo as TipoTienda} datos={c.datos} />
               {comprarCosmetico(c)}
             </Previsualizacion>
           );
@@ -358,7 +408,7 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre']
           titulo={compra.cosmetico.nombre}
           resumen={
             <p>
-              {compra.cosmetico.tipo === 'escudo' ? 'Escudo' : 'Diseño de sobre'} para tu cuenta.
+              {NOMBRE_TIPO[compra.cosmetico.tipo as TipoTienda]} para tu cuenta.
               {compra.moneda === 'fragmentos' && ` Tienes ${formatoFragmentos.format(saldo)} fragmentos.`}
             </p>
           }

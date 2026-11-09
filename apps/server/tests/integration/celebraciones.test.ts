@@ -37,7 +37,7 @@ describe('celebraciones de gol (spec 012, US1)', () => {
     return r.cuerpo.id as string;
   }
 
-  it('el catálogo tiene las 5 celebraciones; GET /api/cosmeticos lista las activas con sus datos', async () => {
+  it('el catálogo tiene las 7 celebraciones; GET /api/cosmeticos lista las activas con sus datos', async () => {
     const filas = await bd.db.execute<{ id: string; activo: boolean; datos: { clase: string; duracionMs: number } }>(
       sql`select id, activo, datos from cosmeticos where tipo = 'celebracion' order by orden`,
     );
@@ -47,22 +47,25 @@ describe('celebraciones de gol (spec 012, US1)', () => {
       'celebracion-neon',
       'celebracion-pizarra',
       'celebracion-prueba-secuencia',
+      'celebracion-discoteca',
+      'celebracion-fuegos',
     ]);
     for (const f of filas.rows) if (f.datos.clase === 'juego') expect(f.datos.duracionMs).toBeLessThanOrEqual(3000);
     const r = await peticion(srv.url, '/api/cosmeticos');
     const celebraciones = (r.cuerpo.cosmeticos as { id: string; tipo: string; datos?: unknown }[]).filter((c) => c.tipo === 'celebracion');
     expect(celebraciones.map((c) => c.id)).not.toContain('celebracion-prueba-secuencia');
-    expect(celebraciones).toHaveLength(4);
+    expect(celebraciones).toHaveLength(6);
     for (const c of celebraciones) expect(c.datos).toBeTruthy();
   });
 
-  it('PUT aspecto: una celebración activa vale; la de prueba (inactiva) o un escudo, 422 COSMETICO_NO_DISPONIBLE', async () => {
+  it('PUT aspecto: una celebración gratuita vale; una de pago sin comprar, la de prueba (inactiva) o un escudo, 422 COSMETICO_NO_DISPONIBLE', async () => {
     const u = await crearRegistrado(srv.url);
     expect((await peticion(srv.url, '/api/perfil/aspecto', { cookie: u.cookie })).cuerpo).toMatchObject({ celebracion: null, modoIncidencias: 'automatico' });
-    const ok = await elegir(u, { celebracion: 'celebracion-neon', modoIncidencias: 'control_total' });
+    const ok = await elegir(u, { celebracion: 'celebracion-pizarra', modoIncidencias: 'control_total' });
     expect(ok.estado, JSON.stringify(ok.cuerpo)).toBe(200);
-    expect(ok.cuerpo).toMatchObject({ celebracion: 'celebracion-neon', modoIncidencias: 'control_total' });
-    for (const id of ['celebracion-prueba-secuencia', 'escudo-flor-de-lis-azul-oro', 'no-existe']) {
+    expect(ok.cuerpo).toMatchObject({ celebracion: 'celebracion-pizarra', modoIncidencias: 'control_total' });
+    // Discoteca y Fuegos artificiales se venden en la tienda (spec 012, ronda 4): sin comprarlas no se pueden elegir.
+    for (const id of ['celebracion-discoteca', 'celebracion-fuegos', 'celebracion-prueba-secuencia', 'escudo-flor-de-lis-azul-oro', 'no-existe']) {
       const r = await elegir(u, { celebracion: id });
       expect(r.estado, id).toBe(422);
       expect(r.cuerpo.error.codigo).toBe('COSMETICO_NO_DISPONIBLE');
@@ -93,7 +96,8 @@ describe('celebraciones de gol (spec 012, US1)', () => {
     const suLado = miLado === 'local' ? 'visitante' : 'local';
     expect(inicio.celebraciones[miLado]).toEqual({ id: 'celebracion-pizarra', datos: { clase: 'juego', duracionMs: 2800 } });
     expect(inicio.celebraciones[suLado].id).toBe(CELEBRACION_DEL_JUEGO);
-    expect(inicio.modoIncidencias).toBe('control_total');
+    // La simulación rápida no tiene modo de incidencias (ronda 2, FR-037): solo lo lleva la 2D.
+    expect(inicio.modoIncidencias).toBeUndefined();
     await ws.cerrar();
   });
 });

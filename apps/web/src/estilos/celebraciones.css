@@ -259,6 +259,9 @@
   color: transparent;
   filter: drop-shadow(0 4px 0 rgb(0 0 0 / 55%));
   animation-name: celebracion-letra-sube;
+  /* El degradado solo pinta dentro de la caja: aire para la cursiva y el interlineado (ronda 3), sin mover nada. */
+  padding: 0.12em 0.14em;
+  margin: -0.12em -0.14em;
 }
 
 .celebracion-estadio .celebracion-rotulo {
@@ -357,6 +360,8 @@
 }
 
 .celebracion-pizarra .celebracion-titulo {
+  /* `celebracion-escribe` recorta a la caja (`clip-path`): aire para la cursiva y el interlineado (ronda 3). */
+  padding: 0.12em 0.2em 0.06em 0.1em;
   color: var(--celebracion-tiza);
   text-shadow: 0 0 2px rgb(255 255 255 / 60%);
   animation: celebracion-escribe var(--duracion-celebracion, 2800ms) linear both;
@@ -395,6 +400,253 @@
   animation: celebracion-aparece var(--duracion-celebracion, 2800ms) linear both;
 }
 
+/* Discoteca (spec 012, ronda 4): bola de espejos, focos de colores, «¡GOL!» que cambia de color y muñequitos bailando. */
+.celebracion-discoteca {
+  background: rgb(8 4 18 / 84%);
+}
+
+.discoteca-foco {
+  position: absolute;
+  top: -8%;
+  left: calc(6% + var(--i) * 24%);
+  width: 24cqw;
+  height: 125cqh;
+  transform-origin: 50% 0;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--luz) 60%, transparent), transparent 80%);
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  animation: discoteca-barre 1100ms ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -450ms);
+}
+
+.discoteca-bola {
+  position: absolute;
+  top: 3%;
+  left: 50%;
+  width: clamp(44px, 15cqmin, 120px);
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffffff 0 5%, #d5dce8 20%, #737f90 66%, #262c38 100%);
+  box-shadow:
+    0 0 24px rgb(255 255 255 / 55%),
+    0 0 60px rgb(160 120 255 / 45%);
+  animation: discoteca-baja 650ms cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+.discoteca-bola::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 2px;
+  height: 40cqh;
+  background: #9aa3b0;
+}
+
+.discoteca-bola-facetas {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-linear-gradient(90deg, rgb(10 12 20 / 45%) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(0deg, rgb(10 12 20 / 45%) 0 1px, transparent 1px 7px);
+  animation: discoteca-gira 700ms linear infinite;
+}
+
+.discoteca-destellos span {
+  position: absolute;
+  top: calc(3% + clamp(22px, 7.5cqmin, 60px));
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--luz);
+  box-shadow: 0 0 10px 3px var(--luz);
+  opacity: 0;
+  animation: discoteca-reflejo 1500ms linear infinite;
+  animation-delay: calc(400ms + var(--i) * -107ms);
+}
+
+.celebracion-discoteca .celebracion-titulo {
+  text-shadow: 0 0 22px currentColor;
+  animation: discoteca-color 520ms steps(1, end) infinite;
+}
+
+.celebracion-discoteca .celebracion-pie {
+  z-index: 1;
+}
+
+.discoteca-pista {
+  position: absolute;
+  right: 0;
+  bottom: 3%;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 3cqw;
+  pointer-events: none;
+}
+
+.bailarin {
+  width: clamp(22px, 7cqmin, 56px);
+  overflow: visible;
+  fill: var(--luz);
+  stroke: var(--luz);
+  stroke-width: 5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px var(--luz));
+  animation: discoteca-salta 260ms ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -90ms);
+}
+
+.bailarin :is(.bailarin-brazo, .bailarin-pierna) {
+  transform-box: view-box;
+  animation: 520ms ease-in-out infinite alternate;
+}
+
+.bailarin .bailarin-brazo {
+  transform-origin: 20px 21px;
+}
+
+.bailarin .bailarin-pierna {
+  transform-origin: 20px 38px;
+}
+
+.bailarin .bailarin-brazo-i {
+  animation-name: discoteca-brazo-i;
+}
+
+.bailarin .bailarin-brazo-d {
+  animation-name: discoteca-brazo-d;
+}
+
+.bailarin .bailarin-pierna-i {
+  animation-name: discoteca-pierna-i;
+}
+
+.bailarin .bailarin-pierna-d {
+  animation-name: discoteca-pierna-d;
+}
+
+.bailarin:nth-child(even) * {
+  animation-direction: alternate-reverse;
+}
+
+/* Colores de la discoteca: cada foco, destello y bailarín, por su posición; el quinto, del equipo. */
+:is(.discoteca-foco, .discoteca-destellos > span, .bailarin):nth-child(5n + 1) {
+  --luz: #ff3fa4;
+}
+
+:is(.discoteca-foco, .discoteca-destellos > span, .bailarin):nth-child(5n + 2) {
+  --luz: #3fd8ff;
+}
+
+:is(.discoteca-foco, .discoteca-destellos > span, .bailarin):nth-child(5n + 3) {
+  --luz: #ffe23f;
+}
+
+:is(.discoteca-foco, .discoteca-destellos > span, .bailarin):nth-child(5n + 4) {
+  --luz: #8a5bff;
+}
+
+:is(.discoteca-destellos > span, .bailarin):nth-child(5n) {
+  --luz: var(--color-equipo);
+}
+
+/* Fuegos artificiales (spec 012, ronda 4): cohetes que suben y estallan en palmeras de colores sobre el cielo. */
+.celebracion-fuegos {
+  background: linear-gradient(to bottom, rgb(3 5 22 / 90%), rgb(12 8 30 / 62%));
+}
+
+.celebracion-fuegos .celebracion-titulo {
+  color: #ffffff;
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 26px rgb(255 214 110 / 75%);
+}
+
+.fuego {
+  --estallido: calc(var(--duracion-celebracion, 3000ms) * var(--t) + 380ms);
+
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.fuego:nth-child(1) {
+  --color-fuego: #ff4b4b;
+}
+
+.fuego:nth-child(2) {
+  --color-fuego: #ffd447;
+}
+
+.fuego:nth-child(3) {
+  --color-fuego: var(--color-equipo);
+}
+
+.fuego:nth-child(4) {
+  --color-fuego: #4bd1ff;
+}
+
+.fuego:nth-child(5) {
+  --color-fuego: #b26bff;
+}
+
+.fuego:nth-child(6) {
+  --color-fuego: #5dff8a;
+}
+
+.fuego:nth-child(7) {
+  --color-fuego: #ff7ad9;
+}
+
+.fuego-cohete {
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 4px;
+  height: 22px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #ffffff, var(--color-fuego) 30%, transparent);
+  opacity: 0;
+  animation: fuego-sube 380ms cubic-bezier(0.2, 0.6, 0.4, 1) both;
+  animation-delay: calc(var(--duracion-celebracion, 3000ms) * var(--t));
+}
+
+.fuego-destello {
+  position: absolute;
+  top: -12cqmin;
+  left: -12cqmin;
+  width: 24cqmin;
+  height: 24cqmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0, var(--color-fuego) 16%, transparent 62%);
+  opacity: 0;
+  animation: fuego-destello 520ms ease-out both;
+  animation-delay: var(--estallido);
+}
+
+.fuego-chispa {
+  position: absolute;
+  top: -2.5px;
+  left: -2.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-fuego);
+  box-shadow: 0 0 7px 2px var(--color-fuego);
+  opacity: 0;
+  animation: fuego-chispa 1100ms both;
+  animation-delay: var(--estallido);
+}
+
 /* Movimiento reducido (FR-014): sin transform, recortes ni escalas; solo el fundido de la capa. */
 .capa-celebracion.reducido *,
 .capa-celebracion.reducido *::before,
@@ -404,7 +656,7 @@
   clip-path: none !important;
 }
 
-.capa-celebracion.reducido :is(.celebracion-particulas, .celebracion-ondas, .celebracion-destello, .celebracion-rayos) {
+.capa-celebracion.reducido :is(.celebracion-particulas, .celebracion-ondas, .celebracion-destello, .celebracion-rayos, .fuego, .discoteca-destellos) {
   display: none;
 }
 
@@ -421,7 +673,7 @@
     clip-path: none !important;
   }
 
-  .capa-celebracion :is(.celebracion-particulas, .celebracion-ondas, .celebracion-destello, .celebracion-rayos) {
+  .capa-celebracion :is(.celebracion-particulas, .celebracion-ondas, .celebracion-destello, .celebracion-rayos, .fuego, .discoteca-destellos) {
     display: none;
   }
 
@@ -704,5 +956,148 @@
   68%,
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes discoteca-barre {
+  from {
+    transform: rotate(-30deg);
+  }
+  to {
+    transform: rotate(30deg);
+  }
+}
+
+@keyframes discoteca-baja {
+  from {
+    transform: translateY(-160%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes discoteca-gira {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 7px 0;
+  }
+}
+
+@keyframes discoteca-reflejo {
+  0% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 25.7deg)) translateX(4cqmin);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 25.7deg + 50deg)) translateX(48cqmin);
+  }
+}
+
+@keyframes discoteca-color {
+  0% {
+    color: #ff3fa4;
+  }
+  25% {
+    color: #3fd8ff;
+  }
+  50% {
+    color: #ffe23f;
+  }
+  75% {
+    color: #b38bff;
+  }
+}
+
+@keyframes discoteca-salta {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-14%);
+  }
+}
+
+@keyframes discoteca-brazo-i {
+  from {
+    transform: rotate(-25deg);
+  }
+  to {
+    transform: rotate(75deg);
+  }
+}
+
+@keyframes discoteca-brazo-d {
+  from {
+    transform: rotate(25deg);
+  }
+  to {
+    transform: rotate(-75deg);
+  }
+}
+
+@keyframes discoteca-pierna-i {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(18deg);
+  }
+}
+
+@keyframes discoteca-pierna-d {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes fuego-sube {
+  0% {
+    opacity: 1;
+    transform: translateY(75cqh);
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fuego-destello {
+  0% {
+    opacity: 0.95;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes fuego-chispa {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--angulo)) translateX(0);
+    animation-timing-function: cubic-bezier(0.1, 0.8, 0.3, 1);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(1.5cqh) rotate(var(--angulo)) translateX(16cqmin);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(8cqh) rotate(var(--angulo)) translateX(19cqmin) scale(0.4);
   }
 }

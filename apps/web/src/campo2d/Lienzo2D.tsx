@@ -71,7 +71,9 @@ export function jugadoresDe(inicio: Inicio): Map<number, JugadorDibujo> {
   for (const lado of ['local', 'visitante'] as const) {
     const a = inicio.alineaciones[lado];
     for (const j of [...a.titulares.map((t) => t.jugador), ...a.suplentes]) {
-      mapa.set(j.id, { lado, dorsal: inicio.dorsales[j.id] ?? null, nombre: nombreCartaDe(j) });
+      // Solo los retratos propios (los de las cartas antiguas no son caras): como las fichas de Formación.
+      const imagen = j.imagen?.startsWith('/cartas/retratos-propios/') ? j.imagen : null;
+      mapa.set(j.id, { lado, dorsal: inicio.dorsales[j.id] ?? null, nombre: nombreCartaDe(j), imagen });
     }
   }
   return mapa;

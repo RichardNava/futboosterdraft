@@ -639,6 +639,32 @@
         "duracionMs": 2000
       },
       "activo": false
+    },
+    {
+      "id": "celebracion-discoteca",
+      "tipo": "celebracion",
+      "nombre": "Discoteca",
+      "gratuito": false,
+      "precio_centimos": 99,
+      "precio_fragmentos": 500,
+      "orden": 44,
+      "datos": {
+        "clase": "juego",
+        "duracionMs": 3000
+      }
+    },
+    {
+      "id": "celebracion-fuegos",
+      "tipo": "celebracion",
+      "nombre": "Fuegos artificiales",
+      "gratuito": false,
+      "precio_centimos": 99,
+      "precio_fragmentos": 500,
+      "orden": 45,
+      "datos": {
+        "clase": "juego",
+        "duracionMs": 3000
+      }
     }
   ],
   "packs": [

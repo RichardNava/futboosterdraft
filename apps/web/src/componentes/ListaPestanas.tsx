@@ -7,7 +7,7 @@ export function ListaPestanas<T extends string>({
   onElegir,
   etiqueta,
 }: {
-  pestanas: readonly { id: T; texto: string }[];
+  pestanas: readonly { id: T; texto: string; ayuda?: string }[];
   activa: T;
   onElegir: (id: T) => void;
   etiqueta: string;
@@ -24,6 +24,7 @@ export function ListaPestanas<T extends string>({
           aria-controls={`panel-${p.id}`}
           tabIndex={activa === p.id ? 0 : -1}
           onClick={() => onElegir(p.id)}
+          data-ayuda={p.ayuda}
         >
           {p.texto}
         </button>

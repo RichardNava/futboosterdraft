@@ -54,6 +54,7 @@ const SECCIONES: DefinicionSeccion[] = [
     subsecciones: [
       { id: 'escudos', texto: 'Escudos' },
       { id: 'sobres', texto: 'Sobres' },
+      { id: 'celebraciones', texto: 'Celebraciones' },
     ],
   },
   {
@@ -78,6 +79,7 @@ const SECCIONES: DefinicionSeccion[] = [
 const POR_ANCLA: Record<string, [SeccionTienda, string]> = {
   escudos: ['cosmeticos', 'escudos'],
   sobres: ['cosmeticos', 'sobres'],
+  celebraciones: ['cosmeticos', 'celebraciones'],
 };
 
 interface Navegacion {
@@ -231,29 +233,21 @@ function SeccionesFuturas({ seccion, ruta }: Navegacion) {
   );
 }
 
-/** Cosméticos de la sección elegida: en «Todo» o sin subsección, escudos y sobres; si no, solo la subsección. */
+/** Cosméticos de la sección elegida: en «Todo» o sin subsección, escudos, sobres y celebraciones; si no, solo la subsección. */
 function SeccionCosmeticos({ seccion, sub, ruta, invitado }: Navegacion & { invitado: boolean }) {
   if (seccion !== 'todo' && seccion !== 'cosmeticos') return null;
-  const tipos: ('escudo' | 'sobre')[] =
-    sub === 'escudos' ? ['escudo'] : sub === 'sobres' ? ['sobre'] : ['escudo', 'sobre'];
+  const tipos: ('escudo' | 'sobre' | 'celebracion')[] =
+    sub === 'escudos' ? ['escudo'] : sub === 'sobres' ? ['sobre'] : sub === 'celebraciones' ? ['celebracion'] : ['escudo', 'sobre', 'celebracion'];
   return (
     <section className="tienda-seccion-bloque" aria-labelledby="titulo-cosmeticos">
       <CabeceraSeccion
         id="cosmeticos"
         titulo="Cosméticos"
-        descripcion="Escudos para tu equipo y diseños para tus sobres. Se eligen en «Mi perfil»."
+        descripcion="Escudos para tu equipo, diseños para tus sobres y celebraciones de gol. Se eligen en «Mi perfil»."
         enTodo={seccion === 'todo'}
         ruta={ruta}
       />
       <TiendaCosmeticos invitado={invitado} tipos={tipos} compacta={seccion === 'todo'} />
-      {/* Spec 012 (FR-013): las celebraciones de gol se eligen gratis en «Mi perfil»; la venta, más adelante. */}
-      {sub !== 'escudos' && sub !== 'sobres' && (
-        <Proximamente
-          titulo="Celebraciones"
-          icono="gol"
-          texto="Celebraciones de gol para tu equipo. De momento, elige una de las gratuitas en «Mi perfil»."
-        />
-      )}
     </section>
   );
 }

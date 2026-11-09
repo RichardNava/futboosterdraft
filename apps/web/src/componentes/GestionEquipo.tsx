@@ -164,7 +164,7 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
     distintivos.set(
       id,
       <span className="distintivo amarilla">
-        <Icono nombre="amarilla" etiqueta={`${n} amarilla${n > 1 ? 's' : ''}`} />
+        <Icono nombre="amarilla" etiqueta={`${n} amarilla${n > 1 ? 's' : ''}`} className="icono-amarilla" />
         {n > 1 ? `×${n}` : ''}
       </span>,
     );

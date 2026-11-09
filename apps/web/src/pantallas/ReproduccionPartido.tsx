@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAmbiente } from '../sonido/ambiente';
 import { chapasDelPartido, equipoMarcador } from '../componentes/chapa';
 import { Link, useParams } from 'react-router';
 import { api, ErrorApi, marcarVisto, obtenerReproduccion } from '../api/cliente';
@@ -114,6 +115,9 @@ export function ReproduccionPartido() {
   const tickVisible = es2d ? tick : (tramoLimite?.hastaTick ?? 0);
   const llegoAlLimite = es2d ? estadoReloj === 'descanso' || estadoReloj === 'pre_prorroga' : datos !== null && tramoLimite !== undefined;
   const terminado = alFinal || (es2d ? estadoReloj === 'fin' : datos !== null && hasta === ultimoTramo);
+
+  // Público de fondo en la 2D (spec 012, ronda 3), como en directo.
+  useAmbiente(!es2d || terminado ? 0 : estadoReloj === 'reproduciendo' || estadoReloj === 'gol' ? 1 : 0.35);
 
   // Al terminar de verlo (o al finalizar), el resultado deja de estar pendiente de ver.
   useEffect(() => {

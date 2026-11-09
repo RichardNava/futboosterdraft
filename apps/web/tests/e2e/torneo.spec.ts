@@ -106,12 +106,13 @@ test('baja pendiente: botón bloqueado, aviso de intervención y Plantillas con 
   await page.reload();
   await expect(page.locator('[data-principal]')).not.toHaveAttribute('aria-disabled', 'true');
 
-  // Plantillas: cada pestaña con su chapa (escudo o color) y el nombre del equipo.
+  // Plantillas (ronda 2 de la spec 012, FR-040): las pestañas, solo con el nombre; la chapa y la media del mejor once,
+  // en la ficha del equipo elegido.
   await page.goto(`/partidas/${partidaId}/plantillas`);
   const pestanas = page.getByRole('tablist', { name: 'Plantillas de los equipos' }).getByRole('tab');
   await expect(pestanas).toHaveCount(4);
-  for (let i = 0; i < 4; i++) {
-    await expect(pestanas.nth(i).locator('.chapa')).toHaveCount(1);
-    await expect(pestanas.nth(i).locator('.nombre-recortado')).not.toBeEmpty();
-  }
+  for (let i = 0; i < 4; i++) await expect(pestanas.nth(i).locator('.nombre-recortado')).not.toBeEmpty();
+  const ficha = page.getByRole('region', { name: 'Equipo' });
+  await expect(ficha.locator('.chapa')).toHaveCount(1);
+  await expect(ficha.getByTestId('media-equipo')).toBeVisible();
 });
