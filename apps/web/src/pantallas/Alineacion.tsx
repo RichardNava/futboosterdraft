@@ -459,6 +459,7 @@ export function Alineacion() {
       <section aria-label="Táctica">
         <PanelTactica tactica={tactica} onCambiar={setTactica} />
         <SelectorModoIncidencias
+          conEtiqueta
           modo={datos.modoIncidencias ?? 'automatico'}
           onCambio={(modo) => {
             setDatos({ ...datos, modoIncidencias: modo });

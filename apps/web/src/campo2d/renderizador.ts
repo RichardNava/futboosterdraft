@@ -297,8 +297,8 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
   const tamDorsal = Math.max(8, radio * 0.95);
   // Spec 008: el nombre se lee con el zoom al 100 % (antes 11 * e, unos 10 px).
   const tamNombre = Math.max(11, 16 * e);
-  // Con retrato, la chapa es algo mayor para que se reconozca la cara (spec 012, ronda 3).
-  const radioRetrato = radio * 1.2;
+  // Con retrato, la chapa es algo mayor para que se reconozca la cara (spec 012, ronda 3; algo más en la ronda 5).
+  const radioRetrato = radio * 1.4;
   // Muesca hacia donde corre (solo si se mueve de verdad, para que no baile parado).
   const muesca = (x: number, y: number, vx: number, vy: number, r: number, color: string) => {
     const rapidez = Math.hypot(vx, vy);
@@ -324,9 +324,10 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
       const { lienzo, mitad } = conRetrato;
       ctx.drawImage(lienzo, x * e - mitad, y * e - mitad, 2 * mitad, 2 * mitad);
       muesca(x, y, vx, vy, radioRetrato, colores.principal);
-      // El dorsal, en una chapita abajo a la derecha.
+      // El dorsal, en una chapa grande a la derecha del retrato, a su altura: ni lo tapa ni empuja el nombre (ronda 5).
       if (j.dorsal !== null) {
-        const [dx, dy, r] = [x * e + radioRetrato * 0.72, y * e + radioRetrato * 0.72, Math.max(5, radioRetrato * 0.44)];
+        const r = Math.max(7, radioRetrato * 0.62);
+        const [dx, dy] = [x * e + mitad + r * 0.85, y * e];
         ctx.beginPath();
         ctx.arc(dx, dy, r, 0, Math.PI * 2);
         ctx.fillStyle = colores.principal;
@@ -334,7 +335,7 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
         ctx.lineWidth = Math.max(1, r * 0.18);
         ctx.strokeStyle = colores.secundario;
         ctx.stroke();
-        ctx.font = `700 ${Math.max(6, r * 1.1)}px ${interfaz.letra}`;
+        ctx.font = `800 ${Math.max(9, r * 1.25)}px ${interfaz.letra}`;
         ctx.fillStyle = colores.secundario;
         ctx.fillText(String(j.dorsal), dx, dy + 0.5);
       }

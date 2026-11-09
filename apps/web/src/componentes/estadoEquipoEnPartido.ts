@@ -160,3 +160,39 @@ export function estadoEquipoEnPartido(
   estado.sustitucionesRestantes = Math.max(0, MAX_SUSTITUCIONES + (prorroga ? 1 : 0) - estado.sustitucionesUsadas);
   return estado;
 }
+
+/** Decisión confirmada por el participante (lote `partido.decisiones`). */
+export interface DecisionEnviada {
+  tipo: string;
+  datos: Record<string, unknown>;
+}
+
+/**
+ * Spec 012, ronda 5: lo confirmado y aún no aplicado (en el descanso, hasta reanudar) cuenta ya en la gestión, para no
+ * enseñar la colocación anterior ni pisarla con otro lote. Las sustituciones, como eventos; el resto, como decisiones
+ * del tick actual (después de los eventos, como las aplica el motor).
+ */
+export function conEnEspera(eventos: readonly EventoEquipo[], aplicadas: readonly DecisionAplicada[], enEspera: readonly DecisionEnviada[], lado: string, tick: number) {
+  const sustitucion = (d: DecisionEnviada) => d.tipo === 'sustitucion';
+  return {
+    eventos: [
+      ...eventos,
+      ...enEspera.filter(sustitucion).map((d) => ({
+        tick,
+        equipo: lado,
+        tipo: 'sustitucion',
+        jugadores: [
+          { rol: 'sale', jugadorId: Number(d.datos.sale) },
+          { rol: 'entra', jugadorId: Number(d.datos.entra) },
+        ],
+      })),
+    ],
+    decisiones: [...aplicadas, ...enEspera.filter((d) => !sustitucion(d)).map((d) => ({ aplicadaEnTick: tick, tipo: d.tipo, datos: d.datos }))],
+  };
+}
+
+/** Quita de lo que está en espera la primera decisión del tipo que el servidor acaba de aplicar (las aplica en orden). */
+export function sinLaAplicada<T extends DecisionEnviada>(enEspera: readonly T[], tipo: string): T[] {
+  const i = enEspera.findIndex((d) => d.tipo === tipo);
+  return i < 0 ? [...enEspera] : [...enEspera.slice(0, i), ...enEspera.slice(i + 1)];
+}

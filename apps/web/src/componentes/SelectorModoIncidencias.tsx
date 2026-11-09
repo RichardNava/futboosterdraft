@@ -2,7 +2,8 @@
  * «Incidencias: Automático / Control total» (spec 012, FR-020, FR-024; contracts/ui.md): control segmentado con
  * botones (Tab llega a cada uno y Intro o espacio lo elige). Se usa en el carril de la 2D y en la pestaña Táctica de
  * Formación. Ronda 3: la explicación habla de «eventos trascendentales» (lesiones, expulsiones y goles) y va detrás del
- * icono de información; en la barra principal, la ayuda resumida de cada modo.
+ * icono de información; en la barra principal, la ayuda resumida de cada modo. Ronda 5: en la 2D, sin la etiqueta
+ * visible «Incidencias» (queda como nombre del grupo), que dejaba sin sitio a «Control total»; en Táctica, con ella.
  */
 import type { ModoIncidencias } from '@fbd/domain';
 import { useId } from 'react';
@@ -20,15 +21,27 @@ const DETALLE =
   'En control total, cada uno detiene el partido y se abre «Gestionar equipo» para que decidas tú. ' +
   'Solo en la simulación 2D; puedes cambiar de modo en cualquier momento.';
 
-export function SelectorModoIncidencias({ modo, onCambio, desactivado = false }: { modo: ModoIncidencias; onCambio: (m: ModoIncidencias) => void; desactivado?: boolean }) {
+export function SelectorModoIncidencias({
+  modo,
+  onCambio,
+  desactivado = false,
+  conEtiqueta = false,
+}: {
+  modo: ModoIncidencias;
+  onCambio: (m: ModoIncidencias) => void;
+  desactivado?: boolean;
+  conEtiqueta?: boolean;
+}) {
   const id = useId().replace(/:/g, '');
   return (
     <div className="selector-modo-incidencias">
-      <span className="nota" id={`etiqueta-${id}`}>
-        Incidencias
-      </span>
+      {conEtiqueta && (
+        <span className="nota" aria-hidden="true">
+          Incidencias
+        </span>
+      )}
       <div className="selector-modo-fila">
-        <div className="segmentado" role="group" aria-labelledby={`etiqueta-${id}`}>
+        <div className="segmentado" role="group" aria-label="Incidencias">
           {OPCIONES.map((o) => (
             <button key={o.modo} type="button" aria-pressed={o.modo === modo} disabled={desactivado} data-ayuda={o.ayuda} onClick={() => o.modo !== modo && onCambio(o.modo)}>
               {o.texto}

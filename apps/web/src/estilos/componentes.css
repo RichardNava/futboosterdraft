@@ -917,6 +917,15 @@ span.error {
   pointer-events: none;
 }
 
+/*
+ * Letra de aviso (spec 012, ronda 5): generosa en los textos cortos y menor según crece el texto (`--caracteres`, su
+ * longitud), sin bajar de la de cuerpo: 22 px hasta 50 caracteres, 16 px desde 150.
+ */
+.lista-avisos li {
+  font-size: clamp(var(--texto-cuerpo), calc(22px - max(0, var(--caracteres, 0) - 50) * 0.06px), 22px);
+  line-height: 1.3;
+}
+
 .region-avisos > * {
   pointer-events: auto;
 }

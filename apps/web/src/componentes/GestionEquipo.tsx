@@ -89,6 +89,10 @@ interface Props {
   onCerrar: (aplicado: boolean) => void;
   /** Parada de «control total» (spec 012): qué ha pasado y cuántos cambios quedan. */
   aviso?: string | null;
+  /** Lesionados de la parada (ronda 5): no se sigue sin sustituirlos mientras queden cambios y suplentes. */
+  lesionadosParada?: ReadonlySet<number>;
+  /** Resultado y minuto del partido en la 2D (ronda 5): al llegar en una parada, se sabe qué ha pasado. */
+  marcador?: string | null;
 }
 
 /**
@@ -99,7 +103,7 @@ interface Props {
  * Spec 012 (FR-015 a FR-017): la misma mesa que Formación (`useDistribucion`, pestañas fijas sobre el lateral), con
  * solo los titulares y el banquillo convocado, y sin «Personalización».
  */
-export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, onCerrar, aviso = null }: Props) {
+export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, onCerrar, aviso = null, lesionadosParada = SIN_LESIONADOS, marcador = null }: Props) {
   const inicial = useMemo<Borrador>(
     () => ({ campo: { formacion: estado.formacion, asignacion: { ...estado.asignacion }, puntos: { ...estado.puntos }, banquillo: [...estado.banquillo] }, tactica: estado.tactica, lanzadores: estado.lanzadores }),
     [estado],
@@ -112,13 +116,22 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
   const distribucion = useDistribucion();
 
   const posicionesDe = useCallback((id: number) => (jugadores.get(id)?.posicion ?? []) as Posicion[], [jugadores]);
-  const bloqueados = useMemo(() => new Set([...estado.sustituidos, ...estado.expulsados]), [estado]);
+  // Los lesionados también: desde «No disponibles» no se pueden llevar al campo (el de la parada sigue en su casilla).
+  const bloqueados = useMemo(() => new Set([...estado.sustituidos, ...estado.expulsados, ...estado.lesionados]), [estado]);
   const opciones = useMemo(() => ({ parametros: P, radioFicha: RADIO_FICHA, posicionesDe, bloqueados }), [posicionesDe, bloqueados]);
   const colocacion = useMemo(() => colocacionDe(borrador.campo, P, posicionesDe), [borrador.campo, posicionesDe]);
   const decisiones = decisionesDeCambios(inicial, borrador);
   const sustituciones = decisiones.filter((d) => d.tipo === 'sustitucion').length;
   const restantes = estado.sustitucionesRestantes - sustituciones;
   const hayCambios = decisiones.length > 0;
+  // Ronda 5: en «control total», el lesionado de la parada lo cambia el participante, no el entrenador automático.
+  const enCampo = new Set(Object.values(borrador.campo.asignacion));
+  const noDisponibles = [...bloqueados].filter((id) => !enCampo.has(id) && !borrador.campo.banquillo.includes(id));
+  const lesionadosSinCambiar = [...lesionadosParada].filter((id) => enCampo.has(id));
+  const suplentesLibres = borrador.campo.banquillo.some((id) => !bloqueados.has(id) && !estado.lesionados.has(id) && !lesionadosParada.has(id));
+  const debeSustituir = lesionadosSinCambiar.length > 0 && restantes > 0 && suplentesLibres;
+  const conUnoMenos = lesionadosSinCambiar.length > 0 && !debeSustituir;
+  const motivoSustituir = debeSustituir ? 'Sustituye al lesionado para seguir' : null;
 
   const alSoltar = (jugadorId: number, destino: DestinoSoltar) => {
     const nuevo = soltar(borrador.campo, jugadorId, destino, opciones);
@@ -168,6 +181,20 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
         {n > 1 ? `×${n}` : ''}
       </span>,
     );
+  for (const id of estado.expulsados)
+    distintivos.set(
+      id,
+      <span className="distintivo roja">
+        <Icono nombre="roja" etiqueta="Expulsado" className="icono-roja" />
+      </span>,
+    );
+  for (const id of estado.sustituidos)
+    distintivos.set(
+      id,
+      <span className="distintivo sustituido">
+        <Icono nombre="cambio" etiqueta="Sustituido" />
+      </span>,
+    );
   for (const id of estado.lesionados)
     distintivos.set(
       id,
@@ -180,6 +207,11 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
     <div className="gestion-equipo" role="dialog" aria-modal="true" aria-labelledby="titulo-gestion" data-testid="gestion-equipo">
       <header className="cabecera-fila">
         <h1 id="titulo-gestion">Gestionar equipo</h1>
+        {marcador && (
+          <p className="marcador-gestion" data-testid="marcador-gestion">
+            {marcador}
+          </p>
+        )}
         <p className="contador-sustituciones" aria-live="polite">
           Sustituciones restantes: <strong>{restantes}</strong>
         </p>
@@ -196,7 +228,13 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
       </header>
       {aviso && (
         <p className="aviso-parada" role="status">
-          <Icono nombre="lesion" /> {aviso} Arrastra un suplente sobre el lesionado para sustituirlo.
+          <Icono nombre="lesion" /> {aviso}
+          {debeSustituir && ' Arrastra un suplente sobre el lesionado para sustituirlo.'}
+        </p>
+      )}
+      {conUnoMenos && (
+        <p className="error" role="alert">
+          No te quedan cambios: tu equipo jugará el resto del partido con un jugador menos.
         </p>
       )}
       {mensaje && (
@@ -214,6 +252,7 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
         modo="partido"
         bloqueados={bloqueados}
         distintivos={distintivos}
+        noDisponibles={noDisponibles}
         pestanas={{
           lista: <ListaPestanas pestanas={pestanas} activa={pestana} onElegir={setPestana} etiqueta="Secciones de la gestión" />,
           activa: pestana,
@@ -264,13 +303,15 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
         </Dialogo>
       )}
       <BarraPrincipal
-        principal={{ etiqueta: 'Confirmar cambios', onClick: confirmar, motivoDesactivado: validarTactica(borrador.tactica).length > 0 ? 'La táctica no es válida' : null }}
-        secundarios={[{ etiqueta: 'Volver sin cambios', onClick: volver }]}
+        principal={{ etiqueta: 'Confirmar cambios', onClick: confirmar, motivoDesactivado: motivoSustituir ?? (validarTactica(borrador.tactica).length > 0 ? 'La táctica no es válida' : null) }}
+        secundarios={[{ etiqueta: 'Volver sin cambios', onClick: volver, motivoDesactivado: motivoSustituir }]}
         estado={hayCambios ? `${decisiones.length} cambio${decisiones.length > 1 ? 's' : ''} sin confirmar` : 'Sin cambios'}
       />
     </div>
   );
 }
+
+const SIN_LESIONADOS: ReadonlySet<number> = new Set();
 
 const ETIQUETA_DECISION: Record<DecisionGestion['tipo'], string> = {
   sustitucion: 'sustitución',

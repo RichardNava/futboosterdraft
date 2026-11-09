@@ -9,7 +9,7 @@ import { api } from '../api/cliente';
 import { AvisoDorsales } from '../componentes/AvisoDorsales';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { Estadisticas } from '../componentes/Estadisticas';
-import { estadoEquipoEnPartido, type AlineacionPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
+import { conEnEspera, estadoEquipoEnPartido, sinLaAplicada, type AlineacionPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
 import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
 import { Marcador as MarcadorPartido } from '../componentes/Marcador';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
@@ -85,6 +85,8 @@ export function PartidoRapido() {
   const [error, setError] = useState<string | null>(null);
   const [gestion, setGestion] = useState(false);
   const [aplicadas, setAplicadas] = useState<DecisionAplicada[]>([]);
+  // Lo confirmado en el descanso se aplica al reanudar: la gestión ya parte de ello (spec 012, ronda 5).
+  const [enEspera, setEnEspera] = useState<DecisionGestion[]>([]);
 
   const { conexion, estado, conectada } = useConexion(partidaId, (m) => {
     if (m.partidoId !== undefined && m.partidoId !== partidoId) return;
@@ -104,7 +106,10 @@ export function PartidoRapido() {
         setPausa({ motivo: m.motivo as string, venceEn: m.venceEn as string });
         break;
       case 'partido.decision_aplicada':
-        if (m.participanteId === miId) setAplicadas((a) => [...a, { aplicadaEnTick: m.aplicadaEnTick as number, tipo: m.tipo as string, datos: m.datos as Record<string, unknown> }]);
+        if (m.participanteId === miId) {
+          setAplicadas((a) => [...a, { aplicadaEnTick: m.aplicadaEnTick as number, tipo: m.tipo as string, datos: m.datos as Record<string, unknown> }]);
+          setEnEspera((e) => sinLaAplicada(e, m.tipo as string));
+        }
         break;
       case 'partido.fin':
         setEventos(m.eventos as EventoVista[]);
@@ -183,9 +188,11 @@ export function PartidoRapido() {
     const ack = await conexion.enviar({ t: 'partido.finalizar', partidoId: inicio.partidoId });
     if (!ack.ok) throw new Error(ack.error?.mensaje ?? 'No se pudo finalizar el partido');
   };
-  const enviarLote = (decisiones: DecisionGestion[]) => {
+  const enviarLote = async (decisiones: DecisionGestion[]) => {
     if (!conexion) throw new Error('Sin conexión');
-    return conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
+    const ack = await conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
+    if (ack.ok) setEnEspera((e) => [...e, ...decisiones]);
+    return ack;
   };
 
   // Botones (contracts/ui.md): en juego, «Finalizar partido»; en una pausa, «Seguir» y, contra un NPC, «Gestionar
@@ -200,7 +207,8 @@ export function PartidoRapido() {
   const secundarios = enPausa ? [accionFinalizar] : [];
 
   if (gestion && miLado) {
-    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], eventos, miLado, Number.POSITIVE_INFINITY, aplicadas, fase === 'pre_prorroga' || fase === 'prorroga');
+    const vistos = conEnEspera(eventos, aplicadas, enEspera, miLado, Number.MAX_SAFE_INTEGER);
+    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], vistos.eventos, miLado, Number.POSITIVE_INFINITY, vistos.decisiones, fase === 'pre_prorroga' || fase === 'prorroga');
     const jugadores = new Map([...inicio.alineaciones[miLado].titulares.map((t) => t.jugador), ...inicio.alineaciones[miLado].suplentes].map((j) => [j.id, j]));
     return (
       <GestionEquipo

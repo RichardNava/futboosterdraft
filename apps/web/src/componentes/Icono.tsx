@@ -59,7 +59,8 @@ const TRAZOS: Record<NombreIcono, ReactNode> = {
   lesion: (
     <>
       <rect x="3" y="3" width="18" height="18" rx="3" />
-      <path d="M12 7v10M7 12h10" />
+      {/* Cruz roja y más gruesa: el botiquín se distingue a simple vista (spec 012, ronda 5). */}
+      <path d="M12 7v10M7 12h10" style={{ stroke: 'var(--color-tarjeta-roja)' }} strokeWidth={3} />
     </>
   ),
   informacion: (

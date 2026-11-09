@@ -855,8 +855,34 @@ html {
   object-fit: contain;
 }
 
+/* Plantillas (ronda 5): la media, dentro de la ficha del equipo y sin caja propia; la cifra grande y, debajo, las estrellas. */
 .ficha-equipo-plantilla .media-equipo {
+  flex-direction: column-reverse;
   justify-content: center;
+  gap: var(--espacio-2);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.ficha-equipo-plantilla .media-equipo-izquierda {
+  flex: none;
+  width: 100%;
+}
+
+.ficha-equipo-plantilla .media-equipo-estrellas {
+  justify-content: center;
+}
+
+.ficha-equipo-plantilla .media-equipo-cifra {
+  align-self: center;
+  width: 140px;
+}
+
+.ficha-equipo-plantilla .media-equipo-valor {
+  font-size: 50px;
 }
 
 .ficha-equipo-plantilla .nota {
@@ -1044,8 +1070,8 @@ html {
 }
 
 /*
- * Media del once (FR-060): diez estrellas que se rellenan con la media y, más grande, la cifra en una estrella
- * de oro. El relleno parcial recorta la estrella llena por la derecha (`--relleno`, 0–1).
+ * Media del once (FR-060): diez estrellas que se rellenan con la media y, más grande, la cifra en oro con volumen
+ * (ronda 5). El relleno parcial recorta la estrella llena por la derecha (`--relleno`, 0–1).
  */
 .media-equipo {
   display: flex;
@@ -1104,19 +1130,21 @@ html {
   stroke-width: 1.2;
 }
 
+/* Estrella y cifra en la misma celda de la rejilla: las dos se centran en ella (ronda 5). */
 .media-equipo-cifra {
-  position: relative;
   flex: none;
   display: grid;
   place-items: center;
-  width: 76px;
+  width: 96px;
   aspect-ratio: 1;
   filter: drop-shadow(0 0 12px var(--color-oro-tenue));
 }
 
+.media-equipo-cifra > * {
+  grid-area: 1 / 1;
+}
+
 .media-equipo-marco {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
 }
@@ -1124,25 +1152,31 @@ html {
 .media-equipo-marco path {
   fill: var(--color-lienzo-hondo);
   stroke: var(--color-oro);
-  stroke-width: 1.4;
+  stroke-width: 1.2;
   stroke-linejoin: round;
 }
 
 /*
- * Centrada en la estrella: la caja se recorta al alto de las cifras (`text-box`) y baja lo que el centro de la estrella
- * queda por debajo del de su caja (12,4 de 24).
+ * Cifra de oro (ronda 5): degradado de metal recortado al texto y, debajo, capas de sombra que le dan canto y volumen.
+ * Sin cursiva: la del cartel la ladeaba a la derecha. La caja se recorta al alto de las cifras (`text-box`) y baja lo
+ * que el centro del cuerpo de la estrella queda por debajo del de su caja.
  */
 .media-equipo-valor {
-  position: relative;
+  display: block;
   text-box: trim-both cap alphabetic;
-  translate: 0 2%;
-  color: var(--color-oro);
+  translate: 0 6%;
+  background: var(--degradado-oro-metal);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   font-family: var(--letra-cartel);
-  font-size: 26px;
-  font-style: var(--inclinacion-cartel);
+  font-size: 34px;
+  font-style: normal;
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  filter: var(--sombra-oro-volumen);
 }
 
 .campo-unico {
@@ -1470,11 +1504,11 @@ html {
 }
 
 .alineacion .media-equipo-cifra {
-  width: 52px;
+  width: 72px;
 }
 
 .alineacion .media-equipo-valor {
-  font-size: 19px;
+  font-size: 25px;
 }
 
 .alineacion .colocacion-resumen {
@@ -3104,7 +3138,7 @@ html {
   position: absolute;
   right: 0;
   z-index: 25;
-  width: min(360px, calc(100vw - 2 * var(--espacio-4)));
+  width: min(440px, calc(100vw - 2 * var(--espacio-4)));
   max-height: 60vh;
   overflow-y: auto;
   margin: var(--espacio-2) 0 0;
@@ -3138,6 +3172,16 @@ html {
 
 .lista-avisos li.aviso-intervencion > .icono {
   color: var(--color-advertencia);
+}
+
+/* Lesionados y sancionados, en rojo (spec 012, ronda 5). */
+.lista-avisos li.aviso-baja,
+.lista-avisos li.aviso-baja a {
+  color: var(--color-tarjeta-roja);
+}
+
+.lista-avisos li.aviso-baja > .icono {
+  color: var(--color-tarjeta-roja);
 }
 
 /* Separa los avisos del equipo (spec 012) de los guardados. */
@@ -3529,9 +3573,16 @@ html {
   gap: var(--espacio-2);
   min-width: 0;
   color: var(--color-texto);
-  /* Ronda 4: letra de cuerpo, no la pequeña del estado, para leerla bien de un vistazo. */
-  font-size: var(--texto-cuerpo);
   font-weight: 500;
+}
+
+/*
+ * Ronda 5: la ayuda y el motivo, con letra generosa que baja según crece el texto (`--caracteres`, su longitud), sin
+ * bajar de la de cuerpo: 20 px hasta 50 caracteres y la de cuerpo desde unos 100.
+ */
+.barra-principal-estado .ayuda-barra,
+.barra-principal-estado .motivo {
+  font-size: clamp(var(--texto-cuerpo), calc(20px - max(0, var(--caracteres, 0) - 50) * 0.08px), 20px);
 }
 
 .barra-principal-estado .ayuda-barra > span {
@@ -3761,6 +3812,16 @@ html {
   max-width: var(--ancho-pantalla);
   margin: 0 auto;
   padding: var(--espacio-6) var(--espacio-4) 0;
+}
+
+/* Resultado y minuto en «Gestionar equipo» de la 2D (spec 012, ronda 5). */
+.marcador-gestion {
+  margin: 0;
+  color: var(--color-texto);
+  font-family: var(--letra-cartel);
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .contador-sustituciones {
@@ -4007,9 +4068,7 @@ html {
   position: sticky;
   top: 0;
   z-index: 1;
-  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: var(--espacio-3);
   padding: var(--espacio-2) var(--espacio-3);
   border: 1px solid var(--borde-vidrio);
   border-radius: var(--radio-panel);
@@ -4025,6 +4084,8 @@ html {
   flex-wrap: nowrap;
 }
 
+/* Cada modo en una línea: «Control total» no se parte (ronda 5). */
 .partido-2d-lateral > .selector-modo-incidencias .segmentado > button {
   flex: 1;
+  white-space: nowrap;
 }

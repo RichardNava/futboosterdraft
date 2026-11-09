@@ -1,6 +1,6 @@
 import { reproducir } from '../sonido/sonido';
 import { Icono } from './Icono';
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'react-router';
 
 export interface AccionBarra {
@@ -130,13 +130,13 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
       <div className="barra-principal-estado">
         {/* La ayuda tapa el estado (y el motivo, que sigue en el DOM para `aria-describedby`) mientras dura. */}
         {ayuda && (
-          <span className="ayuda-barra" aria-hidden="true">
+          <span className="ayuda-barra" aria-hidden="true" style={{ '--caracteres': ayuda.length } as CSSProperties}>
             <Icono nombre="informacion" />
             <span>{ayuda}</span>
           </span>
         )}
         {motivo ? (
-          <span id={idMotivo} className="motivo" hidden={ayuda !== null}>
+          <span id={idMotivo} className="motivo" hidden={ayuda !== null} style={{ '--caracteres': motivo.length } as CSSProperties}>
             {motivo}
           </span>
         ) : (

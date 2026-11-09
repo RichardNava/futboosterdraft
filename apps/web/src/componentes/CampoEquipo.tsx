@@ -43,6 +43,8 @@ interface Props {
   /** Distintivos por jugador (baja, tarjetas, lesión, cansancio). */
   distintivos?: ReadonlyMap<number, ReactNode>;
   maxBanquillo?: number;
+  /** Bajo el banquillo (partido, spec 012, ronda 5): lesionados, expulsados y sustituidos, para no perderles la pista. */
+  noDisponibles?: readonly number[];
   /** Sin banquillo (modo Duelo de jugadores, spec 005): solo el campo y el resto de la plantilla. */
   sinBanquillo?: boolean;
   /** Bajo la media del once (Formación): el resumen de la colocación. */
@@ -91,6 +93,7 @@ export function CampoEquipo(props: Props) {
     bloqueados,
     distintivos,
     maxBanquillo = 7,
+    noDisponibles = [],
     sinBanquillo,
     bajoMedia,
     pestanas,
@@ -358,6 +361,12 @@ export function CampoEquipo(props: Props) {
                   Banquillo ({estado.banquillo.length}/{maxBanquillo})
                 </h2>
                 <div className="lista-compacta">{estado.banquillo.map(fichaLista)}</div>
+              </section>
+            )}
+            {noDisponibles.length > 0 && (
+              <section aria-label="No disponibles" data-testid="no-disponibles" data-ayuda="Ya no pueden jugar este partido: lesionados, expulsados y sustituidos.">
+                <h2>No disponibles ({noDisponibles.length})</h2>
+                <div className="lista-compacta">{noDisponibles.map(fichaLista)}</div>
               </section>
             )}
             {reserva.length > 0 && (

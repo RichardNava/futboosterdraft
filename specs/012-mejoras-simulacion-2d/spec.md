@@ -103,6 +103,27 @@ Términos:
   y van a la barra, que ocupa todo el ancho; los recuadros se ordenan en dos columnas (modo y rivales a la
   izquierda, equipos y ritmo a la derecha) para no desplazar. También, ayuda en los enlaces de navegación.
 
+### Ronda 5 (2026-11-09, tras probar la ronda 4)
+
+- Q: La cifra de la media sigue ladeada a la derecha. → A: Se rehace: cifra en oro con volumen, sin cursiva ni estrella
+  de marco, centrada. En Plantillas, más grande, centrada y dentro de la ficha del equipo (sin recuadro propio).
+- Q: El selector Automático/Control total se rompe en el carril de la 2D. → A: Sin la etiqueta «Incidencias» (queda
+  como nombre accesible del grupo); en la pestaña Táctica de Formación sigue visible.
+- Q: Los avisos se leen pequeños. → A: Letra generosa que se ajusta a la longitud del texto (22 px los cortos, hasta la
+  de cuerpo los largos), en los emergentes y en la bandeja; los de jugadores lesionados o sancionados, en rojo.
+- Q: El botiquín del lesionado se ve poco. → A: Cruz roja y más gruesa.
+- Q: En control total el partido se paró, pero el cambio ya estaba hecho. → A: La parada se abría al simular el lance
+  (por delante de lo que se ve) con la ventana de 120 s del descanso; si vencía mientras el participante decidía, se
+  resolvía en automático. En la 2D la parada de incidencia ya no vence, y en «Gestionar equipo» no se puede seguir
+  sin sustituir al lesionado; si no quedan cambios ni suplentes, se sigue con el aviso de jugar con uno menos.
+- Q: Durante el partido el lesionado desaparece de la gestión. → A: Sección «No disponibles» bajo el banquillo con los
+  lesionados, expulsados y sustituidos.
+- Q: Los cambios de colocación del descanso no se guardaban. → A: Se guardaban, pero se aplican al reanudar y la
+  gestión solo partía de lo ya aplicado: al reabrirla se veía la colocación anterior (y otro lote la pisaba). La gestión
+  parte ahora también de lo confirmado y aún no aplicado (2D y rápida).
+- Q: El dorsal de la 2D apenas se ve. → A: Retrato algo mayor y el dorsal, bastante más grande, a la derecha del retrato
+  y a su altura.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Partido con sonido y celebración de gol (Priority: P1)
@@ -476,6 +497,25 @@ sin desplazarse y con la importancia acordada.
   explicaciones (modos, rivales, dificultades, ritmo) DEBEN ir solo en la barra, que ocupa todo el ancho, y los cuatro
   recuadros DEBEN caber sin desplazar a 1366 × 768; en estrecho, las explicaciones siguen en su sitio. Los enlaces de
   navegación DEBEN tener su ayuda.
+
+**Ronda 5 (2026-11-09)**:
+
+- **FR-056**: La cifra de la media del once DEBE verse centrada, en oro con volumen y sin cursiva. En Plantillas, más
+  grande, centrada y dentro de la ficha del equipo, sin recuadro propio.
+- **FR-057**: En el carril de la 2D, el selector de modo NO DEBE mostrar la etiqueta «Incidencias» y cada opción DEBE
+  caber en una línea.
+- **FR-058**: Los avisos emergentes y los de la bandeja DEBEN usar una letra de 22 px que baja con la longitud del texto
+  hasta la de cuerpo; los avisos de jugadores lesionados o sancionados, en rojo.
+- **FR-059**: El icono de lesión DEBE llevar la cruz en rojo.
+- **FR-060**: En la 2D con control total, la parada de incidencia NO DEBE vencer ni resolverse en automático mientras
+  el participante decide; «Confirmar cambios» y «Volver sin cambios» DEBEN quedar bloqueados hasta sustituir al
+  lesionado, salvo que no queden cambios o suplentes, y entonces se avisa de que el equipo jugará con uno menos.
+- **FR-061**: La gestión del equipo en el partido DEBE mostrar bajo el banquillo una sección «No disponibles» con los
+  lesionados, expulsados y sustituidos.
+- **FR-062**: La gestión del equipo DEBE partir de lo ya confirmado aunque el servidor aún no lo haya aplicado (p. ej.
+  en el descanso), en la 2D y en la rápida.
+- **FR-063**: En la 2D, el retrato DEBE verse algo mayor y el dorsal, bastante más grande, a la derecha del retrato y a
+  su altura, sin taparlo ni bajar el nombre.
 
 ### Key Entities
 

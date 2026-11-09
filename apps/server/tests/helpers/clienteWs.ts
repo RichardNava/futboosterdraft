@@ -58,11 +58,14 @@ export class ClienteWs {
   }
 
   async enviarYEsperarAck(mensaje: Mensaje): Promise<Mensaje> {
-    const desde = this.recibidos.length;
+    let desde = this.recibidos.length;
     const requestId = this.enviar(mensaje);
     for (;;) {
       const ack = await this.esperar('ack', { desde });
       if (ack.requestId === requestId) return ack;
+      // El ack de otro mensaje (p. ej. un «Seguir» anterior): se busca a partir de él; si no, se devolvía siempre el
+      // mismo y el bucle bloqueaba el proceso sin que saltara ningún timeout.
+      desde = this.recibidos.indexOf(ack, desde) + 1;
     }
   }
 

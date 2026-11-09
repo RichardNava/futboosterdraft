@@ -461,6 +461,9 @@ export function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: Parti
 /** Programa el cierre de la ventana de decisión abierta (al abrirla o al reanudar una partida pausada). */
 export function programarVentana(c: ControladorPartida, p: PartidoEnCurso): void {
   if (!p.pausa) return;
+  // Spec 012, ronda 5: en la 2D, la parada de «control total» no vence. Se abre al simular el lance, antes de que el
+  // participante lo vea, y al vencer se resolvía en automático el cambio que le tocaba decidir a él.
+  if (p.dosD && p.pausa.motivo === 'incidencia') return;
   c.servicios.temporizadores.programar(c.clave(`pausa:${p.fila.id}`), p.pausa.venceEn, () => {
     void c
       .ejecutar(async (ctx) => {

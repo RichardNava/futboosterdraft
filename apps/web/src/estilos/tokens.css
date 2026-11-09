@@ -176,6 +176,10 @@
   --mascara-fundido-arriba: linear-gradient(180deg, transparent 0%, #000 30%);
   --sombra-trofeo: drop-shadow(0 0 40px rgb(243 197 82 / 45%)) drop-shadow(0 30px 30px rgb(0 0 0 / 60%));
   --color-oro-tenue: rgb(243 197 82 / 16%);
+  /* Cifra de la media del once (spec 012, ronda 5): metal dorado y canto en capas que le dan volumen. */
+  --degradado-oro-metal: linear-gradient(180deg, #fff7d1 0%, #ffe28a 28%, #f3c552 48%, #c98f1d 56%, #f6d06a 78%, #fff1b8 100%);
+  --sombra-oro-volumen: drop-shadow(0 1px 0 #a8740f) drop-shadow(0 1px 0 #8a5d0a) drop-shadow(0 1px 0 #6b4606)
+    drop-shadow(0 4px 6px rgb(0 0 0 / 55%)) drop-shadow(0 0 14px rgb(243 197 82 / 16%));
   /* Duelos (spec 005, ronda 2): halo del «VS» dorado y del estallido del choque. */
   --sombra-oro: 0 0 18px rgb(243 197 82 / 45%);
   --sombra-estallido: drop-shadow(0 0 10px rgb(243 197 82 / 70%));

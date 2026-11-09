@@ -216,9 +216,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/partidoRapido.ts": {
-    "mtime": 1794163445.47428,
-    "seen": 1794165053.555015,
-    "ast_hash": "d75b065c4a23a8f83ab0bc161d93322f",
+    "mtime": 1794234938.5753055,
+    "seen": 1794235293.9076192,
+    "ast_hash": "c35941fb730c9b390a6efd7b443a1336",
     "semantic_hash": ""
   },
   "apps/server/src/actores/pausa.ts": {
@@ -510,10 +510,10 @@
     "semantic_hash": ""
   },
   "apps/server/tests/helpers/clienteWs.ts": {
-    "mtime": 1792153826.4101133,
-    "seen": 1792327978.0274806,
-    "ast_hash": "bde50fcf5f71f7c2a5ba32838c9f760b",
-    "semantic_hash": "bde50fcf5f71f7c2a5ba32838c9f760b"
+    "mtime": 1794234829.3950496,
+    "seen": 1794235293.91758,
+    "ast_hash": "44d5e6deb559917493ae1ea0e360c922",
+    "semantic_hash": ""
   },
   "apps/server/tests/helpers/partidas.ts": {
     "mtime": 1792484980.7413185,
@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/campo2d/renderizador.ts": {
-    "mtime": 1794185812.4363382,
-    "seen": 1794185941.0458212,
-    "ast_hash": "90cd63ee9a816ad608d101a16dd19fd4",
+    "mtime": 1794222790.234843,
+    "seen": 1794223554.8935523,
+    "ast_hash": "a7b62f95b6062569ba792fe3167d9790",
     "semantic_hash": ""
   },
   "apps/web/src/campo2d/tramos.ts": {
@@ -744,9 +744,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BandejaAvisos.tsx": {
-    "mtime": 1794107628.326082,
-    "seen": 1794115785.3534617,
-    "ast_hash": "47a0ce6db50176279350207616aa0e3e",
+    "mtime": 1794222688.6029873,
+    "seen": 1794223554.894122,
+    "ast_hash": "4413b4eb7976149c86e5bfacfd8cf5b4",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BotonAvanzar.tsx": {
@@ -840,9 +840,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Alineacion.tsx": {
-    "mtime": 1794185812.4423363,
-    "seen": 1794185941.0566883,
-    "ast_hash": "c4b6f9f20bf7eb21e1b81fc766c7887c",
+    "mtime": 1794222743.536481,
+    "seen": 1794223554.9049633,
+    "ast_hash": "4978987fe26e76840e376dd7aece54df",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/CrearPartida.tsx": {
@@ -876,15 +876,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido2D.tsx": {
-    "mtime": 1794185812.4423363,
-    "seen": 1794185941.057822,
-    "ast_hash": "961154efb71a2a8400947b716c50414f",
+    "mtime": 1794243871.6205938,
+    "seen": 1794243975.0331635,
+    "ast_hash": "1e29e6dcb1aee2e6358d2e8140489ce3",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PartidoRapido.tsx": {
-    "mtime": 1794163425.0268848,
-    "seen": 1794165053.5887277,
-    "ast_hash": "33f57f1885053fa13f791887e96c19e0",
+    "mtime": 1794222567.8492148,
+    "seen": 1794223554.90628,
+    "ast_hash": "cf9902ef12bd5080acf5ea9016511c13",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Plantillas.tsx": {
@@ -2382,9 +2382,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BarraPrincipal.tsx": {
-    "mtime": 1794185812.4363382,
-    "seen": 1794185941.0465791,
-    "ast_hash": "079279c9ecb3a97d7afd704f7136f323",
+    "mtime": 1794243846.9082475,
+    "seen": 1794243975.0180507,
+    "ast_hash": "bda0f452c95217d4c1f19de85dc0a883",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Camiseta.tsx": {
@@ -2394,9 +2394,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CampoEquipo.tsx": {
-    "mtime": 1794185812.4373376,
-    "seen": 1794185941.0468278,
-    "ast_hash": "a43cc38405dc392c6b470335550644c0",
+    "mtime": 1794222626.4998055,
+    "seen": 1794223554.8945396,
+    "ast_hash": "7600f7a82e8eeb153a8a6cb00d7b2632",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CampoNombreEquipo.tsx": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/GestionEquipo.tsx": {
-    "mtime": 1794185812.4373376,
-    "seen": 1794185941.048822,
-    "ast_hash": "f82c087806726c40ca864955a81b81e0",
+    "mtime": 1794243871.6185324,
+    "seen": 1794243975.0212603,
+    "ast_hash": "3cc9bf168500609b5b669601ac2fa35c",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ResultadoPartido.tsx": {
@@ -2454,9 +2454,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/estadoEquipoEnPartido.ts": {
-    "mtime": 1794109570.5906632,
-    "seen": 1794115785.363416,
-    "ast_hash": "7faa95a54f1ef5f03fe7e687905699c7",
+    "mtime": 1794222561.7135644,
+    "seen": 1794223554.9019778,
+    "ast_hash": "774af25d56d596a737ed1f309f7fa53d",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/particulas.ts": {
@@ -2526,9 +2526,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/unit/estadoEquipoEnPartido.test.ts": {
-    "mtime": 1792757964.1395235,
-    "seen": 1792758030.9238396,
-    "ast_hash": "649b20aa7d8da547da903734cee84e84",
+    "mtime": 1794222579.5463693,
+    "seen": 1794223554.914832,
+    "ast_hash": "a722380188408c7b693d35d13575422b",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/particulas.test.ts": {
@@ -2784,8 +2784,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Aviso.tsx": {
-    "mtime": 1794141629.7485123,
-    "seen": 1794165053.5772612,
+    "mtime": 1794243827.477657,
+    "seen": 1794243975.0175593,
     "ast_hash": "53d28e3af99dd357615510d6e3ac9be3",
     "semantic_hash": ""
   },
@@ -2808,9 +2808,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Icono.tsx": {
-    "mtime": 1793873215.2081866,
-    "seen": 1793874490.2530994,
-    "ast_hash": "ba3eb7f9efc147fe7244b49c12aa2779",
+    "mtime": 1794222626.4995682,
+    "seen": 1794223554.896854,
+    "ast_hash": "e1b6c12aa823f2ce26835df81016b2ee",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Insignia.tsx": {
@@ -3084,9 +3084,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/MediaEquipo.tsx": {
-    "mtime": 1794185812.4383373,
-    "seen": 1794185941.0495744,
-    "ast_hash": "36e4a9a6b8cef434d1167d7a62b62cb0",
+    "mtime": 1794243763.072751,
+    "seen": 1794243975.0221033,
+    "ast_hash": "b6b1f91e56f2fcc97d6ae95f6a9fa912",
     "semantic_hash": ""
   },
   "apps/server/src/actores/duelos.ts": {
@@ -5016,8 +5016,8 @@
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/sumario.md": {
-    "mtime": 1794179231.4068713,
-    "seen": 1794184595.9560266,
+    "mtime": 1794241291.0694468,
+    "seen": 1794243975.125375,
     "ast_hash": "d47122786e09ff7c5f21fd69ec42d586",
     "semantic_hash": ""
   },
@@ -8406,9 +8406,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/incidencias.test.ts": {
-    "mtime": 1794169068.8413353,
-    "seen": 1794169153.117007,
-    "ast_hash": "14bb86896071685c5bea6641b05f5224",
+    "mtime": 1794235159.5628507,
+    "seen": 1794235293.920917,
+    "ast_hash": "1a6c6cdfa591b81521f5811b8247a544",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/migracion-0015.test.ts": {
@@ -8436,9 +8436,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/SelectorModoIncidencias.tsx": {
-    "mtime": 1794185812.439337,
-    "seen": 1794185941.0505269,
-    "ast_hash": "86c52575c619b45edda727b5a81008b1",
+    "mtime": 1794222742.667982,
+    "seen": 1794223554.898597,
+    "ast_hash": "16f30970c9ed425a0248062125ba1cf8",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/celebraciones/CapaCelebracion.tsx": {
@@ -8640,15 +8640,15 @@
     "semantic_hash": ""
   },
   "specs/012-mejoras-simulacion-2d/spec.md": {
-    "mtime": 1794192109.7239232,
-    "seen": 1794192417.0913858,
-    "ast_hash": "2439acbd80e3800c00ead8c9e6514d3e",
+    "mtime": 1794223515.4262347,
+    "seen": 1794223554.9970748,
+    "ast_hash": "e2be549d863931dacad8cb3da99ad215",
     "semantic_hash": ""
   },
   "specs/012-mejoras-simulacion-2d/tasks.md": {
-    "mtime": 1794192109.7249236,
-    "seen": 1794192417.0913885,
-    "ast_hash": "bbe6648df94fbc17c76a4bbab0bb79ea",
+    "mtime": 1794243896.914899,
+    "seen": 1794243975.1335206,
+    "ast_hash": "3319808160513f7b4254f0c4fff9b926",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-aguila-estrella-512.webp": {

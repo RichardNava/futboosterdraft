@@ -8,7 +8,7 @@ import { RelojReproduccion, VELOCIDADES, type EstadoReloj, type Velocidad } from
 import { datosVacios, incorporarTramo, type TramoRecibido } from '../campo2d/tramos';
 import { AvisoDorsales } from '../componentes/AvisoDorsales';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
-import { estadoEquipoEnPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
+import { conEnEspera, estadoEquipoEnPartido, sinLaAplicada, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
 import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
 import { Chapa, GoleadoresFranja } from '../componentes/Marcador';
 import { Icono } from '../componentes/Icono';
@@ -93,7 +93,10 @@ export function Partido2D() {
   const [tick, setTick] = useState(0);
   const [estadoReloj, setEstadoReloj] = useState<EstadoReloj>('cargando');
   const [fin, setFin] = useState<{ marcador: Marcador; eventos: EventoVista[]; estadisticas: unknown } | null>(null);
-  const [pendientes, setPendientes] = useState(0);
+  // Decisiones confirmadas que el servidor aún no ha aplicado (en el descanso, hasta reanudar): la gestión parte de
+  // ellas para no enseñar la colocación anterior ni pisarlas con otro lote (spec 012, ronda 5).
+  const [enEspera, setEnEspera] = useState<DecisionGestion[]>([]);
+  const pendientes = enEspera.length;
   const [aplicacion, setAplicacion] = useState<{ tick: number; minuto: string } | null>(null);
   const [avisoRival, setAvisoRival] = useState<string | null>(null);
   const [miId, setMiId] = useState<string | null>(null);
@@ -153,7 +156,7 @@ export function Partido2D() {
       case 'partido.decision_aplicada':
         if (m.participanteId === miId) {
           setAplicadas((a) => [...a, { aplicadaEnTick: m.aplicadaEnTick as number, tipo: m.tipo as string, datos: m.datos as Record<string, unknown> }]);
-          setPendientes((n) => Math.max(0, n - 1));
+          setEnEspera((e) => sinLaAplicada(e, m.tipo as string));
           setAplicacion({ tick: m.aplicadaEnTick as number, minuto: (m.minuto as string | undefined) ?? '' });
         } else {
           setAvisoRival(m.tipo === 'sustitucion' ? 'Tu rival ha hecho una sustitución.' : 'Tu rival ha hecho un cambio táctico.');
@@ -306,14 +309,15 @@ export function Partido2D() {
       void conexion?.enviar({ t: 'partido.seguir', partidoId: inicio.partidoId }).catch(() => undefined);
     }
     if (aplicado) {
-      setPendientes((n) => n + 1);
       setAplicacion(null);
       setAvisoGestion(enPausa ? 'Los cambios se aplicarán al reanudarse el partido.' : 'Los cambios se aplicarán en la próxima interrupción.');
     }
   };
-  const enviarLote = (decisiones: DecisionGestion[]) => {
+  const enviarLote = async (decisiones: DecisionGestion[]) => {
     if (!conexion) throw new Error('Sin conexión');
-    return conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
+    const ack = await conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
+    if (ack.ok) setEnEspera((e) => [...e, ...decisiones]);
+    return ack;
   };
 
   if (alFinal) {
@@ -334,7 +338,8 @@ export function Partido2D() {
   if (gestion && miLado) {
     // Solo lo ya visto: eventos y decisiones hasta el tick de la reproducción (research R17).
     const lesionadosParada = new Set(parada?.abierta && parada.motivo === 'incidencia' ? parada.incidencias.filter((i) => i.motivo === 'lesion').map((i) => i.jugadorId) : []);
-    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], eventosVistos, miLado, tick, aplicadas, fase === 'pre_prorroga' || fase === 'prorroga', lesionadosParada);
+    const vistos = conEnEspera(eventosVistos, aplicadas, enEspera, miLado, tick);
+    const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], vistos.eventos, miLado, tick, vistos.decisiones, fase === 'pre_prorroga' || fase === 'prorroga', lesionadosParada);
     const jugadoresPropios = new Map([...inicio.alineaciones[miLado].titulares.map((t) => t.jugador), ...inicio.alineaciones[miLado].suplentes].map((j) => [j.id, j]));
     return (
       <GestionEquipo
@@ -345,6 +350,8 @@ export function Partido2D() {
         enviar={enviarLote}
         onCerrar={cerrarGestion}
         aviso={!parada?.abierta ? null : parada.motivo === 'gol' ? TEXTO_PARADA_GOL : textoParada(parada.incidencias, nombre, parada.restantes)}
+        lesionadosParada={lesionadosParada}
+        marcador={`${nombresEquipo.local} ${marcador.local} – ${marcador.visitante} ${nombresEquipo.visitante} · ${minuto}`}
       />
     );
   }

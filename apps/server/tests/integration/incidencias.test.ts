@@ -121,6 +121,11 @@ describe('control total (spec 012, US4)', () => {
     ws.enviar({ t: 'partido.reproduccion', partidoId, tick: tickParada + 600, velocidad: 8 }, false);
     await espera(200);
     expect(p.motor.tick).toBe(tickParada);
+    // Ronda 5: la parada no vence; nada se resuelve en automático mientras el participante decide.
+    srv.reloj.avanzar(10 * 60_000);
+    await espera(200);
+    expect(p.pausa?.motivo).toBe('incidencia');
+    expect(p.motor.tick).toBe(tickParada);
 
     const lesion = parada!.incidencias.find((i: { motivo: string }) => i.motivo === 'lesion');
     const lado = p.motor.equipos.local.participanteId === yo ? 'local' : 'visitante';
@@ -175,11 +180,13 @@ describe('control total (spec 012, US4)', () => {
       await espera(25);
     }
     expect(pausa, 'no hubo pausa de gol').not.toBeNull();
-    // El trozo acaba en el saque de centro: el gol y los 40 ticks de su interrupción.
+    // El trozo acaba en la interrupción del gol (el paso del tiro puede durar unos ticks más que el propio gol; los 40
+    // de `interrumpir` son segundos de parada, que se consumen al reanudar): la última interrupción simulada es la del gol.
     const tickGol = p.motor.tick;
     const gol = p.motor.eventos.findLast((e) => e.tipo === 'gol')!;
-    expect(tickGol - gol.tick).toBeGreaterThanOrEqual(0);
-    expect(tickGol - gol.tick).toBeLessThanOrEqual(40);
+    const corte = p.motor.eventos.findLast((e) => e.tipo === 'interrupcion')!;
+    expect(corte.datos.motivo).toBe('gol');
+    expect(corte.tick).toBeGreaterThanOrEqual(gol.tick);
     // Sin «Seguir», no se simula más allá del gol.
     ws.enviar({ t: 'partido.reproduccion', partidoId, tick: tickGol + 600, velocidad: 8 }, false);
     await espera(200);

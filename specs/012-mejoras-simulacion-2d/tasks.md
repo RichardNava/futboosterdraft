@@ -281,6 +281,24 @@ FR-008).
 - [X] T105 Pruebas: `pnpm typecheck`, `pnpm lint`, `pnpm test`, integración de celebraciones y tienda, e2e de dificultad y apertura; capturas a 1897 × 911, 1366 × 768 y 390 × 844
 - [ ] T106 Recorrido manual de la ronda 4 (tras `pnpm seed` y reiniciar el servidor): ambiente en la 2D, Discoteca y Fuegos en la tienda y en un gol, selector de modo, «Nueva partida»
 
+---
+
+## Phase 14: Ronda 5 (2026-11-09, tras probar la ronda 4)
+
+**Purpose**: últimos retoques tras probar la ronda 4 (spec, «Ronda 5»: FR-056 a FR-063).
+
+- [X] T107 [P] Media del once (FR-056): cifra en oro con volumen y sin estrella de marco (`MediaEquipo.tsx`, `base.css`, tokens `--degradado-oro-metal` y `--sombra-oro-volumen`); en Plantillas, dentro de la ficha del equipo
+- [X] T108 [P] Selector de modo (FR-057): sin etiqueta en la 2D, con `conEtiqueta` en Táctica (`SelectorModoIncidencias.tsx`, `Alineacion.tsx`, `base.css`)
+- [X] T109 [P] Avisos (FR-058): letra según `--caracteres` en `Aviso.tsx`, `BandejaAvisos.tsx` y `componentes.css`; bajas en rojo (`.aviso-baja`)
+- [X] T110 [P] Botiquín con la cruz roja (FR-059) en `Icono.tsx`
+- [X] T111 Control total sin resolución automática (FR-060): la parada de incidencia de la 2D no programa ventana (`programarVentana` en `partidoRapido.ts`; `tests/integration/incidencias.test.ts`); bloqueo de «Confirmar cambios» y «Volver sin cambios» hasta sustituir al lesionado y aviso de jugar con uno menos (`GestionEquipo.tsx`, `Partido2D.tsx`)
+- [X] T112 «No disponibles» bajo el banquillo (FR-061): `noDisponibles` en `CampoEquipo.tsx`; lesionados bloqueados y distintivos de roja y cambio en `GestionEquipo.tsx`
+- [X] T113 Cambios del descanso (FR-062): `conEnEspera` y `sinLaAplicada` en `estadoEquipoEnPartido.ts`, usados en `Partido2D.tsx` y `PartidoRapido.tsx`; prueba en `tests/unit/estadoEquipoEnPartido.test.ts`
+- [X] T114 [P] Dorsal y retrato en la 2D (FR-063): `renderizador.ts`
+- [X] T115 Pruebas: `pnpm typecheck`, `pnpm lint`, `pnpm test`, integración de incidencias
+- [ ] T116 Recorrido manual de la ronda 5: media en Formación y Plantillas, selector, avisos, botiquín, parada por lesión en control total (esperar más de 2 min), «No disponibles», recolocar en el descanso y reabrir, dorsales en la 2D
+- [X] T117 Retoques tras revisar la ronda 5: estrella de oro de vuelta tras la cifra (centrada en la misma celda), letra generosa y adaptable en la ayuda y el motivo de la barra principal (el toast vuelve a su tamaño) y resultado + minuto en «Gestionar equipo» de la 2D
+
 ## Dependencies & Execution Order
 
 ### Phases

@@ -1,7 +1,7 @@
 /**
  * Media del once en Formación (spec 004, FR-060): diez estrellas que se rellenan de forma gradual con la media
- * (70 → 7 estrellas; 88 → 8 llenas y la novena al 80 %) y, a su derecha y más grande, la cifra dentro de una
- * estrella. La media es la de los titulares colocados, con la penalización por jugar fuera de su posición: la misma
+ * (70 → 7 estrellas; 88 → 8 llenas y la novena al 80 %) y, a su derecha y más grande, la cifra en oro con volumen
+ * centrada sobre una estrella (spec 012, ronda 5: cifra y estrella en la misma celda de rejilla y sin cursiva). La media es la de los titulares colocados, con la penalización por jugar fuera de su posición: la misma
  * media efectiva que muestra cada ficha del campo. Se recalcula en cada cambio del once.
  */
 import { statsEfectivos, type Jugador, type ParametrosEquilibrado, type ResultadoColocacion } from '@fbd/domain';

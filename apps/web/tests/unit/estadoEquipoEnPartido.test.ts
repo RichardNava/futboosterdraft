@@ -1,7 +1,7 @@
 /** Estado del equipo derivado de lo ya visto (spec 003, research R17; T064). */
 import { tacticaPorDefecto } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
-import { estadoEquipoEnPartido, type AlineacionPartido, type EventoEquipo } from '../../src/componentes/estadoEquipoEnPartido';
+import { conEnEspera, estadoEquipoEnPartido, sinLaAplicada, type AlineacionPartido, type EventoEquipo } from '../../src/componentes/estadoEquipoEnPartido';
 
 const carta = (id: number) => ({ id, nombre: 'J', apellidos: String(id), demarcacion: 'MED' as const, posicion: ['MC'], media: 75, nivel: 'Superclase' as const, virtudes: [], defectos: [] });
 const alineacion: AlineacionPartido = {
@@ -58,5 +58,23 @@ describe('estado del equipo en el partido (T064)', () => {
 
   it('en la prórroga hay una sustitución más', () => {
     expect(estadoEquipoEnPartido(alineacion, [], 'local', 0, [], true).sustitucionesRestantes).toBe(6);
+  });
+
+  // Ronda 5: en el descanso, lo confirmado se aplica al reanudar; al volver a la gestión ya debe verse.
+  it('lo confirmado y aún no aplicado cuenta en la gestión; al aplicarse sale de la espera', () => {
+    const colocacion = [{ jugadorId: 9, x: 700, y: 100 }];
+    const asignacion = alineacion.titulares.map((t) => ({ casillaId: t.casillaId, jugadorId: t.jugador.id === 10 ? 12 : t.jugador.id }));
+    const enEspera = [
+      { tipo: 'sustitucion', datos: { sale: 10, entra: 12 } },
+      { tipo: 'recolocacion', datos: { asignacion, colocacion } },
+    ];
+    const vistos = conEnEspera([], [], enEspera, 'local', 2700);
+    const e = estadoEquipoEnPartido(alineacion, vistos.eventos, 'local', 2700, vistos.decisiones);
+    expect(e.asignacion.DC).toBe(12);
+    expect(e.puntos).toEqual({ 9: { x: 700, y: 100 } });
+    expect(e.sustitucionesRestantes).toBe(4);
+    expect(e.banquillo).not.toContain(12);
+    expect(sinLaAplicada(enEspera, 'sustitucion').map((d) => d.tipo)).toEqual(['recolocacion']);
+    expect(sinLaAplicada(enEspera, 'tactica')).toHaveLength(2);
   });
 });
