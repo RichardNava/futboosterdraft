@@ -91,7 +91,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   // Con el reloj del servidor, para que las pruebas puedan hacer caducar la caché (≤ 30 s, FR-018).
   const ajustes = config.ajustes ?? new ServicioAjustes(config.db, () => config.reloj.ahora());
   const temporizadores = new Temporizadores(config.reloj);
-  const economia = new ServicioEconomia(config.db, catalogo, cosmeticos, ajustes);
+  const economia = new ServicioEconomia(config.db, catalogo, cosmeticos, ajustes, undefined, () => config.reloj.ahora());
   const calculo = crearCalculo(config.hilosSimulacion ?? 0, { metricas, logger });
 
   // El gestor se crea después de la autenticación y la pasarela, que lo usan a través de esta referencia.

@@ -2,6 +2,8 @@
  * Estado de carga con la forma del contenido (spec 004, FR-024; research R12): filas de tabla, rejilla de cartas o
  * campo. El pulso es solo de opacidad y se apaga con movimiento reducido.
  */
+import { useConectandoLargo } from '../estado/conexionServidor';
+
 export type FormaEsqueleto = 'filas' | 'cartas' | 'campo';
 
 export function Esqueleto({ forma, cantidad, texto = 'Cargando…' }: { forma: FormaEsqueleto; cantidad?: number; texto?: string }) {
@@ -18,9 +20,11 @@ export function Esqueleto({ forma, cantidad, texto = 'Cargando…' }: { forma: F
 
 /** Pantalla entera mientras carga: el esqueleto dentro de la columna de la pantalla. */
 export function PantallaCargando({ forma, texto }: { forma: FormaEsqueleto; texto?: string }) {
+  // Spec 013 (FR-023): el aviso visible lo pinta el `Marco`; aquí, el texto para lectores de pantalla.
+  const conectando = useConectandoLargo();
   return (
     <main className="pantalla">
-      <Esqueleto forma={forma} texto={texto} />
+      <Esqueleto forma={forma} texto={conectando ? 'Conectando con el servidor…' : texto} />
     </main>
   );
 }

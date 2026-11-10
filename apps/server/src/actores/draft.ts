@@ -20,6 +20,7 @@ import {
   ErrorDraft,
   generarMesa,
   parametrosActuales,
+  repartoDe,
   plantillas,
   resolverTurno,
   sobreDe,
@@ -91,7 +92,8 @@ export async function iniciarDraft(c: ControladorPartida, ctx: ContextoComando, 
 
   const nuevas = asientos.map((participantes, indice) => {
     const semilla = derivarSemilla(c.partida.semilla, `mesa:${indice}`);
-    const sobres = generarMesa(pool, participantes.length, semilla, parametrosActuales());
+    // Spec 013 (FR-016): el reparto del nivel de rareza de la partida, igual en todas las mesas.
+    const sobres = generarMesa(pool, participantes.length, semilla, parametrosActuales(), repartoDe(parametrosActuales(), c.partida.nivelRareza));
     const mesa = crearMesa({
       participantes,
       sobres,

@@ -2,12 +2,10 @@
  * «Mis partidas» (FR-017; contracts/http-api.md): las partidas del usuario, en curso y terminadas, con la
  * acción que tiene pendiente en cada una.
  */
-import type { PartidaResumen } from '@fbd/protocol';
+import type { ConsultaMisPartidas, MisPartidas, PartidaResumen } from '@fbd/protocol';
 import type { GestorPartidas } from './gestor';
 import type { ControladorPartida } from './partida';
 import { vistaTorneo } from './torneo';
-
-const EN_CURSO = new Set(['buscando', 'en_draft', 'en_torneo']);
 
 async function accionYRival(c: ControladorPartida, participanteId: string): Promise<Pick<PartidaResumen, 'accionPendiente' | 'rival' | 'jornadaActual'>> {
   if (c.partida.estado === 'en_draft') {
@@ -27,25 +25,42 @@ async function accionYRival(c: ControladorPartida, participanteId: string): Prom
   return base;
 }
 
-export async function misPartidas(gestor: GestorPartidas, usuarioId: string): Promise<{ enCurso: PartidaResumen[]; terminadas: PartidaResumen[] }> {
-  const filas = await gestor.servicios.repoPartidas.partidasDeUsuario(usuarioId);
+/**
+ * Spec 013 (FR-024, FR-025; research R9): las en curso solo en la primera página (son pocas) y las terminadas con una
+ * consulta paginada, sin reconstruir el controlador de cada una.
+ */
+export async function misPartidas(
+  gestor: GestorPartidas,
+  usuarioId: string,
+  { antes, limite }: ConsultaMisPartidas,
+): Promise<MisPartidas> {
+  const repo = gestor.servicios.repoPartidas;
   const enCurso: PartidaResumen[] = [];
-  const terminadas: PartidaResumen[] = [];
-  for (const { partida, participanteId } of filas) {
-    const c = await gestor.obtener(partida.id);
-    const participante = c?.participante(participanteId);
-    const resumen: PartidaResumen = {
-      id: partida.id,
-      modo: partida.modo,
-      // Quien abandonó la ve como abandonada aunque la sigan jugando otros: no hay «Continuar».
-      fase: participante?.controladoPorNPC ? 'abandonada' : partida.estado,
-      nombreEquipo: c && participante ? c.nombreDe(participante) : '',
-      actualizadaEn: partida.actualizadaEn.toISOString(),
-    };
-    if (c && EN_CURSO.has(resumen.fase)) {
-      Object.assign(resumen, await c.ejecutar(() => accionYRival(c, participanteId)));
-      enCurso.push(resumen);
-    } else terminadas.push(resumen);
+  if (!antes) {
+    for (const { partida, participanteId } of await repo.enCursoDeUsuario(usuarioId)) {
+      const c = await gestor.obtener(partida.id);
+      const participante = c?.participante(participanteId);
+      if (!c || !participante) continue;
+      enCurso.push({
+        id: partida.id,
+        modo: partida.modo,
+        fase: partida.estado,
+        nombreEquipo: c.nombreDe(participante),
+        actualizadaEn: partida.actualizadaEn.toISOString(),
+        ...(await c.ejecutar(() => accionYRival(c, participanteId))),
+      });
+    }
   }
-  return { enCurso, terminadas };
+  const [actualizadaEn, id] = antes ? (antes.split('|') as [string, string]) : [];
+  const { filas, hayMas } = await repo.terminadasDeUsuario(usuarioId, limite, antes ? { actualizadaEn: actualizadaEn!, id: id! } : undefined);
+  const terminadas: PartidaResumen[] = filas.map((f) => ({
+    id: f.id,
+    modo: f.modo,
+    // Quien abandonó la ve como abandonada aunque la sigan jugando otros: no hay «Continuar».
+    fase: f.abandonada ? 'abandonada' : f.estado,
+    nombreEquipo: f.nombreEquipo,
+    actualizadaEn: f.clave,
+  }));
+  const ultima = filas.at(-1);
+  return { enCurso, terminadas, siguiente: hayMas && ultima ? `${ultima.clave}|${ultima.id}` : null };
 }

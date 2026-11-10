@@ -23,6 +23,8 @@ export function resumenPartida(c: ControladorPartida, usuarioId: string | undefi
     conPlazos: !soloUnHumano(c.participantes),
     plazoJornadaHoras: p.plazoJornadaHoras,
     dificultad: p.dificultad,
+    nivelRareza: p.nivelRareza,
+    cobroRareza: p.cobroRareza,
     estado: p.estado,
     duelos: p.configDuelos ?? null,
     versionCatalogo: p.versionCatalogo,

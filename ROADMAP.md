@@ -44,7 +44,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
-| [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012 | P1 | Parcial | INI-03, INI-04, INI-08 |
+| [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012, 013 | P1 | Parcial | INI-03, INI-04, INI-08 |
 
 Los ids siguen el orden en que se registran, no el de prioridad: INI-15 se añadió al aparecer la spec 007.
 
@@ -362,7 +362,7 @@ cuesta simular los partidos.
   suaves (−20 %) y cuatro momentos sonoros nuevos (choque y ruleta de forma en los duelos, campeón, derrota), logo
   oficial en SVG, seis fondos de página nuevos, sin tablas de goleadores en el modo Duelos y nuevo sobre con su
   animación. Los recursos de origen están en `temp/`, que debe desaparecer al cerrar la spec (FR-021).
-- **Specs**: [007](specs/007-retoques-visuales/spec.md), [012](specs/012-mejoras-simulacion-2d/spec.md).
+- **Specs**: [007](specs/007-retoques-visuales/spec.md), [012](specs/012-mejoras-simulacion-2d/spec.md), [013](specs/013-mejora-cartas-rareza-draft/spec.md).
 - **Spec 012 (implementada el 2026-11-08, sin validar)**: sonidos del partido, del draft, del botón principal y de la
   tienda (síntesis propia; público y caja registradora provisionales, a sustituir por CC0), celebraciones de gol como
   cosmético (4 gratuitas + 1 de prueba de clase secuencia), franja de la 2D de altura fija y tarjetas con su color,
@@ -387,6 +387,15 @@ cuesta simular los partidos.
   (Estadio y Neón vuelven a ser gratis); selector de modo de la 2D con aspecto de panel; ayuda de la barra con letra
   más grande y en los enlaces; «Nueva partida» en cuatro recuadros sin desplazar, con las explicaciones en la barra.
   Pendiente: T106 (recorrido a mano).
+- **Spec 013 (implementada el 2026-11-10, sin validar)**: las 300 cartas de Core con su ilustración propia de fondo
+  (WebP, 57,5 KB de media; genérico con la identidad alternativa); rasgos y stats con contraste ≥ 4,5:1 en el peor
+  caso; nivel de rareza del draft (Pobre, Escaso, Moderado, Abundante y Rico; parámetros 6.3.0, Moderado al 30 % de
+  GOAT en la alta) con acceso por el ajuste `acceso_niveles_rareza`, cobro idempotente de 100 fragmentos y pase
+  premium de 30 días (fragmentos o euros, y de cortesía por CLI); la pestaña se recupera sola cuando vuelve el
+  servidor; «Mis partidas» paginada; aviso de inicio de sesión arriba; descripción de rasgo sin parpadeo; media del
+  equipo entera con zoom y «Mi perfil» en dos columnas. `pnpm balance` («Rareza del draft») en verde. Pendiente: el
+  recorrido a mano del [quickstart](specs/013-mejora-cartas-rareza-draft/quickstart.md), borrar `jugadores_bg/` con
+  el visto bueno de la persona y la recuperación de contraseña que pide 013/FR-027 (no existe en la aplicación).
 - **Prioridad / estado**: P1 · **Parcial**. 007: 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
 - **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
   (rarezas y presentación de la carta de la 006).

@@ -1,7 +1,7 @@
 /**
  * Tienda (spec 006, contracts/http-api.md «Tienda»). Solo usuarios registrados; los pagos en euros son simulados.
  */
-import { CuerpoCompra, CuerpoCompraSobre } from '@fbd/protocol';
+import { CuerpoCompra, CuerpoCompraPase, CuerpoCompraSobre } from '@fbd/protocol';
 import type { FastifyInstance } from 'fastify';
 import type { z } from 'zod';
 import type { Auth } from '../auth/auth';
@@ -19,6 +19,13 @@ export function registrarRutasTienda(app: FastifyInstance, auth: Auth, economia:
   const { soloRegistrados } = crearHooksSesion(auth);
 
   app.get('/api/tienda', { preHandler: soloRegistrados }, async (req) => economia.tienda(req.usuario!.id));
+
+  // Pase premium (spec 013, FR-034 a FR-036): estado y compra, idempotente por `idCompra`.
+  app.get('/api/premium', { preHandler: soloRegistrados }, async (req) => economia.premium(req.usuario!.id));
+  app.post('/api/tienda/pase-premium', { preHandler: soloRegistrados }, async (req) => {
+    const { idCompra, moneda } = cuerpo(CuerpoCompraPase, req.body);
+    return economia.comprarPase(req.usuario!.id, moneda, idCompra);
+  });
 
   app.post('/api/tienda/sobre/comprar', { preHandler: soloRegistrados }, async (req) => {
     const { idCompra, moneda } = cuerpo(CuerpoCompraSobre, req.body);

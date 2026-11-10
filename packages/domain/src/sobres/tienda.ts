@@ -7,7 +7,7 @@
 import { DEMARCACIONES, NIVELES, type Demarcacion, type Jugador, type Nivel } from '../catalogo/tipos';
 import type { ParametrosEquilibrado } from '../parametros/index';
 import { Rng, type Semilla } from '../rng/xoshiro';
-import { ErrorPoolInsuficiente, generarSobre } from './generador';
+import { ErrorPoolInsuficiente, generarSobre, repartoClasico } from './generador';
 
 export const CARTAS_SOBRE_TIENDA = 8;
 const MAX_REINTENTOS = 100;
@@ -27,7 +27,8 @@ export function generarSobreTienda(disponibles: readonly Carta[], semilla: Semil
   for (const [clave, lista] of celdas) celdas.set(clave, rng.barajar(lista));
   const quedan = (d: Demarcacion, n: Nivel) => celdas.get(`${d}|${n}`)?.length ?? 0;
 
-  const plan = generarSobre(rng, parametros);
+  // Spec 013: los sobres de la tienda siguen con el reparto de siempre (la economía no cambia).
+  const plan = generarSobre(rng, parametros, repartoClasico(parametros));
   // Como en `generarMesa`: se busca un cruce demarcación × nivel que quepa entero; si no, el último se completa con
   // sustituciones.
   let niveles = rng.barajar(plan.niveles);

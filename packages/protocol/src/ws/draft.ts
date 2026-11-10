@@ -46,6 +46,8 @@ export const MsgSalaActualizada = z.object({
   /** Spec 005: modo de juego y, en el modo duelos, su formación común y el Estado de forma. */
   modo: z.enum(['liga', 'playoff', 'mixto', 'duelos']).optional(),
   duelos: z.object({ formacion: z.string(), estadoForma: z.boolean() }).nullable().optional(),
+  /** Spec 013 (FR-016): nivel de rareza del draft, visible en la sala. */
+  nivelRareza: z.enum(['pobre', 'escaso', 'moderado', 'abundante', 'rico']).optional(),
 });
 export type MsgSalaActualizada = z.infer<typeof MsgSalaActualizada>;
 

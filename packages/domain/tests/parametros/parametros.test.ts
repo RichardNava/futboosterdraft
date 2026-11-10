@@ -9,6 +9,7 @@ import {
   PARAMETROS_V6,
   PARAMETROS_V6_1,
   PARAMETROS_V6_2,
+  PARAMETROS_V6_3,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -206,8 +207,8 @@ describe('parámetros de equilibrado 6.1.0', () => {
 });
 
 describe('parámetros de equilibrado 6.2.0 (spec 012, ronda 2)', () => {
-  it('los partidos nuevos usan la 6.2.0, que solo añade la relajación del que gana de mucho y más porteros en los sobres', () => {
-    expect(parametrosActuales()).toBe(PARAMETROS_V6_2);
+  it('la 6.2.0 solo añade la relajación del que gana de mucho y más porteros en los sobres', () => {
+
     expect(parametrosPorVersion('6.2.0')).toBe(PARAMETROS_V6_2);
     const { version, relajacion, sobres, ...resto } = PARAMETROS_V6_2;
     const { version: v61, relajacion: r61, sobres: sobres61, ...resto61 } = PARAMETROS_V6_1;
@@ -216,5 +217,19 @@ describe('parámetros de equilibrado 6.2.0 (spec 012, ronda 2)', () => {
     expect(relajacion).toEqual({ ventajaMinima: 2, porGol: 0.6, maximo: 2.4, ataque: 1.5 });
     expect(sobres).toEqual({ ...sobres61, probPorteroEnHuecoPorDef: 0.7 });
     expect([version, v61]).toEqual(['6.2.0', '6.1.0']);
+  });
+});
+
+describe('parámetros de equilibrado 6.3.0 (spec 013)', () => {
+  it('los partidos nuevos usan la 6.3.0, que solo añade el reparto de los sobres por nivel de rareza', () => {
+    expect(parametrosActuales()).toBe(PARAMETROS_V6_3);
+    expect(parametrosPorVersion('6.3.0')).toBe(PARAMETROS_V6_3);
+    const { version, sobres, ...resto } = PARAMETROS_V6_3;
+    const { version: v62, sobres: sobres62, ...resto62 } = PARAMETROS_V6_2;
+    expect(resto).toEqual(resto62);
+    const { niveles, ...sobresSinNiveles } = sobres;
+    expect(sobresSinNiveles).toEqual(sobres62);
+    expect(Object.keys(niveles!)).toEqual(['pobre', 'escaso', 'moderado', 'abundante', 'rico']);
+    expect([version, v62]).toEqual(['6.3.0', '6.2.0']);
   });
 });

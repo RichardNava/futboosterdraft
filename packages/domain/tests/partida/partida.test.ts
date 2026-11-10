@@ -77,6 +77,10 @@ describe('Partida', () => {
 
   it('la dificultad por defecto es «Normal» y una desconocida no es válida (003/FR-038a)', () => {
     expect(configPorDefecto().dificultad).toBe('normal');
+    // Spec 013 (FR-013, FR-017): Moderado por defecto; un nivel desconocido se rechaza.
+    expect(configPorDefecto().nivelRareza).toBe('moderado');
+    expect(validarConfigPartida(conf({ nivelRareza: 'x' as never }), 'registrado').map((e) => e.codigo)).toContain('NIVEL_RAREZA_INVALIDO');
+    expect(validarConfigPartida(conf({ nivelRareza: 'rico' }), 'invitado').map((e) => e.codigo)).not.toContain('NIVEL_RAREZA_INVALIDO');
     expect(codigos(conf({ dificultad: 'imposible' as never }))).toContain('CONFIG_INVALIDA');
   });
 

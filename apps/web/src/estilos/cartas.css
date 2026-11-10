@@ -25,6 +25,12 @@
   --carta-franja-texto: #ffffff;
   --carta-chip: rgb(255 255 255 / 10%);
   --carta-linea: rgb(255 255 255 / 16%);
+  /*
+   * Spec 013 (FR-008 a FR-010): recuadro de las virtudes y banda de los stats sobre la ilustración. Alfa mínimo para
+   * ≥ 4,5:1 en el peor caso, el recuadro sobre blanco (test `contrasteCarta`): la ilustración se sigue viendo.
+   */
+  --carta-velo-rasgo: rgb(8 12 18 / 58%);
+  --carta-velo-stats: rgb(8 12 18 / 68%);
   --carta-brillo: rgb(255 255 255 / 30%);
   --carta-luz: rgb(210 222 235 / 40%);
   --carta-letra: var(--letra-cartel);
@@ -427,6 +433,14 @@ img.carta-fondo-accion {
  * Stats y rasgos de la carta completa en `cqi`, con las proporciones de la de 280 px (1,15 rem, 1,45 rem y 1 rem): con
  * letra fija, por debajo de ese ancho no cabían en 2 : 3 y los stats pisaban los rasgos.
  */
+/* Spec 013 (FR-009): banda translúcida propia y sombra fina, legibles sobre cualquier ilustración. */
+.carta.completa .carta-stats {
+  padding-inline: 1.5cqi;
+  border-radius: 6px;
+  background: var(--carta-velo-stats);
+  text-shadow: 0 0 2px rgb(0 0 0 / 90%);
+}
+
 .carta.completa .carta-stat dt {
   font-size: 6.6cqi;
   font-weight: 600;
@@ -565,6 +579,11 @@ img.carta-fondo-accion {
   box-shadow: var(--sombra-elevada);
 }
 
+/* Spec 013 (FR-029): invisible hasta estar colocada; nunca se ve, ni un fotograma, arriba a la izquierda. */
+.carta-descripcion:popover-open:not([data-colocada]) {
+  visibility: hidden;
+}
+
 .carta-descripcion strong {
   display: block;
   margin-bottom: 4px;
@@ -597,6 +616,16 @@ img.carta-fondo-accion {
   border: 1px solid var(--carta-marco);
   font-family: var(--letra-texto);
   font-weight: 700;
+}
+
+/* Spec 013 (FR-008): en la carta completa, recuadro menos translúcido y sombra fina (sin contorno grueso, FR-010). */
+.carta.completa .carta-virtud {
+  background: var(--carta-velo-rasgo);
+}
+
+.carta.completa .carta-virtud,
+.carta.completa .carta-defecto {
+  text-shadow: 0 0 2px rgb(0 0 0 / 90%);
 }
 
 .carta.completa .carta-rasgos {

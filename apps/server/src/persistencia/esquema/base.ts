@@ -5,7 +5,7 @@
  * claves que espera la librería; el `apodo` del modelo de datos es el campo `name`, y el `tipo`
  * ('registrado' | 'invitado') se deriva de `isAnonymous`.
  */
-import type { Dificultad, ModoIncidencias } from '@fbd/domain';
+import type { Dificultad, ModoIncidencias, NivelRareza } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
@@ -151,11 +151,19 @@ export const partidas = pgTable(
     configDuelos: jsonb('config_duelos'),
     /** Identidad de las cartas, copiada del ajuste al crear la partida (spec 011, FR-018). */
     identidad: text('identidad').$type<'real' | 'alternativa'>().notNull().default('real'),
+    /** Nivel de rareza del draft (spec 013, FR-016, FR-018). */
+    nivelRareza: text('nivel_rareza').$type<NivelRareza>().notNull().default('moderado'),
+    /** Fragmentos cobrados por el nivel (FR-033); null = gratis. */
+    cobroRareza: integer('cobro_rareza'),
+    /** `Idempotency-Key` del envío del formulario de crear partida (FR-033). */
+    claveCreacion: text('clave_creacion'),
     creadaEn: timestamp('creada_en', { withTimezone: true }).notNull().defaultNow(),
     actualizadaEn: timestamp('actualizada_en', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
     index('partidas_estado_idx').on(t.estado),
+    uniqueIndex('partidas_anfitrion_clave_uq').on(t.anfitrionId, t.claveCreacion).where(sql`${t.claveCreacion} is not null`),
+    check('partidas_nivel_rareza_ck', sql`${t.nivelRareza} in ('pobre','escaso','moderado','abundante','rico')`),
     check('partidas_modo_ck', sql`${t.modo} in ('liga','playoff','mixto','duelos')`),
     // "Liga 4–8; playoff ∈ {4, 8, 16}; mixto = 8; duelos como el playoff"
     check(
@@ -203,6 +211,7 @@ export const participantes = pgTable(
   },
   (t) => [
     index('participantes_partida_idx').on(t.partidaId),
+    index('participantes_usuario_idx').on(t.usuarioId),
     uniqueIndex('participantes_partida_usuario_uq').on(t.partidaId, t.usuarioId),
     // Nombre único por partida sin distinguir mayúsculas (spec 003, FR-043; migración 0008).
     uniqueIndex('participantes_nombre_equipo_uq').on(t.partidaId, sql`lower(${t.nombreEquipo})`),

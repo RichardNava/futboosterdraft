@@ -12,6 +12,7 @@ import v4 from './v4.json';
 import v5 from './v5.json';
 import v6 from './v6.json';
 import type { Posicion } from '../catalogo/tipos';
+import type { NivelRareza, RepartoSobre } from '../sobres/rareza';
 
 export type GravedadLesion = 'leve' | 'media' | 'grave' | 'larga';
 
@@ -176,8 +177,13 @@ export interface ParametrosEquilibrado {
   sobres: {
     /** Probabilidad de que el hueco "POR o DEF" sea un portero (FR-014). */
     probPorteroEnHuecoPorDef: number;
-    /** Probabilidad de que la carta alta sea GOAT en lugar de Legendario (FR-014). */
+    /**
+     * Probabilidad de que la carta alta sea GOAT en lugar de Legendario (FR-014). Desde la 6.3.0 solo la usan los
+     * sobres de la tienda; el draft usa `niveles`.
+     */
     probGoatEnAlta: number;
+    /** Desde la 6.3.0 (spec 013, FR-012): reparto de cada sobre del draft por nivel de rareza. */
+    niveles?: Record<NivelRareza, RepartoSobre>;
   };
   virtudes: {
     capitania: number;
@@ -468,6 +474,30 @@ export const PARAMETROS_V6_2: ParametrosEquilibrado = {
   sobres: { ...PARAMETROS_V6_1.sobres, probPorteroEnHuecoPorDef: 0.7 },
 };
 
+/**
+ * Parámetros 6.3.0 (spec 013, FR-012, FR-013): reparto de los sobres del draft por nivel de rareza. Moderado pasa de
+ * 80 % / 20 % a 70 % / 30 % en la carta alta; la tienda sigue con `probGoatEnAlta` (0,2). El motor no cambia.
+ */
+export const PARAMETROS_V6_3: ParametrosEquilibrado = {
+  ...PARAMETROS_V6_2,
+  version: '6.3.0',
+  sobres: {
+    ...PARAMETROS_V6_2.sobres,
+    niveles: {
+      pobre: { superclase: 5, crack: 2, legendario: 0, altas: 1, probGoatEnAlta: 0.05 },
+      escaso: { superclase: 5, crack: 2, legendario: 0, altas: 1, probGoatEnAlta: 0.2 },
+      moderado: { superclase: 4, crack: 2, legendario: 1, altas: 1, probGoatEnAlta: 0.3 },
+      abundante: { superclase: 3, crack: 2, legendario: 1, altas: 2, probGoatEnAlta: 0.5 },
+      rico: { superclase: 2, crack: 2, legendario: 1, altas: 3, probGoatEnAlta: 0.5 },
+    },
+  },
+};
+
+/** Reparto de un nivel; las versiones anteriores a la 6.3.0 tienen el de siempre (4, 2, 1 y 1 alta) en todos. */
+export function repartoDe(p: ParametrosEquilibrado, nivel: NivelRareza): RepartoSobre {
+  return p.sobres.niveles?.[nivel] ?? { superclase: 4, crack: 2, legendario: 1, altas: 1, probGoatEnAlta: p.sobres.probGoatEnAlta };
+}
+
 const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V3.version]: PARAMETROS_V3,
   [PARAMETROS_V4.version]: PARAMETROS_V4,
@@ -475,6 +505,7 @@ const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V6.version]: PARAMETROS_V6,
   [PARAMETROS_V6_1.version]: PARAMETROS_V6_1,
   [PARAMETROS_V6_2.version]: PARAMETROS_V6_2,
+  [PARAMETROS_V6_3.version]: PARAMETROS_V6_3,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -492,7 +523,7 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V6_2;
+  return PARAMETROS_V6_3;
 }
 
 /** Versión mayor mínima que el motor actual puede simular (las 3.x y 4.x se reproducen). */

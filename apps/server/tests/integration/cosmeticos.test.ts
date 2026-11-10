@@ -37,8 +37,8 @@ describe('cosméticos (spec 011, US3)', () => {
 
   it('GET /api/cosmeticos: sin sesión sin poseído ni saldo; con sesión, poseído, packs disponibles y saldo', async () => {
     const anonimo = (await catalogo()).cuerpo;
-    // 69 de la 011 + las 4 celebraciones activas de la 012.
-    expect(anonimo.cosmeticos).toHaveLength(73);
+    // 69 de la 011 + las 6 celebraciones activas de la 012 (Discoteca y Fuegos desde la ronda 4).
+    expect(anonimo.cosmeticos).toHaveLength(75);
     expect(anonimo.packs).toHaveLength(10);
     expect(anonimo.saldo).toBeUndefined();
     expect(anonimo.cosmeticos[0].poseido).toBeUndefined();

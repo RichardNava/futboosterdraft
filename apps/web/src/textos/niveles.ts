@@ -71,3 +71,22 @@ export const ABREVIATURA_STAT: Readonly<Record<string, string>> = {
   creatividad: 'CRE',
   agresividad: 'AGR',
 };
+
+/** Nivel de rareza del draft (spec 013, contracts/ui.md), en el orden de la interfaz. */
+export type NivelRareza = 'pobre' | 'escaso' | 'moderado' | 'abundante' | 'rico';
+
+export const ETIQUETA_RAREZA: Readonly<Record<NivelRareza, string>> = {
+  pobre: 'Pobre',
+  escaso: 'Escaso',
+  moderado: 'Moderado',
+  abundante: 'Abundante',
+  rico: 'Rico',
+};
+
+export const DESCRIPCION_RAREZA: Readonly<Record<NivelRareza, string>> = {
+  pobre: 'Casi sin estrellas: mandan Superclase y Crack.',
+  escaso: 'Pocas Legendario; algún GOAT suelto.',
+  moderado: 'El estándar.',
+  abundante: 'Muchas Legendario y GOAT.',
+  rico: 'Todas las Legendario y GOAT de la colección en la mesa.',
+};

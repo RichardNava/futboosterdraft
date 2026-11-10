@@ -83,7 +83,7 @@ export const compras = pgTable(
     usuarioId: text('usuario_id')
       .notNull()
       .references(() => usuarios.id, { onDelete: 'cascade' }),
-    productoTipo: text('producto_tipo').$type<'coleccion' | 'sobre' | 'fragmentos' | 'cosmetico' | 'pack_cosmeticos'>().notNull(),
+    productoTipo: text('producto_tipo').$type<'coleccion' | 'sobre' | 'fragmentos' | 'cosmetico' | 'pack_cosmeticos' | 'pase_premium'>().notNull(),
     productoId: text('producto_id').notNull(),
     moneda: text('moneda').$type<'eur' | 'fragmentos'>().notNull(),
     /** Céntimos o fragmentos. */
@@ -95,7 +95,7 @@ export const compras = pgTable(
   },
   (t) => [
     index('compras_usuario_idx').on(t.usuarioId, t.creadaEn.desc()),
-    check('compras_producto_tipo_ck', sql`${t.productoTipo} in ('coleccion','sobre','fragmentos','cosmetico','pack_cosmeticos')`),
+    check('compras_producto_tipo_ck', sql`${t.productoTipo} in ('coleccion','sobre','fragmentos','cosmetico','pack_cosmeticos','pase_premium')`),
     check('compras_moneda_ck', sql`${t.moneda} in ('eur','fragmentos')`),
     check('compras_estado_ck', sql`${t.estado} in ('completada')`),
   ],
@@ -151,7 +151,19 @@ export const movimientosFragmentos = pgTable(
     check('movimientos_fragmentos_importe_ck', sql`${t.importe} <> 0`),
     check(
       'movimientos_fragmentos_motivo_ck',
-      sql`${t.motivo} in ('recompensa_torneo','desfragmentacion','duplicado','compra_fragmentos','compra_sobre','compra_cosmetico','compra_coleccion')`,
+      sql`${t.motivo} in ('recompensa_torneo','desfragmentacion','duplicado','compra_fragmentos','compra_sobre','compra_cosmetico','compra_coleccion','nivel_rareza','devolucion_nivel_rareza','compra_pase_premium')`,
     ),
+    uniqueIndex('movimientos_devolucion_rareza_uq').on(t.referencia).where(sql`${t.motivo} = 'devolucion_nivel_rareza'`),
   ],
 );
+
+/** Pase premium de la cuenta (spec 013, FR-035, FR-036). */
+export const pasesPremium = pgTable('pases_premium', {
+  usuarioId: text('usuario_id')
+    .primaryKey()
+    .references(() => usuarios.id),
+  /** null = nunca comprado. */
+  fin: timestamp('fin', { withTimezone: true }),
+  cortesia: boolean('cortesia').notNull().default(false),
+  actualizadoEn: timestamp('actualizado_en', { withTimezone: true }).notNull().defaultNow(),
+});

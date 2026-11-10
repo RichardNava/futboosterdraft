@@ -9,7 +9,7 @@ import { EstadoVacio } from '../componentes/EstadoVacio';
 import { Insignia } from '../componentes/Insignia';
 import { NombreRecortado } from '../componentes/NombreRecortado';
 import { mostrarAviso } from '../estado/avisos';
-import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, etiquetaNPC, type Dificultad, type NivelNPC } from '../textos/niveles';
+import { DESCRIPCION_DIFICULTAD, ETIQUETA_DIFICULTAD, ETIQUETA_NIVEL_NPC, ETIQUETA_RAREZA, etiquetaNPC, type Dificultad, type NivelNPC, type NivelRareza } from '../textos/niveles';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { Aviso } from '../componentes/Aviso';
 import { SobreDecorativo } from '../componentes/SobreDecorativo';
@@ -48,13 +48,15 @@ export function Sala() {
   const [participa, setParticipa] = useState<boolean | null>(null);
   const [yo, setYo] = useState<string | null>(null);
   const [dificultad, setDificultad] = useState<Dificultad | null>(null);
+  const [nivelRareza, setNivelRareza] = useState<NivelRareza | null>(null);
 
   useEffect(() => {
-    api<{ miParticipanteId: string | null; dificultad?: Dificultad }>(`/api/partidas/${partidaId}`)
+    api<{ miParticipanteId: string | null; dificultad?: Dificultad; nivelRareza?: NivelRareza }>(`/api/partidas/${partidaId}`)
       .then((p) => {
         setParticipa(p.miParticipanteId !== null);
         setYo(p.miParticipanteId);
         setDificultad(p.dificultad ?? null);
+        setNivelRareza(p.nivelRareza ?? null);
       })
       .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se pudo cargar la partida'));
   }, [partidaId]);
@@ -145,6 +147,12 @@ export function Sala() {
           {dificultad && (
             <p className="nota" data-testid="dificultad">
               Dificultad: <strong>{ETIQUETA_DIFICULTAD[dificultad]}</strong>. {DESCRIPCION_DIFICULTAD[dificultad]}
+            </p>
+          )}
+          {/* Spec 013 (FR-016): el nivel de rareza, igual para todos los de la partida. */}
+          {nivelRareza && (
+            <p className="nota" data-testid="rareza">
+              Rareza: <strong>{ETIQUETA_RAREZA[nivelRareza]}</strong>
             </p>
           )}
         </div>

@@ -9,6 +9,9 @@ export const NivelNPC = z.enum(['amateur', 'intermedio', 'avanzado', 'PRO']);
 export const Dificultad = z.enum(['facil', 'normal', 'dificil', 'extrema']);
 /** Modos de juego; `duelos` es el modo Duelo de jugadores (spec 005, FR-060). */
 export const ModoPartida = z.enum(['liga', 'playoff', 'mixto', 'duelos']);
+/** Nivel de rareza del draft (spec 013, FR-012), en el orden de la interfaz. */
+export const NivelRareza = z.enum(['pobre', 'escaso', 'moderado', 'abundante', 'rico']);
+export type NivelRareza = z.infer<typeof NivelRareza>;
 /** Formación común y Estado de forma del modo duelos (spec 005, FR-061, FR-064a). */
 export const ConfigDuelosEntrada = z.object({ formacion: z.enum(['3-4-3', '4-3-3', '4-4-2', '4-4-2-diamante', '4-2-3-1', '3-5-2', '5-4-1', '5-3-2', '4-5-1', '3-3-3-1']), estadoForma: z.boolean() }).strict();
 export type ConfigDuelosEntrada = z.infer<typeof ConfigDuelosEntrada>;
@@ -33,6 +36,11 @@ export const CrearPartida = z
   plazasHumanas: z.number().int().min(1).optional(),
   /** Por defecto, `'normal'`. */
   dificultad: Dificultad.optional(),
+  /**
+   * Spec 013 (FR-016, FR-017): por defecto, `'moderado'`. Se acepta cualquier texto para que el servidor responda
+   * `400 NIVEL_RAREZA_INVALIDO` en lugar del error genérico de validación.
+   */
+  nivelRareza: z.string().optional(),
   tiempos: z
     .object({
       busquedaS: z.number().int().positive(),
@@ -61,6 +69,9 @@ export const ResumenPartida = z.object({
   conPlazos: z.boolean(),
   plazoJornadaHoras: z.number().int(),
   dificultad: Dificultad,
+  /** Spec 013 (FR-016): nivel de rareza y fragmentos cobrados por él (null = gratis). */
+  nivelRareza: NivelRareza,
+  cobroRareza: z.number().int().nullable(),
   estado: z.enum(['buscando', 'en_draft', 'en_torneo', 'terminada', 'cancelada', 'abandonada']),
   participantes: z.array(ParticipanteSala),
   miParticipanteId: z.string().nullable(),
@@ -81,9 +92,41 @@ export const PartidaResumen = z.object({
 });
 export type PartidaResumen = z.infer<typeof PartidaResumen>;
 
-/** `GET /api/mis-partidas`. */
-export const MisPartidas = z.object({ enCurso: z.array(PartidaResumen), terminadas: z.array(PartidaResumen) });
+/**
+ * `GET /api/mis-partidas?antes=&limite=` (spec 013, FR-024): sin `antes`, las en curso y las `limite` terminadas más
+ * recientes; con `antes`, `enCurso: []` y las siguientes. `siguiente` es el cursor `"<actualizada_en ISO>|<id>"` de la
+ * última fila devuelta, o null si no hay más.
+ */
+export const ConsultaMisPartidas = z
+  .object({
+    antes: z
+      .string()
+      .regex(/^[^|]+\|[0-9a-f-]{36}$/)
+      .refine((c) => z.string().datetime().safeParse(c.split('|')[0]).success)
+      .optional(),
+    limite: z.coerce.number().int().min(1).max(20).default(5),
+  })
+  .strict();
+export type ConsultaMisPartidas = z.infer<typeof ConsultaMisPartidas>;
+
+export const MisPartidas = z.object({ enCurso: z.array(PartidaResumen), terminadas: z.array(PartidaResumen), siguiente: z.string().nullable() });
 export type MisPartidas = z.infer<typeof MisPartidas>;
+
+/** Estado del pase premium (spec 013, FR-036). `fin` en ISO, o null si nunca se compró. */
+export interface EstadoPremium {
+  activo: boolean;
+  cortesia: boolean;
+  fin: string | null;
+}
+
+/** `GET /api/partidas/niveles-rareza` (spec 013, FR-019, FR-034): qué cuesta cada nivel a quien va a crear. */
+export interface RespuestaNivelesRareza {
+  acceso: 'libre' | 'restringido';
+  premium: EstadoPremium;
+  /** null para invitados. */
+  saldo: number | null;
+  niveles: { nivel: NivelRareza; estado: 'gratis' | 'pago' | 'no_disponible'; coste?: number; motivo?: 'INVITADO' }[];
+}
 
 /** `POST /api/partidas/:id/simular-resto` (spec 003, FR-041a). */
 export const RespuestaSimularResto = z.object({ ok: z.literal(true), campeon: z.object({ id: z.string(), nombre: z.string() }) });

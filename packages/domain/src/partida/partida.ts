@@ -4,6 +4,7 @@
 import type { ConfigDuelos } from '../duelos/tipos';
 import { esFormacionId } from '../equipo/formaciones';
 import { Rng, type Semilla } from '../rng/xoshiro';
+import { esNivelRareza, NIVEL_RAREZA_POR_DEFECTO, type NivelRareza } from '../sobres/rareza';
 
 /** `duelos`: modo Duelo de jugadores (spec 005, FR-060), con el cuadro del playoff y cruces resueltos por duelos. */
 export type Modo = 'liga' | 'playoff' | 'mixto' | 'duelos';
@@ -63,6 +64,8 @@ export interface ConfigPartida {
   plazasHumanas?: number;
   /** Niveles del relleno automático de NPC (spec 003, FR-038a). */
   dificultad: Dificultad;
+  /** Nivel de rareza del draft (spec 013, FR-016): igual para toda la partida. */
+  nivelRareza: NivelRareza;
   tiempos: TiemposPartida;
   colecciones: string[];
   /** Solo en el modo duelos (spec 005): formación común y Estado de forma; por defecto, `CONFIG_DUELOS_POR_DEFECTO`. */
@@ -82,13 +85,14 @@ export function configPorDefecto(): ConfigPartida {
     plazoJornadaHoras: 24,
     npc: [],
     dificultad: 'normal',
+    nivelRareza: NIVEL_RAREZA_POR_DEFECTO,
     tiempos: { ...TIEMPOS_POR_DEFECTO },
     colecciones: ['core'],
   };
 }
 
 export interface ErrorConfig {
-  codigo: 'NUM_PARTICIPANTES_INVALIDO' | 'INVITADO_NO_PERMITIDO' | 'DEMASIADOS_NPC' | 'CONFIG_INVALIDA';
+  codigo: 'NUM_PARTICIPANTES_INVALIDO' | 'INVITADO_NO_PERMITIDO' | 'DEMASIADOS_NPC' | 'CONFIG_INVALIDA' | 'NIVEL_RAREZA_INVALIDO';
   mensaje: string;
 }
 
@@ -124,6 +128,9 @@ export function validarConfigPartida(c: ConfigPartida, anfitrion: TipoUsuario): 
   }
   if (c.npc.some((n) => !NIVELES_NPC.includes(n.nivel))) {
     errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'Nivel de NPC desconocido' });
+  }
+  if (!esNivelRareza(c.nivelRareza)) {
+    errores.push({ codigo: 'NIVEL_RAREZA_INVALIDO', mensaje: 'Nivel de rareza desconocido' });
   }
   if (!DIFICULTADES.includes(c.dificultad)) {
     errores.push({ codigo: 'CONFIG_INVALIDA', mensaje: 'Dificultad desconocida' });

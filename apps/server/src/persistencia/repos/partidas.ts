@@ -16,7 +16,17 @@ export class RepoPartidas {
   constructor(private readonly db: BaseDatos) {}
 
   async crear(
-    datos: { anfitrionId: string; config: ConfigPartida; semilla: string; ahora: number; poolCartas?: number[] | null; identidad?: Identidad },
+    datos: {
+      anfitrionId: string;
+      config: ConfigPartida;
+      semilla: string;
+      ahora: number;
+      poolCartas?: number[] | null;
+      identidad?: Identidad;
+      /** Spec 013 (FR-033): fragmentos cobrados por el nivel y clave del envío. */
+      cobroRareza?: number | null;
+      claveCreacion?: string | null;
+    },
     ejecutor: Ejecutor = this.db,
   ): Promise<FilaPartida> {
     const { config } = datos;
@@ -39,6 +49,9 @@ export class RepoPartidas {
         configDuelos: config.modo === 'duelos' ? (config.duelos ?? null) : null,
         // Copia del ajuste vigente: no cambia nunca, aunque cambie el ajuste (spec 011, FR-018).
         identidad: datos.identidad ?? 'real',
+        nivelRareza: config.nivelRareza,
+        cobroRareza: datos.cobroRareza ?? null,
+        claveCreacion: datos.claveCreacion ?? null,
         // La lógica de juego usa siempre el reloj del servidor, nunca la hora de la base de datos.
         creadaEn: new Date(datos.ahora),
         actualizadaEn: new Date(datos.ahora),
@@ -182,13 +195,63 @@ export class RepoPartidas {
   }
 
   /** Todas las partidas de un usuario con su participante, de la más reciente a la más antigua («Mis partidas»). */
-  async partidasDeUsuario(usuarioId: string): Promise<{ partida: FilaPartida; participanteId: string }[]> {
+  /** Partida creada por el anfitrión con esa clave de envío (spec 013, FR-033). */
+  async porClaveCreacion(anfitrionId: string, clave: string, ejecutor: Ejecutor = this.db): Promise<FilaPartida | undefined> {
+    const [fila] = await ejecutor
+      .select()
+      .from(partidas)
+      .where(and(eq(partidas.anfitrionId, anfitrionId), eq(partidas.claveCreacion, clave)));
+    return fila;
+  }
+
+  /** Partidas en curso del usuario en las que sigue jugando (no abandonadas por él). */
+  async enCursoDeUsuario(usuarioId: string): Promise<{ partida: FilaPartida; participanteId: string }[]> {
     return this.db
       .select({ partida: partidas, participanteId: participantes.id })
       .from(partidas)
       .innerJoin(participantes, eq(participantes.partidaId, partidas.id))
-      .where(eq(participantes.usuarioId, usuarioId))
-      .orderBy(desc(partidas.actualizadaEn));
+      .where(
+        and(
+          eq(participantes.usuarioId, usuarioId),
+          eq(participantes.controladoPorNPC, false),
+          inArray(partidas.estado, ['buscando', 'en_draft', 'en_torneo']),
+        ),
+      )
+      .orderBy(desc(partidas.actualizadaEn), desc(partidas.id));
+  }
+
+  /**
+   * Terminadas del usuario (o abandonadas por él), paginadas por clave `(actualizada_en, id)` descendente (spec 013,
+   * R9): una consulta, sin reconstruir ninguna partida. `antes` es el cursor de la última fila de la página anterior.
+   */
+  async terminadasDeUsuario(
+    usuarioId: string,
+    limite: number,
+    antes?: { actualizadaEn: string; id: string },
+  ): Promise<{ filas: { id: string; modo: string; estado: string; abandonada: boolean; nombreEquipo: string; clave: string }[]; hayMas: boolean }> {
+    // La clave con microsegundos: un Date de JS los perdería y el cursor saltaría filas.
+    const clave = sql<string>`to_char(${partidas.actualizadaEn} at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
+    const filas = await this.db
+      .select({
+        id: partidas.id,
+        modo: partidas.modo,
+        estado: partidas.estado,
+        abandonada: participantes.controladoPorNPC,
+        nombreEquipo: participantes.nombreEquipo,
+        clave,
+      })
+      .from(participantes)
+      .innerJoin(partidas, eq(participantes.partidaId, partidas.id))
+      .where(
+        and(
+          eq(participantes.usuarioId, usuarioId),
+          sql`(${partidas.estado} not in ('buscando','en_draft','en_torneo') or ${participantes.controladoPorNPC})`,
+          antes ? sql`(${partidas.actualizadaEn}, ${partidas.id}) < (${antes.actualizadaEn}::timestamptz, ${antes.id}::uuid)` : undefined,
+        ),
+      )
+      .orderBy(desc(partidas.actualizadaEn), desc(partidas.id))
+      .limit(limite + 1);
+    return { filas: filas.slice(0, limite), hayMas: filas.length > limite };
   }
 
   async partidasActivasDeUsuario(usuarioId: string): Promise<FilaPartida[]> {

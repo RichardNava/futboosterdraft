@@ -50,6 +50,19 @@ export interface RespuestaTienda {
   colecciones: ProductoColeccion[];
   sobre: ProductoSobre;
   paquetes: ProductoFragmentos[];
+  /** Spec 013 (FR-034): pase premium de `dias` días; `estado` null si nunca se compró ni hay cortesía. */
+  pasePremium: {
+    precioFragmentos: number;
+    precioCentimos: number;
+    dias: number;
+    estado: { activo: boolean; cortesia: boolean; fin: string | null } | null;
+  };
+}
+
+export interface RespuestaCompraPase {
+  idCompra: string;
+  saldo: number;
+  premium: { activo: boolean; cortesia: boolean; fin: string | null };
 }
 
 export const CuerpoCompra = z.object({ idCompra: z.string().uuid() });
@@ -58,3 +71,7 @@ export type CuerpoCompra = z.infer<typeof CuerpoCompra>;
 /** `'eur'` se sigue aceptando al leer el cuerpo para responder 422 `MONEDA_NO_ADMITIDA` (spec 011, FR-002). */
 export const CuerpoCompraSobre = CuerpoCompra.extend({ moneda: z.enum(['eur', 'fragmentos']) });
 export type CuerpoCompraSobre = z.infer<typeof CuerpoCompraSobre>;
+
+/** `POST /api/tienda/pase-premium` (spec 013). */
+export const CuerpoCompraPase = CuerpoCompra.extend({ moneda: z.enum(['eur', 'fragmentos']) });
+export type CuerpoCompraPase = z.infer<typeof CuerpoCompraPase>;

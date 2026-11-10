@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react';
+import type { RespuestaNivelesRareza } from '@fbd/protocol';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
@@ -8,10 +9,13 @@ import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { useSesion } from '../estado/sesion';
 import {
   DESCRIPCION_DIFICULTAD,
+  DESCRIPCION_RAREZA,
   ETIQUETA_DIFICULTAD,
   ETIQUETA_NIVEL_NPC,
+  ETIQUETA_RAREZA,
   type Dificultad,
   type NivelNPC,
+  type NivelRareza,
 } from '../textos/niveles';
 
 type Modo = 'liga' | 'playoff' | 'mixto' | 'duelos';
@@ -33,8 +37,17 @@ export function CrearPartida() {
   const [plazo, setPlazo] = useState(24);
   const [npc, setNpc] = useState<NivelNPC[]>([]);
   const [dificultad, setDificultad] = useState<Dificultad>('normal');
+  const [nivelRareza, setNivelRareza] = useState<NivelRareza>('moderado');
+  const [niveles, setNiveles] = useState<RespuestaNivelesRareza | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  // Spec 013 (FR-033): una clave por envío del formulario, que se reutiliza si ese envío se repite tras un fallo de red.
+  const clave = useRef<string | null>(null);
+
+  useEffect(() => {
+    api<RespuestaNivelesRareza>('/api/partidas/niveles-rareza').then(setNiveles).catch(() => setNiveles(null));
+  }, []);
+  const estadoNivel = (n: NivelRareza) => niveles?.niveles.find((x) => x.nivel === n);
 
   const cambiarModo = (m: Modo) => {
     setModo(m);
@@ -51,24 +64,32 @@ export function CrearPartida() {
     if (enviando || plazoInvalido) return;
     setError(null);
     setEnviando(true);
+    clave.current ??= crypto.randomUUID();
     try {
       const partida = await api<{ id: string }>('/api/partidas', {
-        idempotente: true,
+        clave: clave.current,
         cuerpo: {
           modo,
           numParticipantes,
           ...(!esInvitado ? { plazoJornadaHoras: plazo } : {}),
           npc: npc.slice(0, maxNpc).map((nivel) => ({ nivel })),
           dificultad,
+          nivelRareza,
           ...(esInvitado ? { plazasHumanas: 1 } : {}),
         },
       });
+      clave.current = null;
       navegar(`/partidas/${partida.id}/sala`);
     } catch (err) {
+      // Una respuesta del servidor es definitiva para esa clave: el siguiente envío lleva otra.
+      if (err instanceof ErrorApi) clave.current = null;
+      const d = err instanceof ErrorApi ? err.detalles : {};
       setError(
-        err instanceof ErrorApi
-          ? err.message
-          : 'No se ha podido crear la partida. Comprueba la conexión y vuelve a intentarlo.',
+        err instanceof ErrorApi && err.codigo === 'SALDO_INSUFICIENTE'
+          ? `Este nivel cuesta ${String(d.precio)} fragmentos y tienes ${String(d.saldo)}: te faltan ${String(d.faltan)}.`
+          : err instanceof ErrorApi
+            ? err.message
+            : 'No se ha podido crear la partida. Comprueba la conexión y vuelve a intentarlo.',
       );
     } finally {
       setEnviando(false);
@@ -181,6 +202,29 @@ export function CrearPartida() {
             </button>
           </fieldset>
 
+          <fieldset className="losetas compactas crear-rareza" data-ayuda={AYUDA_RAREZA}>
+            <legend>Rareza del draft</legend>
+            {(Object.keys(ETIQUETA_RAREZA) as NivelRareza[]).map((n) => {
+              const estado = estadoNivel(n);
+              const precio = estado?.estado === 'pago' ? `${estado.coste} fragmentos` : estado?.estado === 'no_disponible' ? 'Solo con cuenta registrada' : 'Gratis';
+              return (
+                <label key={n} className="loseta" data-ayuda={`${DESCRIPCION_RAREZA[n]} ${precio}.`}>
+                  <input
+                    type="radio"
+                    name="rareza"
+                    checked={nivelRareza === n}
+                    disabled={estado?.estado === 'no_disponible'}
+                    onChange={() => setNivelRareza(n)}
+                  />
+                  <span className="loseta-texto">
+                    <strong>{ETIQUETA_RAREZA[n]}</strong> <span className="rareza-precio">{precio}</span>{' '}
+                    <span className="nota ayuda-en-sitio">{DESCRIPCION_RAREZA[n]}</span>
+                  </span>
+                </label>
+              );
+            })}
+          </fieldset>
+
           <fieldset className="crear-ritmo" data-ayuda={AYUDA_RITMO}>
             <legend>Ritmo del torneo</legend>
             <p className="nota ayuda-en-sitio">{AYUDA_RITMO}</p>
@@ -231,6 +275,10 @@ export function CrearPartida() {
               <dd>{ETIQUETA_DIFICULTAD[dificultad]}</dd>
             </div>
             <div>
+              <dt>Rareza</dt>
+              <dd>{ETIQUETA_RAREZA[nivelRareza]}</dd>
+            </div>
+            <div>
               <dt>Draft</dt>
               <dd>3 sobres de 8 cartas</dd>
             </div>
@@ -241,7 +289,7 @@ export function CrearPartida() {
         principal={{
           etiqueta: 'Crear partida',
           onClick: () => enviar(),
-          motivoDesactivado: plazoInvalido ? 'Corrige el plazo por jornada para crear la partida.' : null,
+          motivoDesactivado: plazoInvalido ? 'Corrige el plazo por jornada para crear la partida.' : enviando ? 'Creando la partida…' : null,
           ayuda: 'Crea la partida y abre la sala, donde esperas a los demás o empiezas el draft.',
         }}
         estado={
@@ -272,5 +320,7 @@ const DETALLE_MODO = {
 const AYUDA_EQUIPOS = 'Cuántos equipos juegan el torneo; con 16, el draft se hace en dos grupos de 8.';
 const AYUDA_RIVALES =
   'Decide el nivel de los NPC que rellenan plazas; los que añadas tú conservan su nivel. El relleno automático nunca usa el nivel PRO: solo tú, como anfitrión, puedes elegirlo.';
+const AYUDA_RAREZA =
+  'Cuántas cartas de cada nivel lleva cada sobre del draft. Es igual para todos los equipos de la partida.';
 const AYUDA_RITMO =
   'Solo el draft se juega a la vez. Si eres la única persona, cada jornada empieza cuando tú quieras; con más personas, cada uno juega sus partidos cuando quiere dentro del plazo de la jornada.';

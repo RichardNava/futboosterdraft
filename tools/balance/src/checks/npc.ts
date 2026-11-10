@@ -29,6 +29,7 @@ import {
   derivarSemilla,
   elegir,
   generarMesa,
+  repartoDe,
   parametrosActuales,
   plantillas,
   resolverTurno,
@@ -83,7 +84,7 @@ export function draftNPC(semilla: string): Record<string, Jugador[]> {
   const pool = core();
   const porId = new Map(pool.map((j) => [j.id, j]));
   const participantes = [...NIVELES];
-  const sobres = generarMesa(pool, participantes.length, derivarSemilla(semilla, 'mesa'), p);
+  const sobres = generarMesa(pool, participantes.length, derivarSemilla(semilla, 'mesa'), p, repartoDe(p, 'moderado'));
   let mesa = crearMesa({
     participantes,
     sobres,
@@ -162,7 +163,7 @@ export function draftMesa(
 ): Record<string, Jugador[]> {
   const p = parametrosActuales();
   const porId = new Map(pool.map((j) => [j.id, j]));
-  const sobres = generarMesa(pool, participantes.length, derivarSemilla(semilla, 'mesa'), p);
+  const sobres = generarMesa(pool, participantes.length, derivarSemilla(semilla, 'mesa'), p, repartoDe(p, 'moderado'));
   let mesa = crearMesa({
     participantes,
     sobres,

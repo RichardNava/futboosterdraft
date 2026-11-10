@@ -1,7 +1,8 @@
 import type { Jugador, Nivel } from '@fbd/domain';
-import { useEffect, useState, type CSSProperties, type FormEvent } from 'react';
+import { useEffect, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { api, ErrorApi } from '../api/cliente';
+import { api } from '../api/cliente';
+import { AvisoAcceso } from '../componentes/AvisoAcceso';
 import { BandejaAvisos } from '../componentes/BandejaAvisos';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
 import { Icono } from '../componentes/Icono';
@@ -43,7 +44,7 @@ export function Inicio() {
   const acceso = parametros.get('acceso');
   const pideAcceso = acceso === 'entrar' || acceso === 'registro';
   const [modo, setModo] = useState<Modo>(acceso === 'entrar' ? 'login' : acceso === 'registro' ? 'registro' : 'menu');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<unknown>(null);
   const [enviando, setEnviando] = useState(false);
   const enCurso = usePartidaEnCurso(usuario !== null);
 
@@ -58,7 +59,7 @@ export function Inicio() {
       await accion();
       navegar('/partidas/nueva');
     } catch (e) {
-      setError(e instanceof ErrorApi ? e.message : 'No se ha podido entrar. Revisa la conexión y vuelve a intentarlo.');
+      setError(e);
     } finally {
       setEnviando(false);
     }
@@ -73,11 +74,9 @@ export function Inicio() {
     else void ejecutar(() => registrarse({ email, password, apodo: String(datos.get('apodo') ?? '') }));
   };
 
-  const errorVisible = error && (
-    <p className="error" role="alert">
-      {error}
-    </p>
-  );
+  // Spec 013 (FR-026, FR-028): en los formularios, el aviso va arriba, sobre su cabecera, sin cambiar su altura.
+  const errorVisible = error !== null && modo === 'menu' && <AvisoAcceso error={error} />;
+  const avisoFormulario = error !== null && modo !== 'menu' ? <AvisoAcceso error={error} /> : null;
 
   if (usuario) {
     return (
@@ -125,7 +124,7 @@ export function Inicio() {
               </button>
             </div>
             {modo === 'registro' && usuario.tipo === 'invitado' && (
-              <FormularioCuenta modo="registro" onEnviar={enviarFormulario} enviando={enviando} onVolver={() => setModo('menu')} principal={false} />
+              <FormularioCuenta modo="registro" onEnviar={enviarFormulario} enviando={enviando} onVolver={() => setModo('menu')} principal={false} aviso={avisoFormulario} />
             )}
             {errorVisible}
           </div>
@@ -166,6 +165,7 @@ export function Inicio() {
               onVolver={() => setModo('menu')}
               onCambiar={() => setModo(modo === 'login' ? 'registro' : 'login')}
               principal
+              aviso={avisoFormulario}
             />
           )}
           {errorVisible}
@@ -247,6 +247,7 @@ function FormularioCuenta({
   onVolver,
   onCambiar,
   principal,
+  aviso,
 }: {
   modo: 'login' | 'registro';
   onEnviar: (e: FormEvent<HTMLFormElement>) => void;
@@ -255,10 +256,13 @@ function FormularioCuenta({
   onCambiar?: () => void;
   /** El envío es el botón principal de la pantalla. */
   principal: boolean;
+  /** Aviso de error, sobre la cabecera del formulario (spec 013, FR-026). */
+  aviso?: ReactNode;
 }) {
   return (
-    <form className="formulario panel" onSubmit={onEnviar} aria-labelledby="titulo-cuenta">
+    <form className="formulario panel formulario-cuenta" onSubmit={onEnviar} aria-labelledby="titulo-cuenta">
       <h2 id="titulo-cuenta">{modo === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}</h2>
+      <div className="aviso-acceso-ranura">{aviso}</div>
       {modo === 'registro' && (
         <label>
           Apodo

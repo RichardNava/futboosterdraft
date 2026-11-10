@@ -16,7 +16,8 @@
     "seed": "tsx src/persistencia/seed.ts",
     "db:migrate": "tsx src/persistencia/migrar.ts",
     "db:generate": "drizzle-kit generate",
-    "ajuste": "tsx src/ajustes/cli.ts"
+    "ajuste": "tsx src/ajustes/cli.ts",
+    "premium": "tsx src/premium/cli.ts"
   },
   "dependencies": {
     "@fastify/compress": "^9.2.2",

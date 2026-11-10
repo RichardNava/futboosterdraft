@@ -292,6 +292,12 @@ function ZonaRasgos({ total, children }: { total: number; children: ReactNode })
  * encabezado «Virtud · …» o «Defecto · …» (spec 005, FR-023). Fuera de esos botones, el pie es parte de la carta: la
  * pulsación y el doble clic en el hueco vacío cuentan como en el cuerpo (spec 004, FR-056); en un rasgo, no (005/FR-024).
  */
+/** Coloca la descripción junto a su rasgo y la marca como colocada (spec 013, FR-029; research R11). */
+function colocarDescripcion(pop: HTMLElement): void {
+  colocarJunto(pop, pop.previousElementSibling ?? pop);
+  pop.dataset.colocada = '';
+}
+
 function Rasgos({ tipo, ids, onClick, onDobleClick }: { tipo: 'virtud' | 'defecto'; ids: string[]; onClick?: () => void; onDobleClick?: () => void }) {
   const textos = useTextosRasgos();
   const base = useId();
@@ -305,8 +311,11 @@ function Rasgos({ tipo, ids, onClick, onDobleClick }: { tipo: 'virtud' | 'defect
     if (e.pointerType !== 'mouse') return;
     const pop = document.getElementById(e.currentTarget.getAttribute('popovertarget') ?? '');
     try {
-      if (mostrar) pop?.showPopover();
-      else pop?.hidePopover();
+      if (mostrar && pop) {
+        pop.showPopover();
+        // En la misma tarea que lo abre: el primer fotograma ya lo pinta en su sitio (spec 013, FR-029).
+        colocarDescripcion(pop);
+      } else pop?.hidePopover();
     } catch {
       // Ya estaba en ese estado.
     }
@@ -340,7 +349,11 @@ function Rasgos({ tipo, ids, onClick, onDobleClick }: { tipo: 'virtud' | 'defect
             popover="auto"
             className="carta-descripcion"
             role="tooltip"
-            onToggle={(e) => e.newState === 'open' && colocarJunto(e.currentTarget, e.currentTarget.previousElementSibling ?? e.currentTarget)}
+            onToggle={(e) => {
+              // El `toggle` llega después de pintarse: hasta colocarlo, el CSS lo deja invisible (`data-colocada`).
+              if (e.newState === 'open') colocarDescripcion(e.currentTarget);
+              else delete e.currentTarget.dataset.colocada;
+            }}
           >
             <strong>
               {ETIQUETA_TIPO[tipo]} · {textos?.[s]?.nombre ?? s}

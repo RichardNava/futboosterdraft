@@ -7,12 +7,20 @@ import { randomBytes } from 'node:crypto';
 import {
   CONFIG_DUELOS_POR_DEFECTO,
   configPorDefecto,
+  accesoNivelRareza,
   derivarSemilla,
+  ErrorPoolInsuficiente,
+  generarMesa,
+  PARAMETROS_ECONOMIA,
+  parametrosActuales,
   plazasHumanasEfectivas,
+  premiumActivo,
+  repartoDe,
   rellenarConNPC,
   validarConfigPartida,
   type ConfigPartida,
   type NivelNPC,
+  type NivelRareza,
 } from '@fbd/domain';
 import type { CrearPartida } from '@fbd/protocol';
 import { eq, inArray } from 'drizzle-orm';
@@ -97,7 +105,17 @@ export class GestorPartidas {
     return activas.length;
   }
 
-  async crearPartida(usuario: UsuarioSesion, entrada: CrearPartida): Promise<ControladorPartida> {
+  /**
+   * Crea una partida. Spec 013: valida el nivel de rareza y el acceso a él (FR-017, FR-019), ensaya los sobres antes de
+   * guardar nada (FR-020) y, si el nivel se paga, cobra una sola vez en la misma transacción que la crea (FR-033). Con
+   * `claveCreacion` (la `Idempotency-Key` del envío), un envío repetido devuelve la misma partida sin cobrar otra vez.
+   */
+  async crearPartida(usuario: UsuarioSesion, entrada: CrearPartida, claveCreacion?: string): Promise<ControladorPartida> {
+    const { db, repoPartidas, economia, ajustes, catalogo } = this.servicios;
+    if (claveCreacion) {
+      const previa = await repoPartidas.porClaveCreacion(usuario.id, claveCreacion);
+      if (previa) return this.obtenerOError(previa.id);
+    }
     const base = configPorDefecto();
     const config: ConfigPartida = {
       ...base,
@@ -106,6 +124,7 @@ export class GestorPartidas {
       plazoJornadaHoras: entrada.plazoJornadaHoras ?? base.plazoJornadaHoras,
       npc: entrada.npc ?? [],
       dificultad: entrada.dificultad ?? base.dificultad,
+      nivelRareza: (entrada.nivelRareza ?? base.nivelRareza) as NivelRareza,
       tiempos: { ...base.tiempos, ...entrada.tiempos },
       // Un invitado solo juega contra la IA: una única plaza humana (FR-000).
       plazasHumanas: usuario.tipo === 'invitado' ? (entrada.plazasHumanas ?? 1) : entrada.plazasHumanas,
@@ -115,35 +134,85 @@ export class GestorPartidas {
     const problemas = validarConfigPartida(config, usuario.tipo);
     const prohibido = problemas.find((p) => p.codigo === 'INVITADO_NO_PERMITIDO');
     if (prohibido) throw errores.prohibido(prohibido.codigo, prohibido.mensaje);
+    const nivelInvalido = problemas.find((p) => p.codigo === 'NIVEL_RAREZA_INVALIDO');
+    if (nivelInvalido) throw errores.validacion(nivelInvalido.codigo, nivelInvalido.mensaje);
     if (problemas.length) {
       throw errores.regla(problemas[0]!.codigo, problemas[0]!.mensaje, { problemas });
     }
 
-    const { db, repoPartidas, economia } = this.servicios;
+    // Acceso al nivel (FR-019): el ajuste y el pase se leen ahora; lo que cambie después no afecta a esta partida.
+    const acceso = accesoNivelRareza({
+      nivel: config.nivelRareza,
+      acceso: await ajustes.accesoNivelesRareza(),
+      tipoUsuario: usuario.tipo,
+      premiumActivo: usuario.tipo === 'registrado' && premiumActivo(await economia.estadoPremium(usuario.id), this.servicios.reloj.ahora()),
+      precio: PARAMETROS_ECONOMIA.precioNivelRareza,
+    });
+    if (!acceso.permitido) {
+      throw errores.prohibido('NIVEL_RAREZA_NO_DISPONIBLE', 'Ese nivel de rareza solo está disponible con una cuenta registrada');
+    }
+
     // Foto de la colección activa del anfitrión registrado (spec 006, FR-014); un invitado juega con Core (FR-015).
     const poolCartas = usuario.tipo === 'registrado' ? await economia.poolActivo(usuario.id) : null;
-    const identidadCartas = await this.servicios.ajustes.identidadCartas();
+    const identidadCartas = await ajustes.identidadCartas();
     const semilla = randomBytes(16).toString('hex');
-    const partidaId = await db.transaction(async (tx) => {
-      const partida = await repoPartidas.crear(
-        { anfitrionId: usuario.id, config, semilla, poolCartas, ahora: this.servicios.reloj.ahora(), identidad: identidadCartas },
-        tx,
-      );
-      // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
-      const identidad = await identidadInicial(this.servicios, usuario, []);
-      await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones, identidad);
-      const niveles: NivelNPC[] = config.npc.map((n) => n.nivel);
-      // En una partida de invitado, el resto de plazas se rellenan con NPC desde el principio.
-      const libres = config.numParticipantes - 1 - niveles.length;
-      if (plazasHumanasEfectivas(config) === 1 && libres > 0) {
-        niveles.push(...rellenarConNPC(libres, derivarSemilla(semilla, 'relleno-inicial'), config.dificultad));
-      }
-      const nombres = nombresNPC(niveles.length, derivarSemilla(semilla, 'nombres-iniciales'), new Set([identidad.nombre]));
-      for (const [i, nivel] of niveles.entries()) await repoPartidas.anadirNPC(partida.id, nivel, nombres[i]!, tx);
-      return partida.id;
-    });
 
-    const c = this.registrar(await this.construir((await repoPartidas.obtener(partidaId))!));
+    // Ensayo de los sobres (FR-020): mismo pool, participantes y semillas que usará el draft.
+    const pool = catalogo.poolPartida({ colecciones: config.colecciones, poolCartas });
+    const parametros = parametrosActuales();
+    const tamanos = config.numParticipantes === 16 ? [8, 8] : [config.numParticipantes];
+    try {
+      tamanos.forEach((n, i) => generarMesa(pool, n, derivarSemilla(semilla, `mesa:${i}`), parametros, repartoDe(parametros, config.nivelRareza)));
+    } catch (e) {
+      if (!(e instanceof ErrorPoolInsuficiente)) throw e;
+      throw errores.regla('POOL_INSUFICIENTE', 'Tu colección activa no tiene cartas suficientes para los sobres de este nivel de rareza');
+    }
+
+    let creada: { id: string; nueva: boolean };
+    try {
+      creada = await db.transaction(async (tx) => {
+        if (acceso.coste > 0) {
+          // Bloquea el saldo: un envío repetido a la vez espera aquí y encuentra la partida ya creada.
+          await economia.bloquearSaldo(tx, usuario.id);
+          const previa = claveCreacion ? await repoPartidas.porClaveCreacion(usuario.id, claveCreacion, tx) : undefined;
+          if (previa) return { id: previa.id, nueva: false };
+        }
+        const partida = await repoPartidas.crear(
+          {
+            anfitrionId: usuario.id,
+            config,
+            semilla,
+            poolCartas,
+            ahora: this.servicios.reloj.ahora(),
+            identidad: identidadCartas,
+            cobroRareza: acceso.coste > 0 ? acceso.coste : null,
+            claveCreacion: claveCreacion ?? null,
+          },
+          tx,
+        );
+        if (acceso.coste > 0) await economia.cobrarRareza(tx, usuario.id, partida.id, acceso.coste);
+        // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
+        const identidad = await identidadInicial(this.servicios, usuario, []);
+        await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones, identidad);
+        const niveles: NivelNPC[] = config.npc.map((n) => n.nivel);
+        // En una partida de invitado, el resto de plazas se rellenan con NPC desde el principio.
+        const libres = config.numParticipantes - 1 - niveles.length;
+        if (plazasHumanasEfectivas(config) === 1 && libres > 0) {
+          niveles.push(...rellenarConNPC(libres, derivarSemilla(semilla, 'relleno-inicial'), config.dificultad));
+        }
+        const nombres = nombresNPC(niveles.length, derivarSemilla(semilla, 'nombres-iniciales'), new Set([identidad.nombre]));
+        for (const [i, nivel] of niveles.entries()) await repoPartidas.anadirNPC(partida.id, nivel, nombres[i]!, tx);
+        return { id: partida.id, nueva: true };
+      });
+    } catch (e) {
+      // Dos envíos gratis con la misma clave a la vez: el segundo choca con el índice único y devuelve la primera.
+      const previa = claveCreacion && esClaveRepetida(e) ? await repoPartidas.porClaveCreacion(usuario.id, claveCreacion) : undefined;
+      if (!previa) throw e;
+      return this.obtenerOError(previa.id);
+    }
+
+    if (!creada.nueva) return this.obtenerOError(creada.id);
+    const c = this.registrar(await this.construir((await repoPartidas.obtener(creada.id))!));
     programarBusqueda(c);
     return c;
   }
@@ -251,4 +320,10 @@ export class GestorPartidas {
     for (const c of this.controladores.values()) c.cerrar();
     this.controladores.clear();
   }
+}
+
+/** Violación del índice único `partidas_anfitrion_clave_uq` (dos envíos con la misma clave a la vez). */
+function esClaveRepetida(e: unknown): boolean {
+  const causa = (e as { cause?: unknown })?.cause ?? e;
+  return (causa as { code?: string })?.code === '23505' && String((causa as { constraint?: string }).constraint) === 'partidas_anfitrion_clave_uq';
 }

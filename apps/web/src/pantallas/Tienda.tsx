@@ -7,16 +7,16 @@
  * Tras un sobre, la apertura del draft y la revelación de las 8 cartas; tras una colección, su confirmación.
  */
 import { NIVELES } from '@fbd/domain';
-import type { ProductoColeccion, RespuestaTienda, ResumenCompra } from '@fbd/protocol';
-import { useEffect, useRef, useState } from 'react';
+import type { ProductoColeccion, RespuestaCompraPase, RespuestaTienda, ResumenCompra } from '@fbd/protocol';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router';
 import { Icono, type NombreIcono } from '../componentes/Icono';
-import { comprarColeccion, comprarSobre, ErrorApi, obtenerTienda } from '../api/cliente';
+import { comprarColeccion, comprarPase, comprarSobre, ErrorApi, obtenerTienda } from '../api/cliente';
 import { reproducir } from '../sonido/sonido';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { CartaJugador } from '../componentes/CartaJugador';
 import { ConfirmacionCompra } from '../componentes/ConfirmacionCompra';
-import { DialogoPagoPrueba, formatoFragmentos } from '../componentes/DialogoPagoPrueba';
+import { DialogoPagoPrueba, formatoEuros, formatoFragmentos } from '../componentes/DialogoPagoPrueba';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { EstadoVacio } from '../componentes/EstadoVacio';
 import { SobreArte } from '../componentes/arte/SobreArte';
@@ -29,7 +29,7 @@ import { mostrarAviso } from '../estado/avisos';
 import { useSaldo } from '../estado/saldo';
 import { ETIQUETA_NIVEL } from '../textos/niveles';
 
-type Pago = { tipo: 'coleccion'; producto: ProductoColeccion };
+type Pago = { tipo: 'coleccion'; producto: ProductoColeccion } | { tipo: 'pase'; moneda: 'fragmentos' | 'eur' };
 
 type Resultado =
   | { tipo: 'sobre'; resumen: ResumenCompra; abierto: boolean; diseno: string }
@@ -193,7 +193,7 @@ function CabeceraSeccion({ id, titulo, descripcion, enTodo, ruta }: PropsCabecer
 }
 
 /** Funcionalidades y modos de juego: aún sin productos (se ven como «Próximamente»). */
-function SeccionesFuturas({ seccion, ruta }: Navegacion) {
+function SeccionesFuturas({ seccion, ruta, premium }: Navegacion & { premium?: ReactNode }) {
   const enTodo = seccion === 'todo';
   return (
     <>
@@ -206,11 +206,13 @@ function SeccionesFuturas({ seccion, ruta }: Navegacion) {
             enTodo={enTodo}
             ruta={ruta}
           />
-          <Proximamente
-            titulo="Premium"
-            icono="rayo"
-            texto="Funciones extra para gestionar tus partidas y tu colección. Muy pronto, aquí."
-          />
+          {premium ?? (
+            <Proximamente
+              titulo="Premium"
+              icono="rayo"
+              texto="Funciones extra para gestionar tus partidas y tu colección. Muy pronto, aquí."
+            />
+          )}
         </section>
       )}
       {(enTodo || seccion === 'modos') && (
@@ -484,7 +486,10 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
       )}
 
       <SeccionCosmeticos {...navegacion} invitado={false} />
-      <SeccionesFuturas {...navegacion} />
+      <SeccionesFuturas
+        {...navegacion}
+        premium={<TarjetaPase pase={tienda.pasePremium} saldo={tienda.saldo} onComprar={(moneda) => setPago({ tipo: 'pase', moneda })} />}
+      />
 
       {pago?.tipo === 'coleccion' && (
         <DialogoPagoPrueba
@@ -501,6 +506,23 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
             setPago(null);
             trasComprar(r);
             setResultado({ tipo: 'coleccion', nombre: pago.producto.nombre, resumen: r });
+          }}
+          onCancelar={() => setPago(null)}
+        />
+      )}
+      {pago?.tipo === 'pase' && (
+        <DialogoPagoPrueba
+          titulo={`Pase premium · ${tienda.pasePremium.dias} días`}
+          resumen={<p>Todos los niveles de rareza del draft, gratis, durante {tienda.pasePremium.dias} días. Si ya lo tienes, se suman a la fecha de fin.</p>}
+          {...(pago.moneda === 'eur'
+            ? { precioCentimos: tienda.pasePremium.precioCentimos }
+            : { precioFragmentos: tienda.pasePremium.precioFragmentos })}
+          comprar={(id) => comprarPase(pago.moneda, id)}
+          onHecho={(r: RespuestaCompraPase) => {
+            setPago(null);
+            reproducir('cajaRegistradora');
+            setTienda((t) => (t ? { ...t, saldo: r.saldo, pasePremium: { ...t.pasePremium, estado: r.premium } } : t));
+            mostrarAviso('exito', `Pase premium activo hasta el ${fechaCorta(r.premium.fin)}.`);
           }}
           onCancelar={() => setPago(null)}
         />
@@ -592,5 +614,53 @@ function CartasDelSobre({ resumen, onSeguir }: { resumen: ResumenCompra; onSegui
         </ul>
       </div>
     </section>
+  );
+}
+
+const fechaCorta = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '');
+
+/** Pase premium (spec 013, FR-034): precio en fragmentos y en euros, y su estado si está activo. */
+function TarjetaPase({
+  pase,
+  saldo,
+  onComprar,
+}: {
+  pase: RespuestaTienda['pasePremium'];
+  saldo: number;
+  onComprar: (moneda: 'fragmentos' | 'eur') => void;
+}) {
+  const faltan = pase.precioFragmentos - saldo;
+  const activo = pase.estado?.activo === true;
+  return (
+    <article className="panel tienda-producto tienda-pase" aria-labelledby="titulo-pase">
+      <h3 id="titulo-pase">Pase premium · {pase.dias} días</h3>
+      <p>Todos los niveles de rareza del draft, gratis, en las partidas que crees.</p>
+      {activo && (
+        <p className="sello-adquirida pequeno" data-testid="pase-activo">
+          {pase.estado!.cortesia ? 'Activo' : `Activo hasta el ${fechaCorta(pase.estado!.fin)}`}
+        </p>
+      )}
+      {!pase.estado?.cortesia && (
+        <div className="acciones">
+          <button
+            type="button"
+            className="boton-principal"
+            aria-disabled={faltan > 0 || undefined}
+            aria-describedby={faltan > 0 ? 'faltan-pase' : undefined}
+            onClick={() => (faltan > 0 ? undefined : onComprar('fragmentos'))}
+          >
+            {activo ? 'Ampliar' : 'Comprar'} por {formatoFragmentos.format(pase.precioFragmentos)} fragmentos
+          </button>
+          <button type="button" className="secundario" onClick={() => onComprar('eur')}>
+            {formatoEuros.format(pase.precioCentimos / 100)}
+          </button>
+          {faltan > 0 && (
+            <span id="faltan-pase" className="motivo">
+              Te faltan {formatoFragmentos.format(faltan)}
+            </span>
+          )}
+        </div>
+      )}
+    </article>
   );
 }

@@ -35,6 +35,7 @@ export function resumenSala(c: ControladorPartida) {
     plazasLibres: c.partida.numParticipantes - c.participantes.length,
     modo: c.partida.modo as 'liga' | 'playoff' | 'mixto' | 'duelos',
     duelos: (c.partida.configDuelos as ConfigDuelos | null) ?? null,
+    nivelRareza: c.partida.nivelRareza,
     venceBusquedaEn:
       c.partida.estado === 'buscando'
         ? new Date(c.partida.creadaEn.getTime() + (c.partida.tiempos as { busquedaS: number }).busquedaS * 1000).toISOString()
@@ -140,9 +141,24 @@ export async function iniciar(c: ControladorPartida, ctx: ContextoComando, usuar
   await emitirEstadoATodos(c, ctx);
 }
 
+/**
+ * Cancela una partida que aún no ha empezado el draft (transición `cancelar`) y devuelve, una sola vez, lo cobrado por
+ * su nivel de rareza (spec 013, FR-033).
+ */
+export async function cancelarPartida(c: ControladorPartida, ctx: ContextoComando): Promise<void> {
+  if (c.partida.estado !== 'buscando') return;
+  await c.servicios.repoPartidas.actualizarEstado(c.id, 'cancelada');
+  c.partida = { ...c.partida, estado: transicion('buscando', 'cancelar') };
+  c.cancelarTemporizadores();
+  if (c.partida.cobroRareza !== null) await c.servicios.economia.devolverCobroRareza(c.id);
+  ctx.emitirATodos({ t: 'error', codigo: 'PARTIDA_CANCELADA', mensaje: 'La partida se ha cancelado' });
+}
+
 /** Pasa la partida a "abandonada" (partida de invitado). */
 export async function abandonarPartidaInvitado(c: ControladorPartida, ctx: ContextoComando): Promise<void> {
   if (!['buscando', 'en_draft', 'en_torneo'].includes(c.partida.estado)) return;
+  // Sale de `buscando` sin draft: si el nivel se cobró, se devuelve (spec 013, FR-033).
+  if (c.partida.estado === 'buscando' && c.partida.cobroRareza !== null) await c.servicios.economia.devolverCobroRareza(c.id);
   await c.servicios.repoPartidas.actualizarEstado(c.id, 'abandonada');
   c.partida = { ...c.partida, estado: transicion(c.partida.estado as 'en_draft', 'abandonar_invitado') };
   c.cancelarTemporizadores();

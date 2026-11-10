@@ -9,6 +9,8 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 - Las 300 cartas de Core son jugadores reales y su única fuente es `data/core-real.json`; `pnpm --filter @fbd/fixtures core-real` lo valida (solo retratos propios, en `/cartas/retratos-propios/`) y regenera `specs/008-datos-reales-core/sumario.md`
 - Imágenes de cosméticos: `pnpm --filter @fbd/fixtures imagenes -- --escudos <dir> --sobres <dir>` (WebP en `apps/web/public/cosmeticos/`; completa `data/cosmeticos.json` sin pisar lo editado)
 - Identidad de las cartas (plan B de derechos de imagen): `pnpm --filter @fbd/server ajuste identidad_cartas <real|alternativa>`, sin reiniciar y solo para las partidas nuevas
+- Ilustraciones de fondo de Core: `pnpm --filter @fbd/fixtures fondos-core -- --origen <dir>` (WebP en `apps/web/public/cartas/fondos/jugadores/<id>.webp`; escribe `imagen_bg` en `data/core-real.json`)
+- Acceso a los niveles de rareza del draft: `pnpm --filter @fbd/server ajuste acceso_niveles_rareza <libre|restringido>`; premium de cortesía: `pnpm --filter @fbd/server premium <email> <si|no>`
 - Guía de estilos visuales (referencia de la spec 004): [docs/diseno/DESIGN.md](docs/diseno/DESIGN.md)
 - Sonidos (acción → efecto, editable): [docs/juego/sonidos.md](docs/juego/sonidos.md)
 - Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)

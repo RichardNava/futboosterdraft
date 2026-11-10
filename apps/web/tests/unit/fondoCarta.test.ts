@@ -21,6 +21,12 @@ describe('fondoDe', () => {
     expect(fondoDe(carta(1, 'POR', '/cartas/propias/x.png'))).toBe('/cartas/propias/x.png');
   });
 
+  it('pinta la ilustración de Core (spec 013) y el fichero existe', () => {
+    const ruta = '/cartas/fondos/jugadores/1.webp';
+    expect(fondoDe(carta(1, 'POR', ruta))).toBe(ruta);
+    expect(existsSync(new URL(`../../public${ruta}`, import.meta.url))).toBe(true);
+  });
+
   it('cambia el genérico (o ninguno) por una foto de la demarcación, siempre la misma y existente', () => {
     for (const [dem, nombre] of [['POR', 'portero'], ['DEF', 'defensa'], ['MED', 'medio'], ['DEL', 'delantero']] as const) {
       const vistos = new Set<string>();

@@ -20,6 +20,7 @@ import {
   ErrorPoolInsuficiente,
   FORMACIONES,
   generarMesa,
+  repartoDe,
   NIVELES,
   parametrosActuales,
   POSICIONES,
@@ -168,7 +169,7 @@ export function mesasFallidas(pool: readonly Jugador[], mesas = 200): number {
   let fallos = 0;
   for (let i = 0; i < mesas; i++) {
     try {
-      generarMesa(pool, PARTICIPANTES, semillaDesdeTexto(`core-real-${i}`), parametrosActuales());
+      generarMesa(pool, PARTICIPANTES, semillaDesdeTexto(`core-real-${i}`), parametrosActuales(), repartoDe(parametrosActuales(), 'moderado'));
     } catch (e) {
       if (!(e instanceof ErrorPoolInsuficiente)) throw e;
       fallos++;
@@ -284,8 +285,10 @@ export function validarCoreReal(jugadores: readonly Jugador[], retratos: readonl
     if (j.imagen.startsWith(PREFIJO_TERCEROS)) errores.push({ id: j.id, regla: 'imagen', mensaje: `Retrato de terceros (FR-021): ${j.imagen}` });
     else if (!RUTA_RETRATO.test(j.imagen)) errores.push({ id: j.id, regla: 'imagen', mensaje: `"imagen" debe ser ${PREFIJO_PROPIO}<slug>.webp` });
     else if (!retratos.includes(j.imagen.slice(PREFIJO_PROPIO.length))) errores.push({ id: j.id, regla: 'imagen', mensaje: `No existe ${j.imagen}` });
-    const fondo = `/cartas/fondos/${String(j.demarcacion).toLowerCase()}.svg`;
+    // Spec 013 (SC-001): cada carta lleva su propia ilustración, y el fichero existe.
+    const fondo = `/cartas/fondos/jugadores/${j.id}.webp`;
     if (j.imagen_bg !== fondo) errores.push({ id: j.id, regla: 'imagen_bg', mensaje: `"imagen_bg" debe ser ${fondo}` });
+    else if (!existsSync(resolve(RAIZ, 'apps/web/public', fondo.slice(1)))) errores.push({ id: j.id, regla: 'imagen_bg', mensaje: `No existe ${fondo}` });
   }
   const usadas = new Map<string, number>();
   for (const j of jugadores) {

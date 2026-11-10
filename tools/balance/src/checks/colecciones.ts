@@ -11,6 +11,7 @@ import {
   comprobarMinimoActivo,
   derivarSemilla,
   generarMesa,
+  repartoDe,
   generarSobreTienda,
   parametrosActuales,
   recuentoPorDemarcacionYNivel,
@@ -65,7 +66,7 @@ export function comprobarSC003(mesas: number, semilla: number): Comprobacion {
     }
     tamanos += activas.length;
     const enPool = new Set(activas.map((j) => j.id));
-    for (const sobre of generarMesa(activas, 8, derivarSemilla(semillaDesdeTexto(`colecciones:${semilla}`), `generar:${m}`), p)) {
+    for (const sobre of generarMesa(activas, 8, derivarSemilla(semillaDesdeTexto(`colecciones:${semilla}`), `generar:${m}`), p, repartoDe(p, 'moderado'))) {
       if (sobre.cartas.some((id) => !enPool.has(id))) fuera++;
       if (!cumpleCupos(sobre.cartas.map((id) => porId.get(id)!))) sinCupos++;
     }

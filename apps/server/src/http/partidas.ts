@@ -1,7 +1,8 @@
 /**
  * Rutas de partidas (T051; contracts/http-api.md).
  */
-import { AnadirNPC, ConfigDuelosEntrada, CrearPartida, CuerpoEscudoPartida, CuerpoNombreEquipo } from '@fbd/protocol';
+import { AnadirNPC, ConfigDuelosEntrada, ConsultaMisPartidas, CrearPartida, type RespuestaNivelesRareza, CuerpoEscudoPartida, CuerpoNombreEquipo } from '@fbd/protocol';
+import { accesoNivelRareza, NIVELES_RAREZA, PARAMETROS_ECONOMIA } from '@fbd/domain';
 import type { FastifyInstance } from 'fastify';
 import type { GestorPartidas } from '../actores/gestor';
 import { cambiarEscudo, cambiarNombreEquipo } from '../actores/identidad';
@@ -16,8 +17,29 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
 
   app.post('/api/partidas', { preHandler: requiereSesion }, async (req, reply) => {
     const entrada = CrearPartida.parse(req.body);
-    const c = await gestor.crearPartida(req.usuario!, entrada);
+    // Spec 013 (FR-033): la clave del envío del formulario hace idempotente la creación (y su cobro).
+    const clave = req.headers['idempotency-key'];
+    const c = await gestor.crearPartida(req.usuario!, entrada, typeof clave === 'string' && clave.length <= 200 ? clave : undefined);
     return reply.code(201).send(gestor.resumen(c, req.usuario!.id));
+  });
+
+  // Spec 013 (FR-019, FR-034): qué cuesta cada nivel de rareza a quien va a crear la partida.
+  app.get('/api/partidas/niveles-rareza', { preHandler: requiereSesion }, async (req): Promise<RespuestaNivelesRareza> => {
+    const usuario = req.usuario!;
+    const { economia, ajustes } = gestor.servicios;
+    const acceso = await ajustes.accesoNivelesRareza();
+    const registrado = usuario.tipo === 'registrado';
+    const premium = registrado ? await economia.premium(usuario.id) : { activo: false, cortesia: false, fin: null };
+    return {
+      acceso,
+      premium,
+      saldo: registrado ? await economia.saldoDe(usuario.id) : null,
+      niveles: NIVELES_RAREZA.map((nivel) => {
+        const r = accesoNivelRareza({ nivel, acceso, tipoUsuario: usuario.tipo, premiumActivo: premium.activo, precio: PARAMETROS_ECONOMIA.precioNivelRareza });
+        if (!r.permitido) return { nivel, estado: 'no_disponible' as const, motivo: r.motivo };
+        return r.coste > 0 ? { nivel, estado: 'pago' as const, coste: r.coste } : { nivel, estado: 'gratis' as const, coste: 0 };
+      }),
+    };
   });
 
   app.get<{ Querystring: { estado?: string } }>('/api/partidas', { preHandler: requiereRegistrado }, async (req) => {
@@ -37,7 +59,10 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
   });
 
   // «Mis partidas» (FR-017): en curso y terminadas, con la acción pendiente de cada una.
-  app.get('/api/mis-partidas', { preHandler: requiereSesion }, async (req) => misPartidas(gestor, req.usuario!.id));
+  // Spec 013 (FR-024): en curso + 5 terminadas, y «Cargar más» con `antes`.
+  app.get('/api/mis-partidas', { preHandler: requiereSesion }, async (req) =>
+    misPartidas(gestor, req.usuario!.id, ConsultaMisPartidas.parse(req.query)),
+  );
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id', { preHandler: requiereSesion }, async (req) => {
     const c = await gestor.obtenerOError(req.params.id);

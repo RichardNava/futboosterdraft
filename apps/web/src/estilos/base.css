@@ -878,10 +878,6 @@ html {
 
 .ficha-equipo-plantilla .media-equipo-cifra {
   align-self: center;
-  width: 140px;
-}
-
-.ficha-equipo-plantilla .media-equipo-valor {
   font-size: 50px;
 }
 
@@ -1130,13 +1126,18 @@ html {
   stroke-width: 1.2;
 }
 
-/* Estrella y cifra en la misma celda de la rejilla: las dos se centran en ella (ronda 5). */
+/*
+ * Estrella y cifra en la misma celda de la rejilla: las dos se centran en ella (ronda 5). Spec 013 (FR-030): medidas en
+ * `em` de la cifra (`font-size` aquí) en lugar de una caja fija en px, para que el zoom no la descuadre.
+ */
 .media-equipo-cifra {
   flex: none;
   display: grid;
   place-items: center;
-  width: 96px;
+  font-size: 34px;
+  width: 2.8em;
   aspect-ratio: 1;
+  overflow: visible;
   filter: drop-shadow(0 0 12px var(--color-oro-tenue));
 }
 
@@ -1158,19 +1159,22 @@ html {
 
 /*
  * Cifra de oro (ronda 5): degradado de metal recortado al texto y, debajo, capas de sombra que le dan canto y volumen.
- * Sin cursiva: la del cartel la ladeaba a la derecha. La caja se recorta al alto de las cifras (`text-box`) y baja lo
- * que el centro del cuerpo de la estrella queda por debajo del de su caja.
+ * Sin cursiva: la del cartel la ladeaba a la derecha. Spec 013 (FR-030): sin recortar la caja (`text-box`), que con
+ * `background-clip: text` dejaba sin pintar lo que las cifras sobresalen de ella y la cortaba con zoom; su propio
+ * `padding-block` le da sitio, y va por encima de la estrella.
  */
 .media-equipo-valor {
+  position: relative;
+  z-index: 1;
   display: block;
-  text-box: trim-both cap alphabetic;
-  translate: 0 6%;
+  padding-block: 0.08em;
+  translate: 0 4%;
   background: var(--degradado-oro-metal);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-family: var(--letra-cartel);
-  font-size: 34px;
+  font-size: 1em;
   font-style: normal;
   font-weight: 800;
   line-height: 1;
@@ -1504,10 +1508,6 @@ html {
 }
 
 .alineacion .media-equipo-cifra {
-  width: 72px;
-}
-
-.alineacion .media-equipo-valor {
   font-size: 25px;
 }
 
@@ -3978,15 +3978,80 @@ html {
   gap: var(--espacio-2);
 }
 
-.perfil-aspecto {
+/*
+ * «Mi perfil» (spec 013, FR-031, SC-010): [equipaciones] | [escudo + sobre] y la celebración debajo, para que a
+ * 1366 × 768 todo lo principal se vea sin desplazarse. Una columna por debajo de 760 px.
+ */
+.perfil-rejilla {
   display: grid;
   gap: var(--espacio-4);
+  grid-template-areas: 'equipaciones' 'escudo' 'sobre' 'celebracion';
 }
 
-@media (min-width: 1024px) {
-  .perfil-aspecto {
-    grid-template-columns: 1fr 1fr;
+.perfil-equipaciones {
+  grid-area: equipaciones;
+}
+
+.perfil-equipaciones .editor-equipacion .equipaciones {
+  margin-top: 0;
+}
+
+.perfil-escudo {
+  grid-area: escudo;
+}
+
+.perfil-sobre {
+  grid-area: sobre;
+}
+
+.perfil-celebracion {
+  grid-area: celebracion;
+}
+
+.perfil-rejilla h2 {
+  margin-block: 0 var(--espacio-2);
+}
+
+.perfil-equipaciones {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+/* Escudo y sobre: dos filas a la vista y el resto con desplazamiento propio (SC-010). */
+.perfil-rejilla .rejilla-cosmeticos {
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  max-height: 140px;
+}
+
+.perfil-rejilla .opcion-cosmetico {
+  min-height: 62px;
+}
+
+.perfil-rejilla .opcion-cosmetico img {
+  width: 52px;
+  height: 52px;
+}
+
+.perfil-rejilla .miniatura-sobre {
+  width: 36px;
+}
+
+@media (min-width: 760px) {
+  .perfil-rejilla {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'equipaciones escudo'
+      'equipaciones sobre'
+      'celebracion celebracion';
+    align-items: start;
   }
+}
+
+.perfil-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espacio-3);
 }
 
 /* Zona del campo 2D: referencia de la capa de celebración (estilos en celebraciones.css). */
@@ -4088,4 +4153,56 @@ html {
 .partido-2d-lateral > .selector-modo-incidencias .segmentado > button {
   flex: 1;
   white-space: nowrap;
+}
+
+/* Spec 013 (FR-023): el servidor no responde desde hace más de 3 s; desaparece solo al volver. */
+.aviso-conectando {
+  position: fixed;
+  top: var(--espacio-4);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 50;
+  margin: 0;
+  padding: var(--espacio-2) var(--espacio-4);
+  border-left: 3px solid var(--color-advertencia);
+  border-radius: var(--radio);
+  background: var(--color-elevado);
+  box-shadow: var(--sombra-elevada);
+  font-weight: 600;
+}
+
+/*
+ * Aviso de error al entrar (spec 013, FR-026, FR-028): sobre la cabecera del formulario, sin cambiar su altura, así
+ * que el bloque centrado de la portada no se mueve; la escena, además, aislada con `contain: layout`.
+ */
+.formulario-cuenta {
+  position: relative;
+}
+
+.aviso-acceso-ranura {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+}
+
+.aviso-acceso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-1) var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radio);
+  background: var(--color-elevado);
+  box-shadow: var(--sombra-elevada);
+}
+
+.aviso-acceso p {
+  margin: 0;
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.portada-escena {
+  contain: layout;
 }

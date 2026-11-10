@@ -25,6 +25,10 @@ export function conIdentidad(jugador: Jugador, identidad: Identidad): Jugador {
     apellidos: alt?.apellidos ?? '',
     nombre_carta: alt?.nombre_carta ?? generico,
     imagen: alt?.imagen ?? siluetaDe(jugador.demarcacion),
+    // Spec 013 (FR-006): la ilustración de Core también identifica al futbolista; vuelve al fondo de su demarcación.
+    imagen_bg: jugador.imagen_bg.startsWith('/cartas/fondos/jugadores/')
+      ? `/cartas/fondos/${jugador.demarcacion.toLowerCase()}.svg`
+      : jugador.imagen_bg,
     // La historia cuenta la carrera del futbolista real: lo identifica tanto como el nombre.
     historia: '',
   };

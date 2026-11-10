@@ -5,6 +5,7 @@ import { RegionAvisos } from '../componentes/Aviso';
 import { Icono, type NombreIcono } from '../componentes/Icono';
 import { MenuNavegacion } from '../componentes/MenuNavegacion';
 import { humanosActivos, usePartidaActiva } from '../estado/partidaActiva';
+import { useConectandoLargo } from '../estado/conexionServidor';
 import { useSesion } from '../estado/sesion';
 import { prepararDesbloqueo, useSonido } from '../sonido/sonido';
 import { Dialogo } from '../componentes/Dialogo';
@@ -100,6 +101,7 @@ const ENLACES: Enlace[] = [
  */
 export function Marco() {
   const { usuario } = useSesion();
+  const conectando = useConectandoLargo();
   const ubicacion = useLocation();
   const modalidadPartido = usePartidaActiva((s) => s.modalidadPartido);
   const compacta = /^\/partidas\/[^/]+\/partido\//.test(ubicacion.pathname) && modalidadPartido === '2d';
@@ -247,6 +249,11 @@ export function Marco() {
       </nav>
       {/* Contenedor único bajo la barra de navegación: la barra del botón principal es `sticky` dentro de él (FR-007). */}
       <div className={compacta ? 'contenido compacto' : 'contenido'}>
+        {conectando && (
+          <p role="status" className="aviso-conectando">
+            Conectando con el servidor…
+          </p>
+        )}
         <Outlet />
       </div>
       <RegionAvisos />

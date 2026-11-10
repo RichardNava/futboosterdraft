@@ -17,6 +17,10 @@ export interface ParametrosEconomia {
   precioSobreFragmentos: number;
   precioSobreCentimos: number;
   paquetesFragmentos: readonly PaqueteFragmentos[];
+  /** Spec 013 (FR-019): coste de un nivel de rareza distinto de Moderado con el acceso `restringido`. */
+  precioNivelRareza: number;
+  /** Spec 013 (FR-034): pase premium de `dias` días. */
+  pasePremium: { dias: number; fragmentos: number; centimos: number };
 }
 
 export const PARAMETROS_ECONOMIA: Readonly<ParametrosEconomia> = {
@@ -26,6 +30,8 @@ export const PARAMETROS_ECONOMIA: Readonly<ParametrosEconomia> = {
   precioSobreCentimos: 99,
   // Retirados por la spec 011 (FR-002): sin licencia de imagen, el dinero real no compra fragmentos.
   paquetesFragmentos: [],
+  precioNivelRareza: 100,
+  pasePremium: { dias: 30, fragmentos: 2990, centimos: 299 },
 };
 
 /**

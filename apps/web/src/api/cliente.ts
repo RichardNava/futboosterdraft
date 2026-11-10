@@ -7,9 +7,11 @@ import type {
   RespuestaColeccion,
   RespuestaDesfragmentar,
   RespuestaMovimientos,
+  RespuestaCompraPase,
   RespuestaTienda,
   ResumenCompra,
 } from '@fbd/protocol';
+import { marcarConectando } from '../estado/conexionServidor';
 
 export class ErrorApi extends Error {
   constructor(
@@ -26,35 +28,85 @@ export class ErrorApi extends Error {
 export interface OpcionesPeticion {
   metodo?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   cuerpo?: unknown;
-  /** Para operaciones que no deben repetirse (FR-062). */
+  /** Para operaciones que no deben repetirse (FR-062): una clave nueva por petición. */
   idempotente?: boolean;
+  /** Clave de idempotencia fija, para reutilizarla en los reintentos de un mismo envío (spec 013, FR-033). */
+  clave?: string;
 }
+
+/** El servidor no ha respondido (red caída, cuerpo no JSON o 5xx del proxy sin el error común). */
+class SinRespuesta extends Error {
+  constructor(readonly causa: unknown) {
+    super('Sin respuesta del servidor');
+  }
+}
+
+/** Esperas entre reintentos de un GET: 0,5 s, 1 s y, desde ahí, 2 s (research R8). */
+const ESPERAS_MS = [500, 1000, 2000];
 
 export async function api<T>(ruta: string, opciones: OpcionesPeticion = {}): Promise<T> {
   const metodo = opciones.metodo ?? (opciones.cuerpo === undefined ? 'GET' : 'POST');
+  // Spec 013 (FR-022): solo los GET se reintentan; el resto podría repetir efectos.
+  if (metodo !== 'GET') {
+    try {
+      return await enviar<T>(ruta, metodo, opciones);
+    } catch (e) {
+      throw e instanceof SinRespuesta ? e.causa : e;
+    }
+  }
+  for (let intento = 0; ; intento++) {
+    try {
+      const datos = await enviar<T>(ruta, metodo, opciones);
+      marcarConectando(false);
+      return datos;
+    } catch (e) {
+      if (!(e instanceof SinRespuesta)) {
+        marcarConectando(false);
+        throw e;
+      }
+      marcarConectando(true);
+      await new Promise((r) => setTimeout(r, ESPERAS_MS[Math.min(intento, ESPERAS_MS.length - 1)]));
+    }
+  }
+}
+
+async function enviar<T>(ruta: string, metodo: string, opciones: OpcionesPeticion): Promise<T> {
   const cabeceras: Record<string, string> = {};
   if (opciones.cuerpo !== undefined) cabeceras['content-type'] = 'application/json';
   if (opciones.idempotente) cabeceras['idempotency-key'] = crypto.randomUUID();
+  if (opciones.clave) cabeceras['idempotency-key'] = opciones.clave;
 
-  const respuesta = await fetch(ruta, {
-    method: metodo,
-    credentials: 'include',
-    headers: cabeceras,
-    body: opciones.cuerpo === undefined ? undefined : JSON.stringify(opciones.cuerpo),
-  });
+  let respuesta: Response;
+  try {
+    respuesta = await fetch(ruta, {
+      method: metodo,
+      credentials: 'include',
+      headers: cabeceras,
+      body: opciones.cuerpo === undefined ? undefined : JSON.stringify(opciones.cuerpo),
+    });
+  } catch (e) {
+    throw new SinRespuesta(e);
+  }
   const texto = await respuesta.text();
-  const datos: unknown = texto ? JSON.parse(texto) : null;
+  let datos: unknown;
+  try {
+    datos = texto ? JSON.parse(texto) : null;
+  } catch (e) {
+    throw new SinRespuesta(respuesta.ok ? e : new ErrorApi(respuesta.status, 'ERROR', `Error ${respuesta.status}`));
+  }
   if (!respuesta.ok) {
     const error = (datos as { error?: { codigo?: string; mensaje?: string; detalles?: Record<string, unknown> } } | null)
       ?.error;
     // Las rutas internas de Better Auth devuelven { message, code }.
     const alternativo = datos as { message?: string; code?: string } | null;
-    throw new ErrorApi(
+    const fallo = new ErrorApi(
       respuesta.status,
       error?.codigo ?? alternativo?.code ?? 'ERROR',
       error?.mensaje ?? alternativo?.message ?? `Error ${respuesta.status}`,
       error?.detalles ?? {},
     );
+    if (!error && !alternativo?.code && [500, 502, 503, 504].includes(respuesta.status)) throw new SinRespuesta(fallo);
+    throw fallo;
   }
   return datos as T;
 }
@@ -124,6 +176,11 @@ export function obtenerTienda(): Promise<RespuestaTienda> {
 /** Los sobres de cartas solo se pagan con fragmentos (spec 011, FR-002). */
 export function comprarSobre(idCompra: string): Promise<ResumenCompra> {
   return api('/api/tienda/sobre/comprar', { cuerpo: { idCompra, moneda: 'fragmentos' } });
+}
+
+/** Pase premium (spec 013, FR-034): idempotente por `idCompra`. */
+export function comprarPase(moneda: 'fragmentos' | 'eur', idCompra: string): Promise<RespuestaCompraPase> {
+  return api('/api/tienda/pase-premium', { cuerpo: { idCompra, moneda } });
 }
 
 export function comprarColeccion(coleccionId: string, idCompra: string): Promise<ResumenCompra> {

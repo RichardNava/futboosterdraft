@@ -64,19 +64,31 @@ function Fila({ p }: { p: PartidaResumen }) {
   );
 }
 
+type MisPartidasDatos = { enCurso: PartidaResumen[]; terminadas: PartidaResumen[]; siguiente: string | null };
+
 /**
  * «Mis partidas» (FR-017; spec 004, FR-023 a FR-025): las partidas en curso y terminadas, con un acceso a la acción
  * pendiente. Sin partidas, el estado vacío lleva a «Nueva partida».
  */
 export function MisPartidas() {
-  const [datos, setDatos] = useState<{ enCurso: PartidaResumen[]; terminadas: PartidaResumen[] } | null>(null);
+  const [datos, setDatos] = useState<MisPartidasDatos | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cargandoMas, setCargandoMas] = useState(false);
+  const fallo = (e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se han podido cargar tus partidas. Comprueba la conexión y vuelve a intentarlo.');
 
   useEffect(() => {
-    api<{ enCurso: PartidaResumen[]; terminadas: PartidaResumen[] }>('/api/mis-partidas')
-      .then(setDatos)
-      .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se han podido cargar tus partidas. Comprueba la conexión y vuelve a intentarlo.'));
+    api<MisPartidasDatos>('/api/mis-partidas').then(setDatos).catch(fallo);
   }, []);
+
+  // Spec 013 (FR-024): las 5 siguientes, al final, sin recargar las que ya se ven.
+  const cargarMas = () => {
+    if (!datos?.siguiente) return;
+    setCargandoMas(true);
+    api<MisPartidasDatos>(`/api/mis-partidas?antes=${encodeURIComponent(datos.siguiente)}`)
+      .then((mas) => setDatos((d) => d && { ...d, terminadas: [...d.terminadas, ...mas.terminadas], siguiente: mas.siguiente }))
+      .catch(fallo)
+      .finally(() => setCargandoMas(false));
+  };
 
   if (error) return <PantallaError mensaje={error} />;
   if (!datos) return <PantallaCargando forma="filas" texto="Cargando tus partidas…" />;
@@ -118,6 +130,11 @@ export function MisPartidas() {
               <Fila key={p.id} p={p} />
             ))}
           </ul>
+        )}
+        {datos.siguiente && (
+          <button type="button" className="secundario cargar-mas" onClick={cargarMas} disabled={cargandoMas}>
+            Cargar más
+          </button>
         )}
       </section>
     </main>

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const CORE = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
 const jugadoresCore = (): Jugador[] => CORE;
 
-const INMUTABLES = ['id', 'stats', 'media', 'virtudes', 'defectos', 'nivel', 'demarcacion', 'posicion', 'nacionalidad', 'altura', 'fecha_nacimiento', 'imagen_bg'] as const;
+const INMUTABLES = ['id', 'stats', 'media', 'virtudes', 'defectos', 'nivel', 'demarcacion', 'posicion', 'nacionalidad', 'altura', 'fecha_nacimiento'] as const;
 
 describe('conIdentidad', () => {
   const base = jugadoresCore()[0]!;
@@ -39,6 +39,15 @@ describe('conIdentidad', () => {
     expect(v.apellidos).toBe('');
     expect(v.imagen).toBe(`/cartas/siluetas/${base.demarcacion.toLowerCase()}.svg`);
     expect(v.historia).toBe('');
+  });
+
+  // Spec 013, FR-006: la ilustración de Core identifica al futbolista; vuelve al fondo genérico de su demarcación.
+  it('alternativa: la ilustración de Core pasa al fondo genérico; otros fondos se conservan', () => {
+    const ilustrada: Jugador = { ...base, demarcacion: 'MED', imagen_bg: '/cartas/fondos/jugadores/7.webp' };
+    expect(conIdentidad(ilustrada, 'alternativa').imagen_bg).toBe('/cartas/fondos/med.svg');
+    expect(conIdentidad(ilustrada, 'real').imagen_bg).toBe('/cartas/fondos/jugadores/7.webp');
+    const propia: Jugador = { ...base, imagen_bg: '/cartas/fondos/otra-coleccion/7.webp' };
+    expect(conIdentidad(propia, 'alternativa').imagen_bg).toBe('/cartas/fondos/otra-coleccion/7.webp');
   });
 
   it('nunca cambia lo que usa el juego (FR-019)', () => {

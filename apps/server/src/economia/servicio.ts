@@ -22,6 +22,9 @@ import {
   type Nivel,
   type ParametrosEquilibrado,
   VENTA_CARTAS_CON_DINERO,
+  nuevoFin,
+  premiumActivo,
+  type EstadoPremium as EstadoPremiumDominio,
 } from '@fbd/domain';
 import type {
   CartaPoseida,
@@ -32,6 +35,8 @@ import type {
   RespuestaCompraCosmetico,
   RespuestaMovimientos,
   RespuestaTienda,
+  EstadoPremium,
+  RespuestaCompraPase,
 } from '@fbd/protocol';
 import { and, asc, desc, eq, lt, sql } from 'drizzle-orm';
 import { errores } from '../http/errores';
@@ -43,6 +48,8 @@ import {
   compras,
   cosmeticosUsuario,
   movimientosFragmentos,
+  partidas,
+  pasesPremium,
   saldosFragmentos,
   usuarios,
   type ResultadoCompraGuardado,
@@ -75,11 +82,17 @@ function descripcion(motivo: MotivoMovimiento, nombreCarta: string | undefined):
       return 'Compra de una colección';
     case 'compra_cosmetico':
       return 'Compra de un cosmético';
+    case 'nivel_rareza':
+      return 'Nivel de rareza';
+    case 'devolucion_nivel_rareza':
+      return 'Devolución del nivel de rareza';
+    case 'compra_pase_premium':
+      return 'Pase premium';
   }
 }
 
-type TipoProducto = 'coleccion' | 'sobre' | 'fragmentos' | 'cosmetico' | 'pack_cosmeticos';
-type MotivoCargo = 'compra_sobre' | 'compra_coleccion' | 'compra_cosmetico';
+type TipoProducto = 'coleccion' | 'sobre' | 'fragmentos' | 'cosmetico' | 'pack_cosmeticos' | 'pase_premium';
+type MotivoCargo = 'compra_sobre' | 'compra_coleccion' | 'compra_cosmetico' | 'compra_pase_premium' | 'nivel_rareza';
 /** `ResumenCompra` más los cosméticos entregados, que solo devuelven las compras de cosméticos. */
 type ResumenCompraInterno = ResumenCompra & { cosmeticos: string[] };
 
@@ -90,6 +103,7 @@ export class ServicioEconomia {
     private readonly cosmeticos: RepoCosmeticos,
     private readonly ajustes: ServicioAjustes,
     private readonly parametros: ParametrosEquilibrado = parametrosActuales(),
+    private readonly ahora: () => number = Date.now,
   ) {}
 
   /** Cartas con la identidad del ajuste vigente (spec 011, R12): colección, tienda e historial. */
@@ -260,6 +274,7 @@ export class ServicioEconomia {
         ...(saldo < p.precioSobreFragmentos ? { faltan: p.precioSobreFragmentos - saldo } : {}),
       },
       paquetes: p.paquetesFragmentos.map((x) => ({ id: x.id, fragmentos: x.fragmentos, precioCentimos: x.centimos })),
+      pasePremium: await this.productoPase(usuarioId),
     };
   }
 
@@ -338,6 +353,87 @@ export class ServicioEconomia {
       return { cartas: [], fragmentos: 0, duplicados: [], cosmeticos: [...pack.cosmeticos] };
     });
     return { idCompra, cosmeticos: r.cosmeticos, saldo: r.saldo };
+  }
+
+  // ---------- Pase premium y nivel de rareza (spec 013) ----------
+
+  /** Estado del pase (FR-036); sin fila, nunca comprado ni de cortesía. */
+  async estadoPremium(usuarioId: string, ejecutor: Ejecutor = this.db): Promise<EstadoPremiumDominio> {
+    const [fila] = await ejecutor.select().from(pasesPremium).where(eq(pasesPremium.usuarioId, usuarioId));
+    return { fin: fila?.fin?.getTime() ?? null, cortesia: fila?.cortesia ?? false };
+  }
+
+  async premium(usuarioId: string, ejecutor: Ejecutor = this.db): Promise<EstadoPremium> {
+    const e = await this.estadoPremium(usuarioId, ejecutor);
+    return { activo: premiumActivo(e, this.ahora()), cortesia: e.cortesia, fin: e.fin === null ? null : new Date(e.fin).toISOString() };
+  }
+
+  /** Compra del pase (FR-034): idempotente por `idCompra`; con el pase activo suma los días a su fin. */
+  async comprarPase(usuarioId: string, moneda: Moneda, idCompra: string): Promise<RespuestaCompraPase> {
+    const { pasePremium } = PARAMETROS_ECONOMIA;
+    const importe = moneda === 'eur' ? pasePremium.centimos : pasePremium.fragmentos;
+    const r = await this.comprar(usuarioId, idCompra, { tipo: 'pase_premium', id: 'pase-30', moneda, importe }, async (tx) => {
+      if (moneda === 'fragmentos') await this.cobrar(tx, usuarioId, importe, idCompra, 'compra_pase_premium');
+      const ahora = new Date(this.ahora());
+      const fin = new Date(nuevoFin(await this.estadoPremium(usuarioId, tx), ahora.getTime(), pasePremium.dias));
+      await tx
+        .insert(pasesPremium)
+        .values({ usuarioId, fin, actualizadoEn: ahora })
+        .onConflictDoUpdate({ target: pasesPremium.usuarioId, set: { fin, actualizadoEn: ahora } });
+      return { cartas: [], fragmentos: 0, duplicados: [] };
+    });
+    return { idCompra, saldo: r.saldo, premium: await this.premium(usuarioId) };
+  }
+
+  private async productoPase(usuarioId: string): Promise<RespuestaTienda['pasePremium']> {
+    const { pasePremium } = PARAMETROS_ECONOMIA;
+    const e = await this.estadoPremium(usuarioId);
+    return {
+      precioFragmentos: pasePremium.fragmentos,
+      precioCentimos: pasePremium.centimos,
+      dias: pasePremium.dias,
+      estado: e.fin || e.cortesia ? await this.premium(usuarioId) : null,
+    };
+  }
+
+  /** Saldo actual (para la pantalla de crear partida). */
+  async saldoDe(usuarioId: string): Promise<number> {
+    await this.asegurarColeccion(usuarioId);
+    return this.saldo(this.db, usuarioId);
+  }
+
+  /**
+   * Dentro de la transacción que crea la partida (FR-033): bloquea el saldo del anfitrión hasta el final. Así un envío
+   * repetido a la vez espera y encuentra la partida ya creada.
+   */
+  async bloquearSaldo(tx: Tx, usuarioId: string): Promise<number> {
+    await this.asegurarColeccion(usuarioId, tx);
+    await this.bloquear(tx, usuarioId);
+    return this.saldo(tx, usuarioId);
+  }
+
+  /** Cobro del nivel de rareza (FR-033), con la partida como referencia; `422 SALDO_INSUFICIENTE` si no alcanza. */
+  async cobrarRareza(tx: Tx, usuarioId: string, partidaId: string, precio: number): Promise<void> {
+    await this.cobrar(tx, usuarioId, precio, partidaId, 'nivel_rareza');
+  }
+
+  /** Devuelve el cobro del nivel de una partida cancelada antes del draft, una sola vez (índice único). */
+  async devolverCobroRareza(partidaId: string): Promise<boolean> {
+    return this.db.transaction(async (tx) => {
+      const [p] = await tx.select({ anfitrionId: partidas.anfitrionId, cobro: partidas.cobroRareza }).from(partidas).where(eq(partidas.id, partidaId));
+      if (!p?.cobro) return false;
+      const nuevo = await tx
+        .insert(movimientosFragmentos)
+        .values({ usuarioId: p.anfitrionId, importe: p.cobro, motivo: 'devolucion_nivel_rareza', referencia: partidaId })
+        .onConflictDoNothing()
+        .returning({ id: movimientosFragmentos.id });
+      if (!nuevo.length) return false;
+      await tx
+        .update(saldosFragmentos)
+        .set({ saldo: sql`${saldosFragmentos.saldo} + ${p.cobro}`, actualizadoEn: new Date() })
+        .where(eq(saldosFragmentos.usuarioId, p.anfitrionId));
+      return true;
+    });
   }
 
   // ---------- Ayudantes ----------

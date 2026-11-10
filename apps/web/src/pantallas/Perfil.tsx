@@ -15,7 +15,7 @@ import { SelectorEscudo } from '../componentes/SelectorEscudo';
 import { SelectorCelebracion } from '../componentes/SelectorCelebracion';
 import { SelectorSobre } from '../componentes/SelectorSobre';
 import { useAspecto } from '../estado/aspecto';
-import type { CuerpoAspecto } from '@fbd/protocol';
+import type { CuerpoAspecto, EstadoPremium } from '@fbd/protocol';
 
 interface PerfilVista {
   nombreEquipo: string | null;
@@ -81,24 +81,32 @@ export function Perfil() {
 
   return (
     <main className="pantalla perfil">
-      <h1>Mi perfil</h1>
+      <header className="perfil-cabecera">
+        <h1>Mi perfil</h1>
+        <EstadoPase />
+      </header>
       <p className="nota">Se usan como valores por defecto al crear o unirte a una partida.</p>
-      <div className="perfil-nombre">
-        <label htmlFor="perfil-nombre">Nombre del equipo</label>
-        <input
-          id="perfil-nombre"
-          value={nombre}
-          maxLength={40}
-          onChange={(e) => setNombre(e.target.value)}
-          aria-invalid={errorNombre ? true : undefined}
-          aria-describedby="perfil-nombre-ayuda"
-        />
-        <p id="perfil-nombre-ayuda" className={errorNombre ? 'error ayuda-campo' : 'nota ayuda-campo'}>
-          {errorNombre ?? `${normalizarNombre(nombre).length}/${NOMBRE_MAX} caracteres`}
-        </p>
+      {/* Spec 013 (FR-031): [equipaciones] | [escudo + sobre] y la celebración debajo; una columna en estrecho. */}
+      <div className="perfil-rejilla">
+        <section className="perfil-equipaciones" aria-label="Nombre y equipaciones">
+          <div className="perfil-nombre">
+            <label htmlFor="perfil-nombre">Nombre del equipo</label>
+            <input
+              id="perfil-nombre"
+              value={nombre}
+              maxLength={40}
+              onChange={(e) => setNombre(e.target.value)}
+              aria-invalid={errorNombre ? true : undefined}
+              aria-describedby="perfil-nombre-ayuda"
+            />
+            <p id="perfil-nombre-ayuda" className={errorNombre ? 'error ayuda-campo' : 'nota ayuda-campo'}>
+              {errorNombre ?? `${normalizarNombre(nombre).length}/${NOMBRE_MAX} caracteres`}
+            </p>
+          </div>
+          <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
+        </section>
+        <AspectoPerfil />
       </div>
-      <EditorEquipacion equipaciones={equipaciones} onChange={setEquipaciones} />
-      <AspectoPerfil />
       <EliminarCuenta />
       <BarraPrincipal
         principal={{
@@ -133,17 +141,17 @@ function AspectoPerfil() {
     }
   };
   return (
-    <div className="perfil-aspecto">
-      <section aria-labelledby="titulo-escudo">
+    <>
+      <section className="perfil-escudo" aria-labelledby="titulo-escudo">
         <h2 id="titulo-escudo">Escudo</h2>
         {aspecto.escudoAsignado && <p className="nota">Te hemos asignado este escudo: elige otro cuando quieras.</p>}
         <SelectorEscudo elegido={aspecto.escudo} onElegir={(escudo) => void guardar({ escudo })} desactivado={guardando} />
       </section>
-      <section aria-labelledby="titulo-sobre">
+      <section className="perfil-sobre" aria-labelledby="titulo-sobre">
         <h2 id="titulo-sobre">Sobre</h2>
         <SelectorSobre aspecto={aspecto} onCambiar={(cambios) => void guardar(cambios)} desactivado={guardando} />
       </section>
-      <section aria-labelledby="titulo-celebracion">
+      <section className="perfil-celebracion" aria-labelledby="titulo-celebracion">
         <h2 id="titulo-celebracion">Celebración de gol</h2>
         <p className="nota">Se ve en el campo cada vez que marcas en la simulación 2D. Vale para las partidas nuevas.</p>
         <SelectorCelebracion
@@ -153,7 +161,24 @@ function AspectoPerfil() {
           desactivado={guardando}
         />
       </section>
-    </div>
+    </>
+  );
+}
+
+/** Fecha de fin del pase premium, o «Activo» con cortesía (spec 013, FR-034). Nada si no está activo. */
+function EstadoPase() {
+  const [premium, setPremium] = useState<EstadoPremium | null>(null);
+  useEffect(() => {
+    api<EstadoPremium>('/api/premium').then(setPremium).catch(() => setPremium(null));
+  }, []);
+  if (!premium?.activo) return null;
+  return (
+    <p className="insignia perfil-pase" data-testid="perfil-pase">
+      Pase premium:{' '}
+      {premium.cortesia || !premium.fin
+        ? 'activo'
+        : `activo hasta el ${new Date(premium.fin).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}`}
+    </p>
   );
 }
 
