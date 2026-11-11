@@ -6,10 +6,13 @@ test('«Nueva partida» ofrece Fácil, Normal, Difícil y Extrema, con Normal pr
   await page.goto('/');
   await page.getByRole('button', { name: 'Jugar como invitado' }).click();
   await expect(page.getByRole('heading', { name: 'Nueva partida' })).toBeVisible();
-  const grupo = page.getByRole('group', { name: 'Dificultad' });
-  await expect(grupo.getByRole('radio')).toHaveCount(4);
-  await expect(grupo.getByRole('radio', { name: /^Normal/ })).toBeChecked();
-  await grupo.getByRole('radio', { name: /^Difícil/ }).check();
+  // Spec 013, ronda 2: deslizador por tramos (Fácil, Normal, Difícil, Extrema).
+  const deslizador = page.getByRole('slider', { name: /^Dificultad/ });
+  await expect(deslizador).toHaveAttribute('max', '3');
+  await expect(deslizador).toHaveAttribute('aria-valuetext', /^Normal\./);
+  await deslizador.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(deslizador).toHaveAttribute('aria-valuetext', /^Difícil\./);
   await page.getByRole('button', { name: 'Crear partida' }).click();
   await expect(page.getByRole('heading', { name: 'Sala' })).toBeVisible();
   await expect(page.getByTestId('dificultad')).toContainText('Difícil');

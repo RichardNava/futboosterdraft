@@ -6,10 +6,14 @@ test('Moderado preseleccionado; elegir Rico ⇒ la sala muestra «Rareza: Rico»
   await page.goto('/');
   await page.getByRole('button', { name: 'Jugar como invitado' }).click();
   await expect(page.getByRole('heading', { name: 'Nueva partida' })).toBeVisible();
-  const grupo = page.getByRole('group', { name: 'Rareza del draft' });
-  await expect(grupo.getByRole('radio')).toHaveCount(5);
-  await expect(grupo.getByRole('radio', { name: /^Moderado/ })).toBeChecked();
-  await grupo.getByRole('radio', { name: /^Rico/ }).check();
+  // Ronda 2: deslizador por tramos (Pobre, Escaso, Moderado, Abundante, Rico).
+  const deslizador = page.getByRole('group', { name: 'Rareza del draft' }).getByRole('slider');
+  await expect(deslizador).toHaveAttribute('max', '4');
+  await expect(deslizador).toHaveAttribute('aria-valuetext', /^Moderado\./);
+  await deslizador.focus();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await expect(deslizador).toHaveAttribute('aria-valuetext', /^Rico\./);
   await page.getByRole('button', { name: 'Crear partida' }).click();
   await expect(page.getByRole('heading', { name: 'Sala' })).toBeVisible();
   await expect(page.getByTestId('rareza')).toContainText('Rareza: Rico');

@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/CrearPartida.tsx": {
-    "mtime": 1794271355.1149788,
-    "seen": 1794272531.7145011,
-    "ast_hash": "13908a27ece43bec459c213aa1470c5c",
+    "mtime": 1794417753.335538,
+    "seen": 1794418023.9352262,
+    "ast_hash": "7bf6b573dbd9e6cc64ac3a58ac9113e8",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Draft.tsx": {
@@ -2382,9 +2382,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BarraPrincipal.tsx": {
-    "mtime": 1794243846.9082475,
-    "seen": 1794243975.0180507,
-    "ast_hash": "bda0f452c95217d4c1f19de85dc0a883",
+    "mtime": 1794353503.3304486,
+    "seen": 1794353716.9974053,
+    "ast_hash": "7c1a447e8ff4f2b5c68fabaa6d0da899",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Camiseta.tsx": {
@@ -2766,9 +2766,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/dificultad.spec.ts": {
-    "mtime": 1793982205.1857936,
-    "seen": 1793983527.6185083,
-    "ast_hash": "085f77b9fa6e1ed99d5e90b2ee6ecf44",
+    "mtime": 1794353593.0063448,
+    "seen": 1794353717.013702,
+    "ast_hash": "5762a705b32b26b95842f6d8c3aa7f62",
     "semantic_hash": ""
   },
   "tools/balance/src/sondaGoleadores.ts": {
@@ -3390,9 +3390,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/rasgos.ts": {
-    "mtime": 1793527628.8504648,
-    "seen": 1793543274.8929052,
-    "ast_hash": "0d4904704852699fca63b74c2a195262",
+    "mtime": 1794353430.8027925,
+    "seen": 1794353717.053885,
+    "ast_hash": "7d97fc5ab32853e5a1ec8bfd32ca3f71",
     "semantic_hash": ""
   },
   "tools/fixtures/src/asignarRasgos.ts": {
@@ -5016,8 +5016,8 @@
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/sumario.md": {
-    "mtime": 1794267909.6159823,
-    "seen": 1794272531.8214557,
+    "mtime": 1794417035.9393785,
+    "seen": 1794418024.0138946,
     "ast_hash": "d47122786e09ff7c5f21fd69ec42d586",
     "semantic_hash": ""
   },
@@ -9114,9 +9114,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/rareza.spec.ts": {
-    "mtime": 1794271644.983321,
-    "seen": 1794272531.7220676,
-    "ast_hash": "dbaca2c5b103855b7482a74e5e2c7b7f",
+    "mtime": 1794353593.0066032,
+    "seen": 1794353717.0169065,
+    "ast_hash": "07f56525413f2450a5d162de96e594d7",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/retoques-013.spec.ts": {
@@ -9180,15 +9180,15 @@
     "semantic_hash": ""
   },
   "tools/fixtures/src/fondosCore.ts": {
-    "mtime": 1794267836.3202877,
-    "seen": 1794272531.7617612,
-    "ast_hash": "98bfa7e6caafd3383cee220e2a25df86",
+    "mtime": 1794353628.5870264,
+    "seen": 1794353717.057206,
+    "ast_hash": "7a11531ba192b8412807184f084ad1fc",
     "semantic_hash": ""
   },
   "tools/fixtures/tests/fondosCore.test.ts": {
-    "mtime": 1794267865.489672,
-    "seen": 1794272531.7625659,
-    "ast_hash": "02e621056b86533fdb82ba4d770eef4f",
+    "mtime": 1794353628.587984,
+    "seen": 1794353717.0579922,
+    "ast_hash": "6b6e7e0dba7b5752becd488d38956893",
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/checklists/requirements.md": {
@@ -9246,21 +9246,21 @@
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/tasks.md": {
-    "mtime": 1794278935.4804037,
-    "seen": 1794278956.3903232,
-    "ast_hash": "917e93c35575dd6500f6ddccdd5c18b5",
+    "mtime": 1794417988.5056558,
+    "seen": 1794418024.0220206,
+    "ast_hash": "bf6bba9b597300a17d87cd6270b45c14",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/1.webp": {
-    "mtime": 1794267892.552,
-    "seen": 1794272531.8518465,
-    "ast_hash": "5374c55462c4001ecf6a50ad1412e235",
+    "mtime": 1794353640.583,
+    "seen": 1794353717.107254,
+    "ast_hash": "430695a6a7e9717b5a754803d155a17c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/10.webp": {
-    "mtime": 1794267883.337,
-    "seen": 1794272531.8518493,
-    "ast_hash": "93560906c2aa5cc8ab7f020757757fba",
+    "mtime": 1794353640.248,
+    "seen": 1794353717.1072567,
+    "ast_hash": "67e1d96c8ebfd07040a0c2fe2f1d27fb",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/100.webp": {
@@ -9522,9 +9522,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/14.webp": {
-    "mtime": 1794267887.298,
-    "seen": 1794272531.8519347,
-    "ast_hash": "def90e628ccf4aad582a9816e2665bad",
+    "mtime": 1794353640.32,
+    "seen": 1794353717.113457,
+    "ast_hash": "5d49ca757e527ab0a5f805684b66e80f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/140.webp": {
@@ -9588,9 +9588,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/15.webp": {
-    "mtime": 1794267888.188,
-    "seen": 1794272531.8519535,
-    "ast_hash": "2c0a7779634f3c4ed21edffda41ee1c8",
+    "mtime": 1794353640.407,
+    "seen": 1794353717.114814,
+    "ast_hash": "5595eb8cd971b30de6e32d56bf79f699",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/150.webp": {
@@ -9654,9 +9654,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/16.webp": {
-    "mtime": 1794267889.128,
-    "seen": 1794272531.8519726,
-    "ast_hash": "75c2e4c4b8afb8fe6fff740864aaf4ca",
+    "mtime": 1794353640.5,
+    "seen": 1794353717.1161497,
+    "ast_hash": "1bc7c3c2cab149a4d713fac52755c4be",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/160.webp": {
@@ -9918,15 +9918,15 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/2.webp": {
-    "mtime": 1794267901.617,
-    "seen": 1794272531.8520856,
-    "ast_hash": "3f45d95c586393889a336e128a12fcbc",
+    "mtime": 1794353642.155,
+    "seen": 1794353717.1219292,
+    "ast_hash": "0403648f1cee2cd0c4cab6670dbaef88",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/20.webp": {
-    "mtime": 1794267893.481,
-    "seen": 1794272531.8520877,
-    "ast_hash": "e62c859b432f6abe611917bee48a6642",
+    "mtime": 1794353640.684,
+    "seen": 1794353717.1219313,
+    "ast_hash": "29bb28a0a2e7dce7ca9f05632a09eeea",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/200.webp": {
@@ -10266,9 +10266,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/251.webp": {
-    "mtime": 1794267897.248,
-    "seen": 1794272531.8522322,
-    "ast_hash": "5e421b40510409f81010b0f8dbdf0c35",
+    "mtime": 1794353640.765,
+    "seen": 1794353717.1297076,
+    "ast_hash": "6ac0b585344deff8cd8b4d32140b8df3",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/252.webp": {
@@ -10278,9 +10278,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/253.webp": {
-    "mtime": 1794267897.413,
-    "seen": 1794272531.8522356,
-    "ast_hash": "dd620c803209da67e027dfab0b9f20b3",
+    "mtime": 1794353640.84,
+    "seen": 1794353717.1298542,
+    "ast_hash": "6b38cc2105afb349b80f1c9f7bfc2cca",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/254.webp": {
@@ -10296,9 +10296,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/256.webp": {
-    "mtime": 1794267897.659,
-    "seen": 1794272531.8522408,
-    "ast_hash": "b4f908989ef6f1939afea637f08372f6",
+    "mtime": 1794353640.921,
+    "seen": 1794353717.1301308,
+    "ast_hash": "6a0e68e65e5289f3362eb833995a8e12",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/257.webp": {
@@ -10314,15 +10314,15 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/259.webp": {
-    "mtime": 1794267897.91,
-    "seen": 1794272531.8522463,
-    "ast_hash": "6b87eac50ee916b4376d7fd5320a46a3",
+    "mtime": 1794353640.997,
+    "seen": 1794353717.1304014,
+    "ast_hash": "7d48fc38b75a3ad16610d185c392e3af",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/26.webp": {
-    "mtime": 1794267898.892,
-    "seen": 1794272531.8522477,
-    "ast_hash": "e82cce342318d62e0db5e28cdfcbdc62",
+    "mtime": 1794353641.573,
+    "seen": 1794353717.1304038,
+    "ast_hash": "e00e757337c3397412c3a5ead6982f12",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/260.webp": {
@@ -10332,21 +10332,21 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/261.webp": {
-    "mtime": 1794267898.15,
-    "seen": 1794272531.8522513,
-    "ast_hash": "530319f4b0643fe7ed7df9fe3b28d8e3",
+    "mtime": 1794353641.076,
+    "seen": 1794353717.130542,
+    "ast_hash": "933f45655ac7bcb61652b446efbd1451",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/262.webp": {
-    "mtime": 1794267898.219,
-    "seen": 1794272531.8522527,
-    "ast_hash": "bc8099e0eb08d46edab36cd5b9759ac1",
+    "mtime": 1794353641.138,
+    "seen": 1794353717.130544,
+    "ast_hash": "dfd1b737b9dba1764faf5f450770326c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/263.webp": {
-    "mtime": 1794267898.305,
-    "seen": 1794272531.8522546,
-    "ast_hash": "ff5daab667707e408b471f5c65085741",
+    "mtime": 1794353641.216,
+    "seen": 1794353717.130546,
+    "ast_hash": "6a877b640063c4befb418815579bb303",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/264.webp": {
@@ -10356,21 +10356,21 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/265.webp": {
-    "mtime": 1794267898.464,
-    "seen": 1794272531.8522584,
-    "ast_hash": "3b688d26b9876c0800ed171691f9326b",
+    "mtime": 1794353641.315,
+    "seen": 1794353717.1306827,
+    "ast_hash": "02ccfa06eb177a033e1d677072727da5",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/266.webp": {
-    "mtime": 1794267898.554,
-    "seen": 1794272531.85226,
-    "ast_hash": "59aabc78fc8f7a8540a795e408364004",
+    "mtime": 1794353641.399,
+    "seen": 1794353717.1306841,
+    "ast_hash": "3c4212facc324003ab77f51aad1e8f44",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/267.webp": {
-    "mtime": 1794267898.654,
-    "seen": 1794272531.8522623,
-    "ast_hash": "0f6b780f5bd2b8dfc9430b233b51ac32",
+    "mtime": 1794353641.484,
+    "seen": 1794353717.1306868,
+    "ast_hash": "2d4e3cee05ff796853e150f18d4c9bd9",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/268.webp": {
@@ -10386,9 +10386,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/27.webp": {
-    "mtime": 1794267899.782,
-    "seen": 1794272531.8522673,
-    "ast_hash": "d3dbb3a992d078bc7b7177b48354d4cb",
+    "mtime": 1794353642.073,
+    "seen": 1794353717.1309552,
+    "ast_hash": "194f4208c04d3f12da2122a1e853710a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/270.webp": {
@@ -10416,15 +10416,15 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/274.webp": {
-    "mtime": 1794267899.296,
-    "seen": 1794272531.8522756,
-    "ast_hash": "5d805c59d71c729d745b7c83c48053b3",
+    "mtime": 1794353641.667,
+    "seen": 1794353717.1314907,
+    "ast_hash": "506d7fa8e109cb5c08a63febdcd95128",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/275.webp": {
-    "mtime": 1794267899.373,
-    "seen": 1794272531.8522775,
-    "ast_hash": "a69ce7a7736dd2817ad51ae119e31d2d",
+    "mtime": 1794353641.754,
+    "seen": 1794353717.131493,
+    "ast_hash": "16cd0d6ce97df416bdac728247414edf",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/276.webp": {
@@ -10434,21 +10434,21 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/277.webp": {
-    "mtime": 1794267899.543,
-    "seen": 1794272531.8522809,
-    "ast_hash": "2d98d070f0dce2a4837a56517fb9ba1b",
+    "mtime": 1794353641.835,
+    "seen": 1794353717.1316292,
+    "ast_hash": "593064a5e1a16b0a337f2992cb653335",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/278.webp": {
-    "mtime": 1794267899.624,
-    "seen": 1794272531.8522825,
-    "ast_hash": "ecbe65d04d478dd0a6ca25c3fa1ff963",
+    "mtime": 1794353641.916,
+    "seen": 1794353717.1316319,
+    "ast_hash": "b1aa42d984013c6ff3dcc5e6a0deadaf",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/279.webp": {
-    "mtime": 1794267899.706,
-    "seen": 1794272531.852285,
-    "ast_hash": "9e3019cad75edba27376fc9c00ba2cc2",
+    "mtime": 1794353641.996,
+    "seen": 1794353717.131634,
+    "ast_hash": "a6b68c66099d2bfb705eb5d7d5e2c98a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/28.webp": {
@@ -10602,15 +10602,15 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/31.webp": {
-    "mtime": 1794267901.859,
-    "seen": 1794272531.8523302,
-    "ast_hash": "e0f3381c573b397b0e03d65456fab886",
+    "mtime": 1794353642.241,
+    "seen": 1794353717.1350102,
+    "ast_hash": "a01b15ec0a053dad5e16a7dc62f94c9b",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/32.webp": {
-    "mtime": 1794267901.937,
-    "seen": 1794272531.8523319,
-    "ast_hash": "232a0ddf585f389838a5fc2457307dc0",
+    "mtime": 1794353642.333,
+    "seen": 1794353717.1350126,
+    "ast_hash": "44816d24d7ea97fead4440e12538c4a6",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/33.webp": {
@@ -10632,9 +10632,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/36.webp": {
-    "mtime": 1794267902.281,
-    "seen": 1794272531.8523393,
-    "ast_hash": "6953a787feb8454248dca8070db21760",
+    "mtime": 1794353642.427,
+    "seen": 1794353717.1354134,
+    "ast_hash": "6deff04528a56789fb8fecba12d75729",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/37.webp": {
@@ -10650,9 +10650,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/39.webp": {
-    "mtime": 1794267902.546,
-    "seen": 1794272531.8523443,
-    "ast_hash": "89d5d9d7b7f00d5e51702309b72c18ce",
+    "mtime": 1794353642.512,
+    "seen": 1794353717.1356869,
+    "ast_hash": "eb23d8b7ada3e4db8c034c048b48ffbf",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/4.webp": {
@@ -10668,9 +10668,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/41.webp": {
-    "mtime": 1794267902.828,
-    "seen": 1794272531.8523493,
-    "ast_hash": "7420ed18e2c57cca3c1757755aa4ed95",
+    "mtime": 1794353642.627,
+    "seen": 1794353717.1359568,
+    "ast_hash": "94658a76656d42871a4762aa900b2601",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/42.webp": {
@@ -10692,21 +10692,21 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/45.webp": {
-    "mtime": 1794267903.184,
-    "seen": 1794272531.8523562,
-    "ast_hash": "71338a0e563025e123f622eee97b3804",
+    "mtime": 1794353642.717,
+    "seen": 1794353717.1363645,
+    "ast_hash": "4ad23f7e7ecccbfb053d52ca9db7baa6",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/46.webp": {
-    "mtime": 1794267903.269,
-    "seen": 1794272531.8523579,
-    "ast_hash": "c276cac9af5850e00b8cdd561c01eae7",
+    "mtime": 1794353642.816,
+    "seen": 1794353717.1363666,
+    "ast_hash": "292a4ef32939a2858f71f6fa089963cd",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/47.webp": {
-    "mtime": 1794267903.35,
-    "seen": 1794272531.8523598,
-    "ast_hash": "1ac271dcf67a5a243a5401add9535afd",
+    "mtime": 1794353642.897,
+    "seen": 1794353717.1363683,
+    "ast_hash": "b71b372337bad94b7b8a9a1e78507322",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/48.webp": {
@@ -10716,15 +10716,15 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/49.webp": {
-    "mtime": 1794267903.523,
-    "seen": 1794272531.8523629,
-    "ast_hash": "20454d416ce85a068ec92273c6a8258d",
+    "mtime": 1794353642.983,
+    "seen": 1794353717.136506,
+    "ast_hash": "d5671f9143af16115fa51f5ce214c556",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/5.webp": {
-    "mtime": 1794267904.517,
-    "seen": 1794272531.8523643,
-    "ast_hash": "ef59bf0f4001b2d1e06168f2f10091a2",
+    "mtime": 1794353643.397,
+    "seen": 1794353717.136508,
+    "ast_hash": "882a8cb378b7aa3a4ee2d5a5032f7d82",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/50.webp": {
@@ -10734,21 +10734,21 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/51.webp": {
-    "mtime": 1794267903.767,
-    "seen": 1794272531.8523676,
-    "ast_hash": "3b8db44bb1966d29e4a4f6f151efb733",
+    "mtime": 1794353643.07,
+    "seen": 1794353717.136654,
+    "ast_hash": "90dc43832f88ebe54e3a1fc2224ace04",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/52.webp": {
-    "mtime": 1794267903.86,
-    "seen": 1794272531.852369,
-    "ast_hash": "c0fc631f34ebdcf6ff19c267c135d642",
+    "mtime": 1794353643.15,
+    "seen": 1794353717.1366558,
+    "ast_hash": "8ddd96f96566e9d69d7721ada4f15f45",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/53.webp": {
-    "mtime": 1794267903.946,
-    "seen": 1794272531.8523707,
-    "ast_hash": "90d8bf44ad91fe0e8f785959ee91d1c4",
+    "mtime": 1794353643.23,
+    "seen": 1794353717.1366575,
+    "ast_hash": "081dced954c392834905fb39d8fb0e20",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/54.webp": {
@@ -10764,9 +10764,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/56.webp": {
-    "mtime": 1794267904.193,
-    "seen": 1794272531.8523757,
-    "ast_hash": "01a4102bb44c96b7f0062fde7d9c16c3",
+    "mtime": 1794353643.32,
+    "seen": 1794353717.1369293,
+    "ast_hash": "b8cac574a4ea75b75bd26ce9ab1292b9",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/57.webp": {
@@ -10788,9 +10788,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/6.webp": {
-    "mtime": 1794267905.452,
-    "seen": 1794272531.8523827,
-    "ast_hash": "71481764b20527076fef57bea0661e67",
+    "mtime": 1794353643.761,
+    "seen": 1794353717.1373305,
+    "ast_hash": "62e1a44837cd478ad14ce90b1196bd5a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/60.webp": {
@@ -10806,9 +10806,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/62.webp": {
-    "mtime": 1794267904.756,
-    "seen": 1794272531.8523877,
-    "ast_hash": "85eed70a13e1684c22b54593d3b26a33",
+    "mtime": 1794353643.481,
+    "seen": 1794353717.1378577,
+    "ast_hash": "cea4b2bd28a9bff2003d14a5af21b465",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/63.webp": {
@@ -10818,9 +10818,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/64.webp": {
-    "mtime": 1794267904.944,
-    "seen": 1794272531.8523912,
-    "ast_hash": "4f74c31e7585263d2cf2d0f07fb8faac",
+    "mtime": 1794353643.577,
+    "seen": 1794353717.1381207,
+    "ast_hash": "4a8ee6ecde662aaed988e58e032c5efe",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/65.webp": {
@@ -10842,9 +10842,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/68.webp": {
-    "mtime": 1794267905.284,
-    "seen": 1794272531.852398,
-    "ast_hash": "a69e8ae4f1704c69b927fea82eed46df",
+    "mtime": 1794353643.672,
+    "seen": 1794353717.138825,
+    "ast_hash": "3adba369b4f2d9e6f6a45a18d2e55d02",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/69.webp": {
@@ -10872,9 +10872,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/72.webp": {
-    "mtime": 1794267905.696,
-    "seen": 1794272531.852406,
-    "ast_hash": "396385523fd945ccfe6e18eddc899286",
+    "mtime": 1794353643.85,
+    "seen": 1794353717.1397455,
+    "ast_hash": "e2cbb5d0e105590b6419d2eef91898cd",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/73.webp": {
@@ -10890,15 +10890,15 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/75.webp": {
-    "mtime": 1794267905.952,
-    "seen": 1794272531.852412,
-    "ast_hash": "6b62297dbe9f90d7b67833c9f69e3619",
+    "mtime": 1794353643.929,
+    "seen": 1794353717.1402228,
+    "ast_hash": "4851a7ded6e7db4bfbad0d1d8b780d9e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/76.webp": {
-    "mtime": 1794267906.032,
-    "seen": 1794272531.8524144,
-    "ast_hash": "ced490289eaee085de3e83f41021674d",
+    "mtime": 1794353644.008,
+    "seen": 1794353717.1402276,
+    "ast_hash": "b1aa42d984013c6ff3dcc5e6a0deadaf",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/77.webp": {
@@ -10908,9 +10908,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/78.webp": {
-    "mtime": 1794267906.197,
-    "seen": 1794272531.8524175,
-    "ast_hash": "4b32fe2a66a9635de902374666a3278a",
+    "mtime": 1794353644.092,
+    "seen": 1794353717.1404643,
+    "ast_hash": "55861f92c0b3cbc929e4b8ab9642b4e9",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/79.webp": {
@@ -10926,9 +10926,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/80.webp": {
-    "mtime": 1794267906.434,
-    "seen": 1794272531.8524227,
-    "ast_hash": "47649df39577a84bf42ce8032185154b",
+    "mtime": 1794353644.179,
+    "seen": 1794353717.1409261,
+    "ast_hash": "99ed3b6d90e2091f21498bccc6be4399",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/81.webp": {
@@ -10944,9 +10944,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/83.webp": {
-    "mtime": 1794267906.693,
-    "seen": 1794272531.8524282,
-    "ast_hash": "349d86ae0a32e7c887297d57bca717fb",
+    "mtime": 1794353644.27,
+    "seen": 1794353717.1413834,
+    "ast_hash": "41b4a94bce9f7c148abe616ca766b117",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/84.webp": {
@@ -10962,15 +10962,15 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/86.webp": {
-    "mtime": 1794267906.97,
-    "seen": 1794272531.8524334,
-    "ast_hash": "cdac89ec520fce0f57c334e905d1ed10",
+    "mtime": 1794353644.357,
+    "seen": 1794353717.1418607,
+    "ast_hash": "2198d5f032f31e7403eff66f2e8c9614",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/87.webp": {
-    "mtime": 1794267907.057,
-    "seen": 1794272531.852435,
-    "ast_hash": "6f1fd4060907461f4a7343eee8aa3a49",
+    "mtime": 1794353644.449,
+    "seen": 1794353717.1418707,
+    "ast_hash": "0cf5047e967b6e776933e6d748c6a017",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/88.webp": {
@@ -10986,9 +10986,9 @@
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/9.webp": {
-    "mtime": 1794267908.415,
-    "seen": 1794272531.85244,
-    "ast_hash": "8e79bae2cb9baf982f26a9698279f393",
+    "mtime": 1794353644.521,
+    "seen": 1794353717.142349,
+    "ast_hash": "71fb33542d70d0b7558f4d0645d52892",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/90.webp": {
@@ -11051,1804 +11051,10 @@
     "ast_hash": "723cf527682e9e7c37c284d68759c59b",
     "semantic_hash": ""
   },
-  "jugadores_bg/100_Guido_Rodriguez.png": {
-    "mtime": 1794107826.5610979,
-    "seen": 1794272531.964817,
-    "ast_hash": "c47170f3da7e9d5aa285a45f496504fd",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/101_Lamine_Camara.png": {
-    "mtime": 1794107931.136209,
-    "seen": 1794272531.964823,
-    "ast_hash": "1c209d4aa0a8d399078bd8de153f95e4",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/102_Lennart_Karl.png": {
-    "mtime": 1794108111.8752942,
-    "seen": 1794272531.9648256,
-    "ast_hash": "06028f953fab807f94438709ece2aa20",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/103_Luis_Milla_Manzanares.png": {
-    "mtime": 1793912896.0,
-    "seen": 1794272531.9648287,
-    "ast_hash": "9798cbaf176a171e4ab580fa0435102d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/104_Kobbie_Mainoo.png": {
-    "mtime": 1794166563.700141,
-    "seen": 1794272531.9648309,
-    "ast_hash": "052b12086a7d90f47c7512a593443af8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/105_Johan_Manzambi.png": {
-    "mtime": 1794166524.0914435,
-    "seen": 1794272531.9648335,
-    "ast_hash": "7d4a8258ff1be4ea5ab9772af0ea8256",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/106_Marc_Bernal_Casas.png": {
-    "mtime": 1794018536.636032,
-    "seen": 1794272531.964837,
-    "ast_hash": "95ad8e352b90b0ea3897b20cecd05b62",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/107_Franco_Mastantuono.png": {
-    "mtime": 1793912710.0,
-    "seen": 1794272531.9648404,
-    "ast_hash": "7dc8fddc57994a8716b3a3f7fcfbbbaa",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/108_Mateus_Fernandes.png": {
-    "mtime": 1793912710.0,
-    "seen": 1794272531.9648433,
-    "ast_hash": "139e63c34a70cac9e2d078b94c1ebc13",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/109_Senny_Mayulu.png": {
-    "mtime": 1793913694.0,
-    "seen": 1794272531.964845,
-    "ast_hash": "98f2524f70df4c077419e68af5237a7d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/10_diogo_costa.png": {
-    "mtime": 1794144753.040392,
-    "seen": 1794272531.964848,
-    "ast_hash": "8bc270b27cc86dc08c64330bd352a1a0",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/110_Ibrahim_Maza.png": {
-    "mtime": 1794018409.2563834,
-    "seen": 1794272531.9648528,
-    "ast_hash": "f39da02ff4c177269f110ac403080807",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/111_Alberto_Moleiro.png": {
-    "mtime": 1794018353.695716,
-    "seen": 1794272531.9648576,
-    "ast_hash": "fc1e7d6026435bd6be19d79accdf8371",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/112_Felix_Nmecha.png": {
-    "mtime": 1793913694.0,
-    "seen": 1794272531.9648604,
-    "ast_hash": "4b706f081892d1fdf86b5dbe8eb2dfa4",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/113_Aleksandar_Pavlovic.png": {
-    "mtime": 1794166289.2998312,
-    "seen": 1794272531.9648638,
-    "ast_hash": "9fc629910ef255bc22047c46a7d47203",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/114_Ismael_Saibari.png": {
-    "mtime": 1793913696.0,
-    "seen": 1794272531.9648666,
-    "ast_hash": "ee4689bc23b562ad06255a47a42af002",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/115_Mamadou_Sangare.png": {
-    "mtime": 1793914622.0,
-    "seen": 1794272531.96487,
-    "ast_hash": "8311aa4aa44b2dc56c59ca08eb760fc7",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/116_Petar_Sucic.png": {
-    "mtime": 1794018211.7302837,
-    "seen": 1794272531.9648738,
-    "ast_hash": "ec3c1b4a904f30f5424adb7fb7470ba6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/117_Thiago_Pitarch.png": {
-    "mtime": 1793914622.0,
-    "seen": 1794272531.9648767,
-    "ast_hash": "caa77c04a14d94e4d5aa790f6bceefc2",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/118_Adam_Wharton.png": {
-    "mtime": 1793914624.0,
-    "seen": 1794272531.9648783,
-    "ast_hash": "17848c9e513dbf81d3dd65c192bb3830",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/119_Maghnes_Akliouche.png": {
-    "mtime": 1793914622.0,
-    "seen": 1794272531.964881,
-    "ast_hash": "e996281f05981a8fa1f1f605d3a155b7",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/11_gregor_kobel.png": {
-    "mtime": 1794145081.636687,
-    "seen": 1794272531.964883,
-    "ast_hash": "6ffc0b22088046f03020927b275d010b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/120_Alejandro_Baena.png": {
-    "mtime": 1794166486.240735,
-    "seen": 1794272531.9648857,
-    "ast_hash": "d34cb5fda1816a6007c1d5eeb8fc6450",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/121_Arda_Guler.png": {
-    "mtime": 1793920574.7225554,
-    "seen": 1794272531.964888,
-    "ast_hash": "2d1f7c8977a8f6d09dbcb2acf5811a7f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/122_Pablo_Barrios.png": {
-    "mtime": 1793920518.2220485,
-    "seen": 1794272531.96489,
-    "ast_hash": "71f065b16b5292149d5a93d5a84ffbfc",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/123_Eduardo_Camavinga.png": {
-    "mtime": 1793920451.1901498,
-    "seen": 1794272531.964892,
-    "ast_hash": "e8ef7d4a1e9bca92b88c9bf63519f9dc",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/124_Rayan_Cherki.png": {
-    "mtime": 1793920367.2952945,
-    "seen": 1794272531.964895,
-    "ast_hash": "5b793fb230bcc4c1ec544425e5e31492",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/125_Rodrigo_De_Paul.png": {
-    "mtime": 1793920289.1137333,
-    "seen": 1794272531.9648967,
-    "ast_hash": "4cedb67a4e4a8bb6cbb76f7d51544ccc",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/126_Elliot_Anderson.png": {
-    "mtime": 1794166414.7049806,
-    "seen": 1794272531.9648988,
-    "ast_hash": "d818d20f535f5231e060e4f9c28a74c3",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/127_eberechi_eze.png": {
-    "mtime": 1794017672.932853,
-    "seen": 1794272531.9649017,
-    "ast_hash": "6609f31564a146e0c882d8fc8252e0bf",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/128_fermin_lopez.png": {
-    "mtime": 1794017552.5549333,
-    "seen": 1794272531.9649043,
-    "ast_hash": "42c54161b9f4f5bd521ddabcfe316ecd",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/129_morgan_gibbs_white.png": {
-    "mtime": 1794017454.9435308,
-    "seen": 1794272531.9649067,
-    "ast_hash": "22c3c61a2e9e7ce20fcfc6646525a555",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/12_david_raya.png": {
-    "mtime": 1794145528.0330193,
-    "seen": 1794272531.964909,
-    "ast_hash": "35bb1e525a17d9ad4d5fb92514b22b07",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/130_Morten_Hjulmand.png": {
-    "mtime": 1793921924.9912138,
-    "seen": 1794272531.9649117,
-    "ast_hash": "9e225bd983975bbab5c94e29bfbcc1ca",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/131_Boubacar_Kamara.png": {
-    "mtime": 1793922230.0363314,
-    "seen": 1794272531.9649131,
-    "ast_hash": "753a54d32bd3aea1089c623b0a5a7c65",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/132_Manu_Kone.png": {
-    "mtime": 1793922659.8493552,
-    "seen": 1794272531.9649162,
-    "ast_hash": "7139e79743d0099f8499fb91ef2f4b8a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/133_marcos_llorente.png": {
-    "mtime": 1794017344.3031902,
-    "seen": 1794272531.9649186,
-    "ast_hash": "1dcf6ce264996999ffd0dc9e8f7efafb",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/134.matheus_nunes.png": {
-    "mtime": 1794017202.7101314,
-    "seen": 1794272531.9649203,
-    "ast_hash": "47b42642192a439cc799d770c0084e1d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/135_morgan_rogers.png": {
-    "mtime": 1794017121.261297,
-    "seen": 1794272531.964923,
-    "ast_hash": "71bac84ecc95c9f73dbd894cd0a2c165",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/136_nico_paz.png": {
-    "mtime": 1794017013.9265134,
-    "seen": 1794272531.9649253,
-    "ast_hash": "460e37cf779b836d20a31abc8011f92f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/137_pedro_gon\u00e7alves.png": {
-    "mtime": 1794016824.2086804,
-    "seen": 1794272531.9649303,
-    "ast_hash": "67f17d0a506b094cb6d5bb7528df57c3",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/138_tijani_reijnders.png": {
-    "mtime": 1794016750.822275,
-    "seen": 1794272531.9649317,
-    "ast_hash": "fb4c5ba513708a766fb9810feef43fd9",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/139_angelo_stiller.png": {
-    "mtime": 1793962691.793281,
-    "seen": 1794272531.9649339,
-    "ast_hash": "8988371c1bf5b334abdd49aed2bf4b4b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/13_unai_simon.png": {
-    "mtime": 1794145929.0884004,
-    "seen": 1794272531.9649358,
-    "ast_hash": "0a2e94c487b22ab4a3051b2d95c4c8cf",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/140_sandro_tonali.png": {
-    "mtime": 1794016344.8635595,
-    "seen": 1794272531.9649382,
-    "ast_hash": "2b61a92e99dd2f20c1ba028983be5a3d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/141_warren_zaire_emery.png": {
-    "mtime": 1794016260.120749,
-    "seen": 1794272531.9649408,
-    "ast_hash": "108cffb8c506bab6008e14ee14e11cbc",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/142_nicolo_barella.png": {
-    "mtime": 1794016172.0161908,
-    "seen": 1794272531.9649427,
-    "ast_hash": "0a2cc2b7102be8340c22ee82ed4a0dde",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/143_bruno_fermamdes.png": {
-    "mtime": 1794016050.5008059,
-    "seen": 1794272531.9649446,
-    "ast_hash": "6569e223cbdf5529f38f082e8c4e7ca6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/144_bruno_guimaraes.png": {
-    "mtime": 1794015944.5654972,
-    "seen": 1794272531.9649463,
-    "ast_hash": "9a6e9f724b681519ed4ea87d7009310b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/145_Moises_Caicedo_Corozo.png": {
-    "mtime": 1793964395.4009652,
-    "seen": 1794272531.9649484,
-    "ast_hash": "6bceefe285dcc54085e3f735a7c080cb",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/146_dani_olmo.png": {
-    "mtime": 1794015865.635389,
-    "seen": 1794272531.96495,
-    "ast_hash": "61151df609f3a44995f2791a8fd722df",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/147_enzo_fernandez.png": {
-    "mtime": 1794014563.48625,
-    "seen": 1794272531.964952,
-    "ast_hash": "f19bcfd71d609554abee54c7f4414871",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/148_Phil_Foden.png": {
-    "mtime": 1793965065.7615802,
-    "seen": 1794272531.9649537,
-    "ast_hash": "334e316b8fe05b70ed5223f6cef8ea68",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/149_Ryan_Gravenberch.png": {
-    "mtime": 1793965390.300761,
-    "seen": 1794272531.9649558,
-    "ast_hash": "3f992602946a244ece9ccc51f559383a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/14_emiliano_martinez.png": {
-    "mtime": 1794146070.3788016,
-    "seen": 1794272531.9649575,
-    "ast_hash": "a62e5b9469f4b00d7b1b85870bae8a89",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/150_Joao_Neves.png": {
-    "mtime": 1793966551.6251085,
-    "seen": 1794272531.9649591,
-    "ast_hash": "2cb2e0f49317ef997a7f3768670b5d97",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/151_alexis_mcallisters.png": {
-    "mtime": 1794013248.9329877,
-    "seen": 1794272531.964961,
-    "ast_hash": "f64ae9d011484aa4eea29bc17d6ad258",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/152_jamal_musiala.png": {
-    "mtime": 1794013193.1571143,
-    "seen": 1794272531.964963,
-    "ast_hash": "a3b0eaa1a4fbeb8da7fbf61586cfa5b4",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/153_Cole_Palmer.png": {
-    "mtime": 1793968356.5675576,
-    "seen": 1794272531.9649649,
-    "ast_hash": "c027b88cf7aa29020e58c7291ecd839c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/154_Pedro_Gonzalez_Lopez.png": {
-    "mtime": 1793968631.3656144,
-    "seen": 1794272531.9649663,
-    "ast_hash": "2dfb3e20855b0c76c0a4362ada5a9685",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/155_Declan_Rice.png": {
-    "mtime": 1794013106.1948485,
-    "seen": 1794272531.964968,
-    "ast_hash": "3c1ab83092d615d33f1ebbf2d199f74b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/156_Dominik_Szoboszlai.png": {
-    "mtime": 1793971450.3129468,
-    "seen": 1794272531.9649694,
-    "ast_hash": "8081c5c2111023700427a3da38f78240",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/157_Aurelien_Tchouameni.png": {
-    "mtime": 1794104196.9972792,
-    "seen": 1794272531.964971,
-    "ast_hash": "3dda820e9693d566b2472bbd3261fa8d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/158_Federico_Valverde_Dipetta.png": {
-    "mtime": 1793972846.8828363,
-    "seen": 1794272531.9649727,
-    "ast_hash": "f27773099646da7c0e16f3863ffc3ea6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/159_Vitor_Machado_Ferreira.png": {
-    "mtime": 1793973435.9263947,
-    "seen": 1794272531.9649744,
-    "ast_hash": "c350e496bf488055cb23a7632fbd42cb",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/15_thibaut_courtois.png": {
-    "mtime": 1794146136.9024107,
-    "seen": 1794272531.964976,
-    "ast_hash": "03d05760c10bc68967f4fe2fee466364",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/160_florian_wirtz.png": {
-    "mtime": 1794012897.740382,
-    "seen": 1794272531.9649782,
-    "ast_hash": "b36b5f661c8946019c20f889f99c56fb",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/161_Martin_Zubimendi_Ibanez.png": {
-    "mtime": 1794104154.49834,
-    "seen": 1794272531.9649801,
-    "ast_hash": "cb9e484af756d485913d455f53f33fc5",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/162_martin_odegaard.png": {
-    "mtime": 1794010594.9683223,
-    "seen": 1794272531.9649823,
-    "ast_hash": "a54ca35548937ecbf18ae626f4f2527d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/163_jude_bellingham.png": {
-    "mtime": 1794010462.6533394,
-    "seen": 1794272531.964985,
-    "ast_hash": "ce708aa9d9f940c852a817a1841d3a5e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/164_rodri.png": {
-    "mtime": 1794010289.4725306,
-    "seen": 1794272531.9649868,
-    "ast_hash": "1094f953ff16ed2523e32c16b4600c1e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/165_folarin_balogun.png": {
-    "mtime": 1794010149.2268221,
-    "seen": 1794272531.9649892,
-    "ast_hash": "bcf2e98e1c84cfb9df95230a4ad542fc",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/166_bazoumana_toure.png": {
-    "mtime": 1794010083.9129176,
-    "seen": 1794272531.9649913,
-    "ast_hash": "670ada9663ed26901df2e6552422e020",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/167_Brian_Brobbey.png": {
-    "mtime": 1794002614.9009273,
-    "seen": 1794272531.9649935,
-    "ast_hash": "255b1d90a92d5f6cedd9435f7615d905",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/168_Carlos_Espi.png": {
-    "mtime": 1794002761.0405128,
-    "seen": 1794272531.9649951,
-    "ast_hash": "07bd01c23e3500feba632d6c2205fc5a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/169_Juan_Camilo_Hernandez_Suarez.png": {
-    "mtime": 1794104139.212354,
-    "seen": 1794272531.964997,
-    "ast_hash": "6f254c6f2e06ef7b0fb3bf4f7bf77570",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/16_gianluigi_donnarumma.png": {
-    "mtime": 1794146323.014574,
-    "seen": 1794272531.9650002,
-    "ast_hash": "3023a38cd5967a039647ff6a8f5db30b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/170_Diego_Moreira.png": {
-    "mtime": 1794009668.1445708,
-    "seen": 1794272531.9650028,
-    "ast_hash": "d99d5c86eb763e39d7d17f5f196f9f37",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/171_Max_Dowman.png": {
-    "mtime": 1794009081.3632786,
-    "seen": 1794272531.9650054,
-    "ast_hash": "ad078525a2ea138b58a41aabb279e934",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/172_Said_El_Mala.png": {
-    "mtime": 1794003697.5488784,
-    "seen": 1794272531.9650085,
-    "ast_hash": "f92d6d7240296dd61d3ca22f91cabe00",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/173_endrick.png": {
-    "mtime": 1794003945.0294535,
-    "seen": 1794272531.9650102,
-    "ast_hash": "e022746d9ed98f9cd3d3e366da79edee",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/174_Karl_Etta_Eyong.png": {
-    "mtime": 1794008193.3760304,
-    "seen": 1794272531.9650116,
-    "ast_hash": "44e94f466849f5413d8afa51e70ce8ec",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/175_matias_fernandez_pardo.png": {
-    "mtime": 1794007768.7444656,
-    "seen": 1794272531.9650135,
-    "ast_hash": "c2bb3612aa4c2ea527f0d710613d4fd5",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/176_ibrahim_mbaye.png": {
-    "mtime": 1794007626.3287406,
-    "seen": 1794272531.965015,
-    "ast_hash": "d6576e83956e2b954c56d8dab6d76bca",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/177_igor_thiago.png": {
-    "mtime": 1794007309.6409817,
-    "seen": 1794272531.9650166,
-    "ast_hash": "69d697de66b367eba02c4a839b412620",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/178_Christian_Kofane.png": {
-    "mtime": 1794007543.5015018,
-    "seen": 1794272531.965019,
-    "ast_hash": "dc3c588315f9457fd55f8cbfb55f54a2",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/179_charalampos_kostoulas.png": {
-    "mtime": 1794007964.386244,
-    "seen": 1794272531.9650204,
-    "ast_hash": "a0a8d305bd8ed605943a8e61b02d29ba",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/17_nanuel_neuer.png": {
-    "mtime": 1794146422.8427937,
-    "seen": 1794272531.9650228,
-    "ast_hash": "da091e4d72d5bf552c43694427f96349",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/180_Eli_Junior_Kroupi.png": {
-    "mtime": 1794007833.2208273,
-    "seen": 1794272531.965026,
-    "ast_hash": "45fca1c4d0909684357252dc9a172f72",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/181_Yankuba_Minteh.png": {
-    "mtime": 1794007784.3085804,
-    "seen": 1794272531.965028,
-    "ast_hash": "bdd260ec4ffa180d68d9e1bfee886040",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/182_Rio_Ngumoha.png": {
-    "mtime": 1794008604.0428538,
-    "seen": 1794272531.965031,
-    "ast_hash": "12d95089085db93c85dcb013386546a7",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/183_antonio_nusa.png": {
-    "mtime": 1794008440.3859181,
-    "seen": 1794272531.9650333,
-    "ast_hash": "b10b2760fce1512c08a5f6409729d58a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/184_pio_esposito.png": {
-    "mtime": 1794008851.4546196,
-    "seen": 1794272531.9650366,
-    "ast_hash": "b0fdd0e1f8af9d276c66532643ffda34",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/185_julian_qui\u00f1ones.png": {
-    "mtime": 1794104126.9807894,
-    "seen": 1794272531.9650404,
-    "ast_hash": "b28a5bdac316de737f855a93039dff34",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/186_rayan.png": {
-    "mtime": 1794011470.1752768,
-    "seen": 1794272531.9650426,
-    "ast_hash": "c582ca8d05de771e99eec25c7a1aea7d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/187_rayan_fofana.png": {
-    "mtime": 1794011394.0592852,
-    "seen": 1794272531.965045,
-    "ast_hash": "fd318299af9bc5541befcf27e29a4f21",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/188_kevin_schade.png": {
-    "mtime": 1794011168.0315957,
-    "seen": 1794272531.9650483,
-    "ast_hash": "0537abd1ba6a4659b3def7ad8df7db84",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/189_nicolo_tresoldi.png": {
-    "mtime": 1794011042.6215599,
-    "seen": 1794272531.965051,
-    "ast_hash": "c651c47320779a0920a0e307b57218b6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/18_jan_oblak.png": {
-    "mtime": 1794146521.1130824,
-    "seen": 1794272531.9650536,
-    "ast_hash": "3c406643c7bcaea8aa7dccd8747f22a2",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/190_yan_diomande.png": {
-    "mtime": 1794010912.5504568,
-    "seen": 1794272531.9650576,
-    "ast_hash": "47ab18447604cc9ab990a90a1448164e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/191_amad_diallo.png": {
-    "mtime": 1794104113.705246,
-    "seen": 1794272531.9650607,
-    "ast_hash": "b681c32d7abc0ae71c66c0b3610fef84",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/192_Bradley_Barcola.png": {
-    "mtime": 1794010556.0055423,
-    "seen": 1794272531.9650652,
-    "ast_hash": "911925651bd7809655d036766c89deab",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/193_jeremy_doku.png": {
-    "mtime": 1794011282.254446,
-    "seen": 1794272531.965068,
-    "ast_hash": "27cde7953161d42733eb97f731a5a755",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/194_Desire_Doue.png": {
-    "mtime": 1794012727.345654,
-    "seen": 1794272531.9650705,
-    "ast_hash": "276e60bbb29820e6377ace483adc99e5",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/195_Hugo_Ekitike.png": {
-    "mtime": 1794013888.722815,
-    "seen": 1794272531.9650748,
-    "ast_hash": "71795bed30cf8bb83b1de5fa7c563b4e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/196_Estevao_Willian.png": {
-    "mtime": 1794104078.8491173,
-    "seen": 1794272531.9650779,
-    "ast_hash": "163e757d2e798d65faa13d687465a5e8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/197_Ferran_Torres_Garcia.png": {
-    "mtime": 1794014582.8712924,
-    "seen": 1794272531.9650805,
-    "ast_hash": "7856e99e2f1bf778de07341c8f02280f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/198_Gabriel_Fernando_de_Jesus.png": {
-    "mtime": 1794014778.7767997,
-    "seen": 1794272531.965084,
-    "ast_hash": "11e42d5e7d6d359b641f78eb1d4d1499",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/199_Cody_Gapko.png": {
-    "mtime": 1794015327.0069568,
-    "seen": 1794272531.9650867,
-    "ast_hash": "d811599206d943f426a3ecf2ea855b4a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/19_honest_ahanor.png": {
-    "mtime": 1794146902.969053,
-    "seen": 1794272531.9650896,
-    "ast_hash": "d7de82607b6ca1547ef88000e3c63899",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/1_senne_lammens.png": {
-    "mtime": 1794141288.6878438,
-    "seen": 1794272531.965093,
-    "ast_hash": "eb07ef50f1e436a9210c75ef25bb5992",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/200_Gon\u00e7alo_Ramos.png": {
-    "mtime": 1794015594.6128244,
-    "seen": 1794272531.9650974,
-    "ast_hash": "2b103630bd851eb0dac51635ec98414d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/201_Anthony_Gordon.png": {
-    "mtime": 1794015961.1216085,
-    "seen": 1794272531.9651005,
-    "ast_hash": "e1c0378192a2e05f68a02f4362edaed1",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/202_Kai_Havertz.png": {
-    "mtime": 1794016144.3995943,
-    "seen": 1794272531.9652004,
-    "ast_hash": "78001dfafa4ae04b9423719222a26f30",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/203_Rasmus_Hojlund.png": {
-    "mtime": 1794016281.7894664,
-    "seen": 1794272531.9652085,
-    "ast_hash": "13ff943a8cba2edf2014fd7a77df0ba6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/204_Iliman_Ndiaye.png": {
-    "mtime": 1794016858.868139,
-    "seen": 1794272531.9652119,
-    "ast_hash": "4d6b8e06d24d625392d9dddd132a0057",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/205_Joao_Pedro_Junqueira_de_Jesus.png": {
-    "mtime": 1794016765.0761132,
-    "seen": 1794272531.965216,
-    "ast_hash": "843062986a2ac44eb620178d19b0f132",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/206_Mohammed_Kudus.png": {
-    "mtime": 1794016937.3203266,
-    "seen": 1794272531.9652193,
-    "ast_hash": "eda17e0d12cfccbddd503643d9283421",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/207_Chukwunonso_Madueke.png": {
-    "mtime": 1794017090.459975,
-    "seen": 1794272531.9652233,
-    "ast_hash": "9a6a14cbaa3b9eb273d44389f1280619",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/208_Donyell_Malen.png": {
-    "mtime": 1794017279.099442,
-    "seen": 1794272531.96523,
-    "ast_hash": "a026fa59b1665493acf6717433efeca5",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/209_Omar_Marmoush.png": {
-    "mtime": 1794017461.6272578,
-    "seen": 1794272531.9652338,
-    "ast_hash": "257e5265d742134015178eaa87a0b0d8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/20_julian_araujo.png": {
-    "mtime": 1794146859.6381786,
-    "seen": 1794272531.9652388,
-    "ast_hash": "2de24e0adf6391042ab47f2cd253108b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/210_Gabriel_Martinelli_Silva.png": {
-    "mtime": 1794017606.2543058,
-    "seen": 1794272531.9652424,
-    "ast_hash": "1422faf50767e8d888d4e2dcf06f5857",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/211_Matheus_Santos_Carneiro_da_Cunha.png": {
-    "mtime": 1794018059.4511044,
-    "seen": 1794272531.9652445,
-    "ast_hash": "53e3b0d79e08beca22769fddd907914c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/212_Bryan_Mbeumo.png": {
-    "mtime": 1794018005.463962,
-    "seen": 1794272531.9652467,
-    "ast_hash": "8bb7fb52818a78ccce3e6755cd423242",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/213_Nicolas_Ivan_Gonzalez.png": {
-    "mtime": 1794018220.7437668,
-    "seen": 1794272531.9652486,
-    "ast_hash": "353ef718381778af53ee27c4c97499b8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/214_Nicolas_Jackson.png": {
-    "mtime": 1794018457.9937644,
-    "seen": 1794272531.9652503,
-    "ast_hash": "02b2dcaf07c163d45b12ad6fb65dc49b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/215_Pedro_Lomba_Neto.png": {
-    "mtime": 1794018616.7120407,
-    "seen": 1794272531.9652529,
-    "ast_hash": "91d2568568bb6827f4bcdbf0e1fb529a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/216_Nicolas_Pepe.png": {
-    "mtime": 1794018823.874874,
-    "seen": 1794272531.9652545,
-    "ast_hash": "c89bb6eac34e48e33010cec2c05e9d5d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/217_Rodrygo_Silva_de_Goes.png": {
-    "mtime": 1794094093.6227858,
-    "seen": 1794272531.9652565,
-    "ast_hash": "583454cc7432f0bbdceae8e7cc6c5296",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/218_Savio_Moreira_de_Oliveira.png": {
-    "mtime": 1794094188.6971543,
-    "seen": 1794272531.9652576,
-    "ast_hash": "c725f7e6ef2ee67333bdb82e922da14d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/219_Antoine_Semenyo.png": {
-    "mtime": 1794094296.38672,
-    "seen": 1794272531.9652603,
-    "ast_hash": "97c4b3e4a34a2adf3b48024288ac5325",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/21_berkay_yilmaz.png": {
-    "mtime": 1794146817.0702395,
-    "seen": 1794272531.9652622,
-    "ast_hash": "839f4c9e41ae24e267232ca7d63cd44e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/220_Benjamin_Sesko.png": {
-    "mtime": 1794094415.3910844,
-    "seen": 1794272531.9652636,
-    "ast_hash": "c1ca00a17bc3504bd3edbcbd19a66b9c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/221_Alexander_Sorloth.png": {
-    "mtime": 1794094965.9041905,
-    "seen": 1794272531.9652658,
-    "ast_hash": "2ef5e206b7fb31f8f93aae867b864fca",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/222_Marcus_Thuram_Ulien.png": {
-    "mtime": 1794095430.7558203,
-    "seen": 1794272531.9652672,
-    "ast_hash": "8c52993962790425ba44928c7ce5f5c2",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/223_Nick_Woltemade.png": {
-    "mtime": 1794095577.368789,
-    "seen": 1794272531.9652693,
-    "ast_hash": "b2249aacfe5cbd4ab9932b3e0abfdc6b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/224_Kenan_Yildiz.png": {
-    "mtime": 1794095847.6857128,
-    "seen": 1794272531.9652708,
-    "ast_hash": "3ec735aca996f66be2b74fd99b6c58b1",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/225_Edinson_Cavani_Gomez.png": {
-    "mtime": 1794096038.4649515,
-    "seen": 1794272531.9652848,
-    "ast_hash": "468d78b84f1b547d3d42cd8c2d334f66",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/226_Viktor_Gyokeres.png": {
-    "mtime": 1794096318.9938314,
-    "seen": 1794272531.9652872,
-    "ast_hash": "a7885c7ae2cac3c3c7bdf5763720f34a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/227_Alexander_Isak.png": {
-    "mtime": 1794096486.4826481,
-    "seen": 1794272531.9652894,
-    "ast_hash": "a63caa90c3708f36d0591d04838ad80a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/228_Julian_Alvarez.png": {
-    "mtime": 1794096834.2229807,
-    "seen": 1794272531.9652917,
-    "ast_hash": "de6cae8349db682a5f9bf741a7ec2a81",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/229_Khvicha_Kvaratskhelia.png": {
-    "mtime": 1794097045.817251,
-    "seen": 1794272531.965294,
-    "ast_hash": "f0aeb464203a958c952b06f8942481d7",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/22_jarrad_branthwaite.png": {
-    "mtime": 1794146719.4626856,
-    "seen": 1794272531.9653022,
-    "ast_hash": "0d1421e9eb29ff4b30289eb7c75594fa",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/230_Lautaro_Javier_Martinez.png": {
-    "mtime": 1794097313.93508,
-    "seen": 1794272531.9653065,
-    "ast_hash": "439db0c6d347a8782d371f3da3b800f4",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/231_Luis_Fernando_Diaz_Marulanda.png": {
-    "mtime": 1794097550.824138,
-    "seen": 1794272531.9653094,
-    "ast_hash": "ef64a286a32935d14869cb3795c5861b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/232_Nicholas_Williams_Arthuer.png": {
-    "mtime": 1794098309.1890626,
-    "seen": 1794272531.9653115,
-    "ast_hash": "f36dabaab57a79d7fbbcd96c3e4b24e0",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/233_Michael_Olise.png": {
-    "mtime": 1794098868.784104,
-    "seen": 1794272531.9653149,
-    "ast_hash": "c39df92de5dcba148867a72d7a689f2a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/234_Victor_Osimhen.png": {
-    "mtime": 1794099073.1839147,
-    "seen": 1794272531.9653182,
-    "ast_hash": "d6a0efa05fd2f757625696d732c2f4a8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/235_Raphael_Dias_Belloli.png": {
-    "mtime": 1794099515.5944214,
-    "seen": 1794272531.9653199,
-    "ast_hash": "835eafbbebcea8672ce8aacfc2876092",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/236_Bukayo_Saka.png": {
-    "mtime": 1794099744.3530993,
-    "seen": 1794272531.9653215,
-    "ast_hash": "7bb7716ff818219dcbedf86d8a00d88e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/237_Karim_Benzema.png": {
-    "mtime": 1794100120.0625782,
-    "seen": 1794272531.9653232,
-    "ast_hash": "8646435ce7f81576b527e31930b35082",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/238_Cristiano_Ronaldo_dos_Santos_Aveiro.png": {
-    "mtime": 1794100545.108237,
-    "seen": 1794272531.9653254,
-    "ast_hash": "55284c6b8bd95611840607c4dd59c3d4",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/239_Masour_Ousmane_Dembele.png": {
-    "mtime": 1794100884.616109,
-    "seen": 1794272531.9653275,
-    "ast_hash": "e01e8e2ec0843a4b20ad221e5421a643",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/23_levi_colwill.png": {
-    "mtime": 1794146669.6900024,
-    "seen": 1794272531.9653296,
-    "ast_hash": "fcaeef739389b5f1d14f8bfa467eee12",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/240_Angel_Fabian_Di_Maria.png": {
-    "mtime": 1794101558.250099,
-    "seen": 1794272531.9653313,
-    "ast_hash": "8a14df5da2bc04f2295a06122a5ae496",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/241_Erling_Braut_Haaland.png": {
-    "mtime": 1794102531.1132212,
-    "seen": 1794272531.9653342,
-    "ast_hash": "f422f1765beda93c63b6804b69b72ff2",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/242_Harry_Kane.png": {
-    "mtime": 1794102705.5615766,
-    "seen": 1794272531.9653366,
-    "ast_hash": "3a4f11fa7819bfadb4d005b5bba85b51",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/243_Lamine_Yamal_Nasraoui_Ebana.png": {
-    "mtime": 1794103738.9864507,
-    "seen": 1794272531.9653387,
-    "ast_hash": "34265d7aaaff06b0a4096838769f55e7",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/244_Luis_Alberto_Suarez_Diaz.png": {
-    "mtime": 1794103544.1208615,
-    "seen": 1794272531.965342,
-    "ast_hash": "ca4e2b570b319d078f4d6e969dc5edb1",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/245_Sadio_Mane.png": {
-    "mtime": 1794103769.569174,
-    "seen": 1794272531.9653432,
-    "ast_hash": "970bca7e6300704f36f73b6dfad4d2bd",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/246_Kylian_Mbappe_Lottin.png": {
-    "mtime": 1794104058.0661585,
-    "seen": 1794272531.9653456,
-    "ast_hash": "2e3f14b16884d61a11540ae76020bc98",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/247_Lionel_Andres_Messi_Cuccittini.png": {
-    "mtime": 1794105019.3530815,
-    "seen": 1794272531.9653475,
-    "ast_hash": "9b6fcdf88a56bd53c1ac136aec5b339f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/248_Neymar_da_Silva_Santos_Junior.png": {
-    "mtime": 1794105709.6686442,
-    "seen": 1794272531.9653494,
-    "ast_hash": "ba381b2de063da52d5b87e3f6f0d1850",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/249_Mohamed_Salah_Ghaly.png": {
-    "mtime": 1794106186.647257,
-    "seen": 1794272531.965351,
-    "ast_hash": "9f84f90916f80bdaeb4baed0b4883466",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/24_maxim_de_cuyper.png": {
-    "mtime": 1794146629.5536883,
-    "seen": 1794272531.9653533,
-    "ast_hash": "7e81e720af2a48d7db61af9f55eae266",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/250_Vinicius_Jose_Paixao_de_Oliveira_Junior.png": {
-    "mtime": 1794106324.6266034,
-    "seen": 1794272531.9653559,
-    "ast_hash": "7fda256d4d602396ccad2487f86aa2ee",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/251_Dominik_Greif.png": {
-    "mtime": 1794106513.27642,
-    "seen": 1794272531.9653578,
-    "ast_hash": "c03d2a55524943557c11b8757c56c283",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/252_Mike_Maignan.png": {
-    "mtime": 1794106647.7187667,
-    "seen": 1794272531.9653597,
-    "ast_hash": "deabaf8851a4c998fc14a4feb5ae6482",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/253_Vanja_Milinkovic-Savic.png": {
-    "mtime": 1794131181.2988343,
-    "seen": 1794272531.9653614,
-    "ast_hash": "a166bb601a19125545425ec115622416",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/254_Mike_Penders.png": {
-    "mtime": 1794131737.1956172,
-    "seen": 1794272531.965363,
-    "ast_hash": "1b4771d7e6c02361681ce3bb9ca08eeb",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/255_Alex_Remiro_Gargallo.png": {
-    "mtime": 1794131651.5483584,
-    "seen": 1794272531.965365,
-    "ast_hash": "e9c5c7797f83bf4dbb9c387827539e57",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/256_Robert_Lynch_Sanchez.png": {
-    "mtime": 1794131816.064741,
-    "seen": 1794272531.9653673,
-    "ast_hash": "2c678c37b01c0062ffca34a826f724e5",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/257_Matvey_Safonov.png": {
-    "mtime": 1794131962.0458632,
-    "seen": 1794272531.965369,
-    "ast_hash": "3c07c106adb05d1146d1850e131e2c63",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/258_Anatoliy_Trubin.png": {
-    "mtime": 1794132258.529274,
-    "seen": 1794272531.9653707,
-    "ast_hash": "cbb10a77b41e03ba0fda3c73e32aab64",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/259_Konstantinos_Tzolakis.png": {
-    "mtime": 1794134419.2227275,
-    "seen": 1794272531.9653723,
-    "ast_hash": "881c281926b58134cc3229d1fd247d42",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/25_eric_garcia.png": {
-    "mtime": 1794148876.1781232,
-    "seen": 1794272531.965374,
-    "ast_hash": "f97660b09b095bc16ad823ff80b4c98b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/260_Alisson_Ramses_Becker.png": {
-    "mtime": 1794134564.9602373,
-    "seen": 1794272531.9653754,
-    "ast_hash": "d9663c0c66f75de27485c6aab5867419",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/261_Ederson_Santana_de_Moraes.png": {
-    "mtime": 1794134628.1065218,
-    "seen": 1794272531.965377,
-    "ast_hash": "08483573644a11070bd16e70c709361f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/262_Giorgi_Mamardashvili.png": {
-    "mtime": 1794135101.1850123,
-    "seen": 1794272531.965379,
-    "ast_hash": "6e7376b29596b3835c361d549850b920",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/263_Archie_Gray.png": {
-    "mtime": 1794135114.8762243,
-    "seen": 1794272531.9653814,
-    "ast_hash": "47748398129661dcb18ac3b3a98e8ddf",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/264_Calvin_Bassey_Ughelumba.png": {
-    "mtime": 1794135450.6482892,
-    "seen": 1794272531.9653838,
-    "ast_hash": "3ef239b5c9f1258f8f1b5df928b5a7d8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/265_Nathan_Collins.png": {
-    "mtime": 1794135624.6836674,
-    "seen": 1794272531.9653857,
-    "ast_hash": "6b966e47c00abd1df480a20a4e70a3a2",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/266_Malo_Gusto.png": {
-    "mtime": 1794136319.8077009,
-    "seen": 1794272531.9653876,
-    "ast_hash": "a685d167393259c142b1fcab3ed51f60",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/267_David_Hancko.png": {
-    "mtime": 1794136518.4182055,
-    "seen": 1794272531.9653893,
-    "ast_hash": "e2088f9a847221a8fa9b3496108acfb6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/268_Ibrahima_Ba.png": {
-    "mtime": 1794136534.7780874,
-    "seen": 1794272531.9653914,
-    "ast_hash": "250cf352bed3f84ab756ecf763fe63af",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/269_El_Hadji_Malick_Diouf.png": {
-    "mtime": 1794136826.7875185,
-    "seen": 1794272531.9653933,
-    "ast_hash": "fbbf898429aaf8f3a77c4ef895876751",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/26_gerard_martin.png": {
-    "mtime": 1794148549.0059853,
-    "seen": 1794272531.965395,
-    "ast_hash": "6cbf3c0a6aac6b966ae604b47875113f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/270_Giorgio_Scalvini.png": {
-    "mtime": 1794137079.6117635,
-    "seen": 1794272531.9653964,
-    "ast_hash": "9ce629b98987842d61997e4092945aba",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/271_Jonathan_Tah.png": {
-    "mtime": 1794137315.4249969,
-    "seen": 1794272531.965399,
-    "ast_hash": "7413fe536f0c48ae98dd929ad6191d43",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/272_Adrien_Truffert.png": {
-    "mtime": 1794137994.2026956,
-    "seen": 1794272531.9654005,
-    "ast_hash": "316d5d65f81e3bf35381ba9c6406b4f8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/273_Jeremie_Frimpong.png": {
-    "mtime": 1794138346.7886634,
-    "seen": 1794272531.9654026,
-    "ast_hash": "734e1ae4cc0d7eefddc5a08f92eb18fa",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/274_Josip_Stanisic.png": {
-    "mtime": 1794138785.0247757,
-    "seen": 1794272531.965405,
-    "ast_hash": "5a525f2a5ead84c24b03d7c27b63e78d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/275_Ronald_Federico_Araujo_da_Silva.png": {
-    "mtime": 1794139110.5817173,
-    "seen": 1794272531.9654067,
-    "ast_hash": "1e6befb0c2987b42cf640dd0b1d649e3",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/276_Matthijs_de_Ligt.png": {
-    "mtime": 1794139966.3078384,
-    "seen": 1794272531.9654088,
-    "ast_hash": "a786e0230797909b944c62f7251cc0a3",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/277_Marcos_Aoas_Correa.png": {
-    "mtime": 1794140331.3114164,
-    "seen": 1794272531.9654114,
-    "ast_hash": "0a0747ed0afbfcd219ada59737c6a664",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/278_Eder_Gabriel_Militao.png": {
-    "mtime": 1794140640.0831888,
-    "seen": 1794272531.965413,
-    "ast_hash": "bf5bdbfbf95c69586942c27d5b71ce35",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/279_Antonio_Rudiger.png": {
-    "mtime": 1794140808.3445902,
-    "seen": 1794272531.9654148,
-    "ast_hash": "176f6cef2bfc846824c61251657cb479",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/27_jorrel_hato.png": {
-    "mtime": 1794148317.0199654,
-    "seen": 1794272531.9654167,
-    "ast_hash": "936af5a554859b5012fe578195b86e7c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/280_John_Stones.png": {
-    "mtime": 1794140935.5949142,
-    "seen": 1794272531.9654186,
-    "ast_hash": "c0ccc3c3ac5a434065493b96b559bd8c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/281_Marcelo_Brozovic.png": {
-    "mtime": 1794141271.7086515,
-    "seen": 1794272531.9654207,
-    "ast_hash": "f19abcda3547a9ee29374448187df9da",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/282_Giorgian_de_Arrascaeta_Benedetti.png": {
-    "mtime": 1794142363.5151293,
-    "seen": 1794272531.9654224,
-    "ast_hash": "f4fa7a9760adde3708df41eb6ef7aca0",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/283_Fabio_Henrique_Tavares.png": {
-    "mtime": 1794167841.766529,
-    "seen": 1794272531.9654243,
-    "ast_hash": "10f23f6f3dea1a42f860143e9e5f73aa",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/284_Frenkie_de_Jong.png": {
-    "mtime": 1794167741.478777,
-    "seen": 1794272531.9654262,
-    "ast_hash": "faedd160881c3feeb7ca16c7c1eb3935",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/285_Pablo_Martin_Paez_Gavira.png": {
-    "mtime": 1794143311.7035208,
-    "seen": 1794272531.9654276,
-    "ast_hash": "fcf144e767646f142ba6d84253a59075",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/286_Mateo_Kovacic.png": {
-    "mtime": 1794143523.9586456,
-    "seen": 1794272531.9654298,
-    "ast_hash": "4ef7e403bde5b139efffe59f6773098f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/287_Jefferson_Lerma_Solis.png": {
-    "mtime": 1794167569.6778898,
-    "seen": 1794272531.965431,
-    "ast_hash": "6dabc5f862740d3dc784d6346a0bfcf5",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/288_Leandro_Paredes.png": {
-    "mtime": 1794144073.7930827,
-    "seen": 1794272531.9654326,
-    "ast_hash": "02ae36e6243e0560a8b0e6b5c31c4a22",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/289_Ricardo_Jorge_Luz_Horta.png": {
-    "mtime": 1794144581.0819588,
-    "seen": 1794272531.9654343,
-    "ast_hash": "d7dcc1b8ea24aad2432dc10a87aaac82",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/28_jacobo_ramon.png": {
-    "mtime": 1794148048.4513352,
-    "seen": 1794272531.965436,
-    "ast_hash": "dd82260585c1db711396de56cbcfd2a2",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/290_Corentin_Tolisso.png": {
-    "mtime": 1794145020.4418912,
-    "seen": 1794272531.9654377,
-    "ast_hash": "d09c7c3ee23d5e2716eb7df1b9d20bd6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/291_Granit_Xhaka.png": {
-    "mtime": 1794145304.8076987,
-    "seen": 1794272531.9654396,
-    "ast_hash": "610b393fadd8791bef133c816124e9c5",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/292_Piotr_Zielinski.png": {
-    "mtime": 1794145935.082142,
-    "seen": 1794272531.965441,
-    "ast_hash": "6e22a55b131623548ec9dd0a4fff70e9",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/293_Hakan_Calhanoglu.png": {
-    "mtime": 1794146190.9801168,
-    "seen": 1794272531.9654431,
-    "ast_hash": "8bbf9da5db7c68a5201cf9b03c3b1bc0",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/294_Bernardo_Mota_Veiga_de_Carvalho_e_Silva.png": {
-    "mtime": 1794167405.1424215,
-    "seen": 1794272531.9654446,
-    "ast_hash": "8511ba5a8d76c4437d1631c147a392f8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/295_Carlos_Henrique_Casimiro.png": {
-    "mtime": 1794167355.6113782,
-    "seen": 1794272531.9654465,
-    "ast_hash": "06242a27f862e30fd6cc0a16533a55fe",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/296_Kevin_De_Bruyne.png": {
-    "mtime": 1794147147.152455,
-    "seen": 1794272531.9654477,
-    "ast_hash": "b2273c455fbd6498f642e512f8a62c48",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/297_Paulo_Exequiel_Dybala.png": {
-    "mtime": 1794167265.6789083,
-    "seen": 1794272531.96545,
-    "ast_hash": "4763bca0ecdcd8a795ab641ad37bfc1c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/298_Luka_Modric.png": {
-    "mtime": 1794167056.1927638,
-    "seen": 1794272531.9654517,
-    "ast_hash": "5acb04fc92abd7fe8d1860252b9625ee",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/299_Marco_Verratti.png": {
-    "mtime": 1794148918.1388285,
-    "seen": 1794272531.965454,
-    "ast_hash": "2c847b96494dd6a37a23490164c08956",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/29_jeremy_jacquet.png": {
-    "mtime": 1794147717.719536,
-    "seen": 1794272531.9654558,
-    "ast_hash": "dc8f0ea483b9f97cb3fa1b5e90da6d7e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/2_zion_suzuki.png": {
-    "mtime": 1794141491.729668,
-    "seen": 1794272531.9654572,
-    "ast_hash": "4d9ef067a0c4a9ff8e24fc856182504e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/300_Robert_Lewandowski.png": {
-    "mtime": 1794166807.4182684,
-    "seen": 1794272531.9654586,
-    "ast_hash": "3c85d8015e4ac220dbeedf5a81953f62",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/30_jon_martin.png": {
-    "mtime": 1794147281.3719852,
-    "seen": 1794272531.965461,
-    "ast_hash": "739b3493b351bdc31b345b1005023f63",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/31_junior_firpo.png": {
-    "mtime": 1794150943.4219959,
-    "seen": 1794272531.9654624,
-    "ast_hash": "751c97ecd8124510f31426b420da302a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/32_abdukodir_khusanov.png": {
-    "mtime": 1794150730.5813682,
-    "seen": 1794272531.9654644,
-    "ast_hash": "03e48da8fa0df3d4696d23b3a42b8f5f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/33_ezri_konsa.png": {
-    "mtime": 1794150537.320588,
-    "seen": 1794272531.9654655,
-    "ast_hash": "cae1389cc6d6733f5642ba8d952abf3e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/34_maxence_lacroix.png": {
-    "mtime": 1794150401.796511,
-    "seen": 1794272531.9654672,
-    "ast_hash": "8a2e14b427cb0a1c84f5bd5b62a0a972",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/35_lewis_hall.png": {
-    "mtime": 1794149385.2738113,
-    "seen": 1794272531.9654691,
-    "ast_hash": "f8bc17489a6084493d9de4ee489bfd2b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/36_lewis_skelly.png": {
-    "mtime": 1794149180.0111995,
-    "seen": 1794272531.9654713,
-    "ast_hash": "7772aa5c042c6523837ac9e50f9f80e7",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/37_valentino_livramento.png": {
-    "mtime": 1794151662.5901756,
-    "seen": 1794272531.9654732,
-    "ast_hash": "2f6b64477d85e4b4710d34b966a3b9ed",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/38_castello_lukeba.png": {
-    "mtime": 1794151249.7994168,
-    "seen": 1794272531.9654765,
-    "ast_hash": "c8968d44e129c3467ac8f55950a4429d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/39_ian_maatsen.png": {
-    "mtime": 1794151195.563546,
-    "seen": 1794272531.9654787,
-    "ast_hash": "fc1cf41da97186d0844846f0e5a7f15d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/3_james_trafford.png": {
-    "mtime": 1794142055.1132927,
-    "seen": 1794272531.9654813,
-    "ast_hash": "bea3f6e37e8f011b74e6d466aa22d945",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/40_nathaniel_brown.png": {
-    "mtime": 1794151132.0409923,
-    "seen": 1794272531.9654834,
-    "ast_hash": "752b9bea1f78500d041cb57a363c654a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/41_nico_oreilly.png": {
-    "mtime": 1794151077.6358404,
-    "seen": 1794272531.9654853,
-    "ast_hash": "6f9127a8d42dd20b2060648933e2ec0d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/42_marco_palestra.png": {
-    "mtime": 1794151031.5391157,
-    "seen": 1794272531.9654865,
-    "ast_hash": "56c742096250061b7f7786d58c4160d1",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/43_marc_pubill.png": {
-    "mtime": 1794163263.5812771,
-    "seen": 1794272531.965489,
-    "ast_hash": "ecb971a1998e78db6fa9b7f70e894008",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/44_jarell_quansah.png": {
-    "mtime": 1794163626.988549,
-    "seen": 1794272531.9654903,
-    "ast_hash": "73df7c0ed409264adc35f96ddab4406c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/45_geovany_quenda.png": {
-    "mtime": 1794163754.1844325,
-    "seen": 1794272531.9654927,
-    "ast_hash": "956e17462999fb245b8639aab637fe1d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/46_rico_lewis.png": {
-    "mtime": 1794163819.84984,
-    "seen": 1794272531.9654949,
-    "ast_hash": "77e1f8f30e04a5bb6fe451092ea18a42",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/47_malick_thiaw.png": {
-    "mtime": 1794163880.6847067,
-    "seen": 1794272531.9654975,
-    "ast_hash": "d8df34b62d65d3273723de940da58738",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/48_van_den_berg.png": {
-    "mtime": 1794163943.5442915,
-    "seen": 1794272531.965499,
-    "ast_hash": "c0fa9d056bc5e21f5cd345fd212f8a53",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/49_van_hecke.png": {
-    "mtime": 1794164072.4063604,
-    "seen": 1794272531.9655018,
-    "ast_hash": "12dc37a1068a0559bcc617772562509b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/4_bart_verbruggen.png": {
-    "mtime": 1794142426.400923,
-    "seen": 1794272531.9655032,
-    "ast_hash": "193717419eda0771aa2d8add35f02c95",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/50_luka_vuskovic.png": {
-    "mtime": 1794164120.4310246,
-    "seen": 1794272531.9655056,
-    "ast_hash": "84ff1694dbe9c4a940bc63b082c4ba5c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/51_aaron_wanbissaka.png": {
-    "mtime": 1794164163.5458367,
-    "seen": 1794272531.9655068,
-    "ast_hash": "1d2e0927b7f207ddde44618d2e107dcd",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/52_leny_yoro.png": {
-    "mtime": 1794164215.8093593,
-    "seen": 1794272531.9655085,
-    "ast_hash": "d46830638439ce991eaf5225488834ff",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/53_rayan_ait_nouri.png": {
-    "mtime": 1794164271.278083,
-    "seen": 1794272531.96551,
-    "ast_hash": "4dd64d3da1bdc5f48b5ee3c103aef923",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/54_alvaro_carreras.png": {
-    "mtime": 1794164332.9376395,
-    "seen": 1794272531.9655113,
-    "ast_hash": "27bf2c8034eeaa4b5be78368f1b14e08",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/55_Yann_Aurel_Bisseck.png": {
-    "mtime": 1793901763.8274782,
-    "seen": 1794272531.965514,
-    "ast_hash": "a47d4e02bec0390ca34fa0e8ebd259d1",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/56_Riccardo_Calafiori.png": {
-    "mtime": 1793901767.5850549,
-    "seen": 1794272531.9655156,
-    "ast_hash": "ee0b62e0425588f15a2b3db611acb450",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/57_Pau_Cubarsi.png": {
-    "mtime": 1793901765.5654266,
-    "seen": 1794272531.965517,
-    "ast_hash": "d13445317c06f5a5a0d3e836bbeec79f",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/58_Marc_Cucurella.png": {
-    "mtime": 1793901772.9345243,
-    "seen": 1794272531.9655185,
-    "ast_hash": "0834e71584a220ebae522efecda04020",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/59_Federico_Dimarco.png": {
-    "mtime": 1793901775.3102386,
-    "seen": 1794272531.96552,
-    "ast_hash": "df65efa9a0b5da03dd9d0dffdcc2a5e4",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/5_lucas_chevalier.png": {
-    "mtime": 1794142693.0437543,
-    "seen": 1794272531.9655218,
-    "ast_hash": "1f8de23330b5c575dc2cf60176f339c6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/60_Marc_Guehi.png": {
-    "mtime": 1793901784.6438985,
-    "seen": 1794272531.9655237,
-    "ast_hash": "896d3823b4f7dd1730af686b10f2d009",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/61_Piero_Hincapie.png": {
-    "mtime": 1793913073.0592337,
-    "seen": 1794272531.9655259,
-    "ast_hash": "565d4f06559b5538fd2f51efe328e10d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/62_Dean_Huijsen.png": {
-    "mtime": 1793913077.9547274,
-    "seen": 1794272531.9655273,
-    "ast_hash": "c81c0b09654a8c8e4b7109120d1bf8d6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/63_Milos_Kerkez.png": {
-    "mtime": 1793913082.838173,
-    "seen": 1794272531.9655292,
-    "ast_hash": "9d9af2f3cbe2423b21fd4ca956e4eca8",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/64_Lisandro_Martinez.png": {
-    "mtime": 1793913091.9891026,
-    "seen": 1794272531.9655309,
-    "ast_hash": "3b30182836de7267e8427356d8aaaf82",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/65_Murillo_Santiago.png": {
-    "mtime": 1793913097.3142014,
-    "seen": 1794272531.9655323,
-    "ast_hash": "e460a68456e2f3cf3db3cea08be812ea",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/66_Ousmane_Diomande.png": {
-    "mtime": 1793913103.6233108,
-    "seen": 1794272531.965534,
-    "ast_hash": "1199cddf0f48175c606f8046ee07a642",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/67_william_pacho.png": {
-    "mtime": 1794164497.209862,
-    "seen": 1794272531.9655354,
-    "ast_hash": "e21616cb38d3b29c9b21980e21ea9a15",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/68_pedro_porro.png": {
-    "mtime": 1794164582.7811089,
-    "seen": 1794272531.965537,
-    "ast_hash": "8e9c8e75d193fac5b275b1e683b34056",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/69_nico_schlotterbeck.png": {
-    "mtime": 1794164629.9686646,
-    "seen": 1794272531.965539,
-    "ast_hash": "6ee1097326e41df541aa90b64c731ff9",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/6_joan_garcia.png": {
-    "mtime": 1794142869.7509573,
-    "seen": 1794272531.9655414,
-    "ast_hash": "3902331089c8c8fb815d1d4490c83796",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/70_jurrien_timber.png": {
-    "mtime": 1794164673.3599985,
-    "seen": 1794272531.9655435,
-    "ast_hash": "e9c15682c691b20fcef63104253276a4",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/71_trent_alexander_arnold.png": {
-    "mtime": 1794164743.192705,
-    "seen": 1794272531.965545,
-    "ast_hash": "57677cd6dcb93aec249b7f1b802cda60",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/72_alphonso_davies.png": {
-    "mtime": 1794164818.2722437,
-    "seen": 1794272531.9655461,
-    "ast_hash": "b40b513481abde14e6aa8baff6650a85",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/73_alessandro_bastoni.png": {
-    "mtime": 1794164995.281873,
-    "seen": 1794272531.965548,
-    "ast_hash": "74f9941ddf6993cc6096a0cfa927b36d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/74_joao_cancelo.png": {
-    "mtime": 1794165044.2668693,
-    "seen": 1794272531.9660108,
-    "ast_hash": "74c95636c9b4d6617a4abc55f70b47ee",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/75_carvajal.png": {
-    "mtime": 1794165138.6871629,
-    "seen": 1794272531.966016,
-    "ast_hash": "5f34154b6a12675b832f06e93c4b9593",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/76_gabriel_magalhaes.png": {
-    "mtime": 1794165183.4457893,
-    "seen": 1794272531.9660175,
-    "ast_hash": "27b81e88f892c731241f1df3116e2d5c",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/77_josko_gvardiol.png": {
-    "mtime": 1794165247.2803285,
-    "seen": 1794272531.96602,
-    "ast_hash": "58808743e1ab92c094c62a3013440b3e",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/78_achraf_hakimi.png": {
-    "mtime": 1794165342.3145785,
-    "seen": 1794272531.9660218,
-    "ast_hash": "aaae161e5067f96864fff8484bdd8bbc",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/79_nuno_mendes.png": {
-    "mtime": 1794165446.110386,
-    "seen": 1794272531.9660237,
-    "ast_hash": "419aa5866b94b9f8ee02a80e7fb9d052",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/7_andre_onana.png": {
-    "mtime": 1794143355.6510286,
-    "seen": 1794272531.966025,
-    "ast_hash": "feec59b5b58497b9d9f4b69c5de58045",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/80_jules_kounde.png": {
-    "mtime": 1794165493.1766973,
-    "seen": 1794272531.9660273,
-    "ast_hash": "189085061e1c98e773be9a50c470c5ef",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/81_nuno_mendes.png": {
-    "mtime": 1794165624.2132232,
-    "seen": 1794272531.9660287,
-    "ast_hash": "5bcb39f36f95f62fa5d747c6ba6278ef",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/82_reece_james.png": {
-    "mtime": 1794165715.0899057,
-    "seen": 1794272531.9660306,
-    "ast_hash": "9048744de7c6509b9c550166d13b4898",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/83_ruben_dias.png": {
-    "mtime": 1794165812.0216222,
-    "seen": 1794272531.9660318,
-    "ast_hash": "b62195610d0737a972c298ee98a2f619",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/84_william_saliba.png": {
-    "mtime": 1794165853.8265595,
-    "seen": 1794272531.9660342,
-    "ast_hash": "bc9a2ab979966895ad56901d3392e2f6",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/85_Dayot_Upamecano.png": {
-    "mtime": 1794018686.458277,
-    "seen": 1794272531.9660356,
-    "ast_hash": "bfb144d3dc55e97df064099d5890d42b",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/86_Sergio_Ramos.png": {
-    "mtime": 1794166651.5251353,
-    "seen": 1794272531.9660373,
-    "ast_hash": "df9690f30407117d7edf43fce695bb31",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/87_Virgil_van_Dijk.png": {
-    "mtime": 1794166163.855105,
-    "seen": 1794272531.9660387,
-    "ast_hash": "f536ee3eb907c8473b5a1490b2108838",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/88_Aaron_Ramsey.png": {
-    "mtime": 1793915071.7285728,
-    "seen": 1794272531.9660404,
-    "ast_hash": "4b688e66417cfea0e1c1dbb131dea9d9",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/89_Alex_Scott.png": {
-    "mtime": 1794166073.824686,
-    "seen": 1794272531.9660418,
-    "ast_hash": "ff88d8cba819608faff5678dd0dc6734",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/8_jordan_pickford.png": {
-    "mtime": 1794143729.1460016,
-    "seen": 1794272531.9660437,
-    "ast_hash": "b22d7e8a1cafef9da939cae1fc55bc10",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/90_Andrey_Santos.png": {
-    "mtime": 1793915081.1257675,
-    "seen": 1794272531.966046,
-    "ast_hash": "a0292097c3b8c54055385c77edbaaa64",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/91_Yasin_Ayari.png": {
-    "mtime": 1793915356.5043402,
-    "seen": 1794272531.966048,
-    "ast_hash": "4e51c326f84a729b459f0d10d162e78d",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/92_Carlos_Baleba.png": {
-    "mtime": 1793915358.430275,
-    "seen": 1794272531.96605,
-    "ast_hash": "bd66fedcec8f353b6b1e04c842164709",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/93_Martin_Baturina.png": {
-    "mtime": 1794018748.3355339,
-    "seen": 1794272531.9660518,
-    "ast_hash": "3e5ac966d8820aa53d227da422ead997",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/94_Tom_Bischof.png": {
-    "mtime": 1793915359.634956,
-    "seen": 1794272531.966054,
-    "ast_hash": "dcf8322e4f73bf1c496b1d461ae4bbd7",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/95_Ayyoub_Bouaddi.png": {
-    "mtime": 1793915842.0614398,
-    "seen": 1794272531.9660559,
-    "ast_hash": "0f57114bf042257a3c7532f9a68a0cfa",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/96_Can_Uzun.png": {
-    "mtime": 1793915787.9566422,
-    "seen": 1794272531.9660575,
-    "ast_hash": "46f7ff88f5feddb0c6c0224ea7b8ae99",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/97_Curtis_Jones.png": {
-    "mtime": 1794106904.8323314,
-    "seen": 1794272531.9660587,
-    "ast_hash": "31ceac437d4f35d9fcddfcdf63b0614a",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/98_Victor_Froholdt.png": {
-    "mtime": 1794107311.0049772,
-    "seen": 1794272531.9660614,
-    "ast_hash": "97f328fed1dd6f34a215ae96ca36df25",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/99_James_Garner.png": {
-    "mtime": 1794107524.2602527,
-    "seen": 1794272531.9660635,
-    "ast_hash": "74ac3965c1d4bbd4ff81b27fa950cd12",
-    "semantic_hash": ""
-  },
-  "jugadores_bg/9_mile_svilar.png": {
-    "mtime": 1793873634.8597288,
-    "seen": 1794272531.9660654,
-    "ast_hash": "494cc6ff3df92865f4eac699a9eb262d",
+  "apps/web/src/componentes/SelectorTramos.tsx": {
+    "mtime": 1794353557.3148973,
+    "seen": 1794353717.0023158,
+    "ast_hash": "8345c7ef99b4d586d2e667f7303122d4",
     "semantic_hash": ""
   }
 }

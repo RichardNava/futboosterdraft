@@ -8,8 +8,11 @@
  *    el peso medio pasa de 120 KB (SC-002).
  * 4. Escribe `imagen_bg: "/cartas/fondos/jugadores/<id>.webp"` en cada ficha sin tocar nada más (ni el formato).
  *
+ * Con `--parcial` (spec 013, ronda 2: retoques por demarcaciones) solo sustituye las ilustraciones que hay en el origen:
+ * no exige las 300, pero sí que cada id exista en Core y no se repita.
+ *
  * No borra el origen (FR-007: se borra a mano tras revisar). Uso:
- * `pnpm --filter @fbd/fixtures fondos-core -- --origen ../../jugadores_bg`.
+ * `pnpm --filter @fbd/fixtures fondos-core -- --origen ../../jugadores_bg [--parcial]`.
  */
 import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -50,14 +53,18 @@ export function planificarFondos(ficheros: readonly string[], ids: readonly numb
   };
 }
 
-/** Cambia el `imagen_bg` de cada ficha en el texto del JSON, conservando el resto del formato. */
-export function escribirImagenBg(texto: string): string {
-  const nuevo = texto.replace(/("id": (\d+),[\s\S]*?"imagen_bg": )"[^"]*"/g, (_, previo: string, id: string) => `${previo}"${rutaFondo(Number(id))}"`);
+/** Cambia el `imagen_bg` de cada ficha (o solo de `soloIds`) en el texto del JSON, conservando el resto del formato. */
+export function escribirImagenBg(texto: string, soloIds?: ReadonlySet<number>): string {
+  const toca = (id: number) => !soloIds || soloIds.has(id);
+  const nuevo = texto.replace(/("id": (\d+),[\s\S]*?"imagen_bg": )"[^"]*"/g, (todo: string, previo: string, id: string) =>
+    toca(Number(id)) ? `${previo}"${rutaFondo(Number(id))}"` : todo,
+  );
   // Comprobación: cada ficha queda con su propio fondo y nada más cambia.
   const antes = JSON.parse(texto) as { jugadores: { id: number; imagen_bg: string }[] };
   const despues = JSON.parse(nuevo) as typeof antes;
   for (const [i, j] of despues.jugadores.entries()) {
-    if (j.imagen_bg !== rutaFondo(j.id) || JSON.stringify({ ...j, imagen_bg: '' }) !== JSON.stringify({ ...antes.jugadores[i], imagen_bg: '' })) {
+    const esperado = toca(j.id) ? rutaFondo(j.id) : antes.jugadores[i]?.imagen_bg;
+    if (j.imagen_bg !== esperado || JSON.stringify({ ...j, imagen_bg: '' }) !== JSON.stringify({ ...antes.jugadores[i], imagen_bg: '' })) {
       throw new Error(`No se ha podido escribir el fondo de la ficha ${j.id}`);
     }
   }
@@ -69,6 +76,8 @@ export interface OpcionesFondos {
   rutaJson?: string;
   destino?: string;
   log?: (m: string) => void;
+  /** Sustituye solo las ilustraciones del origen, sin exigir una por cada id de Core. */
+  parcial?: boolean;
 }
 
 /** Devuelve los errores (vacío si todo fue bien). Con errores de emparejamiento no escribe nada. */
@@ -80,11 +89,12 @@ export async function fondosCore(o: OpcionesFondos): Promise<string[]> {
   const ids = (JSON.parse(texto) as { jugadores: { id: number }[] }).jugadores.map((j) => j.id);
   const plan = planificarFondos(readdirSync(o.origen).filter((f) => statSync(join(o.origen, f)).isFile()), ids);
   const errores = [
-    ...plan.faltan.map((id) => `Falta la ilustración del id ${id}`),
+    ...(o.parcial ? [] : plan.faltan.map((id) => `Falta la ilustración del id ${id}`)),
     ...plan.sobran.map((f) => `Sobra ${f}: su id no está en Core`),
     ...plan.repetidos.map((r) => `Id ${r.id} repetido: ${r.ficheros.join(', ')}`),
   ];
   if (errores.length) return errores;
+  if (plan.porId.size === 0) return ['No hay ilustraciones en el origen'];
 
   mkdirSync(destino, { recursive: true });
   let total = 0;
@@ -97,7 +107,7 @@ export async function fondosCore(o: OpcionesFondos): Promise<string[]> {
   log(`fondos-core: ${plan.porId.size} ilustraciones en ${destino}; peso medio ${(media / 1024).toFixed(1)} KB.`);
   if (media > PESO_MEDIO_MAXIMO) return [`El peso medio (${(media / 1024).toFixed(1)} KB) supera 120 KB (SC-002)`];
 
-  const nuevo = escribirImagenBg(texto);
+  const nuevo = escribirImagenBg(texto, o.parcial ? new Set(plan.porId.keys()) : undefined);
   if (nuevo !== texto) writeFileSync(rutaJson, nuevo, 'utf-8');
   log(nuevo === texto ? 'fondos-core: core-real.json ya estaba al día.' : `fondos-core: imagen_bg escrito en ${rutaJson}.`);
   return [];
@@ -110,7 +120,7 @@ async function principal(): Promise<void> {
     console.error('Uso: pnpm --filter @fbd/fixtures fondos-core -- --origen <dir>');
     process.exit(2);
   }
-  const errores = await fondosCore({ origen: resolve(process.cwd(), origen) });
+  const errores = await fondosCore({ origen: resolve(process.cwd(), origen), parcial: process.argv.includes('--parcial') });
   if (errores.length) {
     for (const e of errores) console.error(`fondos-core: ${e}`);
     console.error(`fondos-core: ${errores.length} errores; no se ha cambiado core-real.json.`);

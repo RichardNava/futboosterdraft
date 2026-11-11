@@ -66,4 +66,13 @@ describe('fondos-core (spec 013, FR-003)', () => {
     expect(await ejecutar()).toEqual([]);
     expect(readFileSync(rutaJson, 'utf-8')).toBe(texto);
   });
+
+  it('parcial (ronda 2): solo sustituye las del origen y deja el resto de fichas como estaban', async () => {
+    await png('2_Dos.png');
+    expect(await ejecutar()).not.toEqual([]);
+    expect(await fondosCore({ origen, rutaJson, destino, log: () => {}, parcial: true })).toEqual([]);
+    expect(readdirSync(destino)).toEqual(['2.webp']);
+    const jugadores = (JSON.parse(readFileSync(rutaJson, 'utf-8')) as { jugadores: { imagen_bg: string }[] }).jugadores;
+    expect(jugadores.map((j) => j.imagen_bg)).toEqual(['/cartas/fondos/def.svg', '/cartas/fondos/jugadores/2.webp', '/cartas/fondos/def.svg']);
+  });
 });

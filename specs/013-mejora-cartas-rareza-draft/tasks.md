@@ -63,7 +63,7 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 - [X] T010 [US1] En `conIdentidad()` (`packages/domain/src/catalogo/identidad.ts`), con identidad `alternativa`, devolver `imagen_bg: '/cartas/fondos/<dem>.svg'` solo si el `imagen_bg` empieza por `/cartas/fondos/jugadores/` (R2; hace pasar T006)
 - [X] T011 [US1] Comprobar que `fondoDe()` (`apps/web/src/componentes/CartaJugador.tsx:52`) pinta la ilustración con la transparencia, máscara y `onError` → genérico actuales; añadir en `apps/web/tests/unit/fondoCarta.test.ts` un caso con `/cartas/fondos/jugadores/1.webp` (sin cambios de componente salvo que el test falle)
 - [X] T012 [US1] `pnpm seed` y revisión visual de 20 cartas al azar en colección, draft, ficha, plantilla y tienda (SC-001, US1-2); anotar el resultado en la respuesta a la persona
-- [ ] T013 [US1] Borrar `jugadores_bg/` de la raíz (FR-007) SOLO tras T009 y T012 en verde y con confirmación explícita de la persona: no está en git y el borrado es irreversible
+- [X] T013 [US1] Borrar `jugadores_bg/` de la raíz (FR-007) SOLO tras T009 y T012 en verde y con confirmación explícita de la persona: no está en git y el borrado es irreversible
 
 **Checkpoint**: US1 entregable sola.
 
@@ -228,6 +228,16 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 - [ ] T073 Recorrer [quickstart.md](quickstart.md) completo, incluido volver el ajuste a `libre` al final
 - [ ] T074 Cierre: `pnpm typecheck && pnpm test && pnpm test:integration && pnpm --filter @fbd/web e2e && pnpm balance` en verde, y `graphify update .`
 - [X] T075 Proponer a la persona el commit (sin ejecutarlo) con el comando exacto listo para copiar
+
+---
+
+## Phase 11: Ronda 2 (revisión de la persona, 2026-11-11)
+
+- [X] T076 `pnpm balance`: dar por buena la magnitud medida de Frágil (4,96 veces más lesiones por minuto; el parámetro `fragil` sigue en 3) con `OBJETIVO_FRAGIL_MEDIDO` en `tools/balance/src/checks/rasgos.ts`; se revisará si resulta problemático
+- [X] T077 Nueva partida sin desplazamiento: Dificultad y Rareza del draft pasan a un deslizador por tramos (`apps/web/src/componentes/SelectorTramos.tsx`); al moverlo, la barra principal muestra el nombre en negrita y la descripción (`data-ayuda-titulo`, `BarraPrincipal.tsx`); rareza en la columna derecha (`base.css`); e2e `dificultad.spec.ts` y `rareza.spec.ts` adaptados
+- [X] T078 `fondos-core --parcial`: sustituye solo las ilustraciones del origen y solo toca su `imagen_bg` (`tools/fixtures/src/fondosCore.ts`, test en `fondosCore.test.ts`)
+- [X] T080 Nueva partida sin desplazar (corrección de la ronda 2): dos columnas con altura propia (`.crear-columna`: modo y rivales; equipos, rareza y ritmo), Equipos y Ritmo en filas compactas y, en pantallas de hasta 820 px de alto, cabecera y sobre más pequeños; medido sin scroll a 1874×905, 1440×800 y 1280×720, con invitado y con cuenta registrada
+- [X] T079 Retoques de porteros y defensas: 51 ilustraciones de `retoques/` convertidas a WebP (media 58,5 KB) sobre las actuales con `fondos-core -- --origen ../../retoques --parcial`; centrocampistas y delanteros, en la ronda 3
 
 ---
 

@@ -27,6 +27,11 @@ import type { Comprobacion } from './partido';
 type Lado = 'local' | 'visitante';
 const P = parametrosActuales();
 const TOLERANCIA = 0.2;
+/**
+ * Magnitud medida de Frágil aceptada en la spec 013 (ronda 2): el multiplicador `fragil` (3) se aplica por entrada y,
+ * acumulado, deja ~4,96 veces más lesiones por minuto. Se da por bueno; si resulta problemático se revisará el parámetro.
+ */
+const OBJETIVO_FRAGIL_MEDIDO = 4.96;
 
 /** Copia de unos parámetros con cambios. */
 function con(cambios: (q: ParametrosEquilibrado) => void, base: ParametrosEquilibrado = P): ParametrosEquilibrado {
@@ -192,7 +197,7 @@ function lesiones(n: number, semilla: number, base: EquipoPartido, rival: Equipo
       'Fragil',
       'Frágil (lesiones por minuto en el campo)',
       razon(porMinuto(conR), porMinuto(sin)),
-      P.defectos!.fragil,
+      OBJETIVO_FRAGIL_MEDIDO,
       `lesiones ${total(sin.r.lesiones, idsAtacantes)} → ${total(conR.r.lesiones, idsAtacantes)}`,
     ),
     comprobacion('DeCristal', 'De cristal (proporción de lesiones largas)', largas, 1, `${total(conR.r.lesionesLargas, idsMedios)} de ${total(conR.r.lesiones, idsMedios)} lesiones`),

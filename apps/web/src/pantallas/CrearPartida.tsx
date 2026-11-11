@@ -5,6 +5,7 @@ import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Icono } from '../componentes/Icono';
+import { SelectorTramos } from '../componentes/SelectorTramos';
 import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { useSesion } from '../estado/sesion';
 import {
@@ -107,149 +108,147 @@ export function CrearPartida() {
       <div className="crear-partida-rejilla">
         {/* Spec 012, ronda 4: desde 720 px, las explicaciones van en la barra principal (`data-ayuda`) y caben sin desplazar; en estrecho (sin cursor), en su sitio. */}
         <form className="formulario crear-formulario" onSubmit={(e) => void enviar(e)}>
-          <fieldset className="losetas crear-modo">
-            <legend>Modo de juego</legend>
-            {(['liga', 'playoff', 'mixto', 'duelos'] as const).map((m) => (
-              <label key={m} className="loseta" data-ayuda={DETALLE_MODO[m]}>
-                <input type="radio" name="modo" checked={modo === m} onChange={() => cambiarModo(m)} />
-                <Icono nombre={ICONO_MODO[m]} tamano={26} className="loseta-icono" />
-                <span className="loseta-texto">
-                  <strong>{ETIQUETA_MODO[m]}</strong>{' '}
-                  <span className="nota ayuda-en-sitio">{DETALLE_MODO[m]}</span>
-                </span>
-              </label>
-            ))}
-          </fieldset>
-
-          <fieldset className="crear-equipos" data-ayuda={AYUDA_EQUIPOS}>
-            <legend>Equipos</legend>
-            <label>
-              Participantes
-              <select value={numParticipantes} onChange={(e) => setNumParticipantes(Number(e.target.value))}>
-                {PARTICIPANTES[modo].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                    {n === 16 ? ' (dos drafts de 8)' : ''}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </fieldset>
-
-          <fieldset className="crear-rivales" data-ayuda={AYUDA_RIVALES}>
-            <legend>Rivales controlados por la IA</legend>
-            <p className="nota ayuda-en-sitio">{AYUDA_RIVALES}</p>
-            <fieldset className="losetas compactas">
-              <legend>Dificultad</legend>
-              {(Object.keys(ETIQUETA_DIFICULTAD) as Dificultad[]).map((d) => (
-                <label key={d} className="loseta" data-ayuda={DESCRIPCION_DIFICULTAD[d]}>
-                  <input
-                    type="radio"
-                    name="dificultad"
-                    checked={dificultad === d}
-                    onChange={() => setDificultad(d)}
-                  />
+          {/* Ronda 2: dos columnas con su propia altura, para que ninguna se estire con huecos y todo quepa sin desplazar. */}
+          <div className="crear-columna">
+            <fieldset className="losetas crear-modo">
+              <legend>Modo de juego</legend>
+              {(['liga', 'playoff', 'mixto', 'duelos'] as const).map((m) => (
+                <label key={m} className="loseta" data-ayuda={DETALLE_MODO[m]}>
+                  <input type="radio" name="modo" checked={modo === m} onChange={() => cambiarModo(m)} />
+                  <Icono nombre={ICONO_MODO[m]} tamano={26} className="loseta-icono" />
                   <span className="loseta-texto">
-                    <strong>{ETIQUETA_DIFICULTAD[d]}</strong>{' '}
-                    <span className="nota ayuda-en-sitio">{DESCRIPCION_DIFICULTAD[d]}</span>
+                    <strong>{ETIQUETA_MODO[m]}</strong>{' '}
+                    <span className="nota ayuda-en-sitio">{DETALLE_MODO[m]}</span>
                   </span>
                 </label>
               ))}
             </fieldset>
-            {npc.length > 0 && (
-              <ul className="lista-npc">
-                {npc.map((nivel, i) => (
-                  <li key={i}>
-                    <span className="lista-npc-numero" aria-hidden="true">
-                      {i + 1}
-                    </span>
-                    <select
-                      aria-label={`Nivel del NPC ${i + 1}`}
-                      value={nivel}
-                      onChange={(e) =>
-                        setNpc(npc.map((n, j) => (j === i ? (e.target.value as NivelNPC) : n)))
-                      }
-                    >
-                      {(Object.keys(ETIQUETA_NIVEL_NPC) as NivelNPC[]).map((n) => (
-                        <option key={n} value={n}>
-                          {ETIQUETA_NIVEL_NPC[n]}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      className="secundario"
-                      onClick={() => setNpc(npc.filter((_, j) => j !== i))}
-                    >
-                      Quitar
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <button
-              type="button"
-              className="secundario"
-              disabled={npc.length >= maxNpc}
-              data-ayuda={
-                esInvitado
-                  ? `Como invitado, las ${maxNpc} plazas restantes son NPC: aquí eliges sus niveles.`
-                  : 'Añade un NPC con el nivel que elijas; las plazas que nadie ocupe al empezar se rellenan solas.'
-              }
-              onClick={() => setNpc([...npc, 'intermedio'])}
-            >
-              Añadir NPC
-            </button>
-          </fieldset>
 
-          <fieldset className="losetas compactas crear-rareza" data-ayuda={AYUDA_RAREZA}>
-            <legend>Rareza del draft</legend>
-            {(Object.keys(ETIQUETA_RAREZA) as NivelRareza[]).map((n) => {
-              const estado = estadoNivel(n);
-              const precio = estado?.estado === 'pago' ? `${estado.coste} fragmentos` : estado?.estado === 'no_disponible' ? 'Solo con cuenta registrada' : 'Gratis';
-              return (
-                <label key={n} className="loseta" data-ayuda={`${DESCRIPCION_RAREZA[n]} ${precio}.`}>
+            <fieldset className="crear-rivales" data-ayuda={AYUDA_RIVALES}>
+              <legend>Rivales controlados por la IA</legend>
+              <p className="nota ayuda-en-sitio">{AYUDA_RIVALES}</p>
+              <SelectorTramos
+                titulo="Dificultad"
+                className="tramos-dificultad"
+                tramos={(Object.keys(ETIQUETA_DIFICULTAD) as Dificultad[]).map((d) => ({
+                  valor: d,
+                  etiqueta: ETIQUETA_DIFICULTAD[d],
+                  descripcion: `${DESCRIPCION_DIFICULTAD[d]}.`,
+                }))}
+                valor={dificultad}
+                onCambio={setDificultad}
+              />
+              {npc.length > 0 && (
+                <ul className="lista-npc">
+                  {npc.map((nivel, i) => (
+                    <li key={i}>
+                      <span className="lista-npc-numero" aria-hidden="true">
+                        {i + 1}
+                      </span>
+                      <select
+                        aria-label={`Nivel del NPC ${i + 1}`}
+                        value={nivel}
+                        onChange={(e) =>
+                          setNpc(npc.map((n, j) => (j === i ? (e.target.value as NivelNPC) : n)))
+                        }
+                      >
+                        {(Object.keys(ETIQUETA_NIVEL_NPC) as NivelNPC[]).map((n) => (
+                          <option key={n} value={n}>
+                            {ETIQUETA_NIVEL_NPC[n]}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="secundario"
+                        onClick={() => setNpc(npc.filter((_, j) => j !== i))}
+                      >
+                        Quitar
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <button
+                type="button"
+                className="secundario"
+                disabled={npc.length >= maxNpc}
+                data-ayuda={
+                  esInvitado
+                    ? `Como invitado, las ${maxNpc} plazas restantes son NPC: aquí eliges sus niveles.`
+                    : 'Añade un NPC con el nivel que elijas; las plazas que nadie ocupe al empezar se rellenan solas.'
+                }
+                onClick={() => setNpc([...npc, 'intermedio'])}
+              >
+                Añadir NPC
+              </button>
+            </fieldset>
+
+          </div>
+          <div className="crear-columna">
+            <fieldset className="crear-equipos" data-ayuda={AYUDA_EQUIPOS}>
+              <legend>Equipos</legend>
+              <label>
+                Participantes
+                <select value={numParticipantes} onChange={(e) => setNumParticipantes(Number(e.target.value))}>
+                  {PARTICIPANTES[modo].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                      {n === 16 ? ' (dos drafts de 8)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </fieldset>
+
+            <fieldset className="crear-rareza" data-ayuda={AYUDA_RAREZA}>
+              <legend>Rareza del draft</legend>
+              <p className="nota ayuda-en-sitio">{AYUDA_RAREZA}</p>
+              <SelectorTramos
+                titulo="Rareza"
+                className="tramos-rareza"
+                tramos={(Object.keys(ETIQUETA_RAREZA) as NivelRareza[]).map((n) => {
+                  const estado = estadoNivel(n);
+                  return {
+                    valor: n,
+                    etiqueta: ETIQUETA_RAREZA[n],
+                    descripcion: DESCRIPCION_RAREZA[n],
+                    nota: estado?.estado === 'pago' ? `${estado.coste} fragmentos` : estado?.estado === 'no_disponible' ? 'Con registro' : undefined,
+                    desactivado: estado?.estado === 'no_disponible',
+                  };
+                })}
+                valor={nivelRareza}
+                onCambio={setNivelRareza}
+              />
+            </fieldset>
+
+            <fieldset className="crear-ritmo" data-ayuda={AYUDA_RITMO}>
+              <legend>Ritmo del torneo</legend>
+              <p className="nota ayuda-en-sitio">{AYUDA_RITMO}</p>
+              {esInvitado ? (
+                <p className="nota">Regístrate para jugar torneos con otras personas.</p>
+              ) : (
+                <label className="crear-plazo">
+                  <span className="crear-plazo-etiqueta">Plazo por jornada con varias personas (horas)</span>
                   <input
-                    type="radio"
-                    name="rareza"
-                    checked={nivelRareza === n}
-                    disabled={estado?.estado === 'no_disponible'}
-                    onChange={() => setNivelRareza(n)}
+                    type="number"
+                    min={1}
+                    max={336}
+                    value={plazo}
+                    onChange={(e) => setPlazo(Number(e.target.value))}
+                    aria-invalid={plazoInvalido || undefined}
+                    aria-describedby="plazo-ayuda"
                   />
-                  <span className="loseta-texto">
-                    <strong>{ETIQUETA_RAREZA[n]}</strong> <span className="rareza-precio">{precio}</span>{' '}
-                    <span className="nota ayuda-en-sitio">{DESCRIPCION_RAREZA[n]}</span>
+                  <span id="plazo-ayuda" className={plazoInvalido ? 'error ayuda-campo' : 'nota ayuda-campo'}>
+                    {plazoInvalido
+                      ? 'El plazo debe estar entre 1 y 336 horas (dos semanas).'
+                      : 'Entre 1 y 336 horas.'}
                   </span>
                 </label>
-              );
-            })}
-          </fieldset>
+              )}
+            </fieldset>
 
-          <fieldset className="crear-ritmo" data-ayuda={AYUDA_RITMO}>
-            <legend>Ritmo del torneo</legend>
-            <p className="nota ayuda-en-sitio">{AYUDA_RITMO}</p>
-            {esInvitado ? (
-              <p className="nota">Regístrate para jugar torneos con otras personas.</p>
-            ) : (
-              <label>
-                Plazo por jornada con varias personas (horas)
-                <input
-                  type="number"
-                  min={1}
-                  max={336}
-                  value={plazo}
-                  onChange={(e) => setPlazo(Number(e.target.value))}
-                  aria-invalid={plazoInvalido || undefined}
-                  aria-describedby="plazo-ayuda"
-                />
-                <span id="plazo-ayuda" className={plazoInvalido ? 'error ayuda-campo' : 'nota ayuda-campo'}>
-                  {plazoInvalido
-                    ? 'El plazo debe estar entre 1 y 336 horas (dos semanas).'
-                    : 'Entre 1 y 336 horas.'}
-                </span>
-              </label>
-            )}
-          </fieldset>
+          </div>
 
           {error && (
             <Aviso tipo="error">
@@ -293,7 +292,7 @@ export function CrearPartida() {
           ayuda: 'Crea la partida y abre la sala, donde esperas a los demás o empiezas el draft.',
         }}
         estado={
-          <span className="solo-ancho">Pasa el cursor por cada opción para ver aquí qué significa.</span>
+          <span className="solo-ancho">Pasa el cursor por cada opción o mueve los deslizadores para ver aquí qué significa.</span>
         }
       />
     </main>

@@ -67,19 +67,30 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Ayuda del control bajo el cursor o con el foco, en cualquier parte de la pantalla (`data-ayuda`; spec 012, ronda 3).
-  const [ayuda, setAyuda] = useState<string | null>(null);
+  // Con `data-ayuda-titulo`, el título va en negrita delante (spec 013, ronda 2: deslizadores de Nueva partida).
+  const [ayudaCompleta, setAyuda] = useState<{ titulo: string | null; texto: string } | null>(null);
+  const ayuda = ayudaCompleta && (ayudaCompleta.titulo ? `${ayudaCompleta.titulo}: ${ayudaCompleta.texto}` : ayudaCompleta.texto);
   useEffect(() => {
     // Solo con sitio (desde 720 px): en estrecho la ayuda haría crecer la barra, que tapa lo que hay debajo.
     const ancha = window.matchMedia?.('(min-width: 720px)');
-    const leer = (e: Event) =>
-      setAyuda((ancha?.matches !== false && e.target instanceof Element && e.target.closest('[data-ayuda]')?.getAttribute('data-ayuda')) || null);
+    const leer = (e: Event) => {
+      const el = ancha?.matches !== false && e.target instanceof Element ? e.target.closest('[data-ayuda]') : null;
+      const texto = el?.getAttribute('data-ayuda');
+      setAyuda(texto ? { titulo: el!.getAttribute('data-ayuda-titulo'), texto } : null);
+    };
+    // Al mover un deslizador (o pulsar una de sus marcas), los atributos cambian después del evento: se leen en el siguiente fotograma.
+    const leerTrasCambio = (e: Event) => requestAnimationFrame(() => leer(e));
     const quitar = () => setAyuda(null);
     document.addEventListener('pointerover', leer);
     document.addEventListener('focusin', leer);
+    document.addEventListener('input', leerTrasCambio);
+    document.addEventListener('click', leerTrasCambio);
     document.documentElement.addEventListener('pointerleave', quitar);
     return () => {
       document.removeEventListener('pointerover', leer);
       document.removeEventListener('focusin', leer);
+      document.removeEventListener('input', leerTrasCambio);
+      document.removeEventListener('click', leerTrasCambio);
       document.documentElement.removeEventListener('pointerleave', quitar);
     };
   }, []);
@@ -132,7 +143,9 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
         {ayuda && (
           <span className="ayuda-barra" aria-hidden="true" style={{ '--caracteres': ayuda.length } as CSSProperties}>
             <Icono nombre="informacion" />
-            <span>{ayuda}</span>
+            <span>
+              {ayudaCompleta!.titulo && <strong>{ayudaCompleta!.titulo}:</strong>} {ayudaCompleta!.texto}
+            </span>
           </span>
         )}
         {motivo ? (
