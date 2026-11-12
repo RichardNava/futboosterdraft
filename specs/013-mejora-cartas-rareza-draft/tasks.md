@@ -226,7 +226,7 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 - [X] T071 [P] Actualizar `CLAUDE.md`: comando `pnpm --filter @fbd/fixtures fondos-core -- --origen <dir>`, ajuste `acceso_niveles_rareza <libre|restringido>` y CLI `pnpm --filter @fbd/server premium <email> <si|no>`
 - [X] T072 [P] Actualizar el estado de la spec 013 en `ROADMAP.md`
 - [ ] T073 Recorrer [quickstart.md](quickstart.md) completo, incluido volver el ajuste a `libre` al final
-- [ ] T074 Cierre: `pnpm typecheck && pnpm test && pnpm test:integration && pnpm --filter @fbd/web e2e && pnpm balance` en verde, y `graphify update .`
+- [X] T074 Cierre: `pnpm typecheck && pnpm test && pnpm test:integration && pnpm --filter @fbd/web e2e && pnpm balance` en verde, y `graphify update .`
 - [X] T075 Proponer a la persona el commit (sin ejecutarlo) con el comando exacto listo para copiar
 
 ---
@@ -238,6 +238,10 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 - [X] T078 `fondos-core --parcial`: sustituye solo las ilustraciones del origen y solo toca su `imagen_bg` (`tools/fixtures/src/fondosCore.ts`, test en `fondosCore.test.ts`)
 - [X] T080 Nueva partida sin desplazar (corrección de la ronda 2): dos columnas con altura propia (`.crear-columna`: modo y rivales; equipos, rareza y ritmo), Equipos y Ritmo en filas compactas y, en pantallas de hasta 820 px de alto, cabecera y sobre más pequeños; medido sin scroll a 1874×905, 1440×800 y 1280×720, con invitado y con cuenta registrada
 - [X] T079 Retoques de porteros y defensas: 51 ilustraciones de `retoques/` convertidas a WebP (media 58,5 KB) sobre las actuales con `fondos-core -- --origen ../../retoques --parcial`; centrocampistas y delanteros, en la ronda 3
+
+## Phase 12: Ronda 3 (revisión de la persona, 2026-11-12)
+
+- [X] T081 Retoques de centrocampistas y delanteros (y algunos porteros y defensas): 119 ilustraciones de `retoques_2/` convertidas a WebP 600×900 (media 61,5 KB) sobre las actuales con `fondos-core -- --origen ../../retoques_2 --parcial`; `imagen_bg` ya apuntaba a `<id>.webp`, así que `core-real.json` no cambia
 
 ---
 
@@ -316,3 +320,4 @@ T023 protocolo de mis-partidas    (packages/protocol/src/http/)
 - `[P]` = ficheros distintos y sin dependencias pendientes.
 - Cada historia se cierra en su checkpoint antes de pasar a la siguiente.
 - Ninguna tarea ejecuta `git commit` ni `git push`.
+- [X] T082 Cierre de la ronda 3: el foco del deslizador por tramos pasa a lima (`--color-accion`, `base.css`; fallaban `diseno/inventario` y `diseno/teclado`) y `control-total.spec.ts` acepta que «Volver sin cambios» esté desactivado con un lesionado y cambios por hacer (spec 012, ronda 5). typecheck, test (el límite de tiempo de `ai/niveles` falla solo con la suite entera en paralelo), test:integration 256/256, balance 52/52 y e2e en verde

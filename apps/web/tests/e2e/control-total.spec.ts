@@ -38,8 +38,15 @@ test('control total en la 2D: parada por un lance propio, aviso y gestión del e
   }
   await expect(gestion.locator('.aviso-parada')).toContainText(lance);
 
-  // Sin cambios: se vuelve al partido y sigue (lo pendiente, en automático).
-  await page.getByRole('button', { name: 'Volver sin cambios' }).click();
+  // Spec 012, ronda 5: con un lesionado y cambios por hacer hay que sustituirlo (sin cambios automáticos).
+  const volver = page.getByRole('button', { name: 'Volver sin cambios' });
+  const aviso = (await gestion.locator('.aviso-parada').textContent()) ?? '';
+  if (/Lesión de .*Te queda/.test(aviso)) {
+    await expect(volver).toHaveAttribute('aria-disabled', 'true');
+    return;
+  }
+  // Sin cambios: se vuelve al partido y sigue.
+  await volver.click();
   await expect(gestion).toBeHidden();
   await expect(page.locator('.campo-2d canvas')).toBeVisible();
 });

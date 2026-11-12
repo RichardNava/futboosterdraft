@@ -2131,7 +2131,7 @@ html {
 }
 
 .selector-tramos input[type='range']:focus-visible {
-  outline: var(--contorno-foco) solid var(--color-foco);
+  outline: var(--contorno-foco) solid var(--color-accion);
   outline-offset: 4px;
   border-radius: var(--radio-pildora);
 }
