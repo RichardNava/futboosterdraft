@@ -44,6 +44,26 @@ Términos:
 - **Pestañeo**: aparición y desaparición, en menos de un instante, de barras, secciones o esqueletos de carga al
   cambiar de pantalla.
 
+## Clarifications
+
+### Session 2026-11-13
+
+- Q: ¿Cuánta energía debe quedarle al pitido final a un jugador normal (sin rasgos de cansancio, sin Presión alta ni
+  marcaje individual) que ha jugado los 90 minutos? → A: ≈ 50 % (penalización ≈ 30 %, cara amarilla); los tramos
+  naranja y rojo quedan para quien se cansa más (Fatigado, Presión alta, marcaje individual) y para la prórroga de los
+  partidos eliminatorios.
+- Q: ¿Qué funciones deben llevar obligatoriamente un comentario explicativo tras la refactorización? → A: todo lo
+  exportado de cada módulo y las funciones internas cuya lógica no sea evidente; no se exige en las pruebas ni en
+  funciones triviales de una línea.
+- Q: ¿Cómo debe notarse que las estadísticas pesan más? → A: no con un objetivo de porcentaje de victorias, sino en el
+  comportamiento: cada estadística hace que el jugador intente más a menudo la acción que gobierna y que le salga mejor
+  (p. ej. un defensa con buena entrada hace más entradas y más limpias, roba más balones y así ayuda a ganar), tanto en
+  la simulación rápida como, de forma patente, en la 2D; el resultado cambia como consecuencia de ese comportamiento.
+- Q: Al volver a una pantalla ya visitada, ¿qué datos se muestran al instante con lo conocido y cuáles hay que esperar
+  a tener actualizados? → A: todo se muestra al instante salvo los datos de decisión (saldo de fragmentos o monedas,
+  plazos y turnos de partida, estado de una partida en curso), que se cargan frescos antes de mostrarse, con la regla
+  de los 2 s.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - El balón solo se mueve cuando alguien lo juega (Priority: P1)
@@ -167,8 +187,10 @@ los jugadores baja tras el inicio del cansancio.
 ### User Story 5 - Las estadísticas de los jugadores deciden más (Priority: P2)
 
 El comportamiento general del partido es más realista y las estadísticas de cada jugador pesan más en lo que hace y en
-cómo le sale: un buen pasador elige y acierta más pases, un buen regateador se va más veces, un buen rematador marca
-más, un buen defensa roba más y un jugador rápido llega antes al balón. La diferencia entre un jugador alto y uno bajo
+cómo le sale: un buen pasador elige y acierta más pases, un buen regateador intenta y gana más regates, un buen
+rematador dispara y marca más, un buen defensa hace más entradas y más limpias y recupera más balones, y un jugador
+rápido llega antes al balón. El resultado cambia como consecuencia de ese comportamiento, no por un ajuste directo del
+marcador. La diferencia entre un jugador alto y uno bajo
 en una estadística se nota a simple vista en la 2D y en las estadísticas del partido.
 
 **Why this priority**: refuerza el Principio I (la estrategia del draft y de la alineación debe ser determinante), pero
@@ -185,8 +207,11 @@ el informe la ventaja medida para cada estadística principal.
    remate convierte un porcentaje de disparos claramente superior.
 3. **Given** dos equipos iguales salvo en la velocidad, **When** se simula una serie, **Then** el más rápido gana más
    balones divididos y en la 2D sus jugadores llegan antes a los balones sueltos.
-4. **Given** dos equipos de media muy distinta, **When** se simula una serie, **Then** el mejor gana con más frecuencia
-   que hoy, sin volver a goleadas desmedidas (se mantiene el freno a las goleadas de la 012).
+4. **Given** dos equipos iguales salvo en la defensa (entrada) de sus defensas, **When** se simula una serie, **Then**
+   el de mejor defensa intenta más entradas, comete menos faltas por entrada y recupera más balones.
+5. **Given** cualquier estadística principal, **When** se ve en la 2D un partido entre jugadores con valores muy
+   distintos en ella, **Then** la diferencia se aprecia en lo que hacen (frecuencia y acierto de la acción), sin volver
+   a goleadas desmedidas (se mantiene el freno a las goleadas de la 012).
 
 ---
 
@@ -207,7 +232,8 @@ simular una conexión lenta y comprobar que el indicador aparece a los 2 segundo
 1. **Given** una conexión normal, **When** el participante cambia de pantalla, **Then** la nueva pantalla se muestra con
    su contenido sin estados intermedios visibles.
 2. **Given** una pantalla ya visitada en la sesión, **When** se vuelve a ella, **Then** se muestra al instante con los
-   últimos datos conocidos y se actualiza sin pestañeo si hay cambios.
+   últimos datos conocidos y se actualiza sin pestañeo si hay cambios, salvo los datos de decisión (FR-025), que se
+   muestran ya actualizados.
 3. **Given** una carga que dura menos de 2 segundos, **When** se navega, **Then** no aparece ningún indicador de carga ni
    esqueleto.
 4. **Given** una carga que dura más de 2 segundos, **When** pasan los 2 segundos, **Then** aparece un indicador de carga
@@ -235,8 +261,8 @@ fijas.
    modificar lo que comprueban.
 2. **Given** una serie de partidos y drafts con semillas fijas, **When** se reproducen antes y después de refactorizar
    (con el motor de las historias 1 a 5 ya cerrado), **Then** los resultados y eventos son idénticos.
-3. **Given** cualquier método del código, **When** se lee, **Then** tiene un comentario que explica su propósito en una o
-   pocas líneas, en español.
+3. **Given** cualquier función o método exportado, o interno de lógica no evidente, **When** se lee, **Then** tiene un
+   comentario que explica su propósito en una o pocas líneas, en español.
 4. **Given** el código tras la refactorización, **When** se busca lógica repetida o sin uso, **Then** no quedan bloques
    duplicados con la misma responsabilidad ni exportaciones, ficheros o ramas sin uso.
 
@@ -260,10 +286,13 @@ fijas.
   100 %.
 - **Energía exactamente en un límite (80, 60, 40, 20 %)**: pertenece al tramo superior (p. ej. 80 % es verde
   sonriente).
+- **Prórroga en un partido eliminatorio**: el cansancio sigue acumulándose al mismo ritmo, sin descanso que lo recupere;
+  es donde los jugadores normales llegan a los tramos naranja y rojo.
 - **Pausa de gestión antes del minuto de inicio del cansancio**: todos los indicadores muestran 100 % y ninguna
   penalización.
 - **Navegación con datos en caché que han cambiado** (p. ej. fragmentos tras una compra): se muestra lo conocido y se
-  actualiza sin pestañeo; nunca se deja un dato obsoleto que pueda llevar a una decisión equivocada (saldo, plazos).
+  actualiza sin pestañeo; los datos de decisión (saldo, plazos, turnos, estado de la partida) no se toman de la caché,
+  se esperan frescos (FR-025).
 - **Navegación rápida entre varias pantallas**: si el participante cambia de pantalla antes de que termine una carga, no
   aparece el indicador de una carga abandonada.
 - **Refactorización que toca el motor**: cualquier diferencia en un partido con semilla fija se considera un fallo de la
@@ -316,7 +345,8 @@ fijas.
 
 - **FR-014**: Sin contar virtudes, defectos ni tácticas que lo modifiquen, los jugadores en el campo DEBEN empezar a
   cansarse en el minuto 65 (55 con Presión alta), y la bajada de rendimiento DEBE ser apreciable en el juego y en las
-  estadísticas (ver SC-006).
+  estadísticas (ver SC-006): un jugador así que juega los 90 minutos termina con energía ≈ 50 % (penalización ≈ 30 %,
+  tramo amarillo) y, si hay prórroga en un partido eliminatorio, sigue cansándose hacia los tramos naranja y rojo.
 - **FR-015**: La energía de cada jugador DEBE ir de 100 % (sin cansancio) a 0 % (cansancio máximo que admite el motor), y
   la penalización DEBE ser el porcentaje en que el cansancio reduce en ese momento sus estadísticas.
 - **FR-016**: En las pausas de «Gestionar equipo» de un partido en curso, cada chapa de un jugador en el campo DEBE mostrar
@@ -333,9 +363,11 @@ fijas.
 
 **Estadísticas más determinantes (US5)**
 
-- **FR-021**: El motor DEBE aumentar el peso de las estadísticas individuales en la elección de las acciones y en su
-  éxito, de forma que la diferencia entre jugadores se note en cada estadística principal (pase, regate, remate,
-  defensa, velocidad, físico, portero).
+- **FR-021**: El motor DEBE aumentar el peso de las estadísticas individuales tanto en la frecuencia con la que cada
+  jugador elige la acción que gobierna cada estadística como en su éxito, de forma que la diferencia entre jugadores
+  se note en cada estadística principal (pase, regate, remate, defensa, velocidad, físico, portero), en la simulación
+  rápida y de forma visible en la 2D. El resultado DEBE cambiar como consecuencia de ese comportamiento, sin un ajuste
+  directo del marcador ni un objetivo de porcentaje de victorias.
 - **FR-022**: Los ajustes DEBEN reflejarse en los parámetros de equilibrado versionados, con una nueva versión de
   parámetros, y medirse en el informe de la herramienta de equilibrado.
 - **FR-023**: Los cambios del motor NO DEBEN romper los criterios de equilibrado vigentes que no se revisan en esta spec
@@ -346,7 +378,9 @@ fijas.
 - **FR-024**: Al navegar entre pantallas, la aplicación DEBE mostrar la nueva pantalla solo cuando su contenido principal
   está listo, manteniendo la anterior mientras tanto, o al instante si ya dispone de los datos.
 - **FR-025**: Los datos ya cargados en la sesión DEBEN reutilizarse al volver a una pantalla y actualizarse en segundo
-  plano sin estados de carga visibles.
+  plano sin estados de carga visibles. Se exceptúan los datos de decisión (saldo de fragmentos o monedas, plazos y
+  turnos de partida, estado de una partida en curso): DEBEN cargarse frescos antes de mostrarse, aplicando la regla de
+  los 2 s de FR-027, y nunca mostrarse con un valor anterior.
 - **FR-026**: La aplicación DEBE adelantar la carga de lo necesario para las pantallas a las que es probable navegar
   (p. ej. al señalar o pulsar un enlace) cuando eso no suponga un coste apreciable.
 - **FR-027**: Si una navegación tarda más de 2 segundos, DEBE aparecer un indicador de carga, que desaparece al terminar o
@@ -360,8 +394,9 @@ fijas.
   herramientas) y unificar la lógica duplicada, eliminar el código sin uso y simplificar lo que se pueda resumir.
 - **FR-030**: La refactorización NO DEBE cambiar ningún comportamiento: las pruebas existentes DEBEN seguir pasando sin
   rebajar lo que comprueban, y los partidos y drafts con semilla fija DEBEN dar el mismo resultado antes y después.
-- **FR-031**: Cada método o función DEBE tener un comentario en español, breve, claro y profesional, que diga qué hace y,
-  cuando no sea evidente, por qué.
+- **FR-031**: Cada función, método o componente exportado de un módulo, y cada función interna cuya lógica no sea
+  evidente, DEBE tener un comentario en español, breve, claro y profesional, que diga qué hace y, cuando no sea
+  evidente, por qué. No se exige en los ficheros de pruebas ni en funciones internas triviales de una línea.
 - **FR-032**: La refactorización DEBE hacerse después de cerrar los cambios de comportamiento del motor (US1 a US5) para
   poder comparar con semillas fijas.
 
@@ -388,14 +423,17 @@ fijas.
   equipo con línea adelantada provoca al menos un 30 % más que sin ella.
 - **SC-005**: En una revisión de 20 fueras de juego pitados en 2D, el 100 % corresponden a un receptor por delante del
   penúltimo defensor en el momento del pase, y ninguna jugada con receptor en posición correcta se pita.
-- **SC-006**: Un jugador sin rasgos de cansancio pierde al final del partido al menos un 15 % de rendimiento respecto a su
-  rendimiento antes del minuto de inicio, medido en el informe de equilibrado.
+- **SC-006**: Un jugador sin rasgos de cansancio, sin Presión alta ni marcaje individual, termina el minuto 90 con una
+  energía de entre el 45 % y el 55 % (penalización de entre el 27 % y el 33 %), y su rendimiento al final del partido
+  baja de forma medible respecto al de antes del minuto de inicio, según el informe de equilibrado; al final de una
+  prórroga está en el tramo naranja o rojo.
 - **SC-007**: En las pausas de «Gestionar equipo», el 100 % de los jugadores en el campo muestran el indicador de energía
   con la cara, el color, el porcentaje y la penalización que corresponden a su tramo.
 - **SC-008**: Para cada estadística principal, el informe de equilibrado muestra que el equipo con +15 puntos en esa
-  estadística obtiene una ventaja medible en la acción que gobierna (al menos +10 % relativo en su tasa de éxito).
-- **SC-009**: Un equipo con 10 puntos más de media gana al menos un 10 % más de partidos que con los parámetros actuales,
-  y la proporción de partidos con 6 o más goles de diferencia no supera la actual.
+  estadística obtiene una ventaja medible en la acción que gobierna, tanto en el número de veces que la intenta como en
+  su tasa de éxito (al menos +10 % relativo en cada una).
+- **SC-009**: Con los parámetros nuevos, la proporción de partidos con 6 o más goles de diferencia no supera la actual
+  (el efecto de las estadísticas sobre el resultado se mide solo a través de SC-008, no con un objetivo de victorias).
 - **SC-010**: Al recorrer las pantallas principales con una conexión normal, en el 100 % de las navegaciones no se ve
   ningún estado de carga intermedio; con una conexión lenta, el indicador aparece a los 2 segundos (±0,3 s) y nunca
   antes.
@@ -403,7 +441,7 @@ fijas.
   partidos y 20 drafts con semilla fija dan resultados idénticos a los de antes.
 - **SC-012**: Tras la refactorización, una revisión automática de código sin uso (que el plan elegirá) no encuentra ninguna
   exportación, fichero ni dependencia sin uso, un resumen lista cada duplicidad unificada y lo eliminado, y el 100 % de
-  las funciones y métodos tienen un comentario explicativo.
+  las funciones, métodos y componentes exportados (fuera de las pruebas) tienen un comentario explicativo.
 
 ## Assumptions
 
