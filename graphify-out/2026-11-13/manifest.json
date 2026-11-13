@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/CrearPartida.tsx": {
-    "mtime": 1794525265.9514284,
-    "seen": 1794525491.3448899,
-    "ast_hash": "462bd740f1d45234e403d74c36467529",
+    "mtime": 1794526270.9526367,
+    "seen": 1794526308.3536575,
+    "ast_hash": "ceeb93db7dda28af1a15152552060705",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Draft.tsx": {
@@ -9246,9 +9246,9 @@
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/tasks.md": {
-    "mtime": 1794525456.084017,
-    "seen": 1794525491.4733727,
-    "ast_hash": "5b9b84e6c8087aa1d66623cac9bee674",
+    "mtime": 1794526284.435509,
+    "seen": 1794526308.4394908,
+    "ast_hash": "e5a44fc9b87d7ab9e65d5833e1848dc0",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/1.webp": {

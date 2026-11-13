@@ -4,7 +4,7 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 
 - Principios del proyecto: [.specify/memory/constitution.md](.specify/memory/constitution.md)
 - Iniciativas, prioridades y estado de cada spec: [ROADMAP.md](ROADMAP.md)
-- Especificación en curso: [specs/013-mejora-cartas-rareza-draft/](specs/013-mejora-cartas-rareza-draft/) (plan desde el 2026-11-10; la anterior es la 012)
+- Especificación en curso: [specs/014-mejoras-motor-navegacion-refactor/](specs/014-mejoras-motor-navegacion-refactor/) (plan desde el 2026-11-13; la anterior es la 013)
 - Datos del catálogo: `data/core-real.json` y `data/cartas-prueba.json` (cartas), `data/colecciones.json` (pertenencia) y `data/cosmeticos.json` (escudos, sobres y packs); `pnpm seed` los carga todos
 - Las 300 cartas de Core son jugadores reales y su única fuente es `data/core-real.json`; `pnpm --filter @fbd/fixtures core-real` lo valida (solo retratos propios, en `/cartas/retratos-propios/`) y regenera `specs/008-datos-reales-core/sumario.md`
 - Imágenes de cosméticos: `pnpm --filter @fbd/fixtures imagenes -- --escudos <dir> --sobres <dir>` (WebP en `apps/web/public/cosmeticos/`; completa `data/cosmeticos.json` sin pisar lo editado)

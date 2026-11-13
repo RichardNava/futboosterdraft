@@ -2052,9 +2052,9 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1794272073.0663345,
-    "seen": 1794272531.7924654,
-    "ast_hash": "8d03d357859be3e7f0d068319c3e81fc",
+    "mtime": 1794529502.9269083,
+    "seen": 1794529538.9909189,
+    "ast_hash": "92651a29c808116ff76b4170a3268711",
     "semantic_hash": ""
   },
   "README.md": {
@@ -11055,6 +11055,66 @@
     "mtime": 1794353557.3148973,
     "seen": 1794353717.0023158,
     "ast_hash": "8345c7ef99b4d586d2e667f7303122d4",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/checklists/requirements.md": {
+    "mtime": 1794528062.963631,
+    "seen": 1794529539.0161068,
+    "ast_hash": "8422cd24c0e8f3c6e47af278b302707f",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/contracts/calidad.md": {
+    "mtime": 1794529496.749539,
+    "seen": 1794529539.0161102,
+    "ast_hash": "d1a070d40b4abecb7484c8fbaf52409e",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/contracts/motor.md": {
+    "mtime": 1794529494.06082,
+    "seen": 1794529539.0161128,
+    "ast_hash": "195fb6fcae25863c098fe7a63127d7a4",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/contracts/protocolo.md": {
+    "mtime": 1794529494.9738472,
+    "seen": 1794529539.0161154,
+    "ast_hash": "7412d1c9e4790e4c58785cfb61754805",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/contracts/ui.md": {
+    "mtime": 1794529495.8636441,
+    "seen": 1794529539.0161176,
+    "ast_hash": "8916b1464d6f069edd77bcad10fa586c",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/data-model.md": {
+    "mtime": 1794529419.5760221,
+    "seen": 1794529539.0161197,
+    "ast_hash": "58bf59a0402ae7aeb51e1bbd964a3da0",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/plan.md": {
+    "mtime": 1794529257.97113,
+    "seen": 1794529539.0161223,
+    "ast_hash": "8e879c9bb1b159e19ea93e1c23df1c23",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/quickstart.md": {
+    "mtime": 1794529497.668324,
+    "seen": 1794529539.0161245,
+    "ast_hash": "1eac8094915ba10a84891bfb788798fe",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/research.md": {
+    "mtime": 1794529418.6907754,
+    "seen": 1794529539.0161262,
+    "ast_hash": "de3d79380ec98be9e02f50e92c28d0f4",
+    "semantic_hash": ""
+  },
+  "specs/014-mejoras-motor-navegacion-refactor/spec.md": {
+    "mtime": 1794529004.689361,
+    "seen": 1794529539.0161276,
+    "ast_hash": "6052e569b874fa176f7d775d44fae936",
     "semantic_hash": ""
   }
 }

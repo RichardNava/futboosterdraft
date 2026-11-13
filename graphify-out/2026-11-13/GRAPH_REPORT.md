@@ -1,7 +1,7 @@
 # Graph Report - futboosterdraft  (2026-11-13)
 
 ## Corpus Check
-- 949 files · ~2,139,235 words
+- 949 files · ~2,139,361 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 21 file(s) not represented in the graph (top: (none) 9, .css 6, .woff2 5)
 
