@@ -79,7 +79,7 @@ export const ETIQUETA_RAREZA: Readonly<Record<NivelRareza, string>> = {
   pobre: 'Pobre',
   escaso: 'Escaso',
   moderado: 'Moderado',
-  abundante: 'Abundante',
+  abundante: 'Alto',
   rico: 'Rico',
 };
 

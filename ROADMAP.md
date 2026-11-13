@@ -389,7 +389,7 @@ cuesta simular los partidos.
   Pendiente: T106 (recorrido a mano).
 - **Spec 013 (implementada el 2026-11-10, sin validar)**: las 300 cartas de Core con su ilustración propia de fondo
   (WebP, 57,5 KB de media; genérico con la identidad alternativa); rasgos y stats con contraste ≥ 4,5:1 en el peor
-  caso; nivel de rareza del draft (Pobre, Escaso, Moderado, Abundante y Rico; parámetros 6.3.0, Moderado al 30 % de
+  caso; nivel de rareza del draft (Pobre, Escaso, Moderado, Alto y Rico; parámetros 6.3.0, Moderado al 30 % de
   GOAT en la alta) con acceso por el ajuste `acceso_niveles_rareza`, cobro idempotente de 100 fragmentos y pase
   premium de 30 días (fragmentos o euros, y de cortesía por CLI); la pestaña se recupera sola cuando vuelve el
   servidor; «Mis partidas» paginada; aviso de inicio de sesión arriba; descripción de rasgo sin parpadeo; media del

@@ -166,8 +166,9 @@ describe('partido rápido (US3)', () => {
 
   it('en eliminatoria con empate hay pausa antes de la prórroga y después la tanda', async () => {
     let comprobado = false;
-    // Hace falta un empate al final de la segunda parte: se repite con partidas nuevas hasta que sale.
-    for (let intento = 0; intento < 20 && !comprobado; intento++) {
+    // Hace falta un empate al final de la segunda parte: se repite con partidas nuevas hasta que sale (con 20 intentos
+    // falló una vez bajo la carga de la suite completa, en el cierre de la spec 013).
+    for (let intento = 0; intento < 40 && !comprobado; intento++) {
       await srv.cerrar();
       await bd.limpiar();
       srv = await iniciarServidorPruebas(bd);

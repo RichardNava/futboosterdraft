@@ -23,7 +23,7 @@ Para decidir los niveles en `/speckit-clarify` (lo pidió la persona), estos son
 
 ### Session 2026-11-09
 
-- Q: ¿Cuántos niveles de rareza y qué reparto por sobre tiene cada uno? → A: 5 niveles (Pobre, Escaso, Moderado = actual, Abundante, Rico) con la tabla de FR-012; Rico no cabe en Core y se rige por FR-020.
+- Q: ¿Cuántos niveles de rareza y qué reparto por sobre tiene cada uno? → A: 5 niveles (Pobre, Escaso, Moderado = actual, Alto, Rico) con la tabla de FR-012; Rico no cabe en Core y se rige por FR-020.
 - Q: ¿Qué hacemos con el nivel Rico, que pide más cartas Legendario y GOAT de las que tiene Core? → A: Rico pone en cada mesa todas las Legendario y GOAT de Core (54 + 36) y cubre los 6 huecos que faltan con Crack; sin repeticiones.
 - Q: ¿Quién puede usar los niveles distintos de Moderado al crear una partida? → A: Libres durante las pruebas, con un ajuste de servidor para restringirlos sin desplegar; la venta se implementa ya: en modo restringido son gratis con cuenta premium y, sin ella, cuestan 100 fragmentos por partida.
 - Q: ¿Cuánto dura la cuenta premium y cuánto cuesta? → A: 30 días desde la compra, 2,99 € o 2.990 fragmentos; sin renovación automática; comprarla con premium activa suma 30 días a la fecha de fin.
@@ -202,12 +202,12 @@ En "Mi perfil" las dos equipaciones comparten un solo contenedor y el espacio li
   | Pobre | 5 S, 2 C, 1 alta | 95 % / 5 % | 15 / 6 / 2,85 / 0,15 | ~1,2 |
   | Escaso | 5 S, 2 C, 1 alta | 80 % / 20 % | 15 / 6 / 2,4 / 0,6 | ~4,8 |
   | Moderado (estándar) | 4 S, 2 C, 1 L, 1 alta | 70 % / 30 % | 12 / 6 / 5,1 / 0,9 | ~7,2 |
-  | Abundante | 3 S, 2 C, 1 L, 2 altas | 50 % / 50 % | 9 / 6 / 6 / 3 | ~24 |
+  | Alto | 3 S, 2 C, 1 L, 2 altas | 50 % / 50 % | 9 / 6 / 6 / 3 | ~24 |
   | Rico | 2 S, 2 C, 1 L, 3 altas | 50 % / 50 % | 6 / 6 / 7,5 / 4,5 (con pool de solo Core: 6 / 6,75 / 6,75 / 4,5) | 36 (todos) |
 
-  Probabilidad de que un GOAT concreto (p. ej. Messi) salga en una mesa de 8 con pool de solo Core, y de que acabe en tu equipo: Pobre 3 % / 0,4 %; Escaso 13 % / 1,7 %; Moderado 20 % / 2,5 % (hoy 13 % / 1,7 %); Abundante 67 % / 8,3 %; Rico 100 % / 12,5 %.
+  Probabilidad de que un GOAT concreto (p. ej. Messi) salga en una mesa de 8 con pool de solo Core, y de que acabe en tu equipo: Pobre 3 % / 0,4 %; Escaso 13 % / 1,7 %; Moderado 20 % / 2,5 % (hoy 13 % / 1,7 %); Alto 67 % / 8,3 %; Rico 100 % / 12,5 %.
 
-  Con pool de solo Core, Pobre, Escaso, Moderado y Abundante caben siempre; Rico pide 96 L + G por mesa y Core tiene 90, así que los 6 huecos sobrantes se cubren por la regla de FR-020. S, C, L y G = Superclase, Crack, Legendario y GOAT.
+  Con pool de solo Core, Pobre, Escaso, Moderado y Alto caben siempre; Rico pide 96 L + G por mesa y Core tiene 90, así que los 6 huecos sobrantes se cubren por la regla de FR-020. S, C, L y G = Superclase, Crack, Legendario y GOAT.
 - **FR-013**: Moderado DEBE ser el valor por defecto. El generador DEBE conservar el algoritmo actual de modo que, con la probabilidad de la carta alta de hoy (80 % / 20 %), produzca exactamente los mismos sobres que hoy para la misma semilla; el cambio a 70 % / 30 % es solo de parámetro y DEBE versionarse como el resto de parámetros de equilibrado.
 - **FR-014**: Todos los niveles DEBEN mantener los cupos de demarcación por sobre (1 "POR o DEF", 2 DEF, 3 MED, 2 DEL) y el tamaño de 8 cartas por sobre.
 - **FR-015**: El reparto DEBE seguir siendo determinista a partir de la semilla de la partida, para poder reproducir y verificar cualquier draft.

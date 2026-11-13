@@ -1,6 +1,6 @@
 import type { RespuestaNivelesRareza } from '@fbd/protocol';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
@@ -49,6 +49,16 @@ export function CrearPartida() {
     api<RespuestaNivelesRareza>('/api/partidas/niveles-rareza').then(setNiveles).catch(() => setNiveles(null));
   }, []);
   const estadoNivel = (n: NivelRareza) => niveles?.niveles.find((x) => x.nivel === n);
+  // Spec 013, ronda 4: si algún nivel no es gratis (modo restringido sin pase premium), la sección se ve bloqueada en
+  // Moderado hasta que se pulsa el botón del precio; el cobro sigue siendo al crear la partida y solo si el nivel no es Moderado.
+  const [desbloqueada, setDesbloqueada] = useState(false);
+  const costeRareza = niveles?.niveles.find((x) => x.estado === 'pago')?.coste;
+  const rarezaBloqueada = !desbloqueada && !!niveles?.niveles.some((x) => x.estado !== 'gratis');
+  const ayudaRareza = !rarezaBloqueada
+    ? AYUDA_RAREZA
+    : costeRareza
+      ? `Para elegir la rareza del draft, paga ${costeRareza} fragmentos por este torneo o activa el pase premium, que desbloquea todos los niveles.`
+      : 'Regístrate para elegir la rareza del draft: con una cuenta puedes pagarla por torneo o activar el pase premium.';
 
   const cambiarModo = (m: Modo) => {
     setModo(m);
@@ -75,7 +85,7 @@ export function CrearPartida() {
           ...(!esInvitado ? { plazoJornadaHoras: plazo } : {}),
           npc: npc.slice(0, maxNpc).map((nivel) => ({ nivel })),
           dificultad,
-          nivelRareza,
+          nivelRareza: rarezaBloqueada ? 'moderado' : nivelRareza,
           ...(esInvitado ? { plazasHumanas: 1 } : {}),
         },
       });
@@ -201,25 +211,65 @@ export function CrearPartida() {
               </label>
             </fieldset>
 
-            <fieldset className="crear-rareza" data-ayuda={AYUDA_RAREZA}>
+            <fieldset className="crear-rareza" data-ayuda={ayudaRareza} data-bloqueada={rarezaBloqueada || undefined}>
               <legend>Rareza del draft</legend>
-              <p className="nota ayuda-en-sitio">{AYUDA_RAREZA}</p>
-              <SelectorTramos
-                titulo="Rareza"
-                className="tramos-rareza"
-                tramos={(Object.keys(ETIQUETA_RAREZA) as NivelRareza[]).map((n) => {
-                  const estado = estadoNivel(n);
-                  return {
-                    valor: n,
-                    etiqueta: ETIQUETA_RAREZA[n],
-                    descripcion: DESCRIPCION_RAREZA[n],
-                    nota: estado?.estado === 'pago' ? `${estado.coste} fragmentos` : estado?.estado === 'no_disponible' ? 'Con registro' : undefined,
-                    desactivado: estado?.estado === 'no_disponible',
-                  };
-                })}
-                valor={nivelRareza}
-                onCambio={setNivelRareza}
-              />
+              <p className="nota ayuda-en-sitio">{ayudaRareza}</p>
+              {rarezaBloqueada && (
+                <div className="rareza-bloqueo" data-ayuda={ayudaRareza}>
+                  {/* Dos cadenas de esquina a esquina: eslabones con trazo discontinuo y sus huecos encima. */}
+                  <svg className="rareza-cadenas" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    {['M0 0L100 100', 'M100 0L0 100'].map((d) => (
+                      <g key={d}>
+                        <path d={d} className="eslabones" vectorEffect="non-scaling-stroke" />
+                        <path d={d} className="huecos" vectorEffect="non-scaling-stroke" />
+                      </g>
+                    ))}
+                  </svg>
+                  <span className="rareza-candado">
+                    <Icono nombre="candado" tamano={30} etiqueta="Rareza bloqueada" />
+                  </span>
+                  {costeRareza ? (
+                    <div className="rareza-botones">
+                      <button
+                        type="button"
+                        className="alternativa rareza-desbloquear"
+                        data-ayuda={`Paga ${costeRareza} fragmentos para elegir la rareza del draft en este torneo; se cobran al crear la partida si el nivel no es Moderado.`}
+                        onClick={() => setDesbloqueada(true)}
+                      >
+                        <Icono nombre="cristal" tamano={18} /> {costeRareza}
+                        <span className="solo-lectores"> fragmentos: desbloquear la rareza en este torneo</span>
+                      </button>
+                      {/* Ronda 4: acceso directo a la compra del pase premium en la tienda. */}
+                      <Link
+                        to="/tienda?seccion=funcionalidades&sub=premium"
+                        className="boton rareza-premium"
+                        data-ayuda="Ve a la tienda a comprar el pase premium: todos los niveles de rareza del draft, gratis, en las partidas que crees."
+                      >
+                        <Icono nombre="rayo" tamano={18} /> Premium
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+              <div className="rareza-selector" inert={rarezaBloqueada}>
+                <SelectorTramos
+                  titulo="Rareza"
+                  className="tramos-rareza"
+                  tramos={(Object.keys(ETIQUETA_RAREZA) as NivelRareza[]).map((n) => {
+                    const estado = estadoNivel(n);
+                    return {
+                      valor: n,
+                      etiqueta: ETIQUETA_RAREZA[n],
+                      descripcion: DESCRIPCION_RAREZA[n],
+                      // Ronda 4: el precio va en el botón del bloqueo, no bajo cada nivel.
+                      nota: estado?.estado === 'no_disponible' ? 'Con registro' : undefined,
+                      desactivado: estado?.estado === 'no_disponible',
+                    };
+                  })}
+                  valor={rarezaBloqueada ? 'moderado' : nivelRareza}
+                  onCambio={setNivelRareza}
+                />
+              </div>
             </fieldset>
 
             <fieldset className="crear-ritmo" data-ayuda={AYUDA_RITMO}>

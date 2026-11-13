@@ -146,7 +146,7 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 - [X] T039 [US3] `iniciarDraft` (`apps/server/src/actores/draft.ts`) pasa `parametros.sobres.niveles[partida.nivelRareza]` a `generarMesa` en cada mesa (FR-016; varias mesas con el mismo reparto)
 - [X] T040 [US3] Ensayo en `crearPartida` (`apps/server/src/actores/gestor.ts`): antes de guardar, ejecutar `generarMesa` con el pool fijado, el número de participantes, `derivarSemilla(semilla, 'mesa:<i>')` y el reparto del nivel; `ErrorPoolInsuficiente` ⇒ `422 POOL_INSUFICIENTE` sin crear ni cobrar (FR-020)
 - [X] T041 [US3] Integración `apps/server/tests/integration/rareza.test.ts` (paso a): crear con cada nivel ⇒ el resumen y la sala devuelven `nivelRareza`; nivel desconocido ⇒ `400 NIVEL_RAREZA_INVALIDO`; Rico con Core en una mesa de 8 arranca el draft sin repetidos; partida previa sin nivel se reanuda como `moderado`
-- [X] T042 [US3] Selector «Rareza del draft» en `apps/web/src/pantallas/CrearPartida.tsx`, en todos los modos: 5 niveles en orden, Moderado preseleccionado, una línea de descripción por nivel (Pobre: «Casi sin estrellas: mandan Superclase y Crack.»; Escaso: «Pocas Legendario; algún GOAT suelto.»; Moderado: «El estándar.»; Abundante: «Muchas Legendario y GOAT.»; Rico: «Todas las Legendario y GOAT de la colección en la mesa.»), cumpliendo el Principio XI (sin desplazarse)
+- [X] T042 [US3] Selector «Rareza del draft» en `apps/web/src/pantallas/CrearPartida.tsx`, en todos los modos: 5 niveles en orden, Moderado preseleccionado, una línea de descripción por nivel (Pobre: «Casi sin estrellas: mandan Superclase y Crack.»; Escaso: «Pocas Legendario; algún GOAT suelto.»; Moderado: «El estándar.»; Alto: «Muchas Legendario y GOAT.»; Rico: «Todas las Legendario y GOAT de la colección en la mesa.»), cumpliendo el Principio XI (sin desplazarse)
 - [X] T043 [P] [US3] Etiqueta «Rareza: <Nivel>» junto al modo y la dificultad en `apps/web/src/pantallas/Sala.tsx` y en el resumen de partida (`PartidaResumen`, `apps/web/src/pantallas/`) (US3-4)
 
 ### Paso (b): ajuste `restringido`, cobro, pase premium y tienda
@@ -242,6 +242,12 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 ## Phase 12: Ronda 3 (revisión de la persona, 2026-11-12)
 
 - [X] T081 Retoques de centrocampistas y delanteros (y algunos porteros y defensas): 119 ilustraciones de `retoques_2/` convertidas a WebP 600×900 (media 61,5 KB) sobre las actuales con `fondos-core -- --origen ../../retoques_2 --parcial`; `imagen_bg` ya apuntaba a `<id>.webp`, así que `core-real.json` no cambia
+
+## Phase 13: Ronda 4 (repaso del quickstart, 2026-11-12)
+
+- [X] T083 Rareza del draft bloqueada: si algún nivel no es gratis (modo `restringido` sin pase), la sección se ve desactivada en Moderado, con dos cadenas de esquina a esquina, un candado en el centro y un botón con el precio y el icono de fragmentos; al señalarla, la barra principal explica que hace falta pagar los fragmentos del torneo o tener el pase premium. El botón desbloquea el deslizador y el cobro sigue siendo al crear la partida, solo si el nivel no es Moderado (`CrearPartida.tsx`, `base.css`; e2e en `rareza.spec.ts`). Junto al del precio (ahora secundario lima), un botón «Premium» en oro con destello que lleva a la tienda (`?seccion=funcionalidades&sub=premium`); los dos tienen su explicación en la barra principal. El precio ya no aparece bajo cada nivel y «Abundante» pasa a llamarse «Alto» (el valor interno sigue siendo `abundante`)
+- [X] T084 Tienda: en «Todo», el pase premium va el primero y destacado en oro (`Tienda.tsx`, `coleccion.css`); en «Funcionalidades» sigue en su sitio
+- [X] T085 `partido-rapido.test.ts` (eliminatoria con empate): 40 intentos en lugar de 20; con la suite entera no salió ningún empate en 20 (aislado pasa en 11 s)
 
 ---
 

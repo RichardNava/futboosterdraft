@@ -49,8 +49,9 @@ En la app:
    - doble clic en «Crear» ⇒ una sola partida y un solo cobro;
    - saldo < 100 ⇒ aviso con saldo y lo que falta, sin partida;
    - invitado ⇒ solo Moderado disponible;
-   - `pnpm --filter @fbd/server premium <email> si` ⇒ todos gratis.
-3. Tienda ⇒ comprar el pase con fragmentos ⇒ «Activo hasta …» (+30 días); comprarlo otra vez ⇒ +30 días más.
+   - sin pase, la sección se ve bloqueada en Moderado (cadenas, candado y botón «100» con el icono de fragmentos); al señalarla, la barra principal explica cómo desbloquearla; el botón la desbloquea para ese torneo (ronda 4);
+   - `pnpm --filter @fbd/server premium <email> si` ⇒ todos gratis y la sección sin bloqueo.
+3. Tienda ⇒ en «Todo», el pase premium aparece el primero y destacado (ronda 4); comprar el pase con fragmentos ⇒ «Activo hasta …» (+30 días); comprarlo otra vez ⇒ +30 días más.
 4. Volver a `libre`.
 
 ## US4 — Arranque y Mis partidas (SC-006, SC-007)

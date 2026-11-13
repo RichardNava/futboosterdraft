@@ -527,6 +527,20 @@
   align-content: start;
 }
 
+/* Spec 013, ronda 4: el pase premium, destacado en oro. */
+.tienda-pase {
+  border: 2px solid var(--color-oro);
+  background: linear-gradient(135deg, var(--color-oro-tenue), var(--color-panel) 60%);
+  box-shadow: 0 0 24px var(--color-oro-tenue);
+}
+
+.tienda-pase h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  color: var(--color-oro);
+}
+
 .tienda-sobre {
   grid-template-columns: minmax(80px, 140px) minmax(0, 1fr);
   align-items: center;

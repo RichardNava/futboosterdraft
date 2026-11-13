@@ -2061,6 +2061,148 @@ html {
   --tramos-fin: var(--color-oro);
 }
 
+/* Spec 013, ronda 4: rareza bloqueada (modo restringido sin pase): cadenas de esquina a esquina, candado y precio. */
+.crear-rareza {
+  position: relative;
+}
+
+.crear-rareza[data-bloqueada] .rareza-selector {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.rareza-bloqueo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-3);
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.rareza-cadenas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.rareza-cadenas path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.rareza-cadenas .eslabones {
+  stroke: var(--color-texto-suave);
+  stroke-width: 7;
+  stroke-dasharray: 12 7;
+}
+
+.rareza-cadenas .huecos {
+  stroke: var(--color-panel);
+  stroke-width: 2.5;
+  stroke-dasharray: 5 14;
+  stroke-dashoffset: -3.5;
+}
+
+.rareza-candado {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--color-oro);
+  border-radius: 50%;
+  background: var(--color-elevado);
+  color: var(--color-oro);
+}
+
+.rareza-bloqueo {
+  flex-wrap: wrap;
+  padding: var(--espacio-2);
+}
+
+.rareza-botones {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espacio-2);
+}
+
+.rareza-desbloquear,
+.rareza-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-1);
+  min-height: 44px;
+  padding: var(--espacio-2) var(--espacio-4);
+  font-weight: 700;
+}
+
+/* El precio, en lima opaco (el de `.alternativa` es tenue y se perdía sobre las cadenas). */
+.crear-rareza button.rareza-desbloquear,
+.crear-rareza button.rareza-desbloquear:hover {
+  border-color: var(--color-accion);
+  background-color: var(--color-accion);
+  background-image: var(--degradado-accion);
+  color: var(--color-accion-texto);
+}
+
+.crear-rareza button.rareza-desbloquear:hover {
+  box-shadow: var(--resplandor-accion);
+}
+
+/* Premium: oro de la paleta, con resplandor y un destello que cruza el botón cada pocos segundos. */
+.rareza-premium {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #ffe39a;
+  border-radius: var(--radio);
+  background: var(--degradado-oro);
+  color: #1a1200;
+  box-shadow: var(--sombra-oro);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rareza-premium::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 70%) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: destello-premium 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.rareza-premium:hover {
+  color: #1a1200;
+  box-shadow: var(--resplandor-oro);
+  filter: brightness(1.06);
+}
+
+@keyframes destello-premium {
+  0%,
+  60% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rareza-premium::after {
+    animation: none;
+  }
+}
+
 .formulario .selector-tramos-titulo {
   display: block;
   color: var(--color-texto-suave);

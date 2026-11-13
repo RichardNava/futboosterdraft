@@ -350,6 +350,9 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
   const faltan = sobre.faltan ?? 0;
   const verColecciones = seccion === 'todo' || seccion === 'colecciones';
   const verSub = (s: string) => seccion === 'todo' || sub === null || sub === s;
+  const tarjetaPase = (
+    <TarjetaPase pase={tienda.pasePremium} saldo={tienda.saldo} onComprar={(moneda) => setPago({ tipo: 'pase', moneda })} />
+  );
 
   return (
     <main className="pantalla tienda">
@@ -364,6 +367,9 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
         </Link>
       </header>
       <NavegacionTienda {...navegacion} />
+
+      {/* Spec 013, ronda 4: el pase premium es el reclamo principal; en «Todo» va el primero y destacado. */}
+      {seccion === 'todo' && tarjetaPase}
 
       {verColecciones && (
         <section className="tienda-seccion-bloque" aria-labelledby="titulo-colecciones">
@@ -488,7 +494,7 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
       <SeccionCosmeticos {...navegacion} invitado={false} />
       <SeccionesFuturas
         {...navegacion}
-        premium={<TarjetaPase pase={tienda.pasePremium} saldo={tienda.saldo} onComprar={(moneda) => setPago({ tipo: 'pase', moneda })} />}
+        premium={seccion === 'todo' ? false : tarjetaPase}
       />
 
       {pago?.tipo === 'coleccion' && (
@@ -633,7 +639,9 @@ function TarjetaPase({
   const activo = pase.estado?.activo === true;
   return (
     <article className="panel tienda-producto tienda-pase" aria-labelledby="titulo-pase">
-      <h3 id="titulo-pase">Pase premium · {pase.dias} días</h3>
+      <h3 id="titulo-pase">
+        <Icono nombre="rayo" tamano={22} /> Pase premium · {pase.dias} días
+      </h3>
       <p>Todos los niveles de rareza del draft, gratis, en las partidas que crees.</p>
       {activo && (
         <p className="sello-adquirida pequeno" data-testid="pase-activo">

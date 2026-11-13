@@ -11,7 +11,7 @@
 | Pobre | Casi sin estrellas: mandan Superclase y Crack. |
 | Escaso | Pocas Legendario; algún GOAT suelto. |
 | Moderado | El estándar. |
-| Abundante | Muchas Legendario y GOAT. |
+| Alto | Muchas Legendario y GOAT. |
 | Rico | Todas las Legendario y GOAT de la colección en la mesa. |
 
 - Botón «Crear» deshabilitado mientras se envía; la `Idempotency-Key` se genera al pulsar y se reutiliza en los
@@ -20,7 +20,7 @@
 
 ## Sala y resumen
 
-Etiqueta «Rareza: Abundante» junto al modo y la dificultad.
+Etiqueta «Rareza: Alto» junto al modo y la dificultad.
 
 ## Tienda y Mi perfil (FR-034)
 

@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/partido-rapido.test.ts": {
-    "mtime": 1793482879.6652148,
-    "seen": 1793482930.0212865,
-    "ast_hash": "6a15a7bffb9b7f99d4ea5c9247a578ab",
+    "mtime": 1794524229.8745077,
+    "seen": 1794524882.0772388,
+    "ast_hash": "272d2772863535273df5e846ce1544fc",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/reproduccion.test.ts": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/CrearPartida.tsx": {
-    "mtime": 1794417753.335538,
-    "seen": 1794418023.9352262,
-    "ast_hash": "7bf6b573dbd9e6cc64ac3a58ac9113e8",
+    "mtime": 1794526270.9526367,
+    "seen": 1794526308.3536575,
+    "ast_hash": "ceeb93db7dda28af1a15152552060705",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Draft.tsx": {
@@ -924,9 +924,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/textos/niveles.ts": {
-    "mtime": 1794271336.8906739,
-    "seen": 1794272531.716521,
-    "ast_hash": "b944a8a514922f7cded0d4dd56a035eb",
+    "mtime": 1794525456.2046418,
+    "seen": 1794525491.3491406,
+    "ast_hash": "0254dd9d947e6ac390c546ac20fd58f8",
     "semantic_hash": ""
   },
   "apps/web/src/vite-env.d.ts": {
@@ -1284,9 +1284,9 @@
     "semantic_hash": "59c6bb84181b75078861fbe86c2bbc89"
   },
   "packages/domain/src/sobres/generador.ts": {
-    "mtime": 1794270080.9797223,
-    "seen": 1794272531.7360883,
-    "ast_hash": "088f6a34476912404c7e53e8bf09f4da",
+    "mtime": 1794525456.246105,
+    "seen": 1794525491.376465,
+    "ast_hash": "bfd2e62b1760107480e599a83b2a0d36",
     "semantic_hash": ""
   },
   "packages/domain/src/torneo/bajas.ts": {
@@ -3612,9 +3612,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Tienda.tsx": {
-    "mtime": 1794271438.4599047,
-    "seen": 1794272531.7159226,
-    "ast_hash": "878ede355e16bdf81f7333ff70c95a53",
+    "mtime": 1794524222.1304164,
+    "seen": 1794524882.0980155,
+    "ast_hash": "b6ae45790077d5cbb23d9e5f0d748a3e",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/coleccion/filtrado.ts": {
@@ -4962,9 +4962,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1794272073.0663345,
-    "seen": 1794272531.792903,
-    "ast_hash": "bb29cd9f97e0837b72ebcb3327f8a156",
+    "mtime": 1794525455.999263,
+    "seen": 1794525491.4413955,
+    "ast_hash": "2ee69ee8e9b414ecf023e06829d7375f",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -9114,9 +9114,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/rareza.spec.ts": {
-    "mtime": 1794353593.0066032,
-    "seen": 1794353717.0169065,
-    "ast_hash": "07f56525413f2450a5d162de96e594d7",
+    "mtime": 1794525456.1740932,
+    "seen": 1794525491.3563635,
+    "ast_hash": "c204151acdafcc294df1f726b717a351",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/retoques-013.spec.ts": {
@@ -9210,9 +9210,9 @@
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/contracts/ui.md": {
-    "mtime": 1794266744.4967206,
-    "seen": 1794272531.8414838,
-    "ast_hash": "976e44235f9298661276eb81078af44b",
+    "mtime": 1794525456.1439297,
+    "seen": 1794525491.472664,
+    "ast_hash": "3a8111da13a79488c1eda55f1c5ce8d2",
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/data-model.md": {
@@ -9228,9 +9228,9 @@
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/quickstart.md": {
-    "mtime": 1794266770.7115521,
-    "seen": 1794272531.8414903,
-    "ast_hash": "10342913c971e1af21b0052c2a8711a3",
+    "mtime": 1794524850.3569899,
+    "seen": 1794524882.1956685,
+    "ast_hash": "2d1773ee6ead92139cd9d424f11c0a23",
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/research.md": {
@@ -9240,15 +9240,15 @@
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/spec.md": {
-    "mtime": 1794266227.7089233,
-    "seen": 1794272531.841494,
-    "ast_hash": "2a1d1366996f7d8d08b46bd819fa2b60",
+    "mtime": 1794525456.115059,
+    "seen": 1794525491.4733694,
+    "ast_hash": "9f63e16af6d371ca1a04a24018c50ddb",
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/tasks.md": {
-    "mtime": 1794507385.8305526,
-    "seen": 1794507423.328053,
-    "ast_hash": "9087cd17867fa78e04bac40edb593426",
+    "mtime": 1794526284.435509,
+    "seen": 1794526308.4394908,
+    "ast_hash": "e5a44fc9b87d7ab9e65d5833e1848dc0",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/1.webp": {
@@ -11055,720 +11055,6 @@
     "mtime": 1794353557.3148973,
     "seen": 1794353717.0023158,
     "ast_hash": "8345c7ef99b4d586d2e667f7303122d4",
-    "semantic_hash": ""
-  },
-  "retoques_2/100_Guido_Rodriguez.png": {
-    "mtime": 1794422765.060477,
-    "seen": 1794507423.4264035,
-    "ast_hash": "cfcad1206b2f1f697799b58ae3fac8c9",
-    "semantic_hash": ""
-  },
-  "retoques_2/103_Luis_Milla_Manzanares.png": {
-    "mtime": 1794422735.8129115,
-    "seen": 1794507423.4264064,
-    "ast_hash": "260281af3f34b513431a677e5e34cc77",
-    "semantic_hash": ""
-  },
-  "retoques_2/105_Johan_Manzambi.png": {
-    "mtime": 1794422675.8238173,
-    "seen": 1794507423.4264083,
-    "ast_hash": "5aea0f26d8251a3252c095939d269969",
-    "semantic_hash": ""
-  },
-  "retoques_2/106_Marc_Bernal_Casas.png": {
-    "mtime": 1794422633.4549682,
-    "seen": 1794507423.4264107,
-    "ast_hash": "534a6bbc291e1ed65702709b66616605",
-    "semantic_hash": ""
-  },
-  "retoques_2/107_Franco_Mastantuono.png": {
-    "mtime": 1794421636.9117045,
-    "seen": 1794507423.4264128,
-    "ast_hash": "c205da4f43586ef47d6c82baa8d0316e",
-    "semantic_hash": ""
-  },
-  "retoques_2/108_Mateus_Fernandes.png": {
-    "mtime": 1794422594.6100116,
-    "seen": 1794507423.4264152,
-    "ast_hash": "7076faf1467deb7458b6e2e1b4a0d9c0",
-    "semantic_hash": ""
-  },
-  "retoques_2/109_Senny_Mayulu.png": {
-    "mtime": 1794422564.5350356,
-    "seen": 1794507423.4264164,
-    "ast_hash": "4468243200f879dace59e677cefffc12",
-    "semantic_hash": ""
-  },
-  "retoques_2/111_Alberto_Moleiro.png": {
-    "mtime": 1794422534.774117,
-    "seen": 1794507423.426418,
-    "ast_hash": "822a0d367a7109fa737bb05050b29f33",
-    "semantic_hash": ""
-  },
-  "retoques_2/112_Felix_Nmecha.png": {
-    "mtime": 1794422494.102013,
-    "seen": 1794507423.4264202,
-    "ast_hash": "02aaee5cd5a25d71a4ddf0453c6fce9e",
-    "semantic_hash": ""
-  },
-  "retoques_2/113_Aleksandar_Pavlovic.png": {
-    "mtime": 1794422452.6375184,
-    "seen": 1794507423.4264214,
-    "ast_hash": "b7da0a9eaccaf66fd269d323814d0bfc",
-    "semantic_hash": ""
-  },
-  "retoques_2/114_Ismael_Saibari.png": {
-    "mtime": 1794422424.294435,
-    "seen": 1794507423.4264233,
-    "ast_hash": "99e0f700a12d8b42019972961e34e9f9",
-    "semantic_hash": ""
-  },
-  "retoques_2/115_Mamadou_Sangare.png": {
-    "mtime": 1794422396.640422,
-    "seen": 1794507423.4264245,
-    "ast_hash": "b52d1e4aeabc3e02390ab5846abd03a1",
-    "semantic_hash": ""
-  },
-  "retoques_2/116_Petar_Sucic.png": {
-    "mtime": 1794422363.427567,
-    "seen": 1794507423.4264264,
-    "ast_hash": "c1ce89edc5ee068a5490db7e925e164d",
-    "semantic_hash": ""
-  },
-  "retoques_2/117_Thiago_Pitarch.png": {
-    "mtime": 1794422308.5613759,
-    "seen": 1794507423.4264278,
-    "ast_hash": "7eb0a5f1622d3f95d53b8b2a59e9ddf3",
-    "semantic_hash": ""
-  },
-  "retoques_2/118_Adam_Wharton.png": {
-    "mtime": 1794422201.5285883,
-    "seen": 1794507423.42643,
-    "ast_hash": "e51fdf0f8b8eecd9effdb7fc5adc584f",
-    "semantic_hash": ""
-  },
-  "retoques_2/119_Maghnes_Akliouche.png": {
-    "mtime": 1794421613.9545236,
-    "seen": 1794507423.4264312,
-    "ast_hash": "224a8bb52ace7818c8bd40d67b545878",
-    "semantic_hash": ""
-  },
-  "retoques_2/120_Alejandro_Baena.png": {
-    "mtime": 1794421593.3027508,
-    "seen": 1794507423.4264333,
-    "ast_hash": "399ce08e4f242b2aee822c3c8be7f88f",
-    "semantic_hash": ""
-  },
-  "retoques_2/121_Arda_Guler.png": {
-    "mtime": 1794421550.3616984,
-    "seen": 1794507423.4264355,
-    "ast_hash": "108d424962085e9e6fcd221627590f06",
-    "semantic_hash": ""
-  },
-  "retoques_2/122_Pablo_Barrios.png": {
-    "mtime": 1794421523.2516892,
-    "seen": 1794507423.4264376,
-    "ast_hash": "60b7713d511414d8bcb2eedc61ca3dd3",
-    "semantic_hash": ""
-  },
-  "retoques_2/123_Eduardo_Camavinga.png": {
-    "mtime": 1794421482.2323577,
-    "seen": 1794507423.4264388,
-    "ast_hash": "f7636ef8af51ab80d8af89a4abf43ba6",
-    "semantic_hash": ""
-  },
-  "retoques_2/124_Rayan_Cherki.png": {
-    "mtime": 1794420461.457814,
-    "seen": 1794507423.4264405,
-    "ast_hash": "0d1f39c0aa9684b49c4c81bf946fe18b",
-    "semantic_hash": ""
-  },
-  "retoques_2/125_Rodrigo_De_Paul.png": {
-    "mtime": 1794421449.8028276,
-    "seen": 1794507423.426442,
-    "ast_hash": "5c047e00a993c03c6e3fe0ab399f0860",
-    "semantic_hash": ""
-  },
-  "retoques_2/126_Elliot_Anderson.png": {
-    "mtime": 1794421403.818441,
-    "seen": 1794507423.4264433,
-    "ast_hash": "8508db281e77d6d265b0bd036f692f7b",
-    "semantic_hash": ""
-  },
-  "retoques_2/127_eberechi_eze.png": {
-    "mtime": 1794421347.893106,
-    "seen": 1794507423.4264448,
-    "ast_hash": "be0b6fd390f4d96b0ed2334bcceff296",
-    "semantic_hash": ""
-  },
-  "retoques_2/128_fermin_lopez.png": {
-    "mtime": 1794422174.0722563,
-    "seen": 1794507423.426446,
-    "ast_hash": "03290ae50cbc315e69088eeb19e3fc7e",
-    "semantic_hash": ""
-  },
-  "retoques_2/131_Boubacar_Kamara.png": {
-    "mtime": 1794421318.90327,
-    "seen": 1794507423.4264476,
-    "ast_hash": "1023a51d9c1b9f7e838fd0709699ddb4",
-    "semantic_hash": ""
-  },
-  "retoques_2/138_tijani_reijnders.png": {
-    "mtime": 1794421296.4240055,
-    "seen": 1794507423.4264488,
-    "ast_hash": "b410b47febcfc53580fb699719bc6f88",
-    "semantic_hash": ""
-  },
-  "retoques_2/140_sandro_tonali.png": {
-    "mtime": 1794421267.6753442,
-    "seen": 1794507423.4264503,
-    "ast_hash": "abf03d4402d88b341b5fc47284eefdd8",
-    "semantic_hash": ""
-  },
-  "retoques_2/141_warren_zaire_emery.png": {
-    "mtime": 1794421245.3176732,
-    "seen": 1794507423.4264517,
-    "ast_hash": "257cb95c1d0b45780dacbe64b658d7ef",
-    "semantic_hash": ""
-  },
-  "retoques_2/142_nicolo_barella.png": {
-    "mtime": 1794420412.9523437,
-    "seen": 1794507423.4264536,
-    "ast_hash": "04d5fd8aa4f67b1c493bdc4017bbc898",
-    "semantic_hash": ""
-  },
-  "retoques_2/143_bruno_fermamdes.png": {
-    "mtime": 1794420269.117254,
-    "seen": 1794507423.4264548,
-    "ast_hash": "fac6c361a72c817f4e3839938ef70f04",
-    "semantic_hash": ""
-  },
-  "retoques_2/148_Phil_Foden.png": {
-    "mtime": 1794420237.571841,
-    "seen": 1794507423.4264572,
-    "ast_hash": "43e32ce1235b1646c8c228d23f6fd6a1",
-    "semantic_hash": ""
-  },
-  "retoques_2/149_Ryan_Gravenberch.png": {
-    "mtime": 1794420213.747624,
-    "seen": 1794507423.4264588,
-    "ast_hash": "dcd0be00e48676ed561b3885b83ebc01",
-    "semantic_hash": ""
-  },
-  "retoques_2/152_jamal_musiala.png": {
-    "mtime": 1794420180.88697,
-    "seen": 1794507423.4264605,
-    "ast_hash": "98e258301577b528123fbe50d446e7f7",
-    "semantic_hash": ""
-  },
-  "retoques_2/153_Cole_Palmer.png": {
-    "mtime": 1794420157.2352986,
-    "seen": 1794507423.426462,
-    "ast_hash": "f8c79a6150a834f566dcdf6e655888e8",
-    "semantic_hash": ""
-  },
-  "retoques_2/154_Pedro_Gonzalez_Lopez.png": {
-    "mtime": 1794419624.9847436,
-    "seen": 1794507423.4264636,
-    "ast_hash": "db321048731c900ef20805ff0ca2cbed",
-    "semantic_hash": ""
-  },
-  "retoques_2/155_Declan_Rice.png": {
-    "mtime": 1794420128.3207166,
-    "seen": 1794507423.4264655,
-    "ast_hash": "cc33a61fa30ae5a4090d84a454c6c33c",
-    "semantic_hash": ""
-  },
-  "retoques_2/156_Dominik_Szoboszlai.png": {
-    "mtime": 1794420103.9108865,
-    "seen": 1794507423.4264667,
-    "ast_hash": "5bb81e0ce5910c33e004b5747fd5f619",
-    "semantic_hash": ""
-  },
-  "retoques_2/157_Aurelien_Tchouameni.png": {
-    "mtime": 1794421224.7760158,
-    "seen": 1794507423.4264684,
-    "ast_hash": "26d6a8939ebb176ba169906b9c7a0d88",
-    "semantic_hash": ""
-  },
-  "retoques_2/158_Federico_Valverde_Dipetta.png": {
-    "mtime": 1794420080.8479612,
-    "seen": 1794507423.42647,
-    "ast_hash": "ee74fa07a5582e31a496c556a67ba876",
-    "semantic_hash": ""
-  },
-  "retoques_2/159_Vitor_Machado_Ferreira.png": {
-    "mtime": 1794420053.947274,
-    "seen": 1794507423.4264717,
-    "ast_hash": "2bf879da2ccea90e56cb18a80727dfc7",
-    "semantic_hash": ""
-  },
-  "retoques_2/160_florian_wirtz.png": {
-    "mtime": 1794420015.5449164,
-    "seen": 1794507423.4264731,
-    "ast_hash": "91b17ffe27c94789a50dce21f98d7228",
-    "semantic_hash": ""
-  },
-  "retoques_2/161_Martin_Zubimendi_Ibanez.png": {
-    "mtime": 1794419989.8368134,
-    "seen": 1794507423.426475,
-    "ast_hash": "64162b8321515931530c31c5810afe4e",
-    "semantic_hash": ""
-  },
-  "retoques_2/168_Carlos_Espi.png": {
-    "mtime": 1794436034.546816,
-    "seen": 1794507423.4264762,
-    "ast_hash": "e4e3d89953be6639485ce9241c7ca56e",
-    "semantic_hash": ""
-  },
-  "retoques_2/171_Max_Dowman.png": {
-    "mtime": 1794436004.3704157,
-    "seen": 1794507423.4264772,
-    "ast_hash": "d62e54c330a666e4e23176812ca20136",
-    "semantic_hash": ""
-  },
-  "retoques_2/172_Said_El_Mala.png": {
-    "mtime": 1794435965.5707026,
-    "seen": 1794507423.4264786,
-    "ast_hash": "0d1d8cb726fddc65f6e46da8bb7c19cf",
-    "semantic_hash": ""
-  },
-  "retoques_2/179_charalampos_kostoulas.png": {
-    "mtime": 1794435901.3306556,
-    "seen": 1794507423.42648,
-    "ast_hash": "fef390994ccb72f2f498cd9076c07ce6",
-    "semantic_hash": ""
-  },
-  "retoques_2/180_Eli_Junior_Kroupi.png": {
-    "mtime": 1794435741.6908202,
-    "seen": 1794507423.4264815,
-    "ast_hash": "c581304349125f30b6817559ad3fd3e3",
-    "semantic_hash": ""
-  },
-  "retoques_2/181_Yankuba_Minteh.png": {
-    "mtime": 1794435701.8211303,
-    "seen": 1794507423.426483,
-    "ast_hash": "3302406c48334bd4a6b5003c233da028",
-    "semantic_hash": ""
-  },
-  "retoques_2/182_Rio_Ngumoha.png": {
-    "mtime": 1794435671.6010225,
-    "seen": 1794507423.426484,
-    "ast_hash": "6371efe3e62218677fcc0460514d5628",
-    "semantic_hash": ""
-  },
-  "retoques_2/184_pio_esposito.png": {
-    "mtime": 1794435636.660174,
-    "seen": 1794507423.4264855,
-    "ast_hash": "911241007be53055ba480fed3b8d9b7e",
-    "semantic_hash": ""
-  },
-  "retoques_2/187_rayan_fofana.png": {
-    "mtime": 1794435572.2943096,
-    "seen": 1794507423.4264867,
-    "ast_hash": "f76c722f64f364348b58ba28e9873b26",
-    "semantic_hash": ""
-  },
-  "retoques_2/188_kevin_schade.png": {
-    "mtime": 1794435531.7292426,
-    "seen": 1794507423.4264889,
-    "ast_hash": "01c98b1632c9170fcb9661a5818b1a86",
-    "semantic_hash": ""
-  },
-  "retoques_2/190_yan_diomande.png": {
-    "mtime": 1794424743.1055558,
-    "seen": 1794507423.42649,
-    "ast_hash": "040c3326e6b239b932a71e9e6bf0ebed",
-    "semantic_hash": ""
-  },
-  "retoques_2/192_Bradley_Barcola.png": {
-    "mtime": 1794435144.5005288,
-    "seen": 1794507423.4264917,
-    "ast_hash": "aecb046a824aad3648278212b2a46a9e",
-    "semantic_hash": ""
-  },
-  "retoques_2/193_jeremy_doku.png": {
-    "mtime": 1794435119.887063,
-    "seen": 1794507423.426493,
-    "ast_hash": "58c8c92323144405eb7256b354bc268c",
-    "semantic_hash": ""
-  },
-  "retoques_2/194_Desire_Doue.png": {
-    "mtime": 1794435098.390549,
-    "seen": 1794507423.4264948,
-    "ast_hash": "678c2fe5002f5a486fe05c98f69cd09a",
-    "semantic_hash": ""
-  },
-  "retoques_2/195_Hugo_Ekitike.png": {
-    "mtime": 1794435069.070969,
-    "seen": 1794507423.4264965,
-    "ast_hash": "6f0d7dc8db28afa4ad81f6c4e484d610",
-    "semantic_hash": ""
-  },
-  "retoques_2/196_Estevao_Willian.png": {
-    "mtime": 1794435022.5172012,
-    "seen": 1794507423.426498,
-    "ast_hash": "af159caf6b1180fcce8672dfc686377b",
-    "semantic_hash": ""
-  },
-  "retoques_2/198_Gabriel_Fernando_de_Jesus.png": {
-    "mtime": 1794434998.428728,
-    "seen": 1794507423.4264996,
-    "ast_hash": "d20281af0c09c1b708a669132b463178",
-    "semantic_hash": ""
-  },
-  "retoques_2/201_Anthony_Gordon.png": {
-    "mtime": 1794424647.3761446,
-    "seen": 1794507423.4265018,
-    "ast_hash": "c1b9a067f9102d9a3c639d9ecd8cc8d3",
-    "semantic_hash": ""
-  },
-  "retoques_2/202_Kai_Havertz.png": {
-    "mtime": 1794434945.0387466,
-    "seen": 1794507423.4265034,
-    "ast_hash": "90a58eea580355bef5a3c5bcdb48b127",
-    "semantic_hash": ""
-  },
-  "retoques_2/205_Joao_Pedro_Junqueira_de_Jesus.png": {
-    "mtime": 1794434911.687626,
-    "seen": 1794507423.4265053,
-    "ast_hash": "51a590a3c8af95c4473bac6d90ead3dd",
-    "semantic_hash": ""
-  },
-  "retoques_2/206_Mohammed_Kudus.png": {
-    "mtime": 1794434845.8435063,
-    "seen": 1794507423.4265068,
-    "ast_hash": "514ccf0abcf7059e65d97dee92ec9de3",
-    "semantic_hash": ""
-  },
-  "retoques_2/207_Chukwunonso_Madueke.png": {
-    "mtime": 1794434819.5621886,
-    "seen": 1794507423.4265082,
-    "ast_hash": "9784580d4dc468122131f3e1210d0630",
-    "semantic_hash": ""
-  },
-  "retoques_2/210_Gabriel_Martinelli_Silva.png": {
-    "mtime": 1794434787.2646139,
-    "seen": 1794507423.4265096,
-    "ast_hash": "77c2256b7ffe2a9da624e7caf0fe3446",
-    "semantic_hash": ""
-  },
-  "retoques_2/212_Bryan_Mbeumo.png": {
-    "mtime": 1794434582.7726502,
-    "seen": 1794507423.426511,
-    "ast_hash": "a75170c55e951d5dda859faa0becd0a9",
-    "semantic_hash": ""
-  },
-  "retoques_2/213_Nicolas_Ivan_Gonzalez.png": {
-    "mtime": 1794434555.0932665,
-    "seen": 1794507423.4265125,
-    "ast_hash": "44617c5dc5b3cab880ada72972a308d1",
-    "semantic_hash": ""
-  },
-  "retoques_2/214_Nicolas_Jackson.png": {
-    "mtime": 1794434507.269171,
-    "seen": 1794507423.426514,
-    "ast_hash": "190b020b5ed15727e91f0fdb3fbae251",
-    "semantic_hash": ""
-  },
-  "retoques_2/215_Pedro_Lomba_Neto.png": {
-    "mtime": 1794434436.3568091,
-    "seen": 1794507423.4265149,
-    "ast_hash": "abc1779e291472a5511d14a6a18063a2",
-    "semantic_hash": ""
-  },
-  "retoques_2/217_Rodrygo_Silva_de_Goes.png": {
-    "mtime": 1794433631.0266292,
-    "seen": 1794507423.4265168,
-    "ast_hash": "2706950d88beb0a5c9db24e190eb4053",
-    "semantic_hash": ""
-  },
-  "retoques_2/218_Savio_Moreira_de_Oliveira.png": {
-    "mtime": 1794434155.9541686,
-    "seen": 1794507423.4265187,
-    "ast_hash": "1ee288b8e4e02f278c72be04d0cf0ba0",
-    "semantic_hash": ""
-  },
-  "retoques_2/221_Alexander_Sorloth.png": {
-    "mtime": 1794434086.8225296,
-    "seen": 1794507423.4265203,
-    "ast_hash": "ed2adeffbb2c42f3d0cfc6f9c452edb3",
-    "semantic_hash": ""
-  },
-  "retoques_2/222_Marcus_Thuram_Ulien.png": {
-    "mtime": 1794424605.1872118,
-    "seen": 1794507423.4265249,
-    "ast_hash": "1f6bc77ef70f283373a573fed931ea58",
-    "semantic_hash": ""
-  },
-  "retoques_2/225_Edinson_Cavani_Gomez.png": {
-    "mtime": 1794424572.5031211,
-    "seen": 1794507423.4265268,
-    "ast_hash": "f7b48464ee2dae278e82f0316cccad46",
-    "semantic_hash": ""
-  },
-  "retoques_2/226_Viktor_Gyokeres.png": {
-    "mtime": 1794424544.8475087,
-    "seen": 1794507423.4265287,
-    "ast_hash": "df2c85e508ef03193d485e66d216f278",
-    "semantic_hash": ""
-  },
-  "retoques_2/228_Julian_Alvarez.png": {
-    "mtime": 1794424521.632511,
-    "seen": 1794507423.4265306,
-    "ast_hash": "75c6b02973d244c6a45d0ef6152ed842",
-    "semantic_hash": ""
-  },
-  "retoques_2/229_Khvicha_Kvaratskhelia.png": {
-    "mtime": 1794424499.855153,
-    "seen": 1794507423.426532,
-    "ast_hash": "dc3bcf9c24bd847d431082368ad4c361",
-    "semantic_hash": ""
-  },
-  "retoques_2/230_Lautaro_Javier_Martinez.png": {
-    "mtime": 1794424413.8430858,
-    "seen": 1794507423.4265335,
-    "ast_hash": "522a896080718c19802c71c578ad77e0",
-    "semantic_hash": ""
-  },
-  "retoques_2/232_Nicholas_Williams_Arthuer.png": {
-    "mtime": 1794424362.5693283,
-    "seen": 1794507423.4265351,
-    "ast_hash": "2299827ec2b1b980378cea08050e4930",
-    "semantic_hash": ""
-  },
-  "retoques_2/233_Michael_Olise.png": {
-    "mtime": 1794424338.2142181,
-    "seen": 1794507423.4265368,
-    "ast_hash": "21d24ad70a78676e30080d66f1b0a4d1",
-    "semantic_hash": ""
-  },
-  "retoques_2/235_Raphael_Dias_Belloli.png": {
-    "mtime": 1794424312.9758303,
-    "seen": 1794507423.4265378,
-    "ast_hash": "2ffaecc71c7061a96a12d258fd85b239",
-    "semantic_hash": ""
-  },
-  "retoques_2/237_Karim_Benzema.png": {
-    "mtime": 1794424131.986312,
-    "seen": 1794507423.426539,
-    "ast_hash": "06d44af52d5a0b7e487d167ad9f4873c",
-    "semantic_hash": ""
-  },
-  "retoques_2/238_Cristiano_Ronaldo_dos_Santos_Aveiro.png": {
-    "mtime": 1794424289.9628358,
-    "seen": 1794507423.4265406,
-    "ast_hash": "fc8336e5901549949e1346a4e630655c",
-    "semantic_hash": ""
-  },
-  "retoques_2/239_Masour_Ousmane_Dembele.png": {
-    "mtime": 1794424258.3756614,
-    "seen": 1794507423.4265418,
-    "ast_hash": "aa72a30adf5779ec25c4e1a06165954d",
-    "semantic_hash": ""
-  },
-  "retoques_2/240_Angel_Fabian_Di_Maria.png": {
-    "mtime": 1794424219.9951224,
-    "seen": 1794507423.426543,
-    "ast_hash": "4a7b36d84010dd5836475f978d82ffc5",
-    "semantic_hash": ""
-  },
-  "retoques_2/241_Erling_Braut_Haaland.png": {
-    "mtime": 1794424180.1461637,
-    "seen": 1794507423.4265451,
-    "ast_hash": "f492ccc51a80cdd1d2d83aadab459e04",
-    "semantic_hash": ""
-  },
-  "retoques_2/242_Harry_Kane.png": {
-    "mtime": 1794424152.9829473,
-    "seen": 1794507423.4265466,
-    "ast_hash": "1b011f29f49eb374be8e45763fd17cc1",
-    "semantic_hash": ""
-  },
-  "retoques_2/243_Lamine_Yamal_Nasraoui_Ebana.png": {
-    "mtime": 1794424101.631532,
-    "seen": 1794507423.426548,
-    "ast_hash": "994c8af0cc5d0afc0a3d7d7c8993d697",
-    "semantic_hash": ""
-  },
-  "retoques_2/244_Luis_Alberto_Suarez_Diaz.png": {
-    "mtime": 1794423975.6704466,
-    "seen": 1794507423.4265494,
-    "ast_hash": "da0da144dee4632ec7a0681cec7c193c",
-    "semantic_hash": ""
-  },
-  "retoques_2/245_Sadio_Mane.png": {
-    "mtime": 1794423950.1069055,
-    "seen": 1794507423.4265513,
-    "ast_hash": "dff5c4e92fdbf0a8dcdcc958127e3189",
-    "semantic_hash": ""
-  },
-  "retoques_2/246_Kylian_Mbappe_Lottin.png": {
-    "mtime": 1794423917.4988282,
-    "seen": 1794507423.4265528,
-    "ast_hash": "df44890e510d15dda7b7fd0647d1bd41",
-    "semantic_hash": ""
-  },
-  "retoques_2/247_Lionel_Andres_Messi_Cuccittini.png": {
-    "mtime": 1794423704.6693635,
-    "seen": 1794507423.4265544,
-    "ast_hash": "2c1f0ac4d824f36b68381939517779c5",
-    "semantic_hash": ""
-  },
-  "retoques_2/248_Neymar_da_Silva_Santos_Junior.png": {
-    "mtime": 1794423633.3816295,
-    "seen": 1794507423.4265559,
-    "ast_hash": "8e918f157fff02cc45d17efbd88ce723",
-    "semantic_hash": ""
-  },
-  "retoques_2/249_Mohamed_Salah_Ghaly.png": {
-    "mtime": 1794423436.003022,
-    "seen": 1794507423.4265573,
-    "ast_hash": "125e23244c724f4f3beb8dcf16305df9",
-    "semantic_hash": ""
-  },
-  "retoques_2/258_Anatoliy_Trubin.png": {
-    "mtime": 1794419195.4245257,
-    "seen": 1794507423.426559,
-    "ast_hash": "026d9c86d24d87b3161bf3c98617457c",
-    "semantic_hash": ""
-  },
-  "retoques_2/281_Marcelo_Brozovic.png": {
-    "mtime": 1794421195.0746088,
-    "seen": 1794507423.4265602,
-    "ast_hash": "9b9621af6bb1da0bc376f82ec2b2e618",
-    "semantic_hash": ""
-  },
-  "retoques_2/282_Giorgian_de_Arrascaeta_Benedetti.png": {
-    "mtime": 1794421164.618262,
-    "seen": 1794507423.4265618,
-    "ast_hash": "3747bb3312fa8808e4bca901e69e1dd6",
-    "semantic_hash": ""
-  },
-  "retoques_2/284_Frenkie_de_Jong.png": {
-    "mtime": 1794419966.908139,
-    "seen": 1794507423.426563,
-    "ast_hash": "ba5436ad982ce40b22fcb41b5e659951",
-    "semantic_hash": ""
-  },
-  "retoques_2/286_Mateo_Kovacic.png": {
-    "mtime": 1794421138.1062796,
-    "seen": 1794507423.426565,
-    "ast_hash": "18b82fc1896cb9677d0c510a2e8eb2ba",
-    "semantic_hash": ""
-  },
-  "retoques_2/288_Leandro_Paredes.png": {
-    "mtime": 1794421110.2564356,
-    "seen": 1794507423.4265664,
-    "ast_hash": "f52b5af4fd8f8e6d6762a2945d119e04",
-    "semantic_hash": ""
-  },
-  "retoques_2/289_Ricardo_Jorge_Luz_Horta.png": {
-    "mtime": 1794421083.4829106,
-    "seen": 1794507423.4265678,
-    "ast_hash": "8ca81f9c78d64310e012b90c79453b2e",
-    "semantic_hash": ""
-  },
-  "retoques_2/290_Corentin_Tolisso.png": {
-    "mtime": 1794421059.4011455,
-    "seen": 1794507423.4265692,
-    "ast_hash": "aca18d27ad57e81b29637e39aaf9fa59",
-    "semantic_hash": ""
-  },
-  "retoques_2/293_Hakan_Calhanoglu.png": {
-    "mtime": 1794421030.4329727,
-    "seen": 1794507423.426571,
-    "ast_hash": "7b8e3dda75a9c26fc7949f75dfb8903a",
-    "semantic_hash": ""
-  },
-  "retoques_2/295_Carlos_Henrique_Casimiro.png": {
-    "mtime": 1794419533.0794146,
-    "seen": 1794507423.4265723,
-    "ast_hash": "0acd8be98351447d138021dbfa09e951",
-    "semantic_hash": ""
-  },
-  "retoques_2/296_Kevin_De_Bruyne.png": {
-    "mtime": 1794419470.9099667,
-    "seen": 1794507423.4265735,
-    "ast_hash": "f6835a23f7c455490ed13e8dd568796b",
-    "semantic_hash": ""
-  },
-  "retoques_2/298_Luka_Modric.png": {
-    "mtime": 1794419444.5350623,
-    "seen": 1794507423.426575,
-    "ast_hash": "91e5cef891e939ad33fc78be7647d63b",
-    "semantic_hash": ""
-  },
-  "retoques_2/299_Marco_Verratti.png": {
-    "mtime": 1794419416.0959027,
-    "seen": 1794507423.4265761,
-    "ast_hash": "115fb0cf543e07f27b3e3928f127758e",
-    "semantic_hash": ""
-  },
-  "retoques_2/300_Robert_Lewandowski.png": {
-    "mtime": 1794423397.8526375,
-    "seen": 1794507423.4265773,
-    "ast_hash": "9d81a052607cbe9b019227190e9e2cf6",
-    "semantic_hash": ""
-  },
-  "retoques_2/7_andre_onana.png": {
-    "mtime": 1794418953.2387245,
-    "seen": 1794507423.4265788,
-    "ast_hash": "520da31594cf767a9e51214faae79de5",
-    "semantic_hash": ""
-  },
-  "retoques_2/88_Aaron_Ramsey.png": {
-    "mtime": 1794423024.4254797,
-    "seen": 1794507423.4265804,
-    "ast_hash": "cf138ddc2c21bff0e10157ee591141ff",
-    "semantic_hash": ""
-  },
-  "retoques_2/89_Alex_Scott.png": {
-    "mtime": 1794422991.598932,
-    "seen": 1794507423.426582,
-    "ast_hash": "c56201a442a053137e8ceb2eaa9e6739",
-    "semantic_hash": ""
-  },
-  "retoques_2/90_Andrey_Santos.png": {
-    "mtime": 1794422961.5401497,
-    "seen": 1794507423.4265833,
-    "ast_hash": "4271c023728468e2fad8923ad07ab021",
-    "semantic_hash": ""
-  },
-  "retoques_2/91_Yasin_Ayari.png": {
-    "mtime": 1794422927.6170433,
-    "seen": 1794507423.4265852,
-    "ast_hash": "1cbd9b382a6e8bfb7fd9aa830df84dea",
-    "semantic_hash": ""
-  },
-  "retoques_2/92_Carlos_Baleba.png": {
-    "mtime": 1794422903.7815871,
-    "seen": 1794507423.4265869,
-    "ast_hash": "41af226c77eb4cfcd4a3c583d975d8a6",
-    "semantic_hash": ""
-  },
-  "retoques_2/93_Martin_Baturina.png": {
-    "mtime": 1794422879.0021372,
-    "seen": 1794507423.4265883,
-    "ast_hash": "170b3a0b53b09e49c47603e77d13ba19",
-    "semantic_hash": ""
-  },
-  "retoques_2/94_Tom_Bischof.png": {
-    "mtime": 1794422837.9732194,
-    "seen": 1794507423.42659,
-    "ast_hash": "0575442d5b63bed5fddf1d7c30d93106",
-    "semantic_hash": ""
-  },
-  "retoques_2/95_Ayyoub_Bouaddi.png": {
-    "mtime": 1794422803.5904975,
-    "seen": 1794507423.4265912,
-    "ast_hash": "4dbe285d293800013d52004f9bac844e",
-    "semantic_hash": ""
-  },
-  "retoques_2/96_Can_Uzun.png": {
-    "mtime": 1794421668.377187,
-    "seen": 1794507423.4265928,
-    "ast_hash": "ea9065f744045849c7a5341a39eaaae5",
     "semantic_hash": ""
   }
 }

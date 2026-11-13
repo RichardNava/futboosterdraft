@@ -171,7 +171,7 @@ export function generarMesa(
     throw new Error(`Número de participantes inválido: ${numParticipantes}`);
   }
   // Con holgura en todos los niveles (Moderado con Core, por ejemplo), el sorteo de siempre: mismos sobres para la
-  // misma semilla (SC-005). Si la mesa es justa (Pobre y Escaso en Superclase; Abundante y Rico en altas), el cruce se
+  // misma semilla (SC-005). Si la mesa es justa (Pobre y Escaso en Superclase; Alto y Rico en altas), el cruce se
   // elige con `mejorCruce`, y si falla o sustituye más altas de las inevitables, se repite la mesa con una semilla
   // derivada (determinista) y se queda la mejor.
   const disponiblesAltas = pool.filter((j) => j.nivel === 'Legendario' || j.nivel === 'GOAT').length;
