@@ -2,7 +2,8 @@
  * Peso de las estadísticas (spec 014, US5; SC-008, contrato M6): para cada estadística principal, el equipo con +15
  * puntos en ella (solo en los campos de carta que la alimentan) intenta más la acción que gobierna y la acierta más,
  * frente al mismo equipo sin el cambio y el mismo rival. Criterio: ≥ +10 % relativo en intentos y en acierto
- * (velocidad: balones sueltos ganados; portero: solo paradas).
+ * (velocidad: balones sueltos ganados; portero: solo paradas). Pase, remate y físico salieron en la spec 015: los
+ * sustituye `015/SC-001` (curvas de FR-002, `checks/curvas015.ts`).
  */
 import type { Demarcacion, Jugador } from '@fbd/domain';
 import { calcularMedia } from '@fbd/domain';
@@ -12,15 +13,12 @@ import { clonar, equipoSintetico } from '../equipos';
 import { serie, type ResultadoSerie } from '../series';
 import type { Comprobacion } from './partido';
 
-type Estadistica = 'pase' | 'regate' | 'remate' | 'defensa' | 'fisico' | 'velocidad' | 'portero';
+type Estadistica = 'regate' | 'defensa' | 'velocidad' | 'portero';
 
 /** Campos de la carta que alimentan cada estadística del motor (`modificadores/atributos.ts`). */
 const CAMPOS: Record<Estadistica, Partial<Record<Demarcacion, string[]>>> = {
-  pase: { DEF: ['tecnica'], MED: ['pase', 'vision'], DEL: ['creatividad'] },
   regate: { MED: ['tecnica'], DEL: ['regate'] },
-  remate: { MED: ['disparo'], DEL: ['finalizacion'] },
   defensa: { DEF: ['tackling', 'anticipacion'], MED: ['posicionamiento'] },
-  fisico: { DEF: ['marcaje'], DEL: ['agresividad'] },
   velocidad: { DEF: ['velocidad'], MED: ['velocidad'], DEL: ['velocidad'] },
   portero: { POR: ['agilidad', 'colocacion'] },
 };
@@ -40,27 +38,19 @@ function conEstadistica(equipo: EquipoPartido, e: Estadistica, delta = DELTA): E
   return { ...equipo, titulares: equipo.titulares.map((t) => ({ ...t, jugador: ajustar(t.jugador) })) };
 }
 
-/** Suma de un contador de los jugadores del equipo A (solo los de `ids`, si se dan). */
-const sumaMetrica = (r: ResultadoSerie, campo: keyof MetricasJugador, ids?: ReadonlySet<number>) =>
-  r.metricasA.reduce((t, m) => t + Object.entries(m).reduce((u, [id, j]) => u + (!ids || ids.has(Number(id)) ? j[campo] : 0), 0), 0);
-const sumaEst = (xs: ResultadoSerie['estadisticasA'], campo: 'pases' | 'pasesCompletados' | 'tiros' | 'tirosPuerta') => xs.reduce((t, s) => t + s[campo], 0);
+/** Suma de un contador de los jugadores del equipo A. */
+const sumaMetrica = (r: ResultadoSerie, campo: keyof MetricasJugador) => r.metricasA.reduce((t, m) => t + Object.values(m).reduce((u, j) => u + j[campo], 0), 0);
+const sumaEst = (xs: ResultadoSerie['estadisticasA'], campo: 'tirosPuerta') => xs.reduce((t, s) => t + s[campo], 0);
 const suma = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 
 /** Intentos y aciertos de la acción que gobierna cada estadística, para el equipo A de la serie. */
-function medir(e: Estadistica, r: ResultadoSerie, usan: ReadonlySet<number>): { intentos: number | null; aciertos: number; base: number } {
+function medir(e: Estadistica, r: ResultadoSerie): { intentos: number | null; aciertos: number; base: number } {
   switch (e) {
-    case 'pase':
-      return { intentos: sumaEst(r.estadisticasA, 'pases'), aciertos: sumaEst(r.estadisticasA, 'pasesCompletados'), base: sumaEst(r.estadisticasA, 'pases') };
     case 'regate':
       return { intentos: sumaMetrica(r, 'regates'), aciertos: sumaMetrica(r, 'regatesGanados'), base: sumaMetrica(r, 'regates') };
-    case 'remate':
-      return { intentos: sumaEst(r.estadisticasA, 'tiros'), aciertos: suma(r.golesA), base: sumaEst(r.estadisticasA, 'tiros') };
     case 'defensa':
       // Frecuencia: balones recuperados; acierto: duelos ganados frente a un regate o una conducción.
       return { intentos: r.estadisticasA.reduce((t, s) => t + s.recuperaciones, 0), aciertos: sumaMetrica(r, 'entradasGanadas'), base: sumaMetrica(r, 'entradas') };
-    case 'fisico':
-      // Solo los jugadores con el stat cambiado (los medios no tienen un campo de físico en la carta).
-      return { intentos: sumaMetrica(r, 'conducciones', usan), aciertos: sumaMetrica(r, 'conduccionesGanadas', usan), base: sumaMetrica(r, 'conducciones', usan) };
     case 'velocidad':
       return { intentos: null, aciertos: sumaMetrica(r, 'sueltosGanados'), base: sumaMetrica(r, 'sueltosDisputados') };
     case 'portero':
@@ -80,9 +70,8 @@ function comprobacionesPesoStats(n: number, semilla: number): Comprobacion[] {
   const sin = serie(base, rival, n, semilla, 'peso-stats', { metricas: true });
   return (Object.keys(CAMPOS) as Estadistica[]).map((e) => {
     const con = serie(conEstadistica(base, e), rival, n, semilla, 'peso-stats', { metricas: true });
-    const usan = new Set(base.titulares.filter((t) => (CAMPOS[e][t.jugador.demarcacion] ?? []).length > 0).map((t) => t.jugador.id));
-    const a = medir(e, sin, usan);
-    const b = medir(e, con, usan);
+    const a = medir(e, sin);
+    const b = medir(e, con);
     const tasaSin = a.aciertos / Math.max(1, a.base);
     const tasaCon = b.aciertos / Math.max(1, b.base);
     const acierto = rel(tasaCon, tasaSin);

@@ -269,3 +269,40 @@ línea por igual y la spec lo quiere local, por cercanía.
   - `enfrentamientos.md` a mano: tabla carta → atributo con quite, marcaje, técnica y liderazgo; curvas; dos duelos
     nuevos; §5.1; §7 casi vacía; §8 resuelta.
   - `virtudes-y-defectos.md` con `pnpm --filter @fbd/domain rasgos:doc` tras cambiar los textos de los tres rasgos.
+
+## Referencia 7.0.0 (T001)
+
+Medida el 2026-11-14 con `pnpm --filter @fbd/balance umbral-motor` (20 partidos, `equipoSintetico`), antes de tocar
+el motor. Dos ejecuciones seguidas, sin otros procesos pesados:
+
+| Medida | 1.ª | 2.ª |
+|---|---|---|
+| Partido completo sin fotogramas | 228,8 ms | 204,8 ms |
+| `resolverResto` desde el minuto 0 | 218,5 ms | 219,8 ms |
+| Partido completo con métricas | 223,3 ms | 198,6 ms |
+
+- Máquina: Intel Core i7-10710U (1,10 GHz, 12 hilos), 16 GB, Windows 10, Node 24.19.0.
+- En esta máquina la 7.0.0 ya supera el umbral absoluto de 120 ms de `umbralMotor.ts`, así que SC-009 se juzga aquí
+  solo por la comparación relativa (≤ +10 %). El ruido entre ejecuciones es de un ±10 %: la comparación se hace con
+  las dos versiones medidas en la misma sesión.
+
+## Serie de cierre de la tanda 1 (T043–T045, 2026-11-14)
+
+`pnpm balance --n 1000` con la 8.0.0: 56/68. Tras recalibrar `disciplina.factorFaltaArea` 0,45 → 0,34 y
+`defectos.malDefensor` 0,65 → 0,5 (solo en la 8.0.0), 005/SC-011 (penaltis 0,42) y 005/SC-004/MalDefensor (0,422) vuelven a
+cumplirse. Siguen en rojo:
+
+| Comprobación | 8.0.0 | Nota |
+|---|---|---|
+| 015/SC-002b | Messi (ED) 69,4 % de partidos con ≥ 1 regate o conducción ganados (objetivo 90 %) | En ED toca poco balón; k=1,3/max 5 solo llega al 81 % (sonda de 200) |
+| 015/SC-003 | aéreos ganados de los centrales 0,76 → 2,17; goles de cabeza del equipo 0,322 → 0,324 | Los centrales casi nunca son rematadores a balón parado: la virtud solo pesa en defensa |
+| 003/SC-002 | 21,1 % de goles desde fuera del área (22–28 %) | 7.0.0: 24,0 % |
+| SC-004 | peor 9,7 % (≥ 10 %) | 7.0.0: 10,9 % |
+| 002/SC-007a | 144,8 pases completados (≥ 150) | Permitido por FR-020 |
+| 002/SC-007b | 27,2 % de posesiones con 3+ pases (≥ 30 %) | |
+| 003/SC-006 | conducciones largas +14 % con +15 de físico y velocidad (≥ +15 %) | |
+| 014/SC-008-velocidad | acierto +7,5 % (≥ +10 %) | 7.0.0 ✔ |
+
+Quedan como pendientes en CI hasta la calibración. `umbral-motor` (T045): 97,1 / 101,1 / 92,9 ms, por debajo de T001 y
+del máximo de 120 ms (la referencia de T001 se midió con la máquina más cargada; la comparación relativa no muestra
+subida).

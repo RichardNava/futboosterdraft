@@ -38,8 +38,8 @@ siguiente.
 
 **Purpose**: medir la línea base antes de tocar nada (SC-009, invariante M2.1).
 
-- [ ] T001 Medir el tiempo por partido de la 7.0.0 con `pnpm --filter @fbd/balance umbral-motor` y apuntar el valor (máquina, fecha, ms/partido) en una sección «Referencia 7.0.0» al final de `specs/015-peso-individual-estadisticas/research.md` (R11)
-- [ ] T002 [P] Confirmar que `pnpm --filter @fbd/engine test equivalencia014` pasa con `packages/engine/tests/fixtures/huella-014.json` antes de empezar; si no pasa, parar y avisar
+- [X] T001 Medir el tiempo por partido de la 7.0.0 con `pnpm --filter @fbd/balance umbral-motor` y apuntar el valor (máquina, fecha, ms/partido) en una sección «Referencia 7.0.0» al final de `specs/015-peso-individual-estadisticas/research.md` (R11)
+- [X] T002 [P] Confirmar que `pnpm --filter @fbd/engine test equivalencia014` pasa con `packages/engine/tests/fixtures/huella-014.json` antes de empezar; si no pasa, parar y avisar
 
 ---
 
@@ -50,14 +50,14 @@ Bloquea a todas las historias.
 
 **⚠️ CRITICAL**: ninguna historia empieza hasta cerrar esta fase.
 
-- [ ] T003 Añadir a `ParametrosEquilibrado` en `packages/domain/src/parametros/index.ts` los seis bloques **opcionales** de contracts/motor.md §M1, con estos tipos exactos: `duelos?: Partial<Record<'regate' | 'conduccion' | 'pase_corto', { base: number; m: number }>>`; `quite?: { DEF: number; MED_MD: number; MED: number; DEL: number; presionador: number; malDefensor: number }`; `aereo?: { bonusCabeceador: number; seleccionCabeceador: number }`; `desmarque?: { radioMarcaM: number; base: number; m: number; bonusLibre: number; penalizacionMarcado: number; pesoEleccion: number }`; `controlPresion?: { base: number; m: number }`; `liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number }`
-- [ ] T004 Crear `PARAMETROS_V8 = { ...PARAMETROS_V7, version: '8.0.0', ... }` en `packages/domain/src/parametros/index.ts`, registrarlo en `REGISTRO['8.0.0']` y hacer que `parametrosActuales()` lo devuelva; `VERSION_MAYOR_SOPORTADA` se queda en 7 (R1). De momento sin bloques nuevos (se añaden en cada historia); `PARAMETROS_V8` se edita en el sitio entre tandas
-- [ ] T005 [P] Ampliar `packages/domain/tests/parametros/parametros.test.ts`: `parametrosActuales().version === '8.0.0'`, `REGISTRO['7.0.0']` sigue disponible y sin ninguno de los bloques nuevos, `VERSION_MAYOR_SOPORTADA === 7`
-- [ ] T006 Cambiar la traducción carta → atributo de `packages/engine/src/modificadores/atributos.ts` para que reciba la carta completa (posiciones y rasgos) y los parámetros, además de las stats efectivas, sin cambiar ningún valor con la 7.0.0; mantener el orden de modificadores stats base → posición → bonificaciones → traducción → cansancio → defectos de equipo (FR-017) y la caché por jugador (`cacheAtributos`)
-- [ ] T007 Ampliar el tipo `Atributo` en `packages/engine/src/modificadores/atributos.ts` con `marcaje`, `tecnica` y `liderazgo` (data-model §4), que solo se calculan con su bloque presente (`desmarque`, `controlPresion`, `liderazgo`); sin bloque, no se usan
-- [ ] T008 Añadir a `MetricasJugador` en `packages/engine/src/tipos.ts` los contadores `duelosDesmarque`, `recibidoLibre`, `marcajesGanados`, `controlesPresion`, `controlesPerdidos`, `duelosAereos`, `aereosGanados` y `habilitaciones`, inicializados a 0 (data-model §7); no viajan en el protocolo ni en los eventos
-- [ ] T009 Hacer que `probabilidad()`/los llamantes de `packages/engine/src/acciones/duelo.ts` en `packages/engine/src/acciones/juego.ts` lean base y m de `parametros.duelos[accion]` cuando exista, y si no de `acciones.*` y `pendientePase` como en la 7.0.0 (data-model §5); la fórmula de `duelo.ts` no cambia
-- [ ] T010 Ejecutar `pnpm --filter @fbd/engine test` y `pnpm -r typecheck`; `equivalencia014` DEBE seguir en verde
+- [X] T003 Añadir a `ParametrosEquilibrado` en `packages/domain/src/parametros/index.ts` los seis bloques **opcionales** de contracts/motor.md §M1, con estos tipos exactos: `duelos?: Partial<Record<'regate' | 'conduccion' | 'pase_corto', { base: number; m: number }>>`; `quite?: { DEF: number; MED_MD: number; MED: number; DEL: number; presionador: number; malDefensor: number }`; `aereo?: { bonusCabeceador: number; seleccionCabeceador: number }`; `desmarque?: { radioMarcaM: number; base: number; m: number; bonusLibre: number; penalizacionMarcado: number; pesoEleccion: number }`; `controlPresion?: { base: number; m: number }`; `liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number }`
+- [X] T004 Crear `PARAMETROS_V8 = { ...PARAMETROS_V7, version: '8.0.0', ... }` en `packages/domain/src/parametros/index.ts`, registrarlo en `REGISTRO['8.0.0']` y hacer que `parametrosActuales()` lo devuelva; `VERSION_MAYOR_SOPORTADA` se queda en 7 (R1). De momento sin bloques nuevos (se añaden en cada historia); `PARAMETROS_V8` se edita en el sitio entre tandas
+- [X] T005 [P] Ampliar `packages/domain/tests/parametros/parametros.test.ts`: `parametrosActuales().version === '8.0.0'`, `REGISTRO['7.0.0']` sigue disponible y sin ninguno de los bloques nuevos, `VERSION_MAYOR_SOPORTADA === 7`
+- [X] T006 Cambiar la traducción carta → atributo de `packages/engine/src/modificadores/atributos.ts` para que reciba la carta completa (posiciones y rasgos) y los parámetros, además de las stats efectivas, sin cambiar ningún valor con la 7.0.0; mantener el orden de modificadores stats base → posición → bonificaciones → traducción → cansancio → defectos de equipo (FR-017) y la caché por jugador (`cacheAtributos`)
+- [X] T007 Ampliar el tipo `Atributo` en `packages/engine/src/modificadores/atributos.ts` con `marcaje`, `tecnica` y `liderazgo` (data-model §4), que solo se calculan con su bloque presente (`desmarque`, `controlPresion`, `liderazgo`); sin bloque, no se usan
+- [X] T008 Añadir a `MetricasJugador` en `packages/engine/src/tipos.ts` los contadores `duelosDesmarque`, `recibidoLibre`, `marcajesGanados`, `controlesPresion`, `controlesPerdidos`, `duelosAereos`, `aereosGanados` y `habilitaciones`, inicializados a 0 (data-model §7); no viajan en el protocolo ni en los eventos
+- [X] T009 Hacer que `probabilidad()`/los llamantes de `packages/engine/src/acciones/duelo.ts` en `packages/engine/src/acciones/juego.ts` lean base y m de `parametros.duelos[accion]` cuando exista, y si no de `acciones.*` y `pendientePase` como en la 7.0.0 (data-model §5); la fórmula de `duelo.ts` no cambia
+- [X] T010 Ejecutar `pnpm --filter @fbd/engine test` y `pnpm -r typecheck`; `equivalencia014` DEBE seguir en verde
 
 **Checkpoint**: 8.0.0 registrada, idéntica a la 7.0.0 en resultados; las historias pueden empezar.
 
@@ -72,19 +72,19 @@ Bloquea a todas las historias.
 
 ### Tests for User Story 1
 
-- [ ] T011 [P] [US1] Crear `packages/engine/tests/curvas015.test.ts`: con `PARAMETROS_V8` y sin ajustes, `probabilidad()` da regate 98/90 en 44–54 %, 98/70 en 65–75 %, 66/90 en 15–25 %; pase corto 55/75 en 63–73 % y 90/75 en 80–90 %; remate 90/80 (normal, 11 m, nadie tapa) en 64–74 % y 60/90 en 22–32 %; conducción 90/70 en 72–82 % y 70/90 en 25–35 % (FR-002, invariante M2.2)
-- [ ] T012 [P] [US1] Crear `packages/engine/tests/quite015.test.ts` con la invariante M2.3: MED sin MD (posicionamiento 80, velocidad 70) → 63,75; con Presionador 67,5; con Mal defensor 60; con los dos 63,75; MED con MD en `posiciones` → ×0,90 aunque juegue en otra casilla; DEL (agresividad 80, velocidad 70) → 60 y con Presionador 63,75; DEF tackling 80 → 80, con Presionador 84, con Mal defensor 76; POR → su defensa. Y con `PARAMETROS_V7` el quite es el de la 7.0.0
-- [ ] T013 [P] [US1] Añadir a `packages/engine/tests/curvas015.test.ts` el caso FR-006 (invariante M2.4): el tirador usa `remate` (MED disparo, DEL finalización) y el portero `parada = (agilidad + colocación) / 2`
+- [X] T011 [P] [US1] Crear `packages/engine/tests/curvas015.test.ts`: con `PARAMETROS_V8` y sin ajustes, `probabilidad()` da regate 98/90 en 44–54 %, 98/70 en 65–75 %, 66/90 en 15–25 %; pase corto 55/75 en 63–73 % y 90/75 en 80–90 %; remate 90/80 (normal, 11 m, nadie tapa) en 64–74 % y 60/90 en 22–32 %; conducción 90/70 en 72–82 % y 70/90 en 25–35 % (FR-002, invariante M2.2)
+- [X] T012 [P] [US1] Crear `packages/engine/tests/quite015.test.ts` con la invariante M2.3: MED sin MD (posicionamiento 80, velocidad 70) → 63,75; con Presionador 67,5; con Mal defensor 60; con los dos 63,75; MED con MD en `posiciones` → ×0,90 aunque juegue en otra casilla; DEL (agresividad 80, velocidad 70) → 60 y con Presionador 63,75; DEF tackling 80 → 80, con Presionador 84, con Mal defensor 76; POR → su defensa. Y con `PARAMETROS_V7` el quite es el de la 7.0.0
+- [X] T013 [P] [US1] Añadir a `packages/engine/tests/curvas015.test.ts` el caso FR-006 (invariante M2.4): el tirador usa `remate` (MED disparo, DEL finalización) y el portero `parada = (agilidad + colocación) / 2`
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `duelos` con los valores de partida de R2: `regate { base: -0.32, m: 1.1 }`, `conduccion { base: 0.25, m: 1.15 }`, `pase_corto { base: 1.57, m: 1.27 }`; remate, pase largo y pase al espacio sin entrada (conservan los de la 7.0.0)
-- [ ] T015 [US1] Añadir a `PARAMETROS_V8` el bloque `quite: { DEF: 1.0, MED_MD: 0.9, MED: 0.85, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 }` en `packages/domain/src/parametros/index.ts`
-- [ ] T016 [US1] Implementar en `packages/engine/src/modificadores/atributos.ts`, con el bloque `quite`: `mult` = base por demarcación (MED_MD si `jugador.posiciones` incluye MD) + `presionador` si tiene Presionador − `malDefensor` si tiene Mal defensor; `quite` = POR defensa · DEF tackling × mult · MED (posicionamiento + velocidad) / 2 × mult · DEL (agresividad + velocidad) / 2 × mult (FR-004, FR-005, R3). No tocar los efectos actuales de Presionador (−0,08 en `juego.ts`, presión extra en `objetivos.ts`) ni de Mal defensor (×0,65 en `contexto.ts`)
-- [ ] T017 [US1] Añadir `015/SC-001` en el nuevo `tools/balance/src/checks/curvas015.ts`: los nueve duelos con `probabilidad()` y `PARAMETROS_V8`, sin series, con el valor de cada uno en el detalle (contracts/balance.md §B1); registrarlo en `tools/balance/src/cli.ts` junto a `gruposMotor014`
-- [ ] T018 [US1] Quitar de `tools/balance/src/checks/pesoStats.ts` las comprobaciones `014/SC-008-pase`, `014/SC-008-remate` y `014/SC-008-fisico` (sustituidas por `015/SC-001`); se quedan regate, defensa, velocidad y portero (B2)
-- [ ] T019 [US1] Quitar esos tres ids de `--pendientes` en `.github/workflows/ci.yml` (y del comentario que los cita)
-- [ ] T020 [US1] Ejecutar `pnpm --filter @fbd/engine test curvas015 quite015 equivalencia014` y `pnpm balance --solo 015/SC-001`; si un duelo cae fuera, ajustar base/m del bloque `duelos` sin ampliar diferencias más allá de FR-002 (FR-003)
+- [X] T014 [US1] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `duelos` con los valores de partida de R2: `regate { base: -0.32, m: 1.1 }`, `conduccion { base: 0.25, m: 1.15 }`, `pase_corto { base: 1.57, m: 1.27 }`; remate, pase largo y pase al espacio sin entrada (conservan los de la 7.0.0)
+- [X] T015 [US1] Añadir a `PARAMETROS_V8` el bloque `quite: { DEF: 1.0, MED_MD: 0.9, MED: 0.85, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 }` en `packages/domain/src/parametros/index.ts`
+- [X] T016 [US1] Implementar en `packages/engine/src/modificadores/atributos.ts`, con el bloque `quite`: `mult` = base por demarcación (MED_MD si `jugador.posiciones` incluye MD) + `presionador` si tiene Presionador − `malDefensor` si tiene Mal defensor; `quite` = POR defensa · DEF tackling × mult · MED (posicionamiento + velocidad) / 2 × mult · DEL (agresividad + velocidad) / 2 × mult (FR-004, FR-005, R3). No tocar los efectos actuales de Presionador (−0,08 en `juego.ts`, presión extra en `objetivos.ts`) ni de Mal defensor (×0,65 en `contexto.ts`)
+- [X] T017 [US1] Añadir `015/SC-001` en el nuevo `tools/balance/src/checks/curvas015.ts`: los nueve duelos con `probabilidad()` y `PARAMETROS_V8`, sin series, con el valor de cada uno en el detalle (contracts/balance.md §B1); registrarlo en `tools/balance/src/cli.ts` junto a `gruposMotor014`
+- [X] T018 [US1] Quitar de `tools/balance/src/checks/pesoStats.ts` las comprobaciones `014/SC-008-pase`, `014/SC-008-remate` y `014/SC-008-fisico` (sustituidas por `015/SC-001`); se quedan regate, defensa, velocidad y portero (B2)
+- [X] T019 [US1] Quitar esos tres ids de `--pendientes` en `.github/workflows/ci.yml` (y del comentario que los cita)
+- [X] T020 [US1] Ejecutar `pnpm --filter @fbd/engine test curvas015 quite015 equivalencia014` y `pnpm balance --solo 015/SC-001`; si un duelo cae fuera, ajustar base/m del bloque `duelos` sin ampliar diferencias más allá de FR-002 (FR-003)
 
 **Checkpoint**: curvas y quite listos y probados por separado.
 
@@ -99,15 +99,15 @@ mejor regateador de Core supera a algún defensor en ≥ 90 % de los partidos (S
 
 ### Tests for User Story 2
 
-- [ ] T021 [P] [US2] Añadir a `packages/engine/tests/opciones.test.ts` la invariante M2.6: con `PARAMETROS_V8`, a igualdad de todo lo demás, el peso de regate y el de conducción con regate 95 son mayores que con 75, tanto con rival encima como con más de 15 m de espacio; con `PARAMETROS_V7`, con espacio abierto el peso no depende del regate (comportamiento de hoy)
+- [X] T021 [P] [US2] Añadir a `packages/engine/tests/opciones.test.ts` la invariante M2.6: con `PARAMETROS_V8`, a igualdad de todo lo demás, el peso de regate y el de conducción con regate 95 son mayores que con 75, tanto con rival encima como con más de 15 m de espacio; con `PARAMETROS_V7`, con espacio abierto el peso no depende del regate (comportamiento de hoy)
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Poner en `PARAMETROS_V8` (`packages/domain/src/parametros/index.ts`) `decision.factores.regate = { k: 0.7, min: 0.6, max: 3.0 }` (contracts/motor.md §M1)
-- [ ] T023 [US2] En `opcionesConDatos` de `packages/engine/src/acciones/opciones.ts`, con el bloque `duelos` presente: aplicar el factor de regate siempre al peso del regate y de la conducción; con espacio abierto, la conducción usa la media geométrica del factor de regate y el del físico (R4). Sin el bloque, igual que la 7.0.0
-- [ ] T024 [US2] Crear `tools/balance/src/sonda015.ts` (200 partidos, modelo `tools/balance/src/sonda014.ts`) que repita la serie A/B de SC-002a y el recuento del mejor regateador de Core de SC-002b, para calibrar `factores.regate` sin la serie de 1.000
-- [ ] T025 [US2] Crear `tools/balance/src/checks/motor015.ts` con `015/SC-002a` (A/B sobre `equipoSintetico` y `clonar`: DEL titular con regate 95 contra 75; intentos de regate + conducción por partido ≥ +40 % y completados ≥ +60 %) y `015/SC-002b` (Core: el mejor regateador del catálogo, titular contra equipos equilibrados; regates o conducciones ganados ≥ 1 en ≥ 90 % de los partidos); registrar el grupo en `tools/balance/src/cli.ts`
-- [ ] T026 [US2] Calibrar `factores.regate` con `pnpm --filter @fbd/balance exec tsx src/sonda015.ts` hasta cumplir SC-002 en la sonda; vigilar 003/SC-005 (conducciones por partido)
+- [X] T022 [US2] Poner en `PARAMETROS_V8` (`packages/domain/src/parametros/index.ts`) `decision.factores.regate = { k: 0.7, min: 0.6, max: 3.0 }` (contracts/motor.md §M1)
+- [X] T023 [US2] En `opcionesConDatos` de `packages/engine/src/acciones/opciones.ts`, con el bloque `duelos` presente: aplicar el factor de regate siempre al peso del regate y de la conducción; con espacio abierto, la conducción usa la media geométrica del factor de regate y el del físico (R4). Sin el bloque, igual que la 7.0.0
+- [X] T024 [US2] Crear `tools/balance/src/sonda015.ts` (200 partidos, modelo `tools/balance/src/sonda014.ts`) que repita la serie A/B de SC-002a y el recuento del mejor regateador de Core de SC-002b, para calibrar `factores.regate` sin la serie de 1.000
+- [X] T025 [US2] Crear `tools/balance/src/checks/motor015.ts` con `015/SC-002a` (A/B sobre `equipoSintetico` y `clonar`: DEL titular con regate 95 contra 75; intentos de regate + conducción por partido ≥ +40 % y completados ≥ +60 %) y `015/SC-002b` (Core: el mejor regateador del catálogo, titular contra equipos equilibrados; regates o conducciones ganados ≥ 1 en ≥ 90 % de los partidos); registrar el grupo en `tools/balance/src/cli.ts`
+- [X] T026 [US2] Calibrar `factores.regate` con `pnpm --filter @fbd/balance exec tsx src/sonda015.ts` hasta cumplir SC-002 en la sonda; vigilar 003/SC-005 (conducciones por partido)
 
 **Checkpoint**: el regateador encara y conduce más; US1 sigue en verde.
 
@@ -123,25 +123,25 @@ parado, con diferencia significativa (SC-003).
 
 ### Tests for User Story 3
 
-- [ ] T027 [P] [US3] Crear `packages/engine/tests/cabeceador015.test.ts` (invariante M2.5): el `aereo` de un DEF es su anticipación; con `PARAMETROS_V8`, en córner/falta lateral, en el primer duelo del remate de cabeza y en el centro interceptado dentro del área, la probabilidad del lado con Cabeceador es 0,15 mayor (antes del recorte 0,03–0,97) que sin la virtud, siendo atacante o defensor; el segundo duelo del remate de cabeza conserva su +0,15; con `PARAMETROS_V7`, sin cambios
-- [ ] T028 [P] [US3] Ampliar `packages/domain/tests/catalogo/validar.test.ts`: Cabeceador es válida en DEF, MED y DEL; una carta POR con Cabeceador es un error de validación
-- [ ] T029 [P] [US3] Ampliar `packages/domain/tests/catalogo/versionCatalogo.test.ts`: `VERSION_CATALOGO_ACTUAL === 3`; `cartaEnVersion(carta, 3)` devuelve la carta tal cual; `cartaEnVersion(carta, 2)` cambia Cabeceador por la virtud cedida en las cartas 60, 76, 77, 86, 87 y 275 y no toca las demás; `cartaEnVersion(carta, 1)` hace lo mismo y además lo que ya hacía con la versión 1
-- [ ] T030 [P] [US3] Ampliar `packages/domain/tests/catalogo/rasgos.test.ts`: `RASGOS.Cabeceador.ambito === 'campo'`
+- [X] T027 [P] [US3] Crear `packages/engine/tests/cabeceador015.test.ts` (invariante M2.5): el `aereo` de un DEF es su anticipación; con `PARAMETROS_V8`, en córner/falta lateral, en el primer duelo del remate de cabeza y en el centro interceptado dentro del área, la probabilidad del lado con Cabeceador es 0,15 mayor (antes del recorte 0,03–0,97) que sin la virtud, siendo atacante o defensor; el segundo duelo del remate de cabeza conserva su +0,15; con `PARAMETROS_V7`, sin cambios
+- [X] T028 [P] [US3] Ampliar `packages/domain/tests/catalogo/validar.test.ts`: Cabeceador es válida en DEF, MED y DEL; una carta POR con Cabeceador es un error de validación
+- [X] T029 [P] [US3] Ampliar `packages/domain/tests/catalogo/versionCatalogo.test.ts`: `VERSION_CATALOGO_ACTUAL === 3`; `cartaEnVersion(carta, 3)` devuelve la carta tal cual; `cartaEnVersion(carta, 2)` cambia Cabeceador por la virtud cedida en las cartas 60, 76, 77, 86, 87 y 275 y no toca las demás; `cartaEnVersion(carta, 1)` hace lo mismo y además lo que ya hacía con la versión 1
+- [X] T030 [P] [US3] Ampliar `packages/domain/tests/catalogo/rasgos.test.ts`: `RASGOS.Cabeceador.ambito === 'campo'`
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] En `packages/domain/src/catalogo/tipos.ts`: sacar Cabeceador de `VIRTUDES_DEL`, crear `VIRTUDES_CAMPO = ['Cabeceador'] as const` y hacer que `virtudesPermitidas` (y `VIRTUDES_POR_DEMARCACION` si existe) la añadan a DEF, MED y DEL, nunca a POR (contracts/catalogo.md §C1)
-- [ ] T032 [US3] En `packages/domain/src/catalogo/rasgos.ts`: añadir `'campo'` a `AmbitoRasgo`, poner `Cabeceador.ambito = 'campo'` y actualizar `descripcion`/`efecto` de Cabeceador (+15 en todos los duelos aéreos de las dos áreas, en ataque y en defensa), Presionador (+0,05 al multiplicador del quite, además de lo de hoy) y Mal defensor (−0,05 al multiplicador del quite, además de lo de hoy); textos visibles con tildes
-- [ ] T033 [P] [US3] En `packages/domain/src/catalogo/documentoRasgos.ts`: etiqueta «Jugador de campo» para el ámbito `'campo'`
-- [ ] T034 [US3] Revisar con `graphify query "VIRTUDES_DEL Cabeceador"` que ningún consumidor (validación, IA del draft en `packages/ai/src/`, fichas en `apps/web/src/componentes/`) dé por hecho que Cabeceador es de delantero; corregir los que lo hagan para que lean `virtudesPermitidas`
-- [ ] T035 [US3] En `packages/domain/src/catalogo/versionCatalogo.ts`: `VERSION_CATALOGO_ACTUAL = 3`; `VIRTUD_CEDIDA_015: Record<number, Virtud> = { 60: MuroDefensivo, 76: Volador, 77: Potente, 86: Intimidante, 87: Aura, 275: Potente }`; `cartaEnVersion(j, v)` con v < 3 cambia Cabeceador por la virtud cedida si `j.id` está en el mapa; v = 1 conserva además lo que ya hacía (data-model §3)
-- [ ] T036 [US3] En `data/core-real.json`, cartas 60 (Marc, cede Muro defensivo y conserva Capitanía), 76 (Gabriel, Volador), 77 (Joško, Potente), 86 (Sergio, Intimidante), 87 (Virgil, Aura) y 275 (Ronald Federico, Potente): cambiar la virtud cedida por Cabeceador; ejecutar `pnpm --filter @fbd/fixtures core-real` (debe pasar y regenera `specs/008-datos-reales-core/sumario.md`)
-- [ ] T037 [US3] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `aereo: { bonusCabeceador: 0.15, seleccionCabeceador: 10 }`
-- [ ] T038 [US3] En `packages/engine/src/acciones/tiro.ts`, con el bloque `aereo`: en `rematarBalonParado`, `ajuste` +`bonusCabeceador` si el rematador tiene Cabeceador y −`bonusCabeceador` si la tiene el defensor que le marca; en el primer duelo del remate de cabeza, −`bonusCabeceador` si el que tapa la tiene; el segundo duelo conserva `bonusProbabilidadAlto`; al elegir al defensor que marca en balón parado (`aereo + Volador`), sumar `seleccionCabeceador` si tiene Cabeceador (R5)
-- [ ] T039 [US3] En el punto de `packages/engine/src/acciones/juego.ts` (o `tiro.ts`) que resuelve el centro interceptado dentro del área del defensor: −`bonusCabeceador` si el interceptor tiene Cabeceador, con el bloque `aereo` (R5)
-- [ ] T040 [US3] Anotar `duelosAereos` (cada participante) y `aereosGanados` (ganador) en balón parado, remate de cabeza tapado y centro en el área, en `packages/engine/src/acciones/tiro.ts` y `juego.ts`
-- [ ] T041 [US3] Añadir `015/SC-003` a `tools/balance/src/checks/motor015.ts`: A/B con centrales con Cabeceador o sin ella; más `aereosGanados` y más goles de cabeza a balón parado, significativos con `mayorSignificativo`
-- [ ] T042 [US3] Ejecutar `pnpm --filter @fbd/engine test cabeceador015 equivalencia014` y `pnpm --filter @fbd/domain test`
+- [X] T031 [US3] En `packages/domain/src/catalogo/tipos.ts`: sacar Cabeceador de `VIRTUDES_DEL`, crear `VIRTUDES_CAMPO = ['Cabeceador'] as const` y hacer que `virtudesPermitidas` (y `VIRTUDES_POR_DEMARCACION` si existe) la añadan a DEF, MED y DEL, nunca a POR (contracts/catalogo.md §C1)
+- [X] T032 [US3] En `packages/domain/src/catalogo/rasgos.ts`: añadir `'campo'` a `AmbitoRasgo`, poner `Cabeceador.ambito = 'campo'` y actualizar `descripcion`/`efecto` de Cabeceador (+15 en todos los duelos aéreos de las dos áreas, en ataque y en defensa), Presionador (+0,05 al multiplicador del quite, además de lo de hoy) y Mal defensor (−0,05 al multiplicador del quite, además de lo de hoy); textos visibles con tildes
+- [X] T033 [P] [US3] En `packages/domain/src/catalogo/documentoRasgos.ts`: etiqueta «Jugador de campo» para el ámbito `'campo'`
+- [X] T034 [US3] Revisar con `graphify query "VIRTUDES_DEL Cabeceador"` que ningún consumidor (validación, IA del draft en `packages/ai/src/`, fichas en `apps/web/src/componentes/`) dé por hecho que Cabeceador es de delantero; corregir los que lo hagan para que lean `virtudesPermitidas`
+- [X] T035 [US3] En `packages/domain/src/catalogo/versionCatalogo.ts`: `VERSION_CATALOGO_ACTUAL = 3`; `VIRTUD_CEDIDA_015: Record<number, Virtud> = { 60: MuroDefensivo, 76: Volador, 77: Potente, 86: Intimidante, 87: Aura, 275: Potente }`; `cartaEnVersion(j, v)` con v < 3 cambia Cabeceador por la virtud cedida si `j.id` está en el mapa; v = 1 conserva además lo que ya hacía (data-model §3)
+- [X] T036 [US3] En `data/core-real.json`, cartas 60 (Marc, cede Muro defensivo y conserva Capitanía), 76 (Gabriel, Volador), 77 (Joško, Potente), 86 (Sergio, Intimidante), 87 (Virgil, Aura) y 275 (Ronald Federico, Potente): cambiar la virtud cedida por Cabeceador; ejecutar `pnpm --filter @fbd/fixtures core-real` (debe pasar y regenera `specs/008-datos-reales-core/sumario.md`)
+- [X] T037 [US3] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `aereo: { bonusCabeceador: 0.15, seleccionCabeceador: 10 }`
+- [X] T038 [US3] En `packages/engine/src/acciones/tiro.ts`, con el bloque `aereo`: en `rematarBalonParado`, `ajuste` +`bonusCabeceador` si el rematador tiene Cabeceador y −`bonusCabeceador` si la tiene el defensor que le marca; en el primer duelo del remate de cabeza, −`bonusCabeceador` si el que tapa la tiene; el segundo duelo conserva `bonusProbabilidadAlto`; al elegir al defensor que marca en balón parado (`aereo + Volador`), sumar `seleccionCabeceador` si tiene Cabeceador (R5)
+- [X] T039 [US3] En el punto de `packages/engine/src/acciones/juego.ts` (o `tiro.ts`) que resuelve el centro interceptado dentro del área del defensor: −`bonusCabeceador` si el interceptor tiene Cabeceador, con el bloque `aereo` (R5)
+- [X] T040 [US3] Anotar `duelosAereos` (cada participante) y `aereosGanados` (ganador) en balón parado, remate de cabeza tapado y centro en el área, en `packages/engine/src/acciones/tiro.ts` y `juego.ts`
+- [X] T041 [US3] Añadir `015/SC-003` a `tools/balance/src/checks/motor015.ts`: A/B con centrales con Cabeceador o sin ella; más `aereosGanados` y más goles de cabeza a balón parado, significativos con `mayorSignificativo`
+- [X] T042 [US3] Ejecutar `pnpm --filter @fbd/engine test cabeceador015 equivalencia014` y `pnpm --filter @fbd/domain test`
 
 **Checkpoint**: Cabeceador de campo en catálogo, motor e informe.
 
@@ -149,9 +149,9 @@ parado, con diferencia significativa (SC-003).
 
 ## Phase 6: Cierre de la tanda 1
 
-- [ ] T043 Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-001`, `015/SC-002a`, `015/SC-002b`, `015/SC-003` ✔; 002/SC-007a puede quedar < 150 (FR-020); ninguna comprobación que pasaba con la 7.0.0 en rojo (FR-021). Ajustar los valores de `duelos`, `quite`, `aereo` y `factores.regate` en `packages/domain/src/parametros/index.ts` si hace falta, dentro de FR-002/FR-003
-- [ ] T044 Actualizar `--pendientes` en `.github/workflows/ci.yml`: quitar las pendientes que ya se cumplen (el informe lo avisa) y añadir los ids de la 015 que aún no se cumplan; si SC-002 a SC-006 no se alcanzan sin ampliar diferencias más allá de FR-002, anotarlo en `specs/015-peso-individual-estadisticas/spec.md` (clarificación de SC-002 a SC-006)
-- [ ] T045 Medir con `pnpm --filter @fbd/balance umbral-motor` y comparar con T001 (≤ +10 %, SC-009)
+- [ ] T043 (abierta: 56/68 → ver research.md, «Serie de cierre de la tanda 1») Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-001`, `015/SC-002a`, `015/SC-002b`, `015/SC-003` ✔; 002/SC-007a puede quedar < 150 (FR-020); ninguna comprobación que pasaba con la 7.0.0 en rojo (FR-021). Ajustar los valores de `duelos`, `quite`, `aereo` y `factores.regate` en `packages/domain/src/parametros/index.ts` si hace falta, dentro de FR-002/FR-003
+- [X] T044 Actualizar `--pendientes` en `.github/workflows/ci.yml`: quitar las pendientes que ya se cumplen (el informe lo avisa) y añadir los ids de la 015 que aún no se cumplan; si SC-002 a SC-006 no se alcanzan sin ampliar diferencias más allá de FR-002, anotarlo en `specs/015-peso-individual-estadisticas/spec.md` (clarificación de SC-002 a SC-006)
+- [X] T045 Medir con `pnpm --filter @fbd/balance umbral-motor` y comparar con T001 (≤ +10 %, SC-009)
 
 ---
 

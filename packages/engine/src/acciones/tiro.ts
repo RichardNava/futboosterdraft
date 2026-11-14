@@ -105,6 +105,23 @@ interface OpcionesTiro {
   trasCentro?: boolean;
 }
 
+/**
+ * Cabeceador en un duelo aéreo de la 8.0.0 (spec 015, research R5): ±`bonusCabeceador` en la probabilidad del atacante,
+ * a favor si lo tiene el atacante y en contra si lo tiene el defensor. Sin el bloque `aereo`, 0 (7.0.0).
+ */
+export function ajusteCabeceador(p: ParametrosEquilibrado, atacante: JugadorEnPartido | undefined, defensor: JugadorEnPartido | undefined): number {
+  const ae = p.aereo;
+  if (!ae) return 0;
+  return (atacante && tiene(atacante, 'Cabeceador') ? ae.bonusCabeceador : 0) - (defensor && tiene(defensor, 'Cabeceador') ? ae.bonusCabeceador : 0);
+}
+
+/** Anota un duelo aéreo disputado por los dos y ganado por uno (spec 015, data-model §7). */
+export function anotarAereo(ctx: Contexto, a: JugadorEnPartido | undefined, d: JugadorEnPartido | undefined, ganaAtacante: boolean): void {
+  anotar(ctx.metricas, a?.id, 'duelosAereos');
+  anotar(ctx.metricas, d?.id, 'duelosAereos');
+  anotar(ctx.metricas, (ganaAtacante ? a : d)?.id, 'aereosGanados');
+}
+
 /** Resuelve un tiro (a puerta, gol, parada, córner o fuera) desde la posición real del tirador (research R6 y R7). */
 export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnPartido, tipoPedido: TipoTiro, opciones: OpcionesTiro = {}): ResultadoTiro {
   const e = ctx.estado;
@@ -154,13 +171,16 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
       atacante: remate + aj.atacante,
       defensor: defensaBloqueo + aj.defensor,
       desplazamiento: tipo === 'penalti' ? 0 : desplazamientoAtaque(e, atacante, defensor, 'tiro', e.balon.zona) * 0.5 + porDistancia + relajado,
-      ajuste: aj.probabilidad + bonusRemate / 2,
+      // Spec 015 (R5): en el primer duelo del remate de cabeza, Cabeceador del que tapa (el del rematador ya va en bonusRemate).
+      ajuste: aj.probabilidad + bonusRemate / 2 + (tipo === 'cabeza' ? ajusteCabeceador(p, undefined, bloqueador) : 0),
     },
     p,
   );
   const arquero = portero(defensor);
   const autor = [{ rol: 'autor' as const, jugadorId: tirador.id }];
-  if (!resolver(ctx.rng, puerta)) {
+  const aPuerta = resolver(ctx.rng, puerta);
+  if (tipo === 'cabeza' && bloqueador) anotarAereo(ctx, tirador, bloqueador, aPuerta);
+  if (!aPuerta) {
     const bloqueado = bloqueador !== undefined && ctx.rng.probabilidad(450);
     if (bloqueado) volar(ctx, 'tiro', tirador.id, { jugadorId: bloqueador!.id }, { exito: false, aerea: tipo === 'cabeza' });
     else volar(ctx, 'tiro', tirador.id, { punto: puntoFuera(ctx, atacante) }, { exito: false, aerea: tipo === 'cabeza' || tipo === 'lejano' });
@@ -329,12 +349,12 @@ export function rematarBalonParado(
       atributo(e, atacante, b, 'aereo') + (tiene(b, 'Cabeceador') ? 10 : 0) + (tiene(b, 'Rematador') ? 6 : 0) - (atributo(e, atacante, a, 'aereo') + (tiene(a, 'Cabeceador') ? 10 : 0) + (tiene(a, 'Rematador') ? 6 : 0)) || a.id - b.id,
   )[0];
   const defensores = defensor.jugadores.filter((j) => j.enCampo && j.casillaId !== 'POR');
-  const marcador = [...cercaDelRemate(defensor, defensores, 4)].sort(
-    (a, b) =>
-      atributo(e, defensor, b, 'aereo') + (tiene(b, 'Volador') ? 6 : 0) - (atributo(e, defensor, a, 'aereo') + (tiene(a, 'Volador') ? 6 : 0)) || a.id - b.id,
-  )[0];
+  // Spec 015 (R5): con el bloque `aereo`, Cabeceador también cuenta al elegir quién marca.
+  const porArribaDef = (j: JugadorEnPartido) =>
+    atributo(e, defensor, j, 'aereo') + (tiene(j, 'Volador') ? 6 : 0) + (p.aereo && tiene(j, 'Cabeceador') ? p.aereo.seleccionCabeceador : 0);
+  const marcador = [...cercaDelRemate(defensor, defensores, 4)].sort((a, b) => porArribaDef(b) - porArribaDef(a) || a.id - b.id)[0];
   if (!rematador) return;
-  let ajuste = 0;
+  let ajuste = ajusteCabeceador(p, rematador, marcador);
   if (marcador && tiene(marcador, 'Volador')) ajuste -= s.bonusProbabilidadAlto;
   const centro = probabilidad(
     {
@@ -354,7 +374,9 @@ export function rematarBalonParado(
     falta(ctx, atacante, rematador, defensor, marcador);
     return;
   }
-  if (resolver(ctx.rng, centro, { rerollAtacante: tiene(lanzador, 'GuanteEnElPie') })) {
+  const ganaRemate = resolver(ctx.rng, centro, { rerollAtacante: tiene(lanzador, 'GuanteEnElPie') });
+  anotarAereo(ctx, rematador, marcador, ganaRemate);
+  if (ganaRemate) {
     // Una falta colgada al área es un pase: su rematador puede estar en fuera de juego (spec 014, FR-008); un córner no.
     const q = e.espacio.jugadores[rematador.id];
     const xBalon = aEquipo(atacante.lado, e.espacio.balon).x;

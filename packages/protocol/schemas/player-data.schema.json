@@ -19,7 +19,8 @@
     "virtudPOR": { "enum": ["Parapenalties", "OneToOne", "Santo", "Ordenabarreras", "JugadorDeCampo"] },
     "virtudDEF": { "enum": ["Infranqueable", "Jerarquia", "Volador", "Libero", "MuroDefensivo"] },
     "virtudMED": { "enum": ["Llegador", "BoxToBox", "PrimerToque", "Todocampista", "JugadorEntreLineas"] },
-    "virtudDEL": { "enum": ["Matador", "Rematador", "Cabeceador", "Desbordante", "GuanteEnElPie"] },
+    "virtudDEL": { "enum": ["Matador", "Rematador", "Desbordante", "GuanteEnElPie"] },
+    "virtudCampo": { "enum": ["Cabeceador"] },
     "defecto": { "enum": ["Agresivo", "Impulsivo", "Fragil", "Fatigado", "Polemico", "Indisciplinado", "Canchero", "Rebelde", "Torpe", "Provocador", "DeCristal", "Estrellita", "Chupon", "Inflexible", "MalDefensor"] },
     "statsPOR": {
       "type": "object", "additionalProperties": false,
@@ -104,7 +105,7 @@
           "then": { "properties": {
             "stats": { "$ref": "#/$defs/statsDEF" },
             "posicion": { "items": { "not": { "const": "POR" } } },
-            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudDEF" }, { "$ref": "#/$defs/virtudMED" }] } }
+            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudDEF" }, { "$ref": "#/$defs/virtudMED" }, { "$ref": "#/$defs/virtudCampo" }] } }
           } }
         },
         {
@@ -112,7 +113,7 @@
           "then": { "properties": {
             "stats": { "$ref": "#/$defs/statsMED" },
             "posicion": { "items": { "not": { "const": "POR" } } },
-            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudMED" }] } }
+            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudMED" }, { "$ref": "#/$defs/virtudCampo" }] } }
           } }
         },
         {
@@ -120,7 +121,7 @@
           "then": { "properties": {
             "stats": { "$ref": "#/$defs/statsDEL" },
             "posicion": { "items": { "not": { "const": "POR" } } },
-            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudDEL" }] } }
+            "virtudes": { "items": { "anyOf": [{ "$ref": "#/$defs/virtudGenerica" }, { "$ref": "#/$defs/virtudDEL" }, { "$ref": "#/$defs/virtudCampo" }] } }
           } }
         }
       ]

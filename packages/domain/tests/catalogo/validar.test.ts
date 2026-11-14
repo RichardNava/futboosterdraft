@@ -208,3 +208,13 @@ describe('validarCatalogo (spec 006, data-model §1.2)', () => {
     expect(validarCatalogo(cartas, [{ ...colCore, cartas: core.slice(1).map((c) => c.id) }, { ...pago, cartas: [1, 301] }]).errores).toEqual([]);
   });
 });
+
+describe('Cabeceador, virtud de jugador de campo (spec 015, contracts/catalogo.md §C1)', () => {
+  it.each([defensa, medio, delantero])('es válida en un $demarcacion', (j) => {
+    expect(reglas({ ...j, virtudes: ['Cabeceador'] })).toEqual([]);
+  });
+
+  it('una carta POR con Cabeceador es un error de validación', () => {
+    expect(reglas({ ...portero, virtudes: ['Cabeceador'] })).toContain('virtud_no_permitida');
+  });
+});

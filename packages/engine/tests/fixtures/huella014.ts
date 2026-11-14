@@ -4,7 +4,7 @@
  * cerrar el motor 7.0.0 y no se regenera durante la refactorización (FR-030): cualquier diferencia es un fallo.
  */
 import { createHash } from 'node:crypto';
-import { parametrosActuales, semillaDesdeTexto, type Tactica, type Virtud } from '@fbd/domain';
+import { PARAMETROS_V7, semillaDesdeTexto, type Tactica, type Virtud } from '@fbd/domain';
 import { avanzar, crearPartido } from '../../src/index';
 import { clonar, equipoSintetico } from '../../../../tools/balance/src/equipos';
 import { draftMesa, electorNPC } from '../../../../tools/balance/src/checks/npc';
@@ -49,7 +49,8 @@ export function partidoHuella(i: number): PartidoHuella {
   const visitante = clonar(equipoSintetico({ semilla: `huella-${i}-b`, formacion: FORMACIONES[(i + 3) % FORMACIONES.length], tactica: TACTICAS[(i + 2) % TACTICAS.length]! }), 'visitante');
   // Los ids de los jugadores sintéticos salen de un contador global: se comparan por su posición en las convocatorias.
   const orden = new Map([...local.titulares.map((t) => t.jugador), ...local.suplentes, ...visitante.titulares.map((t) => t.jugador), ...visitante.suplentes].map((j, k) => [j.id, k]));
-  const p = parametrosActuales();
+  // La huella es de la 7.0.0 (spec 015, research R1): se sigue simulando igual con el motor de la 8.0.0.
+  const p = PARAMETROS_V7;
   const r = avanzar(crearPartido({ version: p.version, parametros: p, semilla: semillaDesdeTexto(`huella-014-${i}`), eliminatoria: i % 4 === 0, local, visitante }), 'final', { fotogramas: true });
   return {
     semilla: i,
@@ -63,7 +64,7 @@ export function partidoHuella(i: number): PartidoHuella {
 /** Draft `i` (1–20) de la huella: las cartas de cada NPC. */
 export function draftHuella(i: number): { semilla: number; picks: Record<string, number[]> } {
   const semilla = `huella-014-draft-${i}`;
-  const { elegirDe } = electorNPC(semilla, PARTICIPANTES.length, parametrosActuales());
+  const { elegirDe } = electorNPC(semilla, PARTICIPANTES.length, PARAMETROS_V7);
   const nivel = (pid: string) => pid.slice(0, pid.lastIndexOf('-')) as (typeof NIVELES_DRAFT)[number];
   const plantillas = draftMesa(semilla, PARTICIPANTES, (pid, sobre, parcial, ronda, turno) => elegirDe(nivel(pid), pid, sobre, parcial, ronda, turno));
   return { semilla: i, picks: Object.fromEntries(Object.entries(plantillas).map(([pid, js]) => [pid, js.map((j) => j.id)])) };

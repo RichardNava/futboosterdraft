@@ -34,6 +34,8 @@ describe('tabla de rasgos', () => {
     for (const d of DEFECTOS) expect(RASGOS[d].ambito).toBe('generico');
     for (const v of ['DeAcero', 'Versatil', 'FairPlayer', 'Revulsivo'] as Rasgo[]) expect(RASGOS[v].ambito).toBe('generico');
     expect(RASGOS.BoxToBox.ambito).toBe('MED');
+    // Spec 015: Cabeceador es de cualquier jugador de campo.
+    expect(RASGOS.Cabeceador.ambito).toBe('campo');
   });
 
   it('los nombres visibles llevan tildes y los identificadores no', () => {

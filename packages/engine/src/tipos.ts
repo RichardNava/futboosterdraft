@@ -166,6 +166,18 @@ export interface MetricasJugador {
   conduccionesGanadas: number;
   sueltosDisputados: number;
   sueltosGanados: number;
+  /** Spec 015 (data-model §7): desmarque (receptor) y marcaje (marcador) antes del pase. */
+  duelosDesmarque: number;
+  recibidoLibre: number;
+  marcajesGanados: number;
+  /** Spec 015: controles con presión del receptor marcado, y los que pierde. */
+  controlesPresion: number;
+  controlesPerdidos: number;
+  /** Spec 015: duelos aéreos disputados (cada participante) y ganados, en las dos áreas. */
+  duelosAereos: number;
+  aereosGanados: number;
+  /** Spec 015: fueras de juego que deshace la posición de un defensa rezagado. */
+  habilitaciones: number;
 }
 
 export interface Estadisticas {

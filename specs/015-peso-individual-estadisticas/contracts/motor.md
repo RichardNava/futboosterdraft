@@ -8,7 +8,9 @@ cumplir las pruebas. Los valores son de partida (research R2–R9) y se fijan co
 ```ts
 type AccionDuelo = 'regate' | 'conduccion' | 'pase_corto';   // ampliable; las ausentes usan los valores de la 7.0.0
 
-duelos?: Partial<Record<AccionDuelo, { base: number; m: number }>>;
+curvas?: Partial<Record<AccionDuelo, { base: number; m: number }>>;
+//  En el código se llama `curvas` (tipo `AccionCurva`): `duelos` ya era el modo Duelo de la spec 005, que
+//  `parametrosEfectivos` rellena siempre, así que su presencia no serviría de interruptor (R1).
 //  8.0.0: regate { -0.32, 1.1 } · conduccion { 0.25, 1.15 } · pase_corto { 1.57, 1.27 }
 
 quite?: { DEF: number; MED_MD: number; MED: number; DEL: number; presionador: number; malDefensor: number };

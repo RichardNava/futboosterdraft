@@ -42,6 +42,14 @@ function metricasVacias(): MetricasJugador {
     conduccionesGanadas: 0,
     sueltosDisputados: 0,
     sueltosGanados: 0,
+    duelosDesmarque: 0,
+    recibidoLibre: 0,
+    marcajesGanados: 0,
+    controlesPresion: 0,
+    controlesPerdidos: 0,
+    duelosAereos: 0,
+    aereosGanados: 0,
+    habilitaciones: 0,
   };
 }
 

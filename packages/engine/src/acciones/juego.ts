@@ -4,9 +4,10 @@
  * en un duelo contra el rival real más cercano. La acción se representa con física: el balón vuela hacia el
  * receptor, el jugador conduce hasta su punto, etc., y su duración sale de ahí (no hay duraciones fijas).
  */
+import type { AccionCurva } from '@fbd/domain';
 import { rival, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } from '../estado/estado';
 import { dist2, dividir, escalar, isqrt, limitar } from '../espacio/aritmetica';
-import { decimasDeMetros, distanciaPorteria, ULTIMO_TERCIO } from '../espacio/campo';
+import { decimasDeMetros, distanciaPorteria, enAreaRival, ULTIMO_TERCIO } from '../espacio/campo';
 import { papelLlegada } from '../espacio/objetivos';
 import { aAbsoluta, aEquipo, CENTRO_Y, centroCelda, LARGO, puntoEnCelda, zonaCarrilDe, type Punto } from '../espacio/geometria';
 import { anotar } from '../metricas';
@@ -24,7 +25,7 @@ import { CERCA_REMATE, entorno, motivosPaseLargo, pesosConEspacio, PUNTO_REMATE,
 import { decisionManoAMano, distanciaDisparo, esManoAMano, type DecisionManoAMano } from './manoAMano';
 import { enFueraDeJuego, factorPericia, penultimoDefensor } from './fueraDeJuego';
 import { interceptorDePase, receptorDePase, type TipoPase } from './receptor';
-import { corner, despejeEnPropia, saqueDePuerta, tirar } from './tiro';
+import { ajusteCabeceador, anotarAereo, corner, despejeEnPropia, saqueDePuerta, tirar } from './tiro';
 
 /** Atributo del atacante y del defensor en cada acción. */
 const ENFRENTAMIENTO: Record<TipoAccion, [Atributo, Atributo]> = {
@@ -446,16 +447,23 @@ export function paso(ctx: Contexto): void {
   const aj = ajusteDuelo(e, portador, rivalDuelo);
   const infranqueable = rivalDuelo ? bonusInfranqueable(e, portador, rivalDuelo) : 0;
   const valorDefensor = rivalDuelo ? atributo(e, defensor, rivalDuelo, atD) + infranqueable : 40;
-  const base = {
-    pase_corto: p.acciones.paseCorto,
-    pase_largo: p.acciones.paseLargo,
-    conduccion: p.acciones.conduccion,
-    regate: p.acciones.regate,
-    pase_espacio: p.acciones.paseEspacio + (transicion ? 0.4 : 0),
-    centro: p.acciones.centro,
-  }[accion];
+  // Spec 015 (R2): base y m propios de la acción con el bloque `curvas`; sin él, los de la 7.0.0.
+  const curva = p.curvas?.[accion as AccionCurva];
+  const base =
+    curva?.base ??
+    {
+      pase_corto: p.acciones.paseCorto,
+      pase_largo: p.acciones.paseLargo,
+      conduccion: p.acciones.conduccion,
+      regate: p.acciones.regate,
+      pase_espacio: p.acciones.paseEspacio + (transicion ? 0.4 : 0),
+      centro: p.acciones.centro,
+    }[accion];
   const stats = e.estadisticas[atacante.lado];
   const espacio = en?.espacio ?? 0;
+  // Spec 015 (R5): un centro que disputa un defensor dentro de su área es un duelo aéreo (Cabeceador del interceptor).
+  const qInterceptor = accion === 'centro' && rivalDuelo ? e.espacio.jugadores[rivalDuelo.id] : undefined;
+  const aereoEnArea = qInterceptor !== undefined && enAreaRival(aEquipo(atacante.lado, qInterceptor));
 
   const exito = probabilidad(
     {
@@ -464,8 +472,8 @@ export function paso(ctx: Contexto): void {
       atacante: (accion === 'conduccion' ? (atributo(e, atacante, portador, 'velocidad') + atributo(e, atacante, portador, 'fisico')) / 2 : atributo(e, atacante, portador, atA)) + aj.atacante,
       defensor: valorDefensor + aj.defensor,
       desplazamiento: desplazamientoAtaque(e, atacante, defensor, accion, zona),
-      ajuste: aj.probabilidad + ajusteVirtudesAccion(ctx, accion, portador, zona, carril, rivalDuelo),
-      ...(esPase(accion) ? { pendiente: p.acciones.pendientePase } : {}),
+      ajuste: aj.probabilidad + ajusteVirtudesAccion(ctx, accion, portador, zona, carril, rivalDuelo) + (aereoEnArea ? ajusteCabeceador(p, undefined, rivalDuelo) : 0),
+      ...(curva ? { pendiente: curva.m } : esPase(accion) ? { pendiente: p.acciones.pendientePase } : {}),
     },
     p,
   );
@@ -479,6 +487,7 @@ export function paso(ctx: Contexto): void {
     clasificarPase(e, atacante, posPortador, plan.punto);
   }
   if (accion === 'centro') stats.centros++;
+  if (aereoEnArea) anotarAereo(ctx, undefined, rivalDuelo, ok);
   if (accion === 'conduccion' || accion === 'regate') {
     stats.conducciones++;
     anotar(ctx.metricas, rivalDuelo?.id, 'entradas');

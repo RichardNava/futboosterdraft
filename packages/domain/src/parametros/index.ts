@@ -161,6 +161,24 @@ export interface ParametrosEquilibrado {
    * atacante (FR-011: la provoca la posición de los defensas, no un sorteo).
    */
   fueraDeJuego?: { toleranciaM: number; holguraMaxM: number; pesoReceptor: number; holguraLineaAdelantada: number };
+  /**
+   * Desde la 8.0.0 (spec 015, research R1): bloques opcionales; sin ellos, el motor hace lo de la 7.0.0.
+   *
+   * `curvas`: base y m (multiplicador de `duelo.pendiente`) propios de cada acción (R2); las ausentes usan `acciones.*` y
+   * `pendientePase`. Se llama `curvas` y no `duelos` (como en contracts/motor.md) porque `duelos` ya es el modo Duelo de
+   * la spec 005, que `parametrosEfectivos` siempre rellena.
+   */
+  curvas?: Partial<Record<AccionCurva, { base: number; m: number }>>;
+  /** Spec 015 (R3): multiplicador del quite por demarcación, y lo que suman Presionador y restan Mal defensor. */
+  quite?: { DEF: number; MED_MD: number; MED: number; DEL: number; presionador: number; malDefensor: number };
+  /** Spec 015 (R5): Cabeceador en los duelos aéreos (probabilidad) y en la elección del marcador a balón parado. */
+  aereo?: { bonusCabeceador: number; seleccionCabeceador: number };
+  /** Spec 015 (R7): duelo de desmarque contra marcaje antes del pase. */
+  desmarque?: { radioMarcaM: number; base: number; m: number; bonusLibre: number; penalizacionMarcado: number; pesoEleccion: number };
+  /** Spec 015 (R8): técnica contra quite al controlar marcado. */
+  controlPresion?: { base: number; m: number };
+  /** Spec 015 (R9): liderazgo del defensa (línea) y del portero (defensas cercanos). */
+  liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number };
   lesiones: {
     probabilidadPorEntrada: number;
     /** Reducción relativa de la probabilidad de lesión con Robusto. */
@@ -426,6 +444,9 @@ export function parametrosEfectivos(p: ParametrosEquilibrado): ParametrosComplet
   return c;
 }
 
+/** Acciones con curva propia en la 8.0.0 (spec 015, R2). */
+export type AccionCurva = 'regate' | 'conduccion' | 'pase_corto';
+
 /** Stats que influyen en la elección de acciones (research R9). */
 export type FactorDecision = 'regate' | 'remate' | 'pase' | 'vision' | 'fisico';
 
@@ -570,6 +591,26 @@ export const PARAMETROS_V7: ParametrosEquilibrado = {
   tacticas: { ...PARAMETROS_V6_3.tacticas, lineaAdelantada: LINEA_ADELANTADA_V7 },
 };
 
+/**
+ * Parámetros 8.0.0 (spec 015): cada duelo enfrenta las dos stats implicadas con una curva propia, quite por demarcación,
+ * el regateador lo intenta más y Cabeceador en cualquier jugador de campo. Todo cuelga de bloques opcionales (research
+ * R1), así que la 7.0.0 se sigue simulando igual. Se edita en el sitio entre las tandas de calibración.
+ */
+export const PARAMETROS_V8: ParametrosEquilibrado = {
+  ...PARAMETROS_V7,
+  version: '8.0.0',
+  curvas: { regate: { base: -0.32, m: 1.1 }, conduccion: { base: 0.25, m: 1.15 }, pase_corto: { base: 1.57, m: 1.27 } },
+  quite: { DEF: 1.0, MED_MD: 0.9, MED: 0.85, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 },
+  aereo: { bonusCabeceador: 0.15, seleccionCabeceador: 10 },
+  // Recalibrados por FR-021 (T043): con el regate siempre ofrecido sube el penalti, y el quite cambia el peso del defecto.
+  disciplina: { ...PARAMETROS_V7.disciplina, factorFaltaArea: 0.34 },
+  defectos: { ...PARAMETROS_V7.defectos!, malDefensor: 0.5 },
+  decision: {
+    ...PARAMETROS_V7.decision,
+    factores: { ...PARAMETROS_V7.decision.factores, regate: { k: 0.7, min: 0.6, max: 3.0 } },
+  },
+};
+
 /** Reparto de un nivel; las versiones anteriores a la 6.3.0 tienen el de siempre (4, 2, 1 y 1 alta) en todos. */
 export function repartoDe(p: ParametrosEquilibrado, nivel: NivelRareza): RepartoSobre {
   return p.sobres.niveles?.[nivel] ?? { superclase: 4, crack: 2, legendario: 1, altas: 1, probGoatEnAlta: p.sobres.probGoatEnAlta };
@@ -584,6 +625,7 @@ const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V6_2.version]: PARAMETROS_V6_2,
   [PARAMETROS_V6_3.version]: PARAMETROS_V6_3,
   [PARAMETROS_V7.version]: PARAMETROS_V7,
+  [PARAMETROS_V8.version]: PARAMETROS_V8,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -601,10 +643,10 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V7;
+  return PARAMETROS_V8;
 }
 
-/** Versión mayor mínima que el motor actual puede simular (spec 014, research R14: solo la 7.x). */
+/** Versión mayor mínima que el motor actual puede simular (spec 014, research R14: la 7.x; la 015 añade la 8.x sin retirarla). */
 export const VERSION_MAYOR_SOPORTADA = 7;
 
 /** Parámetros de una versión concreta, para reproducir un partido (FR-040). Las anteriores a la 7.x lanzan `VersionNoSoportada` (research R14). */
