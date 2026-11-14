@@ -155,6 +155,24 @@ parado, con diferencia significativa (SC-003).
 
 ---
 
+## Phase 6b: Añadidos de la tanda 1 (US7 a US10, clarificaciones del 2026-11-14)
+
+**Goal**: buscar a la estrella, Juego por las bandas, subida al área a balón parado y salir de su zona (FR-025 a
+FR-030), colgados de bloques de la 8.0.0.
+
+- [X] T082 Añadir a `ParametrosEquilibrado` y a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` los bloques `estrella`, `bandas`, `subidaArea` y `segundaLinea` (contracts/motor.md M1) y su prueba en `packages/domain/tests/parametros/parametros.test.ts`
+- [X] T083 [P] [US8] Añadir `bandas` a `ESTILOS_CON_BALON` (`packages/domain/src/equipo/tactica.ts`), al esquema de `packages/protocol/src/http/alineacion.ts` y al panel `apps/web/src/componentes/PanelTactica.tsx` («Juego por las bandas»)
+- [X] T084 [P] [US7] Crear `packages/engine/tests/anadidos015.test.ts` con las invariantes M2.13 a M2.17
+- [X] T085 [US7] `pesosEstrella` y la línea clara en `pesosReceptor` (`packages/engine/src/acciones/receptor.ts`); `ajusteDesmarque` en el duelo del pase (`packages/engine/src/acciones/juego.ts`)
+- [X] T086 [US8] `probabilidadBanda` y centro en `packages/engine/src/modificadores/formacionTactica.ts`; receptor de banda en `receptor.ts`
+- [X] T087 [US9] `colocarSubida` y `porteroSube` en `packages/engine/src/espacio/colocacion.ts`; portero rematador en `rematarBalonParado` (`packages/engine/src/acciones/tiro.ts`)
+- [X] T088 [US10] Mano a mano desde el campo propio (`packages/engine/src/acciones/manoAMano.ts`) y llegada de MC, MII y MID a la frontal (`packages/engine/src/espacio/objetivos.ts`)
+- [X] T089 Añadir `015/SC-011` y `015/SC-012` a `tools/balance/src/checks/motor015.ts`; SC-003 cuenta los goles de cabeza de todo el equipo
+- [X] T090 Documentar los añadidos en spec.md, plan.md, research.md (R12 a R15), data-model.md, contracts y quickstart.md, y en `docs/juego/enfrentamientos.md`
+- [ ] T091 Serie de cierre con los añadidos: `pnpm balance --n 1000`; esperado 015/SC-002b, SC-003, SC-011 y SC-012 ✔ y ninguna regresión nueva; actualizar `--pendientes` en `.github/workflows/ci.yml`
+
+---
+
 ## Phase 7: User Story 4 - Desmarque contra marcaje antes de cada pase (Priority: P2) — tanda 2
 
 **Goal**: duelo de desmarque contra el marcador antes de cada pase, y elección del receptor según ese duelo (FR-011,
@@ -174,7 +192,7 @@ pases completados recibidos, con diferencia significativa (SC-004).
 - [ ] T049 [US4] En `packages/engine/src/modificadores/atributos.ts`, con el bloque `desmarque`: `desmarque` = DEL desmarque, MED visión, DEF velocidad (sustituye al ×0,8 de hoy); `marcaje` = DEF marcaje, MED posicionamiento, DEL agresividad, POR 50 (data-model §4)
 - [ ] T050 [US4] Crear `packages/engine/src/acciones/desmarque.ts` con funciones puras: `marcadorDe(receptor, rivales, radioMarcaM)` (rival de campo más cercano a ≤ radio, un único recorrido sin ordenar ni reservar memoria; `null` si no hay o si el receptor es portero) y `probabilidadDesmarque(desmarque, marcaje, params)` con `probabilidad()` de `duelo.ts` (FR-018, M2.12)
 - [ ] T051 [US4] En `pesosReceptor` de `packages/engine/src/acciones/receptor.ts`, con el bloque: multiplicar el peso de cada candidato por `1 + pesoEleccion × (p − 0,5)`, con p la probabilidad de ganar su duelo de desmarque sin tirada (p = 1 sin marcador) (FR-013)
-- [ ] T052 [US4] En la resolución del pase de `packages/engine/src/acciones/juego.ts`, con el bloque: tras elegir receptor, localizar su marcador, tirar el duelo de desmarque y aplicar +`bonusLibre` (libre) o −`penalizacionMarcado` (marcado) como desplazamiento del duelo del pase; guardar `marcadorId: number | null` y `libre: boolean` solo de forma transitoria en el plan del pase (data-model §6). Si el pase no sale, no se tira el desmarque
+- [ ] T052 [US4] (Sustituye a `ajusteDesmarque` de T085 y a `estrella.pendienteDesmarque`.) En la resolución del pase de `packages/engine/src/acciones/juego.ts`, con el bloque: tras elegir receptor, localizar su marcador, tirar el duelo de desmarque y aplicar +`bonusLibre` (libre) o −`penalizacionMarcado` (marcado) como desplazamiento del duelo del pase; guardar `marcadorId: number | null` y `libre: boolean` solo de forma transitoria en el plan del pase (data-model §6). Si el pase no sale, no se tira el desmarque
 - [ ] T053 [US4] Anotar `duelosDesmarque` y `recibidoLibre` (receptor; también recepción sin marcador cuenta como libre) y `marcajesGanados` (marcador) en `packages/engine/src/acciones/juego.ts`
 - [ ] T054 [US4] Añadir `015/SC-004` a `tools/balance/src/checks/motor015.ts`: A/B receptor +15 de desmarque (más `recibidoLibre` y más pases completados recibidos) y marcador +15 de marcaje (menos `recibidoLibre` del rival), las dos significativas
 

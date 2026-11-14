@@ -36,6 +36,11 @@ en tres tandas."
   (Principio V) y que cada criterio estadístico se compruebe en el informe de la herramienta de equilibrado
   (Principio IX).
 
+- Tras la serie de cierre de la tanda 1 (56/68, [research.md](research.md)), la persona decidió ampliar esta spec,
+  sin abrir otra, con cuatro añadidos (tanda 1b): buscar a la estrella en el pase, la táctica «Juego por las bandas»,
+  la subida al área a balón parado y la salida de su zona de los jugadores que no son delanteros. Nacen de SC-002b (el
+  mejor regateador toca poco el balón jugando de extremo) y de SC-003 (los centrales nunca subían a rematar).
+
 Términos:
 
 - **Duelo**: enfrentamiento de un atributo del jugador que actúa contra un atributo del rival concreto que se le opone,
@@ -49,6 +54,8 @@ Términos:
 - **Recibir libre / con el rival encima**: resultado del duelo de desmarque, que facilita o dificulta el pase y el
   control.
 - **Técnica contra presión**: duelo entre quien controla un balón con un rival encima y ese rival.
+- **Estrella**: el compañero con más media de entre los que pueden recibir un pase.
+- **Línea de pase clara**: ningún rival de campo a 3 m o menos de la línea del pase y el receptor sin rival encima.
 - **Tanda de calibración**: bloque de cambios que se mide con una serie completa de equilibrado (unos 105 minutos con
   1.000 partidos) antes de pasar al siguiente.
 
@@ -75,6 +82,30 @@ Términos:
   menos de una distancia fija (calibrada en la tanda 3); al portero, los defensas dentro de su área o en la zona propia.
 - Q: ¿Se dan por buenos los umbrales de SC-002 a SC-006? → A: Sí, tal cual. Si una tanda no los alcanza sin
   ampliar las diferencias más allá de FR-002, se revisan en esa tanda con una nota en la spec.
+
+### Session 2026-11-14 (añadidos tras la serie de la tanda 1)
+
+- Q: ¿Cómo se resuelve SC-002b (el mejor regateador, de extremo, solo supera a alguien en el 72 % de los partidos)? →
+  A: Buscando más a la estrella en el pase (US7), no subiendo más el factor de regate. Con línea de pase clara se
+  prioriza al de más media; con la estrella marcada, un pasador con (visión + pase)/2 ≤ 80 busca al libre; uno con más
+  de 80 se la juega a la estrella el 40 % de las veces, o la prioriza si tiene más de 5 puntos de media sobre la mejor
+  opción clara. En el éxito del pase interviene también el desmarque del receptor.
+- Q: ¿Se añade una táctica de juego por fuera? → A: Sí, «Juego por las bandas», como un estilo con balón más
+  (junto a Equilibrado, Contraataque y Juego combinativo): se avanza más por fuera y laterales, carrileros y extremos
+  reciben más (US8).
+- Q: ¿Cómo se resuelve SC-003 (los centrales con Cabeceador no marcan más de cabeza)? → A: A balón parado colgado al
+  área (córners y faltas laterales) suben casi todos: se quedan atrás un defensa y un medio, nunca uno con Cabeceador.
+  En la última jugada del partido, perdiendo de uno, sube también el portero (US9).
+- Q: ¿Cuándo sube el portero? → A: Solo en la que presumiblemente es la última jugada: el último minuto del descuento
+  que ha dado el árbitro (90+4 con 4 de descuento; igual al final de la prórroga). Si aun así el rival arma un
+  contraataque con el portero lejos de su portería, el tiro es a puerta vacía.
+- Q: ¿Pueden los jugadores salir de su zona? → A: Sí, si la jugada lo propicia: el que gana un rechace con terreno
+  por delante y solo el portero enfrente encara como un delantero, los medios llegan a la frontal y tiran desde fuera
+  del área con la portería a la vista (US10).
+- Q: ¿Van en una spec nueva? → A: No, en esta, como añadidos (tanda 1b); se miden con la serie de cierre de la tanda 1.
+- Q: ¿Qué significa bajar `defectos.malDefensor` de 0,65 a 0,5? → A: Es la parte de las acciones defensivas que el
+  Mal defensor no cede a un compañero: más bajo, más grave el defecto. Con el −0,05 de quite, la 8.0.0 lo deja haciendo
+  el 42 % de las acciones de un defensa normal (objetivo de la spec 005: 50 % ± 20 %).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -217,6 +248,98 @@ duelos que con uno de 70.
 
 ---
 
+### User Story 7 - Buscar a la estrella (Priority: P1) — añadidos, tanda 1b
+
+Como participante, quiero que mis jugadores busquen a mi mejor jugador cuando tienen una línea de pase clara hacia él, y
+que mis centrocampistas con más visión y pase sean los que se la juegan para que la estrella reciba aunque esté
+defendida.
+
+**Why this priority**: el mejor jugador del equipo debe pesar en el partido; hoy el mejor regateador del catálogo pasa
+partidos enteros casi sin tocar el balón (SC-002b).
+
+**Independent Test**: con la función de pesos del receptor, los cuatro ejemplos de abajo dan la preferencia indicada;
+en una serie, el mejor regateador de Core supera a algún defensor en más partidos.
+
+**Acceptance Scenarios** (4-3-3, EI de 83 de media y ED de 87 o 90):
+
+1. **Given** líneas de pase claras al EI y al ED (87), **When** el portador elige receptor, **Then** prioriza al ED.
+2. **Given** un pasador con (visión + pase)/2 ≤ 80, línea clara al EI y el ED (87) defendido, **When** elige,
+   **Then** prioriza al EI.
+3. **Given** un pasador con (visión + pase)/2 > 80, línea clara al EI y el ED (87) defendido, **When** elige,
+   **Then** se la da al EI el 60 % de las veces y al ED el 40 %.
+4. **Given** un pasador con (visión + pase)/2 > 80, línea clara al EI y el ED (90) defendido, **When** elige,
+   **Then** prioriza al ED (más de 5 puntos de media sobre el EI); si el pase sale, su éxito depende también del
+   desmarque del ED contra el marcaje de quien le defiende.
+
+---
+
+### User Story 8 - Juego por las bandas (Priority: P2) — añadidos, tanda 1b
+
+Como participante, quiero una táctica «Juego por las bandas» para que mi equipo avance por fuera y mis laterales,
+carrileros y extremos reciban más el balón.
+
+**Why this priority**: da a los equipos con buenos jugadores de banda una forma de jugar propia, al nivel de
+Contraataque o Juego combinativo.
+
+**Independent Test**: el mismo equipo con «Juego por las bandas» frente a «Equilibrado» da más toques a laterales y
+extremos y centra más.
+
+**Acceptance Scenarios**:
+
+1. **Given** un equipo con «Juego por las bandas», **When** avanza tras un pase, **Then** el balón va más a menudo a
+   una banda que con «Equilibrado».
+2. **Given** ese equipo, **When** el portador elige receptor, **Then** laterales, carrileros y extremos pesan más.
+3. **Given** el panel de táctica, **When** la persona elige el estilo con balón, **Then** aparece «Juego por las bandas»
+   junto a los demás, compatible con Juego vertical.
+
+---
+
+### User Story 9 - Todos al área a balón parado (Priority: P1) — añadidos, tanda 1b
+
+Como participante, quiero que en los córners y en las faltas laterales suban al área casi todos mis jugadores, los
+cabeceadores los primeros, y que en la última jugada del partido, si voy perdiendo de uno, suba hasta el portero.
+
+**Why this priority**: sin esto, Cabeceador en un central no da goles (SC-003) y el balón parado no se parece al
+fútbol real.
+
+**Independent Test**: en un córner, los objetivos del equipo que ataca ponen a todos menos dos en el área o sus
+inmediaciones, con los Cabeceador entre ellos; en el último minuto del descuento perdiendo de uno, también al portero.
+
+**Acceptance Scenarios**:
+
+1. **Given** un córner a favor, **When** se colocan los jugadores, **Then** se quedan atrás el defensa y el medio más
+   retrasados sin Cabeceador y suben todos los demás; los mejores por arriba ocupan los mejores sitios.
+2. **Given** dos centrales con Cabeceador, **When** se saca el córner, **Then** los dos están en el área y pueden ser
+   el rematador.
+3. **Given** el último minuto del descuento de la segunda parte (o de la prórroga) y el equipo perdiendo de uno,
+   **When** tiene un córner o una falta lateral, **Then** el portero sube y puede rematar; antes de ese minuto,
+   empatando o perdiendo de dos, no.
+5. **Given** un portero que subió y está a más de 30 m de su portería, **When** el rival tira en un contraataque,
+   **Then** el tiro es a puerta vacía (sin parada).
+4. **Given** el equipo que defiende, **When** el rival sube a todos, **Then** defiende el área con ocho jugadores.
+
+---
+
+### User Story 10 - Salir de su zona cuando la jugada lo pide (Priority: P2) — añadidos, tanda 1b
+
+Como participante, quiero que un defensa o un medio que se encuentra con terreno por delante y solo el portero
+enfrente lo encare como un delantero, y que mis medios lleguen a la frontal para tirar o recoger rechaces.
+
+**Why this priority**: en el fútbol real marcan también los que no son delanteros; hoy los medios centro no tiran
+nunca.
+
+**Independent Test**: en una serie, los defensas y medios marcan una parte creíble de los goles de su equipo.
+
+**Acceptance Scenarios**:
+
+1. **Given** un defensa que gana un rechace a 5 m de la línea de medio campo, en su campo, sin ningún rival de campo
+   por delante, **When** decide, **Then** juega el mano a mano: conduce hacia la portería y tira a distancia de
+   disparo.
+2. **Given** el balón en el último tercio rival, **When** se mueven los medios centro e interiores, **Then** llegan a
+   la frontal (unos 22 m de la portería), desde donde pueden tirar con la portería a la vista o recoger el rechace.
+
+---
+
 ### Edge Cases
 
 - **Defensor sin la stat del enfrentamiento**: usa 50 (FR-019). Ejemplo: un portero que tuviera que marcar a un
@@ -236,6 +359,10 @@ duelos que con uno de 70.
   del catálogo; una partida en curso no cambia a mitad de torneo.
 - **Partidos guardados con versiones anteriores del motor**: siguen reproduciéndose con su versión (la 8.0.0 no
   sustituye a la 7.0.0 en los partidos ya jugados).
+- **Juego por las bandas con parámetros sin el bloque `bandas`** (no ocurre en partidos nuevos): juega como Equilibrado.
+- **Portero que sube y pierde el balón**: vuelve a su sitio con el movimiento normal; si el rival tira mientras sigue a
+  más de 30 m de su portería, es a puerta vacía.
+- **Sin candidatos con línea clara**: no hay a quién comparar; los pesos del receptor quedan como sin estrella.
 
 ## Requirements *(mandatory)*
 
@@ -314,6 +441,31 @@ duelos que con uno de 70.
 - **FR-016**: El liderazgo del portero DEBE sumar a los defensas cercanos a él (los que están dentro de su área o en la
   zona propia), en sus duelos, un 2,5 % de su liderazgo en puntos (90 de liderazgo ⇒ +2,25).
 
+**Añadidos — tanda 1b (clarificaciones del 2026-11-14)**
+
+- **FR-025**: Al elegir receptor, el portador DEBE dar más peso a los compañeros con línea de pase clara cuanta más
+  media tengan (× 2 cada 10 puntos sobre 70). Un compañero marcado o sin línea clara solo se busca de más si el pasador
+  tiene (visión + pase)/2 > 80: si su media supera en más de 5 puntos a la de la mejor opción clara, pesa 1,5 veces lo
+  que ella; si no, se la juega en el 40 % de los casos frente al 60 % de esa opción. Con (visión + pase)/2 ≤ 80, el
+  marcado conserva su peso de hoy (los libres pesan más).
+- **FR-026**: En el éxito de un pase hacia un receptor marcado (rival de campo a 3 m o menos) DEBE contar su desmarque
+  contra el marcaje de ese rival: 0,003 de probabilidad por punto de diferencia. Es un anticipo del duelo de desmarque
+  de FR-011, que lo sustituirá en la tanda 2.
+- **FR-027**: DEBE existir el estilo con balón «Juego por las bandas», compatible con todas las demás opciones. Con él,
+  el balón va a una banda tras avanzar con 0,2 más de probabilidad, laterales, carrileros y extremos (LI, LD, CI, CD, EI
+  y ED) pesan × 1,5 como receptores y el peso del centro sube × 1,3.
+- **FR-028**: En un córner o una falta colgada al área, el equipo que ataca DEBE subir a todos sus jugadores de campo
+  menos el defensa y el medio más retrasados sin Cabeceador; los jugadores con Cabeceador suben siempre. Los mejores por
+  arriba (aéreo, más 10 con Cabeceador) ocupan los sitios más cercanos al punto de remate. En el último minuto del
+  descuento de la segunda parte o de la prórroga, perdiendo de uno, sube también el portero y puede ser el rematador;
+  si el rival tira con el portero a más de 30 m de su portería, no hay parada (puerta vacía). El equipo que defiende
+  protege el área con ocho jugadores.
+- **FR-029**: Los jugadores DEBEN poder salir de su zona cuando la jugada lo pide: el mano a mano (014/FR-004) empieza
+  ya 10 m dentro del campo propio para cualquier jugador con solo el portero por delante, y los medios centro e
+  interiores (MC, MII, MID) llegan a la frontal (unos 22 m de la portería) cuando el balón está en el último tercio.
+- **FR-030**: Los añadidos DEBEN colgar de bloques opcionales de la 8.0.0 (`estrella`, `bandas`, `subidaArea`,
+  `segundaLinea`; research R1): con la 7.0.0 el motor DEBE dar exactamente los mismos partidos.
+
 **Comunes**
 
 - **FR-017**: Lo que esta spec no cambia DEBE seguir como en la 7.0.0: los ajustes por zona, formación, táctica y
@@ -380,6 +532,10 @@ duelos que con uno de 70.
   un 10 % que con la 7.0.0.
 - **SC-010**: La simulación rápida y la 2D siguen dando exactamente el mismo partido con la misma semilla (001/SC-008),
   con las referencias regeneradas para la 8.0.0.
+- **SC-011**: En series de 1.000 partidos, el mismo equipo con «Juego por las bandas» da más toques (pases,
+  conducciones y regates) a sus laterales y extremos y centra más que con «Equilibrado», con diferencia significativa.
+- **SC-012**: En series de 1.000 partidos, los defensas y medios marcan entre el 15 % y el 40 % de los goles de su
+  equipo.
 
 ## Decisiones abiertas
 

@@ -15,6 +15,9 @@ si se cumple).
 | `015/SC-005` | `checks/motor015.ts` | sintética A/B: +15 de técnica | `controlesPerdidos / controlesPresion` ≥ 15 % menor |
 | `015/SC-006` | `checks/motor015.ts` | sintética A/B: central con 95 de liderazgo contra 70; portero con 95 contra 70 | `habilitaciones` ≥ 10 % menos; duelos ganados por los defensas cercanos al portero, mayores |
 
+| `015/SC-011` | `checks/motor015.ts` | sintética A/B: el mismo equipo con «Juego por las bandas» o «Equilibrado» | Más toques (pases, conducciones y regates) de LI, LD, EI y ED y más centros, los dos significativos |
+| `015/SC-012` | `checks/motor015.ts` | sintética | Defensas y medios marcan entre el 15 % y el 40 % de los goles de su equipo |
+
 - «Significativa» usa el mismo criterio que 003/SC-007 (`mayorSignificativo`).
 - Las series A/B usan `equipoSintetico` y `clonar`, como `pesoStats.ts`.
 

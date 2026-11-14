@@ -163,6 +163,9 @@ control con presión, y liderazgo) van en ficheros propios para probarlas sin mo
    - US1 (curvas y quite), US2 (frecuencia del regate) y US3 (Cabeceador y las seis cartas).
    - Se cierra con una serie completa: SC-001, SC-002, SC-003 y las pendientes que dependan de ellas. 002/SC-007a puede
      quedar por debajo de 150 (FR-020).
+1b. **Añadidos de la tanda 1** (clarificaciones del 2026-11-14):
+   - Bloques `estrella`, `bandas`, `subidaArea` y `segundaLinea`: US7 a US10 (FR-025 a FR-030).
+   - Se cierran con la serie de cierre de la tanda 1: SC-002b, SC-003, SC-011 y SC-012.
 2. **Tanda 2**:
    - `desmarque` y `controlPresion`: US4 y US5.
    - Se cierra con una serie completa: SC-004, SC-005 y 002/SC-007a ≥ 150.

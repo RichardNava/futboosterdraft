@@ -254,7 +254,7 @@ describe('parámetros de equilibrado 7.0.0 (spec 014, research R14)', () => {
 });
 
 describe('parámetros de equilibrado 8.0.0 (spec 015, research R1)', () => {
-  const BLOQUES = ['curvas', 'quite', 'aereo', 'desmarque', 'controlPresion', 'liderazgo'] as const;
+  const BLOQUES = ['curvas', 'quite', 'aereo', 'desmarque', 'controlPresion', 'liderazgo', 'estrella', 'bandas', 'subidaArea', 'segundaLinea'] as const;
 
   it('los partidos nuevos usan la 8.0.0 y la 7.0.0 sigue disponible', () => {
     expect(parametrosActuales().version).toBe('8.0.0');

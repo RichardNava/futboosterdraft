@@ -5,8 +5,9 @@
  * Santo), y los goles en propia puerta (despejes de centros y tiros desviados).
  */
 import type { ParametrosEquilibrado } from '@fbd/domain';
+import { porteroSube } from '../espacio/colocacion';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
-import { anguloTiro, distanciaPorteria, enAreaRival, metrosDeDecimas, zonaRemate } from '../espacio/campo';
+import { anguloTiro, decimasDeMetros, distanciaPorteria, enAreaRival, metrosDeDecimas, zonaRemate } from '../espacio/campo';
 import { aAbsoluta, aEquipo, CENTRO_Y, LARGO, type Punto } from '../espacio/geometria';
 import { sacadorDeCentro } from '../espacio/colocacion';
 import { anotar } from '../metricas';
@@ -176,7 +177,7 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
     },
     p,
   );
-  const arquero = portero(defensor);
+  const arquero = porteroBajoPalos(e, defensor);
   const autor = [{ rol: 'autor' as const, jugadorId: tirador.id }];
   const aPuerta = resolver(ctx.rng, puerta);
   if (tipo === 'cabeza' && bloqueador) anotarAereo(ctx, tirador, bloqueador, aPuerta);
@@ -308,6 +309,17 @@ export function corner(ctx: Contexto, atacante: EquipoEstado): void {
  * Balón colgado al área (córner o falta lateral): el lanzador centra (Guante en el pie repite),
  * el mejor rematador de cabeza disputa el balón al mejor defensor aéreo (Volador).
  */
+/**
+ * Portero que defiende el tiro. Con `subidaArea` (spec 015, añadidos, R14), si está a más de `porteriaVaciaM` de su
+ * portería (subió a rematar y no ha vuelto), nadie: portería vacía.
+ */
+export function porteroBajoPalos(e: Contexto['estado'], defensor: EquipoEstado): JugadorEnPartido | undefined {
+  const arquero = portero(defensor);
+  const vacia = e.parametros.subidaArea?.porteriaVaciaM;
+  const q = arquero && vacia !== undefined ? e.espacio.jugadores[arquero.id] : undefined;
+  return q && aEquipo(defensor.lado, q).x > decimasDeMetros(vacia!) ? undefined : arquero;
+}
+
 export function rematarBalonParado(
   ctx: Contexto,
   atacante: EquipoEstado,
@@ -343,7 +355,9 @@ export function rematarBalonParado(
         return (pa.x - puntoRemate.x) ** 2 + (pa.y - puntoRemate.y) ** 2 - ((pb.x - puntoRemate.x) ** 2 + (pb.y - puntoRemate.y) ** 2) || a.id - b.id;
       })
       .slice(0, n);
-  const rematadores = cercaDelRemate(atacante, enCampoAtk.filter((j) => j !== lanzador && j.casillaId !== 'POR'), tipo === 'corners' ? 5 : 4);
+  // Spec 015, añadidos (R14): el portero que ha subido en los últimos minutos también puede rematar.
+  const conPortero = porteroSube(e, atacante);
+  const rematadores = cercaDelRemate(atacante, enCampoAtk.filter((j) => j !== lanzador && (conPortero || j.casillaId !== 'POR')), tipo === 'corners' ? 5 : 4);
   const rematador = [...rematadores].sort(
     (a, b) =>
       atributo(e, atacante, b, 'aereo') + (tiene(b, 'Cabeceador') ? 10 : 0) + (tiene(b, 'Rematador') ? 6 : 0) - (atributo(e, atacante, a, 'aereo') + (tiene(a, 'Cabeceador') ? 10 : 0) + (tiene(a, 'Rematador') ? 6 : 0)) || a.id - b.id,

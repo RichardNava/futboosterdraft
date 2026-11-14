@@ -179,6 +179,36 @@ export interface ParametrosEquilibrado {
   controlPresion?: { base: number; m: number };
   /** Spec 015 (R9): liderazgo del defensa (línea) y del portero (defensas cercanos). */
   liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number };
+  /**
+   * Spec 015, añadidos (R12): buscar a la estrella. Con línea de pase clara, el receptor pesa `2^((media − 70)/escalaMedia)`.
+   * Si el mejor está marcado, un pasador con (visión + pase)/2 > `umbralVisionPase` se la juega: con más de
+   * `diferenciaArriesgar` puntos de media sobre la mejor opción clara, el marcado pesa `prioridadEstrella` veces lo que
+   * ella; si no, `repartoArriesgado` frente a 1 − `repartoArriesgado`. `pendienteDesmarque`: probabilidad del pase por
+   * punto de desmarque del receptor sobre el marcaje de quien le marca (a `lineaClaraM` o menos).
+   */
+  estrella?: {
+    umbralVisionPase: number;
+    escalaMedia: number;
+    diferenciaArriesgar: number;
+    repartoArriesgado: number;
+    prioridadEstrella: number;
+    lineaClaraM: number;
+    pendienteDesmarque: number;
+  };
+  /** Spec 015, añadidos (R13): táctica «Juego por las bandas». Sin el bloque, el estilo juega como el equilibrado. */
+  bandas?: { probabilidadBanda: number; receptorBanda: number; centro: number };
+  /**
+   * Spec 015, añadidos (R14): a balón parado colgado al área suben todos menos `retaguardiaDEF` defensas y
+   * `retaguardiaMED` medios sin Cabeceador; el rival defiende con `defensoresArea` en el área. El portero sube solo en la
+   * última jugada (los últimos `ultimaJugadaS` segundos del descuento de la segunda parte o de la prórroga) si su equipo
+   * pierde de uno; si aún hay contraataque y está a más de `porteriaVaciaM` de su portería, se tira a puerta vacía.
+   */
+  subidaArea?: { retaguardiaDEF: number; retaguardiaMED: number; defensoresArea: number; ultimaJugadaS: number; porteriaVaciaM: number };
+  /**
+   * Spec 015, añadidos (R15): fuera de su zona. Los medios centro llegan a la frontal (`xInterior`, décimas del equipo)
+   * y el mano a mano empieza ya `desdeCampoPropioM` metros dentro del campo propio.
+   */
+  segundaLinea?: { xInterior: number; desdeCampoPropioM: number };
   lesiones: {
     probabilidadPorEntrada: number;
     /** Reducción relativa de la probabilidad de lesión con Robusto. */
@@ -602,6 +632,10 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
   curvas: { regate: { base: -0.32, m: 1.1 }, conduccion: { base: 0.25, m: 1.15 }, pase_corto: { base: 1.57, m: 1.27 } },
   quite: { DEF: 1.0, MED_MD: 0.9, MED: 0.85, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 },
   aereo: { bonusCabeceador: 0.15, seleccionCabeceador: 10 },
+  estrella: { umbralVisionPase: 80, escalaMedia: 10, diferenciaArriesgar: 5, repartoArriesgado: 0.4, prioridadEstrella: 1.5, lineaClaraM: 3, pendienteDesmarque: 0.003 },
+  bandas: { probabilidadBanda: 0.2, receptorBanda: 1.5, centro: 1.3 },
+  subidaArea: { retaguardiaDEF: 1, retaguardiaMED: 1, defensoresArea: 8, ultimaJugadaS: 60, porteriaVaciaM: 30 },
+  segundaLinea: { xInterior: 7900, desdeCampoPropioM: 10 },
   // Recalibrados por FR-021 (T043): con el regate siempre ofrecido sube el penalti, y el quite cambia el peso del defecto.
   disciplina: { ...PARAMETROS_V7.disciplina, factorFaltaArea: 0.34 },
   defectos: { ...PARAMETROS_V7.defectos!, malDefensor: 0.5 },

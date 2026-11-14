@@ -43,12 +43,23 @@ const CODIGO_LINEA = { defensa: LINEA_DEFENSA, medio: LINEA_MEDIO, ataque: LINEA
 const por = (v: number, milesimas: number) => dividir(v * milesimas, 1000);
 const mil = (f: number) => Math.round(f * 1000);
 
-type PapelLlegada = 'extremo' | 'mediapunta';
+type PapelLlegada = 'extremo' | 'mediapunta' | 'interior';
+
+const posicionDe = (equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]) =>
+  j.posicion ?? (j.casillaId ? FORMACIONES[equipo.formacion].casillas.find((c) => c.id === j.casillaId)?.posicionesAdmitidas[0] : undefined);
 
 /** Papel en la llegada al área (H11), por la posición en la que juega: extremos (ED, EI) y mediapunta (MCO). */
-export function papelLlegada(equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): PapelLlegada | null {
-  const pos = j.posicion ?? (j.casillaId ? FORMACIONES[equipo.formacion].casillas.find((c) => c.id === j.casillaId)?.posicionesAdmitidas[0] : undefined);
+export function papelLlegada(equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): Exclude<PapelLlegada, 'interior'> | null {
+  const pos = posicionDe(equipo, j);
   return pos === 'ED' || pos === 'EI' ? 'extremo' : pos === 'MCO' ? 'mediapunta' : null;
+}
+
+/** Spec 015, añadidos (R15): con `segundaLinea`, los medios centro e interiores (MC, MII, MID) llegan a la frontal. */
+function papelSegundaLinea(estado: EstadoMotor, equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): PapelLlegada | null {
+  const papel = papelLlegada(equipo, j);
+  if (papel || !estado.parametros.segundaLinea) return papel;
+  const pos = posicionDe(equipo, j);
+  return pos === 'MC' || pos === 'MII' || pos === 'MID' ? 'interior' : null;
 }
 
 /**
@@ -110,7 +121,7 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
     ids.push(j.id);
     anclasX.push(ax);
     anclasY.push(ay);
-    papeles.push(papelLlegada(equipo, j));
+    papeles.push(papelSegundaLinea(estado, equipo, j));
     intensidades.push(intensidadLlegada(estado, j));
     xs.push(x);
     ys.push(y);
@@ -178,6 +189,7 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
     accion !== null && (accion.tipo === 'conduccion' || accion.tipo === 'regate') && equipo.jugadores.some((j) => j.id === accion.deId);
   const llegada = conBalon && (bx >= ULTIMO_TERCIO || (progresando && bx >= p.llegadaAlArea.xProgresion)) ? p.llegadaAlArea : null;
   const ladoBalon = by - CENTRO_Y;
+  const xInterior = estado.parametros.segundaLinea?.xInterior;
   for (let i = 0; i < ids.length; i++) {
     let x = xs[i]!;
     let yi = ys[i]!;
@@ -195,6 +207,9 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
       } else if (extremo || papeles[i] === 'mediapunta') {
         // El extremo del lado del balón (sin cerrarse) y el mediapunta llegan a la frontal.
         x = Math.max(x, x + por(llegada.xMediapunta - x, f));
+      } else if (papeles[i] === 'interior' && xInterior !== undefined) {
+        // Spec 015, añadidos (R15): el medio centro sale de su zona y llega a la frontal lejana (tiro y rechace).
+        x = Math.max(x, x + por(xInterior - x, f));
       }
     }
     // Todo dentro del campo.

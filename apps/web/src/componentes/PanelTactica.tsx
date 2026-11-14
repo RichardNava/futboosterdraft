@@ -63,6 +63,7 @@ export function PanelTactica({ tactica, onCambiar }: Props) {
             ['equilibrado', 'Equilibrado'],
             ['contraataque', 'Contraataque'],
             ['combinativo', 'Juego combinativo'],
+            ['bandas', 'Juego por las bandas'],
           ] as const
         ).map(([valor, texto]) => (
           <label key={valor} className="opcion">

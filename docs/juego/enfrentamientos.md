@@ -202,6 +202,15 @@ Un jugador con 90 de pase pasa unas 3,4 veces más (en peso) que uno con 70; uno
   - Con visión alta casi nunca busca a un compañero en fuera de juego.
 - **Quién defiende**: el radio de intervención (quite y anticipación) decide qué rival disputa cada duelo (§4,
   Regate).
+- **Con la 8.0.0 (spec 015, añadidos)**:
+  - **Buscar a la estrella**: con línea de pase clara (ningún rival a 3 m de la línea y el receptor libre), el peso
+    del compañero se multiplica por 2^((media − 70) / 10). Si el mejor está marcado, solo se la juega un pasador con
+    (visión + pase) / 2 > 80: le da prioridad (×1,5 sobre la mejor opción clara) si tiene más de 5 puntos de media
+    sobre ella; si no, se la da el 40 % de las veces.
+  - **Desmarque en el pase**: hacia un receptor marcado, el pase suma 0,003 por punto de su desmarque sobre el marcaje
+    del rival que le marca.
+  - **Juego por las bandas**: laterales, carrileros y extremos pesan ×1,5 como receptores, el balón va más por fuera
+    (+0,2) y se centra más (×1,3).
 
 ### 5.3 Movimiento y mano a mano
 
@@ -210,6 +219,14 @@ Un jugador con 90 de pase pasa unas 3,4 veces más (en peso) que uno con 70; uno
   suelto depende de esto.
 - **Mano a mano**: la distancia de disparo es 14 m + 3 m por cada 10 puntos de remate sobre 70; con visión alta se
   equivoca menos de decisión ([`acciones/manoAMano.ts`](../../packages/engine/src/acciones/manoAMano.ts)).
+- **Con la 8.0.0 (spec 015, añadidos)**:
+  - El mano a mano empieza ya 10 m dentro del campo propio: cualquier jugador con solo el portero por delante lo
+    encara.
+  - Los medios centro e interiores llegan a la frontal (unos 22 m) con el balón en el último tercio.
+  - A balón parado al área suben todos menos el defensa y el medio más retrasados sin Cabeceador; los mejores por
+    arriba ocupan los mejores sitios, y en el último minuto del descuento, perdiendo de uno, sube el portero (si el
+    rival contraataca y tira con él a más de 30 m de su portería, es a puerta vacía)
+    ([`espacio/colocacion.ts`](../../packages/engine/src/espacio/colocacion.ts)).
 
 ## 6. Lo que es colectivo
 

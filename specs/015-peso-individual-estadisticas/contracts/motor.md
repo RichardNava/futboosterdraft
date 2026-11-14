@@ -27,9 +27,26 @@ controlPresion?: { base: number; m: number };
 
 liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number };
 //  8.0.0 (tanda 3): { 12, 0.5, 0.5, 0.025, 1 }
+
+// Añadidos (tanda 1b; research R12 a R15)
+estrella?: { umbralVisionPase: number; escalaMedia: number; diferenciaArriesgar: number; repartoArriesgado: number;
+             prioridadEstrella: number; lineaClaraM: number; pendienteDesmarque: number };
+//  8.0.0: { 80, 10, 5, 0.4, 1.5, 3, 0.003 }
+
+bandas?: { probabilidadBanda: number; receptorBanda: number; centro: number };
+//  8.0.0: { 0.2, 1.5, 1.3 }
+
+subidaArea?: { retaguardiaDEF: number; retaguardiaMED: number; defensoresArea: number; ultimaJugadaS: number; porteriaVaciaM: number };
+//  8.0.0: { 1, 1, 8, 60, 30 }
+
+segundaLinea?: { xInterior: number; desdeCampoPropioM: number };
+//  8.0.0: { 7900, 10 }   (xInterior en décimas del equipo que ataca: unos 22 m de la portería)
 ```
 
-Además, `decision.factores.regate` pasa a { k: 0,7; min: 0,6; max: 3,0 } en la 8.0.0 (research R4).
+Además, `decision.factores.regate` pasa a { k: 0,7; min: 0,6; max: 3,0 } en la 8.0.0 (research R4), y la
+recalibración de la tanda 1 deja `disciplina.factorFaltaArea` en 0,34 y `defectos.malDefensor` en 0,5.
+
+El dominio añade el estilo con balón `bandas` a `ESTILOS_CON_BALON` (y al esquema de `@fbd/protocol`).
 
 ## M2. Invariantes
 
@@ -69,6 +86,21 @@ Además, `decision.factores.regate` pasa a { k: 0,7; min: 0,6; max: 3,0 } en la 
 11. **Determinismo**: misma semilla y versión ⇒ mismo partido en la rápida y en la 2D (SC-010, `huella-015.json`).
 12. **Coste** (FR-018): ningún duelo nuevo ordena listas ni reserva memoria por llamada. Localizar al marcador es un
     recorrido por los rivales.
+
+13. **Estrella** (FR-025, `pesosEstrella`): con los cuatro ejemplos de US7 (EI 83 claro; ED 87 o 90 claro o marcado):
+    ED claro > EI; pasador ≤ 80 → EI > ED y el ED conserva su peso; pasador > 80 y diferencia ≤ 5 → ED / (EI + ED) =
+    0,4; pasador > 80 y diferencia > 5 → ED = 1,5 × EI. Sin el bloque, los pesos de la 7.0.0.
+14. **Desmarque en el pase** (FR-026, `ajusteDesmarque`): con un rival de campo a ≤ `lineaClaraM` del receptor,
+    `pendienteDesmarque × (desmarque − marcaje)`; sin él o sin el bloque, 0.
+15. **Bandas** (FR-027): con `bandas`, `probabilidadBanda` + 0,2, centro × 1,3 y LI, LD, CI, CD, EI y ED × 1,5 en
+    `pesosReceptor`; el resto, igual. Sin el bloque, como Equilibrado.
+16. **Subida** (FR-028, `objetivosBalonParado`): en un córner con `subidaArea`, 4-4-2 y el ED de lanzador, 7 arriba y
+    2 atrás; los Cabeceador, arriba. Con 4 minutos de descuento, el portero sube con 0-1 en el 90+3:20 y no en el
+    90+1:40, ni con 0-0 ni con 0-2; en la prórroga, igual. `porteroBajoPalos` no devuelve portero si está a más de
+    `porteriaVaciaM` de su portería (con la 7.0.0, siempre lo devuelve). Sin el bloque, 5 arriba como en la 7.0.0.
+17. **Segunda línea** (FR-029): con `segundaLinea`, `esManoAMano` es cierto 5 m dentro del campo propio con solo el
+    portero por delante (falso sin el bloque); el objetivo del MC con el balón en el último tercio está al menos 5 m
+    más adelantado que sin el bloque.
 
 ## M3. Métricas
 

@@ -3343,14 +3343,14 @@
       ],
       "historia": "Mediocentro de La Masia que fue titular con el Barcelona con 17 años, antes de una lesión de rodilla. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
-        "velocidad": 66,
-        "tecnica": 76,
-        "pase": 76,
-        "posicionamiento": 76,
+        "velocidad": 78,
+        "tecnica": 78,
+        "pase": 77,
+        "posicionamiento": 79,
         "vision": 72,
-        "disparo": 64
+        "disparo": 75
       },
-      "media": 71.67,
+      "media": 76.50,
       "virtudes": [
         "PrimerToque"
       ],
@@ -3498,14 +3498,14 @@
       ],
       "historia": "Mediapunta zurdo canario formado en la UD Las Palmas, donde debutó en Primera. En 2025 dio el salto al Villarreal. Destaca por su regate en espacios cortos.",
       "stats": {
-        "velocidad": 76,
-        "tecnica": 86,
-        "pase": 78,
-        "posicionamiento": 68,
+        "velocidad": 74,
+        "tecnica": 82,
+        "pase": 70,
+        "posicionamiento": 64,
         "vision": 80,
-        "disparo": 72
+        "disparo": 70
       },
-      "media": 76.67,
+      "media": 73.33,
       "virtudes": [
         "Filigranas"
       ],
@@ -3813,13 +3813,13 @@
       "historia": "Mediapunta zurdo surgido del Fenerbahçe y fichado por el Real Madrid en 2023, con el que ganó la Liga de Campeones y LaLiga. Brilló con Turquía en la Eurocopa 2024. Técnica y golpeo de élite.",
       "stats": {
         "velocidad": 72,
-        "tecnica": 90,
+        "tecnica": 91,
         "pase": 86,
         "posicionamiento": 74,
-        "vision": 88,
-        "disparo": 84
+        "vision": 89,
+        "disparo": 86
       },
-      "media": 82.33,
+      "media": 83,
       "virtudes": [
         "Filigranas",
         "LanzadorFaltas"
@@ -3846,12 +3846,12 @@
       "stats": {
         "velocidad": 76,
         "tecnica": 84,
-        "pase": 80,
-        "posicionamiento": 80,
-        "vision": 78,
+        "pase": 85,
+        "posicionamiento": 84,
+        "vision": 81,
         "disparo": 70
       },
-      "media": 78,
+      "media": 80,
       "virtudes": [
         "Elegante",
         "PrimerToque"
@@ -3878,13 +3878,13 @@
       "historia": "Centrocampista que debutó con 16 años en el Rennes y fichó por el Real Madrid en 2021, con el que ha ganado dos Ligas de Campeones. Subcampeón del Mundo con Francia en 2022. Puede jugar también de lateral izquierdo.",
       "stats": {
         "velocidad": 84,
-        "tecnica": 86,
+        "tecnica": 82,
         "pase": 80,
-        "posicionamiento": 82,
-        "vision": 78,
+        "posicionamiento": 80,
+        "vision": 76,
         "disparo": 70
       },
-      "media": 80,
+      "media": 78.67,
       "virtudes": [
         "RecuperadorTrasPerdida",
         "Versatil"
@@ -4135,14 +4135,14 @@
       ],
       "historia": "Mediocentro formado en el Olympique de Marsella, donde también jugó de central. En el Aston Villa es el ancla del centro del campo. Una lesión de rodilla le hizo perder casi un año.",
       "stats": {
-        "velocidad": 72,
-        "tecnica": 81,
-        "pase": 83,
+        "velocidad": 73,
+        "tecnica": 80,
+        "pase": 80,
         "posicionamiento": 88,
         "vision": 78,
-        "disparo": 68
+        "disparo": 65
       },
-      "media": 78.33,
+      "media": 77.33,
       "virtudes": [
         "RecuperadorTrasPerdida",
         "Elegante"
@@ -4302,12 +4302,12 @@
       "stats": {
         "velocidad": 79,
         "tecnica": 86,
-        "pase": 83,
+        "pase": 84,
         "posicionamiento": 74,
-        "vision": 84,
-        "disparo": 82
+        "vision": 85,
+        "disparo": 83
       },
-      "media": 81.33,
+      "media": 81.83,
       "virtudes": [
         "JugadorEntreLineas",
         "LanzadorFaltas"
@@ -4333,13 +4333,13 @@
       "historia": "Mediapunta formado en el Braga y el Valencia que pasó por el Wolverhampton. Explotó en el Famalicão y en el Sporting de Portugal, con el que fue máximo goleador de la liga en 2021 y ganó varios títulos.",
       "stats": {
         "velocidad": 78,
-        "tecnica": 84,
+        "tecnica": 80,
         "pase": 80,
         "posicionamiento": 72,
-        "vision": 82,
-        "disparo": 82
+        "vision": 80,
+        "disparo": 80
       },
-      "media": 79.67,
+      "media": 78.33,
       "virtudes": [
         "Llegador",
         "JugadorEntreLineas"
@@ -4595,14 +4595,14 @@
       ],
       "historia": "Mediocentro ecuatoriano surgido de Independiente del Valle que pasó por el Beerschot y el Brighton. En el Chelsea, que pagó por él un traspaso récord, ganó la Conference League y el Mundial de Clubes de 2025.",
       "stats": {
-        "velocidad": 82,
+        "velocidad": 84,
         "tecnica": 84,
-        "pase": 84,
-        "posicionamiento": 91,
-        "vision": 80,
+        "pase": 85,
+        "posicionamiento": 92,
+        "vision": 82,
         "disparo": 77
       },
-      "media": 83,
+      "media": 84,
       "virtudes": [
         "RecuperadorTrasPerdida",
         "Incansable",
@@ -4663,9 +4663,9 @@
       ],
       "historia": "Centrocampista de River Plate que pasó por el Benfica y fichó por el Chelsea en un traspaso récord. Mejor jugador joven del Mundial 2022, que ganó con Argentina junto a la Copa América 2024. Ganó la Conference League y el Mundial de Clubes en 2025.",
       "stats": {
-        "velocidad": 74,
+        "velocidad": 76,
         "tecnica": 86,
-        "pase": 88,
+        "pase": 86,
         "posicionamiento": 84,
         "vision": 86,
         "disparo": 80
@@ -4761,14 +4761,14 @@
       ],
       "historia": "Centrocampista de la cantera del Benfica que fichó por el PSG en 2024. Fue clave en la Liga de Campeones de 2025. Campeón de la Liga de Naciones con Portugal.",
       "stats": {
-        "velocidad": 80,
-        "tecnica": 87,
+        "velocidad": 83,
+        "tecnica": 88,
         "pase": 85,
-        "posicionamiento": 86,
-        "vision": 84,
-        "disparo": 76
+        "posicionamiento": 87,
+        "vision": 85,
+        "disparo": 79
       },
-      "media": 83,
+      "media": 84.5,
       "virtudes": [
         "Incansable",
         "RecuperadorTrasPerdida",
@@ -4898,23 +4898,24 @@
       ],
       "historia": "Centrocampista canario que salió de la UD Las Palmas y se convirtió en el cerebro del Barcelona. Golden Boy y Trofeo Kopa en 2021. Campeón de la Eurocopa 2024 con España; las lesiones le han frenado a menudo.",
       "stats": {
-        "velocidad": 76,
-        "tecnica": 94,
-        "pase": 93,
-        "posicionamiento": 86,
+        "velocidad": 79,
+        "tecnica": 95,
+        "pase": 94,
+        "posicionamiento": 88,
         "vision": 94,
-        "disparo": 80
+        "disparo": 82
       },
-      "media": 87.17,
+      "media": 88.67,
       "virtudes": [
         "PrimerToque",
         "JugadorEntreLineas",
-        "Elegante"
+        "Elegante",
+        "Aura"
       ],
       "defectos": [
         "Fragil"
       ],
-      "nivel": "Legendario",
+      "nivel": "GOAT",
       "imagen": "/cartas/retratos-propios/pedri.webp",
       "imagen_bg": "/cartas/fondos/jugadores/154.webp"
     },
@@ -4999,11 +5000,11 @@
       ],
       "historia": "Mediocentro defensivo que salió del Burdeos y triunfó en el Mónaco. En el Real Madrid ganó la Liga de Campeones de 2024. Subcampeón del Mundo con Francia en 2022.",
       "stats": {
-        "velocidad": 77,
+        "velocidad": 79,
         "tecnica": 83,
-        "pase": 85,
-        "posicionamiento": 90,
-        "vision": 82,
+        "pase": 83,
+        "posicionamiento": 92,
+        "vision": 80,
         "disparo": 81
       },
       "media": 83,
@@ -5037,11 +5038,11 @@
         "velocidad": 88,
         "tecnica": 85,
         "pase": 84,
-        "posicionamiento": 85,
+        "posicionamiento": 86,
         "vision": 82,
-        "disparo": 88
+        "disparo": 89
       },
-      "media": 85.33,
+      "media": 85.67,
       "virtudes": [
         "BoxToBox",
         "Incansable",
@@ -5069,14 +5070,14 @@
       ],
       "historia": "Centrocampista de la cantera del Oporto que pasó por el Wolverhampton. En el PSG es el director de juego del equipo campeón de la Liga de Campeones de 2025. Campeón de la Liga de Naciones con Portugal.",
       "stats": {
-        "velocidad": 76,
+        "velocidad": 79,
         "tecnica": 92,
         "pase": 92,
-        "posicionamiento": 88,
+        "posicionamiento": 90,
         "vision": 90,
         "disparo": 80
       },
-      "media": 86.33,
+      "media": 87.16,
       "virtudes": [
         "PrimerToque",
         "Todocampista",
@@ -5134,8 +5135,8 @@
       ],
       "historia": "Mediocentro de la Real Sociedad, campeón de la Copa del Rey de 2020. Campeón de la Eurocopa 2024 con España. En 2025 fichó por el Arsenal.",
       "stats": {
-        "velocidad": 72,
-        "tecnica": 85,
+        "velocidad": 75,
+        "tecnica": 82,
         "pase": 87,
         "posicionamiento": 90,
         "vision": 84,
@@ -5200,11 +5201,11 @@
       "historia": "Centrocampista que debutó con 16 años en el Birmingham y ganó la Copa de Alemania con el Dortmund. En su primer año en el Real Madrid ganó LaLiga y la Liga de Campeones de 2024, además del Trofeo Kopa. Finalista de la Eurocopa con Inglaterra.",
       "stats": {
         "velocidad": 86,
-        "tecnica": 91,
-        "pase": 87,
-        "posicionamiento": 89,
-        "vision": 88,
-        "disparo": 93
+        "tecnica": 92,
+        "pase": 89,
+        "posicionamiento": 84,
+        "vision": 89,
+        "disparo": 94
       },
       "media": 89,
       "virtudes": [
@@ -5268,14 +5269,14 @@
       ],
       "historia": "Delantero nacido en Nueva York y formado en el Arsenal. Explotó cedido en el Reims y fichó por el Mónaco en 2023. Eligió a Estados Unidos, con el que ganó la Liga de Naciones de la Concacaf.",
       "stats": {
-        "velocidad": 86,
-        "regate": 76,
+        "velocidad": 84,
+        "regate": 75,
         "finalizacion": 80,
         "desmarque": 80,
-        "creatividad": 66,
-        "agresividad": 72
+        "creatividad": 63,
+        "agresividad": 70
       },
-      "media": 76.67,
+      "media": 75.33,
       "virtudes": [
         "Rematador"
       ],
@@ -5358,14 +5359,14 @@
       ],
       "historia": "Delantero centro alto formado en la cantera del Levante. Debutó en Primera con el club granota tras el ascenso de 2025. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
-        "velocidad": 72,
+        "velocidad": 76,
         "regate": 66,
-        "finalizacion": 76,
-        "desmarque": 74,
+        "finalizacion": 85,
+        "desmarque": 78,
         "creatividad": 60,
-        "agresividad": 80
+        "agresividad": 82
       },
-      "media": 71.33,
+      "media": 74.5,
       "virtudes": [
         "Cabeceador"
       ],
@@ -5421,13 +5422,13 @@
       "historia": "Extremo nacido en Bélgica y formado en el Benfica que fichó por el Chelsea en 2023. Tras su cesión al Olympique de Lyon se asentó en el Estrasburgo. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
         "velocidad": 88,
-        "regate": 82,
-        "finalizacion": 68,
-        "desmarque": 72,
-        "creatividad": 72,
-        "agresividad": 64
+        "regate": 80,
+        "finalizacion": 64,
+        "desmarque": 70,
+        "creatividad": 70,
+        "agresividad": 62
       },
-      "media": 74.33,
+      "media": 72.33,
       "virtudes": [
         "Desbordante"
       ],
@@ -5451,13 +5452,13 @@
       "historia": "Extremo de la cantera del Arsenal que debutó en la Premier League con 15 años. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
         "velocidad": 82,
-        "regate": 84,
+        "regate": 82,
         "finalizacion": 66,
         "desmarque": 66,
-        "creatividad": 76,
+        "creatividad": 73,
         "agresividad": 58
       },
-      "media": 72,
+      "media": 71.16,
       "virtudes": [
         "Filigranas"
       ],
@@ -5512,12 +5513,12 @@
       "stats": {
         "velocidad": 86,
         "regate": 80,
-        "finalizacion": 80,
+        "finalizacion": 83,
         "desmarque": 74,
-        "creatividad": 66,
-        "agresividad": 72
+        "creatividad": 69,
+        "agresividad": 74
       },
-      "media": 76.33,
+      "media": 77.67,
       "virtudes": [
         "Potente"
       ],
@@ -5542,13 +5543,13 @@
       "historia": "Delantero camerunés formado en el Villarreal que despuntó cedido en el Cádiz. En 2025 explotó en LaLiga y debutó con Camerún. Se le valora por su mejor rendimiento hasta hoy.",
       "stats": {
         "velocidad": 84,
-        "regate": 78,
-        "finalizacion": 74,
-        "desmarque": 74,
-        "creatividad": 68,
+        "regate": 72,
+        "finalizacion": 73,
+        "desmarque": 73,
+        "creatividad": 65,
         "agresividad": 72
       },
-      "media": 75,
+      "media": 73.16,
       "virtudes": [
         "Potente"
       ],
@@ -9486,13 +9487,13 @@
       "historia": "Zurdo argentino formado en el Instituto de Córdoba que pasó por el Palermo. En la Juventus ganó cinco Serie A y fue el mejor jugador de la liga en 2020. En 2022 fichó por la Roma y fue campeón del Mundo con Argentina.",
       "stats": {
         "velocidad": 84,
-        "tecnica": 94,
+        "tecnica": 90,
         "pase": 88,
-        "posicionamiento": 82,
-        "vision": 92,
-        "disparo": 92
+        "posicionamiento": 78,
+        "vision": 90,
+        "disparo": 91
       },
-      "media": 88.67,
+      "media": 86.83,
       "virtudes": [
         "LanzadorFaltas",
         "Filigranas",
@@ -9501,7 +9502,7 @@
       "defectos": [
         "Fragil"
       ],
-      "nivel": "GOAT",
+      "nivel": "Legendario",
       "imagen": "/cartas/retratos-propios/paulo-dybala.webp",
       "imagen_bg": "/cartas/fondos/jugadores/297.webp"
     },

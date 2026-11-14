@@ -1,6 +1,6 @@
 /**
- * Comprobaciones del motor 8.0.0 (spec 015; contracts/balance.md §B1): frecuencia del regateador (SC-002) y Cabeceador
- * en los centrales (SC-003). Series A/B sintéticas con las mismas semillas: solo cambia lo que se mide.
+ * Comprobaciones del motor 8.0.0 (spec 015; contracts/balance.md §B1): frecuencia del regateador (SC-002), Cabeceador
+ * en los centrales (SC-003), Juego por las bandas (SC-011) y segunda línea (SC-012). Series A/B sintéticas con las mismas semillas: solo cambia lo que se mide.
  */
 import { FORMACIONES, type Jugador, type Virtud } from '@fbd/domain';
 import type { EquipoPartido, MetricasJugador } from '@fbd/engine';
@@ -95,10 +95,49 @@ export function comprobarSC003(n: number, semilla: number): Comprobacion {
   };
 }
 
+/** SC-011: con Juego por las bandas, laterales y extremos tocan más el balón y el equipo centra más, significativo. */
+export function comprobarSC011(n: number, semilla: number): Comprobacion {
+  const base = equipoSintetico({ semilla: 'motor015' });
+  const rival = clonar(base, 'b');
+  const bandas = { ...base, tactica: { ...base.tactica, estiloConBalon: 'bandas' as const } };
+  const ids = base.titulares.filter((t) => ['LI', 'LD', 'EI', 'ED'].includes(t.casillaId)).map((t) => t.jugador.id);
+  const campos = ['pases', 'conducciones', 'regates'] as const;
+  const sin = serie(base, rival, n, semilla, 'motor015-bandas', { metricas: true });
+  const con = serie(bandas, rival, n, semilla, 'motor015-bandas', { metricas: true });
+  const toques = [porPartido(sin, ids, campos), porPartido(con, ids, campos)] as const;
+  const centros = [sin.estadisticasA.map((x) => x.centros), con.estadisticasA.map((x) => x.centros)] as const;
+  const okToques = mayorSignificativo(toques[1], toques[0]);
+  const okCentros = mayorSignificativo(centros[1], centros[0]);
+  return {
+    id: '015/SC-011',
+    descripcion: 'Juego por las bandas: laterales y extremos tocan más el balón y el equipo centra más, con diferencia significativa',
+    ok: okToques && okCentros,
+    detalle: `toques de laterales y extremos ${media(toques[0]).toFixed(1)} → ${media(toques[1]).toFixed(1)}${okToques ? '' : ' (no significativo)'} · centros ${media(centros[0]).toFixed(2)} → ${media(centros[1]).toFixed(2)}${okCentros ? '' : ' (no significativo)'}`,
+  };
+}
+
+/** SC-012: los que no son delanteros (defensas y medios) marcan entre el 15 % y el 40 % de los goles del equipo. */
+export function comprobarSC012(n: number, semilla: number): Comprobacion {
+  const base = equipoSintetico({ semilla: 'motor015' });
+  const r = serie(base, clonar(base, 'b'), n, semilla, 'motor015-segunda', { metricas: true });
+  const noDelanteros = base.titulares.filter((t) => t.jugador.demarcacion === 'DEF' || t.jugador.demarcacion === 'MED').map((t) => t.jugador.id);
+  const suyos = porPartido(r, noDelanteros, ['goles']).reduce((a, b) => a + b, 0);
+  const todos = r.metricasA.reduce((t, m) => t + Object.values(m).reduce((u, x) => u + (x?.goles ?? 0), 0), 0);
+  const cuota = todos > 0 ? suyos / todos : 0;
+  return {
+    id: '015/SC-012',
+    descripcion: 'Segunda línea: defensas y medios marcan entre el 15 % y el 40 % de los goles de su equipo',
+    ok: cuota >= 0.15 && cuota <= 0.4,
+    detalle: `${(100 * cuota).toFixed(1)} % de ${todos} goles (${suyos} de defensas y medios)`,
+  };
+}
+
 export function gruposMotor015(): GrupoComprobaciones[] {
   return [
     { ids: ['015/SC-002a'], serie: 'sintetica', ejecutar: (o) => [comprobarSC002a(o.n, o.seed)] },
     { ids: ['015/SC-002b'], serie: 'sintetica', ejecutar: (o) => [comprobarSC002b(o.n, o.seed)] },
     { ids: ['015/SC-003'], serie: 'sintetica', ejecutar: (o) => [comprobarSC003(o.n, o.seed)] },
+    { ids: ['015/SC-011'], serie: 'sintetica', ejecutar: (o) => [comprobarSC011(o.n, o.seed)] },
+    { ids: ['015/SC-012'], serie: 'sintetica', ejecutar: (o) => [comprobarSC012(o.n, o.seed)] },
   ];
 }

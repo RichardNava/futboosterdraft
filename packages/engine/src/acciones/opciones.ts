@@ -174,7 +174,7 @@ export function pesosConEspacio(
   carril: number,
   en: Entorno | null = entorno(estado, atacante, portador),
 ): [TipoAccion, number][] {
-  const pesos = pesosAcciones(atacante, zona, carril);
+  const pesos = pesosAcciones(atacante, zona, carril, estado.parametros);
   if (!en) return pesos;
   const p = estado.parametros;
   const f = p.decision.factores;

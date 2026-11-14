@@ -95,6 +95,16 @@ cambian.
 decision.factores.regate }`. La forma y los valores de partida están en [contracts/motor.md](contracts/motor.md).
 Registro: `REGISTRO['8.0.0']`; `parametrosActuales()` → V8; `VERSION_MAYOR_SOPORTADA` = 7 (research R1).
 
+Añadidos (tanda 1b): `estrella`, `bandas`, `subidaArea` y `segundaLinea` (contracts/motor.md M1; research R12 a
+R15), además de `disciplina.factorFaltaArea` 0,34 y `defectos.malDefensor` 0,5 (recalibrados en la tanda 1).
+
 Transiciones por tanda: la tanda 1 fija `duelos`, `quite`, `aereo` y `factores.regate`; la tanda 2 añade `desmarque`
 y `controlPresion`; la tanda 3, `liderazgo`. Entre tandas, `PARAMETROS_V8` se edita en el sitio, porque no se publica
 ninguna versión intermedia.
+
+## 9. Táctica (`@fbd/domain`, `equipo/tactica.ts`)
+
+`ESTILOS_CON_BALON` añade `bandas` («Juego por las bandas», FR-027): `['equilibrado', 'contraataque', 'combinativo',
+'bandas']`. Es compatible con todas las demás opciones (también con Juego vertical). La forma de `Tactica` no cambia,
+así que las tácticas guardadas siguen siendo válidas; el esquema de `@fbd/protocol` (`http/alineacion.ts`) y el panel
+de táctica de la web añaden el valor.

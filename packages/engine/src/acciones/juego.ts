@@ -287,7 +287,7 @@ function planearPase(ctx: Contexto, accion: TipoPase, atacante: EquipoEstado, de
     const nuevaZona = Math.min(5, zona + (avanza ? 1 : 0));
     // Llegar al área con un pase corto exige superar una línea más.
     destino = nuevaZona === 5 && !ctx.rng.probabilidad(Math.round(p.acciones.llegadaArea * 1000)) ? 4 : nuevaZona;
-    nuevoCarril = avanza ? (ctx.rng.probabilidad(Math.round(probabilidadBanda(atacante) * 1000)) ? (ctx.rng.probabilidad(500) ? 0 : 2) : 1) : carril;
+    nuevoCarril = avanza ? (ctx.rng.probabilidad(Math.round(probabilidadBanda(atacante, p) * 1000)) ? (ctx.rng.probabilidad(500) ? 0 : 2) : 1) : carril;
   } else {
     destino = Math.min(5, zona + (zona >= 3 ? 2 : 1));
   }
@@ -359,6 +359,29 @@ function decidirManoAMano(ctx: Contexto, atacante: EquipoEstado, portador: Jugad
   // Matador no se equivoca en un mano a mano: siempre acaba tirando.
   if (!tiene(portador, 'Matador') && ctx.rng.probabilidad(Math.round(error * 1000))) return null;
   return decisionManoAMano(e, atacante, portador, en);
+}
+
+/**
+ * Desmarque del receptor en el éxito del pase (spec 015, añadidos, R12; FR-026): si un rival le marca (a `lineaClaraM` o
+ * menos), `pendienteDesmarque` por punto de su desmarque sobre el marcaje de ese rival. Sin el bloque `estrella`, 0.
+ */
+export function ajusteDesmarque(e: EstadoMotor, atacante: EquipoEstado, defensor: EquipoEstado, receptor: JugadorEnPartido): number {
+  const est = e.parametros.estrella;
+  const q = est ? e.espacio.jugadores[receptor.id] : undefined;
+  if (!est || !q) return 0;
+  const radio = decimasDeMetros(est.lineaClaraM);
+  let marcador: JugadorEnPartido | undefined;
+  let mejor = radio * radio;
+  for (const r of defensor.jugadores) {
+    const pr = r.enCampo && !esPortero(r) ? e.espacio.jugadores[r.id] : undefined;
+    if (!pr) continue;
+    const d = dist2(q.x, q.y, pr.x, pr.y);
+    if (d <= mejor) {
+      mejor = d;
+      marcador = r;
+    }
+  }
+  return marcador ? est.pendienteDesmarque * (atributo(e, atacante, receptor, 'desmarque') - atributo(e, defensor, marcador, 'marcaje')) : 0;
 }
 
 /** Un paso de juego: una acción de quien lleva el balón. */
@@ -465,6 +488,7 @@ export function paso(ctx: Contexto): void {
   const qInterceptor = accion === 'centro' && rivalDuelo ? e.espacio.jugadores[rivalDuelo.id] : undefined;
   const aereoEnArea = qInterceptor !== undefined && enAreaRival(aEquipo(atacante.lado, qInterceptor));
 
+  const desmarque = plan ? ajusteDesmarque(e, atacante, defensor, plan.receptor) : 0;
   const exito = probabilidad(
     {
       base,
@@ -472,7 +496,7 @@ export function paso(ctx: Contexto): void {
       atacante: (accion === 'conduccion' ? (atributo(e, atacante, portador, 'velocidad') + atributo(e, atacante, portador, 'fisico')) / 2 : atributo(e, atacante, portador, atA)) + aj.atacante,
       defensor: valorDefensor + aj.defensor,
       desplazamiento: desplazamientoAtaque(e, atacante, defensor, accion, zona),
-      ajuste: aj.probabilidad + ajusteVirtudesAccion(ctx, accion, portador, zona, carril, rivalDuelo) + (aereoEnArea ? ajusteCabeceador(p, undefined, rivalDuelo) : 0),
+      ajuste: aj.probabilidad + ajusteVirtudesAccion(ctx, accion, portador, zona, carril, rivalDuelo) + (aereoEnArea ? ajusteCabeceador(p, undefined, rivalDuelo) : 0) + desmarque,
       ...(curva ? { pendiente: curva.m } : esPase(accion) ? { pendiente: p.acciones.pendientePase } : {}),
     },
     p,

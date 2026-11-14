@@ -33,6 +33,16 @@ Resultado esperado al cerrar:
 - 002/SC-007a puede quedar por debajo de 150 (FR-020).
 - Ninguna otra comprobación nueva en rojo.
 
+### Añadidos (tanda 1b)
+
+```bash
+pnpm --filter @fbd/engine exec vitest run tests/anadidos015.test.ts
+pnpm balance --n 1000 --solo 015/SC-002b,015/SC-003,015/SC-011,015/SC-012
+```
+
+En la aplicación: el panel de táctica ofrece «Juego por las bandas»; en un córner a favor suben casi todos (dos se
+quedan atrás) y en el último minuto del descuento, perdiendo de uno, sube el portero.
+
 ## 3. Tanda 2: desmarque y control con presión
 
 ```sh

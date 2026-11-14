@@ -270,6 +270,56 @@ línea por igual y la spec lo quiere local, por cercanía.
     nuevos; §5.1; §7 casi vacía; §8 resuelta.
   - `virtudes-y-defectos.md` con `pnpm --filter @fbd/domain rasgos:doc` tras cambiar los textos de los tres rasgos.
 
+## R12. Buscar a la estrella y desmarque en el pase (FR-025, FR-026; añadidos)
+
+**Decision**: en `pesosReceptor`, cada candidato del rango elegido lleva su media efectiva (`mediaEfectiva`, con la
+penalización por posición) y si su línea es clara (sin rival de campo a ≤ 3 m del segmento y sin rival encima). La
+función pura `pesosEstrella` aplica las reglas de US7 sobre los pesos de siempre: × 2^((media − 70)/10) a los claros;
+con (visión + pase)/2 > 80, el marcado pesa 1,5 × la mejor opción clara si la supera en más de 5 puntos de media, o
+0,4/0,6 de ella si no. En el duelo del pase, `ajusteDesmarque` suma 0,003 por punto de desmarque sobre el marcaje del
+rival más cercano al receptor (≤ 3 m).
+
+**Rationale**: SC-002b no se alcanza subiendo el factor de regate (k = 1,3 y máximo 5 solo llegan al 81 %): el
+extremo toca poco el balón. Las reglas son las de la persona, con las probabilidades de sus ejemplos (60/40, más de 5
+puntos). El desmarque se anticipa como ajuste porque la persona lo pidió en el éxito del pase; la tanda 2 (R7) lo
+sustituye por el duelo completo.
+
+**Alternatives considered**: comparar la media con la del portador (el de más media del equipo nunca pasaría); un
+factor lineal de media (87 frente a 83 apenas se distingue).
+
+## R13. Juego por las bandas (FR-027; añadidos)
+
+**Decision**: un estilo con balón más (`bandas`), no una casilla aparte: es la lista que la persona nombró
+(Contraataque, Juego combinativo). Engancha en tres sitios que ya existían: `probabilidadBanda` (+ 0,2), el peso del
+centro en `pesosAcciones` (× 1,3) y el receptor por posición en `pesosReceptor` (LI, LD, CI, CD, EI y ED × 1,5).
+
+**Rationale**: la forma de `Tactica` no cambia (sin migración de las tácticas guardadas) y cuelga del bloque `bandas`.
+
+## R14. Subida al área a balón parado (FR-028; añadidos)
+
+**Decision**: con `subidaArea`, `objetivosBalonParado` coloca en córners y faltas al área a todos menos el defensa y el
+medio más retrasados sin Cabeceador, ordenados por `aereo` (+10 con Cabeceador) en once puntos: los cinco de remate de
+siempre, la frontal y las inmediaciones. `porteroSube` (perdiendo de uno en los últimos 60 s del descuento de la
+segunda parte o de la prórroga: la última jugada) añade al portero (−15 de prioridad) y le deja ser rematador en
+`rematarBalonParado`. Si aun así hay un tiro rival con el portero a más de 30 m de su portería, `porteroBajoPalos` lo
+resuelve sin portero (puerta vacía). El rival defiende con ocho.
+
+**Rationale**: sin centrales en el área, Cabeceador solo pesaba en defensa (0,322 → 0,324 goles de cabeza). La espera
+de colocación ya existente (`reponer`) da tiempo a que lleguen.
+
+La persona puso al portero como ejemplo; la regla de la última jugada y la puerta vacía son su corrección (2026-11-14).
+30 m deja fuera las salidas normales del portero (su objetivo no pasa de unos 17 m).
+
+## R15. Segunda línea: salir de su zona (FR-029; añadidos)
+
+**Decision**: dos cambios mínimos con `segundaLinea`: el mano a mano (014, R2) empieza 10 m dentro del campo propio, y
+la llegada al área (H11) incluye a MC, MII y MID, que suben a la frontal (x = 7.900, unos 22 m) con la intensidad de su
+posicionamiento. `papelLlegada` no cambia (lo usan el receptor y el pase; la 7.0.0 seguiría igual).
+
+**Rationale**: una sonda de 200 partidos con el 4-4-2 sintético daba 0,00 goles y 0,06 tiros por partido a los medios
+centro, y 0 mano a mano a los defensas. Con la llegada a 7.430 (27 m) los medios seguían sin tirar; a 7.900 marcan 0,07
+goles y tiran 0,32 veces por partido.
+
 ## Referencia 7.0.0 (T001)
 
 Medida el 2026-11-14 con `pnpm --filter @fbd/balance umbral-motor` (20 partidos, `equipoSintetico`), antes de tocar
@@ -306,3 +356,42 @@ cumplirse. Siguen en rojo:
 Quedan como pendientes en CI hasta la calibración. `umbral-motor` (T045): 97,1 / 101,1 / 92,9 ms, por debajo de T001 y
 del máximo de 120 ms (la referencia de T001 se midió con la máquina más cargada; la comparación relativa no muestra
 subida).
+
+### Añadidos (tanda 1b): sonda de 200 partidos
+
+Con los cuatro añadidos y la recalibración anterior: 015/SC-003 ✔ (goles de cabeza del equipo 0,310 → 0,425; aéreos
+ganados 0,55 → 2,97), 015/SC-002b 84,0 % (antes 72 %), defensas 0,34 goles por partido (antes 0,20), medios 0,07
+(antes 0,00), 3,0 goles por partido y 136 pases completados (antes 145). Falta la serie de 1.000 de cierre.
+
+`defectos.malDefensor` es la parte de las acciones defensivas que el Mal defensor no cede a un compañero
+(`candidatoDefensivo`): bajarlo de 0,65 a 0,5 hace el defecto **más** grave. Con 0,65 en la 8.0.0 el defecto se notaba
+menos que en la 7.0.0 (0,627 frente a ≈ 0,5); la hipótesis, sin verificar, es que con el regate siempre ofrecido hay
+más mano a mano defensivos en los que no hay a quién ceder la acción.
+
+### Añadidos (tanda 1b): comprobaciones con 1.000 partidos
+
+| Comprobación | Resultado |
+|---|---|
+| 015/SC-002b | ✘ Messi (ED) 75,0 % de partidos con ≥ 1 regate o conducción ganados (antes 69,4 %); media 1,70 |
+| 015/SC-003 | ✔ aéreos ganados de los centrales 0,59 → 3,06; goles de cabeza del equipo 0,295 → 0,400 |
+| 015/SC-011 | ✔ toques de laterales y extremos 24,9 → 27,0; centros 4,78 → 5,80 |
+| 015/SC-012 | ✘ defensas y medios, 1,4 % de los goles del equipo (25 de 1.733) |
+
+SC-012 depende mucho de las stats del equipo sintético: con la semilla de la sonda (`sondaLineas`) los defensas
+marcaban 0,34 goles por partido (casi la mitad de cabeza) y los medios 0,07; con la de la comprobación (`motor015`),
+casi nada. Queda pendiente de calibrar (`segundaLinea`, `subidaArea`) junto con SC-002b, en la serie de cierre (T091).
+
+### Añadidos (tanda 1b): serie completa de 1.000 partidos (portero solo en la última jugada)
+
+`pnpm balance --n 1000` con la 8.0.0 y los cuatro añadidos: 60/70 (antes 56/68), 7.656 s.
+
+- Vuelven a cumplirse: 003/SC-006 y SC-004 (salen de `--pendientes` en CI).
+- Sin cambios frente a la serie de `--solo`: 015/SC-002b 74,9 % (media 1,70), 015/SC-003 ✔ (0,58 → 3,06 aéreos;
+  0,295 → 0,399 goles de cabeza), 015/SC-011 ✔, 015/SC-012 1,4 %.
+- Siguen pendientes: 003/SC-002 21,4 %, 002/SC-007a 140,5 pases (antes 144,8), 002/SC-007b 26,3 % (antes 27,2 %),
+  002/SC-008 +9,6 %, 014/SC-008-velocidad +7,7 %.
+- **Fallan y bloquean**:
+  - 014/SC-008-defensa: acierto +6,8 % (25,0 % → 26,7 %; objetivo +10 %); intentos +22,3 % ✔. Nueva regresión.
+  - 003/SC-007, Matador: goles del jugador 0,575 → 0,635 (+10 %), sin diferencia significativa. El CI ya lo
+    describe como una comprobación de un solo jugador que falla por ruido; con más goles repartidos entre
+    defensas y Cabeceador, al delantero le quedan menos.
