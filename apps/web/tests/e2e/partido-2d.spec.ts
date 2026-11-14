@@ -61,7 +61,10 @@ test('partido 2D en directo: velocidades, pausas anunciadas, cambio y estadísti
   await expect(page.getByTestId('resultado-partido')).toBeVisible({ timeout: 180_000 });
   await expect(page.locator('.campo-2d canvas')).toHaveCount(0);
   const tabla = page.getByRole('table');
-  for (const fila of ['Pases intentados', 'Pases completados', 'Precisión de pase', 'Centros', 'Tiros']) await expect(tabla).toContainText(fila);
+  for (const fila of ['Pases intentados', 'Pases completados', 'Precisión de pase', 'Centros', 'Tiros', 'Fueras de juego']) await expect(tabla).toContainText(fila);
+  // Spec 014 (FR-013): cada fuera de juego pitado sale en «Lo que ha pasado» con el jugador.
+  const fueras = Number((await tabla.locator('tr', { hasText: 'Fueras de juego' }).textContent())?.match(/\d+/g)?.reduce((a, b) => a + Number(b), 0) ?? 0);
+  if (fueras > 0) await expect(page.locator('.resumen-eventos')).toContainText(/Fuera de juego de /);
   const marcador = (await page.getByTestId('resultado-marcador').textContent()) ?? '';
   const goles = [...marcador.matchAll(/(\d+) – (\d+)/g)].flatMap((m) => [Number(m[1]), Number(m[2])]).reduce((a, b) => a + b, 0);
   if (goles > 0) expect(await page.evaluate(() => (window as unknown as { golVisto: boolean }).golVisto)).toBe(true);

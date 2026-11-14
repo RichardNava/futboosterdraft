@@ -16,6 +16,7 @@ function idCarta(texto: string): number {
   return id;
 }
 
+/** Rutas de la colección y los fragmentos (solo registrados). */
 export function registrarRutasColeccion(app: FastifyInstance, auth: Auth, economia: ServicioEconomia): void {
   const { soloRegistrados } = crearHooksSesion(auth);
 

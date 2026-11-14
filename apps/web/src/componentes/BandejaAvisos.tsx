@@ -34,7 +34,7 @@ const ICONO_AVISO: Record<Aviso['tipo'], NombreIcono> = {
 };
 
 /** Avisos del equipo de la partida que se está viendo (spec 012, FR-027): no se guardan, salen de la vista de equipo. */
-export interface AvisosDelEquipo {
+interface AvisosDelEquipo {
   partidaId: string;
   avisos: AvisoEquipo[];
   nombre: (id: number) => string;

@@ -12,9 +12,11 @@ export type FilaParticipante = typeof participantes.$inferSelect;
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
+/** Partidas y sus participantes. */
 export class RepoPartidas {
   constructor(private readonly db: BaseDatos) {}
 
+  /** Crea una partida con su anfitrión. */
   async crear(
     datos: {
       anfitrionId: string;
@@ -83,18 +85,22 @@ export class RepoPartidas {
     await ejecutor.update(participantes).set(valor).where(and(eq(participantes.id, participanteId), isNull(columna)));
   }
 
+  /** Partida por id. */
   async obtener(id: string, ejecutor: Ejecutor = this.db): Promise<FilaPartida | undefined> {
     return (await ejecutor.select().from(partidas).where(eq(partidas.id, id)).limit(1))[0];
   }
 
+  /** Partidas en alguno de los estados, de la más antigua a la más reciente. */
   async listarPorEstado(estados: EstadoPartida[]): Promise<FilaPartida[]> {
     return this.db.select().from(partidas).where(inArray(partidas.estado, estados)).orderBy(asc(partidas.creadaEn));
   }
 
+  /** Cambia el estado de una partida. */
   async actualizarEstado(id: string, estado: EstadoPartida, ejecutor: Ejecutor = this.db): Promise<void> {
     await ejecutor.update(partidas).set({ estado, actualizadaEn: new Date() }).where(eq(partidas.id, id));
   }
 
+  /** Participantes de una partida. */
   async participantes(partidaId: string, ejecutor: Ejecutor = this.db): Promise<FilaParticipante[]> {
     return ejecutor
       .select()
@@ -104,6 +110,7 @@ export class RepoPartidas {
       .orderBy(asc(participantes.unidoEn), asc(participantes.tipo), asc(participantes.id));
   }
 
+  /** Añade un participante humano. */
   async anadirHumano(
     partidaId: string,
     usuarioId: string,
@@ -144,6 +151,7 @@ export class RepoPartidas {
     }
   }
 
+  /** Añade un participante NPC. */
   async anadirNPC(
     partidaId: string,
     nivelNPC: NivelNPC,
@@ -157,6 +165,7 @@ export class RepoPartidas {
     return fila!;
   }
 
+  /** Asigna mesa y asiento del draft a cada participante. */
   async asignarAsientos(asientos: { participanteId: string; mesaIndice: number; asiento: number }[], ejecutor: Ejecutor = this.db) {
     for (const a of asientos) {
       await ejecutor
@@ -171,6 +180,7 @@ export class RepoPartidas {
     await this.db.update(participantes).set({ controladoPorNPC: true, nivelNPC: 'intermedio' }).where(eq(participantes.id, participanteId));
   }
 
+  /** Participante del usuario en la partida, si juega en ella. */
   async participanteDeUsuario(partidaId: string, usuarioId: string): Promise<FilaParticipante | undefined> {
     return (
       await this.db
@@ -254,6 +264,7 @@ export class RepoPartidas {
     return { filas: filas.slice(0, limite), hayMas: filas.length > limite };
   }
 
+  /** Partidas en curso en las que juega el usuario. */
   async partidasActivasDeUsuario(usuarioId: string): Promise<FilaPartida[]> {
     const filas = await this.db
       .select({ partida: partidas })

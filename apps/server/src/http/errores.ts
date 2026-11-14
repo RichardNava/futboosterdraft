@@ -27,6 +27,7 @@ export const errores = {
     new ErrorApi(422, codigo, mensaje, detalles),
 };
 
+/** Cuerpo del formato de error común `{ error: { codigo, mensaje, detalles } }`. */
 export function cuerpoError(codigo: string, mensaje: string, detalles: Record<string, unknown> = {}) {
   return { error: { codigo, mensaje, detalles } };
 }

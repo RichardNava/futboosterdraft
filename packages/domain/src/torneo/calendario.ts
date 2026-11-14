@@ -18,6 +18,7 @@ export interface JornadaCalendario {
 
 const DESCANSO = '__descanso__';
 
+/** Calendario de liga a ida y vuelta (método del círculo y vuelta en espejo) con el orden sorteado; con N impar, uno descansa. */
 export function calendarioLiga(participantes: readonly string[], semilla: Semilla): JornadaCalendario[] {
   const orden = new Rng(semilla).barajar(participantes);
   if (orden.length % 2 === 1) orden.push(DESCANSO);

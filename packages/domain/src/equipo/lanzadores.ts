@@ -29,6 +29,7 @@ const STAT_DE: Readonly<Record<TipoLanzamiento, Readonly<Record<Demarcacion, str
   corners: { DEL: 'creatividad', MED: 'pase', DEF: 'tecnica', POR: 'distribucion' },
 };
 
+/** Valor de un jugador como lanzador de penaltis, faltas o córners (el stat que corresponde a su demarcación). */
 export function valorLanzamiento(j: Pick<Jugador, 'demarcacion' | 'stats'>, tipo: TipoLanzamiento): number {
   const valor = (j.stats as unknown as Record<string, number>)[STAT_DE[tipo][j.demarcacion]] ?? 0;
   // Un portero lanza muy por debajo de su stat de distribución.
@@ -47,6 +48,7 @@ export function candidatos(jugadores: readonly Jugador[], tipo: TipoLanzamiento)
   });
 }
 
+/** Lanzadores propuestos para un once: los mejores para cada lanzamiento y el orden de la tanda. */
 export function proponerLanzadores(titulares: readonly Jugador[]): Lanzadores {
   if (titulares.length === 0) return { penaltis: 0, faltas: 0, corners: 0, tanda: [] };
   const penaltis = candidatos(titulares, 'penaltis');

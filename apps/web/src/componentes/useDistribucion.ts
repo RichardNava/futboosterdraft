@@ -5,9 +5,10 @@
  */
 import { useEffect, useState } from 'react';
 
-export const CLAVE_DISTRIBUCION = 'fbd:formacion-distribucion';
+const CLAVE_DISTRIBUCION = 'fbd:formacion-distribucion';
 const PANTALLA_ANCHA = '(min-width: 1024px)';
 
+/** Orientación del campo (horizontal o vertical) elegida por la persona o la que cabe en la pantalla. */
 export function useDistribucion() {
   const [elegida, setElegida] = useState<'horizontal' | 'vertical'>(() => {
     try {

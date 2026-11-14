@@ -2162,10 +2162,10 @@ html {
 .rareza-premium {
   position: relative;
   overflow: hidden;
-  border: 1px solid #ffe39a;
+  border: 1px solid var(--color-oro-claro);
   border-radius: var(--radio);
   background: var(--degradado-oro);
-  color: #1a1200;
+  color: var(--color-oro-texto);
   box-shadow: var(--sombra-oro);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2175,14 +2175,14 @@ html {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 70%) 50%, transparent 70%);
+  background: var(--destello-boton);
   transform: translateX(-120%);
   animation: destello-premium 3s ease-in-out infinite;
   pointer-events: none;
 }
 
 .rareza-premium:hover {
-  color: #1a1200;
+  color: var(--color-oro-texto);
   box-shadow: var(--resplandor-oro);
   filter: brightness(1.06);
 }
@@ -2229,7 +2229,7 @@ html {
   background:
     linear-gradient(90deg, transparent var(--relleno), var(--color-apagado) var(--relleno)),
     linear-gradient(90deg, var(--color-accion), var(--tramos-fin));
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 50%);
+  box-shadow: var(--sombra-pista);
 }
 
 .selector-tramos input[type='range']::-moz-range-track {
@@ -2238,7 +2238,7 @@ html {
   background:
     linear-gradient(90deg, transparent var(--relleno), var(--color-apagado) var(--relleno)),
     linear-gradient(90deg, var(--color-accion), var(--tramos-fin));
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 50%);
+  box-shadow: var(--sombra-pista);
 }
 
 .selector-tramos input[type='range']::-webkit-slider-thumb {
@@ -2248,7 +2248,7 @@ html {
   border: 3px solid var(--color-lienzo-hondo);
   border-radius: 50%;
   background: var(--color-accion);
-  box-shadow: 0 0 0 2px var(--color-accion), 0 0 18px var(--color-accion);
+  box-shadow: var(--resplandor-pulgar);
   transition: transform 120ms ease-out;
   appearance: none;
 }
@@ -2260,7 +2260,7 @@ html {
   border: 3px solid var(--color-lienzo-hondo);
   border-radius: 50%;
   background: var(--color-accion);
-  box-shadow: 0 0 0 2px var(--color-accion), 0 0 18px var(--color-accion);
+  box-shadow: var(--resplandor-pulgar);
   transition: transform 120ms ease-out;
 }
 
@@ -4497,4 +4497,140 @@ html {
 
 .portada-escena {
   contain: layout;
+}
+
+/* Indicador global de navegación (spec 014, FR-027): solo si cambiar de pantalla tarda más de 2 s. */
+.indicador-navegacion {
+  position: fixed;
+  top: var(--barra-navegacion-alto);
+  inset-inline: 0;
+  z-index: 21;
+  height: 3px;
+  overflow: hidden;
+  background-color: var(--color-accion-tenue);
+}
+
+.indicador-navegacion::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  width: 30%;
+  background-color: var(--color-accion);
+  animation: indicador-navegacion 1.2s ease-in-out infinite;
+}
+
+@keyframes indicador-navegacion {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicador-navegacion::before {
+    width: 100%;
+    animation: none;
+  }
+}
+
+/*
+ * Indicador de energía en la chapa de «Gestionar equipo» (spec 014, contrato U1): porcentaje, cara y penalización en
+ * una columna pegada al retrato, encima del círculo de posición. Posición absoluta: la rejilla del campo no crece
+ * (Principio XI). Sin animación.
+ */
+.indicador-energia {
+  position: absolute;
+  top: calc(-1 * var(--espacio-3));
+  left: calc(50% + var(--ficha-retrato) / 2 - 2px);
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.indicador-energia-porcentaje {
+  color: var(--color-texto);
+  text-shadow: var(--sombra-texto-cartel);
+}
+
+.indicador-energia-penalizacion {
+  color: var(--color-error);
+}
+
+.cara-energia {
+  width: 18px;
+  height: 18px;
+}
+
+.cara-energia-fondo {
+  fill: var(--energia-color);
+  stroke: var(--color-lienzo-hondo);
+  stroke-width: 1;
+}
+
+.cara-energia-ojo {
+  fill: var(--color-lienzo-hondo);
+}
+
+.cara-energia-trazo {
+  fill: none;
+  stroke: var(--color-lienzo-hondo);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.energia-fresco {
+  --energia-color: var(--energia-fresco);
+}
+
+.energia-bien {
+  --energia-color: var(--energia-bien);
+}
+
+.energia-medio {
+  --energia-color: var(--energia-medio);
+}
+
+.energia-cansado {
+  --energia-color: var(--energia-cansado);
+}
+
+.energia-agotado {
+  --energia-color: var(--energia-agotado);
+}
+
+@media (max-width: 640px) {
+  /* En móvil la cara va superpuesta en la esquina del retrato. */
+  .indicador-energia {
+    top: calc(-1 * var(--espacio-2));
+    left: calc(50% + var(--ficha-retrato) / 2 - 10px);
+    font-size: 0.6rem;
+  }
+
+  .cara-energia {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.tabla-energia {
+  border-collapse: collapse;
+  margin-block: var(--espacio-3);
+}
+
+.tabla-energia th,
+.tabla-energia td {
+  padding: var(--espacio-1) var(--espacio-3);
+  text-align: left;
+}
+
+.tabla-energia .cara-energia {
+  width: 24px;
+  height: 24px;
 }

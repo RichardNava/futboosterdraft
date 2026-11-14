@@ -13,6 +13,7 @@ import { escudoDe } from './identidad';
 import { modalidadPreferida } from './preparacion';
 import { resumenSala } from './sala';
 
+/** Resumen de la partida para un usuario (estado, modo y su participante). */
 export function resumenPartida(c: ControladorPartida, usuarioId: string | undefined) {
   const p = c.partida;
   return {
@@ -33,6 +34,7 @@ export function resumenPartida(c: ControladorPartida, usuarioId: string | undefi
   };
 }
 
+/** Plantillas de todos los participantes, una vez terminado el draft. */
 export async function plantillasVisibles(c: ControladorPartida) {
   const { repoDraft } = c.servicios;
   const catalogo = c.catalogo;

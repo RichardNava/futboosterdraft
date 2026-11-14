@@ -30,6 +30,7 @@ import { revulsivoParaEntrar, umbralCansancioDe } from './rasgos';
 
 const iguales = (a: Tactica, b: Tactica) => JSON.stringify(a) === JSON.stringify(b);
 
+/** Decisiones de un NPC en una pausa del partido: cambios por cansancio, Revulsivo y táctica según el marcador. */
 export function decidirEnPartido(
   nivel: NivelIA,
   estado: EstadoMotor,

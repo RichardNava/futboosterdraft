@@ -12,13 +12,14 @@ import { anonymous } from 'better-auth/plugins/anonymous';
 import type { BaseDatos } from '../persistencia/db';
 import { cuentas, sesiones, usuarios, verificaciones } from '../persistencia/esquema/index';
 
-export interface OpcionesAuth {
+interface OpcionesAuth {
   secreto: string;
   urlPublica: string;
   /** Al registrarse un invitado: pasa sus partidas al nuevo usuario antes de borrar el anónimo. */
   alVincularInvitado?: (invitadoId: string, nuevoUsuarioId: string) => Promise<void>;
 }
 
+/** Better Auth con correo y contraseña, invitados anónimos y sesiones en la base de datos. */
 export function crearAuth(db: BaseDatos, opciones: OpcionesAuth) {
   return betterAuth({
     secret: opciones.secreto,
@@ -60,6 +61,7 @@ export interface UsuarioSesion {
   email: string | null;
 }
 
+/** Usuario de la sesión a partir del de Better Auth (registrado o invitado). */
 export function aUsuarioSesion(user: { id: string; name: string; email: string; isAnonymous?: boolean | null }): UsuarioSesion {
   const invitado = user.isAnonymous === true;
   return { id: user.id, tipo: invitado ? 'invitado' : 'registrado', apodo: user.name, email: invitado ? null : user.email };

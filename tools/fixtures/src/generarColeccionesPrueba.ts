@@ -40,6 +40,7 @@ const ordenNivel = (n: Nivel) => NIVELES.indexOf(n);
 const mejores = (cartas: readonly Jugador[], n: number) =>
   [...cartas].sort((a, b) => ordenNivel(b.nivel) - ordenNivel(a.nivel) || b.media - a.media || a.id - b.id).slice(0, n).map((c) => c.id);
 
+/** Colecciones de prueba reproducibles a partir de Core (spec 006). */
 export function generarColeccionesPrueba(core: readonly Jugador[], semilla = 'futboosterdraft-colecciones-006') {
   const rng = new Rng(semillaDesdeTexto(semilla));
   const nombresUsados = new Set(core.map((c) => `${c.nombre} ${c.apellidos}`));

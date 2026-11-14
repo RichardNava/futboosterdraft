@@ -14,6 +14,7 @@ import { coleccionesCartas, jugadores } from '../esquema/index';
 /** Id de la colección básica. */
 export const COLECCION_CORE = 'core';
 
+/** Catálogo de cartas en memoria, con sus colecciones y vistas por versión del catálogo. */
 export class Catalogo {
   private readonly vistas = new Map<number, Catalogo>();
   private vistaAlternativa: Catalogo | null = null;
@@ -50,6 +51,7 @@ export class Catalogo {
     return this.vistaAlternativa;
   }
 
+  /** Lee el catálogo de la base de datos. */
   static async cargar(db: BaseDatos): Promise<Catalogo> {
     const filas = await db.select().from(jugadores);
     const pertenencia = new Map<number, string[]>();
@@ -64,6 +66,7 @@ export class Catalogo {
     return new Catalogo(new Map(lista.map((j) => [j.id, j])), pertenencia ?? new Map(lista.map((j) => [j.id, [COLECCION_CORE]])));
   }
 
+  /** Carta por id; lanza si no existe. */
   jugador(id: number): Jugador {
     const j = this.porId.get(id);
     if (!j) throw new Error(`Jugador desconocido: ${id}`);
@@ -80,6 +83,7 @@ export class Catalogo {
     return partida.poolCartas ? partida.poolCartas.map((id) => this.jugador(id)) : this.pool(partida.colecciones);
   }
 
+  /** Colecciones a las que pertenece una carta. */
   coleccionesDe(jugadorId: number): readonly string[] {
     return this.pertenencia.get(jugadorId) ?? [];
   }
@@ -94,6 +98,7 @@ export class Catalogo {
     return [...this.porId.keys()].filter((id) => this.coleccionesDe(id).includes(coleccionId));
   }
 
+  /** Media de cada carta por id. */
   medias(ids: readonly number[]): Record<number, number> {
     return Object.fromEntries(ids.map((id) => [id, this.jugador(id).media]));
   }
@@ -119,6 +124,7 @@ export class Catalogo {
     };
   }
 
+  /** Número de cartas. */
   get tamano(): number {
     return this.porId.size;
   }

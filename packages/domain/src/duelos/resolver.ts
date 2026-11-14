@@ -33,6 +33,7 @@ function validar(once: OnceDuelos, ids: readonly string[]): void {
   if (new Set(jugadores).size !== jugadores.length) throw new ErrorDuelos('JUGADOR_REPETIDO', `El once de ${once.participanteId} repite jugador`);
 }
 
+/** Resuelve un cruce del modo Duelo entre dos onces, casilla a casilla (spec 005, research R9). */
 export function resolverCruce(
   local: OnceDuelos,
   visitante: OnceDuelos,

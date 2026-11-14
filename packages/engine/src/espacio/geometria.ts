@@ -27,10 +27,11 @@ export interface Punto {
 export function aAbsoluta(lado: Lado, p: Punto): Punto {
   return lado === 'local' ? { x: p.x, y: p.y } : { x: LARGO - p.x, y: ANCHO - p.y };
 }
-export const aEquipo = aAbsoluta;
+/** De coordenadas absolutas a las de un equipo (la misma simetría que `aAbsoluta`). */
+export const aEquipo = (lado: Lado, p: Punto): Punto => aAbsoluta(lado, p);
 
 /** Límites de una celda de la rejilla lógica, en coordenadas del equipo con el balón. */
-export function celda(zona: number, carril: number): { x0: number; x1: number; y0: number; y1: number } {
+function celda(zona: number, carril: number): { x0: number; x1: number; y0: number; y1: number } {
   const z = acotar(zona, 0, 5);
   const c = acotar(carril, 0, 2);
   return {
@@ -62,7 +63,7 @@ export function zonaCarrilDe(lado: Lado, p: Punto): { zona: number; carril: numb
   return { zona: acotar(Math.floor((q.x * 6) / LARGO), 0, 5), carril: acotar(Math.floor((q.y * 3) / ANCHO), 0, 2) };
 }
 
-export type Linea = 'porteria' | 'defensa' | 'medio' | 'ataque';
+type Linea = 'porteria' | 'defensa' | 'medio' | 'ataque';
 
 const LINEA_DE_POSICION: Readonly<Record<Posicion, Linea>> = {
   POR: 'porteria',
@@ -96,7 +97,7 @@ export function lineaDe(equipo: EquipoEstado, j: JugadorEnPartido): Linea {
 }
 
 /** Punto de la casilla de un jugador en su formación, en décimas y coordenadas del equipo. */
-export function puntoDeCasilla(equipo: EquipoEstado, casillaId: string | null): Punto {
+function puntoDeCasilla(equipo: EquipoEstado, casillaId: string | null): Punto {
   const casilla = casillaId ? FORMACIONES[equipo.formacion].casillas.find((c) => c.id === casillaId) : undefined;
   return casilla ? { x: casilla.zona.x * 10, y: casilla.zona.y * 10 } : { x: 4500, y: CENTRO_Y };
 }

@@ -4,16 +4,20 @@
  */
 
 export interface Reloj {
+  /** Instante actual en milisegundos. */
   ahora(): number;
   /** Ejecuta `fn` cuando el reloj alcance `instanteMs`. Devuelve una función para cancelar. */
   programar(instanteMs: number, fn: () => void): () => void;
 }
 
+/** Reloj del sistema. */
 export class RelojReal implements Reloj {
+  /** Instante actual en milisegundos. */
   ahora(): number {
     return Date.now();
   }
 
+  /** Ejecuta `fn` al llegar a `instanteMs`; devuelve la función para cancelarlo. */
   programar(instanteMs: number, fn: () => void): () => void {
     // setTimeout admite como máximo ~24,8 días: si el plazo es mayor, se rearma al llegar a ese máximo.
     const MAXIMO = 2_147_483_647;
@@ -43,10 +47,12 @@ export class RelojFalso implements Reloj {
     this.actual = inicioMs;
   }
 
+  /** Instante actual en milisegundos. */
   ahora(): number {
     return this.actual;
   }
 
+  /** Ejecuta `fn` al llegar a `instanteMs`; devuelve la función para cancelarlo. */
   programar(instanteMs: number, fn: () => void): () => void {
     const id = this.siguienteId++;
     this.pendientes.push({ id, instanteMs, fn });
@@ -60,6 +66,7 @@ export class RelojFalso implements Reloj {
     this.fijar(this.actual + ms);
   }
 
+  /** Avanza el reloj hasta el instante y ejecuta en orden lo programado hasta él. */
   fijar(instanteMs: number): void {
     for (;;) {
       const vencidos = this.pendientes
@@ -74,6 +81,7 @@ export class RelojFalso implements Reloj {
     this.actual = Math.max(this.actual, instanteMs);
   }
 
+  /** Tareas programadas aún sin ejecutar. */
   get numPendientes(): number {
     return this.pendientes.length;
   }

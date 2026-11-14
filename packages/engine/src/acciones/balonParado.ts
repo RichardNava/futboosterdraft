@@ -4,7 +4,8 @@
 import { lanzadorEfectivo, parametrosEfectivos, type ParametrosEquilibrado } from '@fbd/domain';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
 import { decimasDeMetros, distanciaPorteria, enAreaRival } from '../espacio/campo';
-import { aAbsoluta, aEquipo, CENTRO_Y, centroCelda, type Punto } from '../espacio/geometria';
+import { aAbsoluta, aEquipo, CENTRO_Y, zonaCarrilDe, type Punto } from '../espacio/geometria';
+import { anotar } from '../metricas';
 import { factorAmarilla, factorRoja, fairPlayer } from '../modificadores/defectos';
 import { tiene } from '../modificadores/virtudes';
 import { reponer } from './animaciones';
@@ -64,6 +65,7 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
   if (lanzadorBalon) reponer(ctx, 'falta', { ...e.espacio.balon }, lanzadorBalon.id);
 }
 
+/** Amarilla a un jugador; la segunda es roja (salvo Fair player, spec 005 FR-033). */
 export function amarilla(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido): void {
   const e = ctx.estado;
   j.amarillas++;
@@ -73,12 +75,14 @@ export function amarilla(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartid
   if (j.amarillas >= 2 && !fairPlayer(e, j)) tarjetaRoja(ctx, equipo, j, 'doble_amarilla');
 }
 
-export function tarjetaRoja(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido, motivo: 'directa' | 'doble_amarilla'): void {
+/** Roja directa o por doble amarilla: evento relevante y expulsión. */
+function tarjetaRoja(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido, motivo: 'directa' | 'doble_amarilla'): void {
   ctx.estado.estadisticas[equipo.lado].rojas++;
   emitir(ctx, 'roja', equipo.lado, [{ rol: 'autor', jugadorId: j.id }], { motivo }, true);
   expulsar(ctx, equipo, j);
 }
 
+/** Penalti del lanzador designado (o el efectivo) desde el punto de penalti; el resultado queda en el evento. */
 export function penalti(ctx: Contexto, atacante: EquipoEstado): void {
   const enCampo = atacante.jugadores.filter((j) => j.enCampo).map((j) => j.jugador);
   const id = lanzadorEfectivo(atacante.lanzadores.penaltis, enCampo, 'penaltis');
@@ -113,7 +117,7 @@ export function probabilidadTiroDirecto(p: ParametrosEquilibrado, punto: Punto, 
 }
 
 /** Falta directa cerca del área: tiro del lanzador de faltas o balón colgado. */
-export function faltaDirecta(ctx: Contexto, atacante: EquipoEstado, defensor: EquipoEstado): void {
+function faltaDirecta(ctx: Contexto, atacante: EquipoEstado, defensor: EquipoEstado): void {
   const e = ctx.estado;
   const enCampo = atacante.jugadores.filter((j) => j.enCampo).map((j) => j.jugador);
   const id = lanzadorEfectivo(atacante.lanzadores.faltas, enCampo, 'faltas');
@@ -128,15 +132,32 @@ export function faltaDirecta(ctx: Contexto, atacante: EquipoEstado, defensor: Eq
   rematarBalonParado(ctx, atacante, defensor, 'faltas', e.parametros.acciones.duelaAereo - 0.2);
 }
 
-/** Fuera de juego del atacante: saque de falta para la defensa. */
-export function fueraDeJuego(ctx: Contexto, atacante: EquipoEstado, jugador: JugadorEnPartido): void {
+/**
+ * Fuera de juego del atacante (spec 014, FR-010): saque de falta para la defensa desde `punto` (absoluto), donde estaba
+ * el infractor al salir el pase. Con métricas, anota si la foto del pase cumple la regla (SC-005).
+ */
+export function fueraDeJuego(ctx: Contexto, atacante: EquipoEstado, jugador: JugadorEnPartido, punto: Punto, foto?: { xPenultimo: number; xBalon: number }): void {
   const e = ctx.estado;
   const defensor = e.equipos[rival(atacante.lado)];
   e.estadisticas[atacante.lado].fuerasDeJuego++;
   e.estadisticas[defensor.lado].fuerasDeJuegoProvocados++;
-  emitir(ctx, 'fuera_de_juego', atacante.lado, [{ rol: 'autor', jugadorId: jugador.id }]);
+  anotar(ctx.metricas, jugador.id, 'fuerasDeJuego');
+  const xInfractor = aEquipo(atacante.lado, punto).x;
+  if (foto && !(xInfractor > foto.xPenultimo && xInfractor > foto.xBalon)) anotar(ctx.metricas, jugador.id, 'fuerasDeJuegoIncoherentes');
+  // Relevante (spec 014, FR-013): se ve en el resumen de la rápida y en lo que ha pasado de la 2D.
+  emitir(ctx, 'fuera_de_juego', atacante.lado, [{ rol: 'autor', jugadorId: jugador.id }], {}, true);
   interrumpir(ctx, 'fuera_de_juego', 14, defensor.lado);
-  const sacador = defensor.jugadores.find((j) => j.enCampo && j.jugador.demarcacion === 'DEF') ?? defensor.jugadores.find((j) => j.enCampo);
-  e.balon = { posesion: defensor.lado, zona: 1, carril: 1, portadorId: sacador?.id ?? 0, transicion: false };
-  if (sacador) reponer(ctx, 'fuera_de_juego', aAbsoluta(defensor.lado, centroCelda(1, 1)), sacador.id);
+  let sacador: JugadorEnPartido | undefined;
+  let mejor = Infinity;
+  for (const j of defensor.jugadores) {
+    const q = j.enCampo && j.casillaId !== 'POR' ? e.espacio.jugadores[j.id] : undefined;
+    const d = q ? (q.x - punto.x) ** 2 + (q.y - punto.y) ** 2 : Infinity;
+    if (d < mejor) {
+      mejor = d;
+      sacador = j;
+    }
+  }
+  sacador ??= defensor.jugadores.find((j) => j.enCampo);
+  e.balon = { posesion: defensor.lado, ...zonaCarrilDe(defensor.lado, punto), portadorId: sacador?.id ?? 0, transicion: false };
+  if (sacador) reponer(ctx, 'fuera_de_juego', punto, sacador.id);
 }

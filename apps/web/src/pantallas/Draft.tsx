@@ -48,6 +48,10 @@ export function Draft() {
   const [apertura, setApertura] = useState<CartaResumen[] | null>(null);
   /** Diseño del sobre de la apertura en curso (spec 011, US2): uno por ronda, del favorito o del carrusel. */
   const [diseno, setDiseno] = useState<string | undefined>(undefined);
+  /** La apertura está en su fundido final: las cartas de la mesa ya se ven por detrás. */
+  const [fundiendo, setFundiendo] = useState(false);
+  /** Apertura pedida antes del primer turno (al pasar de la sala): se pinta su fondo y no el esqueleto. */
+  const aperturaEnCamino = usePartidaActiva((s) => s.aperturaPendiente?.partidaId === partidaId);
   const sobreActual = useAspecto((s) => s.aspecto?.sobreActual);
   /** Turno mostrado ("ronda-turno"): el ack de una elección solo cuenta para el turno en que se envió. */
   const turnoActual = useRef<string | null>(null);
@@ -225,7 +229,9 @@ export function Draft() {
     );
   }
   if (!turno)
-    return (
+    return aperturaEnCamino ? (
+      <main className="pantalla draft">{FONDO_APERTURA}</main>
+    ) : (
       <PantallaCargando forma="cartas" texto={conectada ? 'Esperando el primer sobre…' : 'Conectando…'} />
     );
 
@@ -248,16 +254,22 @@ export function Draft() {
 
   return (
     <main className="pantalla draft">
-      {apertura && diseno !== undefined && (
-        <AperturaSobre
-          cartas={apertura}
-          diseno={diseno}
-          onTerminar={() => {
-            setApertura(null);
-            setDiseno(undefined);
-          }}
-        />
-      )}
+      {/* Mientras se carga la imagen del sobre, su fondo: si no, la mesa vacía asomaba un instante (pestañeo). */}
+      {apertura &&
+        (diseno === undefined ? (
+          FONDO_APERTURA
+        ) : (
+          <AperturaSobre
+            cartas={apertura}
+            diseno={diseno}
+            onFundido={() => setFundiendo(true)}
+            onTerminar={() => {
+              setApertura(null);
+              setDiseno(undefined);
+              setFundiendo(false);
+            }}
+          />
+        ))}
 
       {/* Las cartas dominan; el contexto va en un carril lateral (arriba y abajo en móvil). Spec 004, FR-018, FR-046. */}
       <div className="draft-mesa">
@@ -267,8 +279,8 @@ export function Draft() {
           className="draft-zona"
           aria-label="Sobre actual"
           data-desplazable=""
-          style={apertura ? { visibility: 'hidden' } : undefined}
-          aria-hidden={apertura ? true : undefined}
+          style={apertura && !fundiendo ? { visibility: 'hidden' } : undefined}
+          aria-hidden={apertura && !fundiendo ? true : undefined}
         >
           <div ref={rejilla} className="rejilla-cartas" data-cartas={turno.sobre.cartas.length}>
             {turno.sobre.cartas.map((j) => (
@@ -416,3 +428,6 @@ export function Draft() {
     </main>
   );
 }
+
+/** Fondo de la apertura del sobre, sin contenido: cubre la espera hasta que la apertura puede empezar. */
+const FONDO_APERTURA = <div className="apertura-sobre" aria-hidden="true" />;

@@ -9,17 +9,17 @@ import { useEscalaRejilla } from './useEscalaRejilla';
 /** Duraciones de la secuencia (spec 003, research R21); en el peor caso, ≤ 8 s (FR-011). */
 export const DURACION_SOBRE_MS = 1400;
 export const ESCALONADO_MS = 250;
-export const SALIDA_MS = 350;
-export const GIRO_MS = 300;
-export const PAUSA_ESPECIAL_MS = 600;
-export const FUNDIDO_MS = 300;
+const SALIDA_MS = 350;
+const GIRO_MS = 300;
+const PAUSA_ESPECIAL_MS = 600;
+const FUNDIDO_MS = 300;
 export const DURACION_MAXIMA_MS = 8000;
 
 const especial = (c: CartaResumen) => c.nivel === 'Legendario' || c.nivel === 'GOAT';
 
 const COLOR_PARTICULAS: Record<string, string> = { Legendario: '#c084fc', GOAT: '#ffd700' };
 
-export interface PasoCarta {
+interface PasoCarta {
   /** Cuándo sale la carta boca abajo hacia su sitio. */
   salida: number;
   /** Cuándo empieza a girar (los giros se solapan con las salidas siguientes). */
@@ -55,6 +55,8 @@ type EstadoCarta = 'oculta' | 'salida' | 'girada';
 interface Props {
   cartas: readonly CartaResumen[];
   onTerminar: () => void;
+  /** Empieza el fundido final: lo que hay detrás ya puede verse (fundido cruzado). */
+  onFundido?: () => void;
   /** Diseño del sobre que se abre (spec 011, US2); sin él, el original. */
   diseno?: string;
 }
@@ -66,7 +68,7 @@ interface Props {
  * «Saltar» o un toque en cualquier punto revela todo al instante. Con movimiento reducido, solo un fundido.
  * Las cartas nunca dependen de las partículas: si el canvas falla o se desactiva, la secuencia sigue igual.
  */
-export function AperturaSobre({ cartas, onTerminar, diseno }: Props) {
+export function AperturaSobre({ cartas, onTerminar, onFundido, diseno }: Props) {
   const reducido = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
   const [fase, setFase] = useState<Fase>(reducido ? 'fundido' : 'sobre');
   const [estados, setEstados] = useState<EstadoCarta[]>(() => cartas.map(() => 'oculta'));
@@ -78,6 +80,8 @@ export function AperturaSobre({ cartas, onTerminar, diseno }: Props) {
   useEscalaRejilla(mesa, rejilla, { maxima: 1.15, clave: fase === 'sobre' });
   const terminar = useRef(onTerminar);
   terminar.current = onTerminar;
+  const fundir = useRef(onFundido);
+  fundir.current = onFundido;
   const hecho = useRef(false);
   const acabar = () => {
     if (hecho.current) return;
@@ -137,7 +141,12 @@ export function AperturaSobre({ cartas, onTerminar, diseno }: Props) {
         }, p.giro),
       );
     });
-    t.push(setTimeout(() => setFase('fundido'), fundido));
+    t.push(
+      setTimeout(() => {
+        setFase('fundido');
+        fundir.current?.();
+      }, fundido),
+    );
     t.push(setTimeout(acabar, total));
     return () => {
       // En el doble montaje de StrictMode, la apertura sonaba dos veces.

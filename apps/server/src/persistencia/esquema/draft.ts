@@ -9,6 +9,7 @@ import { sql } from 'drizzle-orm';
 import { check, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { participantes, partidas } from './base';
 
+/** Tabla de mesas de draft. */
 export const mesas = pgTable(
   'mesas',
   {
@@ -40,6 +41,7 @@ export const mesas = pgTable(
   ],
 );
 
+/** Tabla de elecciones del draft. */
 export const elecciones = pgTable(
   'elecciones',
   {

@@ -32,6 +32,7 @@ export function tipoDeGol(datos: Record<string, unknown>): string {
   return typeof datos.distancia === 'number' ? `${tipo} (${datos.distancia} m)` : tipo;
 }
 
+/** Texto de un evento del partido para «Lo que ha pasado». */
 export function describirEvento(e: EventoVista, nombre: (id: number) => string): string {
   const de = (rol: string) => {
     const j = e.jugadores.find((x) => x.rol === rol);
@@ -51,6 +52,8 @@ export function describirEvento(e: EventoVista, nombre: (id: number) => string):
       return `Lesión ${GRAVEDAD[String(e.datos.gravedad)] ?? ''} de ${de('autor')} (${String(e.datos.partidos)} partido${e.datos.partidos === 1 ? '' : 's'} de baja)`;
     case 'ocasion':
       return `Ocasión clara de ${de('autor')}`;
+    case 'fuera_de_juego':
+      return `Fuera de juego de ${de('autor')}`;
     case 'sustitucion':
       return `Entra ${de('entra')} por ${de('sale')}${e.datos.automatica ? ' (cambio por lesión o expulsión)' : ''}`;
     case 'penalti':

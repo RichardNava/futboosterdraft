@@ -2,7 +2,6 @@
  * Defectos de disciplina (spec 005, T036; FR-014; research R6): Canchero, Impulsivo y Agresivo, con semillas fijas y
  * probabilidades forzadas en los parámetros.
  */
-import { PARAMETROS_V3 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { falta } from '../src/acciones/balonParado';
 import { factorAmarilla, factorFalta, factorRoja } from '../src/modificadores/defectos';
@@ -29,13 +28,11 @@ function tarjetas(n: number, defecto: 'Impulsivo' | 'Agresivo' | null, q = P4) {
 }
 
 describe('Canchero (falta por entrada)', () => {
-  it('multiplica la probabilidad de falta por defectos.canchero; con 3.0.0, por 1', () => {
+  it('multiplica la probabilidad de falta por defectos.canchero', () => {
     const e = partido4('canchero');
     const j = ponerRasgos(titularEn(e, 'visitante', 'DCI'), { defectos: ['Canchero'] });
     expect(factorFalta(e, j)).toBe(P4.defectos!.canchero);
     expect(factorFalta(e, titularEn(e, 'visitante', 'DCD'))).toBe(1);
-    const v3 = crearPartido(entrada('canchero-v3'));
-    expect(factorFalta(v3, ponerRasgos(titularEn(v3, 'visitante', 'DCI'), { defectos: ['Canchero'] }))).toBe(1);
   });
 
   it('un equipo de Cancheros comete más faltas en partidos completos (la magnitud la mide balance, 005/SC-004)', () => {
@@ -79,12 +76,5 @@ describe('Impulsivo y Agresivo (tarjetas)', () => {
     const sin = tarjetas(400, null, rojas).rojas;
     expect(razon(con, sin)).toBeGreaterThan(1.6);
     expect(razon(con, sin)).toBeLessThan(2.4);
-  });
-
-  it('con parámetros 3.0.0 los defectos de disciplina no cambian nada', () => {
-    const v3 = crearPartido(entrada('v3'));
-    const j = ponerRasgos(titularEn(v3, 'visitante', 'DCI'), { defectos: ['Impulsivo', 'Agresivo'] });
-    expect([factorAmarilla(v3, j), factorRoja(v3, j)]).toEqual([1, 1]);
-    expect(PARAMETROS_V3.defectos).toBeUndefined();
   });
 });

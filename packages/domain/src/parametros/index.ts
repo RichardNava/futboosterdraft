@@ -82,6 +82,11 @@ export interface ParametrosEquilibrado {
     frenada: number;
     /** Distancia mínima entre dos chapas. */
     radioSeparacion: number;
+    /**
+     * Desde la 7.0.0 (spec 014, research R1): fracción de su velocidad que pierde por tick un balón suelto, que rueda en
+     * su última dirección hasta pararse.
+     */
+    rozamientoSuelto?: number;
     velocidadBalon: Record<'raso' | 'largo' | 'centro' | 'tiro' | 'despeje' | 'suelto', number>;
     vueloMinimoTicks: number;
     /** Tiempo con el balón antes de un pase (control y preparación) y su máximo si el receptor aún llega. */
@@ -132,7 +137,30 @@ export interface ParametrosEquilibrado {
     factorIncansable: number;
     /** Multiplicador del ritmo de los compañeros con un Motivador en el campo. */
     factorMotivador: number;
+    /** Desde la 7.0.0 (spec 014, research R5): tope de la fracción de stats perdida (antes, 0,6 en el código). */
+    maximo?: number;
   };
+  /**
+   * Desde la 7.0.0 (spec 014, research R2): mano a mano por posición. Distancias en metros; `errorDecision` es la
+   * probabilidad máxima (visión 70 o menos) de saltarse la directriz y decidir con los pesos normales.
+   */
+  manoAMano?: {
+    pasilloM: number;
+    margenAtrasM: number;
+    distanciaBaseM: number;
+    distanciaPorRemateM: number;
+    paraleloM: number;
+    errorDecision: number;
+  };
+  /** Desde la 7.0.0 (spec 014, research R3): sin presión, no se devuelve el balón a quien lo dio si el pase ganó menos. */
+  idaVuelta?: { avanceMinimoM: number };
+  /**
+   * Desde la 7.0.0 (spec 014, research R4): fuera de juego por posición. `toleranciaM`: empate legal; `holguraMaxM`: lo
+   * que se pasa de la línea un atacante con desmarque bajo; `pesoReceptor`: peso máximo de un receptor en fuera de juego;
+   * `holguraLineaAdelantada`: multiplicador de esa holgura frente a una línea adelantada, que sube a destiempo para el
+   * atacante (FR-011: la provoca la posición de los defensas, no un sorteo).
+   */
+  fueraDeJuego?: { toleranciaM: number; holguraMaxM: number; pesoReceptor: number; holguraLineaAdelantada: number };
   lesiones: {
     probabilidadPorEntrada: number;
     /** Reducción relativa de la probabilidad de lesión con Robusto. */
@@ -222,7 +250,8 @@ export interface ParametrosEquilibrado {
     individual: { recuperacion: number; cansancio: number; vulnerableDesmarque: number };
     catenaccio: { ofensiva: number; defensiva: number; posesionRival: number };
     presionAlta: { recuperacionCampoRival: number; cansancio: number; vulnerableEspalda: number };
-    lineaAdelantada: { fuerasDeJuegoProvocados: number; vulnerableEspalda: number };
+    /** `fuerasDeJuegoProvocados`: sorteo retirado en la 7.0.0 (spec 014, FR-011). */
+    lineaAdelantada: { fuerasDeJuegoProvocados?: number; vulnerableEspalda: number };
     contraataque: { posesion: number; peligroTransicion: number };
     combinativo: { posesion: number; perdidasPase: number };
     vertical: { accionesBanda: number; pasesLargos: number };
@@ -241,14 +270,15 @@ export interface ParametrosEquilibrado {
     puerta: Record<'normal' | 'cabeza' | 'lejano' | 'manoAMano' | 'falta' | 'penalti', number>;
     /** Base para que un tiro a puerta sea gol (frente a la parada del portero). */
     gol: Record<'normal' | 'cabeza' | 'lejano' | 'manoAMano' | 'falta' | 'penalti', number>;
-    probabilidadFueraDeJuegoBase: number;
+    /** Sorteo retirado en la 7.0.0 (spec 014, FR-011): el fuera de juego sale de las posiciones. */
+    probabilidadFueraDeJuegoBase?: number;
     probabilidadCornerTrasParada: number;
     probabilidadCornerTrasDespeje: number;
     probabilidadBalonFuera: number;
     /** Dificultad añadida por cada zona más allá del centro del campo (zona 3, 4 y 5). */
     dificultadZona: number;
     /** Probabilidad de quedar solo ante el portero tras un regate o un pase al espacio que llegan al área. */
-    probabilidadManoAMano: number;
+    probabilidadManoAMano?: number;
     /** Probabilidad de que un centro vaya raso o atrás: lo remata, con el pie, el mejor colocado (H11). */
     centroRaso: number;
     /** Factor del peso como receptor del extremo o el mediapunta que ya está en el área rival (H11). */
@@ -493,6 +523,49 @@ export const PARAMETROS_V6_3: ParametrosEquilibrado = {
   },
 };
 
+/**
+ * Parámetros 7.0.0 (spec 014): balón suelto que rueda y frena, mano a mano y fuera de juego por posición, cansancio
+ * apreciable (≈ 50 % de energía al 90') y más peso de las estadísticas. Cambia el código del motor: las 6.x ya no se
+ * simulan (research R14).
+ */
+const { probabilidadManoAMano: _pmam, probabilidadFueraDeJuegoBase: _pfdj, ...ACCIONES_V7 } = PARAMETROS_V6_3.acciones;
+const { fuerasDeJuegoProvocados: _fdjp, ...LINEA_ADELANTADA_V7 } = PARAMETROS_V6_3.tacticas.lineaAdelantada;
+
+/** Multiplicador del peso de tirar en la 7.0.0 (calibrado con el informe). */
+const FACTOR_TIRO_V7 = 1.7;
+
+export const PARAMETROS_V7: ParametrosEquilibrado = {
+  ...PARAMETROS_V6_3,
+  version: '7.0.0',
+  // Más rango de velocidad (US5, research R7): el rápido llega antes a los balones sueltos.
+  espacio: { ...PARAMETROS_V6_3.espacio, rozamientoSuelto: 0.3, velocidadJugadorMin: 18 },
+  cansancio: { ...PARAMETROS_V6_3.cansancio, maximo: 0.6, degradacionPorMinuto: 0.011 },
+  manoAMano: { pasilloM: 4, margenAtrasM: 1, distanciaBaseM: 14, distanciaPorRemateM: 3, paraleloM: 2, errorDecision: 0.05 },
+  idaVuelta: { avanceMinimoM: 3 },
+  fueraDeJuego: { toleranciaM: 0.3, holguraMaxM: 0.5, pesoReceptor: 0.05, holguraLineaAdelantada: 3 },
+  // Más pases del buen pasador (002/SC-008): la exclusión de la ida y vuelta le quita devoluciones. Más conversión del
+  // remate (normal y lejano) para mantener los goles sin tiros de más (003/SC-001 y SC-002).
+  acciones: { ...ACCIONES_V7, pendientePase: 2.2, controlPaseTicks: 4, pesoPasePorStat: 1.2, gol: { ...ACCIONES_V7.gol, normal: 0.35, lejano: -0.5 } },
+  // Menos pases largos, con y sin motivo (003/SC-005), y menos faltas en el área con la conducción hasta el punto de penalti (005/SC-011).
+  pases: { ...PARAMETROS_V6_3.pases, factorSinMotivo: 0.1, factorConMotivo: 1.1 },
+  disciplina: { ...PARAMETROS_V6_3.disciplina, factorFaltaArea: 0.45 },
+  // Sin los sorteos de mano a mano, el ataque busca más el tiro para mantener los goles (FR-023).
+  tiro: {
+    ...PARAMETROS_V6_3.tiro,
+    // Más faltas cerca del área con el juego por posición: menos tiros directos (003/SC-003).
+    faltaDirectaTiro: { ...PARAMETROS_V6_3.tiro.faltaDirectaTiro, probabilidad: PARAMETROS_V6_3.tiro.faltaDirectaTiro.probabilidad * 0.65 },
+    pesoPorTramo: PARAMETROS_V6_3.tiro.pesoPorTramo.map((t) => ({ ...t, peso: Math.round(t.peso * FACTOR_TIRO_V7) })) },
+  decision: {
+    ...PARAMETROS_V6_3.decision,
+    factores: {
+      ...PARAMETROS_V6_3.decision.factores,
+      remate: { ...PARAMETROS_V6_3.decision.factores.remate, k: 0.45 },
+      fisico: { ...PARAMETROS_V6_3.decision.factores.fisico, k: 0.4 },
+    },
+  },
+  tacticas: { ...PARAMETROS_V6_3.tacticas, lineaAdelantada: LINEA_ADELANTADA_V7 },
+};
+
 /** Reparto de un nivel; las versiones anteriores a la 6.3.0 tienen el de siempre (4, 2, 1 y 1 alta) en todos. */
 export function repartoDe(p: ParametrosEquilibrado, nivel: NivelRareza): RepartoSobre {
   return p.sobres.niveles?.[nivel] ?? { superclase: 4, crack: 2, legendario: 1, altas: 1, probGoatEnAlta: p.sobres.probGoatEnAlta };
@@ -506,6 +579,7 @@ const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V6_1.version]: PARAMETROS_V6_1,
   [PARAMETROS_V6_2.version]: PARAMETROS_V6_2,
   [PARAMETROS_V6_3.version]: PARAMETROS_V6_3,
+  [PARAMETROS_V7.version]: PARAMETROS_V7,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -523,13 +597,13 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V6_3;
+  return PARAMETROS_V7;
 }
 
-/** Versión mayor mínima que el motor actual puede simular (las 3.x y 4.x se reproducen). */
-export const VERSION_MAYOR_SOPORTADA = 3;
+/** Versión mayor mínima que el motor actual puede simular (spec 014, research R14: solo la 7.x). */
+export const VERSION_MAYOR_SOPORTADA = 7;
 
-/** Parámetros de una versión concreta, para reproducir un partido (FR-040). Las versiones 1.x y 2.x lanzan `VersionNoSoportada`. */
+/** Parámetros de una versión concreta, para reproducir un partido (FR-040). Las anteriores a la 7.x lanzan `VersionNoSoportada` (research R14). */
 export function parametrosPorVersion(version: string): ParametrosEquilibrado {
   const p = REGISTRO[version];
   if (p) return p;

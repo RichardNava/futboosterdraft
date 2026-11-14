@@ -51,6 +51,7 @@ import {
   type ResultadoTramo,
   maxSustituciones,
   MAX_PASOS,
+  energiaDe,
 } from '@fbd/engine';
 import type { Ejecutor } from '../persistencia/db';
 import type { FilaPartido } from '../persistencia/repos/partidos';
@@ -81,9 +82,11 @@ export interface PartidoEnCurso {
 /** `gol`: en la 2D con «control total», cada gol para el partido para gestionar el equipo (spec 012, ronda 2). */
 export type MotivoPausa = 'descanso' | 'pre_prorroga' | 'incidencia' | 'gol';
 
+/** El participante es humano y no lo controla un NPC. */
 export const esHumano = (c: ControladorPartida, pid: string) => c.participante(pid)?.tipo === 'humano' && !c.participante(pid)?.controladoPorNPC;
 
-export function emitirAParticipantes(c: ControladorPartida, ctx: ContextoComando, fila: FilaPartido, mensaje: { t: string } & Record<string, unknown>) {
+/** Envía un mensaje a los dos participantes humanos del partido. */
+function emitirAParticipantes(c: ControladorPartida, ctx: ContextoComando, fila: FilaPartido, mensaje: { t: string } & Record<string, unknown>) {
   for (const pid of [fila.localId, fila.visitanteId]) if (c.participante(pid)?.tipo === 'humano') ctx.emitirA(pid, mensaje);
 }
 
@@ -94,7 +97,8 @@ export function nivelNPCDe(c: ControladorPartida, participanteId: string): Nivel
   return (p.nivelNPC as NivelNPC | null) ?? 'intermedio';
 }
 
-export function nivelesDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): NivelesPartido {
+/** Nivel de los NPC del partido (para sus decisiones). */
+function nivelesDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): NivelesPartido {
   const niveles: NivelesPartido = {};
   const local = nivelNPCDe(c, fila.localId);
   const visitante = nivelNPCDe(c, fila.visitanteId);
@@ -231,6 +235,7 @@ export async function dorsalesParaPartido(
   return { dorsales, asignados: completados.asignados };
 }
 
+/** Equipaciones de un participante (las guardadas o unas al azar reproducibles). */
 export function equipacionesDe(c: ControladorPartida, pid: string): Equipaciones {
   return desdeV1(c.participante(pid)?.equipaciones ?? null) ?? equipacionesAleatorias(derivarSemilla(c.partida.semilla, `equipaciones:${pid}`), parametrosActuales());
 }
@@ -252,7 +257,7 @@ const DATOS_CELEBRACION_DEL_JUEGO: DatosCelebracion = { clase: 'juego', duracion
  * Celebración de gol de cada equipo (spec 012, FR-012): la copiada del perfil del dueño al unirse; NPC o sin elegir,
  * la del juego. Sin consultas: sale de los participantes y del catálogo en memoria.
  */
-export function celebracionesDelPartido(c: ControladorPartida, localId: string, visitanteId: string) {
+function celebracionesDelPartido(c: ControladorPartida, localId: string, visitanteId: string) {
   const de = (pid: string) => {
     const p = c.participante(pid);
     const id = p?.tipo === 'humano' && p.celebracion ? p.celebracion : CELEBRACION_DEL_JUEGO;
@@ -287,6 +292,7 @@ export function resumenAlineaciones(c: ControladorPartida, entrada: Pick<Entrada
   return { local: resumen(entrada.local), visitante: resumen(entrada.visitante) };
 }
 
+/** Prepara y empieza un partido: entrada del motor, mensaje de inicio y primer tramo. */
 export async function iniciarPartido(
   c: ControladorPartida,
   ctx: ContextoComando,
@@ -446,6 +452,7 @@ export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando
   return tramo;
 }
 
+/** Abre una pausa de decisión (descanso, prórroga, gol o incidencia) con su plazo. */
 export function abrirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso, motivo: MotivoPausa, incidencias?: Incidencia[]): void {
   const descansoS = (c.partida.tiempos as { descansoS: number }).descansoS;
   const venceEn = c.servicios.reloj.ahora() + descansoS * 1000;
@@ -473,6 +480,7 @@ export function programarVentana(c: ControladorPartida, p: PartidoEnCurso): void
   });
 }
 
+/** Anuncia la pausa en curso a los participantes, con la energía de los jugadores en el campo. */
 export function emitirPausa(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): void {
   if (!p.pausa) return;
   emitirAParticipantes(c, ctx, p.fila, { t: 'partido.pausa_decision', partidoId: p.fila.id, ...datosPausa(c, p) });
@@ -482,6 +490,16 @@ export function emitirPausa(c: ControladorPartida, ctx: ContextoComando, p: Part
  * Motivo y ventana de la pausa; en una parada de incidencia (spec 012, contracts/protocolo.md), las incidencias del
  * humano y los cambios que le quedan.
  */
+/**
+ * Energía de los jugadores en el campo de los dos equipos (spec 014, FR-016 a FR-018; contrato del protocolo): los del
+ * banquillo, expulsados, lesionados y sustituidos no van.
+ */
+export function energiaEnCampo(motor: EstadoMotor): { jugadorId: number; energia: number; penalizacion: number }[] {
+  return [...motor.equipos.local.jugadores, ...motor.equipos.visitante.jugadores]
+    .filter((j) => j.enCampo)
+    .map((j) => ({ jugadorId: j.id, ...energiaDe(motor, j) }));
+}
+
 function datosPausa(c: ControladorPartida, p: PartidoEnCurso) {
   const pausa = p.pausa!;
   const humano = humanosDe(c, p.fila)[0];
@@ -490,6 +508,7 @@ function datosPausa(c: ControladorPartida, p: PartidoEnCurso) {
   return {
     motivo: pausa.motivo,
     venceEn: new Date(pausa.venceEn).toISOString(),
+    energia: energiaEnCampo(p.motor),
     ...(pausa.motivo === 'incidencia' && lado
       ? {
           incidencias: propias.map((i) => ({ jugadorId: i.jugadorId, motivo: i.motivo, minuto: i.minuto, tick: i.tick })),
@@ -508,6 +527,7 @@ async function reanudar(c: ControladorPartida, ctx: ContextoComando, p: PartidoE
   else await jugarTramo(c, ctx, p, 'parte');
 }
 
+/** Cierra el partido: registra el resultado en el torneo y anuncia el final. */
 export async function terminarPartido(c: ControladorPartida, ctx: ContextoComando, p: PartidoEnCurso): Promise<void> {
   // El torneo registra el resultado y calcula las bajas antes de anunciar el final.
   const bajasNuevas = (await c.alTerminarPartido?.(ctx, p)) ?? [];
@@ -530,7 +550,7 @@ export async function terminarPartido(c: ControladorPartida, ctx: ContextoComand
  * Modalidad de un partido en directo (spec 003, FR-033): la que eligió su humano al abrirlo; `rapida` si no hay
  * humano o aún no la eligió. Solo cambia la presentación, nunca el cálculo.
  */
-export function modalidadDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId' | 'modalidades'>): ModoSimulacion {
+function modalidadDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId' | 'modalidades'>): ModoSimulacion {
   const modalidades = (fila.modalidades as Record<string, ModoSimulacion> | null) ?? {};
   for (const pid of [fila.localId, fila.visitanteId]) if (esHumano(c, pid) && modalidades[pid]) return modalidades[pid];
   return 'rapida';
@@ -541,6 +561,7 @@ export function humanosDe(c: ControladorPartida, fila: Pick<FilaPartido, 'localI
   return [fila.localId, fila.visitanteId].filter((pid) => esHumano(c, pid));
 }
 
+/** Ningún participante del partido es humano activo. */
 export function sinHumanos(c: ControladorPartida, fila: Pick<FilaPartido, 'localId' | 'visitanteId'>): boolean {
   return [fila.localId, fila.visitanteId].every((pid) => {
     const p = c.participante(pid);
@@ -558,7 +579,7 @@ export async function forzarFinal(c: ControladorPartida, ctx: ContextoComando, p
   await jugarTramo(c, ctx, p, 'final');
 }
 
-export type ResultadoComandoPartido = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
+type ResultadoComandoPartido = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
 const fallo = (codigo: string, mensaje: string): ResultadoComandoPartido => ({ ok: false, error: { codigo, mensaje } });
 
 function partidoDe(c: ControladorPartida, participanteId: string, partidoId: string): PartidoEnCurso | ResultadoComandoPartido {
@@ -569,6 +590,7 @@ function partidoDe(c: ControladorPartida, participanteId: string, partidoId: str
   return p;
 }
 
+/** «Seguir» de un participante: cuando están listos todos los humanos, se reanuda. */
 export async function procesarSeguir(c: ControladorPartida, ctx: ContextoComando, participanteId: string, partidoId: string): Promise<ResultadoComandoPartido> {
   const p = partidoDe(c, participanteId, partidoId);
   if ('ok' in p) return p;
@@ -606,6 +628,7 @@ export async function procesarFinalizar(c: ControladorPartida, ctx: ContextoComa
   return { ok: true };
 }
 
+/** Valida y encola una decisión de un participante durante el partido. */
 export function procesarDecisionPartido(
   c: ControladorPartida,
   participanteId: string,
@@ -618,7 +641,7 @@ export function procesarDecisionPartido(
   return { ok: false, error };
 }
 
-export type ResultadoLotePartido = { ok: true } | { ok: false; error: { codigo: string; mensaje: string; indice?: number } };
+type ResultadoLotePartido = { ok: true } | { ok: false; error: { codigo: string; mensaje: string; indice?: number } };
 
 /**
  * Lote de decisiones de la gestión del equipo (spec 003, research R17), con la misma ventana que una decisión

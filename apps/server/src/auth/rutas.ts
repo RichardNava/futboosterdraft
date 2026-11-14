@@ -11,7 +11,8 @@ declare module 'fastify' {
   }
 }
 
-export function cabecerasWeb(req: FastifyRequest): Headers {
+/** Cabeceras de la petición de Fastify como `Headers` web (para Better Auth). */
+function cabecerasWeb(req: FastifyRequest): Headers {
   const h = new Headers();
   for (const [clave, valor] of Object.entries(req.headers)) {
     if (valor === undefined) continue;
@@ -32,11 +33,13 @@ async function reenviar(reply: FastifyReply, respuesta: Response): Promise<Fasti
   return reply.send(texto === '' ? undefined : texto);
 }
 
+/** Usuario de la sesión de la petición, si la hay. */
 export async function usuarioDeLaPeticion(auth: Auth, req: FastifyRequest): Promise<UsuarioSesion | undefined> {
   const sesion = await auth.api.getSession({ headers: cabecerasWeb(req) });
   return sesion ? aUsuarioSesion(sesion.user) : undefined;
 }
 
+/** Ganchos de Fastify que exigen sesión, usuario registrado o solo registrados. */
 export function crearHooksSesion(auth: Auth) {
   const requiereSesion = async (req: FastifyRequest) => {
     req.usuario = await usuarioDeLaPeticion(auth, req);
@@ -63,6 +66,7 @@ export interface OpcionesRutasAuth {
   alEliminarCuenta?: (usuario: UsuarioSesion) => Promise<void>;
 }
 
+/** Rutas de autenticación (`/api/auth/*`) y de la sesión. */
 export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: OpcionesRutasAuth = {}): void {
   const { requiereSesion, requiereRegistrado } = crearHooksSesion(auth);
 

@@ -28,10 +28,10 @@ type Lado = 'local' | 'visitante';
 const P = parametrosActuales();
 const TOLERANCIA = 0.2;
 /**
- * Magnitud medida de Frágil aceptada en la spec 013 (ronda 2): el multiplicador `fragil` (3) se aplica por entrada y,
- * acumulado, deja ~4,96 veces más lesiones por minuto. Se da por bueno; si resulta problemático se revisará el parámetro.
+ * Magnitud de Frágil: el multiplicador `fragil` por entrada. En la 6.x se medían ~4,96 veces más lesiones por minuto
+ * (spec 013, ronda 2); con el motor 7.0.0 la medida vuelve al multiplicador de diseño (spec 014, informe-7.0.0).
  */
-const OBJETIVO_FRAGIL_MEDIDO = 4.96;
+const OBJETIVO_FRAGIL_MEDIDO = P.defectos!.fragil;
 
 /** Copia de unos parámetros con cambios. */
 function con(cambios: (q: ParametrosEquilibrado) => void, base: ParametrosEquilibrado = P): ParametrosEquilibrado {
@@ -364,13 +364,14 @@ function virtudesNuevas(n: number, semilla: number, base: EquipoPartido, rival: 
   ];
 }
 
-export const IDS_RASGOS_DEFECTOS = [
+/** Ids de las comprobaciones de magnitud de cada defecto (005/SC-004). */
+const IDS_RASGOS_DEFECTOS = [
   'Agresivo', 'Impulsivo', 'Canchero', 'Fragil', 'DeCristal', 'Torpe', 'Fatigado', 'Indisciplinado', 'Polemico', 'Rebelde', 'Estrellita', 'Provocador', 'Chupon', 'MalDefensor', 'Inflexible',
 ].map((r) => `005/SC-004/${r}`);
-export const IDS_RASGOS_VIRTUDES = ['005/SC-005', '005/SC-004/Versatil', '005/SC-004/Revulsivo'];
+const IDS_RASGOS_VIRTUDES = ['005/SC-005', '005/SC-004/Versatil', '005/SC-004/Revulsivo'];
 
 /** Defectos (T043) y virtudes nuevas (T089). Cada serie juega `n` partidos con el rasgo y `n` sin él. */
-export function comprobacionesDefectos(n: number, semilla: number): Comprobacion[] {
+function comprobacionesDefectos(n: number, semilla: number): Comprobacion[] {
   const { base, rival } = equiposRasgos();
   const deLesiones = lesiones(n, semilla, base, rival);
   return [
@@ -395,4 +396,3 @@ export function gruposRasgos(): GrupoComprobaciones[] {
   ];
 }
 
-export { conRasgos, equiposRasgos, serieContada, P_DISCIPLINA, P_LESIONES, comprobacion, total, idsDe };

@@ -15,11 +15,12 @@ import { emitirPausa, programarVentana } from './partidoRapido';
 type Resultado = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
 
 /** ¿Es el único humano activo de la partida? */
-export function esUnicoHumano(c: ControladorPartida, participanteId: string): boolean {
+function esUnicoHumano(c: ControladorPartida, participanteId: string): boolean {
   const humanos = c.participantes.filter((p) => p.tipo === 'humano' && !p.controladoPorNPC);
   return humanos.length === 1 && humanos[0]!.id === participanteId;
 }
 
+/** Pausa la partida en solitario cuando su único humano sale de ella. */
 export async function procesarPausar(c: ControladorPartida, ctx: ContextoComando, participanteId: string): Promise<Resultado> {
   if (!c.participante(participanteId)) return { ok: false, error: { codigo: 'NO_PARTICIPA', mensaje: 'No participas en esta partida' } };
   if (!esUnicoHumano(c, participanteId)) {

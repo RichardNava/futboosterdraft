@@ -16,10 +16,12 @@ export interface TramoRecibido {
   fotogramas?: Fotograma[];
 }
 
+/** Datos de reproducción sin fotogramas, acciones ni tanda. */
 export function datosVacios(): DatosReproduccion {
   return { fotogramas: [], acciones: [], tanda: [] };
 }
 
+/** Añade un tramo recibido (fotogramas, acciones, tanda y pausas) a los datos y al reloj. */
 export function incorporarTramo(datos: DatosReproduccion, reloj: RelojReproduccion, t: TramoRecibido): void {
   if (t.fotogramas) agregarFotogramas(datos.fotogramas, t.fotogramas);
   const ultimaAccion = datos.acciones.at(-1)?.inicioTick ?? -1;

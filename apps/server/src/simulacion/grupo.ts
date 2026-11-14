@@ -19,11 +19,13 @@ export type Prioridad = 'humano' | 'npc';
 export interface Calculo {
   /** Número de hilos; 0 = modo en proceso. */
   readonly hilos: number;
+  /** Encola un cálculo con su prioridad y devuelve su resultado. */
   ejecutar<N extends NombreCalculo>(nombre: N, args: Parameters<Funciones[N]>, prioridad: Prioridad): Promise<ReturnType<Funciones[N]>>;
   /** Termina los hilos y rechaza lo pendiente (al cerrar el servidor). */
   cerrar(): Promise<void>;
 }
 
+/** Fallo de un cálculo en un hilo (o grupo cerrado). */
 export class ErrorCalculo extends Error {
   override readonly name = 'ErrorCalculo';
   constructor(
@@ -57,6 +59,7 @@ export function hilosConfigurados(valor: string | undefined, nucleos = available
   return { hilos: porDefecto, aviso: `HILOS_SIMULACION="${valor}" no es válido: se usan ${porDefecto} hilos` };
 }
 
+/** Ejecutor de cálculos pesados: en el propio proceso con 0 hilos o en un grupo de hilos. */
 export function crearCalculo(hilos: number, opciones: OpcionesCalculo = {}): Calculo {
   opciones.metricas?.hilosSimulacion.set(hilos);
   if (hilos > 0) return new GrupoHilos(hilos, opciones);
@@ -94,6 +97,7 @@ interface Hilo {
 
 type Respuesta = { id: number; ok: true; valor: unknown } | { id: number; ok: false; error: { name: string; message: string; stack?: string } };
 
+/** Grupo de hilos de simulación con dos colas de prioridad (humanos antes que NPC). */
 export class GrupoHilos implements Calculo {
   private readonly colas: Record<Prioridad, Tarea[]> = { humano: [], npc: [] };
   private readonly lista: Hilo[] = [];
@@ -113,6 +117,7 @@ export class GrupoHilos implements Calculo {
     for (let i = 0; i < hilos; i++) this.lista.push(this.crearHilo());
   }
 
+  /** Encola un cálculo con su prioridad y devuelve su resultado. */
   ejecutar<N extends NombreCalculo>(nombre: N, args: Parameters<Funciones[N]>, prioridad: Prioridad): Promise<ReturnType<Funciones[N]>> {
     if (this.cerrado) return Promise.reject(new ErrorCalculo(nombre, 'cerrado', 0));
     // Incluye la espera de un hilo libre (spec 010, research R2).
@@ -122,6 +127,7 @@ export class GrupoHilos implements Calculo {
     }));
   }
 
+  /** Termina los hilos y rechaza los cálculos pendientes. */
   async cerrar(): Promise<void> {
     this.cerrado = true;
     const pendientes = [...this.colas.humano, ...this.colas.npc, ...this.lista.flatMap((h) => (h.tarea ? [h.tarea] : []))];

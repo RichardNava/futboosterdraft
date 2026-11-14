@@ -12,7 +12,7 @@ import type { Reloj } from '../programador/reloj';
 
 export type TipoAviso = 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado' | 'baja_sustituida';
 
-export interface NuevoAviso {
+interface NuevoAviso {
   usuarioId: string;
   tipo: TipoAviso;
   partidaId: string;
@@ -20,6 +20,7 @@ export interface NuevoAviso {
   texto: string;
 }
 
+/** Avisos a los usuarios: en la base de datos y, si hay transporte, por correo. */
 export class ServicioAvisos {
   private readonly transporte: Transporter | null;
 
@@ -62,11 +63,13 @@ export class ServicioAvisos {
     await this.db.update(avisos).set({ enviadoEmailEn: new Date(this.reloj.ahora()) }).where(eq(avisos.id, avisoId));
   }
 
+  /** Avisos de un usuario (solo los no leídos si se pide). */
   async listar(usuarioId: string, soloNoLeidos: boolean) {
     const condicion = soloNoLeidos ? and(eq(avisos.usuarioId, usuarioId), eq(avisos.leido, false)) : eq(avisos.usuarioId, usuarioId);
     return this.db.select().from(avisos).where(condicion).orderBy(desc(avisos.creadoEn)).limit(100);
   }
 
+  /** Marca un aviso del usuario como leído; `false` si no existe. */
   async marcarLeido(usuarioId: string, avisoId: string): Promise<boolean> {
     const filas = await this.db
       .update(avisos)

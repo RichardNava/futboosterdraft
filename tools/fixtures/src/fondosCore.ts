@@ -25,6 +25,7 @@ const PESO_MEDIO_MAXIMO = 120 * 1024;
 // Algún nombre usa punto en lugar de guion bajo («134.matheus_nunes.png»).
 const ID_EN_NOMBRE = /^(\d+)[_.-]/;
 
+/** Ruta pública de la ilustración de fondo de una carta de Core. */
 export const rutaFondo = (id: number): string => `/cartas/fondos/jugadores/${id}.webp`;
 
 export interface PlanFondos {

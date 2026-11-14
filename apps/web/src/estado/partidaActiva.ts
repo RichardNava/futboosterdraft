@@ -6,7 +6,7 @@
 import { create } from 'zustand';
 import type { ConexionPartida } from '../conexion/ws';
 
-export interface ParticipanteActivo {
+interface ParticipanteActivo {
   id: string;
   tipo: 'humano' | 'npc';
   controladoPorNPC?: boolean;
@@ -31,6 +31,7 @@ interface EstadoPartidaActiva {
   olvidarConexion(conexion: ConexionPartida): void;
 }
 
+/** Partida que se está viendo: fase y participantes (para el aviso de abandono). */
 export const usePartidaActiva = create<EstadoPartidaActiva>((set, get) => ({
   partidaId: null,
   fase: null,

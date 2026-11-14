@@ -42,7 +42,11 @@ export function validarDecision(estado: EstadoMotor, d: DecisionPartido): Result
   if (!equipo) return error('NO_PARTICIPA', 'No juegas este partido');
   switch (d.tipo) {
     case 'sustitucion': {
-      const pendientes = estado.decisionesPendientes.filter((x) => x.participanteId === d.participanteId && x.tipo === 'sustitucion');
+      // Al reproducir, las decisiones registradas para más adelante aún no cuentan (spec 014: si no, una sustitución
+      // posterior del que entra invalidaba esta).
+      const pendientes = estado.decisionesPendientes.filter(
+        (x) => x.participanteId === d.participanteId && x.tipo === 'sustitucion' && (x.aplicadaEnTick === undefined || x.aplicadaEnTick <= estado.tick),
+      );
       const usadas = equipo.sustitucionesUsadas + pendientes.length;
       if (usadas >= maxSustituciones(estado)) return error('SUSTITUCIONES_AGOTADAS', 'No quedan sustituciones');
       const sale = equipo.jugadores.find((j) => j.id === d.datos.sale);

@@ -1,6 +1,7 @@
 /**
- * Línea base de la spec 005 (T005; SC-003, FR-004): con parámetros 3.0.0, los 20 partidos de referencia producen
- * exactamente la secuencia de eventos congelada en el commit `5007f5a` (`fixtures/equivalencia-005.json`).
+ * Línea base de la spec 005 (T005; SC-003, FR-004): los 20 partidos de referencia producen exactamente la secuencia de
+ * eventos congelada en `fixtures/equivalencia-005.json` (commit `5007f5a` con la 3.0.0; regenerada con la 7.0.0 en la
+ * spec 014, T056, porque las 3.x ya no se simulan).
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

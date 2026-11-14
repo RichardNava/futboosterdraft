@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { abrirPartido } from '../api/cliente';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
-import { BarraPrincipal, type AccionBarra } from './BarraPrincipal';
+import type { AccionBarra } from './BarraPrincipal';
 import { SelectorModo, type Modalidad } from './SelectorModo';
 
 
@@ -15,7 +15,7 @@ interface Preparacion {
   modalidadPreferida?: Modalidad;
 }
 
-export interface EstadoPreparacion {
+interface EstadoPreparacion {
   prep: Preparacion & { partidoId: string; rival: NonNullable<Preparacion['rival']> };
   contraHumano: boolean;
   modalidad: Modalidad;
@@ -98,18 +98,3 @@ export function TarjetaPreparacion({ preparacion }: { preparacion: EstadoPrepara
   );
 }
 
-
-/**
- * Aviso del próximo partido con su botón principal («Comenzar partido» contra un NPC o «Ver partido» contra un
- * humano; spec 002, FR-030) en la `BarraPrincipal`.
- */
-export function AvisoPartido({ partidaId }: { partidaId: string }) {
-  const preparacion = usePreparacionPartido(partidaId);
-  if (!preparacion) return null;
-  return (
-    <>
-      <TarjetaPreparacion preparacion={preparacion} />
-      <BarraPrincipal principal={preparacion.accion} />
-    </>
-  );
-}

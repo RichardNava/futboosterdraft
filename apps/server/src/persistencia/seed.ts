@@ -335,6 +335,7 @@ export async function cargarCosmeticos(db: BaseDatos, c: CatalogoCosmeticosJson)
   });
 }
 
+/** Lee y valida `data/cosmeticos.json`. */
 export function leerCosmeticos(base: string, fichero: string = FICHEROS_POR_DEFECTO.cosmeticos): { catalogo: CatalogoCosmeticosJson; errores: ErrorSeed[] } {
   const catalogo = JSON.parse(readFileSync(resolve(base, fichero), 'utf-8')) as CatalogoCosmeticosJson;
   return { catalogo, errores: validarCosmeticos(catalogo) };

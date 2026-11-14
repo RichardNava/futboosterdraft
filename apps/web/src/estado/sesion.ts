@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { api, ErrorApi } from '../api/cliente';
 import { soltarConexionInvitado } from '../conexion/activa';
 
-export interface Usuario {
+interface Usuario {
   id: string;
   tipo: 'registrado' | 'invitado';
   apodo: string;
@@ -19,6 +19,7 @@ interface EstadoSesion {
   cerrarSesion(): Promise<void>;
 }
 
+/** Usuario de la sesión, con su carga, acceso y salida. */
 export const useSesion = create<EstadoSesion>((set, get) => ({
   usuario: null,
   cargando: true,

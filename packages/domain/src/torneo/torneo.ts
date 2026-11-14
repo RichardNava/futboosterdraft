@@ -110,6 +110,7 @@ function jornadaDeRonda(cuadro: Cuadro, ronda: number, numero: number): JornadaT
   };
 }
 
+/** Torneo nuevo del modo dado: calendario de liga o cuadro, sin resultados. */
 export function crearTorneo(modo: Modo, participantes: string[], mesas: string[][], semilla: Semilla): EstadoTorneo {
   const base = { modo, participantes, mesas, semilla, resultados: [], campeon: null, bajas: estadoBajasVacio(), aportaciones: [] };
   // El modo Duelo de jugadores usa el cuadro del playoff (spec 005, research R10).
@@ -132,14 +133,17 @@ export function jornadaActual(t: EstadoTorneo): JornadaTorneo | undefined {
   return t.jornadas.find((j) => j.estado !== 'cerrada');
 }
 
+/** Marca la jornada como abierta. */
 export function abrirJornada(t: EstadoTorneo, numero: number): EstadoTorneo {
   return { ...t, jornadas: t.jornadas.map((j) => (j.numero === numero ? { ...j, estado: 'abierta' } : j)) };
 }
 
+/** La jornada es de cuadro (con prórroga y penaltis). */
 export function esEliminatoria(j: JornadaTorneo): boolean {
   return j.tipo !== 'liga';
 }
 
+/** Clasificación con los resultados registrados (sin los partidos excluidos). */
 export function clasificacionActual(t: EstadoTorneo, opciones: OpcionesVista = {}): FilaClasificacion[] {
   const excluidos = new Set(opciones.excluirPartidos ?? []);
   const liga = t.resultados.filter(

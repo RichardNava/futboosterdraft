@@ -11,7 +11,7 @@ interface Props {
 }
 
 /** Miniatura de una formación: un punto por casilla, de la portería (abajo) a la delantera (arriba). */
-export function MiniaturaFormacion({ formacion }: { formacion: FormacionId }) {
+function MiniaturaFormacion({ formacion }: { formacion: FormacionId }) {
   return (
     <svg className="miniatura-formacion" viewBox="0 0 64 84" role="img" aria-label={`Formación ${formacion}`}>
       <rect x="1" y="1" width="62" height="82" rx="3" className="miniatura-campo" />

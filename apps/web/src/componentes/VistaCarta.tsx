@@ -2,12 +2,12 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { CartaJugador, type CartaResumen } from './CartaJugador';
 
 /** Retardo de intención con ratón y duración de la pulsación larga en táctil (research R15). */
-export const RETARDO_RATON_MS = 150;
-export const PULSACION_LARGA_MS = 400;
+const RETARDO_RATON_MS = 150;
+const PULSACION_LARGA_MS = 400;
 const TOLERANCIA_PX = 8;
 const MARGEN_PX = 8;
 
-export interface Rect {
+interface Rect {
   left: number;
   top: number;
   width: number;

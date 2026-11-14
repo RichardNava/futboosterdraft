@@ -6,6 +6,7 @@ import { conectar, urlBaseDatos, type BaseDatos } from './db';
 /** Carpeta de migraciones: relativa a este fichero en desarrollo; en la imagen de producción, por entorno. */
 export const CARPETA_MIGRACIONES = process.env.CARPETA_MIGRACIONES ?? fileURLToPath(new URL('../../drizzle', import.meta.url));
 
+/** Aplica las migraciones pendientes de Drizzle. */
 export async function aplicarMigraciones(db: BaseDatos): Promise<void> {
   await migrate(db, { migrationsFolder: CARPETA_MIGRACIONES });
 }

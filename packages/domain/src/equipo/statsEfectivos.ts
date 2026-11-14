@@ -53,6 +53,7 @@ function claseDestino(destino: DestinoPosicion): RolPenalizacion | 'POR' {
 
 const demarcacionDeRol = (r: RolPenalizacion | 'POR'): Demarcacion => (r === 'MED_MCO' || r === 'MED_MD' ? 'MED' : r);
 
+/** Fracción de stats que pierde un jugador en una casilla fuera de su posición (con Versátil e Inflexible). */
 export function penalizacionPorPosicion(
   jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'virtudes' | 'defectos'>,
   destino: DestinoPosicion,
@@ -94,6 +95,7 @@ function penalizacionBase(jugador: Pick<Jugador, 'demarcacion' | 'posicion' | 'v
   return Number.isFinite(menor) ? menor : tabla.porteria;
 }
 
+/** Stats de un jugador en una casilla: con la penalización por posición y las bonificaciones en puntos. */
 export function statsEfectivos(
   jugador: Jugador,
   destino: DestinoPosicion,

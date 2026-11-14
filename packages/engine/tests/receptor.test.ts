@@ -1,6 +1,7 @@
 /**
  * Receptor por tipo de pase, distancia y dirección reales (spec 003, research R3; FR-016, FR-017; T011).
  */
+import { PARAMETROS_V7 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { callejonSinSalida, factorPasador, pesosReceptor, receptorDePase } from '../src/acciones/receptor';
 import type { EstadoMotor, JugadorEnPartido } from '../src/index';
@@ -69,18 +70,54 @@ describe('receptor del pase (T011)', () => {
   });
 
   it('el factor del pasador queda acotado a `pases.atraccionPasadorAcotada`', () => {
+    // Con una atracción alta, para que los extremos lleguen a las cotas (con la 7.0.0 el techo no se alcanza con stats de carta).
+    const parametros = { ...PARAMETROS_V7, acciones: { ...PARAMETROS_V7.acciones, atraccionPasador: 5 } };
     const conPase = (pase: number) => {
-      const e = partido(`pasador-${pase}`);
+      const e = partido(`pasador-${pase}`, { parametros });
       const j = titularEn(e, 'local', 'MC-1');
       j.jugador = { ...j.jugador, stats: { ...j.jugador.stats, pase } as typeof j.jugador.stats };
       return factorPasador(e, e.equipos.local, j);
     };
-    // Los partidos de prueba usan los parámetros 3.0.0 (en la 5.0.0 el techo ya no se alcanza con stats de carta).
-    const [min, max] = partido('acotada').parametros.pases.atraccionPasadorAcotada;
+    const [min, max] = PARAMETROS_V7.pases.atraccionPasadorAcotada;
     expect(conPase(99)).toBeCloseTo(max, 6);
     expect(conPase(30)).toBeCloseTo(min, 6);
     expect(conPase(70)).toBeCloseTo(1, 6);
     expect(conPase(80)).toBeGreaterThan(1);
     expect(conPase(80)).toBeLessThanOrEqual(max);
+  });
+});
+
+describe('ida y vuelta sin sentido (spec 014, M3)', () => {
+  /** X dio el balón al portador sin ganar terreno; un tercero también está libre. */
+  function escena(encima: boolean, avance: number) {
+    const e = partido('ida-vuelta');
+    const portador = titularEn(e, 'local', 'MC-1');
+    const x = titularEn(e, 'local', 'MC-2');
+    const otro = titularEn(e, 'local', 'DCI');
+    const rival = titularEn(e, 'visitante', 'DC');
+    situar(e, portador.id, { x: 5000, y: 3200 });
+    situar(e, x.id, { x: 5000, y: 2200 });
+    situar(e, otro.id, { x: 4500, y: 4400 });
+    situar(e, rival.id, encima ? { x: 10000 - 5000 - 300, y: 6400 - 3200 } : { x: 1000, y: 600 });
+    soloEnCampo(e, [portador.id, x.id, otro.id, rival.id]);
+    darBalon(e, 'local', portador, 2);
+    e.posesion.ultimoPase = { de: x.id, a: portador.id, avance, racha: 1 };
+    const ids = repetir(e, portador, 'pase_corto', 200);
+    return { ids, x };
+  }
+
+  it('M3.1: sin presión y sin avance, quien la acaba de dar no es candidato', () => {
+    const { ids, x } = escena(false, 0);
+    expect(ids.includes(x.id)).toBe(false);
+  });
+
+  it('M3.1: si el pase ganó terreno, sí puede volver', () => {
+    const { ids, x } = escena(false, 400);
+    expect(ids.includes(x.id)).toBe(true);
+  });
+
+  it('M3.2: con un rival encima, la pared sigue permitida', () => {
+    const { ids, x } = escena(true, 0);
+    expect(ids.includes(x.id)).toBe(true);
   });
 });

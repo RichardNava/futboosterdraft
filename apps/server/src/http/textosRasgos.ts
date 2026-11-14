@@ -4,7 +4,7 @@
  */
 import { DEFECTOS, RASGOS, TODAS_LAS_VIRTUDES, type AmbitoRasgo, type Rasgo } from '@fbd/domain';
 
-export interface TextoRasgo {
+interface TextoRasgo {
   id: Rasgo;
   nombre: string;
   descripcion: string;

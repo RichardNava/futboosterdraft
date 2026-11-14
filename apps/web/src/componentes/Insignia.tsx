@@ -4,6 +4,7 @@
  */
 import { Icono } from './Icono';
 
+/** Etiqueta corta de estado (normal o de advertencia). */
 export function Insignia({ texto, tipo = 'normal', suave = false }: { texto: string; tipo?: 'normal' | 'advertencia'; suave?: boolean }) {
   // «etiqueta»: la clase que ya usaban las pantallas y las pruebas de la spec 003 para estas marcas (FR-038).
   const clases = ['insignia', 'etiqueta', suave ? 'suave' : '', tipo === 'advertencia' ? 'advertencia' : ''].filter(Boolean).join(' ');

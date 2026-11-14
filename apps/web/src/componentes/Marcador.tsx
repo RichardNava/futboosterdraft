@@ -6,7 +6,9 @@
  */
 import { contornoSobreLienzo } from './colores';
 import { useState, type CSSProperties } from 'react';
-import { urlEscudo, type Lado } from './chapa';
+import { urlEscudo, type equipoMarcador, type Lado } from './chapa';
+
+type EquipoChapa = ReturnType<typeof equipoMarcador>;
 import type { Goleador } from './goleadores';
 import { NombreRecortado } from './NombreRecortado';
 
@@ -18,7 +20,7 @@ export interface EquipoMarcador {
   escudo?: string | null;
 }
 
-export interface MarcadorGoles {
+interface MarcadorGoles {
   local: number;
   visitante: number;
   penaltis?: { local: number; visitante: number };
@@ -73,7 +75,7 @@ interface Props {
 }
 
 /** «Pérez 12', 67' (pen.) · Ramos (p. p.) 40'» en letra pequeña. */
-export function ListaGoleadores({ goleadores, etiqueta }: { goleadores: Goleador[]; etiqueta: string }) {
+function ListaGoleadores({ goleadores, etiqueta }: { goleadores: Goleador[]; etiqueta: string }) {
   if (goleadores.length === 0) return null;
   return (
     <ul className="lista-goleadores" aria-label={etiqueta}>
@@ -84,6 +86,21 @@ export function ListaGoleadores({ goleadores, etiqueta }: { goleadores: Goleador
         </li>
       ))}
     </ul>
+  );
+}
+
+/** Equipos y goles de la franja del 2D: chapa, nombre y marcador de cada lado. */
+export function EquiposFranja({ local, visitante, goles }: { local: EquipoChapa; visitante: EquipoChapa; goles: Record<Lado, number> }) {
+  return (
+    <span className="equipos-2d">
+      <Chapa {...local} lado="local" />
+      <NombreRecortado texto={local.nombre} />
+      <span className="goles-2d">
+        {goles.local} – {goles.visitante}
+      </span>
+      <NombreRecortado texto={visitante.nombre} />
+      <Chapa {...visitante} lado="visitante" />
+    </span>
   );
 }
 
@@ -114,6 +131,7 @@ export function GoleadoresFranja({
   );
 }
 
+/** Marcador del partido con los escudos, la fase y los goleadores. */
 export function Marcador({ local, visitante, marcador, fase, testIdGoles, goleadores }: Props) {
   return (
     <header className="marcador" aria-live="polite">

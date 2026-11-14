@@ -13,6 +13,7 @@ import type { LadoDuelo } from './tipos';
 
 export type PuntuacionBase = Omit<LadoDuelo, 'forma' | 'puntuacion'> & { base: number };
 
+/** Puntuación base de una carta en una casilla del modo Duelo (media y rasgos, en centésimas). */
 export function puntuacionEfectiva(jugador: Jugador, casilla: DestinoPosicion, p: ParametrosEquilibrado): PuntuacionBase {
   const { duelos } = parametrosEfectivos(p);
   const media = Math.round(jugador.media * 100);

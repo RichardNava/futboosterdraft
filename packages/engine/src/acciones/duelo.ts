@@ -8,11 +8,12 @@
  */
 import type { ParametrosEquilibrado, Rng } from '@fbd/domain';
 
-export function sigmoide(x: number): number {
+/** Sigmoide racional de 0 a 1 centrada en 0,5: idéntica en cualquier máquina. */
+function sigmoide(x: number): number {
   return 0.5 + x / (2 * (1 + Math.abs(x)));
 }
 
-export interface Duelo {
+interface Duelo {
   /** Desplazamiento base de la acción (más alto = más fácil). */
   base: number;
   atacante: number;

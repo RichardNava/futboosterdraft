@@ -14,6 +14,7 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 - Guía de estilos visuales (referencia de la spec 004): [docs/diseno/DESIGN.md](docs/diseno/DESIGN.md)
 - Sonidos (acción → efecto, editable): [docs/juego/sonidos.md](docs/juego/sonidos.md)
 - Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)
+- Enfrentamientos del motor (qué stat contra cuál en cada acción y con qué probabilidad): [docs/juego/enfrentamientos.md](docs/juego/enfrentamientos.md) (a mano; revisar si cambia el motor)
 
 ## Convenciones
 

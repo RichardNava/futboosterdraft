@@ -99,6 +99,8 @@ export function moverJugadores(estado: EstadoMotor): void {
       if (!objetivo) continue;
       let vmax = velocidadDeStat(estado, atributoConBonus(estado, equipo, j, 'velocidad', bonus[j.jugador.demarcacion]));
       if (estado.balon.portadorId === j.id && estado.balon.posesion === lado) vmax = Math.round(vmax * p.factorVelocidadConBalon);
+      // El que va a sacar una reanudación acude a la carrera (spec 014, FR-001): el saque espera a que llegue.
+      if (esp.accion?.tipo === 'saque' && esp.accion.deId === j.id) vmax = p.velocidadJugadorMax;
       moviles.push({ id: j.id, pos, vmax, objetivo, px: pos.x + pos.vx * ANTICIPACION, py: pos.y + pos.vy * ANTICIPACION, fx: 0, fy: 0 });
     }
   }

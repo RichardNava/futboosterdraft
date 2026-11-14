@@ -6,6 +6,7 @@ import { claveNombre, Rng, type Semilla } from '@fbd/domain';
 const PREFIJOS = ['Atlético', 'Real', 'Unión', 'Deportivo', 'Club', 'Racing', 'Sporting', 'Celta', 'Olímpico', 'Juventud'];
 const NUCLEOS = ['Bruma', 'Sierra Alta', 'Puerto Viejo', 'Los Álamos', 'Valle Claro', 'Mareas', 'Cumbre', 'Ribera', 'Faro', 'Encinar', 'Brisa', 'Pedregal'];
 
+/** Nombres de equipo para los NPC, sin repetir los ya usados. */
 export function nombresNPC(cantidad: number, semilla: Semilla, usados: ReadonlySet<string> = new Set()): string[] {
   const rng = new Rng(semilla);
   const nombres: string[] = [];

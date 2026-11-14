@@ -1,10 +1,11 @@
 /**
  * Migración 0010 (spec 005, T006; SC-002, FR-003, FR-036) sobre una base de datos de la spec 004: las virtudes de
  * `jugadores` y de las cartas guardadas en `partidos.entrada` cambian de nombre sin perder valores, y un partido
- * jugado con parámetros 3.0.0 se sigue reproduciendo igual.
+ * jugado con parámetros 3.0.0 conserva sus eventos y su marcador guardados (desde la spec 014 las 3.x ya no se
+ * resimulan: research R14).
  */
-import { PARAMETROS_V3, parametrosPorVersion } from '@fbd/domain';
-import { avanzar, crearPartido, type EntradaPartido } from '@fbd/engine';
+import { PARAMETROS_V3, parametrosPorVersion, VersionNoSoportada } from '@fbd/domain';
+import { crearPartido, type EntradaPartido, type EventoPartido, type Marcador } from '@fbd/engine';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { baseDatos004, CLAVE_004, type BaseDatos004 } from '../helpers/baseDatos004';
@@ -43,16 +44,16 @@ describe('migración 0010 (virtudes y defectos)', () => {
     for (const t of entrada.local.titulares) expect(Array.isArray(t.jugador.virtudes)).toBe(true);
   });
 
-  it('la reproducción del partido 3.0.0 da los mismos eventos y el mismo marcador', async () => {
-    const fila = await bd.db.execute<{ entrada: Omit<EntradaPartido, 'parametros'>; v: string; tipo: string }>(
-      sql`select entrada, version_parametros as v, tipo from partidos where id = ${bd.partidoId}`,
+  it('el partido 3.0.0 conserva sus eventos y su marcador guardados, y ya no se resimula', async () => {
+    const fila = await bd.db.execute<{ entrada: Omit<EntradaPartido, 'parametros'>; eventos: EventoPartido[]; marcador: Marcador; v: string; tipo: string }>(
+      sql`select entrada, eventos, marcador, version_parametros as v, tipo from partidos where id = ${bd.partidoId}`,
     );
-    const { entrada, v, tipo } = fila.rows[0]!;
+    const { entrada, eventos, marcador, v, tipo } = fila.rows[0]!;
     expect(v).toBe(PARAMETROS_V3.version);
     expect(tipo).toBe('futbol');
-    const fin = avanzar(crearPartido({ ...entrada, parametros: parametrosPorVersion(v) }), 'final');
-    expect(fin.eventos).toEqual(bd.eventos);
-    expect(fin.marcador).toEqual(bd.marcador);
+    expect(eventos).toEqual(bd.eventos);
+    expect(marcador).toEqual(bd.marcador);
+    expect(() => crearPartido({ ...entrada, parametros: parametrosPorVersion(v) })).toThrow(VersionNoSoportada);
   });
 
   it('la partida de la 004 queda en la versión 1 del catálogo (FR-036)', async () => {

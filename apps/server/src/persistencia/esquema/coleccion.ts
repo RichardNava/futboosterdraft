@@ -6,6 +6,7 @@ import { sql } from 'drizzle-orm';
 import { boolean, check, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { jugadores, usuarios } from './base';
 
+/** Tabla de colecciones de cartas. */
 export const colecciones = pgTable(
   'colecciones',
   {
@@ -27,6 +28,7 @@ export const colecciones = pgTable(
   ],
 );
 
+/** Tabla de pertenencia de las cartas a las colecciones. */
 export const coleccionesCartas = pgTable(
   'colecciones_cartas',
   {
@@ -75,6 +77,7 @@ export interface ResultadoCompraGuardado {
   duplicados: { id: number; fragmentos: number }[];
 }
 
+/** Tabla de compras (idempotentes por id de compra). */
 export const compras = pgTable(
   'compras',
   {
@@ -101,6 +104,7 @@ export const compras = pgTable(
   ],
 );
 
+/** Tabla de colecciones que posee cada usuario. */
 export const coleccionesUsuario = pgTable(
   'colecciones_usuario',
   {
@@ -118,6 +122,7 @@ export const coleccionesUsuario = pgTable(
   (t) => [primaryKey({ name: 'colecciones_usuario_pk', columns: [t.usuarioId, t.coleccionId] })],
 );
 
+/** Tabla del saldo de fragmentos de cada usuario. */
 export const saldosFragmentos = pgTable(
   'saldos_fragmentos',
   {
@@ -130,6 +135,7 @@ export const saldosFragmentos = pgTable(
   (t) => [check('saldos_fragmentos_saldo_ck', sql`${t.saldo} >= 0`)],
 );
 
+/** Tabla del historial de fragmentos. */
 export const movimientosFragmentos = pgTable(
   'movimientos_fragmentos',
   {

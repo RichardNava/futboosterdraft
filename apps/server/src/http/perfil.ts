@@ -10,6 +10,7 @@ import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
 import { errores } from './errores';
 
+/** Rutas del perfil: nombre de equipo, equipaciones y modalidad. */
 export function registrarRutasPerfil(app: FastifyInstance, auth: Auth, servicios: Pick<Servicios, 'repoPerfiles' | 'reloj'>): void {
   const { requiereSesion } = crearHooksSesion(auth);
 

@@ -43,6 +43,7 @@ export function moverFoco(e: KeyboardEvent<HTMLElement>): void {
   }
 }
 
+/** Selector de escudo entre los que tiene la cuenta. */
 export function SelectorEscudo({ elegido, onElegir, invitado = false, desactivado = false, etiqueta = 'Escudo' }: Props) {
   const { catalogo, error } = useCatalogoCosmeticos();
   if (error && !catalogo) return <p className="nota">No se han podido cargar los escudos.</p>;

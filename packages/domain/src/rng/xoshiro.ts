@@ -17,6 +17,7 @@ function rotl(x: number, k: number): number {
   return ((x << k) | (x >>> (32 - k))) >>> 0;
 }
 
+/** Estado del generador a partir de una semilla hexadecimal; lanza si no es válida. */
 export function estadoDesdeSemilla(semilla: Semilla): EstadoRng {
   const normalizada = semilla.toLowerCase();
   if (!PATRON_SEMILLA.test(normalizada)) {
@@ -33,6 +34,7 @@ export function estadoDesdeSemilla(semilla: Semilla): EstadoRng {
   return estado;
 }
 
+/** Semilla hexadecimal de un estado del generador (inverso de `estadoDesdeSemilla`). */
 export function semillaDesdeEstado(estado: EstadoRng): Semilla {
   return estado.map((v) => (v >>> 0).toString(16).padStart(8, '0')).join('');
 }
@@ -76,6 +78,7 @@ export function derivarSemilla(raiz: Semilla, etiqueta: string): Semilla {
   return semillaDesdeEstado(hash128(`${raiz.toLowerCase()}|${etiqueta}`));
 }
 
+/** Generador xoshiro128** reproducible: el único azar del juego (FR-040). */
 export class Rng {
   private readonly s: EstadoRng;
 
@@ -140,6 +143,7 @@ export class Rng {
     return [...this.s];
   }
 
+  /** Copia independiente con el mismo estado. */
   clonar(): Rng {
     return new Rng(this.estado());
   }

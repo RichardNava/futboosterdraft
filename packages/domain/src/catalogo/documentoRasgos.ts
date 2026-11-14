@@ -29,6 +29,7 @@ function tabla(ids: readonly Rasgo[]): string[] {
   ];
 }
 
+/** Markdown de `docs/juego/virtudes-y-defectos.md` a partir del catálogo de rasgos. */
 export function generarDocumentoRasgos(): string {
   const lineas = [
     '# Virtudes y defectos',

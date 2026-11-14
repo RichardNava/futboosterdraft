@@ -232,16 +232,19 @@ export const FORMACIONES: Readonly<Record<FormacionId, Formacion>> = Object.from
   FORMACIONES_LISTA.map((f) => [f.id, f]),
 ) as Record<FormacionId, Formacion>;
 
+/** Definición de una formación; lanza si no existe. */
 export function formacion(id: FormacionId): Formacion {
   const f = FORMACIONES[id];
   if (!f) throw new Error(`Formación desconocida: ${id}`);
   return f;
 }
 
+/** El valor es el id de una formación. */
 export function esFormacionId(valor: unknown): valor is FormacionId {
   return typeof valor === 'string' && (FORMACIONES_IDS as readonly string[]).includes(valor);
 }
 
+/** Casilla de una formación por su id. */
 export function casilla(formacionId: FormacionId, casillaId: string): Casilla | undefined {
   return FORMACIONES[formacionId].casillas.find((c) => c.id === casillaId);
 }

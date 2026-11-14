@@ -7,8 +7,8 @@ import { amarilla, falta } from '../src/acciones/balonParado';
 import { comprobarLesion } from '../src/acciones/lesiones';
 import { resolverIncidencias } from '../src/acciones/plantel';
 import { multiplicadorIndividual } from '../src/modificadores/defectos';
-import { aplicarDecision, avanzar, crearPartido } from '../src/index';
-import { contextoDe, entrada, ponerRasgos, situar, titularEn } from './ayudas';
+import { aplicarDecision, avanzar } from '../src/index';
+import { contextoDe, ponerRasgos, situar, titularEn } from './ayudas';
 import { conParametros, P4, partido4 } from './ayudasRasgos';
 
 describe('De acero', () => {
@@ -96,12 +96,5 @@ describe('Revulsivo', () => {
     const entro = eq.jugadores.find((j) => j.enCampo && j.entroDesdeBanquillo)!;
     expect(entro).toBeDefined();
     expect(multiplicadorIndividual(e, eq, entro)).toBeCloseTo(1 + P4.virtudes.revulsivo!);
-  });
-
-  it('con parámetros 3.0.0 no hace nada', () => {
-    const e = crearPartido(entrada('revulsivo-v3'));
-    const j = ponerRasgos(titularEn(e, 'local', 'DC'), { virtudes: ['Revulsivo'] });
-    j.entroDesdeBanquillo = true;
-    expect(multiplicadorIndividual(e, e.equipos.local, j)).toBe(1);
   });
 });

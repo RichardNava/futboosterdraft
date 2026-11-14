@@ -98,6 +98,7 @@ function esFechaIsoValida(texto: string): boolean {
 
 const incluye = <T>(lista: readonly T[], valor: unknown): valor is T => lista.includes(valor as T);
 
+/** Errores de una carta frente a las reglas del catálogo (vacío si es válida). */
 export function validarJugador(entrada: unknown): ErrorCatalogo[] {
   const errores: ErrorCatalogo[] = [];
   if (typeof entrada !== 'object' || entrada === null) {
@@ -236,6 +237,7 @@ export function validarJugador(entrada: unknown): ErrorCatalogo[] {
   return errores;
 }
 
+/** Errores de una lista de cartas: los de cada una y los de la colección (ids repetidos…). */
 export function validarColeccion(jugadores: unknown): ErrorCatalogo[] {
   if (!Array.isArray(jugadores)) {
     return [{ id: undefined, regla: 'campos', mensaje: 'La colección debe ser una lista de jugadores' }];

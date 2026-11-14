@@ -56,6 +56,7 @@ export interface ResultadoCruce {
 
 export type CodigoErrorDuelos = 'CASILLAS_INCOMPLETAS' | 'JUGADOR_REPETIDO';
 
+/** Error del modo Duelo, con su código. */
 export class ErrorDuelos extends Error {
   constructor(
     readonly codigo: CodigoErrorDuelos,

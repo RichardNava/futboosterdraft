@@ -30,6 +30,7 @@ export interface Estado2D {
   tramos: Tramo2D[];
 }
 
+/** Estado inicial del búfer de la 2D: nada informado y velocidad x2. */
 export function crearEstado2D(): Estado2D {
   return { ultimoTickInformado: 0, velocidad: 2, tramos: [] };
 }

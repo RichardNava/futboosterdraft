@@ -531,7 +531,7 @@
 .tienda-pase {
   border: 2px solid var(--color-oro);
   background: linear-gradient(135deg, var(--color-oro-tenue), var(--color-panel) 60%);
-  box-shadow: 0 0 24px var(--color-oro-tenue);
+  box-shadow: var(--sombra-oro-suave);
 }
 
 .tienda-pase h3 {

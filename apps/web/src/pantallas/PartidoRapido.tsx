@@ -1,3 +1,4 @@
+import { mapaEnergia, type EnergiaJugador } from '../componentes/IndicadorEnergia';
 import { nombreCartaDe } from '../componentes/CartaJugador';
 import { useEffect, useMemo, useState } from 'react';
 import { coloresDe } from '../componentes/colores';
@@ -10,7 +11,7 @@ import { AvisoDorsales } from '../componentes/AvisoDorsales';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { Estadisticas } from '../componentes/Estadisticas';
 import { conEnEspera, estadoEquipoEnPartido, sinLaAplicada, type AlineacionPartido, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
-import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
+import { enviarLoteDecisiones, GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
 import { Marcador as MarcadorPartido } from '../componentes/Marcador';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
 import { goleadoresDe } from '../componentes/goleadores';
@@ -56,7 +57,7 @@ export const ETIQUETA_FASE: Record<string, string> = {
 };
 
 /** Nombre de cada jugador del partido, con su dorsal. */
-export function nombresDePartido(inicio: Inicio): Map<number, string> {
+function nombresDePartido(inicio: Inicio): Map<number, string> {
   const mapa = new Map<number, string>();
   for (const lado of ['local', 'visitante'] as const) {
     const a = inicio.alineaciones[lado];
@@ -80,7 +81,7 @@ export function PartidoRapido() {
   const [marcador, setMarcador] = useState<Marcador>({ local: 0, visitante: 0 });
   const [estadisticas, setEstadisticas] = useState<unknown>(null);
   const [fase, setFase] = useState('primera_parte');
-  const [pausa, setPausa] = useState<{ motivo: string; venceEn: string } | null>(null);
+  const [pausa, setPausa] = useState<{ motivo: string; venceEn: string; energia?: EnergiaJugador[] } | null>(null);
   const [miId, setMiId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [gestion, setGestion] = useState(false);
@@ -103,7 +104,7 @@ export function PartidoRapido() {
         setPausa(null);
         break;
       case 'partido.pausa_decision':
-        setPausa({ motivo: m.motivo as string, venceEn: m.venceEn as string });
+        setPausa({ motivo: m.motivo as string, venceEn: m.venceEn as string, ...(m.energia ? { energia: m.energia as EnergiaJugador[] } : {}) });
         break;
       case 'partido.decision_aplicada':
         if (m.participanteId === miId) {
@@ -188,12 +189,8 @@ export function PartidoRapido() {
     const ack = await conexion.enviar({ t: 'partido.finalizar', partidoId: inicio.partidoId });
     if (!ack.ok) throw new Error(ack.error?.mensaje ?? 'No se pudo finalizar el partido');
   };
-  const enviarLote = async (decisiones: DecisionGestion[]) => {
-    if (!conexion) throw new Error('Sin conexión');
-    const ack = await conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
-    if (ack.ok) setEnEspera((e) => [...e, ...decisiones]);
-    return ack;
-  };
+  const enviarLote = (decisiones: DecisionGestion[]) =>
+    enviarLoteDecisiones(conexion, inicio.partidoId, decisiones, () => setEnEspera((e) => [...e, ...decisiones]));
 
   // Botones (contracts/ui.md): en juego, «Finalizar partido»; en una pausa, «Seguir» y, contra un NPC, «Gestionar
   // equipo» con la misma importancia a su izquierda (FR-006a).
@@ -218,6 +215,7 @@ export function PartidoRapido() {
         colores={coloresDe(inicio.equipaciones[miLado])}
         enviar={enviarLote}
         onCerrar={() => setGestion(false)}
+        {...(pausa?.energia ? { energia: mapaEnergia(pausa.energia) } : {})}
       />
     );
   }

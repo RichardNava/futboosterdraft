@@ -7,6 +7,7 @@ import type { AccionEnCurso, EstadoMotor, TipoAccionVisible } from '../estado/es
 import { acotar, dist2, isqrt } from '../espacio/aritmetica';
 import { destinoBalon as destinoDelVuelo, esVuelo } from '../espacio/balon';
 import { LARGO, type Punto } from '../espacio/geometria';
+import { anotar } from '../metricas';
 import { anotarFotograma, pasarTiempo, type Contexto } from './contexto';
 
 /** Llegada a un punto: a menos de esta distancia, en décimas. */
@@ -67,10 +68,11 @@ export function controlar(ctx: Contexto, jugadorId: number, ticks: number): void
 }
 
 /** Ticks que tarda el balón de una acción en recorrer una distancia (décimas). */
-export function velocidadDeVuelo(estado: EstadoMotor, tipo: TipoAccionVisible): number {
+function velocidadDeVuelo(estado: EstadoMotor, tipo: TipoAccionVisible): number {
   return estado.parametros.espacio.velocidadBalon[BALON_DE[tipo] ?? 'raso'];
 }
 
+/** Ticks que tarda el balón de una acción en recorrer `distancia` (décimas), con el mínimo de vuelo. */
 export function ticksDeVuelo(estado: EstadoMotor, tipo: TipoAccionVisible, distancia: number): number {
   return Math.max(estado.parametros.espacio.vueloMinimoTicks, Math.ceil(distancia / velocidadDeVuelo(estado, tipo)));
 }
@@ -84,15 +86,16 @@ export function ticksDeCarrera(estado: EstadoMotor, jugadorId: number, punto: Pu
 
 /**
  * Balón en vuelo hacia un jugador (lo sigue hasta llegarle) o hacia un punto. Si el destino es un jugador
- * con un punto de llegada asignado (`destinos`), el balón tarda lo que tarda en llegar a ese punto.
+ * con un punto de llegada asignado (`destinos`), el balón tarda lo que tarda en llegar a ese punto. Devuelve quién se
+ * queda el balón si iba a un jugador.
  */
 export function volar(
   ctx: Contexto,
   tipo: TipoAccionVisible,
   deId: number,
   destino: { jugadorId: number } | { punto: Punto },
-  opciones: { exito: boolean; aerea?: boolean },
-): void {
+  opciones: { exito: boolean; aerea?: boolean; disputa?: boolean },
+): number | undefined {
   const e = ctx.estado;
   if (!esVuelo(tipo)) throw new Error(`${tipo} no es un vuelo`);
   const b = e.espacio.balon;
@@ -120,8 +123,16 @@ export function volar(
   }, 1);
   if (aId !== undefined) delete e.espacio.destinos[aId];
   cerrar(ctx, a);
-  // Si el receptor aún no ha llegado al punto, el balón no vuelve atrás: queda rodando y va a por él.
-  if (aId !== undefined && !balonCon(e, aId)) recuperarSuelto(ctx, aId, 1);
+  // Si el receptor aún no ha llegado al punto, el balón no vuelve atrás: sigue rodando y él va a por él. Devuelve quién
+  // se queda el balón (puede llegar antes un rival).
+  if (aId !== undefined && !balonCon(e, aId)) {
+    const registro = e.acciones[e.acciones.length - 1];
+    const quien = recuperarSuelto(ctx, aId, 1, opciones.disputa);
+    // Si llega antes un rival, el pase no llegó a su destinatario.
+    if (quien !== aId && registro) registro.exito = false;
+    return quien;
+  }
+  return aId;
 }
 
 /** Conducción o regate: el jugador lleva el balón hasta un punto (o hasta donde le frenen). */
@@ -176,28 +187,84 @@ export function reponer(ctx: Contexto, motivo: string, punto: Punto, sacadorId: 
   const p = e.parametros.espacio;
   // En un penalti también se espera a que el lanzador llegue al punto (spec 003: el tiro sale desde allí).
   hasta(ctx, listo, minimo, true, minimo + (alArea || motivo === 'penalti' ? p.esperaColocacionMaxima : p.esperaSaqueMaxima));
+  // Sin esperar a los demás, el que saca sí tiene que llegar al balón: nadie lo juega a distancia (spec 014, FR-001).
+  const sacadorJunto = () => {
+    const s = posicion(e, sacadorId);
+    return !s || dist2(s.x, s.y, esp.balon.x, esp.balon.y) <= LLEGADA * LLEGADA;
+  };
+  // Tope: cruzar el campo dos veces a la velocidad máxima, la del que va a sacar (`moverJugadores`): un lanzador designado
+  // lejano también llega, sin alargar la parte minutos.
+  hasta(ctx, sacadorJunto, 0, true, Math.ceil((2 * LARGO) / p.velocidadJugadorMax));
+  if (motivo === 'banda' || motivo === 'saque_puerta') esp.sinFueraDeJuego = true;
   delete esp.destinos[sacadorId];
   cerrar(ctx, a);
 }
 
-/** Balón suelto tras una pérdida: rueda hacia quien lo recupera, que va a por él. */
-export function recuperarSuelto(ctx: Contexto, recuperadorId: number, minimo = 2): void {
+/** Rival más cercano al balón (el que también va a por un balón suelto). */
+function rivalMasCercano(e: EstadoMotor, jugadorId: number): number | undefined {
+  const local = e.equipos.local.jugadores.some((j) => j.id === jugadorId);
+  const b = e.espacio.balon;
+  let mejor: number | undefined;
+  let mejorD = Infinity;
+  for (const j of e.equipos[local ? 'visitante' : 'local'].jugadores) {
+    const q = j.enCampo ? e.espacio.jugadores[j.id] : undefined;
+    if (!q) continue;
+    const d = dist2(q.x, q.y, b.x, b.y);
+    if (d < mejorD || (d === mejorD && mejor !== undefined && j.id < mejor)) {
+      mejor = j.id;
+      mejorD = d;
+    }
+  }
+  return mejor;
+}
+
+/**
+ * Balón suelto (spec 014, research R1; FR-001, FR-002): el balón rueda en su dirección y frena; `recuperadorId` y el
+ * rival más cercano (con `disputa`) corren hacia su posición actual en cada tick. Se lo queda el primero que llega (lo
+ * decide su velocidad). Devuelve quién lo tiene (el recuperador si nadie llega a tiempo).
+ */
+export function recuperarSuelto(ctx: Contexto, recuperadorId: number, minimo = 2, disputa = true): number {
   const e = ctx.estado;
   const esp = e.espacio;
-  const p = posicion(e, recuperadorId);
-  if (!p) {
+  if (!posicion(e, recuperadorId)) {
     pasarTiempo(ctx, minimo);
-    return;
+    return recuperadorId;
   }
-  esp.destinos[recuperadorId] = { x: esp.balon.x, y: esp.balon.y };
-  const a = abrir(ctx, { tipo: 'control', deId: recuperadorId, aId: recuperadorId, destino: { x: p.x, y: p.y }, aerea: false, exito: true, motivo: 'suelto' });
-  const junto = () => {
-    const q = posicion(e, recuperadorId);
-    return !q || dist2(q.x, q.y, esp.balon.x, esp.balon.y) <= LLEGADA * LLEGADA;
+  const rivalId = disputa ? rivalMasCercano(e, recuperadorId) : undefined;
+  const a = abrir(ctx, { tipo: 'control', deId: recuperadorId, destino: { x: esp.balon.x, y: esp.balon.y }, aerea: false, exito: true, motivo: 'suelto' });
+  const llega = (id: number | undefined) => {
+    const q = id !== undefined ? posicion(e, id) : null;
+    return q !== null && dist2(q.x, q.y, esp.balon.x, esp.balon.y) <= LLEGADA * LLEGADA;
   };
-  hasta(ctx, junto, minimo);
+  // Si los dos se juntan (chapas en contacto) antes de llegar, se lo queda el más cercano al balón.
+  const choque = (a: number, b: number | undefined): number | undefined => {
+    const p = posicion(e, a);
+    const q = b !== undefined ? posicion(e, b) : null;
+    const r = e.parametros.espacio.radioSeparacion;
+    if (!p || !q || dist2(p.x, p.y, q.x, q.y) > r * r) return undefined;
+    const bx = esp.balon.x;
+    const by = esp.balon.y;
+    return dist2(q.x, q.y, bx, by) < dist2(p.x, p.y, bx, by) ? b : a;
+  };
+  let quien: number | undefined;
+  for (let n = 0; n < MAXIMO_TICKS; n++) {
+    quien = llega(recuperadorId) ? recuperadorId : llega(rivalId) ? rivalId : choque(recuperadorId, rivalId);
+    if (quien !== undefined && n >= minimo) break;
+    for (const id of [recuperadorId, rivalId]) if (id !== undefined && posicion(e, id)) esp.destinos[id] = { x: esp.balon.x, y: esp.balon.y };
+    pasarTiempo(ctx, 1);
+  }
   delete esp.destinos[recuperadorId];
+  if (rivalId !== undefined) {
+    delete esp.destinos[rivalId];
+    // Carrera por un balón suelto (SC-008: la velocidad decide).
+    const ganador = quien ?? recuperadorId;
+    for (const id of [recuperadorId, rivalId]) anotar(ctx.metricas, id, 'sueltosDisputados');
+    anotar(ctx.metricas, ganador, 'sueltosGanados');
+  }
+  a.destino = { x: esp.balon.x, y: esp.balon.y };
+  if (quien !== undefined && quien !== recuperadorId) a.exito = false;
   cerrar(ctx, a);
+  return quien ?? recuperadorId;
 }
 
 /** ¿Está el balón con este jugador (pegado a él)? */

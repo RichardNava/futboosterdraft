@@ -22,6 +22,7 @@ import { ConsultaReproduccion, CuerpoAbrir } from '@fbd/protocol';
 import { errores } from './errores';
 import { medir } from '../observabilidad/desglose';
 
+/** Rutas de los partidos: abrirlos, su resumen y su reproducción. */
 export function registrarRutasPartidos(app: FastifyInstance, auth: Auth, gestor: GestorPartidas): void {
   const { requiereSesion } = crearHooksSesion(auth);
 

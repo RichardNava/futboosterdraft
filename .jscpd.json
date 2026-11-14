@@ -1,0 +1,32 @@
+{
+  "//": "Código duplicado (spec 014, research R12): `pnpm dlx jscpd`. Solo TypeScript y TSX de producción: las pruebas y las fixtures repiten montajes a propósito y los JSON son datos.",
+  "path": [
+    "apps/server/src",
+    "apps/web/src",
+    "packages/domain/src",
+    "packages/engine/src",
+    "packages/protocol/src",
+    "packages/ai/src",
+    "tools/balance/src",
+    "tools/fixtures/src",
+    "scripts"
+  ],
+  "format": [
+    "typescript",
+    "tsx"
+  ],
+  "minLines": 8,
+  "minTokens": 70,
+  "ignore": [
+    "**/node_modules/**",
+    "**/tests/**",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/fixtures/**",
+    "**/*.json",
+    "**/*.d.ts"
+  ],
+  "reporters": [
+    "console"
+  ]
+}

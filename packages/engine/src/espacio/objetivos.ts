@@ -19,9 +19,10 @@ import type { EquipoEstado, EstadoMotor } from '../estado/estado';
 import { factorDefensivo } from '../modificadores/defectos';
 import type { Lado } from '../tipos';
 import { acotar, dist2, dividir, escalar, isqrt } from './aritmetica';
-import { ULTIMO_TERCIO } from './campo';
+import { decimasDeMetros, ULTIMO_TERCIO } from './campo';
 import { objetivosBalonParado } from './colocacion';
-import { ANCHO, CENTRO_Y, LARGO, lineaDe, type Punto } from './geometria';
+import { aAbsoluta, aEquipo, ANCHO, CENTRO_Y, LARGO, lineaDe, type Punto } from './geometria';
+import { factorPericia, penultimoDefensor } from '../acciones/fueraDeJuego';
 
 export { lineaDe } from './geometria';
 
@@ -29,7 +30,7 @@ const rival = (lado: Lado): Lado => (lado === 'local' ? 'visitante' : 'local');
 /** Margen con las líneas del campo. */
 const MARGEN = 150;
 /** Ticks (5 s reales a x2) que tarda en volver a la forma quien ha tenido un papel en la jugada. */
-export const TICKS_VUELTA = 118;
+const TICKS_VUELTA = 118;
 /** Margen dentro del rango de distancia entre líneas de FR-023 al acotar los objetivos. */
 const MARGEN_LINEAS = 150;
 const LINEA_DEFENSA = 0;
@@ -42,7 +43,7 @@ const CODIGO_LINEA = { defensa: LINEA_DEFENSA, medio: LINEA_MEDIO, ataque: LINEA
 const por = (v: number, milesimas: number) => dividir(v * milesimas, 1000);
 const mil = (f: number) => Math.round(f * 1000);
 
-export type PapelLlegada = 'extremo' | 'mediapunta';
+type PapelLlegada = 'extremo' | 'mediapunta';
 
 /** Papel en la llegada al área (H11), por la posición en la que juega: extremos (ED, EI) y mediapunta (MCO). */
 export function papelLlegada(equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): PapelLlegada | null {
@@ -250,6 +251,25 @@ function seguirBalon(estado: EstadoMotor): void {
   }
 }
 
+/**
+ * Atacantes sin balón que respetan la línea del fuera de juego (spec 014, FR-012): como mucho hasta el penúltimo
+ * defensor más una holgura que baja con su desmarque (o posicionamiento) y crece frente a una línea adelantada, que sube
+ * a destiempo para ellos (FR-011); por detrás del balón y en campo propio, libres.
+ */
+function respetarLinea(estado: EstadoMotor, atacante: EquipoEstado, defensor: EquipoEstado, objetivos: Record<number, Punto>): void {
+  const f = estado.parametros.fueraDeJuego!;
+  const minimo = Math.max(penultimoDefensor(estado, defensor, atacante.lado), aEquipo(atacante.lado, estado.espacio.balon).x, LARGO / 2);
+  for (const j of atacante.jugadores) {
+    const o = objetivos[j.id];
+    if (!o || !j.enCampo || j.casillaId === 'POR' || j.id === estado.balon.portadorId) continue;
+    const stats = j.jugador.stats as unknown as Record<string, number>;
+    const holgura = decimasDeMetros(f.holguraMaxM) * (defensor.tactica.lineaAdelantada ? f.holguraLineaAdelantada : 1);
+    const limite = minimo + Math.round(holgura * (1 - factorPericia(stats.desmarque ?? stats.posicionamiento ?? 70)));
+    const q = aEquipo(atacante.lado, o);
+    if (q.x > limite) objetivos[j.id] = aAbsoluta(atacante.lado, { x: limite, y: q.y });
+  }
+}
+
 /** Objetivos de todos los titulares, en coordenadas absolutas (sin los destinos de la jugada en curso). */
 export function calcularObjetivos(estado: EstadoMotor): Record<number, Punto> {
   const esp = estado.espacio;
@@ -263,6 +283,7 @@ export function calcularObjetivos(estado: EstadoMotor): Record<number, Punto> {
   const presion = balonParado ? { ids: [], coordinada: false } : elegirPresionadores(estado, defensor);
   objetivosDeForma(estado, atacante, objetivos, [estado.balon.portadorId]);
   objetivosDeForma(estado, defensor, objetivos, presion.ids);
+  if (!balonParado) respetarLinea(estado, atacante, defensor, objetivos);
 
   // Marcaje individual: cada defensor de campo se acerca a su par (el rival más cercano a su objetivo).
   if (defensor.tactica.sistemaDefensivo === 'individual') {

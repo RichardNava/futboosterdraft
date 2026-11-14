@@ -1,3 +1,4 @@
+import { etiquetaEnergia, IndicadorEnergia } from './IndicadorEnergia';
 import {
   ANCHO_CAMPO,
   LARGO_CAMPO,
@@ -42,6 +43,8 @@ interface Props {
   bloqueados?: ReadonlySet<number>;
   /** Distintivos por jugador (baja, tarjetas, lesión, cansancio). */
   distintivos?: ReadonlyMap<number, ReactNode>;
+  /** Spec 014 (FR-016 a FR-018): energía de los jugadores en el campo en la pausa; solo en modo `partido`. */
+  energia?: ReadonlyMap<number, { energia: number; penalizacion: number }>;
   maxBanquillo?: number;
   /** Bajo el banquillo (partido, spec 012, ronda 5): lesionados, expulsados y sustituidos, para no perderles la pista. */
   noDisponibles?: readonly number[];
@@ -92,6 +95,7 @@ export function CampoEquipo(props: Props) {
     reserva = [],
     bloqueados,
     distintivos,
+    energia,
     maxBanquillo = 7,
     noDisponibles = [],
     sinBanquillo,
@@ -259,6 +263,7 @@ export function CampoEquipo(props: Props) {
     const sel = seleccionado === jugadorId;
     const moviendo = arrastre?.jugadorId === jugadorId && arrastre.movido;
     const nombre = `${j.nombre} ${j.apellidos}`;
+    const energiaJ = modo === 'partido' ? energia?.get(jugadorId) : undefined;
     return (
       <VistaCarta key={jugadorId} jugador={j} arrastrando={arrastrando} dorsal={dorsales?.[jugadorId]}>
         <button
@@ -269,7 +274,7 @@ export function CampoEquipo(props: Props) {
           data-casilla={casillaId}
           data-posicion={posicion}
           aria-pressed={sel}
-          aria-label={`${nombre}: ${posicion}, media ${Math.round(ef.media)}${penal > 0 ? `, fuera de posición (−${penal} %)` : ''}${sel ? ', seleccionado: flechas para mover, Intro sobre otra ficha para intercambiar' : ''}`}
+          aria-label={`${nombre}: ${posicion}, media ${Math.round(ef.media)}${penal > 0 ? `, fuera de posición (−${penal} %)` : ''}${energiaJ ? `, ${etiquetaEnergia(energiaJ.energia, energiaJ.penalizacion)}` : ''}${sel ? ', seleccionado: flechas para mover, Intro sobre otra ficha para intercambiar' : ''}`}
           onPointerDown={empezar(jugadorId)}
           onKeyDown={alTeclado(jugadorId)}
         >
@@ -299,6 +304,7 @@ export function CampoEquipo(props: Props) {
             {nombreCartaDe(j)}
           </span>
           {distintivos?.get(jugadorId)}
+          {energiaJ && <IndicadorEnergia {...energiaJ} />}
         </button>
       </VistaCarta>
     );

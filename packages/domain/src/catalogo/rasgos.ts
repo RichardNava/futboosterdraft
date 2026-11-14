@@ -530,6 +530,7 @@ export const RASGOS: Readonly<Record<Rasgo, DefinicionRasgo>> = Object.freeze({
   ),
 }) as unknown as Readonly<Record<Rasgo, DefinicionRasgo>>;
 
+/** Definición de un rasgo; lanza si no existe. */
 export function rasgo(id: Rasgo): DefinicionRasgo {
   const r = RASGOS[id];
   if (!r) throw new Error(`Rasgo desconocido: ${String(id)}`);
@@ -539,10 +540,12 @@ export function rasgo(id: Rasgo): DefinicionRasgo {
 const VIRTUDES_SET: ReadonlySet<unknown> = new Set(TODAS_LAS_VIRTUDES);
 const DEFECTOS_SET: ReadonlySet<unknown> = new Set(DEFECTOS);
 
+/** El valor es el id de una virtud. */
 export function esVirtud(id: unknown): id is Virtud {
   return VIRTUDES_SET.has(id);
 }
 
+/** El valor es el id de un defecto. */
 export function esDefecto(id: unknown): id is Defecto {
   return DEFECTOS_SET.has(id);
 }

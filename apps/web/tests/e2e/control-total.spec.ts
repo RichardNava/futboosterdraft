@@ -22,6 +22,8 @@ test('control total en la 2D: parada por un lance propio, aviso y gestión del e
   await expect(page.locator('.campo-2d canvas')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Control total' })).toHaveAttribute('aria-pressed', 'true');
   const partidoId = page.url().split('/').at(-1)!;
+  // Spec 014 (SC-007): mientras se reproduce la 2D no hay indicador de energía.
+  await expect(page.locator('.indicador-energia')).toHaveCount(0);
   expect((await page.request.post(`/api/dev/partidas/${partidaId}/partidos/${partidoId}/lesiones`)).ok()).toBe(true);
   await page.getByRole('button', { name: 'x8' }).click();
 
@@ -37,6 +39,12 @@ test('control total en la 2D: parada por un lance propio, aviso y gestión del e
     await expect(gestion).toBeHidden();
   }
   await expect(gestion.locator('.aviso-parada')).toContainText(lance);
+
+  // Spec 014 (SC-007): con el cansancio desde el 65', pasado el 75' algún titular está por debajo del 100 % y, pasado el
+  // 85', alguno baja del 80 % y su indicador lleva la penalización.
+  const minuto = Number(/\((\d+)/.exec((await gestion.locator('.aviso-parada').textContent()) ?? '')?.[1] ?? 0);
+  if (minuto >= 75) await expect(gestion.locator('.ficha-equipo .indicador-energia:not([aria-label="Energía 100 %"])').first()).toBeVisible();
+  if (minuto >= 85) await expect(gestion.locator('.ficha-equipo .indicador-energia-penalizacion').first()).toBeVisible();
 
   // Spec 012, ronda 5: con un lesionado y cambios por hacer hay que sustituirlo (sin cambios automáticos).
   const volver = page.getByRole('button', { name: 'Volver sin cambios' });

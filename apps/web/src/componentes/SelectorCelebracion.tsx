@@ -18,6 +18,7 @@ interface Props {
   desactivado?: boolean;
 }
 
+/** Selector de la celebración de gol entre las que tiene la cuenta, con vista previa. */
 export function SelectorCelebracion({ elegida, onElegir, escudo = null, desactivado = false }: Props) {
   const { catalogo, error } = useCatalogoCosmeticos();
   // Cada reproducción de la vista previa es una capa nueva.

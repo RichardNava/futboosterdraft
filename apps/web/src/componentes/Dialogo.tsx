@@ -16,6 +16,7 @@ interface Props {
   alPulsarFondo?: () => void;
 }
 
+/** Diálogo modal accesible: foco atrapado, Escape y clic en el fondo. */
 export function Dialogo({ children, rol = 'dialog', etiquetadoPor, etiqueta, alEscape, alPulsarFondo }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   useAtraparFoco(ref, alEscape);

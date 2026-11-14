@@ -43,7 +43,8 @@ function rangos(xs: readonly number[]): number[] {
   return r;
 }
 
-export function spearman(a: readonly number[], b: readonly number[]): number {
+/** Correlación de rangos de Spearman entre dos listas de la misma longitud. */
+function spearman(a: readonly number[], b: readonly number[]): number {
   const ra = rangos(a);
   const rb = rangos(b);
   const ma = media(ra);
@@ -59,7 +60,7 @@ export function spearman(a: readonly number[], b: readonly number[]): number {
   return da && db ? num / Math.sqrt(da * db) : 0;
 }
 
-export interface EfectoRasgo {
+interface EfectoRasgo {
   id: Rasgo;
   /** Diferencia de goles esperada con el rasgo menos sin él (por partido). */
   efecto: number;
@@ -77,7 +78,7 @@ const CLARAMENTE = 4;
 const MEDIA_STATS = 5;
 
 /** Efecto de cada rasgo en la diferencia de goles (con − sin), con `n` partidos por serie. */
-export function medirEfectos(n: number, semilla: number, ids: readonly Rasgo[] = [...TODAS_LAS_VIRTUDES, ...DEFECTOS]): EfectoRasgo[] {
+function medirEfectos(n: number, semilla: number, ids: readonly Rasgo[] = [...TODAS_LAS_VIRTUDES, ...DEFECTOS]): EfectoRasgo[] {
   const { base, efecto } = medidor(n, semilla);
   return ids.map((id) => ({ id, ...efecto(conRasgo(base, id)) }));
 }
@@ -144,11 +145,13 @@ function comprobacionTipo(tipo: 'virtud' | 'defecto', efectos: readonly EfectoRa
   };
 }
 
-export function comprobacionesImpacto(n: number, semilla: number): Comprobacion[] {
+/** 005/FR-051, FR-051b y SC-013: el efecto de cada rasgo en la diferencia de goles es coherente con su peso. */
+function comprobacionesImpacto(n: number, semilla: number): Comprobacion[] {
   const efectos = medirEfectos(n, semilla);
   return [comprobacionTipo('virtud', efectos), comprobacionTipo('defecto', efectos), comprobarStatsMandan(n, semilla, efectos)];
 }
 
+/** Comprobaciones del impacto de los rasgos (spec 005) para la herramienta. */
 export function gruposImpacto(): GrupoComprobaciones[] {
   return [{ ids: ['005/FR-051', '005/FR-051b', '005/SC-013'], serie: 'sintetica', ejecutar: (o) => comprobacionesImpacto(Math.max(40, Math.round(o.n / 5)), o.seed) }];
 }

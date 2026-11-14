@@ -94,7 +94,7 @@ describe('grupo de hilos', () => {
   it('en proceso (0 hilos) llama a la función real y devuelve su excepción', async () => {
     const g = crearCalculo(0);
     expect(g.hilos).toBe(0);
-    await expect(g.ejecutar('rehacer', [{ entrada: null, versionParametros: '5.0.0', decisiones: [] }, false], 'humano')).rejects.toBeInstanceOf(TypeError);
+    await expect(g.ejecutar('rehacer', [{ entrada: null, versionParametros: '7.0.0', decisiones: [] }, false], 'humano')).rejects.toBeInstanceOf(TypeError);
   });
 });
 

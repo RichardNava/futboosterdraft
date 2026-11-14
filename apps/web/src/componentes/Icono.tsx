@@ -176,6 +176,7 @@ interface Props {
   className?: string;
 }
 
+/** Icono SVG propio; con `etiqueta` es una imagen accesible, sin ella es decorativo. */
 export function Icono({ nombre, etiqueta, tamano, className }: Props) {
   const lado = tamano ?? '1em';
   return (

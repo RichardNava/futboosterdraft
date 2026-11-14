@@ -9,7 +9,7 @@ import { reproducir, type Efecto } from '../../sonido/sonido';
 import { CELEBRACIONES_JUEGO, IDS_CELEBRACIONES_JUEGO } from './registro';
 import { duracionCelebracion, fuentesSecuencia, planCelebracion, type CelebracionElegida, type EquipoCelebracion } from './tipos';
 
-export interface PropsCapaCelebracion {
+interface PropsCapaCelebracion {
   celebracion: CelebracionElegida;
   equipo: EquipoCelebracion;
   goleador: string;
@@ -20,6 +20,7 @@ export interface PropsCapaCelebracion {
 
 const movimientoReducido = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
 
+/** Capa de la celebración de gol sobre el campo 2D (vídeo o animación), con el goleador. */
 export function CapaCelebracion({ celebracion, equipo, goleador, onFin, vistaPrevia = false }: PropsCapaCelebracion) {
   const [falloVideo, setFalloVideo] = useState(false);
   const [reducido] = useState(movimientoReducido);

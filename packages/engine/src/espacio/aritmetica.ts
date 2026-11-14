@@ -16,6 +16,7 @@ export function isqrt(n: number): number {
   return r;
 }
 
+/** Distancia al cuadrado entre dos puntos (enteros, sin raíz). */
 export function dist2(ax: number, ay: number, bx: number, by: number): number {
   const dx = bx - ax;
   const dy = by - ay;
@@ -48,4 +49,5 @@ export function limitar(dx: number, dy: number, maximo: number): [number, number
   return dx * dx + dy * dy > maximo * maximo ? escalar(dx, dy, maximo) : [dx, dy];
 }
 
+/** `v` dentro de [min, max]. */
 export const acotar = (v: number, min: number, max: number): number => (v < min ? min : v > max ? max : v);

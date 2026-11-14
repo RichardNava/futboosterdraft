@@ -50,7 +50,7 @@ export interface ResultadoTramo {
   incidencias?: Incidencia[];
 }
 
-export interface OpcionesAvance {
+interface OpcionesAvance {
   fotogramas?: boolean;
   /** Modo 'ticks': parar al terminar la acción que alcanza este tick. */
   hastaTick?: number;
@@ -196,6 +196,7 @@ function estadisticasSalida(e: EstadoMotor): Estadisticas {
   return { local: salida('local', local), visitante: salida('visitante', 100 - local) };
 }
 
+/** Simula desde `entrada` hasta el corte pedido (`modo`) sin modificarla y devuelve el tramo: estado, eventos, acciones y, si se piden, fotogramas y métricas. */
 export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: OpcionesAvance = {}): ResultadoTramo {
   // Los eventos y las acciones ya emitidos no se modifican nunca: basta copiar las listas. Clonarlos en cada
   // llamada haría que encadenar muchos tramos cortos (2D) costara un tiempo cuadrático.

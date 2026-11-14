@@ -16,6 +16,7 @@ import {
   type ParametrosEquilibrado,
 } from '@fbd/domain';
 
+/** Once de un NPC para el modo Duelo de jugadores en la formación dada (spec 005). */
 export function decidirAlineacionDuelos(
   plantilla: readonly Jugador[],
   formacion: FormacionId,

@@ -18,9 +18,11 @@ export interface MesaPersistida {
   pausa?: { pausadaEn: number; restanteMs: number } | null;
 }
 
+/** Mesas, elecciones y plantillas del draft. */
 export class RepoDraft {
   constructor(private readonly db: BaseDatos) {}
 
+  /** Guarda una mesa de draft nueva. */
   async crearMesa(
     datos: { partidaId: string; indice: number; semilla: string; mesa: Mesa },
     ejecutor: Ejecutor = this.db,
@@ -117,6 +119,7 @@ export class RepoDraft {
     });
   }
 
+  /** Guarda las plantillas resultantes del draft. */
   async guardarPlantillas(porParticipante: Record<string, number[]>, ejecutor: Ejecutor = this.db): Promise<void> {
     for (const [participanteId, jugadores] of Object.entries(porParticipante)) {
       await ejecutor.insert(plantillas).values({ participanteId, jugadores }).onConflictDoUpdate({
@@ -126,6 +129,7 @@ export class RepoDraft {
     }
   }
 
+  /** Cartas de la plantilla de cada participante. */
   async plantillas(participanteIds: string[]): Promise<Map<string, number[]>> {
     if (participanteIds.length === 0) return new Map();
     const filas = await this.db.select().from(plantillas).where(inArray(plantillas.participanteId, participanteIds));

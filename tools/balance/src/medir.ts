@@ -24,6 +24,7 @@ export interface Medicion {
 
 const GRUPO: Record<string, string> = { normal: 'jugada', lejano: 'jugada', manoAMano: 'jugada', cabeza: 'cabeza', falta: 'falta', penalti: 'penalti', propia: 'propia' };
 
+/** Medición descriptiva de una serie entre equipos equilibrados (goles, repartos y volumen de acciones). */
 export function medir(n: number, semilla = 1, etiqueta = 'medir'): Medicion {
   const base = equipoSintetico({ semilla: 'medir' });
   const otro = clonar(base, 'b');

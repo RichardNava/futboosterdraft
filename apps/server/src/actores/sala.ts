@@ -18,6 +18,7 @@ import { identidadInicial, marcarNombreAjustado, nombresAjustados, nombresUsados
 import { nombresNPC } from './nombres';
 import type { ControladorPartida } from './partida';
 
+/** Vista de la sala: configuración, participantes y quién puede empezar. */
 export function resumenSala(c: ControladorPartida) {
   return {
     participantes: c.participantes.map((p) => ({
@@ -76,6 +77,7 @@ export function programarBusqueda(c: ControladorPartida): void {
   });
 }
 
+/** Une a un usuario a la partida (o devuelve su participante si ya está). */
 export async function unirse(c: ControladorPartida, ctx: ContextoComando, usuarioId: string): Promise<string> {
   const existente = c.participantes.find((p) => p.usuarioId === usuarioId);
   if (existente?.controladoPorNPC) throw errores.prohibido('NO_PARTICIPA', 'Abandonaste esta partida');
@@ -96,6 +98,7 @@ export async function unirse(c: ControladorPartida, ctx: ContextoComando, usuari
   return fila.id;
 }
 
+/** El anfitrión añade un NPC del nivel dado. */
 export async function anadirNPC(c: ControladorPartida, ctx: ContextoComando, usuarioId: string, nivel: NivelNPC): Promise<string> {
   if (!c.esAnfitrion(usuarioId)) throw errores.prohibido('SOLO_ANFITRION', 'Solo el anfitrión puede añadir NPC');
   if (c.partida.estado !== 'buscando') throw errores.conflicto('PARTIDA_INICIADA', 'La partida ya ha empezado');

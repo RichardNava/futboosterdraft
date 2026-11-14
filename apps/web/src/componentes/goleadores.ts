@@ -17,6 +17,7 @@ export interface Goleador {
 /** Quita el dorsal delante del nombre («9. Pérez» → «Pérez»): en la lista de goleadores sobra. */
 const sinDorsal = (nombre: string) => nombre.replace(/^\d+\.\s+/, '');
 
+/** Goleadores de cada equipo con sus minutos, a partir de los eventos. */
 export function goleadoresDe(eventos: readonly EventoVista[], nombre: (id: number) => string): Record<'local' | 'visitante', Goleador[]> {
   const lados = { local: new Map<string, Goleador>(), visitante: new Map<string, Goleador>() };
   for (const e of eventos) {

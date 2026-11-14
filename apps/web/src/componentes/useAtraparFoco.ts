@@ -6,6 +6,7 @@ import { useEffect, useRef, type RefObject } from 'react';
 
 const ENFOCABLES = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+/** Mantiene el foco dentro del elemento y llama a `alEscape` con Escape. */
 export function useAtraparFoco(ref: RefObject<HTMLElement | null>, alEscape?: () => void): void {
   const escape = useRef(alEscape);
   escape.current = alEscape;

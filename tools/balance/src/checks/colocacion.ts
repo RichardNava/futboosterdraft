@@ -14,7 +14,7 @@ const pct = (x: number, n: number) => `${((100 * x) / n).toFixed(1)} %`;
  * demarcación con −40 % (delanteros en la defensa); frente a 3 titulares penalizados dentro de su
  * demarcación (−10 %), la diferencia de goles media sigue siendo favorable.
  */
-export function comprobarSC011(n: number, semilla: number): Comprobacion[] {
+function comprobarSC011(n: number, semilla: number): Comprobacion[] {
   const base = equipoSintetico({ semilla: 'sc011' });
   const conCambio = (demarcacion: Demarcacion, posicion: Posicion) => conTresSustituidos(clonar(base, 'b'), 'DEF', demarcacion, posicion);
   const r40 = serie(base, conCambio('DEL', 'DC'), n, semilla, 'sc011-40');
@@ -41,7 +41,7 @@ export function comprobarSC011(n: number, semilla: number): Comprobacion[] {
  * SC-018: contra el mismo rival, una colocación con un delantero más y un defensa menos que la formación de
  * partida (un central adelantado a la zona de delantero centro) marca y recibe más goles de media.
  */
-export function comprobarSC018(n: number, semilla: number): Comprobacion {
+function comprobarSC018(n: number, semilla: number): Comprobacion {
   const rival = equipoSintetico({ semilla: 'referencia', participanteId: 'rival' });
   const base = equipoSintetico({ semilla: 'sc018' });
   const adelantado = clonar(base, 'sintetico');
@@ -57,6 +57,7 @@ export function comprobarSC018(n: number, semilla: number): Comprobacion {
   };
 }
 
+/** SC-011, SC-011b y 002/SC-018: penalización por posición y colocación libre. */
 export function comprobacionesColocacion(n: number, semilla: number): Comprobacion[] {
   return [...comprobarSC011(n, semilla), comprobarSC018(n, semilla)];
 }

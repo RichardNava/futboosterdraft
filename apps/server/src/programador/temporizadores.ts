@@ -5,6 +5,7 @@
  */
 import type { Reloj } from './reloj';
 
+/** Temporizadores con nombre sobre un reloj: programar uno con la misma clave cancela el anterior. */
 export class Temporizadores {
   private readonly activos = new Map<string, () => void>();
 
@@ -20,16 +21,19 @@ export class Temporizadores {
     this.activos.set(clave, cancelar);
   }
 
+  /** Cancela el temporizador de esa clave. */
   cancelar(clave: string): void {
     this.activos.get(clave)?.();
     this.activos.delete(clave);
   }
 
+  /** Cancela todos los temporizadores. */
   cancelarTodos(): void {
     for (const cancelar of this.activos.values()) cancelar();
     this.activos.clear();
   }
 
+  /** Hay un temporizador pendiente con esa clave. */
   activo(clave: string): boolean {
     return this.activos.has(clave);
   }

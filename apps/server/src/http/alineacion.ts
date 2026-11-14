@@ -25,6 +25,7 @@ import { crearHooksSesion } from '../auth/rutas';
 import { escudoDe, torneoIniciado } from '../actores/identidad';
 import { errores } from './errores';
 
+/** Rutas de la alineación, dorsales, equipaciones, nombre y escudo del equipo. */
 export function registrarRutasAlineacion(app: FastifyInstance, auth: Auth, gestor: GestorPartidas): void {
   const { requiereSesion } = crearHooksSesion(auth);
 

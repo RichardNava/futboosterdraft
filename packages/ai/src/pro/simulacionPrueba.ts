@@ -5,6 +5,7 @@
 import { derivarSemilla, type Alineacion, type Jugador, type ParametrosEquilibrado, type Semilla } from '@fbd/domain';
 import { avanzar, crearPartido, type EquipoPartido } from '@fbd/engine';
 
+/** Equipo de partido del motor a partir de una alineación y las cartas por id. */
 export function equipoDesdeAlineacion(participanteId: string, a: Alineacion, porId: ReadonlyMap<number, Jugador>): EquipoPartido {
   return {
     participanteId,

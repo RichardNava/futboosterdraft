@@ -68,6 +68,7 @@ function respuesta(
   };
 }
 
+/** Rutas del aspecto de la cuenta: escudo, sobre y celebración. */
 export function registrarRutasAspecto(app: FastifyInstance, auth: Auth, deps: Deps): void {
   const { requiereSesion } = crearHooksSesion(auth);
 

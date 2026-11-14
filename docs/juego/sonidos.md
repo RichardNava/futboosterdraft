@@ -34,6 +34,7 @@ añade filas en «Pendientes» con las acciones que deberían sonar, y pide que 
 | Partido 2D | Final del partido | `pitidoFinal` | pitidoFinal.mp3 | 0,12 | Tres pitidos, el último largo (spec 012) |
 | Partido 2D | Gol del equipo propio | `golPropio` | golPropio.mp3 | 0,61 | La grada del Millerntor cantando un gol. Un gol en propia puerta cuenta para el equipo que lo suma; quien mira sin jugar oye siempre este |
 | Partido 2D | Gol del rival | `golRival` | golRival.mp3 | 0,45 | Lamento de la grada (ocasión fallada, Millerntor) |
+| Partido 2D | Fuera de juego (spec 014) | `pitidoDescanso` | pitidoDescanso.mp3 | 0,11 | Pitido del árbitro; se reutiliza el del descanso |
 | Partido 2D | Tarjeta amarilla | `tarjetaAmarilla` | tarjetaAmarilla.mp3 | 0,29 | Pitido y «oooh» de la grada (spec 012) |
 | Partido 2D | Tarjeta roja (también por doble amarilla) | `tarjetaRoja` | tarjetaRoja.mp3 | 0,23 | Dos pitidos y un «oooh» más largo (spec 012) |
 | Tienda | Compra de un sobre de cartas (con fragmentos) | `cajaRegistradora` | cajaRegistradora.mp3 | 0,64 | Caja registradora real (spec 012) |

@@ -43,7 +43,7 @@ function retratoCargado(url: string): HTMLImageElement | null {
  * por retrato, tamaño y colores: en cada fotograma solo se copia (un `drawImage`), así que no frena el dibujo. Mientras
  * el retrato no ha cargado, `null` (se dibuja la chapa con el dorsal).
  */
-export function chapaConRetrato(url: string, radio: number, aro: string, contorno: string | null): { lienzo: HTMLCanvasElement; mitad: number } | null {
+function chapaConRetrato(url: string, radio: number, aro: string, contorno: string | null): { lienzo: HTMLCanvasElement; mitad: number } | null {
   const im = retratoCargado(url);
   if (!im || typeof document === 'undefined') return null;
   const ratio = globalThis.devicePixelRatio || 1;
@@ -84,7 +84,7 @@ export function chapaConRetrato(url: string, radio: number, aro: string, contorn
   return hecha;
 }
 
-export interface Escena {
+interface Escena {
   posiciones: Posiciones;
   jugadores: ReadonlyMap<number, JugadorDibujo>;
   /** Equipaciones v2 del partido (spec 003, FR-045, FR-046). */
@@ -105,7 +105,7 @@ export interface Escena {
 }
 
 /** Lo que el lienzo pinta con los colores de la interfaz: textos, rótulos, contornos y letra. */
-export interface ColoresInterfaz {
+interface ColoresInterfaz {
   texto: string;
   lienzo: string;
   velo: string;

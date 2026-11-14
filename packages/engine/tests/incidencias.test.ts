@@ -3,12 +3,12 @@
  *
  * Con lesiones más probables que en un partido normal para que aparezcan en pocas semillas.
  */
-import { PARAMETROS_V3 } from '@fbd/domain';
+import { PARAMETROS_V7 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { aplicarDecision, avanzar, crearPartido, validarDecision, type DecisionRegistrada, type EstadoMotor, type Incidencia, type ResultadoTramo } from '../src/index';
 import { entrada } from './ayudas';
 
-const PARAMETROS = { ...PARAMETROS_V3, lesiones: { ...PARAMETROS_V3.lesiones, probabilidadPorEntrada: 0.04 } };
+const PARAMETROS = { ...PARAMETROS_V7, lesiones: { ...PARAMETROS_V7.lesiones, probabilidadPorEntrada: 0.04 } };
 const conLesiones = (semilla: string) => entrada(semilla, { parametros: PARAMETROS });
 const SEMILLAS = Array.from({ length: 16 }, (_, i) => `incidencias-${i}`);
 

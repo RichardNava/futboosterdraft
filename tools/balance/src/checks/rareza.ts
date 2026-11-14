@@ -34,7 +34,8 @@ const TABLA: Record<NivelRareza, readonly number[]> = {
   rico: [6, 6.75, 6.75, 4.5],
 };
 
-export function comprobarRareza(mesas: number, semilla: number): Comprobacion[] {
+/** 013/SC-004: reparto medio de niveles por participante en cada nivel de rareza del draft. */
+function comprobarRareza(mesas: number, semilla: number): Comprobacion[] {
   const core = (
     JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url)), 'utf-8')) as {
       jugadores: Jugador[];
@@ -67,6 +68,7 @@ export function comprobarRareza(mesas: number, semilla: number): Comprobacion[] 
   });
 }
 
+/** Comprobaciones de los niveles de rareza (spec 013) para la herramienta. */
 export function gruposRareza(): GrupoComprobaciones[] {
   return [
     {

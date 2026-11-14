@@ -11,7 +11,7 @@ import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
 import { calcularPartido, iniciarPartido, registrarCalculoFallido, sinHumanos } from './partidoRapido';
 
-export interface OpcionesJornada {
+interface OpcionesJornada {
   eliminatoria?: boolean;
   jornadaId?: string | null;
   inicial?: boolean;
@@ -106,6 +106,7 @@ export async function modalidadPreferida(c: ControladorPartida, participanteId: 
   return 'rapida';
 }
 
+/** Anuncia a cada participante la preparación del próximo partido (rival y plazo). */
 export async function emitirPreparacion(c: ControladorPartida, ctx: ContextoComando, venceEn: number | null): Promise<void> {
   for (const cruce of c.jornada?.cruces ?? []) {
     for (const [pid, rival] of [

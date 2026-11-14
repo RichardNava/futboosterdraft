@@ -19,7 +19,7 @@ export interface AccionBarra {
  * Ayuda resumida de las acciones habituales de la barra (spec 012, ronda 3). Se muestra en la propia barra al pasar el
  * cursor o enfocar el botón; el icono de información de cada pantalla da el detalle cuando hace falta.
  */
-export const AYUDA_ACCION: Record<string, string> = {
+const AYUDA_ACCION: Record<string, string> = {
   'Confirmar alineación': 'Guarda la alineación y vuelve al torneo para preparar el partido.',
   'Confirmar once': 'Fija tu once para todo el torneo: después no se puede cambiar.',
   'Confirmar mi once': 'Ve a Formación a elegir y fijar tu once para los duelos.',

@@ -21,6 +21,7 @@ export function mantenerConexionInvitado(partidaId: string): void {
   activa = { partidaId, conexion };
 }
 
+/** Cierra y olvida la conexión de la partida en curso (al terminar, abandonarla o cerrar la sesión). */
 export function soltarConexionInvitado(): void {
   activa?.conexion.cerrar();
   activa = null;

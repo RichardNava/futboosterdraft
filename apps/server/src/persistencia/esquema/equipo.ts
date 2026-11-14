@@ -4,6 +4,7 @@
 import { boolean, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { participantes } from './base';
 
+/** Tabla de alineaciones de cada participante (con su historial). */
 export const alineaciones = pgTable(
   'alineaciones',
   {

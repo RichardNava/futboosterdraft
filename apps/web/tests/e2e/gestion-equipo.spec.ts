@@ -133,3 +133,26 @@ test('gestionar equipo con la distribución de Formación', async ({ page }) => 
   await page.getByRole('button', { name: 'Confirmar cambios' }).click();
   await expect(gestion).toBeHidden();
 });
+
+test('energía en la gestión (spec 014, SC-007): en el descanso todos los del campo al 100 % sin penalización; ayuda con los tramos', async ({ page }) => {
+  await hastaElDescansoRapida(page);
+  await page.getByRole('button', { name: 'Gestionar equipo' }).click();
+  const gestion = page.getByTestId('gestion-equipo');
+  const enCampo = gestion.locator('.ficha-equipo');
+  const n = await enCampo.count();
+  expect(n).toBeGreaterThanOrEqual(10);
+  await expect(gestion.locator('.ficha-equipo .indicador-energia')).toHaveCount(n);
+  for (const indicador of await gestion.locator('.ficha-equipo .indicador-energia').all()) {
+    await expect(indicador).toHaveAttribute('aria-label', 'Energía 100 %');
+    await expect(indicador.locator('.indicador-energia-penalizacion')).toHaveCount(0);
+  }
+  // El banquillo no lleva indicador (FR-018).
+  await expect(gestion.getByTestId('banquillo').locator('.indicador-energia')).toHaveCount(0);
+  // El que entra también se ve al 100 % al volver a abrir la gestión tras el cambio.
+  await sustituirEnGestion(page, 'DC');
+  await expect(gestion.locator('.ficha-equipo[data-casilla="DC"] .indicador-energia')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Ayuda: energía de los jugadores' }).click();
+  const ayuda = page.getByRole('dialog', { name: 'Energía de los jugadores' });
+  await expect(ayuda).toContainText('Desde el minuto 65 (55 con Presión alta) los jugadores se cansan y rinden menos');
+  await expect(ayuda.locator('tbody tr')).toHaveCount(5);
+});

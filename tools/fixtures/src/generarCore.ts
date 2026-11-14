@@ -262,6 +262,7 @@ export function generarJugador(rng: Rng, o: OpcionesJugador): Jugador {
   };
 }
 
+/** Colección Core sintética reproducible (fixtures de pruebas). */
 export function generarCore(semillaTexto = 'futboosterdraft-core-v1'): Jugador[] {
   const rng = new Rng(semillaDesdeTexto(semillaTexto));
   const jugadores: Jugador[] = [];

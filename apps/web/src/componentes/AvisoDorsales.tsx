@@ -4,7 +4,7 @@ import { mostrarAviso } from '../estado/avisos';
 import type { Inicio } from '../pantallas/PartidoRapido';
 
 /** Texto del aviso de dorsales nuevos del equipo propio, o `null` si no hay ninguno. */
-export function textoDorsalesNuevos(inicio: Inicio, miId: string | null): string | null {
+function textoDorsalesNuevos(inicio: Inicio, miId: string | null): string | null {
   const lado = miId === inicio.local.id ? 'local' : miId === inicio.visitante.id ? 'visitante' : null;
   if (!lado || !inicio.dorsalesAsignados?.length) return null;
   const a = inicio.alineaciones[lado];

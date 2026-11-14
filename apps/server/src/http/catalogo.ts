@@ -57,6 +57,7 @@ function versionPedida(valor: string | undefined): number {
   return v;
 }
 
+/** Rutas del catálogo de cartas con la identidad vigente. */
 export function registrarRutasCatalogo(app: FastifyInstance, db: BaseDatos, ajustes: ServicioAjustes): void {
   // Identidad del ajuste vigente (spec 011, R12); nunca las dos a la vez.
   const presentar = async (f: typeof jugadores.$inferSelect, version: number): Promise<Jugador> => {

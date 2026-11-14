@@ -22,6 +22,7 @@ type Props<T> = Precio & {
   onCancelar: () => void;
 };
 
+/** Diálogo de pago de prueba con fragmentos o euros (idempotente por compra). */
 export function DialogoPagoPrueba<T>({ titulo, resumen, precioCentimos, precioFragmentos, comprar, onHecho, onCancelar }: Props<T>) {
   const [idCompra] = useState(() => crypto.randomUUID());
   const [enviando, setEnviando] = useState(false);

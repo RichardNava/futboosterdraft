@@ -81,6 +81,7 @@ function sortearDefecto(rng: Rng, carta: Jugador): Defecto | undefined {
   return opciones.length ? elegirPonderado(rng, opciones) : undefined;
 }
 
+/** Asigna virtudes y defectos reproducibles a las cartas (spec 005). */
 export function asignarRasgos(cartas: readonly Jugador[]): Jugador[] {
   const rng = new Rng(semillaDesdeTexto(SEMILLA_RASGOS));
   const resultado = new Map<number, Jugador>(cartas.map((c) => [c.id, cartaEnVersion(c, 1)]));

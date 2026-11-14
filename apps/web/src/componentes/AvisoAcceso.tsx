@@ -4,7 +4,8 @@
  */
 import { ErrorApi } from '../api/cliente';
 
-export function textoAvisoAcceso(error: unknown): { texto: string; credenciales: boolean } {
+/** Texto para un error de inicio de sesión o registro y si es de credenciales. */
+function textoAvisoAcceso(error: unknown): { texto: string; credenciales: boolean } {
   if (error instanceof ErrorApi && (error.estado === 401 || error.codigo === 'INVALID_EMAIL_OR_PASSWORD')) {
     return { texto: 'El email o la contraseña no son correctos.', credenciales: true };
   }
@@ -17,6 +18,7 @@ export function textoAvisoAcceso(error: unknown): { texto: string; credenciales:
   return { texto: error.message, credenciales: false };
 }
 
+/** Aviso de un error de acceso, con «¿Has olvidado la contraseña?» si son las credenciales. */
 export function AvisoAcceso({ error, onRecuperar }: { error: unknown; onRecuperar?: () => void }) {
   const { texto, credenciales } = textoAvisoAcceso(error);
   return (

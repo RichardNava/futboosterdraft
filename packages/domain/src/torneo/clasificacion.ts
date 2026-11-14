@@ -54,6 +54,7 @@ function tabla(participantes: readonly string[], resultados: readonly ResultadoL
   return filas;
 }
 
+/** Clasificación de liga con sus desempates y un sorteo final reproducible. */
 export function clasificacion(participantes: readonly string[], resultados: readonly ResultadoLiga[], semilla: Semilla): FilaClasificacion[] {
   const filas = tabla(participantes, resultados);
   // Sorteo final reproducible: un número por participante.

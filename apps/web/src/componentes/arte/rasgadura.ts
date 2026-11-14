@@ -22,6 +22,7 @@ function generador(semilla: number): () => number {
 
 const redondear = (x: number): number => Math.round(x * 10) / 10;
 
+/** Polígono de la rasgadura del diseño de sobre (el original o uno derivado de su id). */
 export function rasgaduraDe(id: string): string {
   if (id === 'sobre-original') return POLIGONO_ORIGINAL;
   const azar = generador(fnv1a32(id));

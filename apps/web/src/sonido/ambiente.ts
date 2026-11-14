@@ -7,7 +7,7 @@
 import { useEffect, useRef } from 'react';
 import { contextoAudio, FACTOR_VOLUMEN, sonidoActivado, suscribirSonido } from './sonido';
 
-export interface Ambiente {
+interface Ambiente {
   /** 1 con el balón en juego; menos en las pausas (descanso, gestión); 0 lo calla. */
   intensidad(valor: number): void;
   detener(): void;
@@ -48,6 +48,7 @@ function cargar(c: AudioContext, nombre: string): Promise<AudioBuffer | null> {
   return b;
 }
 
+/** Ambiente de estadio sintetizado durante el partido 2D. */
 export function iniciarAmbiente(): Ambiente {
   const c = contextoAudio();
   if (!c) return NADA;

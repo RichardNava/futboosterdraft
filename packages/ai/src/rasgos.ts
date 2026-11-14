@@ -35,6 +35,7 @@ export function umbralCansancioDe(j: Pick<Jugador, 'defectos'>, umbral: number):
   return tieneDefecto(j, 'Fatigado') || tieneDefecto(j, 'Indisciplinado') ? umbral * FACTOR_UMBRAL_CANSANCIO : umbral;
 }
 
+/** Ajusta la alineación de un NPC a los rasgos de sus cartas (p. ej., un Revulsivo empieza en el banquillo; spec 005). */
 export function ajustarAlineacionPorRasgos(
   a: Alineacion,
   plantilla: readonly Jugador[],

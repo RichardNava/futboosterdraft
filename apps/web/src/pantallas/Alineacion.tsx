@@ -1,3 +1,4 @@
+import { enCache } from '../api/cache';
 import { nombreCartaDe } from '../componentes/CartaJugador';
 import {
   FORMACIONES,
@@ -49,7 +50,7 @@ import { SelectorModoIncidencias } from '../componentes/SelectorModoIncidencias'
 import { SelectorEscudo } from '../componentes/SelectorEscudo';
 import { useSesion } from '../estado/sesion';
 
-export interface CasillaVista {
+interface CasillaVista {
   casillaId: string;
   media: number;
   fueraDePosicion: boolean;
@@ -139,13 +140,15 @@ export function Alineacion() {
   const { partidaId } = useParams();
   const usuario = useSesion((s) => s.usuario);
   const navegar = useNavigate();
-  const [datos, setDatos] = useState<DatosEquipo | null>(null);
-  const [campo, setCampo] = useState<EstadoCampo | null>(null);
-  const [tactica, setTactica] = useState<Tactica | null>(null);
-  const [lanzadores, setLanzadores] = useState<Lanzadores | null>(null);
+  // Spec 014 (US6): lo que acaba de cargar el loader, sin esqueleto.
+  const [previos] = useState(() => enCache<DatosEquipo>(`/api/partidas/${partidaId}/alineacion`, { fresco: true }) ?? null);
+  const [datos, setDatos] = useState<DatosEquipo | null>(previos);
+  const [campo, setCampo] = useState<EstadoCampo | null>(() => (previos ? estadoDesde(previos.alineacion) : null));
+  const [tactica, setTactica] = useState<Tactica | null>(previos?.alineacion.tactica ?? null);
+  const [lanzadores, setLanzadores] = useState<Lanzadores | null>(previos?.alineacion.lanzadores ?? null);
   const [mensaje, setMensaje] = useState<{ tipo: 'error'; texto: string; motivos?: string[] } | null>(null);
-  const [equipaciones, setEquipaciones] = useState<Equipaciones | null>(null);
-  const [nombreEquipo, setNombreEquipo] = useState('');
+  const [equipaciones, setEquipaciones] = useState<Equipaciones | null>(previos?.equipaciones ?? null);
+  const [nombreEquipo, setNombreEquipo] = useState(previos?.nombreEquipo ?? '');
   /** Cambio de formación pendiente de confirmar (FR-002a). */
   const [formacionPendiente, setFormacionPendiente] = useState<FormacionId | null>(null);
   /** Diálogo «Confirmar once» del modo duelos. */

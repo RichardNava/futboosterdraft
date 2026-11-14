@@ -1,3 +1,4 @@
+import { enCache } from '../api/cache';
 import type { RespuestaNivelesRareza } from '@fbd/protocol';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -7,6 +8,7 @@ import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Icono } from '../componentes/Icono';
 import { SelectorTramos } from '../componentes/SelectorTramos';
 import { SobreDecorativo } from '../componentes/SobreDecorativo';
+import { mostrarAviso } from '../estado/avisos';
 import { useSesion } from '../estado/sesion';
 import {
   DESCRIPCION_DIFICULTAD,
@@ -39,7 +41,7 @@ export function CrearPartida() {
   const [npc, setNpc] = useState<NivelNPC[]>([]);
   const [dificultad, setDificultad] = useState<Dificultad>('normal');
   const [nivelRareza, setNivelRareza] = useState<NivelRareza>('moderado');
-  const [niveles, setNiveles] = useState<RespuestaNivelesRareza | null>(null);
+  const [niveles, setNiveles] = useState<RespuestaNivelesRareza | null>(() => enCache<RespuestaNivelesRareza>('/api/partidas/niveles-rareza', { fresco: true }) ?? null);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   // Spec 013 (FR-033): una clave por envío del formulario, que se reutiliza si ese envío se repite tras un fallo de red.
@@ -234,7 +236,11 @@ export function CrearPartida() {
                         type="button"
                         className="alternativa rareza-desbloquear"
                         data-ayuda={`Paga ${costeRareza} fragmentos para elegir la rareza del draft en este torneo; se cobran al crear la partida si el nivel no es Moderado.`}
-                        onClick={() => setDesbloqueada(true)}
+                        onClick={() =>
+                          (niveles?.saldo ?? 0) >= costeRareza
+                            ? setDesbloqueada(true)
+                            : mostrarAviso('error', 'No dispones de los fragmentos necesarios', { id: 'rareza-sin-fragmentos', duracionMs: 4000 })
+                        }
                       >
                         <Icono nombre="cristal" tamano={18} /> {costeRareza}
                         <span className="solo-lectores"> fragmentos: desbloquear la rareza en este torneo</span>

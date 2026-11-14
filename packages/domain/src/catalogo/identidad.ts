@@ -10,11 +10,13 @@ export const IDENTIDADES: readonly Identidad[] = ['real', 'alternativa'];
 
 const NOMBRE_DEMARCACION: Record<Demarcacion, string> = { POR: 'Portero', DEF: 'Defensa', MED: 'Centrocampista', DEL: 'Delantero' };
 
+/** Silueta genérica de la demarcación (cartas sin retrato). */
 export const siluetaDe = (demarcacion: Demarcacion): string => `/cartas/siluetas/${demarcacion.toLowerCase()}.svg`;
 
 /** «Defensa 40»: el nombre genérico de una carta sin identidad alternativa. */
 export const nombreGenerico = (j: Pick<Jugador, 'id' | 'demarcacion'>): string => `${NOMBRE_DEMARCACION[j.demarcacion]} ${j.id}`;
 
+/** La carta con la identidad pedida: la real o la alternativa (plan B de derechos de imagen). */
 export function conIdentidad(jugador: Jugador, identidad: Identidad): Jugador {
   if (identidad === 'real') return jugador;
   const { identidad_alternativa: alt, ...resto } = jugador;

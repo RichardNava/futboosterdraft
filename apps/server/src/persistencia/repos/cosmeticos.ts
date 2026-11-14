@@ -11,11 +11,12 @@ import type { BaseDatos, Ejecutor } from '../db';
 import { cosmeticos, cosmeticosUsuario, packsCosmeticos } from '../esquema/index';
 
 /** Quién pide: basta con el id y si es invitado. */
-export interface Solicitante {
+interface Solicitante {
   id: string;
   tipo: 'registrado' | 'invitado';
 }
 
+/** Cosméticos del catálogo en memoria y los que posee cada usuario. */
 export class RepoCosmeticos {
   private constructor(
     private readonly db: BaseDatos,
@@ -28,6 +29,7 @@ export class RepoCosmeticos {
     return new RepoCosmeticos(db, new Map(lista.map((c) => [c.id, c])), packs);
   }
 
+  /** Lee los cosméticos y los packs de la base de datos. */
   static async cargar(db: BaseDatos): Promise<RepoCosmeticos> {
     const filas = await db.select().from(cosmeticos);
     const packs = await db.select().from(packsCosmeticos);
@@ -35,14 +37,17 @@ export class RepoCosmeticos {
     return new RepoCosmeticos(db, new Map(lista.map((c) => [c.id, c])), packs);
   }
 
+  /** Cosmético por id. */
   cosmetico(id: string): Cosmetico | undefined {
     return this.porId.get(id);
   }
 
+  /** Todos los cosméticos. */
   todos(): Cosmetico[] {
     return [...this.porId.values()];
   }
 
+  /** Pack por id. */
   pack(id: string): PackCosmeticos | undefined {
     return this.packs.find((p) => p.id === id);
   }
@@ -54,6 +59,7 @@ export class RepoCosmeticos {
       .map((c) => c.id);
   }
 
+  /** Ids de los cosméticos del usuario. */
   async poseidos(usuarioId: string, tx: Ejecutor = this.db): Promise<Set<string>> {
     const filas = await tx.select({ id: cosmeticosUsuario.cosmeticoId }).from(cosmeticosUsuario).where(eq(cosmeticosUsuario.usuarioId, usuarioId));
     return new Set(filas.map((f) => f.id));
@@ -69,6 +75,7 @@ export class RepoCosmeticos {
     return new Set(this.todos().filter((c) => deTipo(c) && ((c.gratuito && c.activo) || poseidos.has(c.id))).map((c) => c.id));
   }
 
+  /** El cosmético es de ese tipo y quien lo pide puede usarlo (gratuito o suyo). */
   async estaDisponible(quien: Solicitante | null, id: string, tipo: TipoCosmetico, tx?: Ejecutor): Promise<boolean> {
     if (this.porId.get(id)?.tipo !== tipo) return false;
     return (await this.disponibles(quien, tipo, tx)).has(id);

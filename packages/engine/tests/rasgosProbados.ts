@@ -7,7 +7,7 @@
  */
 import type { Rasgo } from '@fbd/domain';
 
-export interface RasgoProbado {
+interface RasgoProbado {
   /** Fichero de prueba de unidad (relativo a la raíz del repositorio) o null si solo se mide en `balance`. */
   prueba: string | null;
   /** Id de la comprobación de `balance`, o null si solo tiene prueba de unidad. */

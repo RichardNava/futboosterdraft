@@ -64,13 +64,16 @@ export function colorDeContraste(fondo: string): string {
   return relacionContraste(fondo, '#ffffff') >= relacionContraste(fondo, '#202020') ? '#ffffff' : '#202020';
 }
 
+/** Distancia RGB entre dos colores hexadecimales. */
 export function distanciaColor(a: string, b: string): number {
   const [r1, g1, b1] = rgb(a);
   const [r2, g2, b2] = rgb(b);
   return Math.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2);
 }
 
+/** Color principal de una equipación. */
 export const principal = (e: Equipacion): string => e.colores[0];
+/** Color del dorsal que contrasta con el principal. */
 export const colorDorsal = (e: Equipacion): string => colorDeContraste(principal(e));
 
 /** Reparto de superficie por color de cada diseño (R24): c1, c2 y c3 (detalles). */
@@ -104,6 +107,7 @@ export function parecido(a: Equipacion, b: Equipacion, p: ParametrosEquilibrado)
   return Math.min(1, Math.max(0, total));
 }
 
+/** Dos equipaciones se confunden (parecido por encima del umbral). */
 export function chocan(a: Equipacion, b: Equipacion, p: ParametrosEquilibrado): boolean {
   return parecido(a, b, p) >= UMBRAL_PARECIDO - 1e-9;
 }
@@ -111,6 +115,7 @@ export function chocan(a: Equipacion, b: Equipacion, p: ParametrosEquilibrado): 
 /** Lisa con su color de contraste. */
 const lisa = (c: string): Equipacion => ({ diseno: 'lisa', colores: [c, colorDeContraste(c)] });
 
+/** Dos equipaciones al azar que no se confunden entre sí. */
 export function equipacionesAleatorias(semilla: Semilla, p: ParametrosEquilibrado): Equipaciones {
   const rng = new Rng(semilla);
   const colores = rng.barajar(PALETA);
@@ -204,6 +209,7 @@ export interface ErrorEquipaciones {
   mensaje: string;
 }
 
+/** Errores de un par de equipaciones (diseño, colores y que no se confundan). */
 export function validarEquipaciones(e: Equipaciones, p: ParametrosEquilibrado): ErrorEquipaciones[] {
   const errores: ErrorEquipaciones[] = [];
   const ambas = [e?.primera, e?.segunda];

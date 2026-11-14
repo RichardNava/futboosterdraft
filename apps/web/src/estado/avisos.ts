@@ -5,12 +5,12 @@
 import { create } from 'zustand';
 import type { TipoAviso } from '../componentes/Aviso';
 
-export interface AccionAviso {
+interface AccionAviso {
   etiqueta: string;
   onClick: () => void;
 }
 
-export interface AvisoEmergente {
+interface AvisoEmergente {
   id: string;
   tipo: TipoAviso;
   texto: string;
@@ -18,7 +18,7 @@ export interface AvisoEmergente {
   accion?: AccionAviso;
 }
 
-export interface OpcionesAviso {
+interface OpcionesAviso {
   /** Clave fija: un aviso nuevo con la misma clave sustituye al anterior (p. ej. el de la conexión). */
   id?: string;
   /** Tiempo hasta cerrarse solo; por defecto 4 s para `exito` y sin límite para el resto. */
@@ -31,8 +31,9 @@ interface EstadoAvisos {
   avisos: AvisoEmergente[];
 }
 
-export const DURACION_EXITO_MS = 4000;
+const DURACION_EXITO_MS = 4000;
 
+/** Avisos emergentes visibles. */
 export const useAvisos = create<EstadoAvisos>(() => ({ avisos: [] }));
 
 let siguiente = 1;
@@ -51,6 +52,7 @@ export function mostrarAviso(tipo: TipoAviso, texto: string, opciones: OpcionesA
   return id;
 }
 
+/** Quita un aviso y su temporizador. */
 export function cerrarAviso(id: string): void {
   const t = temporizadores.get(id);
   if (t !== undefined) window.clearTimeout(t);

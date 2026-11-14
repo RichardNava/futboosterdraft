@@ -1,0 +1,43 @@
+// Código sin uso (spec 014, research R11): `pnpm dlx knip`. Las entradas de cada paquete son las de su package.json
+// (scripts con tsx) más las que knip no deduce; detecta además Vite, Vitest, Playwright y ESLint.
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreBinaries": ["only-allow"],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.ts"],
+      "ignoreDependencies": ["prettier"]
+    },
+    "apps/server": {
+      "entry": ["src/simulacion/*.ts", "tests/**/*.test.ts"],
+      "project": ["src/**/*.ts", "tests/**/*.ts"],
+      // Transporte de pino en desarrollo: se carga por nombre.
+      "ignoreDependencies": ["pino-pretty"]
+    },
+    "apps/web": {
+      "entry": ["tests/**/*.{test,spec}.ts", "scripts/*.mjs"],
+      "project": ["src/**/*.{ts,tsx}", "tests/**/*.ts"]
+    },
+    "packages/*": {
+      "entry": ["tests/**/*.test.ts"],
+      "project": ["src/**/*.ts", "tests/**/*.ts"]
+    },
+    "packages/domain": {
+      "entry": ["scripts/*.ts", "tests/**/*.test.ts"],
+      "project": ["src/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"]
+    },
+    "packages/engine": {
+      "entry": ["tests/**/*.test.ts", "tests/fixtures/*.ts"],
+      "project": ["src/**/*.ts", "tests/**/*.ts"]
+    },
+    "tools/balance": {
+      "entry": ["src/*.ts", "tests/**/*.test.ts"],
+      "project": ["src/**/*.ts", "tests/**/*.ts"]
+    },
+    "tools/fixtures": {
+      "entry": ["src/*.ts", "tests/**/*.test.ts"],
+      "project": ["src/**/*.ts", "tests/**/*.ts"]
+    }
+  },
+  "ignoreWorkspaces": ["tools/load", "tools/sonidos"]
+}

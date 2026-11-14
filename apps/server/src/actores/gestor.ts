@@ -40,6 +40,7 @@ import { plantillasVisibles, resumenPartida, vistaEstado } from './vistas';
 
 const ESTADOS_ACTIVOS = ['buscando', 'en_draft', 'en_torneo'] as const;
 
+/** Controladores de las partidas en memoria: los carga, los cierra y les pasa los comandos. */
 export class GestorPartidas {
   private readonly controladores = new Map<string, ControladorPartida>();
   /** Dependencias del torneo (avisos); se fijan al componer el servidor. */
@@ -86,6 +87,7 @@ export class GestorPartidas {
     return (ESTADOS_ACTIVOS as readonly string[]).includes(partida.estado) ? this.registrar(c) : c;
   }
 
+  /** Controlador de la partida; lanza 404 si no existe. */
   async obtenerOError(id: string): Promise<ControladorPartida> {
     const c = await this.obtener(id);
     if (!c) throw errores.noEncontrado('PARTIDA_NO_ENCONTRADA', 'No existe esa partida');
@@ -224,16 +226,19 @@ export class GestorPartidas {
 
   // ---------- Pasarela WebSocket ----------
 
+  /** Participante del usuario en la partida, si juega en ella. */
   async resolverParticipante(partidaId: string, usuarioId: string): Promise<string | undefined> {
     const c = await this.obtener(partidaId);
     return c?.participanteDeUsuario(usuarioId)?.id;
   }
 
+  /** Fase y vista de la partida para un participante (instantánea al conectar). */
   async estadoVisible(partidaId: string, participanteId: string): Promise<{ fase: string; vista: unknown }> {
     const c = await this.obtenerOError(partidaId);
     return c.ejecutar(() => vistaEstado(c, participanteId));
   }
 
+  /** Anota que un participante se conecta o se desconecta de la partida. */
   alCambiarConexion(partidaId: string, participanteId: string, conectado: boolean): void {
     const c = this.controladores.get(partidaId);
     if (!c) return;
@@ -308,14 +313,17 @@ export class GestorPartidas {
     }
   }
 
+  /** Plantillas de la partida que se pueden ver. */
   async plantillasVisibles(c: ControladorPartida) {
     return plantillasVisibles(c);
   }
 
+  /** Partidas cargadas en memoria. */
   get activas(): number {
     return this.controladores.size;
   }
 
+  /** Cierra todos los controladores (al apagar el servidor). */
   cerrarTodo(): void {
     for (const c of this.controladores.values()) c.cerrar();
     this.controladores.clear();

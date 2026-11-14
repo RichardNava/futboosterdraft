@@ -44,6 +44,7 @@ const lista = (valor: string | undefined): string[] =>
     .map((s) => s.trim())
     .filter(Boolean);
 
+/** Opciones de la línea de órdenes; lanza ante un argumento desconocido. */
 export function leerOpciones(args: readonly string[]): OpcionesBalance {
   const opciones: OpcionesBalance = { n: 1000, seed: 1, torneos: 0, proVsAmateur: false, solo: [], serie: 'sintetica', pendientes: [] };
   for (let i = 0; i < args.length; i++) {
@@ -91,6 +92,7 @@ export function pedido(id: string, solo: readonly string[]): boolean {
   return solo.length === 0 || solo.some((s) => id === s || id.startsWith(s));
 }
 
+/** Texto del informe en consola: una línea por comprobación con su detalle. */
 export function informe(comprobaciones: Comprobacion[], pendientes: readonly string[] = []): string {
   return comprobaciones
     .map((c) => {
@@ -123,6 +125,8 @@ export async function grupos(): Promise<GrupoComprobaciones[]> {
   const { gruposImpacto } = await import('./checks/impacto');
   const { gruposColecciones } = await import('./checks/colecciones');
   const { gruposRareza } = await import('./checks/rareza');
+  const { gruposMotor014 } = await import('./checks/motor014');
+  const { gruposPesoStats } = await import('./checks/pesoStats');
   return [
     ...gruposPartido003(),
     ...gruposPartido(),
@@ -138,6 +142,8 @@ export async function grupos(): Promise<GrupoComprobaciones[]> {
     ...gruposImpacto(),
     ...gruposColecciones(),
     ...gruposRareza(),
+    ...gruposMotor014(),
+    ...gruposPesoStats(),
   ];
 }
 
@@ -158,13 +164,19 @@ function grupoSeleccionado(g: GrupoComprobaciones, o: OpcionesBalance): boolean 
  */
 export const DEPENDENCIAS_SC009 = ['SC-004', '002/SC-007a', '002/SC-007b', '002/SC-008', 'SC-011', 'SC-011b', '002/SC-018'] as const;
 
+/** Ejecuta los grupos pedidos y compone 003/SC-009 con sus dependencias. */
 export async function ejecutar(opciones: OpcionesBalance): Promise<Comprobacion[]> {
   const conSC009 = opciones.serie !== 'core' && !opciones.proVsAmateur && !(opciones.torneos > 0 && opciones.solo.length === 0) && pedido('003/SC-009', opciones.solo);
   const efectivas = conSC009 && opciones.solo.length > 0 ? { ...opciones, solo: [...opciones.solo, ...DEPENDENCIAS_SC009] } : opciones;
   const todos: Comprobacion[] = [];
-  for (const g of await grupos()) {
-    if (!grupoSeleccionado(g, efectivas)) continue;
+  const seleccionados = (await grupos()).filter((g) => grupoSeleccionado(g, efectivas));
+  for (const [i, g] of seleccionados.entries()) {
+    // Progreso por stderr: la ejecución completa dura más de una hora y el informe solo sale al final.
+    const inicio = Date.now();
+    process.stderr.write(`[${String(i + 1)}/${String(seleccionados.length)}] ${g.ids.slice(0, 3).join(', ')}${g.ids.length > 3 ? '…' : ''} `);
     todos.push(...(await g.ejecutar(efectivas)).filter((c) => pedido(c.id, efectivas.solo)));
+    process.stderr.write(`(${((Date.now() - inicio) / 1000).toFixed(0)} s)
+`);
   }
   const resultados = todos.filter((c) => pedido(c.id, opciones.solo));
   if (conSC009) {

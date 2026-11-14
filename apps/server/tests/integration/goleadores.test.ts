@@ -77,7 +77,8 @@ describe('goleadores y asistentes (US9)', () => {
           expect(orden).toBeLessThanOrEqual(0);
           expect(a.partidosJugados).toBeGreaterThanOrEqual(1);
         }
-        expect(tabla[0]?.equipo.nombre).toBeTruthy();
+        // Una jornada sin asistencias (o sin goles) deja la tabla vacía; la igualdad con los resúmenes ya lo cubre.
+        if (tabla.length > 0) expect(tabla[0].equipo.nombre).toBeTruthy();
       }
       // La vista del torneo trae las 10 primeras filas.
       const t = await torneo(srv, partidaId, u);

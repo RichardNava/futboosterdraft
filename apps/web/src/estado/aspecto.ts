@@ -17,6 +17,7 @@ interface EstadoAspecto {
   actualizar(cambios: CuerpoAspecto): Promise<Aspecto>;
 }
 
+/** Aspecto de la cuenta (escudo, sobre y celebración) con su carga y actualización. */
 export const useAspecto = create<EstadoAspecto>((set, get) => ({
   aspecto: null,
   de: null,
@@ -45,7 +46,7 @@ export const useAspecto = create<EstadoAspecto>((set, get) => ({
 }));
 
 /** Diseño del sobre de la siguiente apertura (avanza el carrusel); el original si la petición falla. */
-export async function sobreSiguiente(): Promise<string> {
+async function sobreSiguiente(): Promise<string> {
   try {
     return (await api<{ diseno: string }>('/api/perfil/aspecto/sobre-siguiente', { metodo: 'POST' })).diseno;
   } catch {

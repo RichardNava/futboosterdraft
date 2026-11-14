@@ -2,14 +2,15 @@
  * Balón parado y autogoles (spec 003, research R7 y R11; FR-020; T015): penalti espacial, faltas en duelos
  * aéreos del área, falta directa según distancia y ángulo, y goles en propia puerta.
  */
-import { PARAMETROS_V3, type ParametrosEquilibrado } from '@fbd/domain';
+import { PARAMETROS_V7, type ParametrosEquilibrado } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { falta, probabilidadTiroDirecto } from '../src/acciones/balonParado';
 import { corner, probabilidadAutogolDespeje, tirar } from '../src/acciones/tiro';
 import { avanzar, crearPartido, type EstadoMotor } from '../src/index';
-import { contextoDe, entrada, partido, situar, titularEn } from './ayudas';
+import { paso } from '../src/acciones/juego';
+import { contextoDe, darBalon, entrada, partido, situar, soloEnCampo, titularEn } from './ayudas';
 
-const p = PARAMETROS_V3;
+const p = PARAMETROS_V7;
 
 function conParametros(cambios: (q: ParametrosEquilibrado) => void): ParametrosEquilibrado {
   const q = structuredClone(p);
@@ -155,20 +156,39 @@ describe('goles en propia puerta (FR-020, SC-003)', () => {
 });
 
 describe('factorFaltaArea (spec 005, T079; research R2)', () => {
-  it('multiplica la probabilidad de falta solo dentro del área; con 3.0.0 vale 1', async () => {
+  it('multiplica la probabilidad de falta solo dentro del área', async () => {
     const { factorFaltaArea } = await import('../src/modificadores/defectos');
-    const { PARAMETROS_V4 } = await import('@fbd/domain');
-    const q = conParametros((x) => {
-      (x as { disciplina: { factorFaltaArea?: number } }).disciplina.factorFaltaArea = 0.55;
-    });
-    const e4 = crearPartido(entrada('area', { version: PARAMETROS_V4.version, parametros: { ...PARAMETROS_V4, disciplina: { ...PARAMETROS_V4.disciplina, factorFaltaArea: 0.55 } } }));
+    const e4 = crearPartido(entrada('area', { parametros: conParametros((x) => void (x.disciplina.factorFaltaArea = 0.55)) }));
     expect(factorFaltaArea(e4, 'local', { x: 9000, y: 3200 })).toBe(0.55);
     expect(factorFaltaArea(e4, 'local', { x: 7000, y: 3200 })).toBe(1);
     // Para el visitante, su área de ataque es la del otro lado (coordenadas absolutas).
     expect(factorFaltaArea(e4, 'visitante', { x: 1000, y: 3200 })).toBe(0.55);
     expect(factorFaltaArea(e4, 'local')).toBe(0.55);
-    const e3 = partido('area-v3');
-    expect(factorFaltaArea(e3, 'local', { x: 9000, y: 3200 })).toBe(1);
-    expect(q.version).toBe('3.0.0');
+  });
+});
+
+describe('saques sin fuera de juego (spec 014, M4.5; FR-009)', () => {
+  /** Lateral local que saca y un delantero muy por delante de la defensa, único compañero a quien dársela. */
+  function saque(semilla: string, trasSaque: boolean) {
+    const e = partido(semilla);
+    const sacador = titularEn(e, 'local', 'LD');
+    const delantero = titularEn(e, 'local', 'DC');
+    const central = titularEn(e, 'visitante', 'DCI');
+    const portero = titularEn(e, 'visitante', 'POR');
+    situar(e, sacador.id, { x: 6500, y: 6300 });
+    situar(e, delantero.id, { x: 8600, y: 4500 });
+    situar(e, central.id, { x: 10000 - 7000, y: 3200 });
+    situar(e, portero.id, { x: 300, y: 3200 });
+    soloEnCampo(e, [sacador.id, delantero.id, central.id, portero.id]);
+    darBalon(e, 'local', sacador, 3, 2);
+    if (trasSaque) e.espacio.sinFueraDeJuego = true;
+    paso(contextoDe(e, semilla));
+    return e.eventos.some((ev) => ev.tipo === 'fuera_de_juego');
+  }
+
+  it('el primer pase tras un saque de banda o de puerta nunca se pita; el mismo pase en juego sí puede', () => {
+    const semillas = Array.from({ length: 60 }, (_, i) => `saque-${i}`);
+    expect(semillas.filter((s) => saque(s, true))).toEqual([]);
+    expect(semillas.some((s) => saque(s, false))).toBe(true);
   });
 });

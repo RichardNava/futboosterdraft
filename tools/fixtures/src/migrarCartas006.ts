@@ -24,6 +24,7 @@ export function imagenesGenericas(demarcacion: Demarcacion): Pick<Jugador, 'imag
   return { imagen: `/cartas/siluetas/${d}.svg`, imagen_bg: `/cartas/fondos/${d}.svg` };
 }
 
+/** Nombre corto de la carta: nombre y primer apellido. */
 export function nombreCarta(nombre: string, apellidos: string): string {
   return `${nombre} ${apellidos.split(' ')[0]}`;
 }
@@ -40,6 +41,7 @@ export function repartoGbr(ids: readonly number[], semilla = 'futboosterdraft-gb
 
 type CartaAntigua = Omit<Jugador, 'nombre_carta' | 'imagen' | 'imagen_bg'> & { coleccion?: string };
 
+/** Pasa las cartas antiguas al formato de la spec 006 y reparte las de GBR entre sus selecciones. */
 export function migrarCartas(antiguas: readonly CartaAntigua[]): { jugadores: Jugador[]; gbr: Map<number, string> } {
   const gbr = repartoGbr(antiguas.filter((c) => c.nacionalidad === 'GBR').map((c) => c.id));
   const jugadores = antiguas.map(({ coleccion: _c, ...c }) => {

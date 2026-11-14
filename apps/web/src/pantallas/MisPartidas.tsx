@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useApi } from '../api/cache';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
 import { EstadoVacio } from '../componentes/EstadoVacio';
@@ -71,21 +72,21 @@ type MisPartidasDatos = { enCurso: PartidaResumen[]; terminadas: PartidaResumen[
  * pendiente. Sin partidas, el estado vacío lleva a «Nueva partida».
  */
 export function MisPartidas() {
-  const [datos, setDatos] = useState<MisPartidasDatos | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Spec 014 (US6): la primera página sale de la caché (la carga el loader); las siguientes se añaden aquí.
+  const primera = useApi<MisPartidasDatos>('/api/mis-partidas');
+  const [mas, setMas] = useState<MisPartidasDatos | null>(null);
+  const datos = primera.datos && mas ? { ...primera.datos, terminadas: [...primera.datos.terminadas, ...mas.terminadas], siguiente: mas.siguiente } : (primera.datos ?? null);
+  const [errorMas, setError] = useState<string | null>(null);
+  const error = errorMas ?? (primera.error ? (primera.error instanceof ErrorApi ? primera.error.message : 'No se han podido cargar tus partidas. Comprueba la conexión y vuelve a intentarlo.') : null);
   const [cargandoMas, setCargandoMas] = useState(false);
   const fallo = (e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se han podido cargar tus partidas. Comprueba la conexión y vuelve a intentarlo.');
-
-  useEffect(() => {
-    api<MisPartidasDatos>('/api/mis-partidas').then(setDatos).catch(fallo);
-  }, []);
 
   // Spec 013 (FR-024): las 5 siguientes, al final, sin recargar las que ya se ven.
   const cargarMas = () => {
     if (!datos?.siguiente) return;
     setCargandoMas(true);
     api<MisPartidasDatos>(`/api/mis-partidas?antes=${encodeURIComponent(datos.siguiente)}`)
-      .then((mas) => setDatos((d) => d && { ...d, terminadas: [...d.terminadas, ...mas.terminadas], siguiente: mas.siguiente }))
+      .then((nuevas) => setMas((m) => ({ ...nuevas, terminadas: [...(m?.terminadas ?? []), ...nuevas.terminadas] })))
       .catch(fallo)
       .finally(() => setCargandoMas(false));
   };

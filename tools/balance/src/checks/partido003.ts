@@ -12,7 +12,7 @@ import { mayorSignificativo, media, serie, type ResultadoSerie } from '../series
 import type { Comprobacion } from './partido';
 
 /** Conducciones por equipo y partido del motor 2.0.0 (línea base de T003, `checklists/linea-base.md`). */
-export const LINEA_BASE_CONDUCCIONES = 16.9;
+const LINEA_BASE_CONDUCCIONES = 16.9;
 
 const pct = (x: number) => `${(100 * x).toFixed(1)} %`;
 const GRUPO: Record<string, string> = { normal: 'jugada', lejano: 'jugada', manoAMano: 'jugada', cabeza: 'cabeza', falta: 'falta', penalti: 'penalti', propia: 'propia' };
@@ -74,6 +74,7 @@ function dispersion(r: ResultadoSerie) {
   };
 }
 
+/** 003/SC-001: goles por partido, 0-0 y goleadas en la serie sintética (y en la Core con `conCore`). */
 export function comprobarSC001(n: number, semilla: number, conCore: boolean): Comprobacion[] {
   const fila = (id: string, nombre: string, r: ResultadoSerie): Comprobacion => {
     const d = dispersion(r);
@@ -91,7 +92,7 @@ export function comprobarSC001(n: number, semilla: number, conCore: boolean): Co
 }
 
 /** Goles por partido que puede añadir cada rasgo neto (virtudes − defectos) por jugador del pool (003/SC-001c). */
-export const GOLES_POR_RASGO_NETO = 0.35;
+const GOLES_POR_RASGO_NETO = 0.35;
 
 /**
  * 003/SC-001c, independiente del pool: sin rasgos, la serie Core da 2,6–3,4 goles (los stats se anulan entre equipos
@@ -140,6 +141,7 @@ function reparto(r: ResultadoSerie) {
   };
 }
 
+/** 003/SC-002: proporción de goles desde fuera del área y desde el propio campo. */
 export function comprobarSC002(n: number, semilla: number): Comprobacion {
   const d = reparto(serieBase(n, semilla));
   return {
@@ -150,6 +152,7 @@ export function comprobarSC002(n: number, semilla: number): Comprobacion {
   };
 }
 
+/** 003/SC-003: variedad de goles (penalti, cabeza, falta directa y propia puerta). */
 export function comprobarSC003(n: number, semilla: number): Comprobacion {
   const d = reparto(serieBase(n, semilla));
   const rangos: [string, string, number, number][] = [
@@ -168,6 +171,7 @@ export function comprobarSC003(n: number, semilla: number): Comprobacion {
 
 const ambos = (r: ResultadoSerie) => [...r.estadisticasA, ...r.estadisticasB];
 
+/** 003/SC-004: pocos pases largos y casi ninguno largo hacia atrás. */
 export function comprobarSC004(n: number, semilla: number): Comprobacion {
   const s = ambos(serieBase(n, semilla));
   const largos = s.reduce((a, e) => a + e.pasesLargos, 0) / Math.max(1, s.reduce((a, e) => a + e.pases, 0));
@@ -180,6 +184,7 @@ export function comprobarSC004(n: number, semilla: number): Comprobacion {
   };
 }
 
+/** 003/SC-005: juego combinado (conducciones y pases cortos). */
 export function comprobarSC005(n: number, semilla: number): Comprobacion {
   const s = ambos(serieBase(n, semilla));
   const conducciones = media(s.map((e) => e.conducciones));
@@ -194,7 +199,7 @@ export function comprobarSC005(n: number, semilla: number): Comprobacion {
 }
 
 /** Mismo equipo con un titular (por casilla) con stats y virtudes cambiadas; conserva su id. */
-export function conTitular(equipo: EquipoPartido, casillaId: string, cambios: { stats?: Record<string, number>; virtudes?: Virtud[] }): EquipoPartido {
+function conTitular(equipo: EquipoPartido, casillaId: string, cambios: { stats?: Record<string, number>; virtudes?: Virtud[] }): EquipoPartido {
   const titulares = equipo.titulares.map((t) => {
     if (t.casillaId !== casillaId) return t;
     const j = t.jugador;
@@ -222,6 +227,7 @@ const cuotaEquipo = (r: ResultadoSerie, id: number, f: Medida) => {
   return total > 0 ? suyo / total : 0;
 };
 
+/** 003/SC-006: +15 en un stat se nota en la elección de su acción. */
 export function comprobarSC006(n: number, semilla: number): Comprobacion {
   const { base, rival } = equipos003();
   const sin = serieBase(n, semilla);
@@ -265,6 +271,7 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
   };
 }
 
+/** 003/SC-007: cada virtud tiene un efecto medible en su acción. */
 export function comprobarSC007(n: number, semilla: number): Comprobacion {
   const { base, rival } = equipos003();
   const sin = serieBase(n, semilla);
@@ -303,7 +310,7 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
  * casilla) marcan entre el 25 % y el 50 % de los goles de su equipo. Cinco equipos sintéticos distintos por formación,
  * para que el reparto no dependa de la calidad de un jugador concreto.
  */
-export function comprobarSC023(n: number, semilla: number): Comprobacion {
+function comprobarSC023(n: number, semilla: number): Comprobacion {
   const EQUIPOS = 5;
   const partes: string[] = [];
   let ok = true;
@@ -341,6 +348,7 @@ export function comprobarSC023(n: number, semilla: number): Comprobacion {
   };
 }
 
+/** Comprobaciones de partido de la spec 003 para la herramienta. */
 export function gruposPartido003(): GrupoComprobaciones[] {
   return [
     { ids: ['003/SC-001'], serie: 'sintetica', ejecutar: (o) => comprobarSC001(o.n, o.seed, false) },

@@ -9,6 +9,7 @@ import { sql } from 'drizzle-orm';
 import { boolean, check, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { participantes, partidas } from './base';
 
+/** Tabla de partidos. */
 export const partidos = pgTable(
   'partidos',
   {

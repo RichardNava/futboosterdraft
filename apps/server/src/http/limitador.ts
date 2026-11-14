@@ -17,6 +17,7 @@ export interface OpcionesLimitador {
 /** Con más claves que esto se olvidan las que ya tienen el cubo lleno (no aportan nada). */
 const MAX_CLAVES = 10_000;
 
+/** Limitador de peticiones por clave con cubos de fichas. */
 export class Limitador {
   private readonly cubos = new Map<string, { fichas: number; en: number }>();
   private readonly ahora: () => number;

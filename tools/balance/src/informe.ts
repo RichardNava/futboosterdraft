@@ -28,6 +28,7 @@ function objetivoDe(c: Comprobacion): { descripcion: string; objetivo: string } 
   return { descripcion: c.descripcion.slice(0, i), objetivo: c.descripcion.slice(i + 2) };
 }
 
+/** HTML del informe: cabecera y una fila por comprobación con su objetivo y resultado. */
 export function htmlInforme(comprobaciones: readonly Comprobacion[], cabecera: CabeceraInforme): string {
   const superadas = comprobaciones.filter((c) => c.ok).length;
   const filas = comprobaciones

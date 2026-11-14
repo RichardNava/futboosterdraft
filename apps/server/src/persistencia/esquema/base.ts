@@ -24,6 +24,7 @@ import {
 
 // ---------- Better Auth ----------
 
+/** Tabla de usuarios (registrados e invitados). */
 export const usuarios = pgTable(
   'usuarios',
   {
@@ -40,6 +41,7 @@ export const usuarios = pgTable(
   (t) => [uniqueIndex('usuarios_email_uq').on(t.email)],
 );
 
+/** Tabla de sesiones de Better Auth. */
 export const sesiones = pgTable(
   'sesiones',
   {
@@ -86,6 +88,7 @@ export const verificaciones = pgTable('verificaciones', {
 
 // ---------- Catálogo ----------
 
+/** Tabla de cartas del catálogo. */
 export const jugadores = pgTable(
   'jugadores',
   {
@@ -124,6 +127,7 @@ export const jugadores = pgTable(
 
 // ---------- Partidas ----------
 
+/** Tabla de partidas. */
 export const partidas = pgTable(
   'partidas',
   {
@@ -181,6 +185,7 @@ export const partidas = pgTable(
   ],
 );
 
+/** Tabla de participantes de cada partida (humanos y NPC). */
 export const participantes = pgTable(
   'participantes',
   {

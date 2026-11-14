@@ -6,16 +6,18 @@ import { eq, sql } from 'drizzle-orm';
 import { MODO_INCIDENCIAS_POR_DEFECTO, type Equipaciones, type ModoIncidencias, type ModoSimulacion, type PreferenciasSobre } from '@fbd/domain';
 
 /** Aspecto guardado en el perfil (specs 011 y 012): escudo, sobres, celebración y modo de incidencias. */
-export type AspectoGuardado = { escudo: string | null; celebracion: string | null; modoIncidencias: ModoIncidencias } & PreferenciasSobre;
+type AspectoGuardado = { escudo: string | null; celebracion: string | null; modoIncidencias: ModoIncidencias } & PreferenciasSobre;
 import type { BaseDatos } from '../db';
 import { perfilesUsuario, usuarios } from '../esquema/index';
 
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
+/** Perfil del usuario: nombre de equipo, equipaciones y última modalidad. */
 export class RepoPerfiles {
   constructor(private readonly db: BaseDatos) {}
 
+  /** Última modalidad de simulación elegida por el usuario. */
   async obtenerUltimaModalidad(usuarioId: string, ejecutor: Ejecutor = this.db): Promise<ModoSimulacion | null> {
     const [fila] = await ejecutor.select({ m: perfilesUsuario.ultimaModalidad }).from(perfilesUsuario).where(eq(perfilesUsuario.usuarioId, usuarioId)).limit(1);
     return (fila?.m as ModoSimulacion | null | undefined) ?? null;

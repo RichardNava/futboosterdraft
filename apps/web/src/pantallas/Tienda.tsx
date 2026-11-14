@@ -6,12 +6,13 @@
  * subsecciones, en la URL para poder enlazarlas; lo que aún no se vende se ve como «Próximamente».
  * Tras un sobre, la apertura del draft y la revelación de las 8 cartas; tras una colección, su confirmación.
  */
+import { cargarApi, enCache, poner } from '../api/cache';
 import { NIVELES } from '@fbd/domain';
 import type { ProductoColeccion, RespuestaCompraPase, RespuestaTienda, ResumenCompra } from '@fbd/protocol';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router';
 import { Icono, type NombreIcono } from '../componentes/Icono';
-import { comprarColeccion, comprarPase, comprarSobre, ErrorApi, obtenerTienda } from '../api/cliente';
+import { comprarColeccion, comprarPase, comprarSobre, ErrorApi } from '../api/cliente';
 import { reproducir } from '../sonido/sonido';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { CartaJugador } from '../componentes/CartaJugador';
@@ -36,7 +37,7 @@ type Resultado =
   | { tipo: 'coleccion'; nombre: string; resumen: ResumenCompra };
 
 /** Secciones de la tienda y sus subsecciones (retoques de la spec 011). «Todo» las muestra todas, sin subsecciones. */
-export type SeccionTienda = 'todo' | 'cosmeticos' | 'colecciones' | 'funcionalidades' | 'modos';
+type SeccionTienda = 'todo' | 'cosmeticos' | 'colecciones' | 'funcionalidades' | 'modos';
 
 interface DefinicionSeccion {
   id: SeccionTienda;
@@ -254,6 +255,7 @@ function SeccionCosmeticos({ seccion, sub, ruta, invitado }: Navegacion & { invi
   );
 }
 
+/** Pantalla «Tienda»: sobres, colecciones, pase premium y cosméticos (invitados, solo cosméticos). */
 export function Tienda() {
   const invitado = useSesion((s) => s.usuario?.tipo !== 'registrado');
   const navegacion = useSeccion();
@@ -293,7 +295,7 @@ export function Tienda() {
 }
 
 function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
-  const [tienda, setTienda] = useState<RespuestaTienda | null>(null);
+  const [tienda, setTienda] = useState<RespuestaTienda | null>(() => enCache<RespuestaTienda>('/api/tienda', { fresco: true }) ?? null);
   const [error, setError] = useState<string | null>(null);
   const [pago, setPago] = useState<Pago | null>(null);
   const [resultado, setResultado] = useState<Resultado | null>(null);
@@ -302,8 +304,11 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
   const idSobre = useRef<string | null>(null);
 
   const cargar = () =>
-    obtenerTienda()
-      .then(setTienda)
+    cargarApi<RespuestaTienda>('/api/tienda', { fresco: true })
+      .then((t) => {
+        setTienda(t);
+        poner('/api/tienda', t);
+      })
       .catch((e: unknown) =>
         setError(e instanceof ErrorApi ? e.message : 'No se ha podido cargar la tienda'),
       );

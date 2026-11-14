@@ -17,6 +17,7 @@ function cuerpo<T extends z.ZodTypeAny>(esquema: T, valor: unknown): z.infer<T> 
   return r.data;
 }
 
+/** Rutas del catálogo y la compra de cosméticos. */
 export function registrarRutasCosmeticos(app: FastifyInstance, auth: Auth, economia: ServicioEconomia, cosmeticos: RepoCosmeticos): void {
   const { soloRegistrados } = crearHooksSesion(auth);
 

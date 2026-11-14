@@ -1,3 +1,4 @@
+import { poner, useApi } from '../api/cache';
 import { Link, useNavigate } from 'react-router';
 import { EstadoVacio } from '../componentes/EstadoVacio';
 import { useEffect, useState } from 'react';
@@ -30,21 +31,18 @@ interface PerfilVista {
  */
 export function Perfil() {
   const usuario = useSesion((s) => s.usuario);
-  const [nombre, setNombre] = useState('');
-  const [equipaciones, setEquipaciones] = useState<Equipaciones | null>(null);
-  const [mensaje, setMensaje] = useState<string | null>(null);
-  const [cargado, setCargado] = useState(false);
-
-  useEffect(() => {
-    if (usuario?.tipo !== 'registrado') return;
-    api<PerfilVista>('/api/perfil')
-      .then((p) => {
-        setNombre(p.nombreEquipo ?? '');
-        setEquipaciones(p.equipaciones ?? equipacionesAleatorias(semillaDesdeTexto(usuario.id), parametrosActuales()));
-        setCargado(true);
-      })
-      .catch((e: unknown) => setMensaje(e instanceof ErrorApi ? e.message : 'No se pudo cargar el perfil'));
-  }, [usuario]);
+  // Spec 014 (US6): el perfil sale de la caché (lo carga el loader); el formulario se rellena una sola vez con él.
+  const perfil = useApi<PerfilVista>(usuario?.tipo === 'registrado' ? '/api/perfil' : null);
+  const [editado, setEditado] = useState<{ nombre: string; equipaciones: Equipaciones } | null>(null);
+  const base = perfil.datos && usuario
+    ? { nombre: perfil.datos.nombreEquipo ?? '', equipaciones: perfil.datos.equipaciones ?? equipacionesAleatorias(semillaDesdeTexto(usuario.id), parametrosActuales()) }
+    : null;
+  const nombre = editado?.nombre ?? base?.nombre ?? '';
+  const equipaciones = editado?.equipaciones ?? base?.equipaciones ?? null;
+  const setNombre = (n: string) => base && setEditado({ nombre: n, equipaciones: equipaciones! });
+  const setEquipaciones = (e: Equipaciones) => base && setEditado({ nombre, equipaciones: e });
+  const cargado = base !== null;
+  const mensaje = perfil.error ? (perfil.error instanceof ErrorApi ? perfil.error.message : 'No se pudo cargar el perfil') : null;
 
   if (usuario?.tipo !== 'registrado') {
     return (
@@ -114,6 +112,7 @@ export function Perfil() {
           motivoDesactivado: motivo,
           onClick: async () => {
             await api('/api/perfil', { metodo: 'PUT', cuerpo: { nombreEquipo: normalizarNombre(nombre) || null, equipaciones } });
+            poner<PerfilVista>('/api/perfil', { ...perfil.datos!, nombreEquipo: normalizarNombre(nombre) || null, equipaciones: equipaciones! });
             mostrarAviso('exito', 'Perfil guardado');
           },
         }}

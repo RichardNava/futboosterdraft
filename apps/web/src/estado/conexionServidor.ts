@@ -8,8 +8,10 @@ interface EstadoConexionServidor {
   desde: number | null;
 }
 
+/** Si se está intentando contactar con el servidor y desde cuándo. */
 export const useConexionServidor = create<EstadoConexionServidor>(() => ({ conectando: false, desde: null }));
 
+/** Anota que se está (o ya no) reintentando contactar con el servidor. */
 export function marcarConectando(conectando: boolean): void {
   const actual = useConexionServidor.getState();
   if (actual.conectando === conectando) return;

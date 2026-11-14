@@ -26,6 +26,7 @@ export const ETIQUETA_FASE: Readonly<Record<FaseEliminacion, string>> = {
   final: 'Final',
 };
 
+/** Participantes eliminados del cuadro y en qué ronda. */
 export function eliminaciones(t: EstadoTorneo): Eliminacion[] {
   if (t.modo === 'liga' || !t.cuadro) return [];
   const resultado: Eliminacion[] = [];
@@ -44,6 +45,7 @@ export function eliminaciones(t: EstadoTorneo): Eliminacion[] {
   return resultado;
 }
 
+/** Eliminación de un participante, si la hay. */
 export function eliminacionDe(t: EstadoTorneo, participanteId: string): Eliminacion | null {
   return eliminaciones(t).find((e) => e.participanteId === participanteId) ?? null;
 }

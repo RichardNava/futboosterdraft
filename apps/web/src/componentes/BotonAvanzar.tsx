@@ -1,7 +1,7 @@
 import { BarraPrincipal, type AccionBarra } from './BarraPrincipal';
 
 /** Situaciones en las que el juego espera y se puede avanzar (002/FR-011; spec 003, FR-006; contracts/ui.md). */
-export type SituacionAvance =
+type SituacionAvance =
   | 'fin_draft'
   | 'preparacion'
   | 'pausa'
@@ -16,7 +16,7 @@ export type SituacionAvance =
   | 'ver_campeon'
   | 'volver_menu';
 
-export const ETIQUETA_AVANCE: Record<SituacionAvance, string> = {
+const ETIQUETA_AVANCE: Record<SituacionAvance, string> = {
   fin_draft: 'Preparar equipo',
   preparacion: 'Comenzar partido',
   pausa: 'Seguir',

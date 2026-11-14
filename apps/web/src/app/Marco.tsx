@@ -1,3 +1,4 @@
+import { precargarPantalla } from '../api/cache';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useBlocker, useLocation, useNavigate } from 'react-router';
 import { api } from '../api/cliente';
@@ -10,6 +11,7 @@ import { useSesion } from '../estado/sesion';
 import { prepararDesbloqueo, useSonido } from '../sonido/sonido';
 import { Dialogo } from '../componentes/Dialogo';
 import { Insignia } from '../componentes/Insignia';
+import { IndicadorNavegacion } from '../componentes/IndicadorNavegacion';
 import { useAvisos } from '../estado/avisos';
 import { Escudo } from '../componentes/arte/Escudo';
 import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
@@ -201,7 +203,7 @@ export function Marco() {
   const listaEnlaces = (soloIconos: boolean) =>
     enlaces.map((e) => (
       <li key={e.texto}>
-        <NavLink to={e.a} end={e.a === '/'} aria-current={e.a.includes('?') ? false : undefined} aria-label={soloIconos ? e.texto : undefined} title={soloIconos ? e.texto : undefined} data-ayuda={AYUDA_ENLACE[e.texto]}>
+        <NavLink to={e.a} end={e.a === '/'} aria-current={e.a.includes('?') ? false : undefined} aria-label={soloIconos ? e.texto : undefined} title={soloIconos ? e.texto : undefined} data-ayuda={AYUDA_ENLACE[e.texto]} onPointerEnter={() => precargarPantalla(e.a)} onFocus={() => precargarPantalla(e.a)}>
           <Icono nombre={e.icono} tamano={soloIconos ? 20 : 18} />
           {!soloIconos && e.texto}
         </NavLink>
@@ -247,6 +249,7 @@ export function Marco() {
           </>
         )}
       </nav>
+      <IndicadorNavegacion />
       {/* Contenedor único bajo la barra de navegación: la barra del botón principal es `sticky` dentro de él (FR-007). */}
       <div className={compacta ? 'contenido compacto' : 'contenido'}>
         {conectando && (

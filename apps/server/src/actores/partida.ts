@@ -12,6 +12,7 @@ import type { PartidoEnCurso } from './partidoRapido';
 import type { Alineacion, Baja, EstadoTorneo } from '@fbd/domain';
 import type { ServiciosPartida } from './servicios';
 
+/** Estado en memoria de una partida (fila, participantes, draft, torneo) y su cola de comandos. */
 export class ControladorPartida {
   readonly actor: ActorPartida;
   partida: FilaPartida;
@@ -78,10 +79,12 @@ export class ControladorPartida {
     this.actor = new ActorPartida(datos.partida.id, servicios.difusor);
   }
 
+  /** Id de la partida. */
   get id(): string {
     return this.partida.id;
   }
 
+  /** Id de la partida (para el registro de actores). */
   get partidaId(): string {
     return this.partida.id;
   }
@@ -92,15 +95,18 @@ export class ControladorPartida {
     return this.servicios.catalogo.enVersion(this.partida.versionCatalogo).conIdentidad(this.partida.identidad);
   }
 
+  /** Ejecuta un comando en la cola de la partida. */
   ejecutar<T>(comando: (ctx: ContextoComando) => Promise<T> | T): Promise<T> {
     return this.actor.ejecutar(comando);
   }
 
+  /** Cancela los temporizadores y cierra la cola. */
   cerrar(): void {
     this.cancelarTemporizadores();
     this.actor.cerrar();
   }
 
+  /** Clave de un temporizador de esta partida. */
   clave(nombre: string): string {
     return `${this.partida.id}:${nombre}`;
   }
@@ -118,6 +124,7 @@ export class ControladorPartida {
     if (this.jornada) t.cancelar(this.clave(`preparacion:${this.jornada.numero}`));
   }
 
+  /** Participante por id. */
   participante(participanteId: string): FilaParticipante | undefined {
     return this.participantes.find((p) => p.id === participanteId);
   }
@@ -127,14 +134,17 @@ export class ControladorPartida {
     return this.participantes.find((p) => p.usuarioId === usuarioId && !p.controladoPorNPC);
   }
 
+  /** Participantes humanos. */
   humanos(): FilaParticipante[] {
     return this.participantes.filter((p) => p.tipo === 'humano');
   }
 
+  /** Nombre de equipo de un participante. */
   nombreDe(p: FilaParticipante): string {
     return p.nombreEquipo;
   }
 
+  /** El usuario creó la partida. */
   esAnfitrion(usuarioId: string): boolean {
     return this.partida.anfitrionId === usuarioId;
   }

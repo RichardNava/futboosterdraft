@@ -12,6 +12,7 @@ import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
 import { errores } from './errores';
 
+/** Rutas para crear, listar, ver, unirse e iniciar partidas. */
 export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor: GestorPartidas): void {
   const { requiereSesion, requiereRegistrado } = crearHooksSesion(auth);
 

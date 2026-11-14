@@ -34,7 +34,7 @@ export function mediaMejorOnce(plantilla: readonly Pick<CartaResumen, 'demarcaci
 }
 
 /** Relleno (0–1) de cada una de las diez estrellas: una estrella por cada 10 puntos de media. */
-export function rellenoEstrellas(media: number): number[] {
+function rellenoEstrellas(media: number): number[] {
   return Array.from({ length: ESTRELLAS }, (_, i) => Math.max(0, Math.min(1, media / 10 - i)));
 }
 

@@ -1,3 +1,4 @@
+import { enCache } from '../api/cache';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { api, ErrorApi } from '../api/cliente';
@@ -33,9 +34,13 @@ const COLUMNAS = [['POR', 'DEF'], ['MED'], ['DEL']] as const;
 /** Plantillas de todos los participantes, visibles al terminar el draft (T055; FR-054a). */
 export function Plantillas() {
   const { partidaId } = useParams();
-  const [plantillas, setPlantillas] = useState<PlantillaParticipante[] | null>(null);
-  const [miId, setMiId] = useState<string | null>(null);
-  const [seleccion, setSeleccion] = useState<string | null>(null);
+  // Spec 014 (US6): lo que acaba de cargar el loader, sin esqueleto.
+  const previas = enCache<PlantillaParticipante[]>(`/api/partidas/${partidaId}/plantillas`, { fresco: true });
+  const partidaPrevia = enCache<{ miParticipanteId: string | null }>(`/api/partidas/${partidaId}`, { fresco: true });
+  const conPrevias = previas !== undefined && partidaPrevia !== undefined;
+  const [plantillas, setPlantillas] = useState<PlantillaParticipante[] | null>(conPrevias ? previas : null);
+  const [miId, setMiId] = useState<string | null>(conPrevias ? partidaPrevia.miParticipanteId : null);
+  const [seleccion, setSeleccion] = useState<string | null>(conPrevias ? (partidaPrevia.miParticipanteId ?? previas[0]?.participanteId ?? null) : null);
   const [error, setError] = useState<string | null>(null);
   const [ficha, setFicha] = useState<CartaResumen | null>(null);
   const preparacion = usePreparacionPartido(partidaId ?? '');

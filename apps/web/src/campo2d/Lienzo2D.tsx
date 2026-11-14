@@ -52,7 +52,7 @@ const ETIQUETA_ACCION: Record<string, string> = {
 };
 
 /** Acción en curso en el tick `t` (las acciones van ordenadas y no se solapan). */
-export function accionEn(acciones: readonly AccionVista[], t: number): AccionVista | null {
+function accionEn(acciones: readonly AccionVista[], t: number): AccionVista | null {
   let bajo = 0;
   let alto = acciones.length - 1;
   while (bajo <= alto) {
@@ -80,7 +80,7 @@ export function jugadoresDe(inicio: Inicio): Map<number, JugadorDibujo> {
 }
 
 /** Orden de los jugadores en los fotogramas v2 (el de `partido.inicio`, o el de las alineaciones). */
-export function ordenDe(inicio: Inicio): number[] {
+function ordenDe(inicio: Inicio): number[] {
   if (inicio.ordenJugadores) return inicio.ordenJugadores;
   return (['local', 'visitante'] as const).flatMap((lado) => {
     const a = inicio.alineaciones[lado];

@@ -197,7 +197,7 @@ function eleccionNPC(c: ControladorPartida, mesa: Mesa, semillaMesa: string, pid
   return r.id;
 }
 
-export type ResultadoEleccion = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
+type ResultadoEleccion = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
 
 /** Elección manual de un participante humano (mensaje `draft.elegir`). */
 export async function procesarEleccion(
@@ -255,7 +255,7 @@ export async function abandonarDraft(c: ControladorPartida, ctx: ContextoComando
 }
 
 /** Vencimiento del plazo de un turno. */
-export async function vencerTurno(c: ControladorPartida, ctx: ContextoComando, indice: number): Promise<void> {
+async function vencerTurno(c: ControladorPartida, ctx: ContextoComando, indice: number): Promise<void> {
   const m = c.mesas.find((x) => x.indice === indice);
   // Una mesa pausada (research R10) no vence: el turno sigue al reanudarse.
   if (!m || m.pausa || m.mesa.estado !== 'en_turno' || c.servicios.reloj.ahora() <= m.mesa.venceEn) return;
@@ -353,6 +353,7 @@ function emitirProgreso(c: ControladorPartida, ctx: ContextoComando, mesa: Mesa)
   }
 }
 
+/** Mensaje `draft.turno` de un participante: su sobre, sus elecciones y el plazo. */
 export function mensajeTurno(c: ControladorPartida, indice: number, mesa: Mesa, participanteId: string) {
   const v = vistaParticipante(mesa, participanteId);
   const catalogo = c.catalogo;

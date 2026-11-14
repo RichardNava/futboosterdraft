@@ -4,11 +4,12 @@
  * ampliada, desfragmentar y el historial de fragmentos. Toda la colección llega en una petición y se filtra en el
  * cliente (R15). Las preferencias se recuerdan por usuario en este navegador.
  */
+import { enCache, useApi } from '../api/cache';
 import { comprobarMinimoActivo, DEMARCACIONES, NIVELES, recuentoPorDemarcacionYNivel, type Demarcacion, type Nivel } from '@fbd/domain';
 import type { CartaPoseida, EstadoMinimo, MovimientoFragmentos, RespuestaColeccion } from '@fbd/protocol';
 import { useEffect, useLayoutEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router';
-import { cambiarActiva, desfragmentar, ErrorApi, obtenerColeccion, obtenerMovimientos } from '../api/cliente';
+import { cambiarActiva, desfragmentar, ErrorApi, obtenerMovimientos } from '../api/cliente';
 import { CartaJugador } from '../componentes/CartaJugador';
 import { Dialogo } from '../componentes/Dialogo';
 import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
@@ -78,7 +79,8 @@ function guardarPreferencias(usuarioId: string, p: Preferencias): void {
   }
 }
 
-export const textoMinimo = (i: { demarcacion: string; nivel: Nivel; minimo: number; activas: number }) =>
+/** Explicación de por qué no se puede desactivar una carta (mínimo de su demarcación y nivel). */
+const textoMinimo = (i: { demarcacion: string; nivel: Nivel; minimo: number; activas: number }) =>
   `Mínimo de ${i.demarcacion} ${ETIQUETA_NIVEL[i.nivel]}: ${i.minimo}; tienes ${i.activas} activas`;
 
 function indicadorMinimo(m: EstadoMinimo): string {
@@ -104,9 +106,10 @@ function useColumnas(tamano: Tamano) {
   return { ref, columnas };
 }
 
+/** Pantalla «Colección»: cartas, filtros, orden, paginación, ficha y fragmentos. */
 export function Coleccion() {
   const usuarioId = useSesion((s) => s.usuario?.id ?? '');
-  const [datos, setDatos] = useState<RespuestaColeccion | null>(null);
+  const [datos, setDatos] = useState<RespuestaColeccion | null>(() => enCache<RespuestaColeccion>('/api/coleccion') ?? null);
   const [error, setError] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<Preferencias>(() => leerPreferencias(usuarioId));
   const [busqueda, setBusqueda] = useState('');
@@ -116,13 +119,15 @@ export function Coleccion() {
   const [historial, setHistorial] = useState(false);
   const { ref: rejilla, columnas } = useColumnas(prefs.tamano);
 
-  const cargar = () =>
-    obtenerColeccion()
-      .then(setDatos)
-      .catch((e: unknown) => setError(e instanceof ErrorApi ? e.message : 'No se ha podido cargar la colección'));
+  // Spec 014 (US6): la colección sale de la caché (la carga el loader) y se revalida; los cambios la actualizan.
+  const coleccion = useApi<RespuestaColeccion>('/api/coleccion');
   useEffect(() => {
-    void cargar();
-  }, []);
+    if (coleccion.datos) setDatos(coleccion.datos);
+  }, [coleccion.datos]);
+  useEffect(() => {
+    if (coleccion.error) setError(coleccion.error instanceof ErrorApi ? coleccion.error.message : 'No se ha podido cargar la colección');
+  }, [coleccion.error]);
+  const cargar = () => coleccion.recargar();
 
   const cambiarPrefs = (cambio: Partial<Preferencias>, reiniciar = true) => {
     const nuevas = { ...prefs, ...cambio };

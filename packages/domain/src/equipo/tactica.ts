@@ -13,6 +13,7 @@ export interface Tactica {
   juegoVertical: boolean;
 }
 
+/** Táctica con la que empieza un equipo. */
 export function tacticaPorDefecto(): Tactica {
   return {
     sistemaDefensivo: 'zona',
@@ -28,6 +29,7 @@ export interface ErrorTactica {
   mensaje: string;
 }
 
+/** Errores de una táctica (valores desconocidos o combinaciones no permitidas). */
 export function validarTactica(t: Tactica): ErrorTactica[] {
   const errores: ErrorTactica[] = [];
   if (!SISTEMAS_DEFENSIVOS.includes(t.sistemaDefensivo)) errores.push({ codigo: 'TACTICA_INVALIDA', mensaje: 'Sistema defensivo desconocido' });

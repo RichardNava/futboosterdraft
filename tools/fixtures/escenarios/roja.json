@@ -1,7 +1,7 @@
 {
   "nombre": "roja",
   "descripcion": "Un jugador ve una tarjeta roja: queda sancionado 1 partido.",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "local": {
     "participanteId": "local",
     "jugadores": [
@@ -50,10 +50,10 @@
   },
   "eliminatoria": false,
   "semillas": [
-    "b3be0f0e517583b155a6d38b2f14718e"
+    "c731814d5e995f6acec2d545f0746f12"
   ],
   "esperado": {
-    "jugadorId": 134,
-    "lado": "local"
+    "jugadorId": 143,
+    "lado": "visitante"
   }
 }

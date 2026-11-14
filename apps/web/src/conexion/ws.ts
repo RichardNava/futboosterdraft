@@ -6,10 +6,11 @@
  */
 
 export type MensajeServidor = { t: string } & Record<string, unknown>;
-export type Ack = { t: 'ack'; requestId: string; ok: boolean; error?: { codigo: string; mensaje: string } };
+type Ack = { t: 'ack'; requestId: string; ok: boolean; error?: { codigo: string; mensaje: string } };
 
 type Oyente = (m: MensajeServidor) => void;
 
+/** Conexión WebSocket con una partida: reconexión automática, mensajes con confirmación y oyentes. */
 export class ConexionPartida {
   private socket: WebSocket | null = null;
   private intentos = 0;
@@ -27,6 +28,7 @@ export class ConexionPartida {
 
   constructor(private readonly partidaId: string) {}
 
+  /** Abre la conexión (y la reabre sola si se corta). */
   conectar(): void {
     this.cerradaAMano = false;
     this.sinReintento = false;
@@ -62,6 +64,7 @@ export class ConexionPartida {
     };
   }
 
+  /** Cierra la conexión sin volver a abrirla. */
   cerrar(): void {
     this.cerradaAMano = true;
     window.clearTimeout(this.temporizadorReintento);
@@ -80,11 +83,13 @@ export class ConexionPartida {
     return Date.now() + this.desfaseMs;
   }
 
+  /** Añade un oyente de mensajes; devuelve la función para quitarlo. */
   alRecibir(oyente: Oyente): () => void {
     this.oyentes.add(oyente);
     return () => this.oyentes.delete(oyente);
   }
 
+  /** Añade un oyente del estado de la conexión; devuelve la función para quitarlo. */
   alCambiarConexion(oyente: (conectada: boolean) => void): () => void {
     this.oyentesConexion.add(oyente);
     return () => this.oyentesConexion.delete(oyente);
@@ -103,6 +108,7 @@ export class ConexionPartida {
     });
   }
 
+  /** Envía un mensaje sin esperar confirmación (se pierde si no hay conexión). */
   enviarSinAck(mensaje: MensajeServidor): void {
     if (this.socket?.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify(mensaje));
   }

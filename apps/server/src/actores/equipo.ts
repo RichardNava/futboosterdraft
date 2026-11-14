@@ -37,6 +37,7 @@ export interface Precarga {
   dorsales: Map<string, Dorsales | null>;
 }
 
+/** Plantillas y alineaciones de varios participantes en una sola lectura. */
 export async function precargar(c: ControladorPartida, participanteIds: readonly string[]): Promise<Precarga> {
   const { repoEquipo, repoDraft } = c.servicios;
   const [alineaciones, plantillas, dorsales] = await Promise.all([
@@ -47,6 +48,7 @@ export async function precargar(c: ControladorPartida, participanteIds: readonly
   return { alineaciones, plantillas, dorsales };
 }
 
+/** Lanza si la partida aún no permite editar el equipo (en sala o en el draft). */
 export function exigirEquipoEditable(c: ControladorPartida): void {
   if (c.partida.estado === 'buscando' || c.partida.estado === 'en_draft') {
     throw errores.conflicto('DRAFT_EN_CURSO', 'Podrás preparar el equipo cuando termine el draft');
@@ -55,7 +57,7 @@ export function exigirEquipoEditable(c: ControladorPartida): void {
 }
 
 /** Partida del modo Duelo de jugadores (spec 005). */
-export const esDuelos = (c: ControladorPartida): boolean => c.partida.modo === 'duelos';
+const esDuelos = (c: ControladorPartida): boolean => c.partida.modo === 'duelos';
 
 /** Formación común y Estado de forma de una partida de duelos. */
 export function configDuelos(c: ControladorPartida): ConfigDuelos {
@@ -67,6 +69,7 @@ function exigirNoDuelos(c: ControladorPartida): void {
   if (esDuelos(c)) throw errores.conflicto('NO_DISPONIBLE_EN_MODO', 'No disponible en el modo Duelo de jugadores');
 }
 
+/** Cartas de la plantilla de un participante (de la precarga si se da). */
 export async function plantillaDe(c: ControladorPartida, participanteId: string, precarga?: Precarga): Promise<Jugador[]> {
   const ids = (precarga?.plantillas ?? (await c.servicios.repoDraft.plantillas([participanteId]))).get(participanteId) ?? [];
   return ids.map((id) => c.catalogo.jugador(id));
@@ -114,10 +117,10 @@ export async function alineacionVigente(c: ControladorPartida, participanteId: s
 }
 
 /** Alineación vigente de un participante. */
-export type AlineacionVigente = Awaited<ReturnType<typeof alineacionVigente>>;
+type AlineacionVigente = Awaited<ReturnType<typeof alineacionVigente>>;
 
 /** Hay que sustituir a alguien antes de jugar (FR-029): bajas pendientes y alguien con quien cubrirlas. */
-export const bloqueoPorBajas = (v: Pick<AlineacionVigente, 'bajasPendientes' | 'sinSuplentes'>): boolean => v.bajasPendientes.length > 0 && !v.sinSuplentes;
+const bloqueoPorBajas = (v: Pick<AlineacionVigente, 'bajasPendientes' | 'sinSuplentes'>): boolean => v.bajasPendientes.length > 0 && !v.sinSuplentes;
 
 /**
  * Bloqueo en el servidor (spec 012, FR-029, SC-008): con un convocado de baja en la alineación confirmada y alguien
@@ -133,7 +136,7 @@ export async function exigirSinBajasPendientes(c: ControladorPartida, participan
 }
 
 /** Avisos del equipo (spec 012, FR-027): derivados de las bajas, sin guardarse. */
-export function avisosEquipo(c: ControladorPartida, participanteId: string, v: Pick<AlineacionVigente, 'bajasPendientes' | 'bajasDetalle'>): AvisoEquipo[] {
+function avisosEquipo(c: ControladorPartida, participanteId: string, v: Pick<AlineacionVigente, 'bajasPendientes' | 'bajasDetalle'>): AvisoEquipo[] {
   const pendientes = new Set(v.bajasPendientes.map((b) => b.jugadorId));
   return [
     ...v.bajasPendientes.map((b) => ({
@@ -177,6 +180,7 @@ export function detalleBajas(c: ControladorPartida, participanteId: string) {
     .map((b) => ({ jugadorId: b.jugadorId, motivo: b.motivo, gravedad: b.gravedad, partidosRestantes: b.partidosRestantes }));
 }
 
+/** Vista del equipo para la pantalla de alineación: plantilla, alineación, bajas, dorsales y equipaciones. */
 export function vistaEquipo(c: ControladorPartida, participanteId: string, datos: AlineacionVigente, dorsales: Dorsales | null, equipaciones: Equipaciones | null) {
   const catalogo = c.catalogo;
   return {
@@ -199,7 +203,7 @@ export function vistaEquipo(c: ControladorPartida, participanteId: string, datos
 }
 
 /** Traduce los errores de validación al primer error HTTP, con todos los motivos en los detalles. */
-export function errorDeAlineacion(problemas: ReturnType<typeof validarAlineacion>) {
+function errorDeAlineacion(problemas: ReturnType<typeof validarAlineacion>) {
   const p = problemas[0]!;
   return errores.regla(p.codigo, p.mensaje, { motivos: problemas.flatMap((x) => x.motivos) });
 }
@@ -236,6 +240,7 @@ export async function bloquearOnceDuelos(c: ControladorPartida, participanteId: 
   await repoEquipo.guardarAlineacion(participanteId, a, reloj.ahora(), undefined, true);
 }
 
+/** Valida y guarda la alineación de un participante. */
 export async function confirmarAlineacion(c: ControladorPartida, participanteId: string, a: Alineacion) {
   exigirEquipoEditable(c);
   if (esDuelos(c)) return confirmarOnceDuelos(c, participanteId, a);
@@ -301,6 +306,7 @@ export async function cambiarDorsal(c: ControladorPartida, participanteId: strin
   }
 }
 
+/** Valida y guarda las equipaciones de un participante para la partida. */
 export async function cambiarEquipaciones(c: ControladorPartida, participanteId: string, e: Equipaciones) {
   exigirEquipoEditable(c);
   exigirNoDuelos(c);

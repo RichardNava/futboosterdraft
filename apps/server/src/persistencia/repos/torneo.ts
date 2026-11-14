@@ -9,8 +9,9 @@ import { bajas, contadoresAmarillas, jornadas, torneos } from '../esquema/index'
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
-export type FilaJornada = typeof jornadas.$inferSelect;
+type FilaJornada = typeof jornadas.$inferSelect;
 
+/** Estado del torneo y sus jornadas. */
 export class RepoTorneo {
   constructor(private readonly db: BaseDatos) {}
 
@@ -51,6 +52,7 @@ export class RepoTorneo {
     }
   }
 
+  /** Estado del torneo de la partida, si existe. */
   async cargar(partidaId: string): Promise<EstadoTorneo | undefined> {
     const fila = (await this.db.select().from(torneos).where(eq(torneos.partidaId, partidaId)).limit(1))[0];
     if (!fila) return undefined;
@@ -74,6 +76,7 @@ export class RepoTorneo {
     };
   }
 
+  /** Guarda una jornada del torneo. */
   async guardarJornada(
     partidaId: string,
     j: JornadaTorneo,
@@ -96,10 +99,12 @@ export class RepoTorneo {
     return fila!.id;
   }
 
+  /** Cambia el estado de una jornada. */
   async marcarJornada(partidaId: string, numero: number, estado: JornadaTorneo['estado'], ejecutor: Ejecutor = this.db): Promise<void> {
     await ejecutor.update(jornadas).set({ estado }).where(and(eq(jornadas.partidaId, partidaId), eq(jornadas.numero, numero)));
   }
 
+  /** Jornadas de la partida en orden. */
   async jornadas(partidaId: string): Promise<FilaJornada[]> {
     return this.db.select().from(jornadas).where(eq(jornadas.partidaId, partidaId)).orderBy(asc(jornadas.numero));
   }

@@ -49,7 +49,8 @@ function algunoEnCampo(equipo: EquipoEstado, s: Virtud): boolean {
   return equipo.jugadores.some((j) => j.enCampo && tiene(j, s));
 }
 
-export function vaPerdiendo(estado: EstadoMotor, equipo: EquipoEstado): boolean {
+/** El equipo va por detrás en el marcador. */
+function vaPerdiendo(estado: EstadoMotor, equipo: EquipoEstado): boolean {
   return estado.marcador[equipo.lado] < estado.marcador[rival(equipo.lado)];
 }
 

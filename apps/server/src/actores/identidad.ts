@@ -10,7 +10,6 @@
  *   con las mismas reglas que el nombre. Sin elección, `escudoDe` lo resuelve al leerlo, sin tocar la fila.
  */
 import {
-  claveNombre,
   desdeV1,
   escudoAsignado,
   escudoNpc,
@@ -26,7 +25,7 @@ import type { ContextoComando } from './actor';
 import type { ControladorPartida } from './partida';
 import type { ServiciosPartida as Servicios } from './servicios';
 
-export interface IdentidadInicial {
+interface IdentidadInicial {
   nombre: string;
   equipaciones: Equipaciones | null;
   /** Escudo elegido en el perfil, si sigue disponible; null = asignado al leerlo. */
@@ -100,8 +99,6 @@ export async function cambiarEscudo(c: ControladorPartida, ctx: ContextoComando,
 export const nombresUsados = (c: ControladorPartida, salvo?: string): string[] =>
   c.participantes.filter((p) => p.id !== salvo).map((p) => p.nombreEquipo);
 
-export const clavesUsadas = (c: ControladorPartida): Set<string> => new Set(nombresUsados(c).map(claveNombre));
-
 /**
  * ¿Se ha abierto ya algún partido del torneo (o ha terminado la partida)? (FR-042) Cuentan los partidos con algún
  * humano: los NPC contra NPC se resuelven solos al abrir la jornada, sin que nadie los abra.
@@ -141,6 +138,7 @@ export async function cambiarNombreEquipo(c: ControladorPartida, ctx: ContextoCo
 /** Participantes cuyo nombre del perfil estaba ocupado al unirse (aviso en la sala). */
 export const nombresAjustados = new WeakMap<ControladorPartida, Set<string>>();
 
+/** Anota que el nombre de equipo de un participante se ajustó para no repetirse. */
 export function marcarNombreAjustado(c: ControladorPartida, participanteId: string): void {
   let s = nombresAjustados.get(c);
   if (!s) nombresAjustados.set(c, (s = new Set()));

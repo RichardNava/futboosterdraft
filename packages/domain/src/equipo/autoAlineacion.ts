@@ -112,6 +112,7 @@ function elegirSuplentes(restantes: readonly Jugador[]): number[] {
   return elegidos.slice(0, MAX_SUPLENTES).map((j) => j.id);
 }
 
+/** Mejor once automático de una plantilla sin las bajas: formación, titulares, banquillo, táctica y lanzadores. */
 export function autoAlineacion(
   plantilla: readonly Jugador[],
   bajasActivas: ReadonlySet<number>,

@@ -22,6 +22,7 @@ export function normalizar(texto: string): string {
   return texto.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 }
 
+/** Cartas que cumplen la búsqueda (sin tildes ni mayúsculas) y los filtros. */
 export function filtrarCartas(cartas: readonly CartaPoseida[], busqueda: string, f: Filtros): CartaPoseida[] {
   const q = normalizar(busqueda.trim());
   return cartas.filter(
@@ -60,6 +61,7 @@ export function paginaQueContiene(indice: number, porPagina: number): number {
   return Math.floor(Math.max(0, indice) / Math.max(1, porPagina));
 }
 
+/** Página de una lista, acotada a las que existen. */
 export function paginar<T>(lista: readonly T[], pagina: number, porPagina: number): { elementos: T[]; pagina: number; paginas: number } {
   const n = Math.max(1, porPagina);
   const paginas = Math.max(1, Math.ceil(lista.length / n));

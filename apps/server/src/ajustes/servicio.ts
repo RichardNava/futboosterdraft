@@ -8,8 +8,8 @@ import { eq } from 'drizzle-orm';
 import type { BaseDatos } from '../persistencia/db';
 import { ajustes } from '../persistencia/esquema/index';
 
-export const CLAVE_IDENTIDAD = 'identidad_cartas';
-export const CLAVE_ACCESO_RAREZA = 'acceso_niveles_rareza';
+const CLAVE_IDENTIDAD = 'identidad_cartas';
+const CLAVE_ACCESO_RAREZA = 'acceso_niveles_rareza';
 export const CADUCIDAD_MS = 30_000;
 
 /** Valores admitidos de cada clave; el primero es el valor por defecto. */
@@ -19,6 +19,7 @@ export const AJUSTES_CONOCIDOS = {
 } as const;
 export type ClaveAjuste = keyof typeof AJUSTES_CONOCIDOS;
 
+/** Ajustes del juego en la base de datos con una caché de corta duración. */
 export class ServicioAjustes {
   private readonly cache = new Map<ClaveAjuste, { valor: string; leidoEn: number }>();
 

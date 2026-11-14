@@ -59,6 +59,7 @@ export function colocarSaqueInicial(estado: EstadoMotor, saca: Lado): void {
   esp.objetivos = {};
   esp.referencia = { x: LARGO / 2, y: CENTRO_Y, tick: estado.tick };
   esp.accion = null;
+  esp.velocidadBalon = { x: 0, y: 0 };
   esp.paradaPendiente = 0;
   for (const lado of ['local', 'visitante'] as const) {
     const equipo = estado.equipos[lado];

@@ -23,7 +23,7 @@ import type { Reloj } from '../programador/reloj';
 import { cuerpoError, ErrorApi } from './errores';
 import { Limitador, LIMITE_HTTP, TAMANO_MAXIMO_MENSAJE } from './limitador';
 
-export interface DependenciasApp {
+interface DependenciasApp {
   db: BaseDatos;
   auth: Auth;
   reloj: Reloj;
@@ -49,6 +49,7 @@ export function claveSesion(cookie: string | undefined): string | null {
 
 const CABECERA_IDEMPOTENCIA = 'idempotency-key';
 
+/** Aplicación Fastify con todas las rutas, los ganchos de sesión y el formato de error común. */
 export async function construirApp(deps: DependenciasApp): Promise<FastifyInstance> {
   const app = Fastify({
     loggerInstance: deps.logger,

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { api } from '../api/cliente';
 
-export interface TextoRasgo {
+interface TextoRasgo {
   id: string;
   nombre: string;
   descripcion: string;

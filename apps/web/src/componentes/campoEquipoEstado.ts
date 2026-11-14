@@ -62,7 +62,7 @@ export interface OpcionesSoltar {
 export const RADIO_FICHA = 28;
 
 /** Acota un punto al campo. */
-export function acotar(p: Punto): Punto {
+function acotar(p: Punto): Punto {
   return { x: Math.round(Math.min(LARGO_CAMPO, Math.max(0, p.x))), y: Math.round(Math.min(ANCHO_CAMPO, Math.max(0, p.y))) };
 }
 
@@ -81,7 +81,7 @@ export function colocacionDe(e: EstadoCampo, p: ParametrosEquilibrado, posicione
 }
 
 /** Punto libre más cercano a `p` que queda a `minima` o más de todos los `otros` (búsqueda en anillos). */
-export function puntoLibre(p: Punto, otros: readonly Punto[], minima: number): Punto {
+function puntoLibre(p: Punto, otros: readonly Punto[], minima: number): Punto {
   const libre = (q: Punto) => otros.every((o) => distancia(o, q) >= minima);
   const base = acotar(p);
   if (libre(base)) return base;

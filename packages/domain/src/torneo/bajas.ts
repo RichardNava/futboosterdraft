@@ -38,10 +38,12 @@ export interface PartidoConsecuencias {
   eventos: readonly EventoConsecuencia[];
 }
 
+/** Sin bajas ni amarillas acumuladas. */
 export const estadoBajasVacio = (): EstadoBajas => ({ bajas: [], amarillas: {} });
 
 const autor = (e: EventoConsecuencia) => e.jugadores.find((j) => j.rol === 'autor')?.jugadorId;
 
+/** Bajas y amarillas tras un partido: lesiones, expulsiones y ciclos de amarillas; descuenta las cumplidas. */
 export function aplicarConsecuencias(
   estado: EstadoBajas,
   partido: PartidoConsecuencias,
@@ -84,6 +86,7 @@ export function aplicarConsecuencias(
   return { estado: { bajas: [...bajas, ...nuevas], amarillas }, bajasNuevas: nuevas };
 }
 
+/** Jugadores de un participante que no pueden jugar el próximo partido. */
 export function bajasActivas(estado: EstadoBajas, participanteId: string): Set<number> {
   return new Set(estado.bajas.filter((b) => b.participanteId === participanteId && b.partidosRestantes > 0).map((b) => b.jugadorId));
 }

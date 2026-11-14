@@ -23,6 +23,7 @@ export interface SobreGenerado {
   cartas: number[];
 }
 
+/** No hay cartas suficientes en el pool para generar los sobres. */
 export class ErrorPoolInsuficiente extends Error {
   constructor(mensaje: string) {
     super(mensaje);
@@ -160,6 +161,7 @@ type Pool = readonly Pick<Jugador, 'id' | 'demarcacion' | 'nivel'>[];
 /** Intentos con semillas derivadas cuando una mesa justa sustituye más altas de las inevitables. */
 const INTENTOS_MESA_JUSTA = 30;
 
+/** Sobres de una mesa de draft: tres por participante con el reparto de su nivel de rareza. */
 export function generarMesa(
   pool: Pool,
   numParticipantes: number,

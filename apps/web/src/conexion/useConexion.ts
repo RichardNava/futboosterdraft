@@ -5,7 +5,7 @@ import { useSesion } from '../estado/sesion';
 import { mantenerConexionInvitado } from './activa';
 import { ConexionPartida, type MensajeServidor } from './ws';
 
-export interface EstadoServidor {
+interface EstadoServidor {
   fase: 'sala' | 'draft' | 'preparacion' | 'partido' | 'torneo';
   vista: any; // eslint-disable-line @typescript-eslint/no-explicit-any -- la forma depende de la fase
 }

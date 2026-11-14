@@ -9,12 +9,12 @@
  *
  * El reloj y `requestAnimationFrame` se pueden inyectar (pruebas).
  */
-export const PRESUPUESTO_MS = 6;
-export const FPS_MINIMO = 30;
-export const VENTANA_FPS_MS = 500;
+const PRESUPUESTO_MS = 6;
+const FPS_MINIMO = 30;
+const VENTANA_FPS_MS = 500;
 const MAXIMO_INICIAL = 240;
 
-export interface OpcionesParticulas {
+interface OpcionesParticulas {
   ahora?: () => number;
   pedirFotograma?: (cb: (t: number) => void) => number;
   cancelarFotograma?: (id: number) => void;
@@ -37,6 +37,7 @@ export interface SistemaParticulas {
   readonly estado: { activo: boolean; maximo: number; particulas: number; detenido: boolean };
 }
 
+/** Partículas de la apertura de sobres en un lienzo, que se apagan si el equipo no da los FPS mínimos. */
 export function iniciarParticulas(canvas: HTMLCanvasElement, opciones: OpcionesParticulas = {}): SistemaParticulas {
   const ahora = opciones.ahora ?? (() => performance.now());
   const pedir = opciones.pedirFotograma ?? ((cb) => requestAnimationFrame(cb));

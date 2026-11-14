@@ -58,14 +58,14 @@ export function equipoConMultiplicadores(equipo: EquipoEstado): boolean {
 }
 
 /** Polémico en el campo con su equipo perdiendo (el primero, si hay varios). */
-export function polemicoActivo(estado: EstadoMotor, equipo: EquipoEstado): JugadorEnPartido | undefined {
+function polemicoActivo(estado: EstadoMotor, equipo: EquipoEstado): JugadorEnPartido | undefined {
   if (parametrosDefectos(estado).polemico <= 0) return undefined;
   if (estado.marcador[equipo.lado] >= estado.marcador[rival(equipo.lado)]) return undefined;
   return equipo.jugadores.find((j) => j.enCampo && conDefectos(j) && tiene(j, 'Polemico'));
 }
 
 /** Rebelde convocado en el banquillo (el primero, si hay varios). */
-export function rebeldeActivo(estado: EstadoMotor, equipo: EquipoEstado): JugadorEnPartido | undefined {
+function rebeldeActivo(estado: EstadoMotor, equipo: EquipoEstado): JugadorEnPartido | undefined {
   if (parametrosDefectos(estado).rebelde <= 0) return undefined;
   return equipo.jugadores.find((j) => enBanquillo(j) && conDefectos(j) && tiene(j, 'Rebelde'));
 }

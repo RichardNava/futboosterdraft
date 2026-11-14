@@ -14,16 +14,16 @@
 export type Velocidad = 2 | 4 | 8;
 export const VELOCIDADES: readonly Velocidad[] = [2, 4, 8];
 export const CLAVE_VELOCIDAD = 'fbd.velocidad2d';
-export const INTERVALO_INFORME_MS = 250;
+const INTERVALO_INFORME_MS = 250;
 /** Ticks del motor por lanzamiento de la tanda. */
 export const TICKS_LANZAMIENTO = 60;
 /** Tope del tiempo real de un paso (p. ej. si el navegador ha dejado de pintar un momento). */
 const PASO_MAXIMO_S = 0.25;
 
-export type MotivoPausa = 'gol' | 'descanso' | 'pre_prorroga';
+type MotivoPausa = 'gol' | 'descanso' | 'pre_prorroga';
 export type EstadoReloj = 'reproduciendo' | 'gol' | 'descanso' | 'pre_prorroga' | 'cargando' | 'fin';
 
-export interface OpcionesReloj {
+interface OpcionesReloj {
   ticksPorSegundoX2?: number;
   pausaGolMs?: number;
   tandaLanzamientoMsX2?: number;
@@ -50,6 +50,7 @@ function guardarVelocidad(v: Velocidad): void {
   }
 }
 
+/** Reloj de la reproducción 2D: tick visible, velocidad, pausas y detención por la gestión. */
 export class RelojReproduccion {
   /** Tick de juego que se está mostrando. */
   tick = 0;
@@ -81,6 +82,7 @@ export class RelojReproduccion {
     this.informar = opciones.informar;
   }
 
+  /** Velocidad actual (x1, x2…). */
   get velocidad(): Velocidad {
     return this._velocidad;
   }
@@ -132,6 +134,7 @@ export class RelojReproduccion {
     if (this.pausa && this.pausa.hasta === null) this.pausa = null;
   }
 
+  /** Estado del reloj: en juego, en una pausa (con su motivo) o esperando datos. */
   get estado(): EstadoReloj {
     if (this.pausa) return this.pausa.motivo;
     if (this.final !== null && this.tick >= this.final) return 'fin';
@@ -142,6 +145,7 @@ export class RelojReproduccion {
   /** Gestión del equipo abierta (spec 003, FR-031): el reloj no avanza ni informa al servidor. */
   private detenido = false;
 
+  /** La reproducción está detenida mientras se gestiona el equipo. */
   get enGestion(): boolean {
     return this.detenido;
   }

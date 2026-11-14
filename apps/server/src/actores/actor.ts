@@ -35,6 +35,7 @@ export interface ContextoComando {
   publicar(): void;
 }
 
+/** Cola de comandos de una partida: se ejecutan de uno en uno, en orden. */
 export class ActorPartida {
   private cola: Promise<unknown> = Promise.resolve();
   private pendientes = 0;
@@ -81,10 +82,12 @@ export class ActorPartida {
     while (this.pendientes > 0) await this.cola;
   }
 
+  /** Deja de aceptar comandos. */
   cerrar(): void {
     this.cerrado = true;
   }
 
+  /** El actor ya no acepta comandos. */
   get estaCerrado(): boolean {
     return this.cerrado;
   }
@@ -95,15 +98,18 @@ export class ActorPartida {
   }
 }
 
+/** Actores en memoria por partida. */
 export class RegistroActores<A extends { readonly partidaId: string; cerrar(): void }> {
   private readonly actores = new Map<string, A>();
 
   constructor(private readonly alCambiarTamano?: (n: number) => void) {}
 
+  /** Actor de la partida, si existe. */
   obtener(partidaId: string): A | undefined {
     return this.actores.get(partidaId);
   }
 
+  /** Actor de la partida; lo crea con `crear` si no existe. */
   obtenerOCrear(partidaId: string, crear: () => A): A {
     let actor = this.actores.get(partidaId);
     if (!actor) {
@@ -114,6 +120,7 @@ export class RegistroActores<A extends { readonly partidaId: string; cerrar(): v
     return actor;
   }
 
+  /** Cierra y olvida el actor de la partida. */
   eliminar(partidaId: string): void {
     const actor = this.actores.get(partidaId);
     if (!actor) return;
@@ -132,10 +139,12 @@ export class RegistroActores<A extends { readonly partidaId: string; cerrar(): v
     return ids.length;
   }
 
+  /** Número de actores vivos. */
   get tamano(): number {
     return this.actores.size;
   }
 
+  /** Todos los actores vivos. */
   todos(): A[] {
     return [...this.actores.values()];
   }

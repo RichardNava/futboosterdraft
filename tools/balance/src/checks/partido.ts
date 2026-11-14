@@ -21,7 +21,8 @@ const pct = (x: number, n: number) => `${((100 * x) / n).toFixed(1)} %`;
 type Campo = Exclude<keyof EstadisticasEquipo, 'secuencias' | 'golesPorTipo' | 'golesPorZona'>;
 const col = (r: { estadisticasA: EstadisticasEquipo[] }, campo: Campo) => r.estadisticasA.map((e) => e[campo]);
 
-export function comprobarSC004(n: number, semilla: number): Comprobacion {
+/** SC-004: con +5 de media, el mejor gana ≥ 60 % y el peor ≥ 10 %. */
+function comprobarSC004(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'sc004' });
   const r = serie(conStatsDesplazados(base, 5), base, n, semilla, 'sc004');
   const ok = r.victoriasA / n >= 0.6 && r.victoriasB / n >= 0.1;
@@ -39,7 +40,8 @@ function frente(opciones: OpcionesEquipo, n: number, semilla: number, etiqueta: 
   return serie(equipoSintetico({ semilla: 'sc006', ...opciones }), rivalRef, n, semilla, etiqueta);
 }
 
-export function comprobarSC006(n: number, semilla: number): Comprobacion[] {
+/** SC-006a a SC-006e: formaciones y tácticas tienen el efecto esperado frente a un rival de referencia. */
+function comprobarSC006(n: number, semilla: number): Comprobacion[] {
   const f343 = frente({ formacion: '3-4-3' }, n, semilla, 'f343');
   const f442 = frente({ formacion: '4-4-2' }, n, semilla, 'f442');
   const f541 = frente({ formacion: '5-4-1' }, n, semilla, 'f541');
@@ -95,7 +97,8 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion[] {
   ];
 }
 
-export function comprobarSC007(n: number, semilla: number): Comprobacion {
+/** SC-007: goles por partido entre equipos equilibrados y pocas goleadas. */
+function comprobarSC007(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'sc007' });
   const r = serie(base, clonar(base, 'b'), n, semilla, 'sc007');
   const goles = r.golesA.map((g, i) => g + r.golesB[i]!);
@@ -109,7 +112,8 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
   };
 }
 
-export function comprobarSC015(n: number, semilla: number): Comprobacion {
+/** SC-015: Robusto reduce las lesiones un 30 % o más. */
+function comprobarSC015(n: number, semilla: number): Comprobacion {
   const robustos = equipoSintetico({ semilla: 'sc015', virtudes: ['Robusto'] });
   const normales = equipoSintetico({ semilla: 'sc015', participanteId: 'b' });
   // Cuatro veces más partidos: las lesiones son poco frecuentes.
@@ -127,7 +131,7 @@ export function comprobarSC015(n: number, semilla: number): Comprobacion {
  * 002/SC-007: entre equipos equilibrados con la táctica por defecto, de media entre los dos equipos, las
  * estadísticas de un partido de fútbol de verdad (centros y contraataques revisados en INI-05, 2026-11-01).
  */
-export function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
+function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   const base = equipoSintetico({ semilla: 'sc007-2d' });
   const r = serie(base, clonar(base, 'b'), n, semilla, 'sc007-2d');
   const ambos = (campo: Campo) => media(r.estadisticasA.map((e, i) => e[campo] + r.estadisticasB[i]![campo]));
@@ -167,7 +171,7 @@ export function comprobarSC007Partido2D(n: number, semilla: number): Comprobacio
 }
 
 /** 002/SC-008: +10 de pase en los centrocampistas titulares → ≥ 10 % más pases completados (en número absoluto). */
-export function comprobarSC008Pase(n: number, semilla: number): Comprobacion {
+function comprobarSC008Pase(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'sc008-2d' });
   const rival = equipoSintetico({ semilla: 'referencia', participanteId: 'rival' });
   const sin = serie(base, rival, n, semilla, 'sc008-2d');
@@ -195,6 +199,7 @@ export function gruposPartido(): GrupoComprobaciones[] {
   ];
 }
 
+/** Comprobaciones de partido de las specs 001 y 002. */
 export function comprobacionesPartido(n: number, semilla: number): Comprobacion[] {
   // 001/SC-005 lo sustituye SC-011 de la spec 002 (checks/colocacion.ts).
   return [

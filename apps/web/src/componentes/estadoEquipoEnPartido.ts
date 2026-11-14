@@ -50,8 +50,9 @@ export interface EstadoEquipo {
 }
 
 /** Sustituciones por partido (5) y una más en la prórroga, como el motor (`maxSustituciones`). */
-export const MAX_SUSTITUCIONES = 5;
+const MAX_SUSTITUCIONES = 5;
 
+/** Estado del equipo propio hasta un tick a partir de su alineación, los eventos y las decisiones (para la gestión). */
 export function estadoEquipoEnPartido(
   alineacion: AlineacionPartido,
   eventos: readonly EventoEquipo[],
@@ -162,7 +163,7 @@ export function estadoEquipoEnPartido(
 }
 
 /** Decisión confirmada por el participante (lote `partido.decisiones`). */
-export interface DecisionEnviada {
+interface DecisionEnviada {
   tipo: string;
   datos: Record<string, unknown>;
 }

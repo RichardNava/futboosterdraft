@@ -83,9 +83,9 @@ const BASE: Record<Efecto, number> = {
 /** Volumen general: un 20 % más bajo en la spec 007 (FR-011) y otro poco más en noviembre de 2026 (0,8 → 0,65). */
 export const FACTOR_VOLUMEN = 0.65;
 
-export const GANANCIA = Object.fromEntries(Object.entries(BASE).map(([e, g]) => [e, g * FACTOR_VOLUMEN])) as Record<Efecto, number>;
+const GANANCIA = Object.fromEntries(Object.entries(BASE).map(([e, g]) => [e, g * FACTOR_VOLUMEN])) as Record<Efecto, number>;
 
-export const CLAVE_SONIDO = 'fbd.sonido';
+const CLAVE_SONIDO = 'fbd.sonido';
 
 let contexto: AudioContext | null = null;
 const buferes = new Map<Efecto, Promise<AudioBuffer | null>>();
@@ -101,11 +101,13 @@ function leerPreferencia(): boolean {
 
 let activado = leerPreferencia();
 
+/** El sonido está activado. */
 export function sonidoActivado(): boolean {
   return activado;
 }
 
-export function cambiarSonido(valor: boolean): void {
+/** Activa o desactiva el sonido y lo recuerda. */
+function cambiarSonido(valor: boolean): void {
   activado = valor;
   try {
     globalThis.localStorage?.setItem(CLAVE_SONIDO, valor ? 'activado' : 'silenciado');

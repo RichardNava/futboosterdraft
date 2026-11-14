@@ -21,6 +21,9 @@ export function efectoDeEvento(e: EventoVista, miLado: 'local' | 'visitante' | n
     case 'gol':
       // En propia puerta, el evento ya es del equipo que suma el gol.
       return miLado === null || e.equipo === miLado ? 'golPropio' : 'golRival';
+    // Spec 014 (FR-013): el árbitro pita el fuera de juego.
+    case 'fuera_de_juego':
+      return 'pitidoDescanso';
     case 'amarilla':
       return 'tarjetaAmarilla';
     case 'roja':

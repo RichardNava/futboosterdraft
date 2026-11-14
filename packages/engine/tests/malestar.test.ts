@@ -14,7 +14,7 @@ describe('evento malestar', () => {
     const local = equipo('local');
     const rebelde = local.suplentes[3]!;
     local.suplentes[3] = { ...rebelde, defectos: ['Rebelde'] };
-    const e = crearPartido(entrada('malestar-rebelde', { version: P4.version, parametros: P4, local }));
+    const e = crearPartido(entrada('malestar-rebelde-1', { version: P4.version, parametros: P4, local }));
     const primera = avanzar(e, 'parte');
     const antes = malestar(primera.estado.eventos);
     expect(antes).toHaveLength(1);
@@ -26,13 +26,6 @@ describe('evento malestar', () => {
     const despues = malestar(final.estado.eventos);
     expect(despues).toHaveLength(2);
     expect(despues[1]).toMatchObject({ datos: { defecto: 'Rebelde', activo: false, jugadorId: rebelde.id } });
-  });
-
-  it('con parámetros 3.0.0 no hay malestar', () => {
-    const local = equipo('local');
-    local.suplentes[3] = { ...local.suplentes[3]!, defectos: ['Rebelde'] };
-    const r = avanzar(crearPartido(entrada('malestar-v3', { local })), 'final');
-    expect(malestar(r.eventos)).toHaveLength(0);
   });
 
   it('un Polémico en el campo avisa cada vez que su equipo pasa a ir perdiendo y cuando deja de ir perdiendo', () => {

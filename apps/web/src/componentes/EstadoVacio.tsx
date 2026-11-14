@@ -4,6 +4,7 @@
  */
 import type { ReactNode } from 'react';
 
+/** Mensaje de pantalla sin contenido, con una acción opcional. */
 export function EstadoVacio({ mensaje, accion }: { mensaje: string; accion?: ReactNode }) {
   return (
     <div className="panel estado-vacio">

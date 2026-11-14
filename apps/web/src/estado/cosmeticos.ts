@@ -13,6 +13,7 @@ interface EstadoCosmeticos {
   recargar(): Promise<void>;
 }
 
+/** Catálogo de cosméticos, cargado una vez. */
 export const useCosmeticos = create<EstadoCosmeticos>((set) => ({
   catalogo: null,
   error: false,

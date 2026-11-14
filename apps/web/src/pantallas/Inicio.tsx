@@ -1,3 +1,4 @@
+import { enCache } from '../api/cache';
 import type { Jugador, Nivel } from '@fbd/domain';
 import { useEffect, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
@@ -13,16 +14,21 @@ import { destinoPartida, type PartidaResumen } from './MisPartidas';
 
 type Modo = 'menu' | 'login' | 'registro';
 
+const masReciente = (enCurso: PartidaResumen[]) => [...enCurso].sort((a, b) => Date.parse(b.actualizadaEn) - Date.parse(a.actualizadaEn))[0] ?? null;
+
 /** La partida en curso más reciente, para «Continuar partida» (spec 004, FR-015). `undefined` mientras se carga. */
 function usePartidaEnCurso(activa: boolean): PartidaResumen | null | undefined {
-  const [partida, setPartida] = useState<PartidaResumen | null | undefined>(undefined);
+  // Spec 014 (US6): con lo que acaba de cargar el loader, sin esperar.
+  const [partida, setPartida] = useState<PartidaResumen | null | undefined>(() => {
+    const r = enCache<{ enCurso: PartidaResumen[] }>('/api/mis-partidas', { fresco: true });
+    return r ? masReciente(r.enCurso) : undefined;
+  });
   useEffect(() => {
     if (!activa) return;
     let vigente = true;
     api<{ enCurso: PartidaResumen[] }>('/api/mis-partidas')
       .then((r) => {
-        const reciente = [...r.enCurso].sort((a, b) => Date.parse(b.actualizadaEn) - Date.parse(a.actualizadaEn))[0];
-        if (vigente) setPartida(reciente ?? null);
+        if (vigente) setPartida(masReciente(r.enCurso));
       })
       .catch(() => vigente && setPartida(null));
     return () => {

@@ -24,7 +24,8 @@ function once(pid: string, plantilla: readonly Jugador[]): { once: OnceDuelos; s
   };
 }
 
-export function comprobarSC010Duelos(torneos: number, semilla: number): Comprobacion {
+/** 005/SC-010: en el modo Duelo, los NPC de más nivel ganan más torneos. */
+function comprobarSC010Duelos(torneos: number, semilla: number): Comprobacion {
   const p = parametrosActuales();
   const participantes = Array.from({ length: 8 }, (_, i) => `npc${i + 1}`);
   let cruces = 0;
@@ -75,6 +76,7 @@ export function comprobarSC010Duelos(torneos: number, semilla: number): Comproba
   };
 }
 
+/** Comprobaciones del modo Duelo (spec 005) para la herramienta. */
 export function gruposDuelos(): GrupoComprobaciones[] {
   return [{ ids: ['005/SC-010'], serie: 'npc', ejecutar: (o) => [comprobarSC010Duelos(o.torneos || 36, o.seed)] }];
 }

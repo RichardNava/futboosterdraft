@@ -64,6 +64,7 @@ export function tacticaSegunRival(fuerzaPropia: number, fuerzaRival: number | nu
   return tacticaPorDefecto();
 }
 
+/** Alineación de un NPC según su nivel: formación, once, táctica y lanzadores, con sus errores creíbles (spec 003). */
 export function decidirAlineacion(
   nivel: NivelIA,
   plantilla: readonly Jugador[],

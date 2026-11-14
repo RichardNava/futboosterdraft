@@ -13,7 +13,8 @@ export type TipoAccion = 'pase_corto' | 'pase_largo' | 'conduccion' | 'regate' |
 
 /** Perfil calculado con la colocación (FR-034b): el de la formación si nadie se ha movido de su zona. */
 export const ofensividad = (e: EquipoEstado) => e.perfil.ofensividad;
-export const amplitud = (e: EquipoEstado) => e.perfil.amplitud;
+/** Amplitud del equipo (calculada con su colocación). */
+const amplitud = (e: EquipoEstado) => e.perfil.amplitud;
 
 /**
  * Pesos de cada acción según la zona del balón, la táctica y la formación del equipo atacante. El tiro no está
@@ -85,6 +86,10 @@ export function relajacion(estado: Pick<EstadoMotor, 'parametros' | 'marcador'>,
   return ventaja < r.ventajaMinima ? 0 : Math.min(r.maximo, r.porGol * (ventaja - r.ventajaMinima + 1));
 }
 
+/**
+ * Desplazamiento de la sigmoide de una acción de ataque por formación, zona, relajación y tácticas de los dos equipos
+ * (positivo = más fácil para el atacante).
+ */
 export function desplazamientoAtaque(estado: EstadoMotor, atacante: EquipoEstado, defensor: EquipoEstado, accion: TipoAccion, zona: number): number {
   const p = estado.parametros;
   let x = p.formaciones.efectoOfensividad * (ofensividad(atacante) + ofensividad(defensor));

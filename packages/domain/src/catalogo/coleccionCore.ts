@@ -16,6 +16,7 @@ export const MINIMO_EQUILIBRADO_CORE = 243;
 
 export type RecuentoCatalogo = Record<Demarcacion, Record<Nivel, number>>;
 
+/** Cartas por demarcación y nivel. */
 export function recuentoPorDemarcacionYNivel(jugadores: readonly Pick<Jugador, 'demarcacion' | 'nivel'>[]): RecuentoCatalogo {
   const vacio = (): Record<Nivel, number> => ({ Superclase: 0, Crack: 0, Legendario: 0, GOAT: 0 });
   const recuento: RecuentoCatalogo = { POR: vacio(), DEF: vacio(), MED: vacio(), DEL: vacio() };

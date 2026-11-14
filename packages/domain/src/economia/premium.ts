@@ -6,6 +6,7 @@ export interface EstadoPremium {
   cortesia: boolean;
 }
 
+/** El pase premium está activo en `ahora` (de cortesía o sin caducar). */
 export function premiumActivo(e: EstadoPremium, ahora: number): boolean {
   return e.cortesia || (e.fin !== null && e.fin > ahora);
 }

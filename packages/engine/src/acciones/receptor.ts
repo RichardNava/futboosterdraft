@@ -13,7 +13,7 @@
  *
  * Todo en coordenadas del equipo que ataca y con aritmética entera en lo espacial.
  */
-import type { EquipoEstado, EstadoMotor, JugadorEnPartido } from '../estado/estado';
+import { rival, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } from '../estado/estado';
 import { dist2, dividir, isqrt } from '../espacio/aritmetica';
 import { anguloTiro, AREA, decimasDeMetros, distanciaPorteria, ULTIMO_TERCIO } from '../espacio/campo';
 import { papelLlegada } from '../espacio/objetivos';
@@ -21,7 +21,8 @@ import { aEquipo, type Punto } from '../espacio/geometria';
 import { atributo } from '../modificadores/atributos';
 import { tiene } from '../modificadores/virtudes';
 import type { Lado } from '../tipos';
-import { candidatoDefensivo, elegirPonderado, esPortero, holgura, radioDe, type Contexto } from './contexto';
+import { elegirPonderado, esPortero, holgura, mejorDefensor, radioDe, type Contexto } from './contexto';
+import { enFueraDeJuego, factorPericia } from './fueraDeJuego';
 import { pesoTiro } from './pesoTiro';
 
 export type TipoPase = 'pase_corto' | 'pase_largo' | 'pase_espacio';
@@ -38,20 +39,18 @@ const RANGOS: Record<TipoPase, Rango[]> = {
 };
 
 /** Rival "encima" del portador (6 m) y compañero "libre" (sin rival a menos de 3 m). */
-const RIVAL_ENCIMA = 571;
-const LIBRE = 286;
+export const RIVAL_ENCIMA = 571;
+export const LIBRE = 286;
 /** Lateral: |Δx| ≤ 5 m; hacia atrás corto: ≤ 15 m. */
 const LATERAL = 476;
 const ATRAS_CORTO = 1429;
 
-export interface OpcionesReceptor {
+interface OpcionesReceptor {
   /** Punto (absoluto) hacia el que va el pase: se prefiere a los compañeros cercanos a él. */
   objetivo?: Punto;
   /** Solo estos candidatos (p. ej. los que cumplen el motivo de un pase largo). */
   candidatos?: readonly JugadorEnPartido[];
 }
-
-const rivalDe = (lado: Lado): Lado => (lado === 'local' ? 'visitante' : 'local');
 
 function posicionEquipo(estado: EstadoMotor, lado: Lado, id: number): Punto | null {
   const p = estado.espacio.jugadores[id];
@@ -80,6 +79,15 @@ function rangoDe(estado: EstadoMotor, d2: number): Rango {
   return d2 <= p.distanciaLargo * p.distanciaLargo ? 'medio' : 'largo';
 }
 
+/** Hay un rival a 6 m o menos del punto (coordenadas del equipo `lado`). */
+function rivalEncima(estado: EstadoMotor, lado: Lado, yo: Punto): boolean {
+  for (const r of estado.equipos[rival(lado)].jugadores) {
+    const q = r.enCampo ? posicionEquipo(estado, lado, r.id) : null;
+    if (q && dist2(yo.x, yo.y, q.x, q.y) <= RIVAL_ENCIMA * RIVAL_ENCIMA) return true;
+  }
+  return false;
+}
+
 /**
  * Callejón sin salida (FR-017): rival encima, ningún compañero por delante o a su altura libre a menos de 20 m y
  * sin ángulo de tiro. Solo entonces se admite un pase largo hacia atrás desde el último tercio.
@@ -87,13 +95,8 @@ function rangoDe(estado: EstadoMotor, d2: number): Rango {
 export function callejonSinSalida(estado: EstadoMotor, equipo: EquipoEstado, portador: JugadorEnPartido): boolean {
   const yo = posicionEquipo(estado, equipo.lado, portador.id);
   if (!yo) return false;
-  const rivalLado = rivalDe(equipo.lado);
-  let encima = false;
-  for (const r of estado.equipos[rivalLado].jugadores) {
-    const q = r.enCampo ? posicionEquipo(estado, equipo.lado, r.id) : null;
-    if (q && dist2(yo.x, yo.y, q.x, q.y) <= RIVAL_ENCIMA * RIVAL_ENCIMA) encima = true;
-  }
-  if (!encima) return false;
+  const rivalLado = rival(equipo.lado);
+  if (!rivalEncima(estado, equipo.lado, yo)) return false;
   const corto = estado.parametros.pases.distanciaCorto;
   for (const c of equipo.jugadores) {
     if (!c.enCampo || c.id === portador.id) continue;
@@ -117,7 +120,7 @@ export function pesosReceptor(
 ): [JugadorEnPartido, number][] {
   const yo = posicionEquipo(estado, equipo.lado, portador.id);
   if (!yo) return [];
-  const rivalLado = rivalDe(equipo.lado);
+  const rivalLado = rival(equipo.lado);
   const objetivo = opciones.objetivo ? aEquipo(equipo.lado, opciones.objetivo) : null;
   const corto = estado.parametros.pases.distanciaCorto;
   const enCampoPropio = yo.x < decimasDeMetros(35);
@@ -125,9 +128,18 @@ export function pesosReceptor(
   const f = estado.parametros.decision.factores.pase;
   const haciaDelante = Math.round(1000 * Math.min(f.max, Math.max(f.min, 1 + (f.k * (atributo(estado, equipo, portador, 'pase') - 70)) / 10)));
   let callejon: boolean | null = null;
+  // Sin presión, no se devuelve el balón a quien lo acaba de dar si su pase no ganó terreno (spec 014, FR-006).
+  const ultimo = estado.posesion.ultimoPase;
+  const excluido =
+    ultimo && ultimo.a === portador.id && (ultimo.avance ?? 0) < decimasDeMetros(estado.parametros.idaVuelta!.avanceMinimoM) && !rivalEncima(estado, equipo.lado, yo)
+      ? ultimo.de
+      : null;
+  // Un compañero en fuera de juego apenas se busca; menos cuanta más visión tiene el pasador (spec 014, research R4).
+  const fdj = estado.parametros.fueraDeJuego!;
+  const factorFuera = Math.round(1000 * fdj.pesoReceptor * (1 - factorPericia(atributo(estado, equipo, portador, 'vision'))));
   const porRango: Record<Rango, [JugadorEnPartido, number][]> = { corto: [], medio: [], largo: [] };
   for (const j of opciones.candidatos ?? equipo.jugadores) {
-    if (!j.enCampo || j.id === portador.id || (esPortero(j) && !enCampoPropio)) continue;
+    if (!j.enCampo || j.id === portador.id || j.id === excluido || (esPortero(j) && !enCampoPropio)) continue;
     const q = posicionEquipo(estado, equipo.lado, j.id);
     if (!q) continue;
     const dx = q.x - yo.x;
@@ -154,7 +166,8 @@ export function pesosReceptor(
     const peso =
       dividir(dividir(cercania * factorLibre * conVision * Math.round(1000 * factorPasador(estado, equipo, j)), 10_000_000) * factorLlegada, 1000) *
       (tiene(j, 'Carismatico') ? 3 : 2);
-    porRango[rangoDe(estado, d2)].push([j, Math.max(1, peso)]);
+    const conFuera = enFueraDeJuego(estado, equipo, j, yo.x) ? dividir(peso * factorFuera, 1000) : peso;
+    porRango[rangoDe(estado, d2)].push([j, Math.max(1, conFuera)]);
   }
   for (const rango of RANGOS[tipo]) if (porRango[rango].length > 0) return porRango[rango];
   return [];
@@ -189,24 +202,9 @@ export function distanciaASegmento(p: Punto, a: Punto, b: Punto): number {
  */
 export function interceptorDePase(ctx: Contexto, defensor: EquipoEstado, origen: Punto, destino: Punto): JugadorEnPartido | undefined {
   const e = ctx.estado;
-  let mejor: JugadorEnPartido | undefined;
-  let mejorEfectiva = Infinity;
-  let segundo: JugadorEnPartido | undefined;
-  let segundoEfectiva = Infinity;
-  for (const j of defensor.jugadores) {
+  // Mal defensor (spec 005): la mitad de peso como candidato a cortar el pase (en `mejorDefensor`).
+  return mejorDefensor(ctx, defensor, (j) => {
     const q = j.enCampo ? e.espacio.jugadores[j.id] : undefined;
-    if (!q) continue;
-    const efectiva = dividir(distanciaASegmento(q, origen, destino) * 1000, radioDe(e, defensor, j, 'anticipacion'));
-    if (efectiva < mejorEfectiva || (efectiva === mejorEfectiva && mejor !== undefined && j.id < mejor.id)) {
-      segundo = mejor;
-      segundoEfectiva = mejorEfectiva;
-      mejor = j;
-      mejorEfectiva = efectiva;
-    } else if (efectiva < segundoEfectiva || (efectiva === segundoEfectiva && segundo !== undefined && j.id < segundo.id)) {
-      segundo = j;
-      segundoEfectiva = efectiva;
-    }
-  }
-  // Mal defensor (spec 005): la mitad de peso como candidato a cortar el pase.
-  return candidatoDefensivo(ctx, mejor, segundo);
+    return q ? dividir(distanciaASegmento(q, origen, destino) * 1000, radioDe(e, defensor, j, 'anticipacion')) : undefined;
+  });
 }

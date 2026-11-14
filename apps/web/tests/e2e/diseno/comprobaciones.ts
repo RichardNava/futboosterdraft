@@ -6,7 +6,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page } from '@playwright/test';
 
 /** Anchos de FR-031, más 683 px (ampliación del 200 % en un portátil de 1366 px), con su alto habitual. */
-export const ANCHOS: ReadonlyArray<{ ancho: number; alto: number }> = [
+const ANCHOS: ReadonlyArray<{ ancho: number; alto: number }> = [
   { ancho: 360, alto: 640 },
   { ancho: 683, alto: 384 },
   { ancho: 768, alto: 1024 },
@@ -17,7 +17,7 @@ export const ANCHOS: ReadonlyArray<{ ancho: number; alto: number }> = [
 /** `--color-accion` calculado. */
 export const LIMA = 'rgb(183, 255, 44)';
 
-export interface OpcionesDiseno {
+interface OpcionesDiseno {
   /** Elementos rellenos de lima permitidos (2 en el descanso contra un NPC, 003/FR-006a). */
   maxLima?: number;
   /** Anchos que comprobar (por defecto, todos). */
@@ -27,7 +27,7 @@ export interface OpcionesDiseno {
 }
 
 /** Selectores de los elementos visibles con el fondo calculado igual al lima. */
-export async function rellenosLima(page: Page): Promise<string[]> {
+async function rellenosLima(page: Page): Promise<string[]> {
   return page.evaluate((lima) => {
     const visibles: string[] = [];
     for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) {

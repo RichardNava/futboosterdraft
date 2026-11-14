@@ -202,6 +202,7 @@ interface Props {
   compacta?: boolean;
 }
 
+/** Escaparate de cosméticos (escudos, sobres y celebraciones) con su compra. */
 export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre', 'celebracion'], compacta = false }: Props) {
   const { catalogo, error } = useCatalogoCosmeticos();
   const [compra, setCompra] = useState<Compra | null>(null);

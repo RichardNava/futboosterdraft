@@ -49,6 +49,7 @@ export interface ResultadoSerie {
   penaltis: number;
 }
 
+/** Serie de N partidos reproducibles alternando quién juega en casa, con resultados, estadísticas y, si se piden, métricas. */
 export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: number, etiqueta: string, opciones: boolean | OpcionesSerie = false): ResultadoSerie {
   const { eliminatoria = false, metricas = false, parametros = parametrosActuales(), observador, alTerminar } =
     typeof opciones === 'boolean' ? { eliminatoria: opciones } : opciones;
@@ -119,8 +120,10 @@ export function serie(a: EquipoPartido, b: EquipoPartido, n: number, semilla: nu
   return r;
 }
 
+/** Media aritmética (0 sin datos). */
 export const media = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
 
+/** Error estándar de la media (0 con menos de dos datos). */
 export function errorEstandar(xs: number[]): number {
   if (xs.length < 2) return 0;
   const m = media(xs);

@@ -19,6 +19,7 @@ export const torneos = pgTable('torneos', {
   actualizadoEn: timestamp('actualizado_en', { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Tabla de jornadas del torneo. */
 export const jornadas = pgTable(
   'jornadas',
   {
@@ -40,6 +41,7 @@ export const jornadas = pgTable(
   ],
 );
 
+/** Tabla de bajas por lesión o sanción. */
 export const bajas = pgTable(
   'bajas',
   {
@@ -63,6 +65,7 @@ export const bajas = pgTable(
   ],
 );
 
+/** Tabla de amarillas acumuladas por jugador. */
 export const contadoresAmarillas = pgTable(
   'contadores_amarillas',
   {
@@ -76,6 +79,7 @@ export const contadoresAmarillas = pgTable(
   (t) => [primaryKey({ columns: [t.partidaId, t.participanteId, t.jugadorId] }), check('contadores_rango_ck', sql`${t.amarillas} between 0 and 2`)],
 );
 
+/** Tabla de avisos a los usuarios. */
 export const avisos = pgTable(
   'avisos',
   {

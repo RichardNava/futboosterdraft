@@ -9,6 +9,7 @@ import { parametrosActuales, semillaDesdeTexto } from '@fbd/domain';
 import { avanzar, crearPartido } from '@fbd/engine';
 import { clonar, equipoSintetico } from './equipos';
 
+/** Medición descriptiva de una serie con cambios de parámetros en memoria (para calibrar). */
 export function diagnostico(n: number, semilla = 1, cambios: Record<string, number> = {}) {
   const base = equipoSintetico({ semilla: 'medir' });
   const otro = clonar(base, 'b');

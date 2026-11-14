@@ -30,9 +30,11 @@ function alineacionGuardada(fila: typeof alineaciones.$inferSelect): AlineacionG
   };
 }
 
+/** Alineaciones, dorsales y equipaciones de los participantes. */
 export class RepoEquipo {
   constructor(private readonly db: BaseDatos) {}
 
+  /** Última alineación guardada de un participante. */
   async ultimaAlineacion(participanteId: string, ejecutor: Ejecutor = this.db): Promise<AlineacionGuardada | undefined> {
     const fila = (
       await ejecutor
@@ -56,6 +58,7 @@ export class RepoEquipo {
     return new Map(filas.map((f) => [f.participanteId, alineacionGuardada(f)]));
   }
 
+  /** Guarda una alineación nueva y devuelve su versión. */
   async guardarAlineacion(participanteId: string, a: Alineacion, ahora: number, ejecutor: Ejecutor = this.db, bloqueada = false): Promise<number> {
     const anterior = await this.ultimaAlineacion(participanteId, ejecutor);
     const version = (anterior?.version ?? 0) + 1;
@@ -74,6 +77,7 @@ export class RepoEquipo {
     return version;
   }
 
+  /** Dorsales de la plantilla de un participante, si los tiene. */
   async dorsales(participanteId: string, ejecutor: Ejecutor = this.db): Promise<Dorsales | null> {
     const fila = (await ejecutor.select({ d: plantillas.dorsales }).from(plantillas).where(eq(plantillas.participanteId, participanteId)).limit(1))[0];
     return (fila?.d as Dorsales | null | undefined) ?? null;
@@ -91,10 +95,12 @@ export class RepoEquipo {
     return resultado;
   }
 
+  /** Guarda los dorsales de un participante. */
   async guardarDorsales(participanteId: string, dorsales: Dorsales, ejecutor: Ejecutor = this.db): Promise<void> {
     await ejecutor.update(plantillas).set({ dorsales }).where(eq(plantillas.participanteId, participanteId));
   }
 
+  /** Guarda las equipaciones de un participante. */
   async guardarEquipaciones(participanteId: string, e: Equipaciones, ejecutor: Ejecutor = this.db): Promise<void> {
     await ejecutor.update(participantes).set({ equipaciones: e }).where(eq(participantes.id, participanteId));
   }

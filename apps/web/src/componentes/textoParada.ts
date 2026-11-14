@@ -6,6 +6,7 @@ export interface IncidenciaVista {
   tick: number;
 }
 
+/** Texto de una parada de «control total»: lances y cambios que quedan. */
 export function textoParada(incidencias: readonly IncidenciaVista[], nombre: (id: number) => string, restantes: number): string {
   const lances = incidencias.map((i) => `${i.motivo === 'lesion' ? 'Lesión' : 'Expulsión'} de ${nombre(i.jugadorId)} (${i.minuto})`);
   const lista = lances.length > 1 ? `${lances.slice(0, -1).join(', ')} y ${lances.at(-1)!.replace(/^./, (c) => c.toLowerCase())}` : (lances[0] ?? '');

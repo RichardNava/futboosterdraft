@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useAmbiente } from '../sonido/ambiente';
 import { chapasDelPartido, equipoMarcador } from '../componentes/chapa';
 import { Link, useParams } from 'react-router';
 import { api, ErrorApi, marcarVisto, obtenerReproduccion } from '../api/cliente';
+import { enCache } from '../api/cache';
 import { jugadoresDe, Lienzo2D, type Superposicion } from '../campo2d/Lienzo2D';
 import { RelojReproduccion, VELOCIDADES, type EstadoReloj, type Velocidad } from '../campo2d/relojReproduccion';
 import { datosVacios, incorporarTramo, type TramoRecibido } from '../campo2d/tramos';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Aviso } from '../componentes/Aviso';
 import { Estadisticas } from '../componentes/Estadisticas';
-import { Chapa, GoleadoresFranja, Marcador as MarcadorPartido } from '../componentes/Marcador';
-import { NombreRecortado } from '../componentes/NombreRecortado';
+import { EquiposFranja, GoleadoresFranja, Marcador as MarcadorPartido } from '../componentes/Marcador';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
 import { goleadoresDe } from '../componentes/goleadores';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
@@ -45,7 +45,7 @@ function hastaLaPausa(tramos: TramoReproduccion[], desde: number): number {
 }
 
 /** Aviso de un partido jugado con un motor que ya no puede volver a simularlo (research R2). */
-export const AVISO_VERSION_ANTERIOR = 'Este partido se jugó con una versión anterior del motor';
+const AVISO_VERSION_ANTERIOR = 'Este partido se jugó con una versión anterior del motor';
 
 interface ResumenGuardado {
   alineaciones?: Inicio['alineaciones'] | null;
@@ -82,16 +82,23 @@ export function ReproduccionPartido() {
   const visto = useRef(false);
   const sinRotulos = useMemo(movimientoReducido, []);
 
-  useEffect(() => {
+  // Con lo que dejó el loader en la caché se pinta antes del primer fotograma, sin esqueleto (spec 014, FR-025).
+  useLayoutEffect(() => {
     let vigente = true;
+    const cargado = (r: Reproduccion) => {
+      if (!vigente) return;
+      reproduccion.current = datosVacios();
+      for (const t of r.tramos) incorporarTramo(reproduccion.current, reloj, t);
+      setDatos(r);
+      setHasta(hastaLaPausa(r.tramos, 0));
+    };
+    const enMemoria = enCache<Reproduccion>(`/api/partidos/${partidoId}/reproduccion`);
+    if (enMemoria) {
+      cargado(enMemoria);
+      return;
+    }
     obtenerReproduccion<Reproduccion>(partidoId!)
-      .then((r) => {
-        if (!vigente) return;
-        reproduccion.current = datosVacios();
-        for (const t of r.tramos) incorporarTramo(reproduccion.current, reloj, t);
-        setDatos(r);
-        setHasta(hastaLaPausa(r.tramos, 0));
-      })
+      .then(cargado)
       .catch((e: unknown) => {
         if (!vigente) return;
         if (e instanceof ErrorApi && e.codigo === 'VERSION_NO_REPRODUCIBLE') {
@@ -251,15 +258,7 @@ export function ReproduccionPartido() {
         <>
           <div className="franja-2d">
             <p className="marcador-2d" aria-live="polite">
-              <span className="equipos-2d">
-                <Chapa {...equipoMarcador(inicio, 'local')} lado="local" />
-                <NombreRecortado texto={inicio.local.nombre} />
-                <span className="goles-2d">
-                  {marcador.local} – {marcador.visitante}
-                </span>
-                <NombreRecortado texto={inicio.visitante.nombre} />
-                <Chapa {...equipoMarcador(inicio, 'visitante')} lado="visitante" />
-              </span>
+              <EquiposFranja local={equipoMarcador(inicio, 'local')} visitante={equipoMarcador(inicio, 'visitante')} goles={marcador} />
               <span className="nota">{minuto}</span>
             </p>
             <div className="velocidades segmentado" role="group" aria-label="Velocidad de reproducción">

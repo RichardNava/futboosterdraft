@@ -15,8 +15,10 @@ interface Props {
   mini?: boolean;
 }
 
+/** Imagen de un diseño de sobre (en miniatura con `mini`). */
 export const urlSobre = (id: string, mini = false): string => `/cosmeticos/sobres/${id}${mini ? '-mini' : ''}.webp`;
 
+/** Sobre con su diseño (o el original si la imagen falla), entero o rasgado. */
 export function SobreArte({ diseno, rasgado = false, className, mini = false }: Props) {
   const [fallo, setFallo] = useState<string | null>(null);
   const cosmetico = diseno && diseno !== 'sobre-original' && fallo !== diseno ? diseno : null;

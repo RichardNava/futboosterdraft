@@ -26,6 +26,7 @@ function Miniatura({ c }: { c: Cosmetico }) {
   );
 }
 
+/** Selector del diseño de sobre y de si se elige al azar. */
 export function SelectorSobre({ aspecto, onCambiar, desactivado = false }: Props) {
   const { catalogo, error } = useCatalogoCosmeticos();
   if (error && !catalogo) return <p className="nota">No se han podido cargar los sobres.</p>;

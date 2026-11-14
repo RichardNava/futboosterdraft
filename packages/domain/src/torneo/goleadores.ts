@@ -39,10 +39,12 @@ function tabla(t: EstadoTorneo, campo: 'goles' | 'asistencias', opciones: Opcion
     .map((f, i) => ({ posicion: i + 1, ...f }));
 }
 
+/** Tabla de goleadores del torneo. */
 export function tablaGoleadores(t: EstadoTorneo, opciones: OpcionesTabla = {}): FilaTabla[] {
   return tabla(t, 'goles', opciones);
 }
 
+/** Tabla de asistentes del torneo. */
 export function tablaAsistentes(t: EstadoTorneo, opciones: OpcionesTabla = {}): FilaTabla[] {
   return tabla(t, 'asistencias', opciones);
 }

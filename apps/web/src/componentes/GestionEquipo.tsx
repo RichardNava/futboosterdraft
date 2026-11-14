@@ -1,3 +1,4 @@
+import { CaraEnergia, TRAMOS_ENERGIA } from './IndicadorEnergia';
 import { nombreCartaDe } from './CartaJugador';
 import { FORMACIONES, FORMACIONES_IDS, parametrosActuales, validarTactica, type FormacionId, type Lanzadores, type Posicion, type Tactica } from '@fbd/domain';
 import { useCallback, useMemo, useState } from 'react';
@@ -13,6 +14,7 @@ import { Dialogo } from './Dialogo';
 import { ListaPestanas } from './ListaPestanas';
 import { useDistribucion } from './useDistribucion';
 import { mostrarAviso } from '../estado/avisos';
+import type { ConexionPartida } from '../conexion/ws';
 
 /** Sin «Personalización»: en el partido solo se cambia lo que afecta al juego (spec 012, FR-017). */
 type PestanaGestion = 'alineacion' | 'tactica' | 'lanzadores';
@@ -23,6 +25,14 @@ const PESTANAS_GESTION: { id: PestanaGestion; texto: string }[] = [
 ];
 
 const P = parametrosActuales();
+
+/** Envía un lote de decisiones del partido; si el servidor lo acepta, llama a `alAceptar` (para marcarlas en espera). */
+export async function enviarLoteDecisiones(conexion: ConexionPartida | null, partidoId: string, decisiones: DecisionGestion[], alAceptar: () => void) {
+  if (!conexion) throw new Error('Sin conexión');
+  const ack = await conexion.enviar({ t: 'partido.decisiones', partidoId, decisiones });
+  if (ack.ok) alAceptar();
+  return ack;
+}
 
 export interface DecisionGestion {
   tipo: 'sustitucion' | 'formacion' | 'recolocacion' | 'tactica' | 'lanzadores';
@@ -42,7 +52,7 @@ const igual = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b
  * (suplente sobre titular), formación con su asignación y colocación (o recolocación si no cambia la formación),
  * táctica y lanzadores. El servidor las valida en este orden, todas o ninguna.
  */
-export function decisionesDeCambios(inicial: Borrador, final: Borrador): DecisionGestion[] {
+function decisionesDeCambios(inicial: Borrador, final: Borrador): DecisionGestion[] {
   const decisiones: DecisionGestion[] = [];
   const antes = titularesDe(inicial.campo);
   const despues = titularesDe(final.campo);
@@ -93,6 +103,8 @@ interface Props {
   lesionadosParada?: ReadonlySet<number>;
   /** Resultado y minuto del partido en la 2D (ronda 5): al llegar en una parada, se sabe qué ha pasado. */
   marcador?: string | null;
+  /** Spec 014 (FR-016): energía de los jugadores en el campo, del mensaje de la pausa. */
+  energia?: ReadonlyMap<number, { energia: number; penalizacion: number }>;
 }
 
 /**
@@ -103,7 +115,7 @@ interface Props {
  * Spec 012 (FR-015 a FR-017): la misma mesa que Formación (`useDistribucion`, pestañas fijas sobre el lateral), con
  * solo los titulares y el banquillo convocado, y sin «Personalización».
  */
-export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, onCerrar, aviso = null, lesionadosParada = SIN_LESIONADOS, marcador = null }: Props) {
+export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, onCerrar, aviso = null, lesionadosParada = SIN_LESIONADOS, marcador = null, energia }: Props) {
   const inicial = useMemo<Borrador>(
     () => ({ campo: { formacion: estado.formacion, asignacion: { ...estado.asignacion }, puntos: { ...estado.puntos }, banquillo: [...estado.banquillo] }, tactica: estado.tactica, lanzadores: estado.lanzadores }),
     [estado],
@@ -113,6 +125,7 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
   const [confirmarSalida, setConfirmarSalida] = useState(false);
   const [formacionPendiente, setFormacionPendiente] = useState<FormacionId | null>(null);
   const [pestana, setPestana] = useState<PestanaGestion>('alineacion');
+  const [ayudaEnergia, setAyudaEnergia] = useState(false);
   const distribucion = useDistribucion();
 
   const posicionesDe = useCallback((id: number) => (jugadores.get(id)?.posicion ?? []) as Posicion[], [jugadores]);
@@ -212,6 +225,11 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
             {marcador}
           </p>
         )}
+        {pestana === 'alineacion' && (
+          <button type="button" className="texto boton-ayuda-energia" aria-label="Ayuda: energía de los jugadores" title="Energía de los jugadores" onClick={() => setAyudaEnergia(true)}>
+            ?
+          </button>
+        )}
         <p className="contador-sustituciones" aria-live="polite">
           Sustituciones restantes: <strong>{restantes}</strong>
         </p>
@@ -252,6 +270,7 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
         modo="partido"
         bloqueados={bloqueados}
         distintivos={distintivos}
+        {...(energia ? { energia } : {})}
         noDisponibles={noDisponibles}
         pestanas={{
           lista: <ListaPestanas pestanas={pestanas} activa={pestana} onElegir={setPestana} etiqueta="Secciones de la gestión" />,
@@ -285,6 +304,39 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
             </button>
             <button type="button" className="texto" onClick={() => setFormacionPendiente(null)}>
               Cancelar
+            </button>
+          </div>
+        </Dialogo>
+      )}
+      {ayudaEnergia && (
+        <Dialogo etiquetadoPor="titulo-ayuda-energia" alEscape={() => setAyudaEnergia(false)}>
+          <h2 id="titulo-ayuda-energia">Energía de los jugadores</h2>
+          <p>Desde el minuto 65 (55 con Presión alta) los jugadores se cansan y rinden menos.</p>
+          <table className="tabla-energia">
+            <thead>
+              <tr>
+                <th scope="col">Cara</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Energía</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TRAMOS_ENERGIA.map((t) => (
+                <tr key={t.tramo} className={`energia-${t.tramo}`}>
+                  <td>
+                    <CaraEnergia tramo={t.tramo} />
+                  </td>
+                  <td>{t.texto}</td>
+                  <td>
+                    {t.desde}–{t.hasta} %
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="acciones">
+            <button type="button" className="secundario" onClick={() => setAyudaEnergia(false)}>
+              Cerrar
             </button>
           </div>
         </Dialogo>

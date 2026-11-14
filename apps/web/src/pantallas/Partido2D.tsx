@@ -1,3 +1,4 @@
+import { mapaEnergia, type EnergiaJugador } from '../componentes/IndicadorEnergia';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { coloresDe } from '../componentes/colores';
 import { chapasDelPartido, equipoMarcador } from '../componentes/chapa';
@@ -9,11 +10,10 @@ import { datosVacios, incorporarTramo, type TramoRecibido } from '../campo2d/tra
 import { AvisoDorsales } from '../componentes/AvisoDorsales';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { conEnEspera, estadoEquipoEnPartido, sinLaAplicada, type DecisionAplicada } from '../componentes/estadoEquipoEnPartido';
-import { GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
-import { Chapa, GoleadoresFranja } from '../componentes/Marcador';
+import { enviarLoteDecisiones, GestionEquipo, type DecisionGestion } from '../componentes/GestionEquipo';
+import { Chapa, EquiposFranja, GoleadoresFranja } from '../componentes/Marcador';
 import { Icono } from '../componentes/Icono';
 import { goleadoresDe } from '../componentes/goleadores';
-import { NombreRecortado } from '../componentes/NombreRecortado';
 import { ResultadoPartido } from '../componentes/ResultadoPartido';
 import { ResumenEventos, type EventoVista } from '../componentes/ResumenEventos';
 import { useConexion } from '../conexion/useConexion';
@@ -100,6 +100,8 @@ export function Partido2D() {
   const [aplicacion, setAplicacion] = useState<{ tick: number; minuto: string } | null>(null);
   const [avisoRival, setAvisoRival] = useState<string | null>(null);
   const [miId, setMiId] = useState<string | null>(null);
+  // Energía de la última pausa del servidor (spec 014, FR-016): solo se pinta en la gestión abierta en una pausa.
+  const [energia, setEnergia] = useState<EnergiaJugador[] | null>(null);
   // Tras «Finalizar partido» se ven los eventos según llegan y el resumen en cuanto llega el final.
   const [finalizando, setFinalizando] = useState(false);
   const [gestion, setGestion] = useState(false);
@@ -166,6 +168,7 @@ export function Partido2D() {
         setFin({ marcador: m.marcador as Marcador, eventos: m.eventos as EventoVista[], estadisticas: m.estadisticas });
         break;
       case 'partido.pausa_decision':
+        setEnergia((m.energia as EnergiaJugador[] | undefined) ?? null);
         if (m.motivo === 'incidencia' || m.motivo === 'gol') recibirParada(m as unknown as DatosParada);
         break;
     }
@@ -313,12 +316,8 @@ export function Partido2D() {
       setAvisoGestion(enPausa ? 'Los cambios se aplicarán al reanudarse el partido.' : 'Los cambios se aplicarán en la próxima interrupción.');
     }
   };
-  const enviarLote = async (decisiones: DecisionGestion[]) => {
-    if (!conexion) throw new Error('Sin conexión');
-    const ack = await conexion.enviar({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones });
-    if (ack.ok) setEnEspera((e) => [...e, ...decisiones]);
-    return ack;
-  };
+  const enviarLote = (decisiones: DecisionGestion[]) =>
+    enviarLoteDecisiones(conexion, inicio.partidoId, decisiones, () => setEnEspera((e) => [...e, ...decisiones]));
 
   if (alFinal) {
     return (
@@ -352,6 +351,7 @@ export function Partido2D() {
         aviso={!parada?.abierta ? null : parada.motivo === 'gol' ? TEXTO_PARADA_GOL : textoParada(parada.incidencias, nombre, parada.restantes)}
         lesionadosParada={lesionadosParada}
         marcador={`${nombresEquipo.local} ${marcador.local} – ${marcador.visitante} ${nombresEquipo.visitante} · ${minuto}`}
+        {...(energia && (enPausa || parada?.abierta) ? { energia: mapaEnergia(energia) } : {})}
       />
     );
   }
@@ -383,15 +383,7 @@ export function Partido2D() {
       {/* Franja de 48 px fuera del campo: marcador, reloj y velocidades (spec 004, FR-020). */}
       <div className="franja-2d">
         <p className="marcador-2d" aria-live="polite">
-          <span className="equipos-2d">
-            <Chapa {...equipoMarcador(inicio, 'local')} lado="local" />
-            <NombreRecortado texto={inicio.local.nombre} />
-            <span className="goles-2d">
-              {marcador.local} – {marcador.visitante}
-            </span>
-            <NombreRecortado texto={inicio.visitante.nombre} />
-            <Chapa {...equipoMarcador(inicio, 'visitante')} lado="visitante" />
-          </span>
+          <EquiposFranja local={equipoMarcador(inicio, 'local')} visitante={equipoMarcador(inicio, 'visitante')} goles={marcador} />
           <span className="nota">
             {minuto} · {aviso ?? ETIQUETA_FASE[fase] ?? fase}
           </span>

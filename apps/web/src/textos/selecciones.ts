@@ -8,10 +8,13 @@ import { esSeleccion, SELECCIONES } from '@fbd/domain';
  * Escudos oficiales: desactivados hasta que estén en `public/escudos/` con la licencia revisada (riesgo abierto que
  * bloquea producción; docs/despliegue.md).
  */
-export const ESCUDOS_ACTIVOS = false;
+const ESCUDOS_ACTIVOS = false;
 
+/** Bandera de una selección. */
 export const rutaBandera = (codigo: string): string => `/banderas/${codigo}.svg`;
 
+/** Escudo de una selección, si están activos. */
 export const rutaEscudo = (codigo: string): string | null => (ESCUDOS_ACTIVOS ? `/escudos/${codigo}.svg` : null);
 
+/** Nombre de una selección (el código si no se conoce). */
 export const nombreSeleccion = (codigo: string): string => (esSeleccion(codigo) ? SELECCIONES[codigo].nombre : codigo);

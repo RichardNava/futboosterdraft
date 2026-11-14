@@ -1,10 +1,11 @@
 /**
  * Lote atómico de decisiones (spec 003, research R17; FR-030; T062).
  */
-import { calcularMedia, CLAVES_STATS, FORMACIONES, PARAMETROS_V3, proponerLanzadores, semillaDesdeTexto, tacticaPorDefecto, type Demarcacion, type Jugador, type Posicion } from '@fbd/domain';
-import { aplicarDecision, avanzar, crearPartido, type DecisionPartido, type EquipoPartido, type EstadoMotor } from '@fbd/engine';
+import { calcularMedia, CLAVES_STATS, FORMACIONES, PARAMETROS_V7, proponerLanzadores, semillaDesdeTexto, tacticaPorDefecto, type Demarcacion, type Jugador, type Posicion } from '@fbd/domain';
+import { aplicarDecision, avanzar, crearPartido, maxSustituciones, type DecisionPartido, type EquipoPartido, type EstadoMotor } from '@fbd/engine';
 import { describe, expect, it } from 'vitest';
 import { aplicarLote, type DecisionLote } from '../../src/actores/loteDecisiones';
+import { energiaEnCampo } from '../../src/actores/partidoRapido';
 
 const DEM: Record<string, Demarcacion> = { POR: 'POR', LD: 'DEF', DCD: 'DEF', DCI: 'DEF', LI: 'DEF', ED: 'DEL', MC: 'MED', EI: 'DEL', DC: 'DEL', SD: 'DEL', MCO: 'MED' };
 let siguiente = 1;
@@ -21,7 +22,7 @@ function equipo(participanteId: string): EquipoPartido {
 
 /** Partido en el descanso. */
 function enDescanso(semilla: string): EstadoMotor {
-  const p = PARAMETROS_V3;
+  const p = PARAMETROS_V7;
   const e = crearPartido({ version: p.version, parametros: p, semilla: semillaDesdeTexto(semilla), eliminatoria: false, local: equipo('yo'), visitante: equipo('npc') });
   return avanzar(e, 'parte').estado;
 }
@@ -84,7 +85,8 @@ describe('lote de decisiones (T062)', () => {
     const banquillo = yo.jugadores.filter((j) => !j.enCampo && !j.retirado);
     const decisiones: DecisionLote[] = banquillo.slice(0, 6).map((entra, i) => ({ tipo: 'sustitucion', datos: { sale: enCampo[i]!.id, entra: entra.id } }));
     const r = aplicarLote(e, 'yo', decisiones);
-    expect(r).toMatchObject({ ok: false, indice: 5, codigo: 'SUSTITUCIONES_AGOTADAS' });
+    // Las que queden (una lesión en la primera parte puede haber gastado alguna).
+    expect(r).toMatchObject({ ok: false, indice: maxSustituciones(e) - yo.sustitucionesUsadas, codigo: 'SUSTITUCIONES_AGOTADAS' });
   });
 
   it('un jugador ya sustituido no puede volver a entrar', () => {
@@ -97,5 +99,22 @@ describe('lote de decisiones (T062)', () => {
     const otro = tras.equipos.local.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR' && j.id !== entra.id)!;
     const r = aplicarLote(tras, 'yo', [{ tipo: 'sustitucion', datos: { sale: otro.id, entra: sale.id } }]);
     expect(r).toMatchObject({ ok: false, indice: 0, codigo: 'JUGADOR_NO_DISPONIBLE' });
+  });
+});
+
+describe('energía en la pausa (spec 014, FR-016 a FR-018)', () => {
+  it('trae a todos los jugadores en el campo de los dos equipos y a ninguno del banquillo, expulsado o sustituido', () => {
+    const e = enDescanso('energia-pausa');
+    const expulsado = e.equipos.visitante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR')!;
+    expulsado.enCampo = false;
+    expulsado.expulsado = true;
+    const lista = energiaEnCampo(e);
+    const ids = new Set(lista.map((x) => x.jugadorId));
+    const enCampo = [...e.equipos.local.jugadores, ...e.equipos.visitante.jugadores].filter((j) => j.enCampo);
+    expect(ids).toEqual(new Set(enCampo.map((j) => j.id)));
+    expect(ids.has(expulsado.id)).toBe(false);
+    for (const j of e.equipos.local.jugadores.filter((x) => !x.enCampo)) expect(ids.has(j.id)).toBe(false);
+    // En el descanso nadie se ha cansado todavía.
+    expect(lista.every((x) => x.energia === 100 && x.penalizacion === 0)).toBe(true);
   });
 });

@@ -16,7 +16,8 @@ import { factorAutogol } from '../modificadores/defectos';
 import { ajusteDuelo, santoActivo, tiene } from '../modificadores/virtudes';
 import type { GrupoGol, TipoTiro as TipoTiroGol, ZonaRemate } from '../tipos';
 import { controlar, reponer, volar } from './animaciones';
-import { falta } from './balonParado';
+import { falta, fueraDeJuego } from './balonParado';
+import { enFueraDeJuego, penultimoDefensor } from './fueraDeJuego';
 import { emitir, interrumpir, pasarTiempo, portero, rivalCercano, type Contexto } from './contexto';
 import { probabilidad, resolver } from './duelo';
 import { desplazamientoTiro } from './pesoTiro';
@@ -24,7 +25,7 @@ import { desplazamientoTiro } from './pesoTiro';
 export { desplazamientoTiro, pesoTiro } from './pesoTiro';
 
 /** Tipo de un tiro (los goles en propia puerta no son tiros). */
-export type TipoTiro = Exclude<TipoTiroGol, 'propia'>;
+type TipoTiro = Exclude<TipoTiroGol, 'propia'>;
 
 const GRUPO: Record<TipoTiro, GrupoGol> = { normal: 'jugada', lejano: 'jugada', manoAMano: 'jugada', cabeza: 'cabeza', falta: 'falta', penalti: 'penalti' };
 
@@ -62,7 +63,7 @@ function defensaDe(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnPartido): nu
  * Gol en propia puerta (FR-020, SC-003): el autor es el defensor, el gol suma al equipo `beneficiario` y no
  * cuenta como gol ni asistencia de nadie (`datos.enPropia`).
  */
-export function golEnPropia(ctx: Contexto, beneficiario: EquipoEstado, autor: JugadorEnPartido): void {
+function golEnPropia(ctx: Contexto, beneficiario: EquipoEstado, autor: JugadorEnPartido): void {
   const e = ctx.estado;
   const defensor = e.equipos[rival(beneficiario.lado)];
   const r = remateDesde(beneficiario, e.espacio.balon);
@@ -96,14 +97,15 @@ export function despejeEnPropia(ctx: Contexto, atacante: EquipoEstado, defensor:
   return true;
 }
 
-export type ResultadoTiro = 'gol' | 'parada' | 'fuera' | 'bloqueado';
+type ResultadoTiro = 'gol' | 'parada' | 'fuera' | 'bloqueado';
 
-export interface OpcionesTiro {
+interface OpcionesTiro {
   asistente?: JugadorEnPartido;
   /** Tras un centro (Rematador). */
   trasCentro?: boolean;
 }
 
+/** Resuelve un tiro (a puerta, gol, parada, córner o fuera) desde la posición real del tirador (research R6 y R7). */
 export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnPartido, tipoPedido: TipoTiro, opciones: OpcionesTiro = {}): ResultadoTiro {
   const e = ctx.estado;
   const p = e.parametros;
@@ -246,6 +248,7 @@ function puntoFuera(ctx: Contexto, atacante: EquipoEstado): Punto {
   return aAbsoluta(atacante.lado, { x: LARGO + 150, y: CENTRO_Y + lado * (450 + ((ctx.estado.tick * 53) % 900)) });
 }
 
+/** Saque de puerta del equipo: interrupción y reanudación desde el área pequeña. */
 export function saqueDePuerta(ctx: Contexto, equipo: EquipoEstado): void {
   interrumpir(ctx, 'saque_puerta', 14, equipo.lado);
   const arquero = portero(equipo);
@@ -264,7 +267,7 @@ export function balonAlCentro(ctx: Contexto, equipo: EquipoEstado): JugadorEnPar
  * Saque de centro tras un gol: el balón se recoge de la red y se pone en el centro (no viaja desde la portería, que
  * en la 2D parecía un saque desde ella; hallazgo H8) y todos vuelven a su campo mientras el sacador llega.
  */
-export function saqueDeCentro(ctx: Contexto, equipo: EquipoEstado): void {
+function saqueDeCentro(ctx: Contexto, equipo: EquipoEstado): void {
   const sacador = balonAlCentro(ctx, equipo);
   ctx.estado.espacio.balon = { x: LARGO / 2, y: CENTRO_Y, z: 0 };
   if (sacador) reponer(ctx, 'saque_centro', { x: LARGO / 2, y: CENTRO_Y }, sacador.id);
@@ -352,6 +355,15 @@ export function rematarBalonParado(
     return;
   }
   if (resolver(ctx.rng, centro, { rerollAtacante: tiene(lanzador, 'GuanteEnElPie') })) {
+    // Una falta colgada al área es un pase: su rematador puede estar en fuera de juego (spec 014, FR-008); un córner no.
+    const q = e.espacio.jugadores[rematador.id];
+    const xBalon = aEquipo(atacante.lado, e.espacio.balon).x;
+    if (tipo === 'faltas' && q && enFueraDeJuego(e, atacante, rematador, xBalon)) {
+      const punto = { x: q.x, y: q.y };
+      volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: false, aerea: true });
+      fueraDeJuego(ctx, atacante, rematador, punto, { xPenultimo: penultimoDefensor(e, defensor, atacante.lado), xBalon });
+      return;
+    }
     volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: true, aerea: true });
     e.balon = { posesion: atacante.lado, zona: 5, carril: 1, portadorId: rematador.id, transicion: false };
     tirar(ctx, atacante, rematador, 'cabeza', { asistente: lanzador, trasCentro: true });

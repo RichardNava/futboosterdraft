@@ -78,6 +78,7 @@ export const TIEMPOS_POR_DEFECTO: TiemposPartida = {
   descansoS: 120,
 };
 
+/** Configuración de una partida nueva. */
 export function configPorDefecto(): ConfigPartida {
   return {
     modo: 'liga',
@@ -96,6 +97,7 @@ export interface ErrorConfig {
   mensaje: string;
 }
 
+/** El número de participantes es válido para el modo. */
 export function numParticipantesValido(modo: Modo, n: number): boolean {
   if (!Number.isInteger(n)) return false;
   if (modo === 'liga') return n >= 4 && n <= 8;
@@ -103,10 +105,12 @@ export function numParticipantesValido(modo: Modo, n: number): boolean {
   return n === 8;
 }
 
+/** Plazas para humanos: las pedidas o, si no, las que dejan los NPC. */
 export function plazasHumanasEfectivas(c: ConfigPartida): number {
   return c.plazasHumanas ?? c.numParticipantes - c.npc.length;
 }
 
+/** Errores de la configuración de una partida para el tipo de usuario que la crea. */
 export function validarConfigPartida(c: ConfigPartida, anfitrion: TipoUsuario): ErrorConfig[] {
   const errores: ErrorConfig[] = [];
   if (!numParticipantesValido(c.modo, c.numParticipantes)) {
@@ -165,6 +169,7 @@ const TRANSICIONES: Readonly<Record<EstadoPartida, Partial<Record<EventoPartida,
   abandonada: {},
 };
 
+/** Siguiente estado de la partida ante un evento; lanza si la transición no está permitida. */
 export function transicion(estado: EstadoPartida, evento: EventoPartida): EstadoPartida {
   const siguiente = TRANSICIONES[estado][evento];
   if (!siguiente) throw new Error(`Transición no permitida: ${estado} --${evento}-->`);
@@ -213,6 +218,7 @@ export function soloUnHumano(participantes: readonly ParticipanteRitmo[]): boole
 /** Minutos seguidos sin conexión tras los que se abandona una partida de invitado. */
 export const MINUTOS_ABANDONO_INVITADO = 10;
 
+/** Un invitado desconectado lleva tanto tiempo fuera que se le da por abandonado. */
 export function debeAbandonarsePorDesconexion(desconectadoDesde: number | null, ahora: number): boolean {
   return desconectadoDesde !== null && ahora - desconectadoDesde >= MINUTOS_ABANDONO_INVITADO * 60_000;
 }

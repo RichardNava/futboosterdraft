@@ -14,7 +14,7 @@ import {
   CASILLA_CENTRAL,
   CLAVES_STATS,
   FORMACIONES,
-  PARAMETROS_V3,
+  PARAMETROS_V7,
   proponerLanzadores,
   semillaDesdeTexto,
   tacticaPorDefecto,
@@ -110,7 +110,7 @@ function plantillaCore(lado: 'local' | 'visitante', semilla: number): Jugador[] 
 
 function equipoCore(lado: 'local' | 'visitante', semilla: number): EquipoPartido {
   const plantilla = plantillaCore(lado, semilla);
-  const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V3, { formaciones: ['4-4-2', '4-3-3', '4-2-3-1'] });
+  const a = autoAlineacion(plantilla, new Set(), PARAMETROS_V7, { formaciones: ['4-4-2', '4-3-3', '4-2-3-1'] });
   const porId = new Map(plantilla.map((j) => [j.id, j]));
   return {
     participanteId: lado,
@@ -128,8 +128,8 @@ export function entradaEquivalencia005(i: number): EntradaPartido {
   const deCore = i >= 10;
   const semilla = deCore ? i - 10 : i;
   return {
-    version: PARAMETROS_V3.version,
-    parametros: PARAMETROS_V3,
+    version: PARAMETROS_V7.version,
+    parametros: PARAMETROS_V7,
     semilla: semillaDesdeTexto(`equivalencia-005-${i}`),
     eliminatoria: i % 5 === 4,
     local: deCore ? equipoCore('local', semilla) : equipoSintetico('local', semilla),

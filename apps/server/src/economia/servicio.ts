@@ -96,6 +96,7 @@ type MotivoCargo = 'compra_sobre' | 'compra_coleccion' | 'compra_cosmetico' | 'c
 /** `ResumenCompra` más los cosméticos entregados, que solo devuelven las compras de cosméticos. */
 type ResumenCompraInterno = ResumenCompra & { cosmeticos: string[] };
 
+/** Colección, fragmentos, tienda y pase premium de cada usuario. */
 export class ServicioEconomia {
   constructor(
     private readonly db: BaseDatos,
@@ -127,6 +128,7 @@ export class ServicioEconomia {
     return { saldo: await this.saldo(this.db, usuarioId) };
   }
 
+  /** Colección del usuario con sus colecciones, saldo y el mínimo de activas. */
   async leerColeccion(usuarioId: string): Promise<RespuestaColeccion> {
     await this.asegurarColeccion(usuarioId);
     const filas = await this.cartas(this.db, usuarioId);
@@ -149,6 +151,7 @@ export class ServicioEconomia {
     return filas.filter((f) => f.activa).map((f) => f.jugadorId);
   }
 
+  /** Activa o desactiva una carta respetando el mínimo de activas. */
   async cambiarActiva(usuarioId: string, jugadorId: number, activa: boolean): Promise<{ carta: CartaPoseida; minimo: EstadoMinimo }> {
     await this.asegurarColeccion(usuarioId);
     return this.db.transaction(async (tx) => {
@@ -164,6 +167,7 @@ export class ServicioEconomia {
     });
   }
 
+  /** Convierte una carta en fragmentos respetando el mínimo de activas. */
   async desfragmentar(usuarioId: string, jugadorId: number): Promise<{ fragmentos: number; saldo: number; minimo: EstadoMinimo }> {
     await this.asegurarColeccion(usuarioId);
     return this.db.transaction(async (tx) => {
@@ -252,6 +256,7 @@ export class ServicioEconomia {
 
   // ---------- Tienda ----------
 
+  /** Escaparate de la tienda para el usuario, con su saldo. */
   async tienda(usuarioId: string): Promise<RespuestaTienda> {
     await this.asegurarColeccion(usuarioId);
     const poseidas = new Set((await this.cartas(this.db, usuarioId)).map((f) => f.jugadorId));
@@ -278,6 +283,7 @@ export class ServicioEconomia {
     };
   }
 
+  /** Compra un sobre de cartas con fragmentos (idempotente por `idCompra`). */
   async comprarSobre(usuarioId: string, moneda: Moneda, idCompra: string): Promise<ResumenCompra> {
     if (moneda === 'eur' && !VENTA_CARTAS_CON_DINERO) throw errores.regla('MONEDA_NO_ADMITIDA', 'Los sobres de cartas solo se pagan con fragmentos');
     const importe = PARAMETROS_ECONOMIA.precioSobreFragmentos;
@@ -292,6 +298,7 @@ export class ServicioEconomia {
     });
   }
 
+  /** Compra una colección de pago (idempotente por `idCompra`). */
   async comprarColeccion(usuarioId: string, coleccionId: string, idCompra: string): Promise<ResumenCompra> {
     const coleccion = (await this.coleccionesDePago()).find((c) => c.id === coleccionId);
     if (!coleccion) throw errores.noEncontrado('PRODUCTO_NO_ENCONTRADO', `No existe la colección ${coleccionId}`);
@@ -315,6 +322,7 @@ export class ServicioEconomia {
     });
   }
 
+  /** Compra un paquete de fragmentos (pago de prueba, idempotente por `idCompra`). */
   async comprarFragmentos(usuarioId: string, paqueteId: string, idCompra: string): Promise<ResumenCompra> {
     const paquete = PARAMETROS_ECONOMIA.paquetesFragmentos.find((x) => x.id === paqueteId);
     // Spec 011, FR-002: los paquetes de fragmentos se retiraron; 410 para que un cliente antiguo vea un error claro.
@@ -327,6 +335,7 @@ export class ServicioEconomia {
 
   // ---------- Cosméticos (spec 011, research R10) ----------
 
+  /** Compra un cosmético con fragmentos o euros (idempotente por `idCompra`). */
   async comprarCosmetico(usuarioId: string, cosmeticoId: string, moneda: Moneda, idCompra: string): Promise<RespuestaCompraCosmetico> {
     const c = this.cosmeticos.cosmetico(cosmeticoId);
     if (!c || !c.activo) throw errores.noEncontrado('PRODUCTO_NO_ENCONTRADO', `No existe el cosmético ${cosmeticoId}`);
@@ -363,6 +372,7 @@ export class ServicioEconomia {
     return { fin: fila?.fin?.getTime() ?? null, cortesia: fila?.cortesia ?? false };
   }
 
+  /** Estado del pase premium del usuario. */
   async premium(usuarioId: string, ejecutor: Ejecutor = this.db): Promise<EstadoPremium> {
     const e = await this.estadoPremium(usuarioId, ejecutor);
     return { activo: premiumActivo(e, this.ahora()), cortesia: e.cortesia, fin: e.fin === null ? null : new Date(e.fin).toISOString() };

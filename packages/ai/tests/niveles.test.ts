@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { derivarSemilla, FORMACIONES_IDS, NIVELES_NPC, PARAMETROS_V3, Rng, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
+import { derivarSemilla, FORMACIONES_IDS, NIVELES_NPC, PARAMETROS_V3, PARAMETROS_V7, Rng, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
 import { crearPartido, avanzar } from '@fbd/engine';
 import { describe, expect, it } from 'vitest';
 import { decidirAlineacion, decidirAlineacionDetallada, LIMITE_PRO_MS } from '../src/alineacion';
@@ -71,9 +71,10 @@ describe('niveles de los NPC (T120)', () => {
     const visitante = plantilla(80);
     const la = decidirAlineacion('intermedio', local, new Set(), null, semillaDesdeTexto('l'));
     const lv = decidirAlineacion('intermedio', visitante, new Set(), null, semillaDesdeTexto('v'));
+    // El partido, con los parámetros que el motor simula (spec 014: solo la 7.x).
     let estado = crearPartido({
-      version: p.version,
-      parametros: p,
+      version: PARAMETROS_V7.version,
+      parametros: PARAMETROS_V7,
       semilla: semillaDesdeTexto('partido'),
       eliminatoria: false,
       local: equipoDesdeAlineacion('L', la, new Map(local.map((j) => [j.id, j]))),
@@ -83,8 +84,10 @@ describe('niveles de los NPC (T120)', () => {
     expect(estado.fase).toBe('descanso');
     // Cansancio alto forzado en todos los de campo: el PRO pide como mucho 5 − 1 (reserva) cambios.
     for (const j of estado.equipos.local.jugadores) if (j.enCampo) j.cansancio = 0.9;
-    const decisiones = decidirEnPartido('PRO', estado, 'local', semillaDesdeTexto('d'));
-    const cambios = decisiones.filter((d) => d.tipo === 'sustitucion');
+    // La primera semilla sin el error de «cambio tardío» (los errores de nivel se prueban aparte).
+    const cambios = Array.from({ length: 20 }, (_, i) => decidirEnPartido('PRO', estado, 'local', semillaDesdeTexto(`d${i}`)).filter((d) => d.tipo === 'sustitucion')).find(
+      (c) => c.length > 0,
+    )!;
     expect(cambios.length).toBeLessThanOrEqual(4);
     expect(cambios.length).toBeGreaterThan(0);
     const entran = cambios.map((d) => (d.tipo === 'sustitucion' ? d.datos.entra : 0));

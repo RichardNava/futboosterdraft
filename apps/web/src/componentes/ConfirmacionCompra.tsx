@@ -18,6 +18,7 @@ interface Props {
   onSeguir: () => void;
 }
 
+/** Confirmación de la compra de una colección: el sello «Adquirida» y el resumen de cartas y fragmentos. */
 export function ConfirmacionCompra({ nombre, resumen, onSeguir }: Props) {
   const reducido = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
   const [fase, setFase] = useState<'animacion' | 'resumen'>(reducido ? 'resumen' : 'animacion');

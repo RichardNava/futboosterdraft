@@ -59,6 +59,7 @@ export type CodigoSeleccion = keyof typeof SELECCIONES;
 
 export const CODIGOS_SELECCION = Object.keys(SELECCIONES) as CodigoSeleccion[];
 
+/** El valor es un código de selección conocido. */
 export function esSeleccion(codigo: unknown): codigo is CodigoSeleccion {
   return typeof codigo === 'string' && Object.hasOwn(SELECCIONES, codigo);
 }

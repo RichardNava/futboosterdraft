@@ -4,8 +4,9 @@
  */
 import { useConectandoLargo } from '../estado/conexionServidor';
 
-export type FormaEsqueleto = 'filas' | 'cartas' | 'campo';
+type FormaEsqueleto = 'filas' | 'cartas' | 'campo';
 
+/** Marcador de carga con la forma del contenido (filas, cartas o campo). */
 export function Esqueleto({ forma, cantidad, texto = 'Cargando…' }: { forma: FormaEsqueleto; cantidad?: number; texto?: string }) {
   const n = cantidad ?? (forma === 'filas' ? 5 : forma === 'cartas' ? 8 : 1);
   return (

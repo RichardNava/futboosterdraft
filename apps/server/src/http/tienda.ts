@@ -15,6 +15,7 @@ function cuerpo<T extends z.ZodTypeAny>(esquema: T, valor: unknown): z.infer<T> 
   return r.data;
 }
 
+/** Rutas de la tienda y del pase premium (solo registrados). */
 export function registrarRutasTienda(app: FastifyInstance, auth: Auth, economia: ServicioEconomia): void {
   const { soloRegistrados } = crearHooksSesion(auth);
 

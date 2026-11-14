@@ -142,3 +142,80 @@ test('botones de sesión visibles sin desplazarse, en escritorio y en móvil', a
     await expect(cerrar).toBeInViewport({ ratio: 1 });
   }
 });
+
+/**
+ * Spec 014 (US6; FR-024 a FR-028, SC-010): cambiar de pantalla sin pestañeo. Un observador anota cualquier esqueleto o
+ * indicador de carga que llegue a montarse durante el recorrido.
+ */
+async function vigilarCargas(page: Page): Promise<() => Promise<string[]>> {
+  await page.evaluate(() => {
+    const w = window as unknown as { __cargas: string[] };
+    w.__cargas = [];
+    new MutationObserver(() => {
+      for (const el of document.querySelectorAll('.esqueleto, .indicador-navegacion')) w.__cargas.push(`${location.pathname}:${el.className}`);
+    }).observe(document.body, { childList: true, subtree: true });
+  });
+  return () => page.evaluate(() => (window as unknown as { __cargas: string[] }).__cargas);
+}
+
+const RECORRIDO = [
+  ['Mis partidas', 'Mis partidas'],
+  ['Mi perfil', 'Mi perfil'],
+  ['Colección', 'Colección'],
+  ['Tienda', 'Tienda'],
+  ['Inicio', null],
+] as const;
+
+test('recorrido de pantallas principales sin esqueletos ni indicador de carga (SC-010)', async ({ page }) => {
+  await registrar(page);
+  await page.goto('/');
+  await expect(barra(page).getByRole('link', { name: 'Mis partidas' })).toBeVisible();
+  const cargas = await vigilarCargas(page);
+  for (let vuelta = 0; vuelta < 2; vuelta++) {
+    for (const [enlace, titulo] of RECORRIDO) {
+      await barra(page).getByRole('link', { name: enlace }).first().click();
+      if (titulo) await expect(page.getByRole('heading', { level: 1, name: titulo })).toBeVisible();
+      else await expect(page).toHaveURL(/\/$/);
+    }
+  }
+  expect(await cargas()).toEqual([]);
+});
+
+test('con la red lenta, la pantalla anterior se mantiene y el indicador aparece a los 2 s (FR-027)', async ({ page }) => {
+  await registrar(page);
+  await page.goto('/');
+  await expect(barra(page).getByRole('link', { name: 'Mis partidas' })).toBeVisible();
+  await page.route('**/api/perfil', async (ruta) => {
+    await new Promise((r) => setTimeout(r, 3000));
+    await ruta.continue();
+  });
+  const inicio = Date.now();
+  await barra(page).getByRole('link', { name: 'Mi perfil' }).click();
+  // Antes de 2 s: ni indicador ni pantalla nueva.
+  await page.waitForTimeout(1500);
+  await expect(page.locator('.indicador-navegacion')).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 1, name: 'Mi perfil' })).toHaveCount(0);
+  await expect(page.locator('.indicador-navegacion')).toBeVisible({ timeout: 2000 });
+  const aparece = Date.now() - inicio;
+  expect(aparece).toBeGreaterThanOrEqual(1700);
+  expect(aparece).toBeLessThanOrEqual(2800);
+  await expect(page.getByRole('heading', { level: 1, name: 'Mi perfil' })).toBeVisible();
+  await expect(page.locator('.indicador-navegacion')).toHaveCount(0);
+});
+
+test('con la red lenta, dos enlaces seguidos no dejan indicador del primero (FR-028)', async ({ page }) => {
+  await registrar(page);
+  await page.goto('/');
+  await expect(barra(page).getByRole('link', { name: 'Mis partidas' })).toBeVisible();
+  await page.route('**/api/perfil', async (ruta) => {
+    await new Promise((r) => setTimeout(r, 3000));
+    await ruta.continue();
+  });
+  await barra(page).getByRole('link', { name: 'Mi perfil' }).click();
+  await page.waitForTimeout(500);
+  await barra(page).getByRole('link', { name: 'Mis partidas' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Mis partidas' })).toBeVisible();
+  await page.waitForTimeout(3000);
+  await expect(page.locator('.indicador-navegacion')).toHaveCount(0);
+  await expect(page).toHaveURL(/\/mis-partidas$/);
+});

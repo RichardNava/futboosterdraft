@@ -21,7 +21,8 @@ import { emitir, type Contexto } from './contexto';
 
 export const MINIMO_JUGADORES = 7;
 
-export function sustitucionesDisponibles(ctx: Contexto, equipo: EquipoEstado): number {
+/** Sustituciones que le quedan al equipo (una más en la prórroga). */
+function sustitucionesDisponibles(ctx: Contexto, equipo: EquipoEstado): number {
   return maxSustituciones(ctx.estado) - equipo.sustitucionesUsadas;
 }
 

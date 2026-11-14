@@ -8,8 +8,7 @@
  */
 import { decidirAlineacion, elegirCarta, equipoDesdeAlineacion, jugarHastaElFinal } from '@fbd/ai';
 import { calendarioLiga, derivarSemilla, parametrosActuales, type Alineacion, type Jugador, type ParametrosEquilibrado } from '@fbd/domain';
-import { crearPartido } from '@fbd/engine';
-import { core, draftMesa } from './checks/npc';
+import { core, crearPartidoLiga, draftMesa } from './checks/npc';
 import type { ResultadoSerie } from './series';
 
 export interface ResultadoCore {
@@ -63,14 +62,7 @@ export function serieCore(n: number, semilla: number, p: ParametrosEquilibrado =
     for (const jornada of calendarioLiga(participantes, derivarSemilla(raiz, 'calendario'))) {
       for (const cruce of jornada.partidos) {
         const semillaPartido = derivarSemilla(raiz, `partido:${jornada.numero}:${cruce.local}`);
-        const motor = crearPartido({
-          version: p.version,
-          parametros: p,
-          semilla: semillaPartido,
-          eliminatoria: false,
-          local: alineacion(cruce.local, cruce.visitante),
-          visitante: alineacion(cruce.visitante, cruce.local),
-        });
+        const motor = crearPartidoLiga(p, semillaPartido, alineacion(cruce.local, cruce.visitante), alineacion(cruce.visitante, cruce.local));
         const fin = jugarHastaElFinal(motor, { local: 'avanzado', visitante: 'avanzado' }, semillaPartido);
         const { local, visitante } = fin.marcador;
         r.n++;

@@ -10,6 +10,7 @@ import {
   PARAMETROS_V6_1,
   PARAMETROS_V6_2,
   PARAMETROS_V6_3,
+  PARAMETROS_V7,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -100,9 +101,8 @@ describe('parámetros de equilibrado 3.0.0 (spec 003, T004)', () => {
 });
 
 describe('parámetros de equilibrado 4.0.0 (spec 005, T031, T032)', () => {
-  it('la 4.0.0 y la 3.x se siguen reproduciendo', () => {
+  it('la 4.0.0 se sigue cargando (para mostrar el resumen de sus partidos)', () => {
     expect(parametrosPorVersion('4.0.0')).toBe(PARAMETROS_V4);
-    expect(VERSION_MAYOR_SOPORTADA).toBe(3);
   });
 
   it('las versiones 1 a 3 se cargan con las secciones nuevas neutras', () => {
@@ -221,8 +221,7 @@ describe('parámetros de equilibrado 6.2.0 (spec 012, ronda 2)', () => {
 });
 
 describe('parámetros de equilibrado 6.3.0 (spec 013)', () => {
-  it('los partidos nuevos usan la 6.3.0, que solo añade el reparto de los sobres por nivel de rareza', () => {
-    expect(parametrosActuales()).toBe(PARAMETROS_V6_3);
+  it('la 6.3.0 solo añade el reparto de los sobres por nivel de rareza', () => {
     expect(parametrosPorVersion('6.3.0')).toBe(PARAMETROS_V6_3);
     const { version, sobres, ...resto } = PARAMETROS_V6_3;
     const { version: v62, sobres: sobres62, ...resto62 } = PARAMETROS_V6_2;
@@ -231,5 +230,25 @@ describe('parámetros de equilibrado 6.3.0 (spec 013)', () => {
     expect(sobresSinNiveles).toEqual(sobres62);
     expect(Object.keys(niveles!)).toEqual(['pobre', 'escaso', 'moderado', 'abundante', 'rico']);
     expect([version, v62]).toEqual(['6.3.0', '6.2.0']);
+  });
+});
+
+describe('parámetros de equilibrado 7.0.0 (spec 014, research R14)', () => {
+  it('los partidos nuevos usan la 7.0.0 y solo se simula la 7.x', () => {
+    expect(parametrosActuales()).toBe(PARAMETROS_V7);
+    expect(parametrosPorVersion('7.0.0')).toBe(PARAMETROS_V7);
+    expect(VERSION_MAYOR_SOPORTADA).toBe(7);
+  });
+
+  it('añade cansancio.maximo, rozamiento del balón suelto, mano a mano, ida y vuelta y fuera de juego; retira los sorteos', () => {
+    const p = PARAMETROS_V7;
+    expect(p.cansancio.maximo).toBe(0.6);
+    expect(p.espacio.rozamientoSuelto).toBeGreaterThan(0);
+    expect(p.manoAMano).toMatchObject({ pasilloM: 4, margenAtrasM: 1, distanciaBaseM: 14, paraleloM: 2 });
+    expect(p.idaVuelta).toEqual({ avanceMinimoM: 3 });
+    expect(p.fueraDeJuego?.toleranciaM).toBe(0.3);
+    expect(p.acciones).not.toHaveProperty('probabilidadManoAMano');
+    expect(p.acciones).not.toHaveProperty('probabilidadFueraDeJuegoBase');
+    expect(p.tacticas.lineaAdelantada).not.toHaveProperty('fuerasDeJuegoProvocados');
   });
 });

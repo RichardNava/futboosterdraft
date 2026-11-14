@@ -42,6 +42,7 @@ const DEMARCACION_DE: Record<Posicion, Demarcacion> = {
 
 let siguienteId = 1_000_000;
 
+/** Carta sintética de una posición con stats alrededor de una media. */
 export function jugadorSintetico(posicion: Posicion, media: number, rng: Rng, virtudes: Virtud[] = []): Jugador {
   const demarcacion = DEMARCACION_DE[posicion];
   const stats = Object.fromEntries(
@@ -77,6 +78,7 @@ export interface OpcionesEquipo {
   participanteId?: string;
 }
 
+/** Equipo sintético reproducible: formación, media, táctica y virtudes. */
 export function equipoSintetico(opciones: OpcionesEquipo = {}): EquipoPartido {
   const formacion = opciones.formacion ?? '4-4-2';
   const media = opciones.media ?? 80;

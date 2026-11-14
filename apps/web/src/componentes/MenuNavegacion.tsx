@@ -15,6 +15,7 @@ interface Props {
   sonido: ReactNode;
 }
 
+/** Menú desplegable de la navegación principal en pantallas estrechas. */
 export function MenuNavegacion({ enlaces, sonido }: Props) {
   const id = useId();
   const dialogo = useRef<HTMLDialogElement>(null);

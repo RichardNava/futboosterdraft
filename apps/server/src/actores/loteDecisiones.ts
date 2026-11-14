@@ -7,8 +7,9 @@ import { encolarLote, type DecisionPartido, type EstadoMotor } from '@fbd/engine
 
 export type DecisionLote = { tipo: DecisionPartido['tipo']; datos: Record<string, unknown> };
 
-export type ResultadoLote = { ok: true } | { ok: false; indice: number; codigo: string; mensaje: string };
+type ResultadoLote = { ok: true } | { ok: false; indice: number; codigo: string; mensaje: string };
 
+/** Valida y encola un lote de decisiones del partido: todas o ninguna (spec 003, FR-030). */
 export function aplicarLote(motor: EstadoMotor, participanteId: string, decisiones: readonly DecisionLote[]): ResultadoLote {
   const completas = decisiones.map((d) => ({ participanteId, tipo: d.tipo, datos: d.datos }) as DecisionPartido);
   return encolarLote(motor, completas);

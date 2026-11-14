@@ -9,6 +9,7 @@ import type { Ronda, SobreGenerado } from '../sobres/generador';
 
 export type CodigoErrorDraft = 'NO_PARTICIPA' | 'TURNO_CERRADO' | 'YA_ELEGIDO' | 'CARTA_NO_EN_SOBRE' | 'TURNO_ABIERTO';
 
+/** Error de una acción del draft no permitida, con su código. */
 export class ErrorDraft extends Error {
   constructor(
     readonly codigo: CodigoErrorDraft,
@@ -54,6 +55,7 @@ export interface Mesa {
 
 export const TURNOS_POR_RONDA = 8;
 
+/** Id estable de un sobre: ronda y asiento de origen. */
 export const idSobre = (ronda: Ronda, asientoOrigen: number) => `r${ronda}-a${asientoOrigen}`;
 
 /** Asiento que recibe el sobre del asiento `asiento` al resolver un turno de la ronda `ronda`. */
@@ -62,6 +64,7 @@ export function receptor(asiento: number, ronda: Ronda, n: number): number {
   return (((asiento + d) % n) + n) % n;
 }
 
+/** Mesa de draft recién abierta: participantes sentados, sobres repartidos y primer turno. */
 export function crearMesa(datos: {
   participantes: string[];
   sobres: SobreGenerado[];
@@ -110,10 +113,12 @@ export function sobreDe(mesa: Mesa, participanteId: string): SobreEnJuego {
 const eleccionDelTurno = (mesa: Mesa, participanteId: string) =>
   mesa.elecciones.find((e) => e.participanteId === participanteId && e.ronda === mesa.ronda && e.turno === mesa.turno);
 
+/** El participante ya ha elegido en el turno actual. */
 export function haElegido(mesa: Mesa, participanteId: string): boolean {
   return eleccionDelTurno(mesa, participanteId) !== undefined;
 }
 
+/** Todos han elegido en el turno actual. */
 export function todosEligieron(mesa: Mesa): boolean {
   return mesa.participantes.every((p) => haElegido(mesa, p));
 }

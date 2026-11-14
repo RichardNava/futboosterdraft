@@ -34,7 +34,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-02](#ini-02-experiencia-de-juego-y-ritmo) | Experiencia de juego y ritmo | 002, 003 | P1 | Implementada, sin validar | INI-01 |
 | [INI-03](#ini-03-identidad-visual-y-accesibilidad) | Identidad visual y accesibilidad | 004 | P1 | Implementada, sin validar | INI-02 |
 | [INI-04](#ini-04-virtudes-defectos-y-modo-duelo) | Virtudes, defectos y modo Duelo | 005 | P1 | Implementada, sin validar | INI-01 |
-| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005 | P0 | Hecho | INI-04 |
+| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005, 014 | P0 | Parcial (reabierta por la 014) | INI-04 |
 | [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor | 001, 002 | P1 | Parcial | INI-05 |
 | [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009, 010 | P0 | Parcial | INI-06 |
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
@@ -158,7 +158,16 @@ cuesta simular los partidos.
   comprobaciones que no se pueden medir con el tamaño de muestra actual.
 - **Specs**: [003](specs/003-mejoras-ux-simulacion/spec.md) (T033, T034; [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md),
   [calibracion-npc.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-npc.md)), [005](specs/005-virtudes-defectos/spec.md) (FR-051, research R2).
-- **Prioridad / estado**: P0 · **Hecho** (2026-11-01, parámetros 5.0.0).
+- **Prioridad / estado**: P0 · **Parcial**: hecho el 2026-11-01 (parámetros 5.0.0); reabierta por el motor 7.0.0.
+- **Spec 014 (implementada el 2026-11-13, sin validar)**: [spec](specs/014-mejoras-motor-navegacion-refactor/spec.md).
+  Motor 7.0.0: el balón solo se mueve cuando alguien lo juega, fuera de juego y mano a mano por posición (sin
+  sorteos), sin ida y vuelta, energía visible en la gestión y más peso de las estadísticas. Navegación sin pestañeo
+  (caché de navegación con loaders). Refactorización: knip y jscpd a 0, JSDoc en todo lo exportado
+  ([refactorizacion.md](specs/014-mejoras-motor-navegacion-refactor/refactorizacion.md)). `pnpm balance --n 1000`
+  pasa 58 de 67 ([informe-7.0.0.md](specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md)): fallan 014/SC-008
+  (pase, remate y físico), 002/SC-008, 003/SC-005, 003/SC-007 (Matador), 005/SC-004 Mal defensor y 005/SC-011
+  (lesiones), así que el CI del balance falla. Pendiente: decidir sobre esos criterios y el recorrido a mano del
+  [quickstart](specs/014-mejoras-motor-navegacion-refactor/quickstart.md).
 - **Evidencia**:
   - NPC: 003/SC-010, SC-010a y SC-010b cumplidos en la ronda 4. **Hecho.**
   - Motor: ronda 14 de [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md), estado

@@ -31,6 +31,7 @@ export interface Contexto {
   metricas?: Metricas;
 }
 
+/** Añade un evento del partido en el tick y minuto actuales y lo devuelve. */
 export function emitir(
   ctx: Contexto,
   tipo: TipoEvento,
@@ -87,6 +88,7 @@ export function interrumpir(ctx: Contexto, motivo: string, segundos: number, equ
   ctx.interrupcion = true;
 }
 
+/** Elige una opción al azar con probabilidad proporcional a su peso (la primera si todos valen 0). */
 export function elegirPonderado<T>(rng: Rng, opciones: readonly [T, number][]): T {
   const total = opciones.reduce((a, [, p]) => a + p, 0);
   if (total <= 0) return opciones[0]![0];
@@ -98,14 +100,10 @@ export function elegirPonderado<T>(rng: Rng, opciones: readonly [T, number][]): 
   return opciones[opciones.length - 1]![0];
 }
 
-/** Posición real de un jugador en la capa espacial (absoluta, décimas); null si no está en el campo. */
-export function posicionReal(estado: EstadoMotor, id: number): Punto | null {
-  const p = estado.espacio.jugadores[id];
-  return p ? { x: p.x, y: p.y } : null;
-}
-
+/** El jugador ocupa la casilla de portero. */
 export const esPortero = (j: JugadorEnPartido) => j.casillaId === 'POR';
 
+/** Portero en el campo del equipo, si lo hay. */
 export function portero(equipo: EquipoEstado): JugadorEnPartido | undefined {
   return equipo.jugadores.find((j) => j.enCampo && esPortero(j));
 }
@@ -136,16 +134,27 @@ export function radioIntervencion(estado: EstadoMotor, equipo: EquipoEstado, j: 
 export function rivalCercano(ctx: Contexto, defensor: EquipoEstado, incluirPortero = false): JugadorEnPartido | undefined {
   const e = ctx.estado;
   const b = e.espacio.balon;
+  return mejorDefensor(ctx, defensor, (j) => {
+    const p = j.enCampo && (incluirPortero || !esPortero(j)) ? e.espacio.jugadores[j.id] : undefined;
+    if (!p) return undefined;
+    const radio = radioIntervencion(e, defensor, j);
+    // Distancia al cuadrado entre el radio al cuadrado (en milésimas): enteros seguros hasta 10^15.
+    return Math.floor((dist2(p.x, p.y, b.x, b.y) * 1_000_000) / (radio * radio));
+  });
+}
+
+/**
+ * Defensor con la menor distancia `efectiva` (empates, el de id menor) y el segundo, pasados por `candidatoDefensivo`;
+ * `efectiva` da `undefined` a quien no puede intervenir.
+ */
+export function mejorDefensor(ctx: Contexto, defensor: EquipoEstado, efectivaDe: (j: JugadorEnPartido) => number | undefined): JugadorEnPartido | undefined {
   let mejor: JugadorEnPartido | undefined;
   let mejorEfectiva = Infinity;
   let segundo: JugadorEnPartido | undefined;
   let segundoEfectiva = Infinity;
   for (const j of defensor.jugadores) {
-    const p = j.enCampo && (incluirPortero || !esPortero(j)) ? e.espacio.jugadores[j.id] : undefined;
-    if (!p) continue;
-    const radio = radioIntervencion(e, defensor, j);
-    // Distancia al cuadrado entre el radio al cuadrado (en milésimas): enteros seguros hasta 10^15.
-    const efectiva = Math.floor((dist2(p.x, p.y, b.x, b.y) * 1_000_000) / (radio * radio));
+    const efectiva = efectivaDe(j);
+    if (efectiva === undefined) continue;
     if (efectiva < mejorEfectiva || (efectiva === mejorEfectiva && mejor !== undefined && j.id < mejor.id)) {
       segundo = mejor;
       segundoEfectiva = mejorEfectiva;
@@ -163,7 +172,7 @@ export function rivalCercano(ctx: Contexto, defensor: EquipoEstado, incluirPorte
  * Mal defensor (spec 005, research R6): su peso como candidato a defender se multiplica por `defectos.malDefensor`.
  * Si le tocaba a él y hay otro candidato, le cede la acción con probabilidad 1 − factor; si es el único, defiende.
  */
-export function candidatoDefensivo(ctx: Contexto, mejor: JugadorEnPartido | undefined, segundo: JugadorEnPartido | undefined): JugadorEnPartido | undefined {
+function candidatoDefensivo(ctx: Contexto, mejor: JugadorEnPartido | undefined, segundo: JugadorEnPartido | undefined): JugadorEnPartido | undefined {
   if (!mejor || !segundo) return mejor;
   const f = factorDefensivo(ctx.estado, mejor);
   if (f >= 1) return mejor;
@@ -202,6 +211,7 @@ export function cercanoACelda(ctx: Contexto, equipo: EquipoEstado, zona: number,
   return elegirPonderado(ctx.rng, pesos);
 }
 
+/** Jugador del equipo con ese id (en el campo o no). */
 export function jugadorPorId(equipo: EquipoEstado, id: number): JugadorEnPartido | undefined {
   return equipo.jugadores.find((j) => j.id === id);
 }

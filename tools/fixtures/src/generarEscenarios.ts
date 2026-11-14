@@ -23,6 +23,7 @@ const DESCRIPCIONES: Record<NombreEscenario, string> = {
 
 const autor = (ev: EventoPartido) => ev.jugadores.find((j) => j.rol === 'autor')?.jugadorId;
 
+/** Busca semillas que provocan cada escenario del quickstart (roja, lesiones, amarillas, empate en eliminatoria). */
 export function generarEscenarios(): Escenario[] {
   const core = generarCore();
   const plantillas = plantillasEscenario(core);

@@ -52,7 +52,7 @@ import { crearPartidosJornada, emitirPreparacion, resolverPartidosSinHumanos } f
 import type { ResultadoCruce } from '@fbd/domain';
 
 /** Aviso anticipado antes de que venza el plazo de una jornada asíncrona. */
-export const AVISO_PLAZO_MS = 2 * 60 * 60 * 1000;
+const AVISO_PLAZO_MS = 2 * 60 * 60 * 1000;
 
 export interface DependenciasTorneo {
   avisos: ServicioAvisos;
@@ -101,7 +101,8 @@ async function resolverDuelos(c: ControladorPartida, ctx: ContextoComando, deps:
   if ((await resolverCrucesDuelos(c, opciones)) > 0) await despuesDePartido(c, ctx, deps);
 }
 
-export async function iniciarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
+/** Crea el torneo al terminar el draft y abre su primera jornada. */
+async function iniciarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
   const participantes = c.mesas.flatMap((m) => m.mesa.participantes);
   const mesas = c.mesas.map((m) => m.mesa.participantes);
   c.torneo = crearTorneo(c.partida.modo as EstadoTorneo['modo'], participantes, mesas, c.partida.semilla);
@@ -115,7 +116,7 @@ function humanosActivos(c: ControladorPartida): string[] {
 }
 
 /** ¿Queda algún humano activo sin eliminar? (spec 003, FR-041b; data-model §8.3). */
-export function hayHumanosEnCompeticion(c: ControladorPartida): boolean {
+function hayHumanosEnCompeticion(c: ControladorPartida): boolean {
   return !!c.torneo && humanosEnCompeticion(c.torneo, humanosActivos(c)).length > 0;
 }
 
@@ -311,12 +312,13 @@ export async function fijarModalidades(
   return modalidades;
 }
 
+/** Guarda la última modalidad de simulación elegida por el participante. */
 export function recordarModalidad(c: ControladorPartida, participanteId: string, modalidad: ModoSimulacion): void {
   const participante = c.participante(participanteId);
   if (participante) participante.ultimaModalidad = modalidad;
 }
 
-export type ResultadoSiguienteJornada = { ok: true } | { error: 'JORNADA_ABIERTA' | 'TORNEO_TERMINADO' | 'HAY_VARIOS_HUMANOS' };
+type ResultadoSiguienteJornada = { ok: true } | { error: 'JORNADA_ABIERTA' | 'TORNEO_TERMINADO' | 'HAY_VARIOS_HUMANOS' };
 
 /**
  * «Siguiente jornada» (`POST /api/partidas/:id/siguiente-jornada`, research R9): solo con un humano y con
@@ -412,7 +414,7 @@ async function despuesDePartido(c: ControladorPartida, ctx: ContextoComando, dep
   await abrirSiguienteJornada(c, ctx, deps, torneo);
 }
 
-export type ResultadoSimularResto =
+type ResultadoSimularResto =
   | { ok: true; campeon: { id: string; nombre: string } }
   | { error: 'NO_ELIMINADO' | 'HAY_HUMANOS_EN_COMPETICION' | 'TORNEO_TERMINADO' };
 
@@ -526,7 +528,7 @@ async function pendientesDe(c: ControladorPartida, participanteId: string | unde
  * Lo que comparten las vistas del torneo de todos los humanos, cargado una vez por emisión (spec 010, R7): de
  * cientos de consultas por `torneo.actualizado` a cuatro o cinco.
  */
-export async function datosComunesTorneo(c: ControladorPartida) {
+async function datosComunesTorneo(c: ControladorPartida) {
   const t = c.torneo;
   if (!t) return null;
   const { repoTorneo, repoPartidos, repoVisionados, repoEquipo, economia } = c.servicios;
@@ -551,7 +553,7 @@ export async function vistaTorneo(c: ControladorPartida, participanteId?: string
  * clasificación o cuadro, y campeón. Sus partidos "pendientes de ver" aparecen sin marcador y no cuentan
  * en la clasificación ni en el cuadro. Sin E/S: todo sale de `datos`.
  */
-export async function construirVistaTorneo(c: ControladorPartida, datos: Awaited<ReturnType<typeof datosComunesTorneo>>, participanteId?: string) {
+async function construirVistaTorneo(c: ControladorPartida, datos: Awaited<ReturnType<typeof datosComunesTorneo>>, participanteId?: string) {
   const t = c.torneo;
   const siguiente = soloUnHumano(c.participantes) ? ('manual' as const) : ('automatica' as const);
   const yo = participanteId ? c.participante(participanteId) : undefined;
@@ -664,7 +666,7 @@ export async function construirVistaTorneo(c: ControladorPartida, datos: Awaited
  * Filas de una tabla de goleadores o asistentes para la vista, con el desempate final por nombre y apellidos
  * (FR-042) y las `limite` primeras (todas si es `null`).
  */
-export async function filasTabla(c: ControladorPartida, filas: FilaTabla[], limite: number | null, cargados?: ReadonlyMap<string, Record<number, number> | null>) {
+async function filasTabla(c: ControladorPartida, filas: FilaTabla[], limite: number | null, cargados?: ReadonlyMap<string, Record<number, number> | null>) {
   const { repoEquipo } = c.servicios;
   const catalogo = c.catalogo;
   const dorsales = new Map<string, Record<number, number> | null>();

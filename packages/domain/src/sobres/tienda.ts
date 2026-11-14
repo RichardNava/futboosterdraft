@@ -14,6 +14,7 @@ const MAX_REINTENTOS = 100;
 
 type Carta = Pick<Jugador, 'id' | 'demarcacion' | 'nivel'>;
 
+/** Cartas de un sobre de la tienda entre las que aún no se tienen, con el reparto de niveles del draft. */
 export function generarSobreTienda(disponibles: readonly Carta[], semilla: Semilla, parametros: ParametrosEquilibrado): number[] {
   if (disponibles.length < CARTAS_SOBRE_TIENDA) {
     throw new ErrorPoolInsuficiente(`Quedan ${disponibles.length} cartas por conseguir; un sobre necesita ${CARTAS_SOBRE_TIENDA}`);

@@ -47,7 +47,7 @@ import { Pasarela } from './ws/pasarela';
 import { crearCalculo } from './simulacion/grupo';
 import type { OpcionesLimitador } from './http/limitador';
 
-export interface ConfigServidor {
+interface ConfigServidor {
   db: BaseDatos;
   reloj: Reloj;
   secreto: string;
@@ -81,6 +81,7 @@ export interface Servidor {
   temporizadores: Temporizadores;
 }
 
+/** Servidor completo: base de datos, servicios, gestor de partidas, HTTP y WebSocket. */
 export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   const logger = config.logger ?? crearLogger();
   const metricas = crearMetricas();

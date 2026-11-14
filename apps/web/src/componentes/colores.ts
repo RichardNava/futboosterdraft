@@ -4,11 +4,12 @@
  */
 import { colorDorsal, principal, type Equipacion } from '@fbd/domain';
 
-export interface ColoresChapa {
+interface ColoresChapa {
   principal: string;
   secundario: string;
 }
 
+/** Colores de chapa de una equipación: el principal y el del dorsal. */
 export function coloresDe(e: Equipacion): ColoresChapa {
   return { principal: principal(e), secundario: colorDorsal(e) };
 }

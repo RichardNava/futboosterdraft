@@ -10,7 +10,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import type { Metricas } from './metricas';
 
 export type Operacion = 'apertura' | 'entrega_sobre' | 'eleccion';
-export type Fase = 'cola' | 'calculo' | 'bd' | 'serializacion' | 'difusion';
+type Fase = 'cola' | 'calculo' | 'bd' | 'serializacion' | 'difusion';
 
 const FASES: readonly Fase[] = ['cola', 'calculo', 'bd', 'serializacion', 'difusion'];
 
@@ -77,6 +77,7 @@ export function renombrar(operacion: Operacion): void {
 
 /** Desglose del contexto actual, para atribuirle trabajo que se hace en otro contexto (grupo de aperturas). */
 export type DesgloseActual = Desglose | undefined;
+/** Desglose de la petición en curso, si se está midiendo. */
 export function actual(): DesgloseActual {
   return almacen?.getStore();
 }
@@ -106,6 +107,7 @@ export async function compartido<T>(otros: readonly DesgloseActual[], fn: () => 
   }
 }
 
+/** Suma una consulta a la base de datos al desglose de la petición en curso. */
 export function contarConsulta(): void {
   const d = almacen?.getStore();
   if (d) d.consultas++;

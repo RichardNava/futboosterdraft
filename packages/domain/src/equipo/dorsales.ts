@@ -39,6 +39,7 @@ export const DORSAL_MAXIMO = 99;
 /** Números de la asignación inicial (FR-035). */
 export const DORSALES_INICIALES = 24;
 
+/** Error al asignar dorsales, con su código. */
 export class ErrorDorsales extends Error {
   constructor(
     readonly codigo: 'DORSAL_FUERA_DE_RANGO' | 'JUGADOR_DESCONOCIDO',

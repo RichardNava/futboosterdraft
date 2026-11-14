@@ -50,7 +50,8 @@ const cumpleNiveles = (cartas: readonly Jugador[]) => {
   return n('Superclase') === 4 && n('Crack') === 2 && n('Legendario') >= 1 && n('Legendario') + n('GOAT') === 2;
 };
 
-export function comprobarSC003(mesas: number, semilla: number): Comprobacion {
+/** 006/SC-003: mesas de draft sobre colecciones al azar sin cartas fuera del pool y con sus cupos. */
+function comprobarSC003(mesas: number, semilla: number): Comprobacion {
   const { porId, core, pago } = catalogo();
   const p = parametrosActuales();
   let fuera = 0;
@@ -79,7 +80,8 @@ export function comprobarSC003(mesas: number, semilla: number): Comprobacion {
   };
 }
 
-export function comprobarSC005(sobres: number, semilla: number): Comprobacion {
+/** 006/SC-005: sobres de la tienda sin repetidas, sin cartas ya poseídas y con el reparto de niveles. */
+function comprobarSC005(sobres: number, semilla: number): Comprobacion {
   const { porId, pago } = catalogo();
   const p = parametrosActuales();
   let repetidas = 0;
@@ -103,6 +105,7 @@ export function comprobarSC005(sobres: number, semilla: number): Comprobacion {
   };
 }
 
+/** Comprobaciones de colecciones y tienda (spec 006) para la herramienta. */
 export function gruposColecciones(): GrupoComprobaciones[] {
   return [
     {

@@ -9,13 +9,13 @@
  */
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ElementType, type PointerEvent } from 'react';
 
-export interface PunteroBasico {
+interface PunteroBasico {
   pointerType: string;
   clientX: number;
   clientY: number;
 }
 
-export interface DetectorPulsacion {
+interface DetectorPulsacion {
   bajar(e: PunteroBasico): void;
   mover(e: PunteroBasico): void;
   subir(): void;
@@ -90,6 +90,7 @@ interface Props {
   className?: string;
 }
 
+/** Texto recortado a N líneas con el texto entero como ayuda emergente si no cabe. */
 export function NombreRecortado({ texto, como: Elemento = 'span', lineas = 1, className }: Props) {
   const id = useId().replace(/:/g, '');
   const ref = useRef<HTMLElement>(null);

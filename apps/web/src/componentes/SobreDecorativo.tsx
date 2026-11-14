@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useAspecto } from '../estado/aspecto';
 import { SobreArte } from './arte/SobreArte';
 
+/** Sobre decorativo con el diseño actual de la cuenta. */
 export function SobreDecorativo({ className, rasgado }: { className?: string; rasgado?: boolean }) {
   const diseno = useAspecto((s) => s.aspecto?.sobreActual);
   useEffect(() => {

@@ -4,7 +4,7 @@ import {
   CASILLA_CENTRAL,
   CLAVES_STATS,
   FORMACIONES,
-  PARAMETROS_V3,
+  PARAMETROS_V7,
   proponerLanzadores,
   Rng,
   semillaDesdeTexto,
@@ -27,7 +27,7 @@ const DEM: Record<Posicion, Demarcacion> = {
 
 let id = 1;
 
-export function jugador(posicion: Posicion, valor = 80, virtudes: Virtud[] = []): Jugador {
+function jugador(posicion: Posicion, valor = 80, virtudes: Virtud[] = []): Jugador {
   const demarcacion = DEM[posicion];
   const stats = Object.fromEntries(CLAVES_STATS[demarcacion].map((c) => [c, valor])) as unknown as Jugador['stats'];
   return {
@@ -74,8 +74,8 @@ export function equipo(
 
 export function entrada(semilla: string, cambios: Partial<EntradaPartido> = {}): EntradaPartido {
   return {
-    version: PARAMETROS_V3.version,
-    parametros: PARAMETROS_V3,
+    version: PARAMETROS_V7.version,
+    parametros: PARAMETROS_V7,
     semilla: semillaDesdeTexto(semilla),
     eliminatoria: false,
     local: equipo('local'),

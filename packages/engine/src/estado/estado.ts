@@ -154,6 +154,11 @@ export interface AccionEnCurso {
 export interface EstadoEspacio {
   jugadores: Record<number, PosicionMovil>;
   balon: { x: number; y: number; z: number };
+  /**
+   * Velocidad del balón en el último tick (décimas por tick, enteras; spec 014, research R1). Un balón suelto la
+   * conserva y frena con `espacio.rozamientoSuelto`; pegado a un jugador, es la de ese jugador.
+   */
+  velocidadBalon: { x: number; y: number };
   accion: AccionEnCurso | null;
   /** Puntos a los que deben llegar algunos jugadores: el receptor de un pase, el que conduce. */
   destinos: Record<number, { x: number; y: number }>;
@@ -168,6 +173,8 @@ export interface EstadoEspacio {
   presion: { lado: Lado | null; presionadores: number[]; coordinada: boolean };
   /** Tiempo de parada de la última interrupción, que se consume al recolocar el balón. */
   paradaPendiente: number;
+  /** El siguiente pase sale de un saque de banda o de puerta: no hay fuera de juego (spec 014, FR-009). */
+  sinFueraDeJuego?: boolean;
 }
 
 /** Posesión en curso, para las estadísticas de secuencias, paredes y contraataques (research R4). */
@@ -177,8 +184,11 @@ export interface EstadoPosesion {
   pases: number;
   /** La posesión empezó en el campo propio (para contar contraataques). */
   enCampoPropio: boolean;
-  /** Último pase completado de esta posesión, para detectar paredes (A → B → A). */
-  ultimoPase: { de: number; a: number } | null;
+  /**
+   * Último pase completado de esta posesión, para detectar paredes (A → B → A). `avance`: x ganada por el pase en
+   * décimas; `racha`: pases seguidos entre los mismos dos sin presión ni avance (spec 014, research R3).
+   */
+  ultimoPase: { de: number; a: number; avance?: number; racha?: number } | null;
 }
 
 export interface EstadoMotor {
@@ -223,8 +233,9 @@ export interface EstadoMotor {
 
 export const DURACION_PARTE = 45 * 60;
 export const DURACION_PARTE_PRORROGA = 15 * 60;
-export const MAX_SUSTITUCIONES = 5;
+const MAX_SUSTITUCIONES = 5;
 
+/** El otro lado. */
 export const rival = (lado: Lado): Lado => (lado === 'local' ? 'visitante' : 'local');
 
 function estadisticasVacias(): EstadisticasEquipo {
@@ -340,6 +351,7 @@ export function anclaDeCasilla(formacion: FormacionId, casillaId: string | null)
   return c ? { x: c.zona.x, y: c.zona.y } : undefined;
 }
 
+/** Estado inicial de un partido (saque de centro); lanza `VersionNoSoportada` con parámetros que el motor ya no simula. */
 export function crearPartido(entrada: EntradaPartido): EstadoMotor {
   // El motor de la spec 003 no puede volver a simular partidos de los parámetros 1.x ni 2.x (research R2).
   if (versionMayor(entrada.parametros.version) < VERSION_MAYOR_SOPORTADA || versionMayor(entrada.version) < VERSION_MAYOR_SOPORTADA) {
@@ -369,6 +381,7 @@ export function crearPartido(entrada: EntradaPartido): EstadoMotor {
     espacio: {
       jugadores: {},
       balon: { x: 5000, y: 3200, z: 0 },
+      velocidadBalon: { x: 0, y: 0 },
       accion: null,
       destinos: {},
       objetivos: {},
@@ -384,22 +397,8 @@ export function crearPartido(entrada: EntradaPartido): EstadoMotor {
   return estado;
 }
 
-export function enCampo(e: EquipoEstado): JugadorEnPartido[] {
-  return e.jugadores.filter((j) => j.enCampo);
-}
 
-export function banquillo(e: EquipoEstado): JugadorEnPartido[] {
-  return e.jugadores.filter((j) => !j.enCampo && !j.retirado);
-}
-
-export function jugadorEn(estado: EstadoMotor, id: number): { equipo: EquipoEstado; j: JugadorEnPartido } | undefined {
-  for (const lado of ['local', 'visitante'] as const) {
-    const j = estado.equipos[lado].jugadores.find((x) => x.id === id);
-    if (j) return { equipo: estado.equipos[lado], j };
-  }
-  return undefined;
-}
-
+/** Sustituciones máximas del partido en este momento (una más con prórroga). */
 export function maxSustituciones(estado: EstadoMotor): number {
   return MAX_SUSTITUCIONES + (estado.reloj.parte >= 3 || estado.fase === 'pre_prorroga' ? 1 : 0);
 }

@@ -17,6 +17,7 @@ export interface Metricas {
   operacionConsultas: Summary<'operacion'>;
 }
 
+/** Métricas de Prometheus del servidor. */
 export function crearMetricas(): Metricas {
   const registro = new Registry();
   collectDefaultMetrics({ register: registro });

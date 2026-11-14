@@ -20,6 +20,7 @@ interface Props {
   onCerrar: () => void;
 }
 
+/** Ficha de una carta de la colección: activa, desfragmentar y colecciones a las que pertenece. */
 export function FichaCartaColeccion({ carta, nombresColecciones, motivoMinimo, onCambiarActiva, onDesfragmentar, onCerrar }: Props) {
   const [confirmando, setConfirmando] = useState(false);
   const [enviando, setEnviando] = useState(false);

@@ -3,14 +3,15 @@
  * progresiva. Incansable ralentiza el del propio jugador; un Motivador en el campo, el de sus
  * compañeros. Presión alta y marcaje individual aceleran el desgaste.
  */
-import { minutoDeJuego, type EquipoEstado, type EstadoMotor } from '../estado/estado';
+import { minutoDeJuego, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } from '../estado/estado';
 import { factorCansancio, fatigado } from './defectos';
 import { tiene } from './virtudes';
 
 /** Minuto de juego en que empieza la segunda parte: el inicio del cansancio de un Fatigado (spec 005). */
 const INICIO_SEGUNDA_PARTE = 45;
 
-export function minutoInicioCansancio(estado: EstadoMotor, equipo: EquipoEstado): number {
+/** Minuto en que empieza el cansancio general del equipo (antes con Presión alta). */
+function minutoInicioCansancio(estado: EstadoMotor, equipo: EquipoEstado): number {
   const c = estado.parametros.cansancio;
   return equipo.tactica.alturaBloque === 'presion_alta' ? c.inicioMinPresionAlta : c.inicioMin;
 }
@@ -34,6 +35,15 @@ export function acumularCansancio(estado: EstadoMotor, equipo: EquipoEstado, seg
     let r = ritmo * factorCansancio(estado, j);
     if (tiene(j, 'Incansable')) r *= p.cansancio.factorIncansable;
     if (motivadores - (tiene(j, 'Motivador') ? 1 : 0) > 0) r *= p.cansancio.factorMotivador;
-    j.cansancio = Math.min(0.6, j.cansancio + (r * segundos) / 60);
+    j.cansancio = Math.min(p.cansancio.maximo!, j.cansancio + (r * segundos) / 60);
   }
+}
+
+/**
+ * Energía (0–100) y penalización de rendimiento (% que pierden sus stats) de un jugador (spec 014, data-model §2.2): la
+ * única fuente de la energía que pinta la interfaz.
+ */
+export function energiaDe(estado: EstadoMotor, jugador: JugadorEnPartido): { energia: number; penalizacion: number } {
+  const maximo = estado.parametros.cansancio.maximo!;
+  return { energia: Math.round(100 * (1 - jugador.cansancio / maximo)), penalizacion: Math.round(100 * jugador.cansancio) };
 }

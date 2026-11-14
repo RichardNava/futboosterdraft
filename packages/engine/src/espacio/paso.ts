@@ -12,6 +12,7 @@ import { moverJugadores, PASO_MOVIMIENTO } from './movimiento';
 /** Ticks entre dos cálculos de los objetivos de forma (cambian despacio: siguen al bloque y al balón). */
 const PASO_OBJETIVOS = 4;
 
+/** Un tick de la capa espacial: objetivos de forma, movimiento de los jugadores y del balón. */
 export function pasoEspacial(estado: EstadoMotor): void {
   const esp = estado.espacio;
   if (estado.tick % PASO_MOVIMIENTO === 0) {

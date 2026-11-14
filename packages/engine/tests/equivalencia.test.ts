@@ -14,7 +14,7 @@ import {
   type EventoPartido,
   type ResultadoTramo,
 } from '../src/index';
-import { DEFECTOS, PARAMETROS_V4 } from '@fbd/domain';
+import { DEFECTOS, PARAMETROS_V7 } from '@fbd/domain';
 import { entrada, equipo } from './ayudas';
 
 const SEMILLAS = 200;
@@ -93,7 +93,7 @@ function entradaConDefectos(semilla: string): EntradaPartido {
     t.jugador = { ...t.jugador, defectos: [DEFECTOS[i % DEFECTOS.length]!, DEFECTOS[(i + 7) % DEFECTOS.length]!] };
   });
   for (const eq of [local, visitante]) eq.suplentes = eq.suplentes.map((j, i) => ({ ...j, defectos: [DEFECTOS[(i * 2) % DEFECTOS.length]!] }));
-  return entrada(semilla, { version: PARAMETROS_V4.version, parametros: PARAMETROS_V4, local, visitante });
+  return entrada(semilla, { version: PARAMETROS_V7.version, parametros: PARAMETROS_V7, local, visitante });
 }
 
 describe('equivalencia entre modalidades con defectos (spec 005, T042; FR-041)', () => {

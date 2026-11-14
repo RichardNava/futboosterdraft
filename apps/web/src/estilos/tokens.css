@@ -52,6 +52,16 @@
   --color-error: #ff7a6b;
 
   /*
+   * Energía de los jugadores en «Gestionar equipo» (spec 014, FR-016): de verde a rojo por tramos. Información de juego,
+   * siempre junto a la cara y el porcentaje (FR-020). La aplicación tiene un único tema oscuro: sin variante clara.
+   */
+  --energia-fresco: #4be08a;
+  --energia-bien: #b4ec6a;
+  --energia-medio: #ffd84a;
+  --energia-cansado: #ff9f43;
+  --energia-agotado: #ff5a5a;
+
+  /*
    * Defectos de las cartas (spec 005, FR-021; excepción de color de información de juego, 004/FR-003): rojo de juego,
    * distinto del error, sobre un recuadro oscuro propio para que contraste en cartas claras y oscuras. Siempre con el
    * icono «defecto» delante.
@@ -199,6 +209,14 @@
   /* Degradados de las piezas protagonistas */
   --degradado-accion: linear-gradient(180deg, #c9ff5c 0%, #b7ff2c 55%, #a6ef1c 100%);
   --degradado-oro: linear-gradient(180deg, #ffe39a 0%, #f3c552 45%, #b9861a 100%);
+  /* Botón premium (spec 013, ronda 4): canto, texto y destello que lo cruza. */
+  --color-oro-claro: #ffe39a;
+  --color-oro-texto: #1a1200;
+  --destello-boton: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 70%) 50%, transparent 70%);
+  --sombra-oro-suave: 0 0 24px var(--color-oro-tenue);
+  /* Deslizador por tramos (spec 013, ronda 2): pista hundida y pulgar con halo de acción. */
+  --sombra-pista: inset 0 1px 2px rgb(0 0 0 / 50%);
+  --resplandor-pulgar: 0 0 0 2px var(--color-accion), 0 0 18px var(--color-accion);
   --degradado-panel-destacado: linear-gradient(135deg, rgb(183 255 44 / 10%), rgb(183 255 44 / 0%) 45%), linear-gradient(180deg, rgb(23 50 38 / 92%), rgb(12 28 21 / 92%));
 
   /* Medidas */

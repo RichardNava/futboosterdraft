@@ -11,13 +11,12 @@ export type FilaPartido = typeof partidos.$inferSelect;
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
-export type ResumenPartido = Pick<FilaPartido, 'id' | 'jornadaNumero' | 'localId' | 'visitanteId' | 'marcador' | 'estado' | 'resolucion' | 'tipo'>;
-
-export type Resolucion = 'directo' | 'apertura' | 'plazo' | 'npc';
+type ResumenPartido = Pick<FilaPartido, 'id' | 'jornadaNumero' | 'localId' | 'visitanteId' | 'marcador' | 'estado' | 'resolucion' | 'tipo'>;
 
 /** Derivado de la spec 001 que se conserva en las vistas: el partido se resolvió al vencer el plazo. */
 export const resueltoAutomaticamente = (p: Pick<FilaPartido, 'resolucion'>): boolean => p.resolucion === 'plazo';
 
+/** Partidos del torneo: entrada, decisiones, resultado y estado. */
 export class RepoPartidos {
   constructor(private readonly db: BaseDatos) {}
 
@@ -71,6 +70,7 @@ export class RepoPartidos {
     return new Map(r.rows.map((f) => [f.id, f.modalidades]));
   }
 
+  /** Partido por id. */
   async obtener(id: string): Promise<FilaPartido | undefined> {
     return (await this.db.select().from(partidos).where(eq(partidos.id, id)).limit(1))[0];
   }
@@ -96,6 +96,7 @@ export class RepoPartidos {
       .orderBy(asc(partidos.jornadaNumero), asc(partidos.id));
   }
 
+  /** Actualiza campos de un partido. */
   async actualizar(id: string, cambios: Partial<Omit<FilaPartido, 'id'>>, ejecutor: Ejecutor = this.db): Promise<void> {
     await ejecutor.update(partidos).set(cambios).where(eq(partidos.id, id));
   }

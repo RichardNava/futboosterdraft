@@ -13,6 +13,7 @@ interface Props {
   onCambiar: (activa: boolean) => Promise<void>;
 }
 
+/** Interruptor para activar o desactivar una carta, con el motivo si el mínimo lo impide. */
 export function InterruptorActiva({ carta, motivoMinimo, onCambiar }: Props) {
   const [enviando, setEnviando] = useState(false);
   const bloqueado = carta.activa && motivoMinimo !== null;

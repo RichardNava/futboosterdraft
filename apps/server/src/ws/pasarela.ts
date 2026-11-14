@@ -26,9 +26,9 @@ export interface ContextoConexion {
   usuario: UsuarioSesion;
 }
 
-export type ResultadoComando = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
+type ResultadoComando = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
 
-export interface Manejador<T> {
+interface Manejador<T> {
   esquema: ZodType<T>;
   /** `true` si el mensaje cambia estado: lleva requestId, se deduplica y se responde con ack. */
   conAck: boolean;
@@ -61,6 +61,7 @@ export interface OpcionesPasarela {
 const MensajeEntrante = z.object({ t: z.string().min(1) }).passthrough();
 const ConRequestId = z.object({ requestId: z.string().uuid() }).passthrough();
 
+/** Conexiones WebSocket por partida y participante: recibe comandos y difunde mensajes. */
 export class Pasarela implements Difusor {
   /** partidaId → participanteId → sockets abiertos (una persona puede tener varias pestañas). */
   private readonly conexiones = new Map<string, Map<string, Set<WebSocket>>>();
@@ -72,10 +73,12 @@ export class Pasarela implements Difusor {
     this.limitador = new Limitador(opciones.limite ?? LIMITE_WS);
   }
 
+  /** Manejador de un tipo de mensaje entrante. */
   registrarManejador<T>(tipo: string, manejador: Manejador<T>): void {
     this.manejadores.set(tipo, manejador as Manejador<unknown>);
   }
 
+  /** Envía un mensaje a todos los participantes de la partida o a uno. */
   enviar(partidaId: string, salida: MensajeSaliente): void {
     const porParticipante = this.conexiones.get(partidaId);
     if (!porParticipante) return;
@@ -89,6 +92,7 @@ export class Pasarela implements Difusor {
     });
   }
 
+  /** El participante tiene alguna conexión abierta a la partida. */
   estaConectado(partidaId: string, participanteId: string): boolean {
     return (this.conexiones.get(partidaId)?.get(participanteId)?.size ?? 0) > 0;
   }
@@ -102,6 +106,7 @@ export class Pasarela implements Difusor {
     });
   }
 
+  /** Ruta `/ws` de Fastify que abre las conexiones. */
   registrarRuta(app: FastifyInstance): void {
     app.get<{ Querystring: { partidaId?: string } }>('/ws', { websocket: true }, async (socket, req) => {
       const partidaId = req.query.partidaId;

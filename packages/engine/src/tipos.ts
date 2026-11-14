@@ -151,6 +151,21 @@ export interface MetricasJugador {
   golesCabeza: number;
   /** Goles marcados (sin los de propia puerta). */
   goles: number;
+  /** Spec 014 (SC-005): fueras de juego pitados y los que no cumplen x infractor > x penúltimo y > x balón (deben ser 0). */
+  fuerasDeJuego: number;
+  fuerasDeJuegoIncoherentes: number;
+  /** Spec 014 (SC-002): mano a mano, los que empiezan a distancia de disparo, y de estos los que acaban en tiro o pase atrás. */
+  manoAMano: number;
+  manoAManoDisparo: number;
+  manoAManoTiro: number;
+  manoAManoPaseAtras: number;
+  /** Spec 014 (SC-003): secuencias A → B → A → B sin presión ni avance (se anotan al pasador del cuarto pase). */
+  idasVueltas: number;
+  /** Spec 014 (SC-008): duelos defensivos frente a un regate o una conducción, conducciones ganadas y balones sueltos. */
+  entradas: number;
+  conduccionesGanadas: number;
+  sueltosDisputados: number;
+  sueltosGanados: number;
 }
 
 export interface Estadisticas {

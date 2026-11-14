@@ -49,6 +49,7 @@ const PRECIOS: Record<Tipo, { centimos: number; fragmentos: number; pack: number
   sobre: { centimos: 50, fragmentos: 250, pack: 199 },
 };
 
+/** Texto en minúsculas, sin tildes y con guiones, para nombres de fichero. */
 export function slug(texto: string): string {
   return texto
     .normalize('NFKD')

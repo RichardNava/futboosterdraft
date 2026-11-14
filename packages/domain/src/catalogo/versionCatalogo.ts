@@ -12,6 +12,7 @@ export const VERSION_CATALOGO_ACTUAL = 2;
 /** Virtudes que no existían en la versión 1 del catálogo. */
 export const VIRTUDES_NUEVAS_005: readonly Virtud[] = ['DeAcero', 'Versatil', 'FairPlayer', 'Revulsivo'];
 
+/** La carta como era en una versión anterior del catálogo (sin las virtudes nuevas de la 005 ni defectos). */
 export function cartaEnVersion<J extends Jugador>(jugador: J, version: number): J {
   if (version >= VERSION_CATALOGO_ACTUAL) return jugador;
   return { ...jugador, virtudes: jugador.virtudes.filter((v) => !VIRTUDES_NUEVAS_005.includes(v)), defectos: [] };

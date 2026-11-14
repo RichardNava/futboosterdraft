@@ -2,7 +2,7 @@
  * Distancia, zona y tipo de los remates y estadísticas de pases y tiros nuevas (spec 003, research R11;
  * data-model §7.2 y §7.3; contracts/engine-api.md; T016).
  */
-import { aportacionesDePartido, PARAMETROS_V3 } from '@fbd/domain';
+import { aportacionesDePartido, PARAMETROS_V7 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { avanzar, crearPartido, type EstadisticasEquipo, type ResultadoTramo } from '../src/index';
 import { entrada } from './ayudas';
@@ -48,7 +48,7 @@ describe('eventos de tiro y gol (T016)', () => {
   });
 
   it('un gol en propia puerta no suma goles ni asistencias al defensor que lo marca', () => {
-    const q = structuredClone(PARAMETROS_V3);
+    const q = structuredClone(PARAMETROS_V7);
     q.tiro.autogol.desvio = 0.5;
     let vistos = 0;
     for (let i = 0; i < 6; i++) {

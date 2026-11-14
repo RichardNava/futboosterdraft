@@ -7,7 +7,8 @@
  * - **Pase largo** solo con motivo táctico (R4): cambio de orientación, espalda, salida bajo presión, despeje o
  *   transición; sin motivo, ×`pases.factorSinMotivo`.
  * - **Tiro** por distancia y ángulo reales (R6): una única acción `tiro` con `pesoTiro`.
- * - **Stats** (R9): `factorStat` acotado, y solo cuando la situación permite la acción.
+ * - **Stats** (R9): `factorStat` acotado, y solo cuando la situación permite la acción (spec 014: el remate también en el
+ *   área y el físico en toda conducción).
  * - **Virtudes** (R10): Desbordante regatea más por banda.
  * - **Defectos** (spec 005): un Chupón pasa la mitad.
  *
@@ -23,11 +24,9 @@ import { factorPase } from '../modificadores/defectos';
 import { tiene } from '../modificadores/virtudes';
 import { esPortero, holgura } from './contexto';
 import { pesoTiro } from './pesoTiro';
-import { distanciaASegmento } from './receptor';
+import { distanciaASegmento, LIBRE, RIVAL_ENCIMA } from './receptor';
 
-/** Rival encima (6 m), compañero libre (3 m), nadie en la línea de tiro (3 m) y el cono de ±30° (tan 30° ≈ 0,577). */
-const RIVAL_ENCIMA = 571;
-const LIBRE = 286;
+/** Nadie en la línea de tiro (3 m) y el cono de ±30° (tan 30° ≈ 0,577); rival encima y libre, los de `receptor`. */
 const LINEA_TIRO = 286;
 const TAN30_MILESIMAS = 577;
 /** Hasta dónde se mide el espacio libre por delante: 25 m. */
@@ -59,6 +58,7 @@ export interface Entorno {
   cercaRemate: number;
 }
 
+/** Lo que ve el portador (rivales, compañeros, presión, espacio y remate), o `null` si no está en el campo. */
 export function entorno(estado: EstadoMotor, atacante: EquipoEstado, portador: JugadorEnPartido): Entorno | null {
   const q = estado.espacio.jugadores[portador.id];
   if (!q) return null;
@@ -155,16 +155,17 @@ export function porteroAdelantado(estado: EstadoMotor, atacante: EquipoEstado, e
 }
 
 /** Peso de tirar desde la posición del portador (research R6), sin los factores de stat. */
-export function pesoTiroDesde(estado: EstadoMotor, atacante: EquipoEstado, en: Entorno): number {
+function pesoTiroDesde(estado: EstadoMotor, atacante: EquipoEstado, en: Entorno): number {
   return pesoTiro(estado.parametros, distanciaPorteria(en.yo), anguloTiro(en.yo), porteroAdelantado(estado, atacante, en));
 }
 
 /** Nadie a 3 m o menos de la línea entre el tirador y el centro de la portería. */
-export function lineaDeTiroDespejada(en: Entorno): boolean {
+function lineaDeTiroDespejada(en: Entorno): boolean {
   const porteria = { x: 10000, y: 3200 };
   return !en.rivales.some((r) => !esPortero(r.j) && distanciaASegmento(r.p, en.yo, porteria) <= LINEA_TIRO);
 }
 
+/** Pesos de cada acción del portador: los de zona y táctica ajustados con el espacio real y sus stats (R4–R10). */
 export function pesosConEspacio(
   estado: EstadoMotor,
   atacante: EquipoEstado,
@@ -216,7 +217,8 @@ export function pesosConEspacio(
   let tiro = pesoTiroDesde(estado, atacante, en);
   if (tiro > 0) {
     const despejada = lineaDeTiroDespejada(en);
-    if (!enAreaRival(en.yo) && anguloTiro(en.yo) >= p.tiro.anguloReducidoGrados && despejada) tiro *= factorStat(attr('remate'), f.remate) / 1000;
+    // Spec 014 (US5, T051): el remate pesa en cualquier tiro posible, también dentro del área o con la línea tapada.
+    tiro *= factorStat(attr('remate'), f.remate) / 1000;
     // Las formaciones ofensivas buscan más el tiro; con la línea tapada, se tira menos.
     tiro *= (1 + 0.35 * ofensividad(atacante)) * (despejada ? 1.2 : 0.6);
     salida.push(['tiro', Math.round(tiro)]);

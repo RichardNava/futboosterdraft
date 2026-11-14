@@ -4,6 +4,7 @@
  */
 import type { KeyboardEvent } from 'react';
 
+/** Navegación con flechas, Inicio y Fin entre pestañas (patrón ARIA). */
 export function alTeclaPestanas(e: KeyboardEvent<HTMLElement>): void {
   const pestanas = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]'));
   const actual = pestanas.indexOf(e.target as HTMLElement);

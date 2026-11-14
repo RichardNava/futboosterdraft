@@ -25,7 +25,7 @@ export function TituloLetras({ texto = '¡GOL!' }: { texto?: string }) {
   );
 }
 
-export type ClaseParticula = 'confeti' | 'serpentina' | 'chispa' | 'tiza' | 'flash';
+type ClaseParticula = 'confeti' | 'serpentina' | 'chispa' | 'tiza' | 'flash';
 
 /**
  * Partículas de una clase. `confeti` y `chispa` salen disparadas desde el centro y caen; `serpentina` y `tiza` caen

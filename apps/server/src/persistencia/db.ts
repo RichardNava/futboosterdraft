@@ -17,8 +17,9 @@ export interface ConexionBD {
  * Conexiones simultáneas a PostgreSQL. Cada partida escribe desde su actor; con 100 partidas activas
  * (SC-017), 10 conexiones hacían esperar a los comandos (T140). Se ajusta con `DB_POOL_MAX`.
  */
-export const POOL_POR_DEFECTO = 25;
+const POOL_POR_DEFECTO = 25;
 
+/** Conexión a PostgreSQL con su pool y Drizzle. */
 export function conectar(url: string): ConexionBD {
   const pool = new pg.Pool({ connectionString: url, max: Number(process.env.DB_POOL_MAX ?? POOL_POR_DEFECTO) });
   medirConsultas(pool);
@@ -48,6 +49,7 @@ function medirConsultas(pool: pg.Pool): void {
   }) as typeof pool.connect;
 }
 
+/** `DATABASE_URL`; lanza si no está definida. */
 export function urlBaseDatos(): string {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error('Falta la variable de entorno DATABASE_URL (ver .env.example)');

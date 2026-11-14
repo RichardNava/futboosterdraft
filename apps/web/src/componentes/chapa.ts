@@ -10,13 +10,14 @@ import { coloresDe } from './colores';
 
 export type Lado = 'local' | 'visitante';
 
-export interface LadoChapa {
+interface LadoChapa {
   color: string;
   escudo: string | null;
 }
 
 const lisa = (color: string): Equipacion => ({ diseno: 'lisa', colores: [color] }) as Equipacion;
 
+/** Chapa de cada equipo (escudo y color); sin escudos, círculos de colores que no se confundan entre sí. */
 export function chapasDelPartido(
   equipaciones: Record<Lado, Equipacion>,
   escudos?: { local: string | null; visitante: string | null } | null,

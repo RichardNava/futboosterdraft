@@ -12,7 +12,8 @@ export type Metricas = Record<number, MetricasJugador>;
 
 const acumuladas = new WeakMap<EstadoMotor, Metricas>();
 
-export function metricasVacias(): MetricasJugador {
+/** Contadores de un jugador a cero. */
+function metricasVacias(): MetricasJugador {
   return {
     regates: 0,
     regatesGanados: 0,
@@ -30,6 +31,17 @@ export function metricasVacias(): MetricasJugador {
     golesFalta: 0,
     golesCabeza: 0,
     goles: 0,
+    fuerasDeJuego: 0,
+    fuerasDeJuegoIncoherentes: 0,
+    manoAMano: 0,
+    manoAManoDisparo: 0,
+    manoAManoTiro: 0,
+    manoAManoPaseAtras: 0,
+    idasVueltas: 0,
+    entradas: 0,
+    conduccionesGanadas: 0,
+    sueltosDisputados: 0,
+    sueltosGanados: 0,
   };
 }
 

@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import type { BaseDatos } from '../persistencia/db';
 import type { Metricas } from './metricas';
 
+/** Rutas `/healthz` y `/metrics`. */
 export function registrarRutasObservabilidad(app: FastifyInstance, db: BaseDatos, metricas: Metricas): void {
   app.get('/healthz', async (_req, reply) => {
     try {

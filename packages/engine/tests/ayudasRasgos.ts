@@ -1,9 +1,9 @@
-/** Partidos de prueba con los parámetros 4.0.0 de la spec 005 (rasgos activos). */
-import { PARAMETROS_V4, type ParametrosEquilibrado } from '@fbd/domain';
+/** Partidos de prueba con los parámetros actuales (7.0.0; rasgos de la spec 005 activos). */
+import { PARAMETROS_V7, type ParametrosEquilibrado } from '@fbd/domain';
 import { crearPartido, type EstadoMotor } from '../src/index';
 import { entrada } from './ayudas';
 
-export const P4 = PARAMETROS_V4;
+export const P4 = PARAMETROS_V7;
 
 /** Copia de unos parámetros con cambios (probabilidades forzadas). */
 export function conParametros(cambios: (q: ParametrosEquilibrado) => void, base: ParametrosEquilibrado = P4): ParametrosEquilibrado {
@@ -12,7 +12,7 @@ export function conParametros(cambios: (q: ParametrosEquilibrado) => void, base:
   return q;
 }
 
-/** Partido recién creado con unos parámetros (4.0.0 por defecto). */
+/** Partido recién creado con unos parámetros (7.0.0 por defecto). */
 export function partido4(semilla: string, q: ParametrosEquilibrado = P4): EstadoMotor {
   return crearPartido(entrada(semilla, { version: q.version, parametros: q }));
 }

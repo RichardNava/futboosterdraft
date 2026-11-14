@@ -5,7 +5,7 @@ import { goleadoresDe } from './goleadores';
 import { Marcador, type EquipoMarcador } from './Marcador';
 import { ResumenEventos, type EventoVista } from './ResumenEventos';
 
-export type MarcadorFinal = { local: number; visitante: number; penaltis?: { local: number; visitante: number } };
+type MarcadorFinal = { local: number; visitante: number; penaltis?: { local: number; visitante: number } };
 
 interface Props {
   partidaId: string;

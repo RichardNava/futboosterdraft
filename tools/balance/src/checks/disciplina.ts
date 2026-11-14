@@ -5,7 +5,7 @@
  * (directas más doble amarilla), penaltis y lesiones, frente a sus objetivos ±20 %. El detalle muestra «actual 3.0.0 /
  * medido / objetivo» para cada magnitud.
  */
-import { PARAMETROS_V3, parametrosActuales } from '@fbd/domain';
+import { parametrosActuales } from '@fbd/domain';
 import type { GrupoComprobaciones } from '../cli';
 import { serieCore } from '../core';
 import { clonar, equipoSintetico } from '../equipos';
@@ -13,12 +13,13 @@ import { serie, type ResultadoSerie } from '../series';
 import type { Comprobacion } from './partido';
 
 /** Objetivos por partido de FR-071. */
-export const OBJETIVOS_DISCIPLINA = { amarillas: 4, rojas: 0.2, penaltis: 0.35, lesiones: 0.35 } as const;
+const OBJETIVOS_DISCIPLINA = { amarillas: 4, rojas: 0.2, penaltis: 0.35, lesiones: 0.35 } as const;
 const TOLERANCIA = 0.2;
 
 type Magnitud = keyof typeof OBJETIVOS_DISCIPLINA;
 
-export function frecuencias(r: ResultadoSerie): Record<Magnitud, number> {
+/** Amarillas, rojas, penaltis y lesiones por partido de una serie (los dos equipos). */
+function frecuencias(r: ResultadoSerie): Record<Magnitud, number> {
   const suma = (f: (e: ResultadoSerie['estadisticasA'][number]) => number) =>
     (r.estadisticasA.reduce((a, e) => a + f(e), 0) + r.estadisticasB.reduce((a, e) => a + f(e), 0)) / Math.max(1, r.n);
   return {
@@ -43,18 +44,21 @@ function comprobacion(id: string, nombre: string, medido: Record<Magnitud, numbe
   };
 }
 
-export function comprobarSC011Sintetica(n: number, semilla: number): Comprobacion {
+/** 005/SC-011 en la serie sintética con los parámetros actuales. */
+function comprobarSC011Sintetica(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'disciplina-005' });
   const rival = clonar(base, 'b');
+  // Desde la 7.0.0 (spec 014, research R14) la 3.0.0 ya no se simula: sin columna «actual».
   const medido = frecuencias(serie(base, rival, n, semilla, 'disciplina-005', { parametros: parametrosActuales() }));
-  const actual = frecuencias(serie(base, rival, n, semilla, 'disciplina-005', { parametros: PARAMETROS_V3 }));
-  return comprobacion('005/SC-011', `Serie sintética, parámetros ${parametrosActuales().version}`, medido, actual);
+  return comprobacion('005/SC-011', `Serie sintética, parámetros ${parametrosActuales().version}`, medido, null);
 }
 
-export function comprobarSC011Core(n: number, semilla: number): Comprobacion {
+/** 005/SC-011b en la serie Core (plantillas draftadas por NPC). */
+function comprobarSC011Core(n: number, semilla: number): Comprobacion {
   return comprobacion('005/SC-011b', `Serie Core (NPC avanzados), parámetros ${parametrosActuales().version}`, frecuencias(serieCore(n, semilla).serie), null);
 }
 
+/** Comprobaciones de disciplina y lesiones (spec 005) para la herramienta. */
 export function gruposDisciplina(): GrupoComprobaciones[] {
   return [
     { ids: ['005/SC-011'], serie: 'sintetica', ejecutar: (o) => [comprobarSC011Sintetica(o.n, o.seed)] },

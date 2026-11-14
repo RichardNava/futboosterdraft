@@ -40,6 +40,7 @@ export const PARAMETROS_ECONOMIA: Readonly<ParametrosEconomia> = {
  */
 export const VENTA_CARTAS_CON_DINERO = false;
 
+/** Fragmentos que da desfragmentar una carta de ese nivel. */
 export function valorDesfragmentar(nivel: Nivel, p: Readonly<ParametrosEconomia> = PARAMETROS_ECONOMIA): number {
   return p.desfragmentar[nivel];
 }

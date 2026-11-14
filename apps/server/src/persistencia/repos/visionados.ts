@@ -9,8 +9,9 @@ import { partidos, visionados } from '../esquema/index';
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
-export type EstadoVisionado = 'pendiente' | 'visto' | 'revelado';
+type EstadoVisionado = 'pendiente' | 'visto' | 'revelado';
 
+/** Hasta dónde ha visto cada participante cada partido. */
 export class RepoVisionados {
   constructor(private readonly db: BaseDatos) {}
 
@@ -36,6 +37,7 @@ export class RepoVisionados {
     return filas.length > 0;
   }
 
+  /** Estado del visionado de un partido por un participante. */
   async estado(partidoId: string, participanteId: string): Promise<EstadoVisionado | null> {
     const fila = (
       await this.db

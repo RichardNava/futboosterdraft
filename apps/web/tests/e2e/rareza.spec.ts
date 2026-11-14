@@ -55,3 +55,18 @@ test('ronda 4: en restringido y sin pase, la rareza se ve bloqueada en Moderado 
   await page.keyboard.press('ArrowRight');
   await expect(seccion.getByRole('slider')).toHaveAttribute('aria-valuetext', /^Alto\./);
 });
+
+test('sin fragmentos suficientes, pulsar el precio no desbloquea y avisa', async ({ page }) => {
+  const niveles = ['pobre', 'escaso', 'moderado', 'abundante', 'rico'].map((nivel) =>
+    nivel === 'moderado' ? { nivel, estado: 'gratis', coste: 0 } : { nivel, estado: 'pago', coste: 100 },
+  );
+  await page.route('**/api/partidas/niveles-rareza', (r) =>
+    r.fulfill({ contentType: 'application/json', body: JSON.stringify({ acceso: 'restringido', premium: { activo: false, cortesia: false, fin: null }, saldo: 40, niveles }) }),
+  );
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Jugar como invitado' }).click();
+  const seccion = page.getByRole('group', { name: 'Rareza del draft' });
+  await seccion.getByRole('button', { name: /100 fragmentos: desbloquear/ }).click();
+  await expect(page.getByText('No dispones de los fragmentos necesarios')).toBeVisible();
+  await expect(seccion.getByRole('img', { name: 'Rareza bloqueada' })).toBeVisible();
+});

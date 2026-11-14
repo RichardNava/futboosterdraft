@@ -21,6 +21,7 @@ const DETALLE =
   'En control total, cada uno detiene el partido y se abre «Gestionar equipo» para que decidas tú. ' +
   'Solo en la simulación 2D; puedes cambiar de modo en cualquier momento.';
 
+/** Elección entre «control total» y resolución automática de lesiones y expulsiones. */
 export function SelectorModoIncidencias({
   modo,
   onCambio,

@@ -1,3 +1,4 @@
+import { enCache } from '../api/cache';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { api, ErrorApi, revelarResultado, siguienteJornada, simularResto } from '../api/cliente';
@@ -129,8 +130,9 @@ const rutaVer = (partidaId: string, p: Pick<PartidoVista, 'partidoId' | 'tipo'>,
 export function Torneo() {
   const { partidaId } = useParams();
   const navegar = useNavigate();
-  const [vista, setVista] = useState<VistaTorneo | null>(null);
-  const [partida, setPartida] = useState<ResumenPartida | null>(null);
+  // Spec 014 (US6): lo que acaba de cargar el loader, sin esqueleto.
+  const [vista, setVista] = useState<VistaTorneo | null>(() => enCache<VistaTorneo>(`/api/partidas/${partidaId}/torneo`, { fresco: true }) ?? null);
+  const [partida, setPartida] = useState<ResumenPartida | null>(() => enCache<ResumenPartida>(`/api/partidas/${partidaId}`, { fresco: true }) ?? null);
   const [pestana, setPestana] = useState<Pestana | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [avisosNuevos, setAvisosNuevos] = useState(0);

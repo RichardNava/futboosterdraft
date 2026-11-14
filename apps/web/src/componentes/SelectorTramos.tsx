@@ -1,6 +1,6 @@
 import { useId, type CSSProperties } from 'react';
 
-export interface Tramo<T extends string> {
+interface Tramo<T extends string> {
   valor: T;
   etiqueta: string;
   descripcion: string;

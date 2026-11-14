@@ -2,7 +2,7 @@
  * Rasgos en las decisiones de los NPC (spec 005, T056; research R12): no convocar a un Rebelde suplente, evitar a un
  * Estrellita que no es el mejor y cambiar antes a Fatigados e Indisciplinados.
  */
-import { PARAMETROS_V3, PARAMETROS_V4, semillaDesdeTexto, type Jugador } from '@fbd/domain';
+import { PARAMETROS_V3, PARAMETROS_V7, PARAMETROS_V4, semillaDesdeTexto, type Jugador } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { decidirAlineacion } from '../src/alineacion';
 import { avanzar, crearPartido } from '@fbd/engine';
@@ -81,7 +81,7 @@ describe('Revulsivo', () => {
   it('entra en el descanso por el jugador de su demarcación con menos media', () => {
     const local = equipo('local');
     local.suplentes[5] = { ...local.suplentes[5]!, virtudes: ['Revulsivo'] };
-    const e = avanzar(crearPartido(entrada('revulsivo-ia', { version: p.version, parametros: p, local })), 'parte').estado;
+    const e = avanzar(crearPartido(entrada('revulsivo-ia', { version: PARAMETROS_V7.version, parametros: PARAMETROS_V7, local })), 'parte').estado;
     expect(e.fase).toBe('descanso');
     const r = revulsivoParaEntrar(e, 'local', new Set());
     expect(r?.entra.id).toBe(local.suplentes[5]!.id);

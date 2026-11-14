@@ -10,6 +10,7 @@ import { crearHooksSesion } from '../auth/rutas';
 import { CuerpoPantallaVista } from '@fbd/protocol';
 import { errores } from './errores';
 
+/** Rutas del torneo: vista, tablas y avisos. */
 export function registrarRutasTorneo(app: FastifyInstance, auth: Auth, gestor: GestorPartidas, deps: DependenciasTorneo): void {
   const { requiereSesion } = crearHooksSesion(auth);
 

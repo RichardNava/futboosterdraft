@@ -10,7 +10,8 @@ import { emitir, portero, type Contexto } from '../acciones/contexto';
 import { probabilidad, resolver } from '../acciones/duelo';
 import type { Lado } from '../tipos';
 
-export function ordenTanda(equipo: EquipoEstado): JugadorEnPartido[] {
+/** Orden de la tanda: los lanzadores designados que siguen en el campo y después el resto, como candidatos a los penaltis. */
+function ordenTanda(equipo: EquipoEstado): JugadorEnPartido[] {
   const enCampo = equipo.jugadores.filter((j) => j.enCampo);
   const designados = equipo.lanzadores.tanda.map((id) => enCampo.find((j) => j.id === id)).filter((j): j is JugadorEnPartido => !!j);
   const resto = candidatos(
@@ -40,6 +41,7 @@ function lanzar(ctx: Contexto, tirador: EquipoEstado, j: JugadorEnPartido, arque
   return resolver(ctx.rng, p, { rerollDefensor: santo });
 }
 
+/** Tanda de penaltis: cinco por equipo y muerte súbita hasta que uno gana. */
 export function jugarTanda(ctx: Contexto): void {
   const e = ctx.estado;
   const local = e.equipos.local;

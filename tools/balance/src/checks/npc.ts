@@ -41,7 +41,7 @@ import {
   type ParametrosEquilibrado,
   type ResultadoLiga,
 } from '@fbd/domain';
-import { avanzar, crearPartido } from '@fbd/engine';
+import { avanzar, crearPartido, type EquipoPartido } from '@fbd/engine';
 import { DIR_SALIDA } from '../informe';
 import type { GrupoComprobaciones } from '../cli';
 import { alineacionReferencia, elegirCartaReferencia } from '../referencia';
@@ -52,6 +52,7 @@ const NIVELES: readonly NivelNPC[] = ['PRO', 'avanzado', 'intermedio', 'amateur'
 const RUTA_CORE = fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url));
 
 let catalogo: Jugador[] | null = null;
+/** Cartas de Core (`data/core-real.json`), leídas una vez. */
 export function core(): Jugador[] {
   catalogo ??= (JSON.parse(readFileSync(RUTA_CORE, 'utf-8')) as { jugadores: Jugador[] }).jugadores;
   return catalogo;
@@ -80,30 +81,13 @@ export function electorNPC(semilla: string, participantes: number, p: Parametros
 
 /** Draft completo entre NPC: devuelve la plantilla de cada participante (su id es su nivel). */
 export function draftNPC(semilla: string): Record<string, Jugador[]> {
-  const p = parametrosActuales();
-  const pool = core();
-  const porId = new Map(pool.map((j) => [j.id, j]));
-  const participantes = [...NIVELES];
-  const sobres = generarMesa(pool, participantes.length, derivarSemilla(semilla, 'mesa'), p, repartoDe(p, 'moderado'));
-  let mesa = crearMesa({
-    participantes,
-    sobres,
-    medias: Object.fromEntries(sobres.flatMap((s) => s.cartas).map((id) => [id, porId.get(id)!.media])),
-    ahora: 0,
-    turnoS: 45,
-  });
-  const { elegirDe } = electorNPC(semilla, participantes.length, p);
-  while (mesa.estado === 'en_turno') {
-    for (const pid of participantes) {
-      const sobre = sobreDe(mesa, pid).restantes.map((id) => porId.get(id)!);
-      const parcial = vistaParticipante(mesa, pid).misElecciones.map((id) => porId.get(id)!);
-      const carta = elegirDe(pid as NivelNPC, pid, sobre, parcial, mesa.ronda, mesa.turno);
-      mesa = elegir(mesa, pid, carta, 0, 'npc');
-    }
-    mesa = resolverTurno(mesa, 0);
-  }
-  return Object.fromEntries(Object.entries(plantillas(mesa)).map(([pid, ids]) => [pid, ids.map((id) => porId.get(id)!)]));
+  const { elegirDe } = electorNPC(semilla, NIVELES.length, parametrosActuales());
+  return draftMesa(semilla, [...NIVELES], (pid, sobre, parcial, ronda, turno) => elegirDe(pid as NivelNPC, pid, sobre, parcial, ronda, turno));
 }
+
+/** Partido de liga (sin eliminatoria) con los parámetros dados. */
+export const crearPartidoLiga = (p: ParametrosEquilibrado, semilla: string, local: EquipoPartido, visitante: EquipoPartido) =>
+  crearPartido({ version: p.version, parametros: p, semilla, eliminatoria: false, local, visitante });
 
 /** Juega un torneo y devuelve la posición final (1 = campeón) de cada nivel. */
 export function torneoNPC(semilla: string): Record<NivelNPC, number> {
@@ -128,14 +112,7 @@ export function torneoNPC(semilla: string): Record<NivelNPC, number> {
   for (const jornada of calendarioLiga([...NIVELES], derivarSemilla(semilla, 'calendario'))) {
     for (const cruce of jornada.partidos) {
       const semillaPartido = derivarSemilla(semilla, `partido:${jornada.numero}:${cruce.local}`);
-      const motor = crearPartido({
-        version: p.version,
-        parametros: p,
-        semilla: semillaPartido,
-        eliminatoria: false,
-        local: alineacion(cruce.local, cruce.visitante),
-        visitante: alineacion(cruce.visitante, cruce.local),
-      });
+      const motor = crearPartidoLiga(p, semillaPartido, alineacion(cruce.local, cruce.visitante), alineacion(cruce.visitante, cruce.local));
       const r = jugarHastaElFinal(motor, { local: cruce.local as NivelNPC, visitante: cruce.visitante as NivelNPC }, semillaPartido);
       resultados.push({ local: cruce.local, visitante: cruce.visitante, golesLocal: r.marcador.local, golesVisitante: r.marcador.visitante });
     }
@@ -189,13 +166,8 @@ export interface ResultadoReferencia {
   partidos: number;
 }
 
-/**
- * 003/SC-010 (research R13): liga a doble vuelta de 8 con el participante de referencia y 7 NPC de un nivel.
- * Solo se juegan (y cuentan) los 14 partidos del participante de referencia: los demás no cambian su
- * porcentaje de victorias, porque no se modelan las bajas entre jornadas.
- */
-export function torneoReferencia(nivel: NivelNPC, semilla: string): ResultadoReferencia {
-  const p = parametrosActuales();
+/** Draft de 8 (el participante de referencia y 7 NPC de un nivel) y el equipo de la referencia. */
+export function mesaReferencia(nivel: NivelNPC, semilla: string, p: ParametrosEquilibrado) {
   const npcs = Array.from({ length: 7 }, (_, i) => `npc${i + 1}`);
   const participantes = ['referencia', ...npcs];
   const { elegirDe } = electorNPC(semilla, participantes.length, p);
@@ -204,6 +176,17 @@ export function torneoReferencia(nivel: NivelNPC, semilla: string): ResultadoRef
   );
   const porIdDe = (pid: string) => new Map(equipos[pid]!.map((j) => [j.id, j]));
   const referencia = equipoDesdeAlineacion('referencia', alineacionReferencia(equipos.referencia!, new Set(), p), porIdDe('referencia'));
+  return { npcs, equipos, porIdDe, referencia };
+}
+
+/**
+ * 003/SC-010 (research R13): liga a doble vuelta de 8 con el participante de referencia y 7 NPC de un nivel.
+ * Solo se juegan (y cuentan) los 14 partidos del participante de referencia: los demás no cambian su
+ * porcentaje de victorias, porque no se modelan las bajas entre jornadas.
+ */
+export function torneoReferencia(nivel: NivelNPC, semilla: string): ResultadoReferencia {
+  const p = parametrosActuales();
+  const { npcs, equipos, porIdDe, referencia } = mesaReferencia(nivel, semilla, p);
   const r: ResultadoReferencia = { victorias: 0, empates: 0, derrotas: 0, partidos: 0 };
   for (const npc of npcs) {
     const a = decidirAlineacion(nivel, equipos[npc]!, new Set(), equipos.referencia!, derivarSemilla(semilla, `alineacion:${npc}`), {
@@ -213,14 +196,7 @@ export function torneoReferencia(nivel: NivelNPC, semilla: string): ResultadoRef
     const rival = equipoDesdeAlineacion(npc, a, porIdDe(npc));
     for (const enCasa of [true, false]) {
       const semillaPartido = derivarSemilla(semilla, `partido:${npc}:${enCasa ? 'ida' : 'vuelta'}`);
-      const motor = crearPartido({
-        version: p.version,
-        parametros: p,
-        semilla: semillaPartido,
-        eliminatoria: false,
-        local: enCasa ? referencia : rival,
-        visitante: enCasa ? rival : referencia,
-      });
+      const motor = crearPartidoLiga(p, semillaPartido, enCasa ? referencia : rival, enCasa ? rival : referencia);
       const fin = jugarHastaElFinal(motor, enCasa ? { visitante: nivel } : { local: nivel }, semillaPartido);
       const mios = enCasa ? fin.marcador.local : fin.marcador.visitante;
       const suyos = enCasa ? fin.marcador.visitante : fin.marcador.local;
@@ -400,6 +376,7 @@ export function comprobarSC010b(drafts: number, semilla: number): Comprobacion {
 }
 
 
+/** 003/SC-010, SC-010a y SC-010b: los NPC de más nivel ganan más y cometen sus errores creíbles. */
 export function comprobacionesNPC(torneos: number, semilla: number): Comprobacion[] {
   let proDelante = 0;
   let avanzadoDelante = 0;

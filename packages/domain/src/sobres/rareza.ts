@@ -12,6 +12,7 @@ export const NIVELES_RAREZA: readonly NivelRareza[] = ['pobre', 'escaso', 'moder
 
 export const NIVEL_RAREZA_POR_DEFECTO: NivelRareza = 'moderado';
 
+/** El valor es un nivel de rareza del draft. */
 export function esNivelRareza(v: unknown): v is NivelRareza {
   return typeof v === 'string' && (NIVELES_RAREZA as readonly string[]).includes(v);
 }

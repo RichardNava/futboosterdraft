@@ -28,6 +28,7 @@ interface Props {
   id?: string;
 }
 
+/** Aviso en línea de éxito, información, advertencia o error, con acciones y cierre opcionales. */
 export function Aviso({ tipo, children, acciones, onCerrar, className, rol, id }: Props) {
   const role = rol ?? (tipo === 'error' ? 'alert' : 'status');
   return (

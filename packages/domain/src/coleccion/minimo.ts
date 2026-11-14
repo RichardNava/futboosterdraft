@@ -34,6 +34,7 @@ export function comprobarMinimoActivo(
   return actuales - 1 >= minimo ? { ok: true } : { ok: false, demarcacion, nivel, minimo, activas: actuales };
 }
 
+/** Si las cartas activas cumplen el mínimo por demarcación y nivel, y qué casillas no lo cumplen. */
 export function estadoMinimo(activas: RecuentoCatalogo, minimos: RecuentoCatalogo = DISTRIBUCION_CORE): EstadoMinimo {
   const incumplidas = DEMARCACIONES.flatMap((demarcacion) =>
     NIVELES.filter((nivel) => activas[demarcacion][nivel] < minimos[demarcacion][nivel]).map((nivel) => ({

@@ -106,6 +106,19 @@ export const MsgPartidoPausa = z.object({
     .array(z.object({ jugadorId: z.number().int(), motivo: z.enum(['lesion', 'expulsion']), minuto: z.string(), tick: z.number() }))
     .optional(),
   sustitucionesRestantes: z.number().int().optional(),
+  /**
+   * Spec 014 (FR-016 a FR-018): energía y penalización de todos los jugadores en el campo de los dos equipos, calculadas
+   * por el motor. Opcional para no romper clientes abiertos durante un despliegue.
+   */
+  energia: z
+    .array(
+      z.object({
+        jugadorId: z.number().int(),
+        energia: z.number().int().min(0).max(100),
+        penalizacion: z.number().int().min(0).max(100),
+      }),
+    )
+    .optional(),
 });
 
 export const MsgPartidoDecisionAplicada = z.object({

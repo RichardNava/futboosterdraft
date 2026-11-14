@@ -4,15 +4,15 @@
  */
 import type {
   RespuestaCambiarActiva,
-  RespuestaColeccion,
   RespuestaDesfragmentar,
   RespuestaMovimientos,
   RespuestaCompraPase,
-  RespuestaTienda,
   ResumenCompra,
 } from '@fbd/protocol';
 import { marcarConectando } from '../estado/conexionServidor';
+import { caducar, enCache } from './cache';
 
+/** Error de la API con su estado HTTP, código y detalles (formato de error común). */
 export class ErrorApi extends Error {
   constructor(
     readonly estado: number,
@@ -25,13 +25,15 @@ export class ErrorApi extends Error {
   }
 }
 
-export interface OpcionesPeticion {
+interface OpcionesPeticion {
   metodo?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   cuerpo?: unknown;
   /** Para operaciones que no deben repetirse (FR-062): una clave nueva por petición. */
   idempotente?: boolean;
   /** Clave de idempotencia fija, para reutilizarla en los reintentos de un mismo envío (spec 013, FR-033). */
   clave?: string;
+  /** Solo la caché de navegación: pedir a la red aunque haya un valor recién cargado. */
+  sinCache?: boolean;
 }
 
 /** El servidor no ha respondido (red caída, cuerpo no JSON o 5xx del proxy sin el error común). */
@@ -44,16 +46,23 @@ class SinRespuesta extends Error {
 /** Esperas entre reintentos de un GET: 0,5 s, 1 s y, desde ahí, 2 s (research R8). */
 const ESPERAS_MS = [500, 1000, 2000];
 
+/** Petición a la API con la cookie de sesión; los GET se reintentan si el servidor no responde y reutilizan lo que acaba de cargar el loader. */
 export async function api<T>(ruta: string, opciones: OpcionesPeticion = {}): Promise<T> {
   const metodo = opciones.metodo ?? (opciones.cuerpo === undefined ? 'GET' : 'POST');
   // Spec 013 (FR-022): solo los GET se reintentan; el resto podría repetir efectos.
   if (metodo !== 'GET') {
     try {
-      return await enviar<T>(ruta, metodo, opciones);
+      const datos = await enviar<T>(ruta, metodo, opciones);
+      // Lo que se guardó para la navegación ya no vale como dato fresco (spec 014, FR-025).
+      caducar();
+      return datos;
     } catch (e) {
       throw e instanceof SinRespuesta ? e.causa : e;
     }
   }
+  // Lo que acaba de pedir el loader de esta navegación no se vuelve a pedir (spec 014, research R8).
+  const reciente = opciones.sinCache ? undefined : enCache<T>(ruta, { fresco: true });
+  if (reciente !== undefined) return reciente;
   for (let intento = 0; ; intento++) {
     try {
       const datos = await enviar<T>(ruta, metodo, opciones);
@@ -151,14 +160,12 @@ export function marcarPantallaVista(partidaId: string, pantalla: 'derrota' | 'ca
 
 // ---------- Colección, fragmentos y tienda (spec 006, contracts/http-api.md) ----------
 
-export function obtenerColeccion(): Promise<RespuestaColeccion> {
-  return api('/api/coleccion');
-}
-
+/** Activa o desactiva una carta de la colección para los drafts. */
 export function cambiarActiva(jugadorId: number, activa: boolean): Promise<RespuestaCambiarActiva> {
   return api(`/api/coleccion/cartas/${jugadorId}`, { metodo: 'PUT', cuerpo: { activa } });
 }
 
+/** Convierte una carta repetida en fragmentos. */
 export function desfragmentar(jugadorId: number): Promise<RespuestaDesfragmentar> {
   return api(`/api/coleccion/cartas/${jugadorId}/desfragmentar`, { metodo: 'POST' });
 }
@@ -166,10 +173,6 @@ export function desfragmentar(jugadorId: number): Promise<RespuestaDesfragmentar
 /** Historial del más reciente al más antiguo; `antes` pide la página siguiente (FR-018). */
 export function obtenerMovimientos(antes?: string): Promise<RespuestaMovimientos> {
   return api(`/api/fragmentos/movimientos${antes ? `?antes=${encodeURIComponent(antes)}` : ''}`);
-}
-
-export function obtenerTienda(): Promise<RespuestaTienda> {
-  return api('/api/tienda');
 }
 
 /** Las compras se repiten con el mismo `idCompra` (lo genera quien llama): el servidor no cobra dos veces (FR-032). */
@@ -183,6 +186,7 @@ export function comprarPase(moneda: 'fragmentos' | 'eur', idCompra: string): Pro
   return api('/api/tienda/pase-premium', { cuerpo: { idCompra, moneda } });
 }
 
+/** Compra una colección de la tienda (idempotente por `idCompra`). */
 export function comprarColeccion(coleccionId: string, idCompra: string): Promise<ResumenCompra> {
   return api(`/api/tienda/colecciones/${coleccionId}/comprar`, { cuerpo: { idCompra } });
 }

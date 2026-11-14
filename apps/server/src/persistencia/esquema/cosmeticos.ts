@@ -7,6 +7,7 @@ import { boolean, check, integer, jsonb, pgTable, primaryKey, text, timestamp, u
 import { usuarios } from './base';
 import { compras } from './coleccion';
 
+/** Tabla de cosméticos (escudos, sobres y celebraciones). */
 export const cosmeticos = pgTable(
   'cosmeticos',
   {
@@ -27,6 +28,7 @@ export const cosmeticos = pgTable(
   ],
 );
 
+/** Tabla de packs de cosméticos. */
 export const packsCosmeticos = pgTable(
   'packs_cosmeticos',
   {
@@ -43,6 +45,7 @@ export const packsCosmeticos = pgTable(
   ],
 );
 
+/** Tabla de cosméticos que posee cada usuario. */
 export const cosmeticosUsuario = pgTable(
   'cosmeticos_usuario',
   {
