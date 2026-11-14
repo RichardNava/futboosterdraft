@@ -564,9 +564,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/goleadores.test.ts": {
-    "mtime": 1792484980.7453644,
-    "seen": 1792485016.6160026,
-    "ast_hash": "911a84761665c2050126a1e3f79bbcc3",
+    "mtime": 1794618407.7516441,
+    "seen": 1794619306.0540845,
+    "ast_hash": "7618e6c976ff6571ddbf4d155c3af3e0",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/navegacion.test.ts": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/AperturaSobre.tsx": {
-    "mtime": 1794556996.3667908,
-    "seen": 1794592739.6313698,
-    "ast_hash": "8d4e7b10d10fc5e5847be5b850dc9b4f",
+    "mtime": 1794618606.5772922,
+    "seen": 1794619306.0610123,
+    "ast_hash": "cf659e22754edb39d12bae713ab8da63",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/AvisoDorsales.tsx": {
@@ -846,15 +846,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/CrearPartida.tsx": {
-    "mtime": 1794532922.4131756,
-    "seen": 1794592739.635872,
-    "ast_hash": "f6b3a70188944dd5ff1435250fc3a77a",
+    "mtime": 1794618377.518195,
+    "seen": 1794619306.0735073,
+    "ast_hash": "50955b2ce802d2f7f5e99780e3492545",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Draft.tsx": {
-    "mtime": 1794107795.5273614,
-    "seen": 1794115785.3686335,
-    "ast_hash": "08775710bb83befa1d91d88d38a6164b",
+    "mtime": 1794618658.71266,
+    "seen": 1794619306.0735097,
+    "ast_hash": "791dd1b65ee4124d0084eb513248a039",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Inicio.tsx": {
@@ -1818,9 +1818,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/cli.ts": {
-    "mtime": 1794535849.809502,
-    "seen": 1794592739.6657343,
-    "ast_hash": "cc7905d0d7820af1f0a9c2c9106819ac",
+    "mtime": 1794618396.0273664,
+    "seen": 1794619306.1164176,
+    "ast_hash": "f110aedf786639b29774cc477f3ed773",
     "semantic_hash": ""
   },
   "tools/balance/src/equipos.ts": {
@@ -9114,9 +9114,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/rareza.spec.ts": {
-    "mtime": 1794525456.1740932,
-    "seen": 1794525491.3563635,
-    "ast_hash": "c204151acdafcc294df1f726b717a351",
+    "mtime": 1794618389.0390832,
+    "seen": 1794619306.0808845,
+    "ast_hash": "6c626439b0195c18f3bdb6a82b145381",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/retoques-013.spec.ts": {
@@ -11238,9 +11238,9 @@
     "semantic_hash": ""
   },
   "specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md": {
-    "mtime": 1794592681.2293732,
-    "seen": 1794592739.7066898,
-    "ast_hash": "7636e2fa27e84c16fa919860e635f241",
+    "mtime": 1794619281.175515,
+    "seen": 1794619306.1603644,
+    "ast_hash": "aa7aea46ff4e09033c96504950d8e447",
     "semantic_hash": ""
   },
   "specs/014-mejoras-motor-navegacion-refactor/refactorizacion.md": {
@@ -11256,9 +11256,9 @@
     "semantic_hash": ""
   },
   "specs/014-mejoras-motor-navegacion-refactor/tasks.md": {
-    "mtime": 1794592744.677546,
-    "seen": 1794617681.797899,
-    "ast_hash": "998392d8e669fcc6693f68edaf0eea80",
+    "mtime": 1794619281.175236,
+    "seen": 1794619306.1611264,
+    "ast_hash": "a49172fbe2e8bd327bb73eb6fff11216",
     "semantic_hash": ""
   },
   "docs/juego/enfrentamientos.md": {

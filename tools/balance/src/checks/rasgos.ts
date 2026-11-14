@@ -122,6 +122,12 @@ function serieContada(a: EquipoPartido, b: EquipoPartido, n: number, semilla: nu
   return { r, s, minutos };
 }
 
+/**
+ * Mal defensor juega la mitad de las acciones defensivas (005, diseño). El objetivo es ese efecto y no el parámetro:
+ * en el motor 7.0.0 un peso de 0,5 lo deja en un tercio, y hace falta 0,65 para la mitad.
+ */
+const OBJETIVO_MAL_DEFENSOR = 0.5;
+
 function comprobacion(rasgoId: Rasgo, nombre: string, medido: number, objetivo: number, detalle: string): Comprobacion {
   const ok = Number.isFinite(medido) && Math.abs(medido - objetivo) <= TOLERANCIA * Math.abs(objetivo);
   return {
@@ -301,7 +307,7 @@ function juego(n: number, semilla: number, base: EquipoPartido, rival: EquipoPar
   const defensivas = (s: typeof sin) => suma(s, centrales, (m) => m.intercepciones + m.entradasGanadas);
   return [
     comprobacion('Chupon', 'Chupón (peso de los pases frente al resto de acciones)', razon(momios(conR), momios(sin)), P.defectos!.chupon, `momios ${momios(sin).toFixed(2)} → ${momios(conR).toFixed(2)}`),
-    comprobacion('MalDefensor', 'Mal defensor (intercepciones y entradas ganadas)', razon(defensivas(conR), defensivas(sin)), P.defectos!.malDefensor, `acciones ${defensivas(sin)} → ${defensivas(conR)}`),
+    comprobacion('MalDefensor', 'Mal defensor (intercepciones y entradas ganadas)', razon(defensivas(conR), defensivas(sin)), OBJETIVO_MAL_DEFENSOR, `acciones ${defensivas(sin)} → ${defensivas(conR)}`),
   ];
 }
 

@@ -489,7 +489,7 @@ const DEFINICION_DEFECTOS: Readonly<Record<Defecto, Entrada>> = {
     nombre: 'Mal defensor',
     descripcion: 'Apenas participa en las acciones defensivas.',
     efecto:
-      'Su peso como candidato a defender se multiplica por `defectos.malDefensor` (0,5): si le toca un duelo o cortar un pase, se lo cede al siguiente candidato con probabilidad 0,5, y en la presión cuenta como si estuviera al doble de distancia. Si es el único candidato, defiende igual. Un portero conserva sus acciones.',
+      'Su peso como candidato a defender se multiplica por `defectos.malDefensor` (0,65, calibrado para que haga la mitad de las intercepciones y entradas): si le toca un duelo o cortar un pase, se lo cede al siguiente candidato con probabilidad 0,35, y en la presión cuenta como si estuviera a 1,5 veces su distancia. Si es el único candidato, defiende igual. Un portero conserva sus acciones.',
     activacion: 'Sin el balón.',
     acumulacion: PROPIA,
     impacto: 0.4,

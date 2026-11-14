@@ -1,8 +1,9 @@
 # Informe del motor 7.0.0 (spec 014, T055, T056 y T084)
 
 Resultado de `pnpm balance --n 1000` (semilla 1) con los parámetros 7.0.0 finales y el motor cerrado, comparado con la
-[referencia 6.3.0](referencia-6.3.0.md). **58 de 67 comprobaciones superadas** (la 6.3.0 pasaba 52 de 52; la 7.0.0
-añade las 15 de la spec 014). El CI ejecuta el balance sin `--pendientes`: tal como está, falla.
+[referencia 6.3.0](referencia-6.3.0.md). **60 de 67 comprobaciones superadas** (la 6.3.0 pasaba 52 de 52; la 7.0.0
+añade las 15 de la spec 014). Las 7 que fallan pasan a la spec 015 y el CI las ejecuta con `--pendientes`: informan,
+pero no bloquean.
 
 ## Parámetros finales
 
@@ -15,6 +16,8 @@ Sobre `PARAMETROS_V6_3` (`packages/domain/src/parametros/index.ts`):
 | `manoAMano`, `idaVuelta`, `fueraDeJuego` | bloques nuevos | US2, US3 y FR-006; se retiran los sorteos `probabilidadManoAMano` y `probabilidadFueraDeJuegoBase` |
 | `acciones` | `pendientePase` 2,2; `controlPaseTicks` 4; `pesoPasePorStat` 1,2; `gol.normal` 0,35; `gol.lejano` −0,5 | Peso del pase (002/SC-008, 014/SC-008) y goles sin los sorteos de mano a mano (003/SC-001 y SC-002) |
 | `pases` | `factorSinMotivo` 0,1; `factorConMotivo` 1,1 | Menos pases largos (003/SC-005) |
+| `lesiones` | `probabilidadPorEntrada` 0,011 | Lesiones por partido con más minutos de juego (005/SC-011) |
+| `defectos` | `malDefensor` 0,65 | Mal defensor hace la mitad de las acciones defensivas (005/SC-004) |
 | `disciplina` | `factorFaltaArea` 0,45 | Menos faltas en el área con la conducción hasta el punto de penalti (005/SC-011) |
 | `tiro` | pesos por tramo ×1,7; `faltaDirectaTiro.probabilidad` ×0,65 | Goles (FR-023) y falta directa (003/SC-003) |
 | `decision.factores` | `remate.k` 0,45; `fisico.k` 0,4 | Peso de las estadísticas (014/SC-008) |
@@ -27,7 +30,8 @@ Sobre `PARAMETROS_V6_3` (`packages/domain/src/parametros/index.ts`):
 | 7.0b | tiro, faltas en el área, `pendientePase`, `controlPaseTicks` | 57/67 |
 | 7.0c | tiro ×1,7, `pesoPasePorStat` 1,2, `factorSinMotivo` 0,1, `factorFaltaArea` 0,45, objetivo de Frágil | 59/67 |
 | 7.0d | `gol.normal` 0,35, `gol.lejano` −0,5, `factorConMotivo` 1,1 | 60/67 |
-| 7.0e | motor: el sacador acude a la carrera (ver «Correcciones del motor») | **58/67** (final) |
+| 7.0e | motor: el sacador acude a la carrera (ver «Correcciones del motor») | 58/67 |
+| 7.0f | `lesiones.probabilidadPorEntrada` 0,011; `defectos.malDefensor` 0,65 | **60/67** (final) |
 
 Probadas y descartadas con `--solo` y `src/diagnostico.ts`: tiro ×1,85 (apenas sube los goles), `pesoPasePorStat` 1,6
 (no mueve 002/SC-008), `factorConMotivo` 0,9 y 1,0 (los cambios de orientación bajan a 5,0 y SC-004 sale del
@@ -74,15 +78,20 @@ cortos).
 4. **003/SC-005 pases cortos**: 59,2 % (≥ 60 %). Misma causa; las conducciones (+30 %) cumplen de sobra.
 5. **003/SC-007 Matador**: +7 % de goles, no significativo. Con los mano a mano por posición todos tiran en esa
    situación, y lo que añade Matador (no pasarla nunca) pesa poco; en 7.0c (+13 %) sí pasaba.
-6. **005/SC-004 Mal defensor** (0,366; objetivo 0,5 ± 20 %) y **005/SC-011 lesiones** (0,43 por partido; máximo
-   0,42): pasaban en 7.0d y salen del margen con la corrección del sacador (menos tiempo parado: más minutos de juego y
-   duelos). Están al borde y se recuperan ajustando sus parámetros (`defectos.malDefensor`, `lesiones`), no los
-   objetivos.
+
+Las siete (014/SC-008 pase, remate y físico; 002/SC-008 y con ella 003/SC-009; 003/SC-005; 003/SC-007) dependen del
+peso individual de las estadísticas, que rehace la spec 015: van en `--pendientes` en `ci.yml` hasta entonces.
+
+Mal defensor (0,366) y las lesiones (0,43 por partido) salieron del margen con la corrección del sacador (más minutos
+de juego y de entradas) y se recuperaron en 7.0f: 0,504 y 0,38.
 
 ## Decisiones
 
 - **Objetivo de Frágil**: se medía contra 4,96, una rareza de la 6.x (el multiplicador de diseño es 3). Con la 7.0.0
   vuelve al valor del parámetro (`tools/balance/src/checks/rasgos.ts`): 2,81 frente a 3 ✔.
+- **Objetivo de Mal defensor**: el diseño es que haga la mitad de las acciones defensivas. En la 7.0.0 un peso de
+  0,5 lo deja en un tercio; con 0,65 vuelve a la mitad, y la comprobación mide contra ese 0,5 de diseño en lugar del
+  parámetro (`OBJETIVO_MAL_DEFENSOR` en `checks/rasgos.ts`; texto del catálogo y `virtudes-y-defectos.md` al día).
 - **SC-004 frente a SC-008**: ante el conflicto se mantiene SC-004 (y FR-023) y se documenta el fallo de 014/SC-008.
 
 ## Correcciones del motor durante la calibración
@@ -140,5 +149,5 @@ El `pnpm balance` de la persona da exactamente el resultado de este informe (58/
 
 ## Pendiente
 
-- Decidir sobre las comprobaciones que fallan: reformular 014/SC-008 pase en la spec, otra ronda para Mal defensor y
-  lesiones, y qué hacer con 002/SC-008, 003/SC-005 y Matador (calibrar más o `--pendientes` en `ci.yml`).
+- Spec 015 (peso individual de las estadísticas por duelos): sustituye 014/SC-008 por curvas objetivo por duelo y debe
+  sacar de `--pendientes` las siete comprobaciones de arriba.

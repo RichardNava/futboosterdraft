@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/index.ts": {
-    "mtime": 1794578566.6029358,
-    "seen": 1794592739.6518369,
-    "ast_hash": "78f09202d1e64c2c27dadee073d4f457",
+    "mtime": 1794619644.2384093,
+    "seen": 1794627559.6089654,
+    "ast_hash": "aad76372c214573adbcd5b0aaaf7e14c",
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/v1.json": {
@@ -1554,9 +1554,9 @@
     "semantic_hash": ""
   },
   "packages/engine/src/espacio/objetivos.ts": {
-    "mtime": 1794556996.5414982,
-    "seen": 1794592739.6599221,
-    "ast_hash": "fdb93a95ca74d42ffd9313908fb743e8",
+    "mtime": 1794621078.2325144,
+    "seen": 1794627559.6197865,
+    "ast_hash": "c0b13178f74de1309a03042420c46db8",
     "semantic_hash": ""
   },
   "packages/engine/src/espacio/paso.ts": {
@@ -1848,32 +1848,32 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/fixtures/escenarios/empate-eliminatoria.json": {
-    "mtime": 1794586100.909451,
-    "seen": 1794592739.6668546,
+    "mtime": 1794621132.860102,
+    "seen": 1794627559.6345053,
     "ast_hash": "3eb645c1aa2b5db2ee630aa3c8eecb27",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-grave.json": {
-    "mtime": 1794586100.9089248,
-    "seen": 1794592739.666857,
+    "mtime": 1794621132.8591356,
+    "seen": 1794627559.634508,
     "ast_hash": "5c140529dd06f44ccbcde25cf3148ba4",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-larga.json": {
-    "mtime": 1794586100.9089248,
-    "seen": 1794592739.666859,
-    "ast_hash": "577d50fe9d9382026e106283c3b5a60d",
+    "mtime": 1794621132.8591356,
+    "seen": 1794627559.63451,
+    "ast_hash": "78fc1c39c8f05cfe5a4694037b853e29",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/roja.json": {
-    "mtime": 1794586100.9083083,
-    "seen": 1794592739.666861,
+    "mtime": 1794621132.8582613,
+    "seen": 1794627559.6345122,
     "ast_hash": "fb3979826b5177627ea7ceccdecb1700",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/tres-amarillas.json": {
-    "mtime": 1794586100.9089248,
-    "seen": 1794592739.6668625,
+    "mtime": 1794621132.8591356,
+    "seen": 1794627559.6345139,
     "ast_hash": "7fd853f20e8c4ae20542916d435ccf88",
     "semantic_hash": ""
   },
@@ -2004,9 +2004,9 @@
     "semantic_hash": "08b983757611230f35f1eb6b3b485507"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1793542854.1043067,
-    "seen": 1793543274.9124236,
-    "ast_hash": "d4ec49dd695446411ea40d2afbb4db41",
+    "mtime": 1794620266.8264587,
+    "seen": 1794627559.653483,
+    "ast_hash": "66459320b261ea8a7187041ae40cb24f",
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
@@ -3192,9 +3192,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/rasgos.ts": {
-    "mtime": 1794535776.8246348,
-    "seen": 1794592739.6499188,
-    "ast_hash": "e9b027ae7659b444b9ef57156df21c55",
+    "mtime": 1794621078.231513,
+    "seen": 1794627559.6051717,
+    "ast_hash": "f0be83ef8ccbaf95bed869d1f970d434",
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/versionCatalogo.ts": {
@@ -3306,9 +3306,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/defectosJuego.test.ts": {
-    "mtime": 1792757964.221351,
-    "seen": 1792758030.9338322,
-    "ast_hash": "e3f9b3bdfb5b35c162be178b8fd9eeef",
+    "mtime": 1794621760.901415,
+    "seen": 1794627559.6227448,
+    "ast_hash": "829e7d46b7a5e0809373ba0182f343a4",
     "semantic_hash": ""
   },
   "packages/engine/tests/defectosMedia.test.ts": {
@@ -3330,9 +3330,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/equivalencia-005.json": {
-    "mtime": 1794586078.4647112,
-    "seen": 1794592739.661581,
-    "ast_hash": "e3b04daecbc6cb8181e990ef84cdb505",
+    "mtime": 1794621093.386442,
+    "seen": 1794627559.6244318,
+    "ast_hash": "9fb195beae617b5b544602fd52302ef7",
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/generarEquivalencia005.ts": {
@@ -3390,9 +3390,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/rasgos.ts": {
-    "mtime": 1794557005.9683025,
-    "seen": 1794592739.6657326,
-    "ast_hash": "48289123b847069ad71efe891f1cfa2f",
+    "mtime": 1794621078.2305126,
+    "seen": 1794627559.6322713,
+    "ast_hash": "c0549ce25cf5fca376ce3e9a5ea3a454",
     "semantic_hash": ""
   },
   "tools/fixtures/src/asignarRasgos.ts": {
@@ -3402,9 +3402,9 @@
     "semantic_hash": ""
   },
   "docs/juego/virtudes-y-defectos.md": {
-    "mtime": 1794592694.9708087,
-    "seen": 1794592739.6862507,
-    "ast_hash": "35263912f8ce628976b683a7aa37333c",
+    "mtime": 1794621079.1744983,
+    "seen": 1794627559.655519,
+    "ast_hash": "bb4b421e6d9d7239223618431ad0475e",
     "semantic_hash": ""
   },
   "specs/005-virtudes-defectos/checklists/requirements.md": {
@@ -11190,9 +11190,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/huella-014.json": {
-    "mtime": 1794586092.9976034,
-    "seen": 1794592739.6617315,
-    "ast_hash": "21548290d6e2ba191130b8da3307d152",
+    "mtime": 1794621107.995432,
+    "seen": 1794627559.6248398,
+    "ast_hash": "f6b98c5a48f5d2a21fbe48a30d38a550",
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/huella014.ts": {
@@ -11238,9 +11238,9 @@
     "semantic_hash": ""
   },
   "specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md": {
-    "mtime": 1794619281.175515,
-    "seen": 1794619306.1603644,
-    "ast_hash": "aa7aea46ff4e09033c96504950d8e447",
+    "mtime": 1794627523.6559644,
+    "seen": 1794627559.6762915,
+    "ast_hash": "7b43bf5c380f70af9d3b4c87290432e5",
     "semantic_hash": ""
   },
   "specs/014-mejoras-motor-navegacion-refactor/refactorizacion.md": {

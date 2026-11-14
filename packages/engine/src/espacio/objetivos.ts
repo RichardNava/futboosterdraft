@@ -228,7 +228,7 @@ function elegirPresionadores(estado: EstadoMotor, defensor: EquipoEstado): { ids
     const q = estado.espacio.jugadores[j.id];
     if (!q) continue;
     const d = dist2(q.x, q.y, b.x, b.y);
-    // Mal defensor (spec 005): presiona como si estuviera al doble de distancia, pero sigue siendo candidato.
+    // Mal defensor (spec 005): presiona como si estuviera a 1/factor veces su distancia, pero sigue siendo candidato.
     const f = factorDefensivo(estado, j);
     if (d <= limite) candidatos.push({ id: j.id, d: f === 1 ? d : Math.floor(d / (f * f)) });
   }

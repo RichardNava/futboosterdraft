@@ -1,7 +1,7 @@
 # Graph Report - futboosterdraft  (2026-11-14)
 
 ## Corpus Check
-- 984 files · ~2,185,097 words
+- 984 files · ~2,185,380 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 22 file(s) not represented in the graph (top: (none) 9, .css 6, .woff2 5)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ba76aabf`
+- Built from commit: `01455fa5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1694,7 +1694,7 @@ Cohesion: 0.43
 Nodes (6): terminadas(), rotl(), R9. «Mis partidas» lenta (FR-024, FR-025; SC-007), Implementation for User Story 4, Phase 5: User Story 4 - Arranque solo y «Mis partidas» rápida (Priority: P1), Tests for User Story 4
 
 ## Ambiguous Edges - Review These
-- `equipacionEnPartido (resolucion de choque de colores)` → `Guardarrail esErrorAdmisible`  [AMBIGUOUS]
+- `Guardarrail esErrorAdmisible` → `equipacionEnPartido (resolucion de choque de colores)`  [AMBIGUOUS]
   specs/003-mejoras-ux-simulacion/data-model.md · relation: semantically_similar_to
 
 ## Knowledge Gaps
@@ -1706,7 +1706,7 @@ Nodes (6): terminadas(), rotl(), R9. «Mis partidas» lenta (FR-024, FR-025; SC-
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `vitest` connect `vitest` to `estado.ts`, `tiro.ts`, `actores/equipo.ts`, `gestor.ts`, `Partido2D.tsx`, `torneo/torneo.ts`, `juego.ts`, `package.json`, `partidoRapido.ts`, `defectos.ts`, `actores/draft.ts`, `Marco.tsx`, `partido003.ts`, `torneo/torneo.ts`, `servidor.ts`, `interpolacion.ts`, `Rng`, `baseDatos004.ts`, `engine/src/index.ts`, `Jugador`, `ws/base.ts`, `CartaJugador.tsx`, `http/aspecto.ts`, `Duelos.tsx`, `economia/servicio.ts`, `premium.test.ts`, `equipaciones.ts`, `Alineacion.tsx`, `ref_node_path`, `aperturas.ts`, `Rng`, `Coleccion.tsx`, `sonido.ts`, `Tienda.tsx`, `receptor.ts`, `rasgaduraDe`, `api`, `catalogo/rasgos.ts`, `parametrosActuales`, `autoAlineacion`, `validar.ts`, `celebraciones/tipos.ts`, `crearServidor`, `ControladorPartida`, `ref_node_fs`, `colores.ts`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+  _High betweenness centrality (0.039) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `parametrosActuales()` (e.g. with `Implementation` and `R7. Parámetros 4.0.0 y reproducibilidad (FR-017, FR-072, SC-003)`) actually correct?**
   _`parametrosActuales()` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fbd/ai`, `@fbd/domain`, `@fbd/engine` to the rest of the system?**
@@ -1721,5 +1721,5 @@ _Questions this graph is uniquely positioned to answer:_
 ### Low-confidence Hints
 _AMBIGUOUS edges — the extractor was unsure. Verify before acting on these._
 
-- **What is the exact relationship between `equipacionEnPartido (resolucion de choque de colores)` and `Guardarrail esErrorAdmisible`?**
+- **What is the exact relationship between `Guardarrail esErrorAdmisible` and `equipacionEnPartido (resolucion de choque de colores)`?**
   _Edge tagged AMBIGUOUS (relation: semantically_similar_to) - confidence is low._

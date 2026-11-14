@@ -119,17 +119,19 @@ describe('Mal defensor (candidato defensivo)', () => {
     return veces / n;
   }
 
-  it('multiplica por 0,5 su peso como candidato: la mitad de las veces le cede el duelo al siguiente', () => {
-    expect(factorDefensivo(escena(true).e, escena(true).cerca)).toBe(P4.defectos!.malDefensor);
+  const f = P4.defectos!.malDefensor;
+
+  it('multiplica su peso como candidato por `defectos.malDefensor`: con probabilidad 1 − factor le cede el duelo al siguiente', () => {
+    expect(factorDefensivo(escena(true).e, escena(true).cerca)).toBe(f);
     expect(vecesCerca(false, 'duelo')).toBe(1);
-    expect(vecesCerca(true, 'duelo')).toBeGreaterThan(0.4);
-    expect(vecesCerca(true, 'duelo')).toBeLessThan(0.6);
+    expect(vecesCerca(true, 'duelo')).toBeGreaterThan(f - 0.1);
+    expect(vecesCerca(true, 'duelo')).toBeLessThan(f + 0.1);
   });
 
   it('también en la intercepción de un pase', () => {
     expect(vecesCerca(false, 'pase')).toBe(1);
-    expect(vecesCerca(true, 'pase')).toBeGreaterThan(0.4);
-    expect(vecesCerca(true, 'pase')).toBeLessThan(0.6);
+    expect(vecesCerca(true, 'pase')).toBeGreaterThan(f - 0.1);
+    expect(vecesCerca(true, 'pase')).toBeLessThan(f + 0.1);
   });
 
   it('si es el único candidato, defiende igual', () => {

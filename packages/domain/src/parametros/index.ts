@@ -549,6 +549,10 @@ export const PARAMETROS_V7: ParametrosEquilibrado = {
   // Menos pases largos, con y sin motivo (003/SC-005), y menos faltas en el área con la conducción hasta el punto de penalti (005/SC-011).
   pases: { ...PARAMETROS_V6_3.pases, factorSinMotivo: 0.1, factorConMotivo: 1.1 },
   disciplina: { ...PARAMETROS_V6_3.disciplina, factorFaltaArea: 0.45 },
+  // Con el sacador que acude a la carrera hay más minutos de juego y más entradas: se recuperan las lesiones por partido
+  // (005/SC-011) y el efecto medido de Mal defensor (005/SC-004).
+  lesiones: { ...PARAMETROS_V6_3.lesiones, probabilidadPorEntrada: 0.011 },
+  defectos: { ...PARAMETROS_V6_3.defectos!, malDefensor: 0.65 },
   // Sin los sorteos de mano a mano, el ataque busca más el tiro para mantener los goles (FR-023).
   tiro: {
     ...PARAMETROS_V6_3.tiro,
