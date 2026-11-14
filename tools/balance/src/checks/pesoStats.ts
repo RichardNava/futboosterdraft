@@ -18,7 +18,7 @@ type Estadistica = 'regate' | 'defensa' | 'velocidad' | 'portero';
 /** Campos de la carta que alimentan cada estadística del motor (`modificadores/atributos.ts`). */
 const CAMPOS: Record<Estadistica, Partial<Record<Demarcacion, string[]>>> = {
   regate: { MED: ['tecnica'], DEL: ['regate'] },
-  defensa: { DEF: ['tackling', 'anticipacion'], MED: ['posicionamiento'] },
+  defensa: { DEF: ['tackling', 'anticipacion'], MED: ['posicionamiento'], DEL: ['agresividad'] },
   velocidad: { DEF: ['velocidad'], MED: ['velocidad'], DEL: ['velocidad'] },
   portero: { POR: ['agilidad', 'colocacion'] },
 };

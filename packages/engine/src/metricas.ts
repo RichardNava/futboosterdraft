@@ -31,6 +31,8 @@ function metricasVacias(): MetricasJugador {
     golesFalta: 0,
     golesCabeza: 0,
     goles: 0,
+    golesManoAMano: 0,
+    tirosManoAMano: 0,
     fuerasDeJuego: 0,
     fuerasDeJuegoIncoherentes: 0,
     manoAMano: 0,

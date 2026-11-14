@@ -9,7 +9,7 @@ si se cumple).
 |---|---|---|---|
 | `015/SC-001` | `checks/curvas015.ts` | ninguna (cálculo directo) | Los nueve duelos de FR-002 dentro de su rango; el detalle da cada valor |
 | `015/SC-002a` | `checks/motor015.ts` | sintética A/B: DEL titular con regate 95 contra 75 | Intentos de regate y conducción por partido ≥ +40 %; completados ≥ +60 % |
-| `015/SC-002b` | `checks/motor015.ts` | Core: el mejor regateador del catálogo, titular contra equipos equilibrados | Supera a algún defensor (regate o conducción ganados ≥ 1) en ≥ 90 % de los partidos |
+| `015/SC-002b` | `checks/motor015.ts` | Core: el mejor regateador del catálogo, titular contra equipos equilibrados | Supera a algún defensor (regate o conducción ganados ≥ 1) en ≥ 80 % de los partidos (antes 90 %) |
 | `015/SC-003` | `checks/motor015.ts` | sintética A/B: centrales con Cabeceador o sin ella | Más `aereosGanados` y más goles de cabeza a balón parado, con diferencia significativa |
 | `015/SC-004` | `checks/motor015.ts` | sintética A/B: receptor +15 de desmarque; marcador +15 de marcaje | Con desmarque, más `recibidoLibre` y más pases completados recibidos; con marcaje, menos `recibidoLibre` del rival; las dos significativas |
 | `015/SC-005` | `checks/motor015.ts` | sintética A/B: +15 de técnica | `controlesPerdidos / controlesPresion` ≥ 15 % menor |

@@ -43,7 +43,7 @@ segundaLinea?: { xInterior: number; desdeCampoPropioM: number };
 //  8.0.0: { 7900, 10 }   (xInterior en décimas del equipo que ataca: unos 22 m de la portería)
 ```
 
-Además, `decision.factores.regate` pasa a { k: 0,7; min: 0,6; max: 3,0 } en la 8.0.0 (research R4), y la
+Además, `decision.factores.regate` pasa a { k: 0,7; min: 0,6; max: 3,0 } en la 8.0.0 (research R4; con los añadidos, { k: 1,1; min: 0,6; max: 4,0 }), y la
 recalibración de la tanda 1 deja `disciplina.factorFaltaArea` en 0,34 y `defectos.malDefensor` en 0,5.
 
 El dominio añade el estilo con balón `bandas` a `ESTILOS_CON_BALON` (y al esquema de `@fbd/protocol`).

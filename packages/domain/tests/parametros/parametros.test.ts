@@ -277,6 +277,6 @@ describe('parámetros de equilibrado 8.0.0 (spec 015, research R1)', () => {
     expect(defectos).toEqual({ ...defectos7, malDefensor: 0.5 });
     expect(version).toBe('8.0.0');
     expect({ ...decision.factores, regate: decision7.factores.regate }).toEqual(decision7.factores);
-    expect(decision.factores.regate).toEqual({ k: 0.7, min: 0.6, max: 3.0 });
+    expect(decision.factores.regate).toEqual({ k: 1.1, min: 0.6, max: 4.0 });
   });
 });

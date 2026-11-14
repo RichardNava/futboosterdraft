@@ -395,3 +395,22 @@ casi nada. Queda pendiente de calibrar (`segundaLinea`, `subidaArea`) junto con 
   - 003/SC-007, Matador: goles del jugador 0,575 → 0,635 (+10 %), sin diferencia significativa. El CI ya lo
     describe como una comprobación de un solo jugador que falla por ruido; con más goles repartidos entre
     defensas y Cabeceador, al delantero le quedan menos.
+
+### Calibración tras la serie completa (2026-11-14)
+
+Decisiones: SC-002b baja al 80 %; 014/SC-008-defensa debe pasar; Matador se mide donde actúa.
+
+- **015/SC-002b**: la escala de media sola se estanca en torno al 79 % (sondas de 300: escala 10 → 74 %, 6 → 79 %,
+  4 → 80 %, 3 → 79 %; la prioridad de la estrella marcada no mueve nada). Lo que falta son partidos en los que la
+  estrella apenas recibe. Valores: `estrella.escalaMedia` 10 → 4 y `decision.factores.regate` { k 0,7 → 1,1; max 3 → 4 }.
+  Con 1.000 partidos: 81,0 % (media 2,25); 015/SC-002a sigue ✔ (+63,5 % intentos, +94,1 % completados).
+  Coste: 002/SC-007a baja a 134,3 pases completados y 2,0 contraataques por partido (en el límite); 002/SC-007b, 25,5 %.
+- **014/SC-008-defensa**: no lo causa un añadido en concreto sino la fórmula de quite de la 8.0.0. Por demarcación (300
+  partidos, sin → con +15): DEF 35,9 % → 45,5 %; MED 25,1 % → 26,1 % (su quite es (posicionamiento + velocidad)/2 ×
+  0,85, así que +15 de carta son +6,4); DEL 18,8 % → 18,6 % (la comprobación no les subía nada y hacen el 35–40 % de
+  las entradas). Los añadidos llevan más juego por fuera y diluyen la medida. Se sincroniza la comprobación con
+  `atributos.ts` de la 8.0.0: DEL suma `agresividad`. Con 1.000 partidos: acierto +11,8 % ✔ (intentos +25,5 %).
+- **003/SC-007, Matador**: la virtud funciona por tiro, pero el Matador nunca la pasa y conduce hasta tirar, así que
+  juega menos mano a mano (1.640 → 1.329) y sus goles totales no prueban nada. Con 1.000 partidos: conversión de sus
+  tiros en mano a mano 35,2 % → 47,0 % (287 y 251 tiros; z ≈ 2,8). La comprobación pasa a medir esa conversión
+  (métricas nuevas `golesManoAMano` y `tirosManoAMano`; contraste de dos proporciones, z > 2).

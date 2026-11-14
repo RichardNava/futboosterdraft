@@ -632,7 +632,7 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
   curvas: { regate: { base: -0.32, m: 1.1 }, conduccion: { base: 0.25, m: 1.15 }, pase_corto: { base: 1.57, m: 1.27 } },
   quite: { DEF: 1.0, MED_MD: 0.9, MED: 0.85, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 },
   aereo: { bonusCabeceador: 0.15, seleccionCabeceador: 10 },
-  estrella: { umbralVisionPase: 80, escalaMedia: 10, diferenciaArriesgar: 5, repartoArriesgado: 0.4, prioridadEstrella: 1.5, lineaClaraM: 3, pendienteDesmarque: 0.003 },
+  estrella: { umbralVisionPase: 80, escalaMedia: 4, diferenciaArriesgar: 5, repartoArriesgado: 0.4, prioridadEstrella: 1.5, lineaClaraM: 3, pendienteDesmarque: 0.003 },
   bandas: { probabilidadBanda: 0.2, receptorBanda: 1.5, centro: 1.3 },
   subidaArea: { retaguardiaDEF: 1, retaguardiaMED: 1, defensoresArea: 8, ultimaJugadaS: 60, porteriaVaciaM: 30 },
   segundaLinea: { xInterior: 7900, desdeCampoPropioM: 10 },
@@ -641,7 +641,8 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
   defectos: { ...PARAMETROS_V7.defectos!, malDefensor: 0.5 },
   decision: {
     ...PARAMETROS_V7.decision,
-    factores: { ...PARAMETROS_V7.decision.factores, regate: { k: 0.7, min: 0.6, max: 3.0 } },
+    // k 0,7 → 1,1 y max 3 → 4 con los añadidos (SC-002b rebajado al 80 %).
+    factores: { ...PARAMETROS_V7.decision.factores, regate: { k: 1.1, min: 0.6, max: 4.0 } },
   },
 };
 

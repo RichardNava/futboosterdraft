@@ -271,15 +271,24 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
   };
 }
 
+const sumar = (xs: number[]) => xs.reduce((t, x) => t + x, 0);
+const proporcion = (aciertos: number[], intentos: number[]) => ({ p: sumar(aciertos) / Math.max(1, sumar(intentos)), n: sumar(intentos) });
+/** Contraste de dos proporciones: b mayor que a con z > 2. */
+function mayorProporcion(b: { p: number; n: number }, a: { p: number; n: number }): boolean {
+  const error = Math.sqrt((a.p * (1 - a.p)) / Math.max(1, a.n) + (b.p * (1 - b.p)) / Math.max(1, b.n));
+  return b.p - a.p > 2 * error && b.p > a.p;
+}
+
 /** 003/SC-007: cada virtud tiene un efecto medible en su acción. */
 export function comprobarSC007(n: number, semilla: number): Comprobacion {
   const { base, rival } = equipos003();
   const sin = serieBase(n, semilla);
   const golesFaltaEquipo = (r: ResultadoSerie) => r.estadisticasA.map((e) => e.golesPorTipo.falta);
-  const casos: { virtud: Virtud; casilla: string; nombre: string; medida: (r: ResultadoSerie, id: number) => number[]; aumentoMinimo?: number }[] = [
+  const casos: { virtud: Virtud; casilla: string; nombre: string; medida: (r: ResultadoSerie, id: number) => number[]; intentos?: (r: ResultadoSerie, id: number) => number[]; aumentoMinimo?: number }[] = [
     { virtud: 'LanzadorFaltas', casilla: 'MC-1', nombre: 'goles de falta directa', medida: (r) => golesFaltaEquipo(r), aumentoMinimo: 0.3 },
     { virtud: 'Cabeceador', casilla: 'DC', nombre: 'goles de cabeza del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.golesCabeza) },
-    { virtud: 'Matador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
+    // Matador solo actúa en el mano a mano y en esa jugada siempre tira: se mide la conversión de esos tiros, no sus goles.
+    { virtud: 'Matador', casilla: 'DC', nombre: 'conversión de sus tiros en mano a mano', medida: (r, id) => sumaMetrica(r, id, (m) => m.golesManoAMano), intentos: (r, id) => sumaMetrica(r, id, (m) => m.tirosManoAMano) },
     { virtud: 'Rematador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
     { virtud: 'Llegador', casilla: 'MC-1', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
     { virtud: 'Desbordante', casilla: 'EI', nombre: 'regates intentados', medida: (r, id) => sumaMetrica(r, id, (m) => m.regates) },
@@ -292,6 +301,13 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
     const con = serie(conTitular(base, c.casilla, { virtudes: [c.virtud] }), rival, n, semilla, 'sc003', { metricas: true });
     const a = c.medida(sin, id);
     const b = c.medida(con, id);
+    if (c.intentos) {
+      const [ta, tb] = [proporcion(a, c.intentos(sin, id)), proporcion(b, c.intentos(con, id))];
+      const bien = mayorProporcion(tb, ta);
+      ok &&= bien;
+      partes.push(`${c.virtud}: ${c.nombre} ${(100 * ta.p).toFixed(1)} % → ${(100 * tb.p).toFixed(1)} % (${ta.n} → ${tb.n} tiros)${bien ? '' : ' ✘'}`);
+      continue;
+    }
     const aumento = media(a) > 0 ? media(b) / media(a) - 1 : 0;
     const bien = c.aumentoMinimo !== undefined ? aumento >= c.aumentoMinimo : mayorSignificativo(b, a);
     ok &&= bien;
@@ -299,7 +315,7 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
   }
   return {
     id: '003/SC-007',
-    descripcion: 'Virtudes con efecto: Lanzador de faltas ≥ 30 % más goles de falta directa; el resto, diferencia significativa en su acción',
+    descripcion: 'Virtudes con efecto: Lanzador de faltas ≥ 30 % más goles de falta directa; Matador, mejor conversión en mano a mano; el resto, diferencia significativa en su acción',
     ok,
     detalle: partes.join(' · '),
   };

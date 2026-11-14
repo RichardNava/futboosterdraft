@@ -151,6 +151,10 @@ export interface MetricasJugador {
   golesCabeza: number;
   /** Goles marcados (sin los de propia puerta). */
   goles: number;
+  /** Goles en un mano a mano (003/SC-007, Matador: la virtud solo actúa ahí). */
+  golesManoAMano: number;
+  /** Tiros en un mano a mano (003/SC-007, Matador: conversión de esos tiros). */
+  tirosManoAMano: number;
   /** Spec 014 (SC-005): fueras de juego pitados y los que no cumplen x infractor > x penúltimo y > x balón (deben ser 0). */
   fuerasDeJuego: number;
   fuerasDeJuegoIncoherentes: number;

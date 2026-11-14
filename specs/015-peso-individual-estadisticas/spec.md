@@ -90,6 +90,10 @@ Términos:
   prioriza al de más media; con la estrella marcada, un pasador con (visión + pase)/2 ≤ 80 busca al libre; uno con más
   de 80 se la juega a la estrella el 40 % de las veces, o la prioriza si tiene más de 5 puntos de media sobre la mejor
   opción clara. En el éxito del pase interviene también el desmarque del receptor.
+- Q: ¿Se mantiene el 90 % de SC-002b tras la serie de los añadidos (74,9 %)? → A: No: el objetivo baja al 80 % y se
+  calibran los añadidos para llegar a él.
+- Q: ¿Qué mide 003/SC-007 para Matador? → A: Los goles del jugador en mano a mano, la única jugada en la que actúa la
+  virtud; sus goles totales dependen de cuánto marquen los demás y no prueban el efecto.
 - Q: ¿Se añade una táctica de juego por fuera? → A: Sí, «Juego por las bandas», como un estilo con balón más
   (junto a Equilibrado, Contraataque y Juego combinativo): se avanza más por fuera y laterales, carrileros y extremos
   reciben más (US8).
@@ -158,7 +162,7 @@ completa más regates y conducciones; se mide por partido y por jugador.
    juega una serie, **Then** el de 95 intenta al menos un 40 % más de regates y conducciones por partido y completa al
    menos un 60 % más.
 2. **Given** el mejor regateador del catálogo, titular en una serie de partidos contra equipos equilibrados, **When** se
-   revisan sus acciones, **Then** en al menos el 90 % de los partidos supera a algún defensor en regate o en conducción.
+   revisan sus acciones, **Then** en al menos el 80 % de los partidos supera a algún defensor en regate o en conducción.
 
 ---
 
@@ -512,7 +516,8 @@ nunca.
   calculados sin ajustes.
 - **SC-002**: En series de 1.000 partidos, un delantero con 95 de regate intenta al menos un 40 % más de regates y
   conducciones por partido que el mismo con 75, y completa al menos un 60 % más; y el mejor regateador del catálogo
-  supera a algún defensor en regate o conducción en al menos el 90 % de los partidos que juega.
+  supera a algún defensor en regate o conducción en al menos el 80 % de los partidos que juega (rebajado del 90 % tras
+  la serie de los añadidos).
 - **SC-003**: En series de 1.000 partidos, los defensas con Cabeceador ganan más duelos aéreos y sus equipos marcan
   más goles de cabeza a balón parado que sin la virtud, con diferencia significativa.
 - **SC-004**: En series de 1.000 partidos, un receptor con 15 puntos más de desmarque recibe libre más a menudo y recibe

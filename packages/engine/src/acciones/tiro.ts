@@ -146,6 +146,7 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
     stats.contraataques++;
     e.posesion.enCampoPropio = false;
   }
+  if (tipo === 'manoAMano') anotar(ctx.metricas, tirador.id, 'tirosManoAMano');
   if (tipo !== 'penalti') controlar(ctx, tirador.id, 2);
 
   const remate = atributo(e, atacante, tirador, tipo === 'cabeza' ? 'aereo' : 'remate');
@@ -236,6 +237,7 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
     anotar(ctx.metricas, tirador.id, 'goles');
     if (tipo === 'falta') anotar(ctx.metricas, tirador.id, 'golesFalta');
     if (tipo === 'cabeza') anotar(ctx.metricas, tirador.id, 'golesCabeza');
+    if (tipo === 'manoAMano') anotar(ctx.metricas, tirador.id, 'golesManoAMano');
     const jugadores = opciones.asistente ? [...autor, { rol: 'asistente' as const, jugadorId: opciones.asistente.id }] : autor;
     emitir(ctx, 'gol', atacante.lado, jugadores, { tipo, marcador: { ...e.marcador }, ...enRemate }, true);
     interrumpir(ctx, 'gol', 40, defensor.lado);

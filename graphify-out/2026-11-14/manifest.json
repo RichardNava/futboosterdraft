@@ -2004,9 +2004,9 @@
     "semantic_hash": "08b983757611230f35f1eb6b3b485507"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1794676773.0861824,
-    "seen": 1794680747.7565365,
-    "ast_hash": "58115419c683107e1ae28998a5a4b4d4",
+    "mtime": 1794688437.5940533,
+    "seen": 1794688462.8850977,
+    "ast_hash": "662e7f86bd687800c7fe44764c65d698",
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
@@ -4944,9 +4944,9 @@
     "semantic_hash": ""
   },
   "data/core-real.json": {
-    "mtime": 1794680671.78714,
-    "seen": 1794680747.7024393,
-    "ast_hash": "37dbb9185e35e82de1f51968d71d2f78",
+    "mtime": 1794683660.478853,
+    "seen": 1794688462.8275952,
+    "ast_hash": "47b99129e9bff24ebf6a6d2784e8bf1b",
     "semantic_hash": ""
   },
   "tools/fixtures/src/coreReal.ts": {
@@ -11310,9 +11310,9 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/research.md": {
-    "mtime": 1794680278.7397199,
-    "seen": 1794680747.7840345,
-    "ast_hash": "1611819a486ef4c9ea97b6ddce985e0e",
+    "mtime": 1794688437.6361656,
+    "seen": 1794688462.9117806,
+    "ast_hash": "90d5af202a09091b25e587f7b6243669",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/spec.md": {
