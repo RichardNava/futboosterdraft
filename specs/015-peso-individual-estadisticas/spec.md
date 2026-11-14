@@ -52,6 +52,30 @@ Términos:
 - **Tanda de calibración**: bloque de cambios que se mide con una serie completa de equilibrado (unos 105 minutos con
   1.000 partidos) antes de pasar al siguiente.
 
+## Clarifications
+
+### Session 2026-11-14
+
+- Q: ¿Qué se hace con el mínimo de 150 pases completados (002/SC-007a) si las curvas del pase bajan el acierto? → A:
+  Se mantiene 150; el desmarque de la tanda 2 compensa la bajada. Al cerrar la tanda 1 puede quedar por debajo de
+  forma temporal; al cerrar la tanda 2 DEBE cumplirse.
+- Q: ¿El +0,05 de Presionador sustituye a su efecto actual o se suma? → A: Se suma (conserva el +8 y la presión de
+  hoy). Mal defensor, igual: conserva lo de hoy y además resta 0,05.
+- Q: ¿Cómo se aplican Presionador y Mal defensor en un defensa, cuyo quite es su tackling? → A: Sobre un
+  multiplicador implícito de 1,00: Presionador, tackling × 1,05; Mal defensor, tackling × 0,95.
+- Q: ¿Qué curva objetivo debe cumplir la conducción (sustituye a 014/SC-008-fisico)? → A: 90 contra quite 70,
+  72–82 %; 70 contra quite 90, 25–35 %.
+- Q: ¿Qué virtud cede cada central de Core por Cabeceador? → A: 60 Marc, Muro defensivo; 76 Gabriel, Volador;
+  77 Joško, Potente; 86 Sergio, Intimidante; 87 Virgil, Aura; 275 Ronald Federico, Potente.
+- Q: ¿Cuánto mejora Cabeceador un duelo aéreo? → A: +15 puntos de probabilidad, como hoy en el remate de cabeza,
+  también en los duelos aéreos de las dos áreas.
+- Q: ¿Qué significa «centrocampista con MD»? → A: Que la carta tiene MD entre sus posiciones, juegue donde juegue
+  en el partido.
+- Q: ¿Quién es «cercano» al defensa líder y al portero líder? → A: Al defensa, los defensas de su misma línea a
+  menos de una distancia fija (calibrada en la tanda 3); al portero, los defensas dentro de su área o en la zona propia.
+- Q: ¿Se dan por buenos los umbrales de SC-002 a SC-006? → A: Sí, tal cual. Si una tanda no los alcanza sin
+  ampliar las diferencias más allá de FR-002, se revisan en esa tanda con una nota en la spec.
+
 ## User Scenarios & Testing *(mandatory)*
 
 Las historias siguen el orden de las tandas de calibración: la tanda 1 son US1 a US3; la tanda 2, US4 y US5; la tanda
@@ -122,7 +146,7 @@ aéreos defensivos frente al mismo defensa sin la virtud.
 1. **Given** un defensa en un duelo aéreo, **When** se resuelve, **Then** su atributo aéreo es su anticipación (sin
    stat nueva en la carta).
 2. **Given** un defensa con Cabeceador, **When** disputa un balón aéreo en cualquiera de las dos áreas, **Then** su
-   anticipación en ese duelo es mayor que sin la virtud.
+   probabilidad de ganar ese duelo es 15 puntos mayor que sin la virtud.
 3. **Given** las cartas de Core 60, 76, 77, 86, 87 y 275 con Cabeceador, **When** se juega una serie, **Then** sus
    equipos marcan más goles de cabeza a balón parado que con sus virtudes actuales.
 
@@ -199,7 +223,7 @@ duelos que con uno de 70.
   receptor.
 - **Portero receptor**: no tiene desmarque ni técnica; no hay duelo de desmarque con él (nadie le marca) y en el control
   con presión usa su distribución.
-- **Defensa con Presionador o con Mal defensor**: su quite es el tackling; ver FR-005.
+- **Defensa con Presionador o con Mal defensor**: su quite es el tackling × 1,05 o × 0,95 (FR-005).
 - **Presionador y Mal defensor a la vez** en un mismo jugador: los dos ajustes se suman al multiplicador (se anulan en
   el quite).
 - **Jugador fuera de su posición o cansado**: los modificadores de posición, bonificaciones, cansancio y defectos de
@@ -232,22 +256,23 @@ duelos que con uno de 70.
   | Pase corto 90 contra anticipación 75 | 91 % | 80–90 % |
   | Remate 90 contra parada 80 (tiro normal a 11 m, nadie tapa) | 71 % | 64–74 % |
   | Remate 60 contra parada 90 (mismas condiciones) | 27 % | 22–32 % |
-  | Conducción [NEEDS CLARIFICATION: ¿qué curva objetivo debe cumplir la conducción, que sustituye a 014/SC-008-fisico? Propuesta: 90 contra quite 70, 72–82 %; 70 contra quite 90, 25–35 %] | 90 contra 60: 81 %; 60 contra 85: 33 % | — |
+  | Conducción 90 contra quite 70 | 90 contra 60: 81 % | 72–82 % |
+  | Conducción 70 contra quite 90 | 60 contra 85: 33 % | 25–35 % |
 
 - **FR-003**: La sensibilidad DEBE ser la mínima necesaria para entrar en las curvas de FR-002: mayor que la actual en
   el regate y la conducción, algo mayor en el pase y sin cambios en el remate. No se DEBEN ampliar las diferencias más
   allá de esos rangos.
 - **FR-004**: El quite de cada jugador DEBE calcularse así:
   - Defensa: su tackling.
-  - Centrocampista con MD entre sus posiciones: (posicionamiento + velocidad) / 2 × 0,90.
-  - Centrocampista sin MD: (posicionamiento + velocidad) / 2 × 0,85.
+  - Centrocampista con MD entre las posiciones de su carta (juegue donde juegue en el partido): (posicionamiento +
+    velocidad) / 2 × 0,90.
+  - Centrocampista sin MD en su carta: (posicionamiento + velocidad) / 2 × 0,85.
   - Delantero: (agresividad + velocidad) / 2 × 0,80.
   - Portero: su defensa (como hoy).
 - **FR-005**: La virtud Presionador DEBE sumar 0,05 al multiplicador del quite (un delantero con Presionador: × 0,85) y
-  el defecto Mal defensor DEBE restarle 0,05, además de lo que ya hace hoy. [NEEDS CLARIFICATION: ¿el +0,05 de
-  Presionador sustituye a su efecto actual (+8 puntos de probabilidad en contra del portador al presionar y más
-  presión) o se suma a él? ¿Y en un defensa, cuyo quite es el tackling sin multiplicador, se aplica sobre un
-  multiplicador implícito de 1,00 (Presionador × 1,05; Mal defensor × 0,95) o no le afecta?]
+  el defecto Mal defensor DEBE restarle 0,05. Los dos ajustes se suman a lo que ya hacen hoy (Presionador conserva
+  sus +8 puntos de probabilidad en contra del portador al presionar y la presión extra). En un defensa se aplican sobre
+  un multiplicador implícito de 1,00: Presionador, tackling × 1,05; Mal defensor, tackling × 0,95.
 - **FR-006**: En el tiro, el atacante DEBE usar su disparo si es centrocampista y su finalización si es delantero, y el
   portero, la media de su agilidad y su colocación.
 - **FR-007**: La probabilidad de elegir regate y conducción DEBE crecer con la stat de regate (y con la del atacante en
@@ -256,11 +281,14 @@ duelos que con uno de 70.
 - **FR-008**: En el juego aéreo, el atributo de un defensa DEBE ser su anticipación, sin añadir ninguna stat nueva a las
   cartas.
 - **FR-009**: La virtud Cabeceador DEBE poder tenerla cualquier jugador de campo, de cualquier demarcación. En un
-  defensa (y en cualquiera que dispute un balón aéreo) DEBE mejorar el atributo con el que disputa ese duelo aéreo, en
-  ataque y en defensa; en el remate de cabeza conserva su efecto actual.
+  defensa (y en cualquiera que dispute un balón aéreo) DEBE sumar +15 puntos de probabilidad a su favor en ese duelo
+  aéreo, en ataque y en defensa, en cualquiera de las dos áreas; en el remate de cabeza conserva su efecto actual (los
+  mismos +15).
 - **FR-010**: Las cartas de Core 60, 76, 77, 86, 87 y 275 (centrales) DEBEN tener la virtud Cabeceador. Todas tienen ya
-  el máximo de virtudes de su nivel, así que cada una DEBE cambiar una de sus virtudes actuales por Cabeceador (ver
-  Decisiones abiertas). El cambio se hace en el catálogo de Core, su única fuente, y DEBE pasar su validación.
+  el máximo de virtudes de su nivel, así que cada una DEBE cambiar una de sus virtudes actuales por Cabeceador: 60 Marc
+  cede Muro defensivo (conserva Capitanía); 76 Gabriel, Volador; 77 Joško, Potente; 86 Sergio, Intimidante; 87 Virgil,
+  Aura; 275 Ronald Federico, Potente. El cambio se hace en el catálogo de Core, su única fuente, y DEBE pasar su
+  validación.
 
 **Tanda 2 — desmarque contra marcaje y técnica contra presión**
 
@@ -280,10 +308,11 @@ duelos que con uno de 70.
 **Tanda 3 — liderazgo**
 
 - **FR-015**: El liderazgo de un defensa DEBE hacer que su línea defensiva se descoloque menos cerca de él: los
-  defensas cercanos guardan mejor la distancia entre sí y rompen menos la línea del fuera de juego. Con varios líderes
-  cerca, cuenta el mayor.
-- **FR-016**: El liderazgo del portero DEBE sumar a los defensas cercanos a él, en sus duelos, un 2,5 % de su liderazgo
-  en puntos (90 de liderazgo ⇒ +2,25).
+  defensas cercanos guardan mejor la distancia entre sí y rompen menos la línea del fuera de juego. Son cercanos los
+  defensas de su misma línea a menos de una distancia fija, que se calibra en la tanda 3. Con varios líderes cerca,
+  cuenta el mayor.
+- **FR-016**: El liderazgo del portero DEBE sumar a los defensas cercanos a él (los que están dentro de su área o en la
+  zona propia), en sus duelos, un 2,5 % de su liderazgo en puntos (90 de liderazgo ⇒ +2,25).
 
 **Comunes**
 
@@ -294,9 +323,10 @@ duelos que con uno de 70.
   aritméticas, sin búsquedas ni bucles añadidos por duelo más allá de localizar al rival implicado); la simulación de un
   partido DEBE seguir dentro del umbral de rendimiento del motor que comprueba el CI.
 - **FR-019**: Si en un enfrentamiento el defensor no tiene una stat con la que comparar, DEBE usarse 50.
-- **FR-020**: Los pases completados por partido DEBEN cumplir el mínimo de 002/SC-007a. [NEEDS CLARIFICATION: las
-  curvas del pase de FR-002 bajan el acierto (hoy 158,5 pases completados, mínimo 150). ¿Se mantiene el mínimo de 150 y
-  el desmarque de US4 (más pases a receptores libres) debe compensar la bajada, o se revisa ese mínimo y a qué valor?]
+- **FR-020**: Los pases completados por partido DEBEN cumplir el mínimo de 002/SC-007a, que se mantiene en 150 (hoy
+  158,5). Las curvas del pase de FR-002 bajan el acierto; el desmarque de US4 (más pases a receptores libres) DEBE
+  compensar la bajada. Al cerrar la tanda 1 se admite quedar por debajo de 150 de forma temporal; al cerrar la tanda 2
+  DEBE cumplirse.
 - **FR-021**: No DEBE haber regresiones (014/FR-023): 001/SC-004 (con +5 de media, el mejor gana al menos el 60 % y el
   peor al menos el 10 %), los criterios de goles de la 003 y los de la 005 DEBEN seguir en verde.
 - **FR-022**: Los resultados del motor cambian, así que DEBE publicarse una versión nueva de los parámetros (8.0.0); los
@@ -326,7 +356,8 @@ duelos que con uno de 70.
 
 ### Measurable Outcomes
 
-- **SC-001**: Los siete duelos de FR-002 (y el de conducción que se acuerde) caen en su rango, calculados sin ajustes.
+- **SC-001**: Los nueve duelos de FR-002 (siete de regate, pase y remate, y dos de conducción) caen en su rango,
+  calculados sin ajustes.
 - **SC-002**: En series de 1.000 partidos, un delantero con 95 de regate intenta al menos un 40 % más de regates y
   conducciones por partido que el mismo con 75, y completa al menos un 60 % más; y el mejor regateador del catálogo
   supera a algún defensor en regate o conducción en al menos el 90 % de los partidos que juega.
@@ -344,7 +375,7 @@ duelos que con uno de 70.
   curvas; 002/SC-008, 003/SC-009, 003/SC-005 y 003/SC-007) pasan y salen de la lista de pendientes del CI, que queda
   vacía; el informe de equilibrado completo pasa sin ninguna comprobación pendiente.
 - **SC-008**: Siguen en verde todos los criterios que pasaban con la 7.0.0, en particular 001/SC-004, los de goles de
-  la 003 y los de la 005, y el mínimo de pases completados que se acuerde (FR-020).
+  la 003 y los de la 005, y el mínimo de 150 pases completados (FR-020) al cerrar la tanda 2.
 - **SC-009**: La simulación de un partido sigue dentro del umbral de rendimiento del motor del CI, y no tarda más de
   un 10 % que con la 7.0.0.
 - **SC-010**: La simulación rápida y la 2D siguen dando exactamente el mismo partido con la misma semilla (001/SC-008),
@@ -352,23 +383,7 @@ duelos que con uno de 70.
 
 ## Decisiones abiertas
 
-Para revisar con `/speckit-clarify` antes de planificar:
-
-1. **Mínimo de pases completados (FR-020)**: mantener 150 y compensar con el desmarque, o revisar el mínimo.
-2. **Presionador y Mal defensor (FR-005)**: si el +0,05 de Presionador sustituye o se suma a su efecto actual, y cómo se
-   aplican los dos en un defensa.
-3. **Curva de la conducción (FR-002)**: rango objetivo que sustituye a 014/SC-008-fisico.
-4. **Virtud que cede cada central por Cabeceador (FR-010)**: propuesta, quitar una virtud repetida o de menos peso en su
-   juego: 60 Marc, Muro defensivo (se queda Capitanía); 76 Gabriel, Volador; 77 Joško, Potente; 86 Sergio, Intimidante;
-   87 Virgil, Aura; 275 Ronald Federico, Potente.
-5. **Cuánto mejora Cabeceador el juego aéreo (FR-009)**: propuesta, los mismos +15 puntos de probabilidad que hoy da en
-   el remate de cabeza, también en los duelos aéreos defensivos.
-6. **«Con MD» (FR-004)**: se entiende que la carta tiene MD entre sus posiciones, no que juegue en esa posición en el
-   partido.
-7. **Quién es «cercano»** al defensa líder y al portero (FR-015, FR-016): propuesta, los defensas de la misma línea a
-   menos de una distancia fija (a calibrar en la tanda 3) y, para el portero, los defensas dentro de su área o en la
-   zona propia.
-8. **Umbrales de SC-002 a SC-006**: los porcentajes son una primera propuesta; se pueden ajustar antes de planificar.
+Ninguna: las ocho se resolvieron en [Clarifications](#clarifications) (sesión del 2026-11-14).
 
 ## Assumptions
 
