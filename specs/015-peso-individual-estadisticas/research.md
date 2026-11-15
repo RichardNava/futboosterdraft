@@ -414,3 +414,53 @@ Decisiones: SC-002b baja al 80 %; 014/SC-008-defensa debe pasar; Matador se mide
   juega menos mano a mano (1.640 → 1.329) y sus goles totales no prueban nada. Con 1.000 partidos: conversión de sus
   tiros en mano a mano 35,2 % → 47,0 % (287 y 251 tiros; z ≈ 2,8). La comprobación pasa a medir esa conversión
   (métricas nuevas `golesManoAMano` y `tirosManoAMano`; contraste de dos proporciones, z > 2).
+
+### Calibración de los pendientes (2026-11-15)
+
+Decisiones: 002/SC-007a baja a ≥ 130 pases completados y 002/SC-007b al 25 % de posesiones con 3 o más pases (FR-020).
+
+- **014/SC-008-velocidad**: por demarcación, la carrera por el balón suelto es puramente física (llega primero el más
+  rápido; el choque entre los dos casi nunca decide, porque el balón se alcanza a 150 décimas y la separación mínima es
+  de 110). La velocidad pesaba poco: `espacio.velocidadJugadorMin` 18 → 14 (la máxima sigue en 36). Sondas de 300:
+  máximo 40 → +6 %, 15–39 → +8 %, mínimo 14 → +15 %. Con 1.000 partidos: acierto +13,4 % ✔.
+- **003/SC-002**: el factor de gol del tiro lejano solo no basta (−0,5 → 0: del 20,3 % al 22,3 %). Valores:
+  `acciones.puerta.lejano` −0,2 → 0,1 y `acciones.gol.lejano` −0,5 → −0,1. Sonda de 300: 23,6 % fuera del área ✔.
+- **002/SC-008**: `pesoPasePorStat` no actúa en la 8.0.0 (manda la curva del pase) y la pendiente de la curva no ayuda en
+  ningún sentido (m 0,95 → +7,1 %; 1,1 → +7,6 %; 1,27 → +8,7 %; 1,4 → +7,7 %; 1,55 → +6,8 % y rompe 015/SC-001). Sigue
+  pendiente, con 003/SC-009, que lo incluye.
+
+Huellas: `data/core-real.json` cambió las stats de varias cartas (decisión de producto), lo que cambia los sobres y los
+picks de los NPC; se regeneran `huella-014.json` (los 100 partidos salen idénticos, solo cambian los 20 drafts) y
+`regresion-e9aca5d.json` (G4).
+
+### Serie de cierre de 1.000 partidos (2026-11-15)
+
+`pnpm balance --n 1000 --pendientes 002/SC-008,003/SC-009,015/SC-012`: 62/70 (antes 60/70), 7.487 s.
+
+- Pasan ahora: 015/SC-002b 83,1 % (media 2,24), 003/SC-007 (Matador 32,8 % → 45,1 % en mano a mano), 003/SC-002 25,2 %,
+  002/SC-007b 25,7 %, 014/SC-008-velocidad +13,0 %. 003/SC-001 sigue ✔ con 3,05 goles por partido.
+- 014/SC-005 (1 incoherente de 2.687): fallo de la métrica, no de la regla. En la falta colgada al área, el penúltimo
+  defensor de la foto se medía después de `volar`, que avanza el reloj. Se toma antes; la simulación no cambia (0 de 2.687).
+- **Fallan en el límite** (sin cambio de parámetros entre medias):
+  - 003/SC-006: conducciones largas con +15 de físico y velocidad 1,31 → 1,50 (+14,5 %; objetivo +15 %). El resto, holgado.
+  - 002/SC-007a: 2,0 contraataques por partido redondeado, por debajo de 2 (133,3 pases ✔).
+  - 014/SC-008-defensa: acierto +9,0 % (25,0 % → 27,3 %, ±1,0 %; la sonda de `--solo` daba +11,8 %); intentos +25,8 % ✔.
+  - 015/SC-003: aéreos ganados 0,55 → 2,88 ✔, pero goles de cabeza del equipo 0,340 → 0,371, no significativo (antes
+    0,295 → 0,399). Con más goles de tiro lejano, el Cabeceador pesa menos en el total del equipo.
+- Siguen pendientes: 002/SC-008 +9,1 %, 015/SC-012 2,3 %, 003/SC-009.
+
+### Ajustes tras la serie de cierre (2026-11-15)
+
+Decisiones: 003/SC-006 baja a +14,5 % en conducciones largas; quite de los MED algo mayor; 015/SC-003 mide los goles de
+cabeza de los propios centrales. Sondas de 1.000 partidos con `--solo`:
+
+- 003/SC-006 ✔: conducciones largas +21,8 % (el resto, holgado).
+- 014/SC-008-defensa ✔: `quite.MED_MD` 0,90 → 0,92 y `quite.MED` 0,85 → 0,87; acierto +10,4 % (±0,9 %), intentos +26,4 %.
+- 015/SC-003 ✔: aéreos ganados 0,52 → 2,88; goles de cabeza de los centrales 0,000 → 0,208 por partido.
+- 002/SC-007a ✘: 2,0 contraataques por partido redondeado, por debajo de 2 (132,6 pases ✔).
+- Contraataques con la táctica Contraataque (sonda de 300, `sc007-2d` frente a su clon): equilibrado 0,96 por equipo
+  (1,91 por partido); con Contraataque, 1,46 el que la elige y 1,07 el rival (2,53 por partido), posesión 46,1 %.
+- **Córners**: 2,1–2,3 por partido (objetivo de producto 9,5–12,5). Solo salen de tiros: parada (30 %) o bloqueo (35 %).
+  Prototipo descartado: córner tras un centro despejado; aun con el 100 % se llega a 4,6 por partido, y los goles
+  (3,37 → 3,56) y la cuota de cabeza (19,4 % → 23,4 %) suben. Llegar a 10 pide más fuentes (despejes, entradas y pases
+  que salen por la línea de fondo) y recalibrar goles: decisión pendiente.

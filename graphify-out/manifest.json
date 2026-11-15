@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/index.ts": {
-    "mtime": 1794694764.1427977,
-    "seen": 1794695168.584759,
-    "ast_hash": "193a5a214c2baf8653b43fd61bb8eb7f",
+    "mtime": 1794708154.340079,
+    "seen": 1794708950.2637086,
+    "ast_hash": "04664c8f3c8b0e72c3be6659b188232e",
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/v1.json": {
@@ -1392,9 +1392,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/parametros/parametros.test.ts": {
-    "mtime": 1794694764.1427977,
-    "seen": 1794695168.5908308,
-    "ast_hash": "4b3f87bf2f03205ff8caa72401572458",
+    "mtime": 1794698116.261627,
+    "seen": 1794698763.0490537,
+    "ast_hash": "70cb9edd850565f8ec4ff62b5730d57a",
     "semantic_hash": ""
   },
   "packages/domain/tests/partida/partida.test.ts": {
@@ -1470,8 +1470,8 @@
     "semantic_hash": "c365c1d84b0da9e064b8a284899e5549"
   },
   "packages/engine/src/acciones/animaciones.ts": {
-    "mtime": 1794585984.8985245,
-    "seen": 1794592739.6594484,
+    "mtime": 1794697039.7747571,
+    "seen": 1794698763.0512657,
     "ast_hash": "b55a75ab9db14f3bcfe4cbcb7ff559c5",
     "semantic_hash": ""
   },
@@ -1494,9 +1494,9 @@
     "semantic_hash": ""
   },
   "packages/engine/src/acciones/juego.ts": {
-    "mtime": 1794675719.2778714,
-    "seen": 1794676126.9396322,
-    "ast_hash": "a0e20b805e7344e43b3ac264ead6d7b8",
+    "mtime": 1794708154.3403158,
+    "seen": 1794708950.2736547,
+    "ast_hash": "b953afebccbc8d5df657bbc0e247e3d5",
     "semantic_hash": ""
   },
   "packages/engine/src/acciones/lesiones.ts": {
@@ -1518,9 +1518,9 @@
     "semantic_hash": ""
   },
   "packages/engine/src/acciones/tiro.ts": {
-    "mtime": 1794694764.1437967,
-    "seen": 1794695168.594664,
-    "ast_hash": "1d5d5fc0e4547bcf010ab4640b519204",
+    "mtime": 1794706308.408587,
+    "seen": 1794706732.910145,
+    "ast_hash": "73459504bee37369eb8e0a8e567f543e",
     "semantic_hash": ""
   },
   "packages/engine/src/espacio/aritmetica.ts": {
@@ -1812,9 +1812,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido.ts": {
-    "mtime": 1794556996.4466393,
-    "seen": 1794592739.6657245,
-    "ast_hash": "4c060c4c054c21f4ce52e5cbaa475a79",
+    "mtime": 1794696764.9779127,
+    "seen": 1794698763.066237,
+    "ast_hash": "c4bebb9f197805bd5d1387dc8fbcd2f6",
     "semantic_hash": ""
   },
   "tools/balance/src/cli.ts": {
@@ -1848,33 +1848,33 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/fixtures/escenarios/empate-eliminatoria.json": {
-    "mtime": 1794694764.1478128,
-    "seen": 1794695168.6100757,
-    "ast_hash": "edff77c5e9e2b180211b7bd40d917b67",
+    "mtime": 1794708526.9913988,
+    "seen": 1794708950.2905314,
+    "ast_hash": "678e3d1bb643069caf5c14760a1a5d41",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-grave.json": {
-    "mtime": 1794694764.1478128,
-    "seen": 1794695168.6100779,
-    "ast_hash": "352024ab16fd3bdc38a1d470ad274ed9",
+    "mtime": 1794708526.9903977,
+    "seen": 1794708950.2905335,
+    "ast_hash": "d71b8c8b7f7222b9c215b1514e075785",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-larga.json": {
-    "mtime": 1794694764.1487966,
-    "seen": 1794695168.6100798,
-    "ast_hash": "e4bb09f36747ff25583edaa82ab2a7b3",
+    "mtime": 1794708526.9903977,
+    "seen": 1794708950.2905357,
+    "ast_hash": "22eb19db4cc7cb289a94912e4e1a0d55",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/roja.json": {
-    "mtime": 1794694764.1487966,
-    "seen": 1794695168.610082,
-    "ast_hash": "0deaeadcea1beb7e2b5474af4a4d2f1c",
+    "mtime": 1794708526.989452,
+    "seen": 1794708950.2905378,
+    "ast_hash": "b2720bcf767f7a951bfb56bf297a6f3d",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/tres-amarillas.json": {
-    "mtime": 1794694764.1487966,
-    "seen": 1794695168.6100836,
-    "ast_hash": "82f7617a07094f9c18fc8a1f65bf606f",
+    "mtime": 1794708526.9903977,
+    "seen": 1794708950.2905395,
+    "ast_hash": "9db659db531e85d3833522c6b62feed2",
     "semantic_hash": ""
   },
   "tools/fixtures/package.json": {
@@ -2004,9 +2004,9 @@
     "semantic_hash": "08b983757611230f35f1eb6b3b485507"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1794688437.5940533,
-    "seen": 1794688462.8850977,
-    "ast_hash": "662e7f86bd687800c7fe44764c65d698",
+    "mtime": 1794698393.4412405,
+    "seen": 1794698763.0879238,
+    "ast_hash": "b8c438822ccb9519f463650b23e0f96f",
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
@@ -2670,9 +2670,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido003.ts": {
-    "mtime": 1794694764.1467988,
-    "seen": 1794695168.6075065,
-    "ast_hash": "7e86bf69838ec48d40c44230f403b8ce",
+    "mtime": 1794707970.7867975,
+    "seen": 1794708950.28787,
+    "ast_hash": "6a546f0d1ecfc2c4058c0598e4a208e5",
     "semantic_hash": ""
   },
   "tools/balance/src/core.ts": {
@@ -9156,9 +9156,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/sobres/fixtures/regresion-e9aca5d.json": {
-    "mtime": 1794267661.3243253,
-    "seen": 1794272531.7417042,
-    "ast_hash": "f23e05a9ee170c48880daaa75c907ddb",
+    "mtime": 1794696747.4474237,
+    "seen": 1794698763.049447,
+    "ast_hash": "8f667c57b49cb23dc70f009fea1f2ad8",
     "semantic_hash": ""
   },
   "packages/domain/tests/sobres/rareza.test.ts": {
@@ -11190,9 +11190,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/huella-014.json": {
-    "mtime": 1794621107.995432,
-    "seen": 1794627559.6248398,
-    "ast_hash": "f6b98c5a48f5d2a21fbe48a30d38a550",
+    "mtime": 1794696741.7730334,
+    "seen": 1794698763.0592225,
+    "ast_hash": "bf617f9f6deaf7415aa448b1ac2be83c",
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/huella014.ts": {
@@ -11286,15 +11286,15 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/contracts/motor.md": {
-    "mtime": 1794694764.1457963,
-    "seen": 1794695168.653001,
-    "ast_hash": "88125ba2cf5358716be2b17ae93ddc26",
+    "mtime": 1794708517.0669343,
+    "seen": 1794708950.3348846,
+    "ast_hash": "9098b8b72c4b0ac952959ae4fa31014d",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/data-model.md": {
-    "mtime": 1794675886.824901,
-    "seen": 1794676127.0148544,
-    "ast_hash": "c75af38cc6052e497d8139765a5580d8",
+    "mtime": 1794708517.0365078,
+    "seen": 1794708950.334887,
+    "ast_hash": "923abce233a6e8d784d30f68b294e60e",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/plan.md": {
@@ -11310,15 +11310,15 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/research.md": {
-    "mtime": 1794695142.9015992,
-    "seen": 1794695168.6533713,
-    "ast_hash": "aba094a580c2a9c6e3285c74fa1ba0e5",
+    "mtime": 1794706707.2854962,
+    "seen": 1794706732.971015,
+    "ast_hash": "dab04bd0630222d171e47c2817fda835",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/spec.md": {
-    "mtime": 1794694764.1457963,
-    "seen": 1794695168.6533735,
-    "ast_hash": "8bfd689d5c6376b42574df024b16b1c5",
+    "mtime": 1794708920.651836,
+    "seen": 1794708950.3352728,
+    "ast_hash": "882d76a5e7243313918d65c769ad7ee7",
     "semantic_hash": ""
   },
   "packages/engine/tests/cabeceador015.test.ts": {
@@ -11334,9 +11334,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/quite015.test.ts": {
-    "mtime": 1794662359.262139,
-    "seen": 1794663714.069983,
-    "ast_hash": "a33bfd09d1f0b55cd1b08614af65aee5",
+    "mtime": 1794708901.5231583,
+    "seen": 1794708950.2820456,
+    "ast_hash": "8a83fca368d2e839193478d628f44d27",
     "semantic_hash": ""
   },
   "tools/balance/src/checks/curvas015.ts": {
@@ -11346,9 +11346,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/motor015.ts": {
-    "mtime": 1794694764.1467988,
-    "seen": 1794695168.6071482,
-    "ast_hash": "624544c548946fb2cd17013e29b5d3f0",
+    "mtime": 1794707978.7190611,
+    "seen": 1794708950.287622,
+    "ast_hash": "dd2f8d678ef2b0e0ee84b953772fdbff",
     "semantic_hash": ""
   },
   "tools/balance/src/sonda015.ts": {

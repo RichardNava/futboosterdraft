@@ -48,7 +48,7 @@ mismo que en la 7.0.0.
 | liderazgo | liderazgo | liderazgo | 0 | 0 | `liderazgo` |
 | aéreo (DEF) | | anticipación (sin cambio) | | | — |
 
-`mult` = base por demarcación (DEF 1,00; MED con MD en `posiciones` 0,90; MED sin MD 0,85; DEL 0,80) + 0,05 por
+`mult` = base por demarcación (DEF 1,00; MED con MD en `posiciones` 0,92; MED sin MD 0,87; DEL 0,80) + 0,05 por
 Presionador − 0,05 por Mal defensor.
 
 Orden de los modificadores sin cambios (FR-017): stats base → posición → bonificaciones en puntos → **traducción** →

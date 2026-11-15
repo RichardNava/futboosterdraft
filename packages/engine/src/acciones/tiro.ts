@@ -398,8 +398,10 @@ export function rematarBalonParado(
     const xBalon = aEquipo(atacante.lado, e.espacio.balon).x;
     if (tipo === 'faltas' && q && enFueraDeJuego(e, atacante, rematador, xBalon)) {
       const punto = { x: q.x, y: q.y };
+      // La foto antes de volar: el vuelo avanza el reloj y mueve a los defensores.
+      const foto = { xPenultimo: penultimoDefensor(e, defensor, atacante.lado), xBalon };
       volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: false, aerea: true });
-      fueraDeJuego(ctx, atacante, rematador, punto, { xPenultimo: penultimoDefensor(e, defensor, atacante.lado), xBalon });
+      fueraDeJuego(ctx, atacante, rematador, punto, foto);
       return;
     }
     volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: true, aerea: true });

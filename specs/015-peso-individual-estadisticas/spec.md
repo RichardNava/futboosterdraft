@@ -92,8 +92,14 @@ Términos:
   opción clara. En el éxito del pase interviene también el desmarque del receptor.
 - Q: ¿Se mantiene el 90 % de SC-002b tras la serie de los añadidos (74,9 %)? → A: No: el objetivo baja al 80 % y se
   calibran los añadidos para llegar a él.
+- Q: ¿Se mantienen 150 pases completados y el 30 % de posesiones con 3 o más pases? → A: No: con la estrella que
+  regatea más hay menos pase; bajan a 130 y al 25 % (serie de calibración: 134,3 y 25,5 %).
 - Q: ¿Qué mide 003/SC-007 para Matador? → A: Los goles del jugador en mano a mano, la única jugada en la que actúa la
   virtud; sus goles totales dependen de cuánto marquen los demás y no prueban el efecto.
+- Q: ¿Qué mide SC-003 para Cabeceador? → A: Los goles de cabeza de los propios centrales con la virtud, no los del
+  equipo: con más goles de tiro lejano, los del resto diluyen el efecto (decisión del 2026-11-15).
+- Q: ¿Se mantiene el +15 % de conducciones largas de 003/SC-006 con +15 de físico y velocidad? → A: Baja a +14,5 %
+  (serie de cierre: +14,5 %).
 - Q: ¿Se añade una táctica de juego por fuera? → A: Sí, «Juego por las bandas», como un estilo con balón más
   (junto a Equilibrado, Contraataque y Juego combinativo): se avanza más por fuera y laterales, carrileros y extremos
   reciben más (US8).
@@ -137,9 +143,9 @@ en su rango; con una serie de equilibrado se comprueba que los aciertos por stat
    probabilidad de éxito está entre el 63 % y el 73 %, y la de un pase de 90 contra la misma anticipación, entre el 80 %
    y el 90 %.
 3. **Given** un centrocampista que no tiene MD entre sus posiciones, con 80 de posicionamiento y 70 de velocidad, **When**
-   intenta quitar el balón, **Then** su quite vale (80 + 70) / 2 × 0,85 = 63,75.
+   intenta quitar el balón, **Then** su quite vale (80 + 70) / 2 × 0,87 = 65,25 (0,85 hasta la calibración del 2026-11-15).
 4. **Given** el mismo centrocampista con la virtud Presionador, **When** intenta quitar el balón, **Then** su quite vale
-   (80 + 70) / 2 × 0,90 = 67,5; con Mal defensor (y sin Presionador), (80 + 70) / 2 × 0,80 = 60.
+   (80 + 70) / 2 × 0,92 = 69; con Mal defensor (y sin Presionador), (80 + 70) / 2 × 0,82 = 61,5.
 5. **Given** un delantero que remata, **When** se resuelve el duelo con el portero, **Then** se enfrenta su finalización
    (un centrocampista, su disparo) a la media de agilidad y colocación del portero.
 
@@ -396,8 +402,8 @@ nunca.
 - **FR-004**: El quite de cada jugador DEBE calcularse así:
   - Defensa: su tackling.
   - Centrocampista con MD entre las posiciones de su carta (juegue donde juegue en el partido): (posicionamiento +
-    velocidad) / 2 × 0,90.
-  - Centrocampista sin MD en su carta: (posicionamiento + velocidad) / 2 × 0,85.
+    velocidad) / 2 × 0,92 (0,90 hasta la calibración del 2026-11-15).
+  - Centrocampista sin MD en su carta: (posicionamiento + velocidad) / 2 × 0,87 (0,85 hasta la calibración del 2026-11-15).
   - Delantero: (agresividad + velocidad) / 2 × 0,80.
   - Portero: su defensa (como hoy).
 - **FR-005**: La virtud Presionador DEBE sumar 0,05 al multiplicador del quite (un delantero con Presionador: × 0,85) y
@@ -479,8 +485,8 @@ nunca.
   aritméticas, sin búsquedas ni bucles añadidos por duelo más allá de localizar al rival implicado); la simulación de un
   partido DEBE seguir dentro del umbral de rendimiento del motor que comprueba el CI.
 - **FR-019**: Si en un enfrentamiento el defensor no tiene una stat con la que comparar, DEBE usarse 50.
-- **FR-020**: Los pases completados por partido DEBEN cumplir el mínimo de 002/SC-007a, que se mantiene en 150 (hoy
-  158,5). Las curvas del pase de FR-002 bajan el acierto; el desmarque de US4 (más pases a receptores libres) DEBE
+- **FR-020**: Los pases completados por partido DEBEN cumplir el mínimo de 002/SC-007a, que baja de 150 a 130 con los
+  añadidos (y el de posesiones con 3 o más pases de 002/SC-007b, del 30 % al 25 %); con la 7.0.0 eran 158,5. Las curvas del pase de FR-002 bajan el acierto; el desmarque de US4 (más pases a receptores libres) DEBE
   compensar la bajada. Al cerrar la tanda 1 se admite quedar por debajo de 150 de forma temporal; al cerrar la tanda 2
   DEBE cumplirse.
 - **FR-021**: No DEBE haber regresiones (014/FR-023): 001/SC-004 (con +5 de media, el mejor gana al menos el 60 % y el
@@ -519,7 +525,8 @@ nunca.
   supera a algún defensor en regate o conducción en al menos el 80 % de los partidos que juega (rebajado del 90 % tras
   la serie de los añadidos).
 - **SC-003**: En series de 1.000 partidos, los defensas con Cabeceador ganan más duelos aéreos y sus equipos marcan
-  más goles de cabeza a balón parado que sin la virtud, con diferencia significativa.
+  más goles de cabeza que sin la virtud, con diferencia significativa (los goles de cabeza de esos defensas, no los del
+  equipo).
 - **SC-004**: En series de 1.000 partidos, un receptor con 15 puntos más de desmarque recibe libre más a menudo y recibe
   más pases completados; un marcador con 15 puntos más de marcaje deja al receptor menos veces libre. Las dos
   diferencias son significativas.
@@ -532,7 +539,7 @@ nunca.
   curvas; 002/SC-008, 003/SC-009, 003/SC-005 y 003/SC-007) pasan y salen de la lista de pendientes del CI, que queda
   vacía; el informe de equilibrado completo pasa sin ninguna comprobación pendiente.
 - **SC-008**: Siguen en verde todos los criterios que pasaban con la 7.0.0, en particular 001/SC-004, los de goles de
-  la 003 y los de la 005, y el mínimo de 150 pases completados (FR-020) al cerrar la tanda 2.
+  la 003 y los de la 005, y el mínimo de 130 pases completados (FR-020) al cerrar la tanda 2.
 - **SC-009**: La simulación de un partido sigue dentro del umbral de rendimiento del motor del CI, y no tarda más de
   un 10 % que con la 7.0.0.
 - **SC-010**: La simulación rápida y la 2D siguen dando exactamente el mismo partido con la misma semilla (001/SC-008),

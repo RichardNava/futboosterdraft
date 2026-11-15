@@ -33,15 +33,15 @@ const DEL = { agresividad: 80, velocidad: 70 };
 const DEF = { tackling: 80 };
 
 describe('quite de la 8.0.0 (M2.3)', () => {
-  it('MED sin MD: (posicionamiento + velocidad) / 2 × 0,85, ±0,05 por Presionador y Mal defensor', () => {
-    expect(quite('MC-1', { stats: MED })).toBeCloseTo(63.75);
-    expect(quite('MC-1', { stats: MED, virtudes: ['Presionador'] })).toBeCloseTo(67.5);
-    expect(quite('MC-1', { stats: MED, defectos: ['MalDefensor'] })).toBeCloseTo(60);
-    expect(quite('MC-1', { stats: MED, virtudes: ['Presionador'], defectos: ['MalDefensor'] })).toBeCloseTo(63.75);
+  it('MED sin MD: (posicionamiento + velocidad) / 2 × 0,87, ±0,05 por Presionador y Mal defensor', () => {
+    expect(quite('MC-1', { stats: MED })).toBeCloseTo(65.25);
+    expect(quite('MC-1', { stats: MED, virtudes: ['Presionador'] })).toBeCloseTo(69);
+    expect(quite('MC-1', { stats: MED, defectos: ['MalDefensor'] })).toBeCloseTo(61.5);
+    expect(quite('MC-1', { stats: MED, virtudes: ['Presionador'], defectos: ['MalDefensor'] })).toBeCloseTo(65.25);
   });
 
-  it('MED con MD en su carta: × 0,90 aunque juegue de MC', () => {
-    expect(quite('MC-1', { stats: MED, posicion: ['MD', 'MC'] })).toBeCloseTo(67.5);
+  it('MED con MD en su carta: × 0,92 aunque juegue de MC', () => {
+    expect(quite('MC-1', { stats: MED, posicion: ['MD', 'MC'] })).toBeCloseTo(69);
   });
 
   it('DEL: (agresividad + velocidad) / 2 × 0,80', () => {

@@ -14,7 +14,7 @@ curvas?: Partial<Record<AccionDuelo, { base: number; m: number }>>;
 //  8.0.0: regate { -0.32, 1.1 } · conduccion { 0.25, 1.15 } · pase_corto { 1.57, 1.27 }
 
 quite?: { DEF: number; MED_MD: number; MED: number; DEL: number; presionador: number; malDefensor: number };
-//  8.0.0: { 1.0, 0.9, 0.85, 0.8, 0.05, 0.05 }
+//  8.0.0: { 1.0, 0.92, 0.87, 0.8, 0.05, 0.05 } (0.9 y 0.85 hasta el 2026-11-15)
 
 aereo?: { bonusCabeceador: number; seleccionCabeceador: number };
 //  8.0.0: { 0.15, 10 }

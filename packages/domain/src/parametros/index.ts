@@ -630,7 +630,16 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
   ...PARAMETROS_V7,
   version: '8.0.0',
   curvas: { regate: { base: -0.32, m: 1.1 }, conduccion: { base: 0.25, m: 1.15 }, pase_corto: { base: 1.57, m: 1.27 } },
-  quite: { DEF: 1.0, MED_MD: 0.9, MED: 0.85, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 },
+  // Calibración tras los añadidos: la velocidad pesa más en la carrera (014/SC-008-velocidad) y el tiro lejano va más a
+  // puerta y entra algo más (003/SC-002).
+  espacio: { ...PARAMETROS_V7.espacio, velocidadJugadorMin: 14 },
+  acciones: {
+    ...PARAMETROS_V7.acciones,
+    puerta: { ...PARAMETROS_V7.acciones.puerta, lejano: 0.1 },
+    gol: { ...PARAMETROS_V7.acciones.gol, lejano: -0.1 },
+  },
+  // MED_MD 0,9 → 0,92 y MED 0,85 → 0,87 tras la serie de cierre (014/SC-008-defensa, 2026-11-15).
+  quite: { DEF: 1.0, MED_MD: 0.92, MED: 0.87, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 },
   aereo: { bonusCabeceador: 0.15, seleccionCabeceador: 10 },
   estrella: { umbralVisionPase: 80, escalaMedia: 4, diferenciaArriesgar: 5, repartoArriesgado: 0.4, prioridadEstrella: 1.5, lineaClaraM: 3, pendienteDesmarque: 0.003 },
   bandas: { probabilidadBanda: 0.2, receptorBanda: 1.5, centro: 1.3 },
@@ -645,6 +654,8 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
     factores: { ...PARAMETROS_V7.decision.factores, regate: { k: 1.1, min: 0.6, max: 4.0 } },
   },
 };
+
+
 
 /** Reparto de un nivel; las versiones anteriores a la 6.3.0 tienen el de siempre (4, 2, 1 y 1 alta) en todos. */
 export function repartoDe(p: ParametrosEquilibrado, nivel: NivelRareza): RepartoSobre {

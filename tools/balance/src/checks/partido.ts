@@ -144,7 +144,8 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
     }
   }
   const umbrales: [Campo, string, number][] = [
-    ['pasesCompletados', 'pases completados', 150],
+    // 150 → 130 en la spec 015 (añadidos: más regate de la estrella, menos pase; decisión del 2026-11-14).
+    ['pasesCompletados', 'pases completados', 130],
     ['centros', 'centros', 9],
     ['tiros', 'tiros', 15],
     ['conducciones', 'conducciones', 30],
@@ -157,14 +158,14 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   return [
     {
       id: '002/SC-007a',
-      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 150 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques',
       ok: valores.every((v) => v.valor >= v.minimo),
       detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
     },
     {
       id: '002/SC-007b',
-      descripcion: 'Al menos el 30 % de las posesiones con 3 o más pases seguidos',
-      ok: proporcion >= 0.3,
+      descripcion: 'Al menos el 25 % de las posesiones con 3 o más pases seguidos',
+      ok: proporcion >= 0.25,
       detalle: `${(proporcion * 100).toFixed(1)} % de ${posesiones} posesiones`,
     },
   ];

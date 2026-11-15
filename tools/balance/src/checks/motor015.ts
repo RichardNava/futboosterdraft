@@ -72,10 +72,11 @@ export function comprobarSC002b(n: number, semilla: number): Comprobacion {
   };
 }
 
-/** Goles de cabeza por partido de todo el equipo A (SC-003 habla de los goles del equipo, no solo de los centrales). */
-const golesCabezaEquipo = (r: ResultadoSerie) => r.metricasA.map((m) => Object.values(m).reduce((t, x) => t + (x?.golesCabeza ?? 0), 0));
-
-/** SC-003: centrales con Cabeceador frente a sin ella: más duelos aéreos ganados y más goles de cabeza del equipo, significativos. */
+/**
+ * SC-003: centrales con Cabeceador frente a sin ella: más duelos aéreos ganados y más goles de cabeza de los propios
+ * centrales, significativos. Se mide donde actúa la virtud: los goles de cabeza del equipo se diluyen con los del resto
+ * (decisión del 2026-11-15).
+ */
 export function comprobarSC003(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'motor015' });
   const rival = clonar(base, 'b');
@@ -84,14 +85,14 @@ export function comprobarSC003(n: number, semilla: number): Comprobacion {
   const sin = serie(base, rival, n, semilla, 'motor015-cabeceador', { metricas: true });
   const con = serie(cambiar(base, centrales, conVirtud('Cabeceador')), rival, n, semilla, 'motor015-cabeceador', { metricas: true });
   const aereos = [porPartido(sin, ids, ['aereosGanados']), porPartido(con, ids, ['aereosGanados'])] as const;
-  const goles = [golesCabezaEquipo(sin), golesCabezaEquipo(con)] as const;
+  const goles = [porPartido(sin, ids, ['golesCabeza']), porPartido(con, ids, ['golesCabeza'])] as const;
   const okAereos = mayorSignificativo(aereos[1], aereos[0]);
   const okGoles = mayorSignificativo(goles[1], goles[0]);
   return {
     id: '015/SC-003',
     descripcion: 'Cabeceador en los centrales: más duelos aéreos ganados y más goles de cabeza, con diferencia significativa',
     ok: okAereos && okGoles,
-    detalle: `aéreos ganados ${media(aereos[0]).toFixed(2)} → ${media(aereos[1]).toFixed(2)} por partido${okAereos ? '' : ' (no significativo)'} · goles de cabeza del equipo ${media(goles[0]).toFixed(3)} → ${media(goles[1]).toFixed(3)}${okGoles ? '' : ' (no significativo)'}`,
+    detalle: `aéreos ganados ${media(aereos[0]).toFixed(2)} → ${media(aereos[1]).toFixed(2)} por partido${okAereos ? '' : ' (no significativo)'} · goles de cabeza de los centrales ${media(goles[0]).toFixed(3)} → ${media(goles[1]).toFixed(3)}${okGoles ? '' : ' (no significativo)'}`,
   };
 }
 

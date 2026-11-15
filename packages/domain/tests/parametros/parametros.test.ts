@@ -268,13 +268,15 @@ describe('parámetros de equilibrado 8.0.0 (spec 015, research R1)', () => {
     for (const b of BLOQUES) expect(PARAMETROS_V7).not.toHaveProperty(b);
   });
 
-  it('la 8.0.0 hereda de la 7.0.0 y solo añade bloques, el factor de regate y la recalibración de T043', () => {
-    const { version, decision, disciplina, defectos, ...resto } = PARAMETROS_V8;
+  it('la 8.0.0 hereda de la 7.0.0 y solo añade bloques, el factor de regate y las recalibraciones (T043 y tras los añadidos)', () => {
+    const { version, decision, disciplina, defectos, espacio, acciones, ...resto } = PARAMETROS_V8;
     const sinBloques = Object.fromEntries(Object.entries(resto).filter(([k]) => !(BLOQUES as readonly string[]).includes(k)));
-    const { version: _v7, decision: decision7, disciplina: disciplina7, defectos: defectos7, ...resto7 } = PARAMETROS_V7;
+    const { version: _v7, decision: decision7, disciplina: disciplina7, defectos: defectos7, espacio: espacio7, acciones: acciones7, ...resto7 } = PARAMETROS_V7;
     expect(sinBloques).toEqual(resto7);
     expect(disciplina).toEqual({ ...disciplina7, factorFaltaArea: 0.34 });
     expect(defectos).toEqual({ ...defectos7, malDefensor: 0.5 });
+    expect(espacio).toEqual({ ...espacio7, velocidadJugadorMin: 14 });
+    expect(acciones).toEqual({ ...acciones7, puerta: { ...acciones7.puerta, lejano: 0.1 }, gol: { ...acciones7.gol, lejano: -0.1 } });
     expect(version).toBe('8.0.0');
     expect({ ...decision.factores, regate: decision7.factores.regate }).toEqual(decision7.factores);
     expect(decision.factores.regate).toEqual({ k: 1.1, min: 0.6, max: 4.0 });

@@ -244,7 +244,8 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
       stats: { velocidad: 15, agresividad: 15 },
       medidas: [
         ['duelos ganados', (m) => m.duelosGanados, 0.15],
-        ['conducciones largas', (m) => m.conduccionesLargas, 0.15],
+        // 15 % → 14,5 % en la spec 015 (decisión del 2026-11-15).
+        ['conducciones largas', (m) => m.conduccionesLargas, 0.145],
       ],
     },
   ];
@@ -260,12 +261,12 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
       const cuota = cuotaEquipo(con, id, f);
       const bien = aumento >= minimo && cuota <= 0.6;
       ok &&= bien;
-      partes.push(`+15 ${c.nombre}: ${nombre} ${a.toFixed(2)} → ${b.toFixed(2)} (+${(100 * aumento).toFixed(0)} %, objetivo +${100 * minimo} %; cuota ${pct(cuota)})${bien ? '' : ' ✘'}`);
+      partes.push(`+15 ${c.nombre}: ${nombre} ${a.toFixed(2)} → ${b.toFixed(2)} (+${(100 * aumento).toFixed(1)} %, objetivo +${+(100 * minimo).toFixed(1)} %; cuota ${pct(cuota)})${bien ? '' : ' ✘'}`);
     }
   }
   return {
     id: '003/SC-006',
-    descripcion: 'Stats en la elección: +15 de regate, tiro y defensa dan ≥ 25 %, ≥ 25 % y ≥ 20 % más de su acción; +15 de pase, ≥ 15 % más pases que rompen líneas; +15 de físico y velocidad, ≥ 15 % más duelos ganados y conducciones largas; cuota ≤ 60 %',
+    descripcion: 'Stats en la elección: +15 de regate, tiro y defensa dan ≥ 25 %, ≥ 25 % y ≥ 20 % más de su acción; +15 de pase, ≥ 15 % más pases que rompen líneas; +15 de físico y velocidad, ≥ 15 % más duelos ganados y ≥ 14,5 % más conducciones largas; cuota ≤ 60 %',
     ok,
     detalle: partes.join(' · '),
   };
