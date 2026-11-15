@@ -23,6 +23,7 @@ import { atributo, mediaEfectiva } from '../modificadores/atributos';
 import { tiene } from '../modificadores/virtudes';
 import type { Lado } from '../tipos';
 import { elegirPonderado, esPortero, holgura, mejorDefensor, radioDe, type Contexto } from './contexto';
+import { marcadorDe, probabilidadDesmarque } from './desmarque';
 import { enFueraDeJuego, factorPericia } from './fueraDeJuego';
 import { pesoTiro } from './pesoTiro';
 
@@ -189,6 +190,7 @@ export function pesosReceptor(
   const estrella = estado.parametros.estrella;
   const bandas = equipo.tactica.estiloConBalon === 'bandas' ? estado.parametros.bandas : undefined;
   const radioClara = estrella ? decimasDeMetros(estrella.lineaClaraM) : 0;
+  const desmarque = estado.parametros.desmarque;
   const porRango: Record<Rango, Candidato[]> = { corto: [], medio: [], largo: [] };
   for (const j of opciones.candidatos ?? equipo.jugadores) {
     if (!j.enCampo || j.id === portador.id || j.id === excluido || (esPortero(j) && !enCampoPropio)) continue;
@@ -220,9 +222,18 @@ export function pesosReceptor(
       (tiene(j, 'Carismatico') ? 3 : 2);
     const conFuera = enFueraDeJuego(estado, equipo, j, yo.x) ? dividir(peso * factorFuera, 1000) : peso;
     const conBanda = bandas && BANDA.has(posicionDe(equipo, j) ?? '') ? Math.round(conFuera * bandas.receptorBanda) : conFuera;
+    // Desmarque (spec 015, FR-013): × (1 + pesoEleccion × (p − 0,5)), con p su probabilidad de ganar el duelo (1 sin marcador).
+    let conDesmarque = conBanda;
+    if (desmarque) {
+      const marcador = marcadorDe(estado, j, estado.equipos[rivalLado], desmarque.radioMarcaM);
+      const pm = marcador
+        ? probabilidadDesmarque(atributo(estado, equipo, j, 'desmarque'), atributo(estado, estado.equipos[rivalLado], marcador, 'marcaje'), estado.parametros)
+        : 1000;
+      conDesmarque = Math.round((conBanda * (1000 + desmarque.pesoEleccion * (pm - 500))) / 1000);
+    }
     porRango[rangoDe(estado, d2)].push({
       j,
-      peso: Math.max(1, conBanda),
+      peso: Math.max(1, conDesmarque),
       clara: estrella !== undefined && libre >= LIBRE * LIBRE && lineaClara(estado, equipo.lado, yo, q, radioClara),
       media: estrella ? mediaEfectiva(estado, equipo, j) : 0,
     });

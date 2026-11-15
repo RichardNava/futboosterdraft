@@ -20,18 +20,18 @@ aereo?: { bonusCabeceador: number; seleccionCabeceador: number };
 //  8.0.0: { 0.15, 10 }
 
 desmarque?: { radioMarcaM: number; base: number; m: number; bonusLibre: number; penalizacionMarcado: number; pesoEleccion: number };
-//  8.0.0 (tanda 2): { 3, 0, 1, 0.5, 0.4, 1 }
+//  8.0.0 (tanda 2): { 3, 0, 1, 0.25, 0.4, 1 }   (bonusLibre 0,5 de partida)
 
 controlPresion?: { base: number; m: number };
-//  8.0.0 (tanda 2): { 1.0, 1 }
+//  8.0.0 (tanda 2): { 0.5, 1 }   (base 1,0 de partida)
 
 liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number };
 //  8.0.0 (tanda 3): { 12, 0.5, 0.5, 0.025, 1 }
 
 // Añadidos (tanda 1b; research R12 a R15)
 estrella?: { umbralVisionPase: number; escalaMedia: number; diferenciaArriesgar: number; repartoArriesgado: number;
-             prioridadEstrella: number; lineaClaraM: number; pendienteDesmarque: number };
-//  8.0.0: { 80, 10, 5, 0.4, 1.5, 3, 0.003 }
+             prioridadEstrella: number; lineaClaraM: number };
+//  8.0.0: { 80, 4, 5, 0.4, 1.5, 3 }   (`pendienteDesmarque`, 0,003, salió en la tanda 2: lo sustituye `desmarque`)
 
 bandas?: { probabilidadBanda: number; receptorBanda: number; centro: number };
 //  8.0.0: { 0.2, 1.5, 1.3 }
@@ -41,7 +41,18 @@ subidaArea?: { retaguardiaDEF: number; retaguardiaMED: number; defensoresArea: n
 
 segundaLinea?: { xInterior: number; desdeCampoPropioM: number };
 //  8.0.0: { 7900, 10 }   (xInterior en décimas del equipo que ataca: unos 22 m de la portería)
+
+// Balones fuera (US11, FR-031)
+fueraDeCampo?: { centroDespejado: number; desvio: number; desvioBanda: number; margenFondoM: number; margenBandaM: number;
+                 paradaCorner: number; esperaCorner: number; paradaBanda: number; velocidadColocacion: number;
+                 peligroCorner: number };
+//  8.0.0: { 0.9, 0.25, 0.5, 22, 15, 20, 15, 6, 4, 0.3 }
 ```
+
+Con `fueraDeCampo`, además, `acciones.probabilidadCornerTrasParada` pasa de 0,3 a 0,45 y
+`acciones.probabilidadCornerTrasDespeje` (tiro bloqueado) de 0,35 a 0,6, y la carrera tras el centro de un córner no
+cuenta como balón suelto (`cuentaSuelto: false`, 014/SC-008): el duelo aéreo ya decidió quién remata o despeja, y la
+simulación no cambia.
 
 Además, `decision.factores.regate` pasa a { k: 0,7; min: 0,6; max: 3,0 } en la 8.0.0 (research R4; con los añadidos, { k: 1,1; min: 0,6; max: 4,0 }), y la
 recalibración de la tanda 1 deja `disciplina.factorFaltaArea` en 0,34 y `defectos.malDefensor` en 0,5.
@@ -54,9 +65,9 @@ El dominio añade el estilo con balón `bandas` a `ESTILOS_CON_BALON` (y al esqu
 2. **Curvas** (SC-001): con `PARAMETROS_V8` y sin ajustes, `probabilidad()` da los nueve valores de FR-002 dentro de
    su rango (tabla en research R2).
 3. **Quite** (FR-004/005), sin cansancio ni penalización por posición:
-   - MED sin MD con posicionamiento 80 y velocidad 70: 63,75.
-   - El mismo con Presionador: 67,5. Con Mal defensor: 60. Con los dos: 63,75.
-   - MED con MD: ×0,90.
+   - MED sin MD con posicionamiento 80 y velocidad 70: 65,25 (× 0,87).
+   - El mismo con Presionador: 69. Con Mal defensor: 61,5. Con los dos: 65,25.
+   - MED con MD: ×0,92.
    - DEL con agresividad 80 y velocidad 70: 60 (con Presionador, 63,75).
    - DEF con tackling 80: 80 (Presionador 84, Mal defensor 76).
    - POR: su defensa.
@@ -67,17 +78,18 @@ El dominio añade el estilo con balón `bandas` a `ESTILOS_CON_BALON` (y al esqu
    en cualquiera de las dos áreas.
 6. **Frecuencia** (FR-007): el peso de regate y de conducción crece con el `regate` del portador tenga o no espacio
    por delante. A igualdad de todo lo demás, el peso con regate 95 es mayor que con 75.
-7. **Desmarque** (FR-011/012/019):
-   - Sin rival a ≤ `radioMarcaM` del receptor no hay tirada y el receptor recibe libre.
+7. **Desmarque** (FR-011/012/019; `acciones/desmarque.ts` y `desmarqueDelPase` en `juego.ts`):
+   - Sin rival a ≤ `radioMarcaM` del receptor no hay tirada y el receptor recibe libre (+`bonusLibre` también).
    - Con portero receptor no hay duelo.
    - Defensor sin stat: 50.
    - Si gana el receptor, el pase lleva +`bonusLibre` y no hay control. Si pierde, lleva −`penalizacionMarcado` y, si
      llega, hay control.
 8. **Elección** (FR-013): de dos candidatos iguales salvo el `desmarque`, el de más desmarque tiene más peso en
    `pesosReceptor`.
-9. **Control** (FR-014):
+9. **Control** (FR-014; `controlConPresion` en `juego.ts`):
    - Solo tras un pase completado a un receptor marcado.
-   - Enfrenta `tecnica` contra el `quite` del marcador. Si pierde, `perder()` con el marcador como recuperador.
+   - Enfrenta `tecnica` contra el `quite` del marcador. Si pierde, `perder()` con el marcador como recuperador, que le
+     quita el balón de los pies sin carrera por un balón suelto (no cuenta en 014/SC-008).
 10. **Liderazgo** (FR-015/016):
     - Portero de 90 de liderazgo ⇒ +2,25 al atributo defensor de un DEF en la zona ≤ `zonaMaxPortero`.
     - Fuera de esa zona, +0.
@@ -90,8 +102,8 @@ El dominio añade el estilo con balón `bandas` a `ESTILOS_CON_BALON` (y al esqu
 13. **Estrella** (FR-025, `pesosEstrella`): con los cuatro ejemplos de US7 (EI 83 claro; ED 87 o 90 claro o marcado):
     ED claro > EI; pasador ≤ 80 → EI > ED y el ED conserva su peso; pasador > 80 y diferencia ≤ 5 → ED / (EI + ED) =
     0,4; pasador > 80 y diferencia > 5 → ED = 1,5 × EI. Sin el bloque, los pesos de la 7.0.0.
-14. **Desmarque en el pase** (FR-026, `ajusteDesmarque`): con un rival de campo a ≤ `lineaClaraM` del receptor,
-    `pendienteDesmarque × (desmarque − marcaje)`; sin él o sin el bloque, 0.
+14. **Desmarque en el pase** (FR-026): sustituido en la tanda 2 por el duelo de desmarque (M2.7); `ajusteDesmarque` y
+    `estrella.pendienteDesmarque` ya no existen.
 15. **Bandas** (FR-027): con `bandas`, `probabilidadBanda` + 0,2, centro × 1,3 y LI, LD, CI, CD, EI y ED × 1,5 en
     `pesosReceptor`; el resto, igual. Sin el bloque, como Equilibrado.
 16. **Subida** (FR-028, `objetivosBalonParado`): en un córner con `subidaArea`, 4-4-2 y el ED de lanzador, 7 arriba y

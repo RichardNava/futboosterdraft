@@ -42,7 +42,7 @@ function multQuite(j: Jugador, p: ParametrosEquilibrado): number | null {
   return base + (j.virtudes.includes('Presionador') ? q.presionador : 0) - (j.defectos.includes('MalDefensor') ? q.malDefensor : 0);
 }
 
-const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null) => Record<Atributo, number>>> = {
+const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null, p: ParametrosEquilibrado) => Record<Atributo, number>>> = {
   POR: (s) => ({
     pase: s.distribucion!,
     vision: s.distribucion!,
@@ -60,7 +60,7 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null) => Recor
     tecnica: s.distribucion!,
     liderazgo: s.liderazgo!,
   }),
-  DEF: (s, m) => ({
+  DEF: (s, m, p) => ({
     pase: s.tecnica!,
     vision: s.tecnica!,
     regate: (s.tecnica! + s.velocidad!) / 2,
@@ -70,7 +70,8 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null) => Recor
     anticipacion: s.anticipacion!,
     fisico: s.marcaje!,
     aereo: s.anticipacion!,
-    desmarque: s.velocidad! * 0.8,
+    // Con el bloque `desmarque` (spec 015, FR-012), su velocidad entera: es la stat con la que se desmarca.
+    desmarque: p.desmarque ? s.velocidad! : s.velocidad! * 0.8,
     centro: s.tecnica!,
     parada: media(s) * 0.5,
     marcaje: s.marcaje!,
@@ -163,7 +164,7 @@ function entradaAtributos(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorE
       casilla: j.casillaId,
       posicion: j.posicion,
       bonus,
-      valores: TRADUCCION[j.jugador.demarcacion](efectivos, multQuite(j.jugador, estado.parametros)),
+      valores: TRADUCCION[j.jugador.demarcacion](efectivos, multQuite(j.jugador, estado.parametros), estado.parametros),
       media: media(efectivos),
     };
     cacheAtributos.set(j, entrada);

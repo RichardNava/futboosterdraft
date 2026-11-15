@@ -47,6 +47,7 @@ function metricasVacias(): MetricasJugador {
     duelosDesmarque: 0,
     recibidoLibre: 0,
     marcajesGanados: 0,
+    pasesRecibidos: 0,
     controlesPresion: 0,
     controlesPerdidos: 0,
     duelosAereos: 0,

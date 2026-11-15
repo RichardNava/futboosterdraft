@@ -8,7 +8,8 @@ import type { ParametrosEquilibrado } from '@fbd/domain';
 import { porteroSube } from '../espacio/colocacion';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
 import { anguloTiro, decimasDeMetros, distanciaPorteria, enAreaRival, metrosDeDecimas, zonaRemate } from '../espacio/campo';
-import { aAbsoluta, aEquipo, CENTRO_Y, LARGO, type Punto } from '../espacio/geometria';
+import { aAbsoluta, aEquipo, CENTRO_Y, centroCelda, LARGO, zonaCarrilDe, type Punto } from '../espacio/geometria';
+import { dist2 } from '../espacio/aritmetica';
 import { sacadorDeCentro } from '../espacio/colocacion';
 import { anotar } from '../metricas';
 import { atributo } from '../modificadores/atributos';
@@ -19,7 +20,7 @@ import type { GrupoGol, TipoTiro as TipoTiroGol, ZonaRemate } from '../tipos';
 import { controlar, reponer, volar } from './animaciones';
 import { falta, fueraDeJuego } from './balonParado';
 import { enFueraDeJuego, penultimoDefensor } from './fueraDeJuego';
-import { emitir, interrumpir, pasarTiempo, portero, rivalCercano, type Contexto } from './contexto';
+import { emitir, esPortero, interrumpir, pasarTiempo, portero, rivalCercano, type Contexto } from './contexto';
 import { probabilidad, resolver } from './duelo';
 import { desplazamientoTiro } from './pesoTiro';
 
@@ -303,7 +304,7 @@ export function corner(ctx: Contexto, atacante: EquipoEstado): void {
   const defensor = e.equipos[rival(atacante.lado)];
   e.estadisticas[atacante.lado].corners++;
   emitir(ctx, 'corner', atacante.lado);
-  interrumpir(ctx, 'corner', 90, atacante.lado);
+  interrumpir(ctx, 'corner', p.fueraDeCampo?.paradaCorner ?? 90, atacante.lado);
   rematarBalonParado(ctx, atacante, defensor, 'corners', p.acciones.duelaAereo);
 }
 
@@ -372,6 +373,11 @@ export function rematarBalonParado(
   if (!rematador) return;
   let ajuste = ajusteCabeceador(p, rematador, marcador);
   if (marcador && tiene(marcador, 'Volador')) ajuste -= s.bonusProbabilidadAlto;
+  // Spec 015 (balones fuera): con más córners, cada uno es menos peligroso (remate y falta en el duelo aéreo).
+  const peligro = tipo === 'corners' ? (p.fueraDeCampo?.peligroCorner ?? 1) : 1;
+  // La carrera tras su centro no cuenta como balón suelto: el duelo aéreo ya decidió quién se queda el balón, y con el
+  // triple de córners diluía la medida de la velocidad (014/SC-008).
+  const cuentaSuelto = !(tipo === 'corners' && p.fueraDeCampo);
   const centro = probabilidad(
     {
       base,
@@ -384,13 +390,13 @@ export function rematarBalonParado(
   // El centro de un balón parado también es un centro (FR-024).
   e.estadisticas[atacante.lado].centros++;
   // Agarrón en el duelo aéreo: falta, que es penalti si se comete dentro del área (research R7).
-  if (marcador && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaDueloAereoArea * 1000))) {
-    volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: false, aerea: true });
+  if (marcador && ctx.rng.probabilidad(Math.round(p.disciplina.probabilidadFaltaDueloAereoArea * 1000 * peligro))) {
+    volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: false, aerea: true, cuentaSuelto });
     e.balon = { posesion: atacante.lado, zona: 5, carril: 1, portadorId: rematador.id, transicion: false };
     falta(ctx, atacante, rematador, defensor, marcador);
     return;
   }
-  const ganaRemate = resolver(ctx.rng, centro, { rerollAtacante: tiene(lanzador, 'GuanteEnElPie') });
+  const ganaRemate = resolver(ctx.rng, Math.round(centro * peligro), { rerollAtacante: tiene(lanzador, 'GuanteEnElPie') });
   anotarAereo(ctx, rematador, marcador, ganaRemate);
   if (ganaRemate) {
     // Una falta colgada al área es un pase: su rematador puede estar en fuera de juego (spec 014, FR-008); un córner no.
@@ -404,14 +410,38 @@ export function rematarBalonParado(
       fueraDeJuego(ctx, atacante, rematador, punto, foto);
       return;
     }
-    volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: true, aerea: true });
+    volar(ctx, 'centro', lanzador.id, { jugadorId: rematador.id }, { exito: true, aerea: true, cuentaSuelto });
     e.balon = { posesion: atacante.lado, zona: 5, carril: 1, portadorId: rematador.id, transicion: false };
     tirar(ctx, atacante, rematador, 'cabeza', { asistente: lanzador, trasCentro: true });
   } else {
     // Despeje: la defensa se hace con el balón cerca de su área.
     const despejador = marcador ?? defensores[0];
-    if (despejador) volar(ctx, 'centro', lanzador.id, { jugadorId: despejador.id }, { exito: false, aerea: true });
+    if (despejador) volar(ctx, 'centro', lanzador.id, { jugadorId: despejador.id }, { exito: false, aerea: true, cuentaSuelto });
     if (despejador && despejeEnPropia(ctx, atacante, defensor, despejador)) return;
     e.balon = { posesion: defensor.lado, zona: 1, carril: ctx.rng.entero(0, 2), portadorId: despejador?.id ?? 0, transicion: false };
+    if (tipo === 'corners' && p.fueraDeCampo && despejador) alejarDespeje(ctx, atacante, defensor, despejador);
   }
+}
+
+/**
+ * Spec 015 (balones fuera): el despeje de un córner aleja el balón del área hacia el compañero de campo más cercano al
+ * centro de la celda de la zona 1 en el carril del balón. Si llega antes un rival, la segunda jugada es suya.
+ */
+function alejarDespeje(ctx: Contexto, atacante: EquipoEstado, defensor: EquipoEstado, despejador: JugadorEnPartido): void {
+  const e = ctx.estado;
+  const destino = aAbsoluta(defensor.lado, centroCelda(1, e.balon.carril));
+  let receptor: JugadorEnPartido | undefined;
+  let mejor = Infinity;
+  for (const j of defensor.jugadores) {
+    const q = j !== despejador && j.enCampo && !esPortero(j) ? e.espacio.jugadores[j.id] : undefined;
+    const d = q ? dist2(q.x, q.y, destino.x, destino.y) : Infinity;
+    if (d < mejor) {
+      mejor = d;
+      receptor = j;
+    }
+  }
+  if (!receptor) return;
+  const quien = volar(ctx, 'despeje', despejador.id, { jugadorId: receptor.id }, { exito: true, aerea: true, disputa: true }) ?? receptor.id;
+  const suyo = defensor.jugadores.some((j) => j.id === quien);
+  e.balon = { posesion: suyo ? defensor.lado : atacante.lado, ...zonaCarrilDe(suyo ? defensor.lado : atacante.lado, e.espacio.balon), portadorId: quien, transicion: false };
 }

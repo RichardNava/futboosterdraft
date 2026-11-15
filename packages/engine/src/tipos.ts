@@ -174,6 +174,8 @@ export interface MetricasJugador {
   duelosDesmarque: number;
   recibidoLibre: number;
   marcajesGanados: number;
+  /** Spec 015 (SC-004): pases completados que recibe. */
+  pasesRecibidos: number;
   /** Spec 015: controles con presión del receptor marcado, y los que pierde. */
   controlesPresion: number;
   controlesPerdidos: number;

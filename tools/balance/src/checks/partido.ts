@@ -133,7 +133,12 @@ function comprobarSC015(n: number, semilla: number): Comprobacion {
  */
 function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   const base = equipoSintetico({ semilla: 'sc007-2d' });
-  const r = serie(base, clonar(base, 'b'), n, semilla, 'sc007-2d');
+  let saquesBanda = 0;
+  const r = serie(base, clonar(base, 'b'), n, semilla, 'sc007-2d', {
+    alTerminar: (final) => {
+      saquesBanda += final.eventos.filter((ev) => ev.tipo === 'interrupcion' && ev.datos.motivo === 'fuera_de_banda').length;
+    },
+  });
   const ambos = (campo: Campo) => media(r.estadisticasA.map((e, i) => e[campo] + r.estadisticasB[i]![campo]));
   let posesiones = 0;
   let largas = 0;
@@ -150,15 +155,20 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
     ['tiros', 'tiros', 15],
     ['conducciones', 'conducciones', 30],
     ['paredes', 'paredes', 3],
-    ['cambiosOrientacion', 'cambios de orientación', 5],
-    ['contraataques', 'contraataques', 2],
+    // 5 → 4 en la spec 015 (balones fuera: los córners ocupan el lugar de saques de puerta y recuperaciones en banda, de
+    // donde salen; apenas se aprecia en la simulación; decisión del 2026-11-15).
+    ['cambiosOrientacion', 'cambios de orientación', 4],
+    // 2 → 1,8 en la spec 015 (decisión del 2026-11-15; con la táctica Contraataque el equipo hace un 52 % más).
+    ['contraataques', 'contraataques', 1.8],
   ];
   const valores = umbrales.map(([campo, nombre, minimo]) => ({ nombre, minimo, valor: ambos(campo) }));
   const proporcion = posesiones ? largas / posesiones : 0;
+  const corners = ambos('corners');
+  const banda = saquesBanda / n;
   return [
     {
       id: '002/SC-007a',
-      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,8 contraataques',
       ok: valores.every((v) => v.valor >= v.minimo),
       detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
     },
@@ -167,6 +177,12 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
       descripcion: 'Al menos el 25 % de las posesiones con 3 o más pases seguidos',
       ok: proporcion >= 0.25,
       detalle: `${(proporcion * 100).toFixed(1)} % de ${posesiones} posesiones`,
+    },
+    {
+      id: '015/SC-013',
+      descripcion: 'Balones fuera: entre 6 y 9 córners por partido entre equipos equilibrados',
+      ok: corners >= 6 && corners <= 9,
+      detalle: `${corners.toFixed(2)} córners y ${banda.toFixed(2)} saques de banda por partido`,
     },
   ];
 }
@@ -195,7 +211,7 @@ export function gruposPartido(): GrupoComprobaciones[] {
     { ids: ['SC-006a', 'SC-006b', 'SC-006c', 'SC-006d', 'SC-006e'], serie: 'sintetica', ejecutar: (o) => comprobarSC006(o.n, o.seed) },
     { ids: ['SC-007'], serie: 'sintetica', ejecutar: (o) => [comprobarSC007(o.n, o.seed)] },
     { ids: ['SC-015'], serie: 'sintetica', ejecutar: (o) => [comprobarSC015(o.n, o.seed)] },
-    { ids: ['002/SC-007a', '002/SC-007b'], serie: 'sintetica', ejecutar: (o) => comprobarSC007Partido2D(o.n, o.seed) },
+    { ids: ['002/SC-007a', '002/SC-007b', '015/SC-013'], serie: 'sintetica', ejecutar: (o) => comprobarSC007Partido2D(o.n, o.seed) },
     { ids: ['002/SC-008'], serie: 'sintetica', ejecutar: (o) => [comprobarSC008Pase(o.n, o.seed)] },
   ];
 }

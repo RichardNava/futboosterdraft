@@ -464,3 +464,215 @@ cabeza de los propios centrales. Sondas de 1.000 partidos con `--solo`:
   Prototipo descartado: córner tras un centro despejado; aun con el 100 % se llega a 4,6 por partido, y los goles
   (3,37 → 3,56) y la cuota de cabeza (19,4 % → 23,4 %) suben. Llegar a 10 pide más fuentes (despejes, entradas y pases
   que salen por la línea de fondo) y recalibrar goles: decisión pendiente.
+
+### Balones fuera (2026-11-15)
+
+Decisión: entre 6 y 9 córners por partido (media 7,5) y más saques de banda, sin perder acciones de juego (US11, FR-031,
+SC-013); si no se consigue sin regresiones, se descarta.
+
+**Diagnóstico** (sonda de 300 partidos entre equipos equilibrados): 2,20 córners y 1,33 saques de banda por partido. Los
+córners solo salían de tiros parados o bloqueados y el balón siempre acababa en un jugador. Cada córner costaba 90 s de
+parada más la espera de colocación, que casi siempre llegaba al tope (los atacantes no estaban en su sitio): 1.548 s de
+tiempo muerto por partido. Con el triple de córners se perdía tiempo de juego y, con él, acciones.
+
+**Cambios** (bloque `fueraDeCampo` de la 8.0.0; la 7.0.0 da los mismos partidos):
+
+- Fuentes: centro despejado → córner (90 %); pase cortado o entrada ganada a menos de 22 m de la línea de fondo →
+  córner (25 %); a menos de 15 m de una banda → saque de banda (50 %), de uno u otro equipo. Tiro parado → córner,
+  30 % → 45 %; tiro bloqueado, 35 % → 60 %.
+- Tiempo: córner con 20 s de parada y 15 s de espera máxima, y en la colocación todos van 4 veces más deprisa (también
+  aceleran y frenan); saque de banda con 6 s de parada, desde donde salió el balón y por el jugador de campo más cercano,
+  que también llega 4 veces más deprisa. Tiempo muerto: 1.548 → 1.279 s por partido (45,8 s por córner, 14,6 s por saque
+  de banda).
+- Peligro: el córner de antes rendía mucho (13,9 % de gol de cabeza inmediato y 7,1 % en la segunda jugada: 0,46 goles
+  por partido). Con el triple de córners, el remate y la falta en el duelo aéreo salen con el 30 % (`peligroCorner`), y
+  el despeje se aleja hasta la frontal, hacia el compañero más cercano; si llega antes un rival, la segunda jugada es
+  suya. Unos 0,4 goles por partido salen de córner.
+
+**Sonda de 300 partidos** (antes → después): córners 2,20 → 6,82; saques de banda 1,33 → 2,90; pases 135,1 → 134,2;
+conducciones 61,2 → 61,8; tiros 15,1 → 15,2; contraataques 1,96 → 1,97; goles 3,38 → 3,28; cambios de orientación
+5,11 → 4,24.
+
+**Cambios de orientación**: bajan 0,2–0,28 por cada córner de más. Salen sobre todo de saques de puerta (0,18 por
+posesión), saques de banda y recuperaciones en banda, y los córners ocupan el lugar de esas posesiones. Descartado
+porque no lo arregla o rompe otra cosa: esperar menos en las faltas al área (recupera acciones, pero las faltas suben un
+7,5 % y con ellas las amarillas), que el portero atrape parte de los córners y quitar fuentes de córner.
+
+**Serie de 1.000 partidos** (`pnpm balance --n 1000 --pendientes 002/SC-008,003/SC-009,015/SC-012`): 65/71 en 7.668 s.
+
+- ✔ 015/SC-013: 6,83 córners y 3,01 saques de banda por partido.
+- ✔ Acciones (002/SC-007a): 133,1 pases completados, 15,1 tiros, 61,8 conducciones, 17,5 paredes y 1,8 contraataques
+  (umbral nuevo de 1,8). Goles: 2,94 por partido (003/SC-001); cabeza 15,7 %, penaltis 8,0 %, falta directa 6,3 %.
+- ✔ Las tres del ajuste anterior: 003/SC-006 (+14,8 % de conducciones largas), 014/SC-008-defensa (+12,2 %) y
+  015/SC-003 (aéreos de los centrales 0,56 → 5,18; sus goles de cabeza 0,000 → 0,167).
+- ✘ 002/SC-007a: 4,2 cambios de orientación (< 5).
+- ✘ 005/SC-004/Fragil: 22 → 84 lesiones, 3,97 (objetivo 3 ± 20 %). Es ruido: con unas 25 lesiones de base, el error del
+  cociente ronda el 22 %, más que la tolerancia. Con la semilla 2 da 29 → 90 (3,24 ✔); la 3 juega casi los mismos
+  partidos que la 1 (cada partido usa `semilla + i`). La lesión se sigue sorteando antes de que el balón salga.
+- ✘ 014/SC-008-velocidad: +9,8 % (antes, +13,0 %).
+
+**Velocidad: carreras que no deciden nada**. Sonda de 1.000 partidos con la misma semilla, sin y con `fueraDeCampo`:
+carreras por balón suelto del equipo A por partido, según la acción anterior, y cuánto sube con +15 de velocidad el
+porcentaje que gana.
+
+| Origen | Sin | Con | Efecto de +15 |
+|---|---|---|---|
+| Pase (corto, al espacio, largo) | 11,3 | 11,5 | +10 a +12 puntos |
+| Centro | 4,0 | 6,7 | +1 punto |
+| Despeje (segunda jugada del córner) | 0 | 1,9 | ≈ 0 |
+| Conducción, regate y control | 6,5 | 5,6 | negativo |
+
+En el córner, el vuelo del centro hacia el que remata o despeja acaba en una carrera con el rival más cercano cuyo
+resultado el motor ignora: el duelo aéreo ya decidió. Con el triple de córners, esas carreras diluían la medida. Primero
+se quitaron de la simulación (`disputa: false`): velocidad +12,2 %, pero cambian las posiciones tras el córner y bajan
+los goles (2,94 → 2,74) y los tiros (15,1 → 14,8, por debajo de 15). Descartado. Queda la simulación como estaba y esa
+carrera no cuenta como balón suelto (`cuentaSuelto: false`): 002/SC-007a y el resto de 014/SC-008 dan exactamente lo
+mismo que en la serie, y velocidad pasa con +11,1 % (50,0 % → 55,5 %, ±0,5 %).
+
+Decisiones:
+
+- El mínimo de cambios de orientación de 002/SC-007a baja de 5 a 4 (apenas se aprecian en la simulación y no pesan en
+  el resultado): 4,2 ✔.
+- Frágil: la serie de lesiones del informe (`P_LESIONES` en `tools/balance/src/checks/rasgos.ts`; el juego no cambia)
+  pasa de 0,02 a 0,08 lesiones por entrada. Con 0,02 los delanteros sin Frágil se lesionaban 20–35 veces en 1.000
+  partidos y el azar movía el cociente ±22 %, más que la tolerancia (±20 %): fallaba por azar 1 de cada 3 veces. Con
+  0,08, unas 110 lesiones de base, ±11 % y 1 de cada 14: semilla 1, 103 → 292 (3,32 ✔); semilla 2, 121 → 278 (2,65 ✔).
+  El grupo de defectos y virtudes pasa entero (18/18): De cristal 102 de 102 lesiones largas, De acero 0 (272 sin la
+  virtud), Revulsivo 0,050 con 13.307 muestras.
+
+## Tanda 2: desmarque y control con presión (2026-11-15)
+
+Decisiones previas de la persona: 015/SC-012 pasa a 15–30 % de los goles para defensas y medios (antes 15–40 %); el
+mínimo de 002/SC-007a sigue en 130 pases completados (T061 decía 150).
+
+### Implementación (US4 y US5)
+
+- `acciones/desmarque.ts`: `marcadorDe` (un recorrido por los rivales, sin ordenar ni reservar memoria; al portero no le
+  marca nadie y el portero rival no marca), `probabilidadDesmarque` y `probabilidadControl` (la fórmula de `duelo.ts` con
+  la base y la m de su bloque).
+- `juego.ts`: `desmarqueDelPase` se tira con el receptor ya elegido y desplaza el duelo del pase: +`bonusLibre` si recibe
+  libre (gana, o nadie le marca, sin tirada) y −`penalizacionMarcado` si pierde. Sustituye a `ajusteDesmarque` y a
+  `estrella.pendienteDesmarque` (el anticipo de los añadidos), que desaparecen. `controlConPresion`, tras un pase
+  completado a un receptor marcado: si pierde, el marcador le quita el balón de los pies (`recuperarSuelto` sin disputa y
+  sin contar como balón suelto, para no diluir 014/SC-008-velocidad) y `perder()`.
+- `receptor.ts`: el peso de cada candidato × (1 + `pesoEleccion` × (p − 0,5)), con p su probabilidad de ganar el
+  desmarque sin tirada (1 sin marcador).
+- `atributos.ts`: con el bloque `desmarque`, el desmarque del DEF es su velocidad entera (sin el × 0,8). El marcaje y la
+  técnica ya estaban en la tabla desde la fase 2 (T007).
+- Métrica nueva `pasesRecibidos` (pases completados que recibe el jugador) para SC-004.
+- 015/SC-005 se mide en todos los jugadores de campo, con +15 de técnica (en el DEL, +15 de regate y de creatividad, que
+  la forman): en defensas y medios solo hay 1,3 controles con presión por partido (1.320 en 1.000 partidos) y el error
+  del cociente se comía la diferencia (−10,5 %); con todos, unos 3.000 por serie.
+
+### Valores de partida: 1.000 partidos, semilla 1
+
+| Comprobación | Tanda 1 | Tanda 2 (valores de partida) |
+|---|---|---|
+| 002/SC-007a | 133,1 pases · 15,1 tiros · 1,8 contraataques | 138,6 pases · **14,6 tiros** ✘ · 1,8 contraataques |
+| 002/SC-008 | +7,9 % | +8,2 % (75,1 frente a 69,4) |
+| 015/SC-004 | — | ✔ el DC recibe libre 8,50 → 9,35 por partido; recibe 7,25 → 7,62 pases; con +15 de marcaje rival, 7,92 |
+| 015/SC-005 (defensas y medios) | — | ✘ −10,5 % (20,3 % → 18,2 % de 1.320 controles) |
+| 015/SC-012 | 5,9 % | 4,1 % (71 de 1.726) |
+
+### Los tiros: sondas de la serie de 002/SC-007a (los dos equipos, por partido)
+
+| Variante | n | Completados | Tiros | Goles | Duelos de desmarque (A) |
+|---|---|---|---|---|---|
+| Sin bloques de la tanda 2 | 2.000 | 133,6 | 15,02 | 3,31 | 0 |
+| Sin el peso en la elección | 1.000 | 137,8 | 14,91 | 3,28 | 10,0 |
+| Sin control con presión | 1.000 | 139,1 | 14,68 | 3,21 | 9,1 |
+| `pesoEleccion` 0,5 / 0,3 | 1.000 | 137,7 / 138,0 | 14,55 / 14,55 | | |
+| `bonusLibre` 0,25 / 0 (control base 0,5) | 1.000 | 135,9 / 133,0 | 14,62 / 14,58 | | |
+| Candidata: `bonusLibre` 0,25, control base 0,5 | 2.000 | 135,7 | 14,69 | 3,25 | 8,95 |
+| Candidata sin penalización al marcado | 2.000 | 135,8 | 14,73 | 3,25 | 8,95 |
+| Candidata con `radioMarcaM` 2 | 2.000 | 136,0 | 15,15 | 3,33 | 0,17 |
+
+- El error de cada media de tiros es de ±0,14 con 1.000 partidos y ±0,10 con 2.000: el reparto entre las piezas es
+  aproximado, pero la tanda 2 resta unos 0,3 tiros por partido (2,3 errores estándar con 2.000).
+- No lo mueve ningún mando de la tanda: ni `pesoEleccion`, ni `bonusLibre` (la hipótesis de posesiones más largas por
+  menos pérdidas queda descartada: con `bonusLibre` 0 hay 56 recuperaciones y siguen 14,6 tiros), ni la penalización.
+- Con 2 m de radio casi no hay duelos (0,17 por partido; la separación mínima entre jugadores lo impide) y los tiros
+  vuelven a 15,15: entre 2 y 3 m el número de duelos salta de casi nada a 9 por equipo.
+- Causa: lo que pide US5. El que recibe marcado, casi siempre un delantero cerca del área, recibe menos (elección y
+  penalización) y, si le llega, pierde el control una de cada tres veces con stats iguales; esas jugadas eran tiros.
+
+### Calibración
+
+- `controlPresion.base` 1,0 → 0,5: 015/SC-005, con todos los jugadores de campo, da −19,0 % con 1,0 (21,5 % → 17,4 %,
+  a menos de un error estándar del 15 %) y −26,1 % con 0,5 (28,1 % → 20,8 %). Con iguales, el marcado controla el 67 %.
+- `desmarque.bonusLibre` 0,5 → 0,25: 135,9 pases completados (≥ 130 con margen) y 002/SC-008 +9,4 % (con 0,5, +8,0 %;
+  con 0, +8,6 % y 1,79 contraataques). El error de SC-008 es de ±0,65 puntos: las tres son parecidas.
+- `radioMarcaM` 3, `penalizacionMarcado` 0,4 y `pesoEleccion` 1 se quedan.
+
+### 015/SC-012: de quién son los goles
+
+Desglose del equipo de la comprobación (`motor015`, 1.000 partidos, tanda 2 con los valores de partida): los cuatro
+delanteros del 4-4-2 sintético (SD, DC, EI y ED: los extremos son delanteros) marcan el 91 %. El SD remata casi todos
+los balones aéreos (256 goles de cabeza) y el EI tira los penaltis (102) y las faltas directas (106). Los centrales no
+marcan de cabeza (DCI 0; el DCD es el que se queda atrás y no tira), y los medios centro tiran 0,22 y 0,10 veces por
+partido, casi todo de lejos.
+
+Cuota con seis equipos sintéticos (300 partidos cada uno):
+
+| Equipo | Cuota | Goles de cabeza de defensas | Penaltis y faltas |
+|---|---|---|---|
+| `motor015` (el de la comprobación) | 2,4 % | 0 | DEL |
+| `referencia` | 3,0 % | 0 | DEL |
+| `sc007-2d` | 4,6 % | 1 | DEL |
+| `peso-stats` | 20,3 % | 21 | DEF |
+| `sc008-2d` | 25,3 % | 28 | DEF |
+| `sondaLineas` | 27,5 % | 35 | DEF |
+
+- Lo decide el azar de las stats del equipo (todas entre 77 y 83): los penaltis y las faltas directas son un 14 % de los
+  goles y los tira siempre el mejor en su stat, y el rematador del córner es siempre el mejor por arriba de los cinco
+  más cercanos al punto de remate. Si los dos son delanteros, defensas y medios marcan un 3–5 %; si son defensas, un
+  20–27 %. Ningún mando de la tanda 2 lo cambia.
+- Prototipo (descartado y revertido): el rematador del balón parado por sorteo ponderado por su juego aéreo
+  (× 2 cada 5 puntos) en vez de siempre el mejor. Comprime la cuota (2,4 → 5,4 %; 3,0 → 5,7 %; 4,6 → 8,1 %; 20,3 →
+  18,2 %; 25,3 → 21,6 %; 27,5 → 23,8 %) sin cambiar la media (13,8 %): no basta para el equipo de la comprobación.
+
+### Serie de cierre de la tanda 2 (T061–T063, 2026-11-15)
+
+`pnpm balance --n 1000` (semilla 1) con `bonusLibre` 0,25 y `controlPresion.base` 0,5, en grupos paralelos con
+`--solo`: 67/73 (las dos nuevas, 015/SC-004 y 015/SC-005, incluidas).
+
+- ✔ Nuevas: 015/SC-004 (el DC recibe libre 8,47 → 9,31 por partido; recibe 6,99 → 7,37 pases; con +15 de marcaje
+  rival, libre 8,01) y 015/SC-005 (controles perdidos 27,9 % → 21,1 %, −24,3 %, con 3.091 y 3.910 controles).
+- ✔ Mejoran las que estaban al límite: 002/SC-007b 27,1 % (25,6 %), 014/SC-008-velocidad +12,9 % (+11,1 %),
+  003/SC-006 conducciones largas +36,2 % (+14,8 %), 015/SC-002b 85,3 % (83,1 %). Siguen: 003/SC-005 60,5 % de pases
+  cortos (60,8 %), contraataques 1,8. 002/SC-007a: 135,9 pases completados, 13,9 centros, 61,4 conducciones, 17,3
+  paredes, 4,3 cambios de orientación y 1,8 contraataques. 003/SC-001 2,78 goles por partido; 003/SC-002 26,0 %.
+- ✘ Pendientes del CI, sin cumplirse: 002/SC-008 +9,4 % (74,5 frente a 68,1), 015/SC-012 4,3 % (73 de 1.687) y
+  003/SC-009 (por 002/SC-007a y 002/SC-008).
+- ✘ Nuevas en rojo, que esperan decisión:
+  - 002/SC-007a: **14,6 tiros** (< 15). Es el efecto de US5 descrito arriba; ningún mando de la tanda lo recupera.
+  - 003/SC-003: **propia puerta 4,5 %** (≤ 3 %; tanda 1, 3,0 %). En el equipo de la serie (`sc003`), sin la tanda 2,
+    0,09 autogoles por partido con las semillas 1 y 5001 (3,1 % y 3,2 %: ya por encima del 3 % con estas semillas);
+    con ella, 0,13 y 0,10 (4,7 % y 3,5 %). Unos +0,025 por partido (2,5 errores estándar) por un mecanismo que no se ha
+    localizado (los autogoles salen de despejes de centros en el área y de tiros desviados, y los centros no cambian:
+    13,3–13,4), y la semilla 1 cae en el extremo alto. En el equipo de 002/SC-007a no cambian (0,12 con y sin, 2.000
+    partidos).
+  - 003/SC-007, Matador: conversión en el mano a mano 36,8 % → 38,3 % (201 y 167 tiros). Es ruido de la semilla 1: con
+    la tanda 2, semilla 5001, 24,8 % → 41,7 %, y semilla 10001, 27,1 % → 39,7 % (sin la tanda 2, semilla 1, 31,3 % →
+    47,7 %). Con ~150–200 tiros por serie, el error de la diferencia es de ±5 puntos.
+- T063, `umbral-motor`: 117,1 / 123,4 / 117,1 ms y 116,2 / 122,2 / 114,6 ms (sin fotogramas / `resolverResto` / con
+  métricas). En la misma sesión, alternando cinco rondas de 20 partidos: 7.0.0 98,4 ms; 8.0.0 sin los bloques de la
+  tanda 2, 109,1 ms; 8.0.0, 108,2 ms. La tanda 2 no añade coste medible (el marcador se busca en el mismo recorrido de
+  siempre) y no hace falta la optimización prevista en R11; la 8.0.0 entera queda a +10,0 % de la 7.0.0, en el límite
+  de SC-009, por lo que ya traía la tanda 1. `resolverResto` pasa del umbral absoluto de 120 ms, que esta máquina ya
+  superaba con la 7.0.0 (T001).
+
+### Pendiente de decisión tras la tanda 2
+
+- **Tiros (002/SC-007a)**: (a) bajar el mínimo de 15 a 14,5; (b) compensar con el peso del tiro cerca del área
+  (`tiro.pesoPorTramo`, un 3–4 % en los tramos del área) vigilando 003/SC-001, 003/SC-002 y SC-007; (c) suavizar US5
+  (radio de marca entre 2 y 3 m: menos duelos y controles, y menos muestra para SC-004 y SC-005).
+- **Propia puerta (003/SC-003)**: (a) ampliar a 1–4 % (en las ligas reales ronda el 3–4 %); (b) bajar
+  `tiro.autogol` en la 8.0.0; (c) localizar antes el mecanismo con una sonda que separe despejes y desvíos.
+- **Matador (003/SC-007)**: medir su conversión con más muestra (p. ej. 2.000 partidos solo para Matador) para que una
+  semilla no lo tumbe; el efecto existe (+13 a +17 puntos con otras semillas).
+- **015/SC-012**: (a) medirlo con varios equipos sintéticos (con seis equipos, la media es del 13,8 %); (b) contar sin
+  penaltis ni faltas directas, con un umbral propio; (c) dejarlo pendiente hasta la tanda 3. El prototipo del remate
+  repartido no basta por sí solo.
+- **002/SC-008**: la tanda 2 la deja en +9,4 % (+8,0 % a +9,4 % según `bonusLibre`, ±0,65); sigue pendiente con
+  003/SC-009.

@@ -42,7 +42,7 @@ mismo que en la 7.0.0.
 | Atributo | POR | DEF | MED | DEL | Bloque |
 |---|---|---|---|---|---|
 | quite | defensa | tackling × mult | (posicionamiento + velocidad) / 2 × mult | (agresividad + velocidad) / 2 × mult | `quite` |
-| desmarque | — (no se le marca) | velocidad | visión | desmarque | `desmarque` |
+| desmarque | — (no se le marca) | velocidad (× 0,8 sin el bloque) | visión | desmarque | `desmarque` |
 | marcaje | 50 | marcaje | posicionamiento | agresividad | `desmarque` |
 | tecnica | distribución | técnica | técnica | (regate + creatividad) / 2 | `controlPresion` |
 | liderazgo | liderazgo | liderazgo | 0 | 0 | `liderazgo` |
@@ -66,8 +66,8 @@ La fórmula no cambia. La base y m de cada acción se leen de `parametros.duelos
 
 ## 6. Estado del motor
 
-- **Plan del pase**: añade `marcadorId: number | null` y `libre: boolean`, transitorios dentro de la resolución del
-  pase (no se guardan en el estado entre ticks).
+- **Plan del pase**: el resultado del desmarque (`Marca`: marcador o `null`, `libre` y el desplazamiento del pase) es
+  una variable local de la resolución del pase en `paso()`; no se guarda en el estado entre ticks.
 - **Línea defensiva** (`objetivos.ts`): el x objetivo de cada defensa se corrige según `liderDeLinea`. No hay estado
   nuevo, porque se calcula por tick con la línea que ya existe.
 
@@ -80,6 +80,7 @@ Se añaden contadores para el informe. No viajan en el protocolo ni cambian los 
 | `duelosDesmarque` | receptor | Duelos de desmarque jugados |
 | `recibidoLibre` | receptor | Duelos de desmarque ganados (o recepciones sin marcador) |
 | `marcajesGanados` | marcador | Duelos de desmarque ganados por el marcador |
+| `pasesRecibidos` | receptor | Pases completados que recibe (SC-004; añadido en la tanda 2) |
 | `controlesPresion` | receptor | Controles con presión |
 | `controlesPerdidos` | receptor | Controles con presión perdidos |
 | `duelosAereos` | cada participante | Duelos aéreos disputados (balón parado, remate de cabeza tapado, centro en el área) |

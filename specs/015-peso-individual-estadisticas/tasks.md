@@ -149,7 +149,7 @@ parado, con diferencia significativa (SC-003).
 
 ## Phase 6: Cierre de la tanda 1
 
-- [ ] T043 (abierta: 56/68 → ver research.md, «Serie de cierre de la tanda 1») Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-001`, `015/SC-002a`, `015/SC-002b`, `015/SC-003` ✔; 002/SC-007a puede quedar < 150 (FR-020); ninguna comprobación que pasaba con la 7.0.0 en rojo (FR-021). Ajustar los valores de `duelos`, `quite`, `aereo` y `factores.regate` en `packages/domain/src/parametros/index.ts` si hace falta, dentro de FR-002/FR-003
+- [X] T043 (cerrada el 2026-11-15: ver research.md, «Balones fuera»; quedan pendientes 002/SC-008, 003/SC-009 y 015/SC-012) Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-001`, `015/SC-002a`, `015/SC-002b`, `015/SC-003` ✔; 002/SC-007a puede quedar < 150 (FR-020); ninguna comprobación que pasaba con la 7.0.0 en rojo (FR-021). Ajustar los valores de `duelos`, `quite`, `aereo` y `factores.regate` en `packages/domain/src/parametros/index.ts` si hace falta, dentro de FR-002/FR-003
 - [X] T044 Actualizar `--pendientes` en `.github/workflows/ci.yml`: quitar las pendientes que ya se cumplen (el informe lo avisa) y añadir los ids de la 015 que aún no se cumplan; si SC-002 a SC-006 no se alcanzan sin ampliar diferencias más allá de FR-002, anotarlo en `specs/015-peso-individual-estadisticas/spec.md` (clarificación de SC-002 a SC-006)
 - [X] T045 Medir con `pnpm --filter @fbd/balance umbral-motor` y comparar con T001 (≤ +10 %, SC-009)
 
@@ -169,7 +169,7 @@ FR-030), colgados de bloques de la 8.0.0.
 - [X] T088 [US10] Mano a mano desde el campo propio (`packages/engine/src/acciones/manoAMano.ts`) y llegada de MC, MII y MID a la frontal (`packages/engine/src/espacio/objetivos.ts`)
 - [X] T089 Añadir `015/SC-011` y `015/SC-012` a `tools/balance/src/checks/motor015.ts`; SC-003 cuenta los goles de cabeza de todo el equipo
 - [X] T090 Documentar los añadidos en spec.md, plan.md, research.md (R12 a R15), data-model.md, contracts y quickstart.md, y en `docs/juego/enfrentamientos.md`
-- [ ] T091 Serie de cierre con los añadidos: `pnpm balance --n 1000`; esperado 015/SC-002b, SC-003, SC-011 y SC-012 ✔ y ninguna regresión nueva; actualizar `--pendientes` en `.github/workflows/ci.yml`
+- [ ] T091 (abierta: 015/SC-012 en 5,9 %, ver research.md, «Balones fuera») Serie de cierre con los añadidos: `pnpm balance --n 1000`; esperado 015/SC-002b, SC-003, SC-011 y SC-012 ✔ y ninguna regresión nueva; actualizar `--pendientes` en `.github/workflows/ci.yml`
 
 ---
 
@@ -183,18 +183,18 @@ pases completados recibidos, con diferencia significativa (SC-004).
 
 ### Tests for User Story 4
 
-- [ ] T046 [P] [US4] Crear `packages/engine/tests/desmarque.test.ts` (invariante M2.7): sin rival de campo a ≤ `radioMarcaM` del receptor no hay tirada y recibe libre; con portero receptor no hay duelo; defensor sin stat usa 50 (FR-019); receptor que gana → +`bonusLibre` en el pase y sin control; receptor que pierde → −`penalizacionMarcado` y control si llega; atributos de FR-012 (desmarque: DEL desmarque, MED visión, DEF velocidad; marcaje: DEF marcaje, MED posicionamiento, DEL agresividad, POR 50); escenario 4 de US4 (MED receptor contra DEL marcador: visión contra agresividad)
-- [ ] T047 [P] [US4] Ampliar `packages/engine/tests/receptor.test.ts` (invariante M2.8): de dos candidatos iguales salvo el `desmarque`, el de más desmarque tiene más peso en `pesosReceptor`; sin marcador, p = 1; con `PARAMETROS_V7`, pesos de hoy
+- [X] T046 [P] [US4] Crear `packages/engine/tests/desmarque.test.ts` (invariante M2.7): sin rival de campo a ≤ `radioMarcaM` del receptor no hay tirada y recibe libre; con portero receptor no hay duelo; defensor sin stat usa 50 (FR-019); receptor que gana → +`bonusLibre` en el pase y sin control; receptor que pierde → −`penalizacionMarcado` y control si llega; atributos de FR-012 (desmarque: DEL desmarque, MED visión, DEF velocidad; marcaje: DEF marcaje, MED posicionamiento, DEL agresividad, POR 50); escenario 4 de US4 (MED receptor contra DEL marcador: visión contra agresividad)
+- [X] T047 [P] [US4] Ampliar `packages/engine/tests/receptor.test.ts` (invariante M2.8): de dos candidatos iguales salvo el `desmarque`, el de más desmarque tiene más peso en `pesosReceptor`; sin marcador, p = 1; con `PARAMETROS_V7`, pesos de hoy
 
 ### Implementation for User Story 4
 
-- [ ] T048 [US4] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `desmarque: { radioMarcaM: 3, base: 0, m: 1, bonusLibre: 0.5, penalizacionMarcado: 0.4, pesoEleccion: 1 }`
-- [ ] T049 [US4] En `packages/engine/src/modificadores/atributos.ts`, con el bloque `desmarque`: `desmarque` = DEL desmarque, MED visión, DEF velocidad (sustituye al ×0,8 de hoy); `marcaje` = DEF marcaje, MED posicionamiento, DEL agresividad, POR 50 (data-model §4)
-- [ ] T050 [US4] Crear `packages/engine/src/acciones/desmarque.ts` con funciones puras: `marcadorDe(receptor, rivales, radioMarcaM)` (rival de campo más cercano a ≤ radio, un único recorrido sin ordenar ni reservar memoria; `null` si no hay o si el receptor es portero) y `probabilidadDesmarque(desmarque, marcaje, params)` con `probabilidad()` de `duelo.ts` (FR-018, M2.12)
-- [ ] T051 [US4] En `pesosReceptor` de `packages/engine/src/acciones/receptor.ts`, con el bloque: multiplicar el peso de cada candidato por `1 + pesoEleccion × (p − 0,5)`, con p la probabilidad de ganar su duelo de desmarque sin tirada (p = 1 sin marcador) (FR-013)
-- [ ] T052 [US4] (Sustituye a `ajusteDesmarque` de T085 y a `estrella.pendienteDesmarque`.) En la resolución del pase de `packages/engine/src/acciones/juego.ts`, con el bloque: tras elegir receptor, localizar su marcador, tirar el duelo de desmarque y aplicar +`bonusLibre` (libre) o −`penalizacionMarcado` (marcado) como desplazamiento del duelo del pase; guardar `marcadorId: number | null` y `libre: boolean` solo de forma transitoria en el plan del pase (data-model §6). Si el pase no sale, no se tira el desmarque
-- [ ] T053 [US4] Anotar `duelosDesmarque` y `recibidoLibre` (receptor; también recepción sin marcador cuenta como libre) y `marcajesGanados` (marcador) en `packages/engine/src/acciones/juego.ts`
-- [ ] T054 [US4] Añadir `015/SC-004` a `tools/balance/src/checks/motor015.ts`: A/B receptor +15 de desmarque (más `recibidoLibre` y más pases completados recibidos) y marcador +15 de marcaje (menos `recibidoLibre` del rival), las dos significativas
+- [X] T048 [US4] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `desmarque: { radioMarcaM: 3, base: 0, m: 1, bonusLibre: 0.5, penalizacionMarcado: 0.4, pesoEleccion: 1 }`
+- [X] T049 [US4] En `packages/engine/src/modificadores/atributos.ts`, con el bloque `desmarque`: `desmarque` = DEL desmarque, MED visión, DEF velocidad (sustituye al ×0,8 de hoy); `marcaje` = DEF marcaje, MED posicionamiento, DEL agresividad, POR 50 (data-model §4)
+- [X] T050 [US4] Crear `packages/engine/src/acciones/desmarque.ts` con funciones puras: `marcadorDe(receptor, rivales, radioMarcaM)` (rival de campo más cercano a ≤ radio, un único recorrido sin ordenar ni reservar memoria; `null` si no hay o si el receptor es portero) y `probabilidadDesmarque(desmarque, marcaje, params)` con `probabilidad()` de `duelo.ts` (FR-018, M2.12)
+- [X] T051 [US4] En `pesosReceptor` de `packages/engine/src/acciones/receptor.ts`, con el bloque: multiplicar el peso de cada candidato por `1 + pesoEleccion × (p − 0,5)`, con p la probabilidad de ganar su duelo de desmarque sin tirada (p = 1 sin marcador) (FR-013)
+- [X] T052 [US4] (Sustituye a `ajusteDesmarque` de T085 y a `estrella.pendienteDesmarque`.) En la resolución del pase de `packages/engine/src/acciones/juego.ts`, con el bloque: tras elegir receptor, localizar su marcador, tirar el duelo de desmarque y aplicar +`bonusLibre` (libre) o −`penalizacionMarcado` (marcado) como desplazamiento del duelo del pase; guardar `marcadorId: number | null` y `libre: boolean` solo de forma transitoria en el plan del pase (data-model §6). Si el pase no sale, no se tira el desmarque
+- [X] T053 [US4] Anotar `duelosDesmarque` y `recibidoLibre` (receptor; también recepción sin marcador cuenta como libre) y `marcajesGanados` (marcador) en `packages/engine/src/acciones/juego.ts`
+- [X] T054 [US4] Añadir `015/SC-004` a `tools/balance/src/checks/motor015.ts`: A/B receptor +15 de desmarque (más `recibidoLibre` y más pases completados recibidos) y marcador +15 de marcaje (menos `recibidoLibre` del rival), las dos significativas
 
 **Checkpoint**: desmarque probado por separado; `equivalencia014` en verde.
 
@@ -209,23 +209,23 @@ Depende de US4 (decide quién recibe marcado).
 
 ### Tests for User Story 5
 
-- [ ] T055 [P] [US5] Añadir a `packages/engine/tests/desmarque.test.ts` la invariante M2.9: el control solo ocurre tras un pase completado a un receptor marcado; enfrenta `tecnica` contra el `quite` del marcador; si pierde, `perder()` con el marcador como recuperador; receptor libre o sin marcador → sin duelo; `tecnica` = DEF/MED técnica, DEL (regate + creatividad) / 2, POR distribución
+- [X] T055 [P] [US5] Añadir a `packages/engine/tests/desmarque.test.ts` la invariante M2.9: el control solo ocurre tras un pase completado a un receptor marcado; enfrenta `tecnica` contra el `quite` del marcador; si pierde, `perder()` con el marcador como recuperador; receptor libre o sin marcador → sin duelo; `tecnica` = DEF/MED técnica, DEL (regate + creatividad) / 2, POR distribución
 
 ### Implementation for User Story 5
 
-- [ ] T056 [US5] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `controlPresion: { base: 1.0, m: 1 }`
-- [ ] T057 [US5] En `packages/engine/src/modificadores/atributos.ts`, con el bloque `controlPresion`: `tecnica` = POR distribución, DEF técnica, MED técnica, DEL (regate + creatividad) / 2
-- [ ] T058 [US5] Añadir a `packages/engine/src/acciones/desmarque.ts` la función pura del duelo de control (`tecnica` contra `quite`, con `base`/`m` del bloque) y llamarla en `packages/engine/src/acciones/juego.ts` tras un pase completado a un receptor marcado (reutilizando el `marcadorId` de T052); si pierde, `perder()` en la posición del receptor; anotar `controlesPresion` y `controlesPerdidos`. Sin tipo de acción nuevo
-- [ ] T059 [US5] Añadir `015/SC-005` a `tools/balance/src/checks/motor015.ts`: A/B +15 de técnica; `controlesPerdidos / controlesPresion` ≥ 15 % menor
-- [ ] T060 [US5] Ejecutar `pnpm --filter @fbd/engine test desmarque receptor equivalencia014`
+- [X] T056 [US5] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `controlPresion: { base: 1.0, m: 1 }`
+- [X] T057 [US5] En `packages/engine/src/modificadores/atributos.ts`, con el bloque `controlPresion`: `tecnica` = POR distribución, DEF técnica, MED técnica, DEL (regate + creatividad) / 2
+- [X] T058 [US5] Añadir a `packages/engine/src/acciones/desmarque.ts` la función pura del duelo de control (`tecnica` contra `quite`, con `base`/`m` del bloque) y llamarla en `packages/engine/src/acciones/juego.ts` tras un pase completado a un receptor marcado (reutilizando el `marcadorId` de T052); si pierde, `perder()` en la posición del receptor; anotar `controlesPresion` y `controlesPerdidos`. Sin tipo de acción nuevo
+- [X] T059 [US5] Añadir `015/SC-005` a `tools/balance/src/checks/motor015.ts`: A/B +15 de técnica; `controlesPerdidos / controlesPresion` ≥ 15 % menor
+- [X] T060 [US5] Ejecutar `pnpm --filter @fbd/engine test desmarque receptor equivalencia014`
 
 ---
 
 ## Phase 9: Cierre de la tanda 2
 
-- [ ] T061 Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-004`, `015/SC-005` ✔ y **002/SC-007a ≥ 150** pases completados (FR-020). Si no llega, ajustar `bonusLibre` y `pesoEleccion` en `packages/domain/src/parametros/index.ts`; las de la tanda 1 siguen en verde
-- [ ] T062 Actualizar `--pendientes` en `.github/workflows/ci.yml` con el resultado
-- [ ] T063 Medir con `pnpm --filter @fbd/balance umbral-motor` (≤ +10 % sobre T001); si se supera, calcular el marcador de cada candidato una sola vez por decisión de pase y reutilizarlo en el pase y el control (R11)
+- [ ] T061 (abierta: 015/SC-004 y SC-005 ✔ y 135,9 pases; en rojo 002/SC-007a por 14,6 tiros, 003/SC-003 propia puerta 4,5 % y 003/SC-007 Matador por ruido; ver research.md, «Tanda 2») Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-004`, `015/SC-005` ✔ y **002/SC-007a ≥ 130** pases completados (FR-020; 150 hasta el 2026-11-14). Si no llega, ajustar `bonusLibre` y `pesoEleccion` en `packages/domain/src/parametros/index.ts`; las de la tanda 1 siguen en verde
+- [ ] T062 (abierta: ninguna pendiente se cumple, así que no sale ninguna; las tres nuevas en rojo esperan decisión) Actualizar `--pendientes` en `.github/workflows/ci.yml` con el resultado
+- [X] T063 (la tanda 2 no añade coste; la 8.0.0 queda a +10,0 % de la 7.0.0) Medir con `pnpm --filter @fbd/balance umbral-motor` (≤ +10 % sobre T001); si se supera, calcular el marcador de cada candidato una sola vez por decisión de pase y reutilizarlo en el pase y el control (R11)
 
 ---
 

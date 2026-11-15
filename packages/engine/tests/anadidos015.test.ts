@@ -1,10 +1,10 @@
 /**
- * Añadidos de la spec 015 (FR-025 a FR-029; research R11 a R14): buscar a la estrella, desmarque en el pase, Juego por
- * las bandas, subida al área a balón parado y segunda línea. Todo cuelga de bloques de la 8.0.0: con la 7.0.0, nada.
+ * Añadidos de la spec 015 (FR-025 a FR-029; research R11 a R14): buscar a la estrella, Juego por las bandas, subida al
+ * área a balón parado y segunda línea. Todo cuelga de bloques de la 8.0.0: con la 7.0.0, nada. El desmarque en el pase
+ * (FR-026) lo sustituyó el duelo de desmarque de la tanda 2 (`desmarque.test.ts`).
  */
 import { PARAMETROS_V7, PARAMETROS_V8 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
-import { ajusteDesmarque } from '../src/acciones/juego';
 import { esManoAMano } from '../src/acciones/manoAMano';
 import type { Entorno } from '../src/acciones/opciones';
 import { pesosEstrella, pesosReceptor, type Candidato } from '../src/acciones/receptor';
@@ -12,7 +12,6 @@ import { porteroBajoPalos } from '../src/acciones/tiro';
 import { objetivosBalonParado } from '../src/espacio/colocacion';
 import { calcularObjetivos } from '../src/espacio/objetivos';
 import { pesosAcciones, probabilidadBanda } from '../src/modificadores/formacionTactica';
-import { atributo } from '../src/modificadores/atributos';
 import type { EstadoMotor } from '../src/index';
 import { darBalon, equipo, partido, ponerRasgos, situar, titularEn } from './ayudas';
 
@@ -50,30 +49,6 @@ describe('buscar a la estrella (FR-025, R11)', () => {
     const [ei, ed] = pesosEstrella(escenaEstrella(90, true), 85, ESTRELLA);
     expect(ed!).toBeGreaterThan(ei!);
     expect(ed! / ei!).toBeCloseTo(ESTRELLA.prioridadEstrella, 2);
-  });
-});
-
-describe('desmarque del receptor en el pase (FR-026)', () => {
-  const escena = (parametros: typeof V8 | Record<string, never>, marcadorA: number) => {
-    const e = partido('desmarque015', parametros);
-    const receptor = titularEn(e, 'local', 'DC');
-    const marcador = titularEn(e, 'visitante', 'DCI');
-    situar(e, receptor.id, { x: 8000, y: 3200 });
-    situar(e, marcador.id, { x: 10000 - 8000 - marcadorA, y: 3200 });
-    return { e, receptor, marcador };
-  };
-
-  it('con un marcador encima, pendienteDesmarque × (desmarque − marcaje)', () => {
-    const { e, receptor, marcador } = escena(V8, 150);
-    const esperado = ESTRELLA.pendienteDesmarque * (atributo(e, e.equipos.local, receptor, 'desmarque') - atributo(e, e.equipos.visitante, marcador, 'marcaje'));
-    expect(ajusteDesmarque(e, e.equipos.local, e.equipos.visitante, receptor)).toBeCloseTo(esperado);
-  });
-
-  it('sin nadie a 3 m, o con la 7.0.0, no cuenta', () => {
-    const lejos = escena(V8, 1000);
-    expect(ajusteDesmarque(lejos.e, lejos.e.equipos.local, lejos.e.equipos.visitante, lejos.receptor)).toBe(0);
-    const v7 = escena({}, 150);
-    expect(ajusteDesmarque(v7.e, v7.e.equipos.local, v7.e.equipos.visitante, v7.receptor)).toBe(0);
   });
 });
 

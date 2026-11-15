@@ -62,9 +62,11 @@ Cada carta tiene seis stats según su demarcación
 | anticipación | colocación | anticipación | posicionamiento | agresividad × 0,8 |
 | físico | aéreo | marcaje | (posicionamiento + velocidad) / 2 | agresividad |
 | aéreo | aéreo | anticipación | posicionamiento × 0,85 | (finalización + desmarque) / 2 |
-| desmarque | 20 | velocidad × 0,8 | visión | desmarque |
+| desmarque | 20 | velocidad × 0,8 (8.0.0: velocidad) | visión | desmarque |
 | centro | distribución × 0,7 | técnica | pase | creatividad |
 | parada | (agilidad + colocación) / 2 | media × 0,5 | media × 0,5 | media × 0,5 |
+| marcaje (8.0.0) | 50 | marcaje | posicionamiento | agresividad |
+| técnica (8.0.0) | distribución | técnica | técnica | (regate + creatividad) / 2 |
 
 **Modificadores**, en este orden, antes de cada duelo:
 
@@ -128,6 +130,13 @@ rasgos y sin cansancio. Cerca del área rival bajan (cada zona a partir de la 3 
 - **A balón parado** (córner o falta lateral): el atacante es (centro del lanzador + aéreo del mejor rematador) / 2
   contra el aéreo del mejor defensor por arriba de los que están cerca
   ([`tiro.ts`](../../packages/engine/src/acciones/tiro.ts), `rematarBalonParado`).
+- **Con la 8.0.0 (spec 015, balones fuera)**: hay el triple de córners, así que en el córner el remate y la falta en el
+  duelo aéreo salen con el 30 % de su probabilidad (`fueraDeCampo.peligroCorner`). El despeje va hacia la frontal y esa
+  segunda jugada se disputa como balón suelto (§5.3); la carrera tras el centro no decide nada (el duelo aéreo ya
+  decidió) y no cuenta como balón suelto. Cuando la defensa gana un duelo, el balón puede irse fuera: un centro
+  despejado sale a córner el 90 % de las veces; un pase cortado o una entrada a menos de 22 m de la línea de fondo, el
+  25 % (córner); a menos de 15 m de una banda, el 50 % (saque de banda de uno u otro equipo)
+  ([`juego.ts`](../../packages/engine/src/acciones/juego.ts), `fueraTrasDuelo`).
 
 | Centro contra anticipación | Éxito |
 |---|---|
@@ -156,6 +165,26 @@ En los dos, la distancia resta: 0,35 por cada 10 m a partir de 11 m, y 0,05 por 
 
 Lo que convierte un tiro en gol es el producto de los dos duelos. En la serie del informe de equilibrado acaban en
 gol un 17,5 % de los tiros, porque la mayoría salen de lejos o con poco ángulo.
+
+### Desmarque y control con presión (8.0.0, spec 015, tanda 2)
+
+[`acciones/desmarque.ts`](../../packages/engine/src/acciones/desmarque.ts) y `desmarqueDelPase` y `controlConPresion`
+en [`acciones/juego.ts`](../../packages/engine/src/acciones/juego.ts):
+
+1. **Desmarque** (antes de cada pase, con el receptor ya elegido): el desmarque del receptor contra el marcaje de quien
+   le marca, el rival de campo más cercano a 3 m o menos. Base 0. Si gana el receptor, o si nadie le marca (sin
+   tirada), recibe libre y el duelo del pase suma 0,25 a x; si pierde, resta 0,4. Al portero no le marca nadie.
+2. **Control con presión** (solo si perdió el desmarque y el pase le llega): su técnica contra el quite del marcador.
+   Base 0,5. Si pierde, el marcador le quita el balón (sin carrera por un balón suelto) y es una pérdida.
+
+| Duelo | 90 contra 70 | 80 contra 80 | 70 contra 90 |
+|---|---|---|---|
+| Desmarque contra marcaje | 72 % | 50 % | 28 % |
+| Técnica contra quite (control) | 78 % | 67 % | 38 % |
+
+Con un pase corto 70 contra 70 (80 % sin desmarque), el receptor libre lo recibe el 82 % de las veces y el marcado, el
+77 %; si le llega marcado, lo controla el 67 % de las veces con stats iguales. Con 3 m de radio hay unos 9 duelos de
+desmarque por equipo y partido y unos 3 controles con presión (casi todos de los delanteros); con 2 m, casi ninguno.
 
 ### Ajustes del duelo
 
@@ -207,8 +236,8 @@ Un jugador con 90 de pase pasa unas 3,4 veces más (en peso) que uno con 70; uno
     del compañero se multiplica por 2^((media − 70) / 10). Si el mejor está marcado, solo se la juega un pasador con
     (visión + pase) / 2 > 80: le da prioridad (×1,5 sobre la mejor opción clara) si tiene más de 5 puntos de media
     sobre ella; si no, se la da el 40 % de las veces.
-  - **Desmarque en el pase**: hacia un receptor marcado, el pase suma 0,003 por punto de su desmarque sobre el marcaje
-    del rival que le marca.
+  - **Desmarque** (tanda 2, sustituye al anticipo de 0,003 por punto): el peso de cada compañero se multiplica por
+    1 + (p − 0,5), con p su probabilidad de ganar el duelo de desmarque (§4); sin nadie que le marque, p = 1 (× 1,5).
   - **Juego por las bandas**: laterales, carrileros y extremos pesan ×1,5 como receptores, el balón va más por fuera
     (+0,2) y se centra más (×1,3).
 
@@ -241,11 +270,11 @@ Un jugador con 90 de pase pasa unas 3,4 veces más (en peso) que uno con 70; uno
 | Stat | Demarcación | Uso actual |
 |---|---|---|
 | liderazgo | Portero, Defensa | Solo en la media de la carta. |
-| desmarque | Delantero | Solo dentro del aéreo. El atributo «desmarque» existe pero ninguna acción lo usa. |
-| marcaje | Defensa | Solo como «físico», que en un defensa casi solo cuenta cuando conduce él. No se enfrenta al desmarque. |
+| desmarque | Delantero | Dentro del aéreo y, con la 8.0.0, en el duelo de desmarque (§4). |
+| marcaje | Defensa | Como «físico» y, con la 8.0.0, contra el desmarque del receptor (§4). |
 | agresividad | Delantero | Su quite, su anticipación y su físico (cuando defiende o conduce). |
-| técnica | Defensa | Pase, visión, centro y la mitad del regate; no reduce las pérdidas. |
-| técnica | Medio | Su regate. |
+| técnica | Defensa | Pase, visión, centro y la mitad del regate; con la 8.0.0, también el control con presión (§4). |
+| técnica | Medio | Su regate y, con la 8.0.0, el control con presión (§4). |
 | posicionamiento | Medio | Quite, anticipación, parte del físico y del aéreo: es casi toda su defensa. |
 | aéreo | Defensa | No existe: el juego aéreo de un defensa es su anticipación. |
 
@@ -256,8 +285,8 @@ Frente a lo propuesto el 2026-11-13 («que cada stat se enfrente individualmente
 - **Ya funciona así**: regate contra quite, pase contra anticipación, remate contra parada, centro contra
   anticipación y aéreo contra aéreo, con el jugador concreto que defiende.
 - **Falta**:
-  - Desmarque contra marcaje: ganar o perder la posición antes de recibir.
-  - Técnica contra presión: perder menos balones en el control.
+  - Desmarque contra marcaje: ganar o perder la posición antes de recibir (hecho en la 8.0.0, tanda 2).
+  - Técnica contra presión: perder menos balones en el control (hecho en la 8.0.0, tanda 2).
   - Liderazgo: que los defensas de alrededor se descoloquen menos.
   - El remate usa una sola stat (finalización o disparo), no la combinación de las dos.
   - El aéreo del defensa sale de su anticipación.

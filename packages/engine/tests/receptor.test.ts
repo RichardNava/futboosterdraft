@@ -1,7 +1,7 @@
 /**
  * Receptor por tipo de pase, distancia y dirección reales (spec 003, research R3; FR-016, FR-017; T011).
  */
-import { PARAMETROS_V7 } from '@fbd/domain';
+import { PARAMETROS_V7, PARAMETROS_V8 } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { callejonSinSalida, factorPasador, pesosReceptor, receptorDePase } from '../src/acciones/receptor';
 import type { EstadoMotor, JugadorEnPartido } from '../src/index';
@@ -119,5 +119,49 @@ describe('ida y vuelta sin sentido (spec 014, M3)', () => {
   it('M3.2: con un rival encima, la pared sigue permitida', () => {
     const { ids, x } = escena(true, 0);
     expect(ids.includes(x.id)).toBe(true);
+  });
+});
+
+describe('elección del receptor según su duelo de desmarque (spec 015, FR-013, M2.8)', () => {
+  const V8 = { version: PARAMETROS_V8.version, parametros: PARAMETROS_V8 };
+  const { desmarque: _sinBloque, ...sinDesmarque } = PARAMETROS_V8;
+  const SIN_DESMARQUE = { version: PARAMETROS_V8.version, parametros: sinDesmarque };
+
+  /** Dos delanteros simétricos respecto al portador, iguales salvo el desmarque; cada uno con un central a 2 m o lejos. */
+  function pesos(parametros: typeof V8 | typeof SIN_DESMARQUE | Record<string, never>, marcados: boolean) {
+    const e = partido('eleccion-desmarque', parametros);
+    const portador = titularEn(e, 'local', 'MC-1');
+    const bueno = titularEn(e, 'local', 'DC');
+    const malo = titularEn(e, 'local', 'SD');
+    bueno.jugador = { ...bueno.jugador, stats: { ...bueno.jugador.stats, desmarque: 95 } as typeof bueno.jugador.stats };
+    malo.jugador = { ...malo.jugador, stats: { ...malo.jugador.stats, desmarque: 70 } as typeof malo.jugador.stats };
+    const centrales = [titularEn(e, 'visitante', 'DCI'), titularEn(e, 'visitante', 'DCD')];
+    situar(e, portador.id, { x: 5000, y: 3200 });
+    situar(e, bueno.id, { x: 6000, y: 2600 });
+    situar(e, malo.id, { x: 6000, y: 3800 });
+    // Coordenadas del visitante: a 2 m por delante de cada delantero, o en su propia área, lejos de todos.
+    centrales.forEach((c, i) => situar(e, c.id, marcados ? { x: 10000 - 6190, y: 6400 - (i === 0 ? 2600 : 3800) } : { x: 500, y: 1000 + 4400 * i }));
+    soloEnCampo(e, [portador.id, bueno.id, malo.id, ...centrales.map((c) => c.id)]);
+    darBalon(e, 'local', portador, 3);
+    const m = new Map(pesosReceptor(e, e.equipos.local, portador, 'pase_corto').map(([j, p]) => [j.id, p]));
+    return { bueno: m.get(bueno.id)!, malo: m.get(malo.id)! };
+  }
+
+  it('de dos candidatos marcados iguales salvo el desmarque, el de más desmarque pesa más', () => {
+    const p = pesos(V8, true);
+    expect(p.bueno).toBeGreaterThan(p.malo);
+  });
+
+  it('sin marcador, p = 1: el peso se multiplica por 1 + pesoEleccion × 0,5', () => {
+    const con = pesos(V8, false);
+    const sin = pesos(SIN_DESMARQUE, false);
+    const factor = 1 + PARAMETROS_V8.desmarque!.pesoEleccion * 0.5;
+    expect(con.bueno / sin.bueno).toBeCloseTo(factor, 2);
+    expect(con.malo / sin.malo).toBeCloseTo(factor, 2);
+  });
+
+  it('con la 7.0.0, el desmarque no cambia los pesos', () => {
+    const p = pesos({}, true);
+    expect(p.bueno).toBe(p.malo);
   });
 });

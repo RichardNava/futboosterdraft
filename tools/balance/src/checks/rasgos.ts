@@ -45,8 +45,10 @@ const P_DISCIPLINA = con((q) => {
   q.disciplina.probabilidadAmarillaPorFalta = 0.15;
   q.disciplina.probabilidadRojaDirectaPorFalta = 0.08;
 });
+// 0,02 → 0,08 en la spec 015 (2026-11-15): con 0,02 los delanteros sin Frágil se lesionaban 20–35 veces en 1.000
+// partidos y el azar movía el cociente ±22 %, más que la tolerancia (±20 %); con 0,08, unas 110 lesiones y ±11 %.
 const P_LESIONES = con((q) => {
-  q.lesiones.probabilidadPorEntrada = 0.02;
+  q.lesiones.probabilidadPorEntrada = 0.08;
 });
 const P_AUTOGOLES = con((q) => {
   q.tiro.autogol.despejeCentro = 0.1;

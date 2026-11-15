@@ -1,8 +1,9 @@
 /**
  * Comprobaciones del motor 8.0.0 (spec 015; contracts/balance.md §B1): frecuencia del regateador (SC-002), Cabeceador
- * en los centrales (SC-003), Juego por las bandas (SC-011) y segunda línea (SC-012). Series A/B sintéticas con las mismas semillas: solo cambia lo que se mide.
+ * en los centrales (SC-003), desmarque contra marcaje (SC-004), control con presión (SC-005), Juego por las bandas
+ * (SC-011) y segunda línea (SC-012). Series A/B sintéticas con las mismas semillas: solo cambia lo que se mide.
  */
-import { FORMACIONES, type Jugador, type Virtud } from '@fbd/domain';
+import { FORMACIONES, type Jugador, type ParametrosEquilibrado, type Virtud } from '@fbd/domain';
 import type { EquipoPartido, MetricasJugador } from '@fbd/engine';
 import type { GrupoComprobaciones } from '../cli';
 import { clonar, equipoSintetico } from '../equipos';
@@ -20,6 +21,11 @@ export function cambiar(equipo: EquipoPartido, casillas: readonly string[], f: (
 
 const conStat = (stat: string, valor: number) => (j: Jugador): Jugador => ({ ...j, stats: { ...j.stats, [stat]: valor } as Jugador['stats'] });
 const conVirtud = (v: Virtud) => (j: Jugador): Jugador => ({ ...j, virtudes: [...j.virtudes, v] });
+const masStat = (stat: string, delta: number) => (j: Jugador): Jugador =>
+  conStat(stat, Math.min(99, (j.stats as unknown as Record<string, number>)[stat]! + delta))(j);
+const casillasDe = (equipo: EquipoPartido, demarcaciones: readonly string[]) =>
+  equipo.titulares.filter((t) => demarcaciones.includes(t.jugador.demarcacion)).map((t) => t.casillaId);
+const suma = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 
 /** Por partido, la suma de unos contadores de los jugadores `ids` del equipo A. */
 export function porPartido(r: ResultadoSerie, ids: readonly number[], campos: readonly (keyof MetricasJugador)[]): number[] {
@@ -96,6 +102,64 @@ export function comprobarSC003(n: number, semilla: number): Comprobacion {
   };
 }
 
+/**
+ * SC-004: el DC con +15 de desmarque recibe libre más a menudo y recibe más pases completados; con +15 de marcaje en los
+ * defensas rivales, recibe libre menos veces. Las tres diferencias, significativas.
+ */
+export function comprobarSC004(n: number, semilla: number): Comprobacion {
+  const base = equipoSintetico({ semilla: 'motor015' });
+  const rival = clonar(base, 'b');
+  const id = idEn(base, 'DC');
+  const sin = serie(base, rival, n, semilla, 'motor015-desmarque', { metricas: true });
+  const desmarque = serie(cambiar(base, ['DC'], masStat('desmarque', 15)), rival, n, semilla, 'motor015-desmarque', { metricas: true });
+  const marcaje = serie(base, cambiar(rival, casillasDe(rival, ['DEF']), masStat('marcaje', 15)), n, semilla, 'motor015-desmarque', { metricas: true });
+  const libre = [sin, desmarque, marcaje].map((r) => porPartido(r, [id], ['recibidoLibre']));
+  const recibidos = [sin, desmarque].map((r) => porPartido(r, [id], ['pasesRecibidos']));
+  const okLibre = mayorSignificativo(libre[1]!, libre[0]!);
+  const okRecibidos = mayorSignificativo(recibidos[1]!, recibidos[0]!);
+  const okMarcaje = mayorSignificativo(libre[0]!, libre[2]!);
+  const duelos = [sin, desmarque, marcaje].map((r) => suma(porPartido(r, [id], ['duelosDesmarque'])) / r.n);
+  const ns = (ok: boolean) => (ok ? '' : ' (no significativo)');
+  return {
+    id: '015/SC-004',
+    descripcion: 'Desmarque: con +15 de desmarque se recibe libre más a menudo y se reciben más pases completados; con +15 de marcaje del rival, menos veces libre (significativas)',
+    ok: okLibre && okRecibidos && okMarcaje,
+    detalle:
+      `DC libre ${media(libre[0]!).toFixed(2)} → ${media(libre[1]!).toFixed(2)} por partido${ns(okLibre)} · pases recibidos ${media(recibidos[0]!).toFixed(2)} → ${media(recibidos[1]!).toFixed(2)}${ns(okRecibidos)}` +
+      ` · con +15 de marcaje rival, libre ${media(libre[2]!).toFixed(2)}${ns(okMarcaje)} · duelos de desmarque ${duelos.map((d) => d.toFixed(2)).join(' / ')}`,
+  };
+}
+
+/** El mismo equipo con +15 de técnica en sus jugadores de campo: la stat en DEF y MED; en el DEL, regate y creatividad (su técnica es la media). */
+export function conTecnica(equipo: EquipoPartido, delta = 15): EquipoPartido {
+  const del = casillasDe(equipo, ['DEL']);
+  return cambiar(cambiar(equipo, casillasDe(equipo, ['DEF', 'MED']), masStat('tecnica', delta)), del, (j) => masStat('creatividad', delta)(masStat('regate', delta)(j)));
+}
+
+/**
+ * SC-005: con +15 de técnica en los jugadores de campo, la parte de controles con presión que pierden baja al menos un
+ * 15 %. Cuentan todos: los delanteros, los más marcados, hacen la mayoría de los controles.
+ */
+export function comprobarSC005(n: number, semilla: number, parametros?: ParametrosEquilibrado): Comprobacion {
+  const base = equipoSintetico({ semilla: 'motor015' });
+  const rival = clonar(base, 'b');
+  const ids = base.titulares.filter((t) => t.jugador.demarcacion !== 'POR').map((t) => t.jugador.id);
+  const tasa = (r: ResultadoSerie) => {
+    const controles = suma(porPartido(r, ids, ['controlesPresion']));
+    return { controles, perdidos: suma(porPartido(r, ids, ['controlesPerdidos'])) / Math.max(1, controles) };
+  };
+  const opciones = { metricas: true, ...(parametros ? { parametros } : {}) };
+  const sin = tasa(serie(base, rival, n, semilla, 'motor015-tecnica', opciones));
+  const con = tasa(serie(conTecnica(base), rival, n, semilla, 'motor015-tecnica', opciones));
+  const reduccion = sin.perdidos > 0 ? 1 - con.perdidos / sin.perdidos : Number.NaN;
+  return {
+    id: '015/SC-005',
+    descripcion: 'Control con presión: con +15 de técnica, al menos un 15 % menos de controles perdidos',
+    ok: reduccion >= 0.15,
+    detalle: `perdidos ${(100 * sin.perdidos).toFixed(1)} % → ${(100 * con.perdidos).toFixed(1)} % de ${sin.controles} y ${con.controles} controles (${pct(-reduccion)})`,
+  };
+}
+
 /** SC-011: con Juego por las bandas, laterales y extremos tocan más el balón y el equipo centra más, significativo. */
 export function comprobarSC011(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'motor015' });
@@ -117,7 +181,7 @@ export function comprobarSC011(n: number, semilla: number): Comprobacion {
   };
 }
 
-/** SC-012: los que no son delanteros (defensas y medios) marcan entre el 15 % y el 40 % de los goles del equipo. */
+/** SC-012: los que no son delanteros (defensas y medios) marcan entre el 15 % y el 30 % de los goles del equipo (máximo del 40 % hasta el 2026-11-15). */
 export function comprobarSC012(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'motor015' });
   const r = serie(base, clonar(base, 'b'), n, semilla, 'motor015-segunda', { metricas: true });
@@ -127,8 +191,8 @@ export function comprobarSC012(n: number, semilla: number): Comprobacion {
   const cuota = todos > 0 ? suyos / todos : 0;
   return {
     id: '015/SC-012',
-    descripcion: 'Segunda línea: defensas y medios marcan entre el 15 % y el 40 % de los goles de su equipo',
-    ok: cuota >= 0.15 && cuota <= 0.4,
+    descripcion: 'Segunda línea: defensas y medios marcan entre el 15 % y el 30 % de los goles de su equipo',
+    ok: cuota >= 0.15 && cuota <= 0.3,
     detalle: `${(100 * cuota).toFixed(1)} % de ${todos} goles (${suyos} de defensas y medios)`,
   };
 }
@@ -138,6 +202,8 @@ export function gruposMotor015(): GrupoComprobaciones[] {
     { ids: ['015/SC-002a'], serie: 'sintetica', ejecutar: (o) => [comprobarSC002a(o.n, o.seed)] },
     { ids: ['015/SC-002b'], serie: 'sintetica', ejecutar: (o) => [comprobarSC002b(o.n, o.seed)] },
     { ids: ['015/SC-003'], serie: 'sintetica', ejecutar: (o) => [comprobarSC003(o.n, o.seed)] },
+    { ids: ['015/SC-004'], serie: 'sintetica', ejecutar: (o) => [comprobarSC004(o.n, o.seed)] },
+    { ids: ['015/SC-005'], serie: 'sintetica', ejecutar: (o) => [comprobarSC005(o.n, o.seed)] },
     { ids: ['015/SC-011'], serie: 'sintetica', ejecutar: (o) => [comprobarSC011(o.n, o.seed)] },
     { ids: ['015/SC-012'], serie: 'sintetica', ejecutar: (o) => [comprobarSC012(o.n, o.seed)] },
   ];

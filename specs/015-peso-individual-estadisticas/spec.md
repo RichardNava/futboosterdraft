@@ -100,6 +100,14 @@ Términos:
   equipo: con más goles de tiro lejano, los del resto diluyen el efecto (decisión del 2026-11-15).
 - Q: ¿Se mantiene el +15 % de conducciones largas de 003/SC-006 con +15 de físico y velocidad? → A: Baja a +14,5 %
   (serie de cierre: +14,5 %).
+- Q: ¿Se mantienen los 2 contraataques por partido de 002/SC-007a? → A: Bajan a 1,8: con la táctica por defecto el
+  límite era exigente, y con la táctica Contraataque el equipo hace un 52 % más (sonda de 300: 1,46 frente a 0,96).
+- Q: ¿Cuántos córners y saques de banda? → A: Se veían pocos (2,2 córners y 1,4 saques de banda por partido): el balón
+  iba siempre a un jugador. El objetivo son entre 6 y 9 córners por partido (media 7,5) y más saques de banda, con
+  despejes, desvíos y rechaces que se van fuera, sin perder acciones de juego (US11, FR-031, SC-013). Si no se
+  consigue sin regresiones, se descarta y se vuelve a la versión anterior.
+- Q: Con el triple de córners, los cambios de orientación de 002/SC-007a bajan de 5,1 a 4,2: ¿se mantiene el mínimo de
+  5? → A: Baja a 4: apenas se aprecian en la simulación y no pesan en el resultado.
 - Q: ¿Se añade una táctica de juego por fuera? → A: Sí, «Juego por las bandas», como un estilo con balón más
   (junto a Equilibrado, Contraataque y Juego combinativo): se avanza más por fuera y laterales, carrileros y extremos
   reciben más (US8).
@@ -116,6 +124,12 @@ Términos:
 - Q: ¿Qué significa bajar `defectos.malDefensor` de 0,65 a 0,5? → A: Es la parte de las acciones defensivas que el
   Mal defensor no cede a un compañero: más bajo, más grave el defecto. Con el −0,05 de quite, la 8.0.0 lo deja haciendo
   el 42 % de las acciones de un defensa normal (objetivo de la spec 005: 50 % ± 20 %).
+
+### Session 2026-11-15 (antes de la tanda 2)
+
+- Q: ¿Qué cuota de goles deben marcar defensas y medios (SC-012)? → A: Entre el 15 % y el 30 % de los goles de su
+  equipo (antes, 15–40 %). Al cerrar la tanda 1 está en el 5,9 % (104 de 1.767): se busca en la tanda 2 cómo acercarlo
+  y, si no se alcanza, se explica con datos antes de tocar nada más.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -350,6 +364,28 @@ nunca.
 
 ---
 
+### User Story 11 - Balones que se van fuera (Priority: P2) — balones fuera, tras la serie de cierre
+
+Como participante, quiero ver córners y saques de banda como en un partido de verdad: despejes, desvíos y rechaces que
+se van del campo, no un balón que siempre acaba en un jugador.
+
+**Why this priority**: con 2,2 córners por partido el juego parece dirigido; los córners son ocasiones y el saque de
+banda forma parte del ritmo del partido.
+
+**Independent Test**: entre equipos equilibrados, entre 6 y 9 córners por partido sin que bajen los pases, los tiros,
+las conducciones ni los contraataques.
+
+**Acceptance Scenarios**:
+
+1. **Given** un centro que despeja un defensor, **When** se resuelve el duelo, **Then** puede salir a córner.
+2. **Given** un pase cortado o una entrada ganada cerca de la línea de fondo, **When** el defensor gana el duelo,
+   **Then** el balón puede irse a córner; cerca de una banda, a saque de banda (de uno u otro equipo).
+3. **Given** un saque de banda, **When** se reanuda, **Then** saca el jugador de campo más cercano, sin cruzar el campo.
+4. **Given** un córner, **When** se colocan los jugadores, **Then** el saque no tarda más de un minuto, y el despeje
+   del defensor aleja el balón del área.
+
+---
+
 ### Edge Cases
 
 - **Defensor sin la stat del enfrentamiento**: usa 50 (FR-019). Ejemplo: un portero que tuviera que marcar a un
@@ -460,7 +496,7 @@ nunca.
   marcado conserva su peso de hoy (los libres pesan más).
 - **FR-026**: En el éxito de un pase hacia un receptor marcado (rival de campo a 3 m o menos) DEBE contar su desmarque
   contra el marcaje de ese rival: 0,003 de probabilidad por punto de diferencia. Es un anticipo del duelo de desmarque
-  de FR-011, que lo sustituirá en la tanda 2.
+  de FR-011, que lo sustituye desde la tanda 2.
 - **FR-027**: DEBE existir el estilo con balón «Juego por las bandas», compatible con todas las demás opciones. Con él,
   el balón va a una banda tras avanzar con 0,2 más de probabilidad, laterales, carrileros y extremos (LI, LD, CI, CD, EI
   y ED) pesan × 1,5 como receptores y el peso del centro sube × 1,3.
@@ -474,7 +510,14 @@ nunca.
   ya 10 m dentro del campo propio para cualquier jugador con solo el portero por delante, y los medios centro e
   interiores (MC, MII, MID) llegan a la frontal (unos 22 m de la portería) cuando el balón está en el último tercio.
 - **FR-030**: Los añadidos DEBEN colgar de bloques opcionales de la 8.0.0 (`estrella`, `bandas`, `subidaArea`,
-  `segundaLinea`; research R1): con la 7.0.0 el motor DEBE dar exactamente los mismos partidos.
+  `segundaLinea` y `fueraDeCampo`; research R1): con la 7.0.0 el motor DEBE dar exactamente los mismos partidos.
+- **FR-031**: Balones fuera (US11): un centro despejado DEBE poder salir a córner, y un pase cortado o una entrada ganada
+  cerca de la línea de fondo, también; cerca de una banda, a saque de banda de uno u otro equipo (si es del que
+  defendía, cuenta como recuperación). Más tiros parados y bloqueados DEBEN acabar en córner. El saque de banda lo DEBE
+  hacer el jugador de campo más cercano; en el córner los jugadores DEBEN colocarse a la escala del reloj (el saque no
+  pasa de un minuto) y el despeje DEBE alejar el balón del área. Con más córners, cada uno DEBE ser menos peligroso
+  (remate y falta en el duelo aéreo), para que no cambien los goles de cabeza ni los penaltis. La carrera tras el centro
+  del córner NO DEBE contar como balón suelto (014/SC-008): el duelo aéreo ya decidió quién se queda el balón.
 
 **Comunes**
 
@@ -546,8 +589,10 @@ nunca.
   con las referencias regeneradas para la 8.0.0.
 - **SC-011**: En series de 1.000 partidos, el mismo equipo con «Juego por las bandas» da más toques (pases,
   conducciones y regates) a sus laterales y extremos y centra más que con «Equilibrado», con diferencia significativa.
-- **SC-012**: En series de 1.000 partidos, los defensas y medios marcan entre el 15 % y el 40 % de los goles de su
-  equipo.
+- **SC-012**: En series de 1.000 partidos, los defensas y medios marcan entre el 15 % y el 30 % de los goles de su
+  equipo (el máximo era el 40 % hasta el 2026-11-15).
+- **SC-013**: En series de 1.000 partidos entre equipos equilibrados, hay entre 6 y 9 córners por partido (media
+  buscada, 7,5) y siguen en verde los mínimos de 002/SC-007a y los criterios de FR-021.
 
 ## Decisiones abiertas
 

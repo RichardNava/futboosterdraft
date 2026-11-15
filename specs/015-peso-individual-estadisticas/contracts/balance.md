@@ -11,12 +11,12 @@ si se cumple).
 | `015/SC-002a` | `checks/motor015.ts` | sintética A/B: DEL titular con regate 95 contra 75 | Intentos de regate y conducción por partido ≥ +40 %; completados ≥ +60 % |
 | `015/SC-002b` | `checks/motor015.ts` | Core: el mejor regateador del catálogo, titular contra equipos equilibrados | Supera a algún defensor (regate o conducción ganados ≥ 1) en ≥ 80 % de los partidos (antes 90 %) |
 | `015/SC-003` | `checks/motor015.ts` | sintética A/B: centrales con Cabeceador o sin ella | Más `aereosGanados` y más goles de cabeza a balón parado, con diferencia significativa |
-| `015/SC-004` | `checks/motor015.ts` | sintética A/B: receptor +15 de desmarque; marcador +15 de marcaje | Con desmarque, más `recibidoLibre` y más pases completados recibidos; con marcaje, menos `recibidoLibre` del rival; las dos significativas |
-| `015/SC-005` | `checks/motor015.ts` | sintética A/B: +15 de técnica | `controlesPerdidos / controlesPresion` ≥ 15 % menor |
+| `015/SC-004` | `checks/motor015.ts` | sintética A/B: el DC +15 de desmarque; los defensas rivales +15 de marcaje | Con desmarque, más `recibidoLibre` y más `pasesRecibidos` del DC por partido; con marcaje rival, menos `recibidoLibre` del DC; las tres significativas |
+| `015/SC-005` | `checks/motor015.ts` | sintética A/B: +15 de técnica en los jugadores de campo (DEF y MED la stat; DEL regate y creatividad, que la forman) | `controlesPerdidos / controlesPresion` ≥ 15 % menor (todos cuentan: los delanteros hacen la mayoría de los controles) |
 | `015/SC-006` | `checks/motor015.ts` | sintética A/B: central con 95 de liderazgo contra 70; portero con 95 contra 70 | `habilitaciones` ≥ 10 % menos; duelos ganados por los defensas cercanos al portero, mayores |
 
 | `015/SC-011` | `checks/motor015.ts` | sintética A/B: el mismo equipo con «Juego por las bandas» o «Equilibrado» | Más toques (pases, conducciones y regates) de LI, LD, EI y ED y más centros, los dos significativos |
-| `015/SC-012` | `checks/motor015.ts` | sintética | Defensas y medios marcan entre el 15 % y el 40 % de los goles de su equipo |
+| `015/SC-012` | `checks/motor015.ts` | sintética | Defensas y medios marcan entre el 15 % y el 30 % de los goles de su equipo |
 
 - «Significativa» usa el mismo criterio que 003/SC-007 (`mayorSignificativo`).
 - Las series A/B usan `equipoSintetico` y `clonar`, como `pesoStats.ts`.
