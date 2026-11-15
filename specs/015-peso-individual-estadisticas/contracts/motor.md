@@ -52,7 +52,8 @@ fueraDeCampo?: { centroDespejado: number; desvio: number; desvioBanda: number; m
 Con `fueraDeCampo`, además, `acciones.probabilidadCornerTrasParada` pasa de 0,3 a 0,45 y
 `acciones.probabilidadCornerTrasDespeje` (tiro bloqueado) de 0,35 a 0,6, y la carrera tras el centro de un córner no
 cuenta como balón suelto (`cuentaSuelto: false`, 014/SC-008): el duelo aéreo ya decidió quién remata o despeja, y la
-simulación no cambia.
+simulación no cambia. Con el triple de córners hay más despejes en el área, y el que despeja busca el campo contrario:
+`tiro.autogol.despejeCentro` pasa de 0,008 a 0,004 en la 8.0.0 (003/SC-003; decisión del 2026-11-15).
 
 Además, `decision.factores.regate` pasa a { k: 0,7; min: 0,6; max: 3,0 } en la 8.0.0 (research R4; con los añadidos, { k: 1,1; min: 0,6; max: 4,0 }), y la
 recalibración de la tanda 1 deja `disciplina.factorFaltaArea` en 0,34 y `defectos.malDefensor` en 0,5.

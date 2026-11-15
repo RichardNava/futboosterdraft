@@ -3,7 +3,17 @@
  * en los centrales (SC-003), desmarque contra marcaje (SC-004), control con presión (SC-005), Juego por las bandas
  * (SC-011) y segunda línea (SC-012). Series A/B sintéticas con las mismas semillas: solo cambia lo que se mide.
  */
-import { FORMACIONES, type Jugador, type ParametrosEquilibrado, type Virtud } from '@fbd/domain';
+import {
+  ALTURAS_BLOQUE,
+  ESTILOS_CON_BALON,
+  FORMACIONES,
+  FORMACIONES_IDS,
+  SISTEMAS_DEFENSIVOS,
+  type Jugador,
+  type ParametrosEquilibrado,
+  type Tactica,
+  type Virtud,
+} from '@fbd/domain';
 import type { EquipoPartido, MetricasJugador } from '@fbd/engine';
 import type { GrupoComprobaciones } from '../cli';
 import { clonar, equipoSintetico } from '../equipos';
@@ -181,19 +191,39 @@ export function comprobarSC011(n: number, semilla: number): Comprobacion {
   };
 }
 
-/** SC-012: los que no son delanteros (defensas y medios) marcan entre el 15 % y el 30 % de los goles del equipo (máximo del 40 % hasta el 2026-11-15). */
+/**
+ * SC-012: los que no son delanteros (defensas y medios) marcan entre el 15 % y el 30 % de los goles del equipo (máximo
+ * del 40 % hasta el 2026-11-15). La cuota cambia mucho de un equipo a otro (quién tira los penaltis y las faltas, quién
+ * gana por arriba, cuántos delanteros pone la formación): se mide sobre 20 equipos, uno por formación y táctica, contra
+ * rivales de otra formación, con los mismos partidos en total (decisión del 2026-11-15).
+ */
 export function comprobarSC012(n: number, semilla: number): Comprobacion {
-  const base = equipoSintetico({ semilla: 'motor015' });
-  const r = serie(base, clonar(base, 'b'), n, semilla, 'motor015-segunda', { metricas: true });
-  const noDelanteros = base.titulares.filter((t) => t.jugador.demarcacion === 'DEF' || t.jugador.demarcacion === 'MED').map((t) => t.jugador.id);
-  const suyos = porPartido(r, noDelanteros, ['goles']).reduce((a, b) => a + b, 0);
-  const todos = r.metricasA.reduce((t, m) => t + Object.values(m).reduce((u, x) => u + (x?.goles ?? 0), 0), 0);
+  const EQUIPOS = 20;
+  let suyos = 0;
+  let todos = 0;
+  const cuotas: number[] = [];
+  for (let k = 0; k < EQUIPOS; k++) {
+    const estilo = ESTILOS_CON_BALON[k % ESTILOS_CON_BALON.length]!;
+    const alturaBloque = ALTURAS_BLOQUE[k % ALTURAS_BLOQUE.length]!;
+    // Combinaciones válidas: el juego vertical solo con contraataque y la línea adelantada solo con presión alta.
+    const tactica: Tactica = { sistemaDefensivo: SISTEMAS_DEFENSIVOS[k % 2]!, alturaBloque, estiloConBalon: estilo, juegoVertical: estilo === 'contraataque', lineaAdelantada: alturaBloque === 'presion_alta' };
+    const a = equipoSintetico({ formacion: FORMACIONES_IDS[k % FORMACIONES_IDS.length]!, tactica, semilla: `sc012-${k}`, participanteId: 'a' });
+    const b = equipoSintetico({ formacion: FORMACIONES_IDS[(k + 3) % FORMACIONES_IDS.length]!, semilla: `sc012-b${k}`, participanteId: 'b' });
+    const r = serie(a, b, Math.max(1, Math.round(n / EQUIPOS)), semilla + k, `sc012-${k}`, { metricas: true });
+    const noDelanteros = a.titulares.filter((t) => t.jugador.demarcacion === 'DEF' || t.jugador.demarcacion === 'MED').map((t) => t.jugador.id);
+    const s = porPartido(r, noDelanteros, ['goles']).reduce((x, y) => x + y, 0);
+    const t = r.metricasA.reduce((x, m) => x + Object.values(m).reduce((u, v) => u + (v?.goles ?? 0), 0), 0);
+    suyos += s;
+    todos += t;
+    if (t > 0) cuotas.push(s / t);
+  }
   const cuota = todos > 0 ? suyos / todos : 0;
+  const [min, max] = [Math.min(...cuotas), Math.max(...cuotas)];
   return {
     id: '015/SC-012',
-    descripcion: 'Segunda línea: defensas y medios marcan entre el 15 % y el 30 % de los goles de su equipo',
+    descripcion: 'Segunda línea: defensas y medios marcan entre el 15 % y el 30 % de los goles de su equipo (20 equipos, formaciones y tácticas distintas)',
     ok: cuota >= 0.15 && cuota <= 0.3,
-    detalle: `${(100 * cuota).toFixed(1)} % de ${todos} goles (${suyos} de defensas y medios)`,
+    detalle: `${(100 * cuota).toFixed(1)} % de ${todos} goles (${suyos} de defensas y medios); por equipo, entre ${(100 * min).toFixed(1)} % y ${(100 * max).toFixed(1)} %`,
   };
 }
 

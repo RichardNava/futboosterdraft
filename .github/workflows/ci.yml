@@ -32,9 +32,9 @@ jobs:
       # Con `--pendientes`, solo las que recalibra la spec 015 (peso individual de las stats; ver
       # specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md): se ejecutan e informan, pero no bloquean. Cualquier
       # otra que falle bloquea; si una pendiente ya se cumple, el informe avisa para quitarla de la lista.
-      # Spec 015 tras calibrar los añadidos (T091): 015/SC-012 (segunda línea) sin alcanzar; 002/SC-008 (+10 de pase) se
-      # queda en +9 %, y con él 003/SC-009, que lo incluye.
-      - run: pnpm balance --n 1000 --pendientes 002/SC-008,003/SC-009,015/SC-012
+      # Spec 015 tras la tanda 2 (T062): 002/SC-008 (+10 de pase) se queda en +9,4 %, y con él 003/SC-009, que lo incluye.
+      # 015/SC-012 ya se cumple medido sobre 20 equipos (2026-11-15).
+      - run: pnpm balance --n 1000 --pendientes 002/SC-008,003/SC-009
 
   # Pruebas de diseño de la spec 004 (FR-040): contraste y reglas WCAG 2.1 AA con axe, desplazamiento horizontal,
   # lima reservado y foco visible en cada pantalla del inventario, y el flujo completo con teclado.

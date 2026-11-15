@@ -691,6 +691,9 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
     velocidadColocacion: 4,
     peligroCorner: 0.3,
   },
+  // Con balones fuera hay el triple de córners y de despejes en el área: el que despeja busca el campo contrario, así que
+  // sus despejes acaban en la propia portería la mitad de veces que en la 7.0.0 (003/SC-003; decisión del 2026-11-15).
+  tiro: { ...PARAMETROS_V7.tiro, autogol: { ...PARAMETROS_V7.tiro.autogol, despejeCentro: PARAMETROS_V7.tiro.autogol.despejeCentro / 2 } },
   // Recalibrados por FR-021 (T043): con el regate siempre ofrecido sube el penalti, y el quite cambia el peso del defecto.
   disciplina: { ...PARAMETROS_V7.disciplina, factorFaltaArea: 0.34 },
   defectos: { ...PARAMETROS_V7.defectos!, malDefensor: 0.5 },

@@ -152,7 +152,8 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
     // 150 → 130 en la spec 015 (añadidos: más regate de la estrella, menos pase; decisión del 2026-11-14).
     ['pasesCompletados', 'pases completados', 130],
     ['centros', 'centros', 9],
-    ['tiros', 'tiros', 15],
+    // 15 → 14 en la spec 015 (tanda 2: con el delantero marcado llegan menos balones al área; decisión del 2026-11-16).
+    ['tiros', 'tiros', 14],
     ['conducciones', 'conducciones', 30],
     ['paredes', 'paredes', 3],
     // 5 → 4 en la spec 015 (balones fuera: los córners ocupan el lugar de saques de puerta y recuperaciones en banda, de
@@ -168,7 +169,7 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   return [
     {
       id: '002/SC-007a',
-      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,8 contraataques',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 14 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,8 contraataques',
       ok: valores.every((v) => v.valor >= v.minimo),
       detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
     },

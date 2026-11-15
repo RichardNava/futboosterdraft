@@ -1254,9 +1254,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/index.ts": {
-    "mtime": 1794754934.9271388,
-    "seen": 1794755568.1915233,
-    "ast_hash": "9a7e6e3bef42699d16fce584155eb95d",
+    "mtime": 1794780829.2500038,
+    "seen": 1794783681.1482105,
+    "ast_hash": "e7211a28c050e3d2dd73598b9ed29ed9",
     "semantic_hash": ""
   },
   "packages/domain/src/parametros/v1.json": {
@@ -1392,9 +1392,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/parametros/parametros.test.ts": {
-    "mtime": 1794737238.6866164,
-    "seen": 1794748433.123869,
-    "ast_hash": "b6e1c013f90bfd5999884c5468dde91c",
+    "mtime": 1794780810.481628,
+    "seen": 1794783681.1553082,
+    "ast_hash": "f0ae0b334f8dd323a5608b8dbadedc35",
     "semantic_hash": ""
   },
   "packages/domain/tests/partida/partida.test.ts": {
@@ -1812,9 +1812,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido.ts": {
-    "mtime": 1794749794.067283,
-    "seen": 1794749875.7101848,
-    "ast_hash": "435042eec59a93f433fcd0180c492429",
+    "mtime": 1794784140.0041003,
+    "seen": 1794784594.4584374,
+    "ast_hash": "062f691389256b85f6b71860bd3c0c74",
     "semantic_hash": ""
   },
   "tools/balance/src/cli.ts": {
@@ -1848,32 +1848,32 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "tools/fixtures/escenarios/empate-eliminatoria.json": {
-    "mtime": 1794754998.12379,
-    "seen": 1794755568.3203714,
+    "mtime": 1794781214.997188,
+    "seen": 1794783681.1775324,
     "ast_hash": "75534fd7da1ede6645232c769a2dea69",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-grave.json": {
-    "mtime": 1794754998.1227896,
-    "seen": 1794755568.3203845,
+    "mtime": 1794781214.9963446,
+    "seen": 1794783681.1775348,
     "ast_hash": "9bb8c16527b02c802829632c587950fc",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/lesion-larga.json": {
-    "mtime": 1794754998.1227896,
-    "seen": 1794755568.3203926,
+    "mtime": 1794781214.997188,
+    "seen": 1794783681.1775367,
     "ast_hash": "4458e7b1d500f1f1099d0df88101a5bb",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/roja.json": {
-    "mtime": 1794754998.1221793,
-    "seen": 1794755568.3204033,
+    "mtime": 1794781214.995227,
+    "seen": 1794783681.1775389,
     "ast_hash": "bba9c6032894f1b2134783c56f17eeb7",
     "semantic_hash": ""
   },
   "tools/fixtures/escenarios/tres-amarillas.json": {
-    "mtime": 1794754998.1227896,
-    "seen": 1794755568.3204129,
+    "mtime": 1794781214.9963446,
+    "seen": 1794783681.1775415,
     "ast_hash": "f255704725b6f453ae86950bf2512080",
     "semantic_hash": ""
   },
@@ -2004,9 +2004,9 @@
     "semantic_hash": "08b983757611230f35f1eb6b3b485507"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1794698393.4412405,
-    "seen": 1794698763.0879238,
-    "ast_hash": "b8c438822ccb9519f463650b23e0f96f",
+    "mtime": 1794783627.1876864,
+    "seen": 1794783681.2048936,
+    "ast_hash": "d40102fa1196d54c5c3346922652150b",
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
@@ -2670,9 +2670,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido003.ts": {
-    "mtime": 1794707970.7867975,
-    "seen": 1794708950.28787,
-    "ast_hash": "6a546f0d1ecfc2c4058c0598e4a208e5",
+    "mtime": 1794780256.8602078,
+    "seen": 1794783681.1746101,
+    "ast_hash": "aa67fde72d064c2816935f82507018b9",
     "semantic_hash": ""
   },
   "tools/balance/src/core.ts": {
@@ -11274,9 +11274,9 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/contracts/balance.md": {
-    "mtime": 1794755593.9948783,
-    "seen": 1794759119.108806,
-    "ast_hash": "3fea951f5a22d05e7446f75c46790432",
+    "mtime": 1794780554.3215399,
+    "seen": 1794783681.2325652,
+    "ast_hash": "ee457207b39a2df17e03139296c285ce",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/contracts/catalogo.md": {
@@ -11286,9 +11286,9 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/contracts/motor.md": {
-    "mtime": 1794755594.0684626,
-    "seen": 1794759119.108945,
-    "ast_hash": "a30d17b391dbf4b5378935996a218e50",
+    "mtime": 1794781350.3894973,
+    "seen": 1794783681.2327998,
+    "ast_hash": "a73ad726d9fda1dfdf7bd061914281c1",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/data-model.md": {
@@ -11310,15 +11310,15 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/research.md": {
-    "mtime": 1794758663.4162328,
-    "seen": 1794759119.109321,
-    "ast_hash": "1bec2288a8015b06ddb249900392c66a",
+    "mtime": 1794784568.6760929,
+    "seen": 1794784594.505465,
+    "ast_hash": "3189e554f083b4331f08cf951d716335",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/spec.md": {
-    "mtime": 1794753313.7845407,
-    "seen": 1794755568.527974,
-    "ast_hash": "d8403dc365a2fdf07f98d474f6c1fa39",
+    "mtime": 1794784140.0046158,
+    "seen": 1794784594.5054674,
+    "ast_hash": "1669595c2f47c1991c51f00be6e461ef",
     "semantic_hash": ""
   },
   "packages/engine/tests/cabeceador015.test.ts": {
@@ -11346,9 +11346,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/motor015.ts": {
-    "mtime": 1794753876.4842393,
-    "seen": 1794755568.3123972,
-    "ast_hash": "63cd1a7feb43936921eb5b1b8e053f69",
+    "mtime": 1794780293.9748106,
+    "seen": 1794783681.174269,
+    "ast_hash": "e9893e32f78a2d5739fdbf30ca650a3e",
     "semantic_hash": ""
   },
   "tools/balance/src/sonda015.ts": {
@@ -11358,9 +11358,9 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/tasks.md": {
-    "mtime": 1794758652.0475385,
-    "seen": 1794759119.1094527,
-    "ast_hash": "151eddb8b45bc9ba0c28ab90d19d7bae",
+    "mtime": 1794784568.7304506,
+    "seen": 1794784594.5054705,
+    "ast_hash": "a559b4d87e8ce0abb88e18e1b770589b",
     "semantic_hash": ""
   },
   "packages/engine/tests/anadidos015.test.ts": {

@@ -169,7 +169,7 @@ FR-030), colgados de bloques de la 8.0.0.
 - [X] T088 [US10] Mano a mano desde el campo propio (`packages/engine/src/acciones/manoAMano.ts`) y llegada de MC, MII y MID a la frontal (`packages/engine/src/espacio/objetivos.ts`)
 - [X] T089 Añadir `015/SC-011` y `015/SC-012` a `tools/balance/src/checks/motor015.ts`; SC-003 cuenta los goles de cabeza de todo el equipo
 - [X] T090 Documentar los añadidos en spec.md, plan.md, research.md (R12 a R15), data-model.md, contracts y quickstart.md, y en `docs/juego/enfrentamientos.md`
-- [ ] T091 (abierta: 015/SC-012 en 5,9 %, ver research.md, «Balones fuera») Serie de cierre con los añadidos: `pnpm balance --n 1000`; esperado 015/SC-002b, SC-003, SC-011 y SC-012 ✔ y ninguna regresión nueva; actualizar `--pendientes` en `.github/workflows/ci.yml`
+- [X] T091 (cerrada el 2026-11-15: 015/SC-012 ✔ medido sobre 20 equipos, 25,1 %; ver research.md, «Tras la tanda 2») Serie de cierre con los añadidos: `pnpm balance --n 1000`; esperado 015/SC-002b, SC-003, SC-011 y SC-012 ✔ y ninguna regresión nueva; actualizar `--pendientes` en `.github/workflows/ci.yml`
 
 ---
 
@@ -223,8 +223,8 @@ Depende de US4 (decide quién recibe marcado).
 
 ## Phase 9: Cierre de la tanda 2
 
-- [ ] T061 (abierta: 015/SC-004 y SC-005 ✔ y 135,9 pases; en rojo 002/SC-007a por 14,6 tiros, 003/SC-003 propia puerta 4,5 % y 003/SC-007 Matador por ruido; ver research.md, «Tanda 2») Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-004`, `015/SC-005` ✔ y **002/SC-007a ≥ 130** pases completados (FR-020; 150 hasta el 2026-11-14). Si no llega, ajustar `bonusLibre` y `pesoEleccion` en `packages/domain/src/parametros/index.ts`; las de la tanda 1 siguen en verde
-- [ ] T062 (abierta: ninguna pendiente se cumple, así que no sale ninguna; las tres nuevas en rojo esperan decisión) Actualizar `--pendientes` en `.github/workflows/ci.yml` con el resultado
+- [X] T061 (cerrada el 2026-11-16: 71 de 73 ✔; 015/SC-004 y SC-005 ✔, 136,0 pases y 14,6 tiros con el mínimo bajado a 14; 003/SC-003 (propia 3,1 %), 003/SC-007 y 015/SC-012 ✔; ver research.md, «Tras la tanda 2») Ejecutar `pnpm balance --n 1000`; esperado: `015/SC-004`, `015/SC-005` ✔ y **002/SC-007a ≥ 130** pases completados (FR-020; 150 hasta el 2026-11-14). Si no llega, ajustar `bonusLibre` y `pesoEleccion` en `packages/domain/src/parametros/index.ts`; las de la tanda 1 siguen en verde
+- [X] T062 (cerrada el 2026-11-16: 015/SC-012 sale de la lista, que queda en 002/SC-008 y 003/SC-009) Actualizar `--pendientes` en `.github/workflows/ci.yml` con el resultado
 - [X] T063 (la tanda 2 no añade coste; la 8.0.0 queda a +10,0 % de la 7.0.0) Medir con `pnpm --filter @fbd/balance umbral-motor` (≤ +10 % sobre T001); si se supera, calcular el marcador de cada candidato una sola vez por decisión de pase y reutilizarlo en el pase y el control (R11)
 
 ---

@@ -131,6 +131,23 @@ Términos:
   equipo (antes, 15–40 %). Al cerrar la tanda 1 está en el 5,9 % (104 de 1.767): se busca en la tanda 2 cómo acercarlo
   y, si no se alcanza, se explica con datos antes de tocar nada más.
 
+### Session 2026-11-15 (tras la tanda 2)
+
+- Q: ¿Cómo se mide SC-012, si la cuota cambia tanto de un equipo a otro (del 2,4 % al 27,5 % con seis equipos)? → A:
+  Con muchos equipos, formaciones y tácticas: lo realista es que cambie según la calidad de los jugadores, la táctica y
+  el rival. Se reparten los 1.000 partidos entre 20 equipos (las diez formaciones, dos tácticas cada una) contra rivales
+  de otra formación.
+- Q: ¿Se amplía el máximo de goles en propia puerta de 003/SC-003 (4,5 % tras la tanda 2)? → A: Sí, a 1–4 %. Suben
+  porque balones fuera trae más córners y más despejes en el área. Además, el que despeja en su área busca el campo
+  contrario: en la 8.0.0, la probabilidad de autogol al despejar se reduce a la mitad.
+- Q: ¿Qué se exige a Matador en 003/SC-007, que cae por ruido con algunas semillas? → A: Es una virtud: desequilibra un
+  poco y su efecto fluctúa con el resto del equipo (±5 puntos es razonable). Basta con que no empeore la conversión en
+  mano a mano más de 5 puntos y con que el delantero con Matador no marque más de 1,5 goles por partido.
+- Q: ¿Se sube un 4 % el peso del tiro para recuperar los 15 tiros de 002/SC-007a? → A: Se midió y no los mueve: dentro
+  del área el tiro ya es la opción de más peso en el 99,5–100 % de las decisiones (research, «Tras la tanda 2»). Lo que
+  falta son llegadas al área con el delantero marcado, el efecto buscado de la tanda 2.
+- Q: ¿Qué se hace entonces con el mínimo de 15 tiros (14,6 tras la tanda 2)? → A: Baja a 14 (decisión del 2026-11-16).
+
 ## User Scenarios & Testing *(mandatory)*
 
 Las historias siguen el orden de las tandas de calibración: la tanda 1 son US1 a US3; la tanda 2, US4 y US5; la tanda
@@ -589,8 +606,9 @@ las conducciones ni los contraataques.
   con las referencias regeneradas para la 8.0.0.
 - **SC-011**: En series de 1.000 partidos, el mismo equipo con «Juego por las bandas» da más toques (pases,
   conducciones y regates) a sus laterales y extremos y centra más que con «Equilibrado», con diferencia significativa.
-- **SC-012**: En series de 1.000 partidos, los defensas y medios marcan entre el 15 % y el 30 % de los goles de su
-  equipo (el máximo era el 40 % hasta el 2026-11-15).
+- **SC-012**: En series de 1.000 partidos repartidos entre 20 equipos (las diez formaciones, con tácticas distintas, y
+  rivales de otra formación), los defensas y medios marcan entre el 15 % y el 30 % de los goles de su equipo (el máximo
+  era el 40 % y se medía con un solo equipo hasta el 2026-11-15).
 - **SC-013**: En series de 1.000 partidos entre equipos equilibrados, hay entre 6 y 9 córners por partido (media
   buscada, 7,5) y siguen en verde los mínimos de 002/SC-007a y los criterios de FR-021.
 

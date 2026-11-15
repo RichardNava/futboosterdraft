@@ -269,10 +269,12 @@ describe('parámetros de equilibrado 8.0.0 (spec 015, research R1)', () => {
   });
 
   it('la 8.0.0 hereda de la 7.0.0 y solo añade bloques, el factor de regate y las recalibraciones (T043, tras los añadidos y balones fuera)', () => {
-    const { version, decision, disciplina, defectos, espacio, acciones, ...resto } = PARAMETROS_V8;
+    const { version, decision, disciplina, defectos, espacio, acciones, tiro, ...resto } = PARAMETROS_V8;
     const sinBloques = Object.fromEntries(Object.entries(resto).filter(([k]) => !(BLOQUES as readonly string[]).includes(k)));
-    const { version: _v7, decision: decision7, disciplina: disciplina7, defectos: defectos7, espacio: espacio7, acciones: acciones7, ...resto7 } = PARAMETROS_V7;
+    const { version: _v7, decision: decision7, disciplina: disciplina7, defectos: defectos7, espacio: espacio7, acciones: acciones7, tiro: tiro7, ...resto7 } = PARAMETROS_V7;
     expect(sinBloques).toEqual(resto7);
+    // El despeje en el área busca el campo contrario: la mitad de autogoles al despejar (decisión del 2026-11-15).
+    expect(tiro).toEqual({ ...tiro7, autogol: { ...tiro7.autogol, despejeCentro: tiro7.autogol.despejeCentro / 2 } });
     expect(disciplina).toEqual({ ...disciplina7, factorFaltaArea: 0.34 });
     expect(defectos).toEqual({ ...defectos7, malDefensor: 0.5 });
     expect(espacio).toEqual({ ...espacio7, velocidadJugadorMin: 14 });

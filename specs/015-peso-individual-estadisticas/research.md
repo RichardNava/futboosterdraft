@@ -676,3 +676,84 @@ Cuota con seis equipos sintéticos (300 partidos cada uno):
   repartido no basta por sí solo.
 - **002/SC-008**: la tanda 2 la deja en +9,4 % (+8,0 % a +9,4 % según `bonusLibre`, ±0,65); sigue pendiente con
   003/SC-009.
+
+## Tras la tanda 2: decisiones del 2026-11-15
+
+Decisiones de la persona sobre los pendientes de la sección anterior, con las sondas que las apoyan (1.000 partidos por
+serie, semillas 1 y 5001; sondas temporales ya borradas).
+
+### Tiros (002/SC-007a): el peso del tiro no los recupera
+
+Se decidió subir un 4 % el peso del tiro (`tiro.pesoPorTramo`; hoy 340 hasta 11 m, 255 hasta 16,5 m, 94 hasta 25 m y
+34 hasta 35 m, el ×1,7 de la 7.0.0 sobre los de la 6.x). Antes de aplicarlo se midió en qué proporción de las decisiones
+dentro del área el tiro es la opción de más peso (portador recién llegado, sin mano a mano ni transición):
+
+| Dentro del área (`sc003`, semilla 1) | Decisiones | Peso medio del tiro | El tiro es la opción de más peso |
+|---|---|---|---|
+| A ≤ 11 m | 1.916 | 67,9 % | 100 % |
+| De 11 a 16,5 m | 4.156 | 63,1 % | 99,9 % |
+| A más de 16,5 m (costados del área) | 1.326 | 37,9 % | 47,8 % |
+
+Dentro del área el tiro ya es casi siempre la opción más probable; un 4 % más apenas cambia su cuota y no mueve los
+tiros (serie de 002/SC-007a, `sc007-2d`, tiros por partido de los dos equipos):
+
+| Variante | Semilla 1 | Semilla 5001 | Goles de fuera del área (semilla 1 / 5001) |
+|---|---|---|---|
+| 8.0.0 | 14,62 | 14,55 | — |
+| ×1,04 en los tramos del área | 14,58 | 14,60 | — |
+| ×1,04 en todos los tramos | 14,69 | 14,54 | 26,1 % / 27,6 % |
+| ×1,2 en el tramo de 16,5–25 m | 15,00 | 14,70 | 26,8 % / 26,1 % |
+| ×1,4 en el tramo de 16,5–25 m | 14,97 | 15,11 | 28,0 % / 29,4 % |
+
+Los tiros que faltan no son decisiones en el área, sino balones que ya no llegan a ella con el delantero marcado (tanda 2).
+Solo ×1,4 en el tramo de 16,5–25 m llega a 15 de media, con los goles de fuera del área en el límite de 003/SC-002
+(22–28 %). No se aplica ningún cambio de peso. **Decisión del 2026-11-16**: el mínimo de tiros de 002/SC-007a baja de
+15 a 14 (14,5 dejaba muy poco margen: 14,55 con la semilla 5001).
+
+### Propia puerta (003/SC-003): el despeje busca el campo contrario
+
+Origen de los autogoles (`sc003`, semilla 1 / 5001): despeje de un córner 50 / 48, tiro desviado 56 / 47, despeje de una
+falta colgada 18 / 9 y despeje de un centro en juego 1 / 1. Los despejes a balón parado son la mitad: balones fuera
+triplicó los córners, y cada centro despejado que sale por la línea de fondo da otro córner y otro despeje.
+
+El rango pasa a 1–4 % y, como propuso la persona, el que despeja en su área busca el campo contrario: en la 8.0.0,
+`tiro.autogol.despejeCentro` baja de 0,008 a 0,004 (la 7.0.0 no cambia).
+
+| `despejeCentro` (×) | Propia puerta, semilla 1 | Semilla 5001 |
+|---|---|---|
+| 1 (0,008) | 4,5 % | 3,7 % |
+| 0,5 (0,004, elegido) | 3,1 % | 2,6 % |
+| 0,4 | 3,0 % | 2,4 % |
+
+No cambia los tiros (13,38), los goles (2,76) ni los córners (6,43). Torpe (005/SC-004) se mide con autogoles forzados
+(`despejeCentro` 0,1), así que no le afecta.
+
+### Matador (003/SC-007): comprobación de sensatez
+
+La persona decide que una virtud desequilibra un poco y que su efecto fluctúa (±5 puntos es razonable); lo que no se
+admite es que el delantero con Matador marque una barbaridad. La comprobación pasa a exigir que la conversión en mano a
+mano no empeore más de 5 puntos y que el jugador no marque más de 1,5 goles por partido.
+
+### Segunda línea (015/SC-012): 20 equipos
+
+Con un solo equipo la cuota depende de quién tira los penaltis y las faltas y de quién gana por arriba. La comprobación
+reparte ahora los 1.000 partidos entre 20 equipos (las diez formaciones, cada una con dos tácticas distintas) contra
+rivales de otra formación: **25,3 %** de 1.068 goles con la semilla 1 y **27,7 %** de 1.088 con la 5001, ✔ (por
+equipo, del 4,1 % al 50,8 %). Tarda lo mismo (161 s).
+
+### Serie de cierre tras las decisiones (T061 y T062, 2026-11-16)
+
+`pnpm balance --n 1000`, semilla 1 (la del CI), por partes con `--solo`: **71 de 73** ✔. Solo fallan 002/SC-008
+(+9,4 %: 74,5 frente a 68,1 pases completados) y 003/SC-009, que lo incluye; las dos siguen en `--pendientes` del CI,
+que queda en `002/SC-008,003/SC-009` (015/SC-012 sale de la lista).
+
+- 002/SC-007a ✔ con el mínimo de 14 tiros: 136,0 pases completados, 13,9 centros, 14,6 tiros, 61,3 conducciones, 17,3
+  paredes, 4,4 cambios de orientación y 1,8 contraataques. 002/SC-007b 27,0 %; 015/SC-013 6,71 córners.
+- 003/SC-003: penalti 8,3 %, cabeza 15,4 %, falta directa 6,6 % y **propia puerta 3,1 %**. 003/SC-001 2,76 goles;
+  003/SC-002 26,4 % desde fuera del área; 003/SC-005 60,5 % de pases cortos; 003/SC-006, conducciones largas +37,3 %.
+- 003/SC-007: Matador 36,6 % → 38,3 % de conversión en mano a mano (202 → 167 tiros), 0,53 goles por partido; las demás
+  virtudes, con diferencia significativa.
+- 015/SC-012: 25,1 % de 1.070 goles (por equipo, del 4,1 % al 50,0 %). 015/SC-004 (libre 8,48 → 9,30; recibidos 6,98 →
+  7,36; con +15 de marcaje rival, 8,01) y 015/SC-005 (−24,6 %), sin cambios.
+- 014/SC-008: defensa +13,0 %, velocidad +12,8 %, portero +28,9 %. 005: 18 de 18 rasgos (Torpe 1,92), SC-011 (amarillas
+  4,53, rojas 0,21, penaltis 0,35, lesiones 0,38), FR-051, FR-051b y SC-013. 002/SC-018 ✔.
