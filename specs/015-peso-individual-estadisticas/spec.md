@@ -147,6 +147,10 @@ Términos:
   del área el tiro ya es la opción de más peso en el 99,5–100 % de las decisiones (research, «Tras la tanda 2»). Lo que
   falta son llegadas al área con el delantero marcado, el efecto buscado de la tanda 2.
 - Q: ¿Qué se hace entonces con el mínimo de 15 tiros (14,6 tras la tanda 2)? → A: Baja a 14 (decisión del 2026-11-16).
+- Q: ¿Cómo se mide 002/SC-008 (+9,4 %), si en el 4-4-2 del juego los de banda son extremos y solo quedan 2 medios? → A:
+  En varias formaciones: en ninguna formación razonable se juega con dos medios. Se reparten los partidos entre las que
+  tienen 3 o más (4-3-3, 4-4-2 en rombo, 4-2-3-1, 3-5-2, 5-3-2 y 4-5-1); ningún mando del motor lo movía (research,
+  «002/SC-008: por qué no llega al +10 %»). Con ella pasa 003/SC-009 y el CI se queda sin `--pendientes`.
 
 ## User Scenarios & Testing *(mandatory)*
 

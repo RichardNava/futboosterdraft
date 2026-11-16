@@ -35,8 +35,10 @@ Se exige lo mismo que con la 7.0.0:
 - 001/SC-004.
 - 003/SC-001 a SC-003 (goles).
 - Todas las de la 005.
-- 002/SC-007a ≥ 150 pases completados desde el cierre de la tanda 2.
-- Además: 002/SC-008, 003/SC-009, 003/SC-005 y 003/SC-007, que hoy están pendientes.
+- 002/SC-007a ≥ 130 pases completados (150 hasta el 2026-11-14) y ≥ 14 tiros (15 hasta el 2026-11-16) desde el cierre
+  de la tanda 2.
+- Además: 002/SC-008 (medido desde el 2026-11-16 en las formaciones con 3 o más medios), 003/SC-009, 003/SC-005 y
+  003/SC-007, que salieron de pendientes al cerrar la tanda 2.
 
 ## B4. Rendimiento (SC-009)
 

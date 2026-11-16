@@ -257,7 +257,7 @@ de 95 contra 70, los defensas cercanos ganan más duelos (SC-006).
 
 - [ ] T073 Crear `packages/engine/tests/fixtures/generarHuella015.ts` (modelo `generarHuella014.ts`/`huella014.ts`, 100 partidos y 20 drafts con `PARAMETROS_V8`), generar `packages/engine/tests/fixtures/huella-015.json` y crear `packages/engine/tests/equivalencia015.test.ts`, que compruebe la huella y la igualdad entre la simulación rápida y la 2D (SC-010). `huella-014.json` no se regenera
 - [ ] T074 Regenerar las referencias de equivalencia que usan `parametrosActuales()` (las que fijan `PARAMETROS_V7` se quedan), p. ej. con `packages/engine/tests/fixtures/regenerarEquivalencia005.ts` si depende de la versión actual
-- [ ] T075 Ejecutar la serie final `pnpm balance --n 1000` sin `--pendientes`: todas en verde (SC-006, SC-007, SC-008), y quitar `--pendientes` (y su comentario) de `.github/workflows/ci.yml`
+- [ ] T075 (`--pendientes` ya quitado de `ci.yml` el 2026-11-16, al cumplirse 002/SC-008 y 003/SC-009; queda la serie final) Ejecutar la serie final `pnpm balance --n 1000` sin `--pendientes`: todas en verde (SC-006, SC-007, SC-008), y quitar `--pendientes` (y su comentario) de `.github/workflows/ci.yml`
 - [ ] T076 Medir con `pnpm --filter @fbd/balance umbral-motor`: ≤ 1,10 × T001 y bajo el umbral absoluto (SC-009)
 - [ ] T077 [P] Actualizar a mano `docs/juego/enfrentamientos.md` a la 8.0.0: tabla carta → atributo (quite, marcaje, técnica, liderazgo), curvas de FR-002, los dos duelos nuevos, §5.1, §7 y §8 resueltas (FR-023)
 - [ ] T078 [P] Regenerar `docs/juego/virtudes-y-defectos.md` con `pnpm --filter @fbd/domain rasgos:doc` (FR-023)

@@ -1812,9 +1812,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido.ts": {
-    "mtime": 1794749794.067283,
-    "seen": 1794749875.7101848,
-    "ast_hash": "435042eec59a93f433fcd0180c492429",
+    "mtime": 1794784140.0041003,
+    "seen": 1794784594.4584374,
+    "ast_hash": "062f691389256b85f6b71860bd3c0c74",
     "semantic_hash": ""
   },
   "tools/balance/src/cli.ts": {
@@ -11310,15 +11310,15 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/research.md": {
-    "mtime": 1794781325.2148352,
-    "seen": 1794783681.2332828,
-    "ast_hash": "72e97963d5920f9fc911b23e371cdded",
+    "mtime": 1794784568.6760929,
+    "seen": 1794784594.505465,
+    "ast_hash": "3189e554f083b4331f08cf951d716335",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/spec.md": {
-    "mtime": 1794781302.3132493,
-    "seen": 1794783681.233286,
-    "ast_hash": "9e981cbe1b8023b92446fe467b100bae",
+    "mtime": 1794784140.0046158,
+    "seen": 1794784594.5054674,
+    "ast_hash": "1669595c2f47c1991c51f00be6e461ef",
     "semantic_hash": ""
   },
   "packages/engine/tests/cabeceador015.test.ts": {
@@ -11358,9 +11358,9 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/tasks.md": {
-    "mtime": 1794783643.397339,
-    "seen": 1794783681.2332919,
-    "ast_hash": "0d81227e665394753a98462c96731ace",
+    "mtime": 1794784568.7304506,
+    "seen": 1794784594.5054705,
+    "ast_hash": "a559b4d87e8ce0abb88e18e1b770589b",
     "semantic_hash": ""
   },
   "packages/engine/tests/anadidos015.test.ts": {

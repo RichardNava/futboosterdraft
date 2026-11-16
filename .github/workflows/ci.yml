@@ -29,12 +29,8 @@ jobs:
       # comprobaciones de un solo jugador (003/SC-007 Matador y Desbordante, 005/SC-004 Agresivo y Torpe) fallan por ruido.
       # Incluye las comprobaciones de la spec 002 (SC-007, SC-008, SC-011 y SC-018) y las de la serie sintética de la
       # spec 003 (003/SC-001 a 003/SC-009); la serie Core (003/SC-001c) y los torneos de NPC (003/SC-010) se lanzan aparte.
-      # Con `--pendientes`, solo las que recalibra la spec 015 (peso individual de las stats; ver
-      # specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md): se ejecutan e informan, pero no bloquean. Cualquier
-      # otra que falle bloquea; si una pendiente ya se cumple, el informe avisa para quitarla de la lista.
-      # Spec 015 tras la tanda 2 (T062): 002/SC-008 (+10 de pase) se queda en +9,4 %, y con él 003/SC-009, que lo incluye.
-      # 015/SC-012 ya se cumple medido sobre 20 equipos (2026-11-15).
-      - run: pnpm balance --n 1000 --pendientes 002/SC-008,003/SC-009
+      # Sin `--pendientes` desde el 2026-11-16 (spec 015, tras la tanda 2): todas se cumplen y cualquier fallo bloquea.
+      - run: pnpm balance --n 1000
 
   # Pruebas de diseño de la spec 004 (FR-040): contraste y reglas WCAG 2.1 AA con axe, desplazamiento horizontal,
   # lima reservado y foco visible en cada pantalla del inventario, y el flujo completo con teclado.

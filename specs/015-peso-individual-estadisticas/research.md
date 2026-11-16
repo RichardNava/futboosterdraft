@@ -757,3 +757,32 @@ que queda en `002/SC-008,003/SC-009` (015/SC-012 sale de la lista).
   7,36; con +15 de marcaje rival, 8,01) y 015/SC-005 (−24,6 %), sin cambios.
 - 014/SC-008: defensa +13,0 %, velocidad +12,8 %, portero +28,9 %. 005: 18 de 18 rasgos (Torpe 1,92), SC-011 (amarillas
   4,53, rojas 0,21, penaltis 0,35, lesiones 0,38), FR-051, FR-051b y SC-013. 002/SC-018 ✔.
+
+### 002/SC-008: por qué no llega al +10 % (2026-11-16)
+
+Sonda de 1.000 partidos por serie (semillas 1 / 5001), el equipo de la comprobación (`sc008-2d`, 4-4-2) contra
+`referencia`, sin y con +10 de pase en sus medios:
+
+| Variante | 002/SC-008 | Intentos de pase del equipo | Acierto | Pases de los medios |
+|---|---|---|---|---|
+| 8.0.0 (4-4-2, 2 MED) | +9,3 % / +8,6 % | +8,1 % / +7,7 % | 79,1 → 80,0 % | +16 % / +15 % |
+| `atraccionPasador` 1,2 → 1,5 | +8,7 % / +8,4 % | +8,0 % / +7,8 % | 79,3 → 79,9 % | +17 % / +18 % |
+| `atraccionPasador` 1,2 → 1,8 | +8,9 % / +8,4 % | +8,0 % / +7,9 % | 79,3 → 80,0 % | +18 % / +18 % |
+| `decision.factores.pase.k` 1,2 → 1,6 | +7,8 % / +8,7 % | +6,8 % / +7,9 % | 79,2 → 80,0 % | +16 % / +18 % |
+| 4-2-3-1 (3 MED), 8.0.0 | +13,2 % / +11,5 % | +12,3 % / +10,6 % | 79,5 → 80,1 % | +18 % / +18 % |
+| 4-3-3 (3 MED), 8.0.0 | +12,5 % / +14,6 % | +11,4 % / +13,5 % | 82,8 → 83,6 % | +20 % / +22 % |
+
+Casi todo el aumento sale de más pases intentados (el equipo circula más por sus medios); el acierto apenas sube un
+punto, porque los medios dan el 35–40 % de los pases. En el 4-4-2 los de banda son extremos (DEL), así que el +10 de pase
+solo llega a 2 de los 10 jugadores de campo. Ningún mando del motor lo mueve: la atracción del pasador, el factor de
+pase y la pendiente de la curva (tanda 1) suben igual la serie sin y la serie con. Con 3 medios, el mismo motor da entre
++11,5 % y +14,6 %. El límite está en cómo se mide, no en el motor.
+
+**Decisión del 2026-11-16**: en ninguna formación razonable se juega con dos medios, así que 002/SC-008 se mide en las
+formaciones con 3 o más centrocampistas en sus casillas (4-3-3, 4-4-2 en rombo, 4-2-3-1, 3-5-2, 5-3-2 y 4-5-1), con los
+mismos partidos en total. Resultado con 1.000 partidos: **+13,7 %** (72,1 → 81,9) con la semilla 1 y **+12,5 %** (72,8 →
+81,9) con la 5001, ✔; por formación, entre +6,5 % (5-3-2) y +18,1 % (4-4-2 en rombo). 003/SC-009 pasa con sus siete
+dependencias, y el CI se queda sin `--pendientes`.
+
+En el juego, las casillas de banda del 4-4-2 y del 5-4-1 solo admiten extremos (ED y EI, delanteros) desde la spec 001,
+y las del 3-4-3 y 3-3-3-1 son de carrileros (CI y CD, defensas) o extremos: no es el motor el que los coloca así.

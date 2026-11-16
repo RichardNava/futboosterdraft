@@ -4,6 +4,7 @@
  * SC-005 lo sustituye SC-011 de la spec 002 (checks/colocacion.ts). Todas usan semillas fijas, así que el
  * resultado es reproducible.
  */
+import { CASILLA_CENTRAL, FORMACIONES, FORMACIONES_IDS, POSICIONES_POR_DEMARCACION } from '@fbd/domain';
 import type { EstadisticasEquipo } from '@fbd/engine';
 import type { GrupoComprobaciones } from '../cli';
 import { clonar, conPaseDeMedios, conStatsDesplazados, equipoSintetico, type OpcionesEquipo } from '../equipos';
@@ -188,20 +189,39 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   ];
 }
 
-/** 002/SC-008: +10 de pase en los centrocampistas titulares → ≥ 10 % más pases completados (en número absoluto). */
+/**
+ * Formaciones con al menos 3 centrocampistas en la carta de sus casillas (como el equipo sintético). En el 4-4-2, 3-4-3,
+ * 5-4-1 y 3-3-3-1 los de banda son extremos o carrileros y solo quedan 2.
+ */
+export const FORMACIONES_TRES_MEDIOS = FORMACIONES_IDS.filter(
+  (f) => FORMACIONES[f].casillas.filter((c) => c.id !== CASILLA_CENTRAL && POSICIONES_POR_DEMARCACION.MED.includes(c.posicionesAdmitidas[0]!)).length >= 3,
+);
+
+/**
+ * 002/SC-008: +10 de pase en los centrocampistas titulares → ≥ 10 % más pases completados (en número absoluto). Hasta el
+ * 2026-11-16 se medía solo en un 4-4-2, que en el juego tiene 2 medios: ahora se reparten los partidos entre las
+ * formaciones con 3 o más (decisión del 2026-11-16).
+ */
 function comprobarSC008Pase(n: number, semilla: number): Comprobacion {
-  const base = equipoSintetico({ semilla: 'sc008-2d' });
   const rival = equipoSintetico({ semilla: 'referencia', participanteId: 'rival' });
-  const sin = serie(base, rival, n, semilla, 'sc008-2d');
-  const con = serie(conPaseDeMedios(base, 10), rival, n, semilla, 'sc008-2d');
-  const a = media(col(sin, 'pasesCompletados'));
-  const b = media(col(con, 'pasesCompletados'));
+  const partidos = Math.max(1, Math.round(n / FORMACIONES_TRES_MEDIOS.length));
+  let a = 0;
+  let b = 0;
+  const partes: string[] = [];
+  for (const [k, formacion] of FORMACIONES_TRES_MEDIOS.entries()) {
+    const base = equipoSintetico({ formacion, semilla: `sc008-${formacion}` });
+    const sin = media(col(serie(base, rival, partidos, semilla + k, `sc008-${formacion}`), 'pasesCompletados'));
+    const con = media(col(serie(conPaseDeMedios(base, 10), rival, partidos, semilla + k, `sc008-${formacion}`), 'pasesCompletados'));
+    a += sin;
+    b += con;
+    partes.push(`${formacion} ${sin > 0 ? `${con >= sin ? '+' : ''}${((con / sin - 1) * 100).toFixed(1)}` : '?'} %`);
+  }
   const aumento = a > 0 ? b / a - 1 : 0;
   return {
     id: '002/SC-008',
-    descripcion: '+10 de pase en los centrocampistas titulares: ≥ 10 % más pases completados',
+    descripcion: '+10 de pase en los centrocampistas titulares (formaciones con 3 o más): ≥ 10 % más pases completados',
     ok: aumento >= 0.1,
-    detalle: `${b.toFixed(1)} frente a ${a.toFixed(1)} pases completados por partido (+${(aumento * 100).toFixed(1)} %)`,
+    detalle: `${(b / FORMACIONES_TRES_MEDIOS.length).toFixed(1)} frente a ${(a / FORMACIONES_TRES_MEDIOS.length).toFixed(1)} pases completados por partido (+${(aumento * 100).toFixed(1)} %) · ${partes.join(' · ')}`,
   };
 }
 

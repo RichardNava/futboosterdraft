@@ -1812,9 +1812,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/checks/partido.ts": {
-    "mtime": 1794784140.0041003,
-    "seen": 1794784594.4584374,
-    "ast_hash": "062f691389256b85f6b71860bd3c0c74",
+    "mtime": 1794786236.6017992,
+    "seen": 1794787533.9600954,
+    "ast_hash": "b430019d310067ff2bd054e4094a7f96",
     "semantic_hash": ""
   },
   "tools/balance/src/cli.ts": {
@@ -2004,9 +2004,9 @@
     "semantic_hash": "08b983757611230f35f1eb6b3b485507"
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1794783627.1876864,
-    "seen": 1794783681.2048936,
-    "ast_hash": "d40102fa1196d54c5c3346922652150b",
+    "mtime": 1794787122.4350433,
+    "seen": 1794787533.984447,
+    "ast_hash": "c03355dbaf537b1d6ad1d8033c890896",
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
@@ -11274,9 +11274,9 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/contracts/balance.md": {
-    "mtime": 1794780554.3215399,
-    "seen": 1794783681.2325652,
-    "ast_hash": "ee457207b39a2df17e03139296c285ce",
+    "mtime": 1794787130.4497478,
+    "seen": 1794787534.0097468,
+    "ast_hash": "21b0969ace0205c1e1c92f053fcb6c4d",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/contracts/catalogo.md": {
@@ -11310,15 +11310,15 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/research.md": {
-    "mtime": 1794784568.6760929,
-    "seen": 1794784594.505465,
-    "ast_hash": "3189e554f083b4331f08cf951d716335",
+    "mtime": 1794787122.4644222,
+    "seen": 1794787534.0104017,
+    "ast_hash": "51001310c1ea5b98c7d13ae328fe4756",
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/spec.md": {
-    "mtime": 1794784140.0046158,
-    "seen": 1794784594.5054674,
-    "ast_hash": "1669595c2f47c1991c51f00be6e461ef",
+    "mtime": 1794787122.4356074,
+    "seen": 1794787534.0104043,
+    "ast_hash": "b4a843c80164e76e36ff0d7b74dc3e82",
     "semantic_hash": ""
   },
   "packages/engine/tests/cabeceador015.test.ts": {
@@ -11358,9 +11358,9 @@
     "semantic_hash": ""
   },
   "specs/015-peso-individual-estadisticas/tasks.md": {
-    "mtime": 1794784568.7304506,
-    "seen": 1794784594.5054705,
-    "ast_hash": "a559b4d87e8ce0abb88e18e1b770589b",
+    "mtime": 1794787122.436131,
+    "seen": 1794787534.0104072,
+    "ast_hash": "88cb238d0dd67b0d11f45655ac7a9841",
     "semantic_hash": ""
   },
   "packages/engine/tests/anadidos015.test.ts": {
