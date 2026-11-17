@@ -1,7 +1,7 @@
 # Graph Report - futboosterdraft  (2026-11-17)
 
 ## Corpus Check
-- 1010 files · ~2,241,013 words
+- 1010 files · ~2,241,328 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 22 file(s) not represented in the graph (top: (none) 9, .css 6, .woff2 5)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5f74f7a8`
+- Built from commit: `b1d6a37c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1847,7 +1847,7 @@ Nodes (3): Implementation for User Story 7, Phase 9: User Story 7 — Cartas con
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `vitest` connect `vitest` to `JugadorEnPartido`, `peticion`, `juego.ts`, `parametrosActuales`, `Partido2D.tsx`, `ReproduccionPartido.tsx`, `helpers/app.ts`, `torneo/torneo.ts`, `objetivos.ts`, `generarCore.ts`, `package.json`, `defectos.ts`, `actores/draft.ts`, `actores/torneo.ts`, `carrusel.test.ts`, `torneo/goleadores.test.ts`, `visibilidad.test.ts`, `ref_node_fs`, `torneo/bajas.test.ts`, `AperturaSobre.tsx`, `opciones.ts`, `Duelos.tsx`, `cache.ts`, `draft.test.ts`, `CartaJugador.tsx`, `catalogo/tipos.ts`, `equipaciones.ts`, `parametros/index.ts`, `Alineacion.tsx`, `seed.ts`, `Jugador`, `domain/src/index.ts`, `parametros.ts`, `servicios.ts`, `EstadoTorneo`, `RelojReproduccion`, `Coleccion.tsx`, `aperturas-grupo.test.ts`, `cosmeticos/tipos.ts`, `xoshiro.ts`, `api`, `domain/src/index.ts`, `rasgaduraDe`, `Marco.tsx`, `Lienzo2D.tsx`, `calendario.ts`, `escenarios.ts`, `ambiente.ts`, `BaseDatos`, `gestor.ts`, `colores.ts`, `servidor.ts`, `partido003.ts`, `ParametrosEquilibrado`, `celebraciones/tipos.ts`, `integration/desglose.test.ts`, `npc.ts`, `Rng`, `catalogo/selecciones.ts`, `base.test.ts`, `premiumActivo`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `parametrosActuales()` (e.g. with `Implementation` and `R7. Parámetros 4.0.0 y reproducibilidad (FR-017, FR-072, SC-003)`) actually correct?**
   _`parametrosActuales()` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fbd/ai`, `@fbd/domain`, `@fbd/engine` to the rest of the system?**

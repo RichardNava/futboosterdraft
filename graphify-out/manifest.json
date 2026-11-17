@@ -2832,9 +2832,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/NombreRecortado.tsx": {
-    "mtime": 1794556996.8795667,
-    "seen": 1794592739.6329954,
-    "ast_hash": "14e35b02df48d57f9a1b8380fe5d73fc",
+    "mtime": 1794953235.173627,
+    "seen": 1794955306.5281322,
+    "ast_hash": "49f2e4fa6490b2aeefe3881d351f0660",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/pestanas.ts": {
@@ -2916,9 +2916,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/unit/nombreRecortado.test.ts": {
-    "mtime": 1792592850.817023,
-    "seen": 1792645202.6995964,
-    "ast_hash": "56f7929ec9c187bf8effe0d5e098d5c6",
+    "mtime": 1794953235.1759014,
+    "seen": 1794955306.5491936,
+    "ast_hash": "d06f3fc686f207e772b816fd9a32c027",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/tokens.test.ts": {
@@ -3072,9 +3072,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/diseno/ronda4.spec.ts": {
-    "mtime": 1792757964.13739,
-    "seen": 1792758030.921458,
-    "ast_hash": "0b0b588d6cc5431432e385e4de17f34a",
+    "mtime": 1794955234.8699653,
+    "seen": 1794955306.5433354,
+    "ast_hash": "1947473a5c1092e01669598fcd32de25",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/diseno/ronda5.spec.ts": {
