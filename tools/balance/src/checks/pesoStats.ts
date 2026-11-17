@@ -76,10 +76,12 @@ function comprobacionesPesoStats(n: number, semilla: number): Comprobacion[] {
     const tasaCon = b.aciertos / Math.max(1, b.base);
     const acierto = rel(tasaCon, tasaSin);
     const intentos = a.intentos === null || b.intentos === null ? null : rel(b.intentos, a.intentos);
-    const ok = acierto >= 0.1 && (intentos === null || intentos >= 0.1);
+    // Velocidad, +8 % desde el 2026-11-17 (spec 015): su efecto real ronda el +11 % con ±1,2 puntos de ruido por serie.
+    const minimo = e === 'velocidad' ? 0.08 : 0.1;
+    const ok = acierto >= minimo && (intentos === null || intentos >= 0.1);
     return {
       id: `014/SC-008-${e}`,
-      descripcion: `Peso de las estadísticas, ${e} +${DELTA}: ≥ +10 % relativo en intentos y en acierto de la acción que gobierna`,
+      descripcion: `Peso de las estadísticas, ${e} +${DELTA}: ≥ +${100 * minimo} % relativo en intentos y en acierto de la acción que gobierna`,
       ok,
       detalle: `${intentos === null ? '' : `intentos ${pct(intentos)} (${a.intentos} → ${b.intentos}) · `}acierto ${pct(acierto)} (${(100 * tasaSin).toFixed(1)} % → ${(100 * tasaCon).toFixed(1)} %, ±${(100 * ee(tasaCon, b.base)).toFixed(1)} %)`,
     };

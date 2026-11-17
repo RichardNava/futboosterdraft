@@ -160,8 +160,10 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
     // 5 → 4 en la spec 015 (balones fuera: los córners ocupan el lugar de saques de puerta y recuperaciones en banda, de
     // donde salen; apenas se aprecia en la simulación; decisión del 2026-11-15).
     ['cambiosOrientacion', 'cambios de orientación', 4],
-    // 2 → 1,8 en la spec 015 (decisión del 2026-11-15; con la táctica Contraataque el equipo hace un 52 % más).
-    ['contraataques', 'contraataques', 1.8],
+    // 2 → 1,8 → 1,5 en la spec 015 (decisiones del 2026-11-15 y 2026-11-17: el caso normal ronda 1,8 y oscila con el
+    // azar; algunas jugadas que en el fútbol real serían contraataque no cuentan). 015/SC-014 exige que la táctica
+    // Contraataque haga al menos un 30 % más.
+    ['contraataques', 'contraataques', 1.5],
   ];
   const valores = umbrales.map(([campo, nombre, minimo]) => ({ nombre, minimo, valor: ambos(campo) }));
   const proporcion = posesiones ? largas / posesiones : 0;
@@ -170,7 +172,7 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   return [
     {
       id: '002/SC-007a',
-      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 14 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,8 contraataques',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 14 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,5 contraataques',
       ok: valores.every((v) => v.valor >= v.minimo),
       detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
     },

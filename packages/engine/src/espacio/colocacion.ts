@@ -73,7 +73,10 @@ function colocarSubida(estado: EstadoMotor, ataque: EquipoEstado, defensa: Equip
   const porArriba = (j: JugadorEnPartido) =>
     atributo(estado, ataque, j, 'aereo') + (tiene(j, 'Cabeceador') ? seleccion : 0) + (lineaDe(ataque, j) === 'porteria' ? -15 : 0);
   const portero = porteroSube(estado, ataque) ? titulares(ataque).filter((j) => lineaDe(ataque, j) === 'porteria' && j.id !== sacadorId) : [];
-  const suben = [...campo.filter((j) => !atras.includes(j)), ...portero].sort((a, b) => porArriba(b) - porArriba(a) || a.id - b.id);
+  const candidatos = [...campo.filter((j) => !atras.includes(j)), ...portero];
+  // Una vez por jugador, no en cada comparación: se recalcula en cada tick del saque (spec 015, SC-009).
+  const arriba = new Map(candidatos.map((j) => [j, porArriba(j)]));
+  const suben = candidatos.sort((a, b) => arriba.get(b)! - arriba.get(a)! || a.id - b.id);
   suben.forEach((j, i) => poner(ataque, j, PUNTOS_SUBIDA[i] ?? { x: 7900, y: acotar(anclaDe(ataque, j).y, 1400, 5000) }));
   atras.forEach((j) => poner(ataque, j, { x: 4800, y: anclaDe(ataque, j).y }));
   const defensores = titulares(defensa)

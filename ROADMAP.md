@@ -34,7 +34,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-02](#ini-02-experiencia-de-juego-y-ritmo) | Experiencia de juego y ritmo | 002, 003 | P1 | Implementada, sin validar | INI-01 |
 | [INI-03](#ini-03-identidad-visual-y-accesibilidad) | Identidad visual y accesibilidad | 004 | P1 | Implementada, sin validar | INI-02 |
 | [INI-04](#ini-04-virtudes-defectos-y-modo-duelo) | Virtudes, defectos y modo Duelo | 005 | P1 | Implementada, sin validar | INI-01 |
-| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005, 014 | P0 | Parcial (reabierta por la 014) | INI-04 |
+| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005, 014, 015 | P0 | Implementada, sin validar | INI-04 |
 | [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor | 001, 002 | P1 | Parcial | INI-05 |
 | [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009, 010 | P0 | Parcial | INI-06 |
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
@@ -168,6 +168,15 @@ cuesta simular los partidos.
   (pase, remate y físico), 002/SC-008, 003/SC-005, 003/SC-007 (Matador), 005/SC-004 Mal defensor y 005/SC-011
   (lesiones), así que el CI del balance falla. Pendiente: decidir sobre esos criterios y el recorrido a mano del
   [quickstart](specs/014-mejoras-motor-navegacion-refactor/quickstart.md).
+- **Spec 015 (implementada el 2026-11-17, sin validar)**: [spec](specs/015-peso-individual-estadisticas/spec.md).
+  Motor 8.0.0 (la 7.0.0 se sigue simulando igual): una curva por duelo, quite por demarcación, el regateador lo intenta
+  más, Cabeceador en cualquier jugador de campo, desmarque contra marcaje, técnica contra presión y liderazgo del
+  defensa y del portero, más los añadidos (buscar a la estrella, Juego por las bandas, subida al área, segunda línea y
+  balones fuera). Tras las decisiones del 2026-11-17 (portero relativo a 70, la línea medida en 20 escenarios con una
+  escala por liderazgo, contraataques 1,5 con la táctica Contraataque obligada a +30 %, velocidad +8 %),
+  `pnpm balance --n 1000` pasa 76 de 76 ([informe-8.0.0.md](specs/015-peso-individual-estadisticas/informe-8.0.0.md))
+  y la 8.0.0 tarda un 5–6 % más que la 7.0.0. Pendiente: el recorrido a mano del
+  [quickstart](specs/015-peso-individual-estadisticas/quickstart.md) (paso 5, en la aplicación).
 - **Evidencia**:
   - NPC: 003/SC-010, SC-010a y SC-010b cumplidos en la ronda 4. **Hecho.**
   - Motor: ronda 14 de [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md), estado

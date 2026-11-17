@@ -50,14 +50,18 @@ pnpm --filter @fbd/engine test desmarque
 pnpm balance --n 1000
 ```
 
-Resultado esperado: `015/SC-004` y `015/SC-005` ✔, y **002/SC-007a ≥ 150** pases completados.
+Resultado esperado: `015/SC-004` y `015/SC-005` ✔, y **002/SC-007a ≥ 130** pases completados (150 hasta el
+2026-11-14).
 
 ## 4. Tanda 3: liderazgo y cierre
 
 ```sh
 pnpm --filter @fbd/engine test liderazgo
-pnpm --filter @fbd/engine exec tsx tests/fixtures/generarHuella015.ts
+pnpm balance --n 1000 --solo 015/SC-006,015/SC-014      # ~15 min: la línea en 20 escenarios, el portero y la táctica Contraataque
+pnpm --filter @fbd/engine exec tsx tests/fixtures/generarHuella015.ts   # solo al cerrar la spec
+pnpm --filter @fbd/engine test equivalencia              # huella-014 (7.0.0), huella-015 (8.0.0) y 2D = rápida
 pnpm balance --n 1000                                    # sin --pendientes
+pnpm --filter @fbd/balance umbral-motor                  # SC-009, junto con la 7.0.0 en la misma sesión
 pnpm --filter @fbd/domain rasgos:doc                     # regenera virtudes-y-defectos.md
 pnpm -r test && pnpm -r typecheck
 ```
@@ -65,8 +69,12 @@ pnpm -r test && pnpm -r typecheck
 Resultado esperado:
 
 - `015/SC-006` ✔ y el informe completo sin pendientes (SC-007, SC-008).
-- `umbralMotor` ≤ +10 % respecto al paso 1 (SC-009).
+- `umbralMotor` ≤ +10 % respecto a la 7.0.0 medida en la misma sesión (SC-009; en la máquina de referencia la 7.0.0 ya
+  pasaba del umbral absoluto de 120 ms).
 - `huella-014.json` y `huella-015.json` en verde (SC-010).
+
+En la aplicación: con un central de mucho liderazgo, la línea defensiva se mueve más junta en la 2D (los defensas
+cercanos a él no se adelantan dejando atrás a un compañero).
 
 ## 5. Comprobación en la aplicación (persona no técnica)
 

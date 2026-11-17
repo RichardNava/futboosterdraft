@@ -24,7 +24,7 @@ import { probabilidad, resolver } from './duelo';
 import { comprobarLesion } from './lesiones';
 import { CERCA_REMATE, entorno, motivosPaseLargo, pesosConEspacio, PUNTO_REMATE, type Entorno } from './opciones';
 import { decisionManoAMano, distanciaDisparo, esManoAMano, type DecisionManoAMano } from './manoAMano';
-import { enFueraDeJuego, factorPericia, penultimoDefensor } from './fueraDeJuego';
+import { enFueraDeJuego, factorPericia, habilitador, penultimoDefensor } from './fueraDeJuego';
 import { interceptorDePase, receptorDePase, type TipoPase } from './receptor';
 import { ajusteCabeceador, anotarAereo, corner, despejeEnPropia, saqueDePuerta, tirar } from './tiro';
 
@@ -276,6 +276,8 @@ function pasar(
   controlar(ctx, de.id, Math.min(Math.max(p.controlMaximoTicks, minimo), Math.max(minimo, carrera - vuelo)));
   // Fuera de juego con las posiciones del momento en que sale el pase (spec 014, FR-008).
   const fuera = exito && conFueraDeJuego ? fotoFueraDeJuego(e, atacante, a) : null;
+  // Spec 015 (R9): un pase al espacio que deja en juego un defensa rezagado rompe su línea (SC-006; solo al medir).
+  if (ctx.metricas && tipo === 'pase_espacio' && conFueraDeJuego) anotar(ctx.metricas, habilitador(e, atacante, a, aEquipo(atacante.lado, e.espacio.balon).x)?.id, 'habilitaciones');
   const quien = volar(ctx, tipo, de.id, { jugadorId: a.id }, { exito: exito && !fuera, disputa: exito && !fuera });
   return { quien, fuera };
 }

@@ -182,8 +182,19 @@ export interface ParametrosEquilibrado {
   desmarque?: { radioMarcaM: number; base: number; m: number; bonusLibre: number; penalizacionMarcado: number; pesoEleccion: number };
   /** Spec 015 (R8): técnica contra quite al controlar marcado (tras perder el desmarque), con `base` y `m`. */
   controlPresion?: { base: number; m: number };
-  /** Spec 015 (R9): liderazgo del defensa (línea) y del portero (defensas cercanos). */
-  liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number };
+  /**
+   * Spec 015 (R9): liderazgo del defensa (línea) y del portero (defensas cercanos). La línea corrige
+   * min(`maxCorreccion`, `kDefensa` × (L − `baseDefensa`) / 25); el portero suma `porcentajePortero` × (L − `basePortero`).
+   */
+  liderazgo?: {
+    radioDefensaM: number;
+    kDefensa: number;
+    maxCorreccion: number;
+    baseDefensa: number;
+    porcentajePortero: number;
+    basePortero: number;
+    zonaMaxPortero: number;
+  };
   /**
    * Spec 015, añadidos (R12): buscar a la estrella. Con línea de pase clara, el receptor pesa `2^((media − 70)/escalaMedia)`.
    * Si el mejor está marcado, un pasador con (visión + pase)/2 > `umbralVisionPase` se la juega: con más de
@@ -676,6 +687,11 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
   // 0,5 → 0,25 y controlPresion.base 1 → 0,5 en la calibración (research, «Tanda 2»).
   desmarque: { radioMarcaM: 3, base: 0, m: 1, bonusLibre: 0.25, penalizacionMarcado: 0.4, pesoEleccion: 1 },
   controlPresion: { base: 0.5, m: 1 },
+  // Tanda 3 (US6, research R9): el defensa líder ordena su línea y el portero líder ayuda a los defensas de su zona.
+  // radioDefensaM 12 → 20 en la calibración: los defensas de una línea de cuatro están a 13–17 m (research, «Tanda 3»).
+  // Decisiones del 2026-11-17: la línea corrige en proporción a L − 36,5 (la escala de SC-006a: 0,12 % por punto, 1,5 %
+  // con 49) y el portero suma el 2,5 % de lo que su liderazgo pasa de 70.
+  liderazgo: { radioDefensaM: 20, kDefensa: 0.34, maxCorreccion: 0.8, baseDefensa: 36.5, porcentajePortero: 0.025, basePortero: 70, zonaMaxPortero: 1 },
   bandas: { probabilidadBanda: 0.2, receptorBanda: 1.5, centro: 1.3 },
   subidaArea: { retaguardiaDEF: 1, retaguardiaMED: 1, defensoresArea: 8, ultimaJugadaS: 60, porteriaVaciaM: 30 },
   segundaLinea: { xInterior: 7900, desdeCampoPropioM: 10 },

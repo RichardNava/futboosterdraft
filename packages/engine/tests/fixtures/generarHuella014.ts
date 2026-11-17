@@ -9,8 +9,8 @@ import { draftHuella, partidoHuella, SEMILLAS_DRAFTS, SEMILLAS_PARTIDOS, type Hu
 
 const huella: Huella = {
   version: PARAMETROS_V7.version,
-  partidos: SEMILLAS_PARTIDOS.map(partidoHuella),
-  drafts: SEMILLAS_DRAFTS.map(draftHuella),
+  partidos: SEMILLAS_PARTIDOS.map((i) => partidoHuella(i)),
+  drafts: SEMILLAS_DRAFTS.map((i) => draftHuella(i)),
 };
 const ruta = fileURLToPath(new URL('./huella-014.json', import.meta.url));
 writeFileSync(ruta, `${JSON.stringify(huella)}\n`);

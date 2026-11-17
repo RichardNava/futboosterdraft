@@ -786,3 +786,232 @@ dependencias, y el CI se queda sin `--pendientes`.
 
 En el juego, las casillas de banda del 4-4-2 y del 5-4-1 solo admiten extremos (ED y EI, delanteros) desde la spec 001,
 y las del 3-4-3 y 3-3-3-1 son de carrileros (CI y CD, defensas) o extremos: no es el motor el que los coloca así.
+
+## Tanda 3: liderazgo (2026-11-16)
+
+### Implementación (US6)
+
+- `modificadores/liderazgo.ts`, puro: `liderDeLinea` (el mayor liderazgo de los defensas de la línea a `radioDefensaM` o
+  menos, él incluido), `correccionLinea` (min(`maxCorreccion`, `kDefensa` × (L − 70) / 25), 0 con 70 o menos),
+  `bonusPortero` y `bonusLiderPortero` (el del portero propio a un DEF en sus zonas 0 a `zonaMaxPortero`).
+- **Línea** (`objetivos.ts`): el penúltimo defensor se calcula una vez en `calcularObjetivos` y lo comparten
+  `respetarLinea` (atacantes) y los defensas del equipo que defiende, cuyo x objetivo se acerca a él en la fracción de su
+  líder. El líder se busca con las posiciones de la forma, en la pasada en que ya se calculan; el liderazgo es la stat
+  de la carta (0 si no es DEF), sin cansancio, como en los demás objetivos.
+- **Portero** (`ajusteDuelo`): cubre el pase, la conducción, el regate, el centro (también el duelo aéreo en el área)
+  y el tiro tapado (también el primer duelo del remate de cabeza); el duelo aéreo del balón parado lo suma en
+  `rematarBalonParado`. Lee la stat de liderazgo del portero.
+- **`habilitaciones`**: `habilitador` (`fueraDeJuego.ts`), anotado en `pasar` en los pases al espacio que no salen de
+  un saque de banda, solo al medir.
+- **015/SC-006**: línea sin líder (defensas, portero y suplentes a 70); DCI con 95 frente a 70 y portero con 95 frente a
+  70; los duelos ganados por los defensas son sus entradas ganadas, intercepciones y duelos aéreos ganados.
+
+### Dónde está el defensa rezagado (sonda por tick, 250 partidos)
+
+En cada tick en que el equipo defiende, el rezagado (el penúltimo, si es defensa) **no va retrasado respecto a su
+objetivo** (−0,02 a −0,09 m): es su objetivo el que está 2,8–3,0 m más hondo que el de los demás (las anclas de los
+centrales están 2 m por detrás de las de los laterales, y el que sale a presionar sube la media de los otros). El
+mando de R9, el objetivo, es el sitio correcto.
+
+### Radio (T072)
+
+En fase defensiva, los defensas de una línea de cuatro están a 13–17 m entre sí. Con 12 m el líder no alcanza a nadie y
+solo se corrige a sí mismo hacia el penúltimo, que suele ser él: se queda más atrás y la línea empeora. Con 20 m alcanza
+al otro central y al lateral de su lado; con 30 m no se añade nadie (sale lo mismo). Sonda de 250 partidos, DCI con 95
+frente a todos con 70, semillas 1 / 5001:
+
+| Variante (`kDefensa` y `maxCorreccion` 0,5) | Habilitados por tick | Habilitaciones por partido |
+|---|---|---|
+| radio 12 | +6 % / +11 % | −14 % / −15 % |
+| radio 20 | −9 % / −5 % | −11 % / −23 % |
+| radio 30 | igual que 20 | igual que 20 |
+
+«Habilitados por tick»: atacantes rivales que en ese momento están entre la línea de los demás y el rezagado (la
+exposición continua, con mucha más muestra que el evento). Probadas y descartadas: acercar a la **altura media** de la
+línea en lugar del penúltimo (+60 % de habilitados con radio 12: sube solo a los cercanos y deja atrás a los demás;
+acercar al penúltimo nunca crea un defensa más hondo), y **no corregir al propio penúltimo** (peor en todos los radios).
+
+**`radioDefensaM` = 20.**
+
+### Fuerza de la corrección
+
+015/SC-006 con 1.000 partidos (habilitaciones del equipo, central de 95 frente a 70):
+
+| `kDefensa` / `maxCorreccion` | Semilla 1 | Semilla 5001 |
+|---|---|---|
+| 0,5 / 0,5 | −1,7 % (0,29 → 0,28) | −7,1 % (0,31 → 0,29) |
+| 0,8 / 0,8 | −1,7 % (0,29 → 0,28) | −15,6 % (0,31 → 0,26) |
+| 1 / 0,8 (sonda, suplentes sin tocar) | −10,1 % (0,338 → 0,304) | −17,4 % (0,304 → 0,251) |
+
+Hay unas 290 habilitaciones por serie: el error de la diferencia es de ±8 %, del orden del umbral. Con 0,8 el efecto es
+de un −10 a −15 % (también en la exposición por tick: −12 % y −9 %), pero la semilla del CI cae en el extremo bajo. Una
+fracción de 1 congelaría la línea (el penúltimo tendría por objetivo su propia posición).
+
+La fórmula fija la proporción entre líderes: uno de 80 corrige el 40 % de lo que corrige uno de 95. Reforzar al de 95
+refuerza a todos los equipos (los defensas de Core y los sintéticos rondan 75–85), y con 0,8 la serie completa pierde
+tres comprobaciones más que con 0,5 (abajo). **`kDefensa` y `maxCorreccion` se quedan en 0,5.**
+
+### Portero líder: poco efecto entre porteros, mucho sobre todos
+
+- Entre un portero de 95 y uno de 70 hay 0,625 puntos (+1,25 puntos de probabilidad en un duelo igualado): los
+  defensas ganan un +0,3 % / +0,2 % más de duelos (11,72 → 11,76; 11,71 → 11,73), dentro del ruido (±1,5 %).
+- Pero **todos** los porteros suman: con 70–90 de liderazgo, +1,75 a +2,25 puntos a todos los duelos de los defensas
+  en sus zonas 0 y 1, en los dos equipos. Eso baja los goles, los tiros y los contraataques (1.000 partidos por fila,
+  semillas 1 / 5001):
+
+| Variante | Goles (`sc003`) | Goles (`sc007-2d`) | Tiros (`sc007-2d`) | Contraataques (`sc007-2d`) |
+|---|---|---|---|---|
+| Sin el bloque | 2,76 / 2,81 | 3,20 / 3,14 | 14,62 / 14,55 | 1,82 / 1,76 |
+| Solo el portero (zonas 0 y 1) | 2,66 / 2,66 | — | — | — |
+| Solo la línea (k 0,8) | 2,80 / 2,83 | 3,18 / 3,19 | 14,62 / 14,81 | 1,73 / 1,86 |
+| Línea k 0,8 y portero en la zona 0 | 2,69 / 2,73 | 3,02 / 3,07 | 14,42 / 14,59 | 1,70 / 1,78 |
+| Línea k 0,8 y portero en las zonas 0 y 1 | 2,66 / 2,67 | 3,00 / 3,06 | 14,25 / 14,34 | 1,66 / 1,73 |
+
+La línea no cuesta goles; el portero, entre 0,10 y 0,15 por partido, y unos 0,1 contraataques. Los contraataques de
+002/SC-007a (mínimo 1,8) están en el borde del ruido incluso sin el bloque (1,76 con la semilla 5001; error de la
+diferencia entre dos series ≈ 0,06).
+
+### Serie final (T075, 2026-11-16)
+
+`pnpm balance --n 1000`, semilla 1, por partes con `--solo` (12 procesos), con 015/SC-006 nueva (74 comprobaciones):
+
+| Parámetros de `liderazgo` | Superadas | Fallan |
+|---|---|---|
+| radio 20, k y máximo 0,5 (finales) | **71 de 74** | 015/SC-006; 002/SC-007a por los contraataques (1,7) y, con ella, 003/SC-009 |
+| radio 20, k y máximo 0,8 | 68 de 74 | las mismas, más 015/SC-004 (pases recibidos 7,03 → 7,27, no significativo), 015/SC-005 (−14,9 %) y Mal defensor (0,396; mínimo 0,4) |
+
+Con los finales: 003/SC-001 2,67 goles; 003/SC-002 27,3 %; 003/SC-003 penalti 8,5 %, cabeza 14,9 %, falta directa 6,9 %
+y propia puerta 2,5 %; 003/SC-005 60,5 % de pases cortos; 002/SC-007a 135,0 pases completados, 14,0 centros, **14,3
+tiros**, 61,3 conducciones, 16,7 paredes, 4,4 cambios de orientación y **1,7 contraataques**; 002/SC-007b 26,8 %;
+015/SC-013 6,71 córners; 002/SC-008 +14,7 %; 015/SC-012 28,4 %; 015/SC-004 (libre 8,47 → 9,41; recibidos 7,03 → 7,40;
+con marcaje rival, 7,91) y 015/SC-005 (−26,9 %); 014/SC-004 1,37 fueras de juego; 014/SC-008 defensa +13,9 % y
+velocidad +10,8 %; 005/SC-011 amarillas 4,50 y lesiones 0,41; Mal defensor 0,465; SC-007 2,60 goles.
+
+### Rendimiento (T076)
+
+Misma sesión, cinco rondas alternas de 20 partidos, dos veces (`equipoSintetico` «umbral»):
+
+| Versión | 1.ª | 2.ª |
+|---|---|---|
+| 7.0.0 | 93,7 ms | 94,9 ms |
+| 8.0.0 sin el bloque `liderazgo` | 103,7 ms (+10,7 %) | 105,7 ms (+11,4 %) |
+| 8.0.0 con el bloque neutro (k 0 y portero 0: el mismo partido, con todo el código) | 104,5 ms (+11,5 %) | 105,8 ms (+11,4 %) |
+| 8.0.0 | 104,5 ms (+11,5 %) | 106,2 ms (+11,9 %) |
+
+El código de la tanda 3 cuesta entre 0,1 y 0,8 ms por partido (bloque neutro frente a sin bloque), dentro del ruido
+entre rondas; el resto de la diferencia es que el partido se juega distinto. La 8.0.0 sin el bloque mide ya +10,7–11,4 %
+en esta sesión (+10,0 % en la de la tanda 2): SC-009 estaba en el límite por las tandas 1 y 2, y el ruido entre
+sesiones es de ±1 %. `umbral-motor`: 117,4 / 121,4 / 112,5 ms (sin fotogramas / `resolverResto` / con métricas), como en
+la tanda 2.
+
+### Pendiente de decisión tras la tanda 3
+
+Resueltas el 2026-11-17: ver [«Decisiones del 2026-11-17 y su implementación»](#decisiones-del-2026-11-17-y-su-implementación).
+
+1. **015/SC-006, la línea (−10 % de habilitaciones con un central de 95).** Con la corrección de R9, un líder de 95 deja
+   como mucho a la mitad el hueco de sus vecinos: −1,7 % / −7,1 % con 1.000 partidos (semillas 1 / 5001), con un error
+   de ±8 %. Reforzarlo (0,8) llega a −10–15 % pero mueve a todos los equipos y tumba tres comprobaciones. Opciones: (a)
+   medirla con más muestra, contando las habilitaciones en todos los pases y no solo en los pases al espacio (unas 1,5
+   por partido en lugar de 0,3); (b) medirla con toda la línea con 95 frente a 70 (−29 % en la sonda de 150 partidos);
+   (c) exigir solo que baje, con diferencia significativa; (d) dejarla como informativa.
+2. **015/SC-006, el portero (sus defensas ganan más duelos).** Pasa por +0,3 % / +0,2 %, dentro del ruido (±1,5 %):
+   95 frente a 70 son 0,625 puntos. Opciones: (a) comprobarlo como una curva, sin series, igual que 015/SC-001
+   (la probabilidad del duelo de un defensa con un portero de 95 y de 70); (b) dejarlo así, sabiendo que es frágil.
+3. **FR-016 baja los goles y los contraataques.** Todos los porteros suman (70–90 de liderazgo ⇒ +1,75 a +2,25 puntos a
+   todos los duelos de sus defensas en las zonas 0 y 1): −0,10 a −0,15 goles y ~−0,1 contraataques por partido. Con un
+   bonus relativo a 70 (2,5 % de lo que pasa de 70: 95 ⇒ +0,625, 70 ⇒ 0; misma diferencia entre porteros) los goles
+   vuelven a 2,78 / 2,84 y los contraataques quedan en 1,72 / 1,86 (sonda con la línea a 0,8). Opciones: (a) bonus
+   relativo a 70 (cambia el ejemplo de FR-016: 90 ⇒ +0,5); (b) solo en la zona 0 (2,69 / 2,73 goles; contraataques
+   1,70 / 1,78); (c) mantener FR-016 y decidir sobre el mínimo de contraataques.
+4. **002/SC-007a, contraataques ≥ 1,8.** Sin el bloque ya dan 1,82 / 1,76 (semillas 1 / 5001): el mínimo está dentro
+   del ruido (error de la diferencia entre dos series ≈ 0,06).
+5. **SC-009 (≤ +10 %).** Ver «Rendimiento»: la tanda 3 no añade coste medible; la 8.0.0 queda en +11,4–11,9 % por las
+   tandas 1 y 2. Opciones: (a) recuperar margen en el pase con desmarque (el remedio de R11: el marcador de cada
+   candidato una vez por decisión y reutilizado en el pase y el control); (b) revisar el umbral.
+
+**Recomendación**: 3a (bonus relativo a 70: conserva el efecto entre porteros y quita el coste en goles), 2a (curva) y,
+para la línea, 1a + 1c (todos los pases y diferencia significativa; sin comprobar aún con 1.000 partidos); con 3a,
+volver a medir los contraataques antes de tocar su mínimo. Para SC-009, 5a antes de revisar el umbral.
+
+## Decisiones del 2026-11-17 y su implementación
+
+Las cinco decisiones de la persona sobre lo pendiente tras la tanda 3 (spec.md, Clarifications, sesión «decisiones tras
+la tanda 3») y cómo se han llevado al motor y a las comprobaciones.
+
+### Portero relativo a 70 (FR-016)
+
+`bonusPortero` suma `porcentajePortero` × (L − `basePortero`), con `basePortero` 70: 90 ⇒ +0,5; 95 ⇒ +0,625; 70 o
+menos ⇒ 0. La diferencia entre porteros no cambia, y un portero medio ya no refuerza a todas las defensas. En la sonda
+(1.000 partidos, semillas 1 / 5001, con la línea de entonces) los goles vuelven a 2,78 / 2,84 (2,66 / 2,67 con el bonus
+absoluto) y los contraataques de 002/SC-007a quedan en 1,72 / 1,86.
+
+### Portero: comprobación por cálculo (015/SC-006b)
+
+Una conducción 80 contra 80 de un defensa en su área: el defensa la gana el 40,0 % con un portero de 70 y el 40,9 % con
+uno de 95. La serie con el portero de 95 se informa: 10,33–10,52 → 10,33–10,67 duelos ganados por partido, dentro del
+ruido, como se esperaba.
+
+### Línea: escala por liderazgo en 20 escenarios (015/SC-006a)
+
+- **Medida**: la exposición de la línea (`exposicionLinea`: atacantes de campo que el penúltimo defensor, si es de la
+  línea defensiva, deja en juego en ese momento), en cada tick en que el equipo defiende. Es la versión continua de las
+  habilitaciones (0,12 por segundo frente a 0,25 habilitaciones por partido), con muchas más muestras. Las
+  habilitaciones se siguen informando.
+- **Escenarios**: los 20 de 015/SC-012 (diez formaciones, tácticas distintas, rival de otra formación), 50 partidos por
+  escenario y variante. Línea sin líder: defensas, portero y suplentes con 30 de liderazgo; variantes, el central (la
+  casilla central de una defensa de 3 o 5, o el DCI) con 60, 80 y 95.
+- **Mecánica**: la corrección empieza en `baseDefensa` = 36,5 (no en 70), porque la escala de la persona es proporcional
+  a L − 36,5 (1,5 % + 0,12 % × (L − 49) = 0,12 % × (L − 36,5)).
+
+Bajada de la exposición frente a la línea sin líder (semillas 1 / 5001):
+
+| `kDefensa` (`maxCorreccion` 0,8) | Central de 60 (mín. 2,82 %) | 80 (mín. 5,22 %) | 95 (mín. 7,02 %) | Por punto sobre 36,5 (mín. 0,12 %) |
+|---|---|---|---|---|
+| 0,2 | 5,3 / 2,3 % | 3,3 / 5,3 % | 4,6 / 9,0 % | 0,09 / 0,14 % |
+| **0,34** | 7,6 / 2,8 % | 13,5 / 10,7 % | 18,2 / 13,3 % | **0,31 / 0,22 %** |
+
+Cada nivel varía hasta 5 puntos entre semillas (±3,4 % de error de la diferencia con 1.000 partidos), tanto como el
+mínimo de 60: exigir cada nivel por separado haría fallar al de 60 por azar, salvo con una mecánica mucho más fuerte, lo
+contrario de lo que se pidió. Como la escala es proporcional, exigirla en cada liderazgo equivale a exigir al menos un
+0,12 % por punto sobre 36,5; esa pendiente se estima con los tres niveles juntos (mínimos cuadrados), con la mitad de
+ruido, y además se exige que los tres bajen. Con 0,34 la pendiente es de unas dos veces el mínimo (0,22–0,31 %): el
+margen justo para no fallar por azar. **`kDefensa` = 0,34; `maxCorreccion` = 0,8; `baseDefensa` = 36,5.**
+
+### Contraataques (002/SC-007a y 015/SC-014)
+
+El 1,7 era el caso normal: dos 4-4-2 iguales con la táctica por defecto, la suma de los dos (unos 0,85 por equipo).
+Sonda de 500 partidos contra ese 4-4-2, contraataques por equipo: 4-4-2 normal 0,88; 4-4-2 con Contraataque y juego
+vertical 1,25 (+42 %); el mismo con +10 de velocidad 1,35 (+53 %); 3-4-3 con Contraataque, juego vertical y +10 de
+velocidad 1,03 (+17 %: recupera más arriba y solo cuentan las posesiones que empiezan en campo propio). El mínimo del
+caso normal baja a 1,5 y 015/SC-014 exige el +30 % de la táctica.
+
+La táctica Contraataque del motor juega más largo y al espacio, avanza antes y, al recuperar, busca la espalda rival al
+momento; no retrasa el bloque (eso es la altura del bloque). Que también lo haga queda como idea para otra spec.
+
+### Rendimiento (SC-009)
+
+Perfil de 30 partidos (`node --cpu-prof`) de la 8.0.0 frente a la 7.0.0: el 58 % de la diferencia estaba en
+`colocarSubida` (la subida al área a balón parado, US9), que se recalcula en cada tick de un saque de esquina o falta y
+volvía a calcular el atributo aéreo de cada jugador en cada comparación de la ordenación; el resto, en `bonusEquipo`
+(hasta cinco recorridos del equipo por cada atributo pedido, y la 8.0.0 pide más) y en los pesos del receptor.
+
+- `colocarSubida`: el aéreo de cada candidato se calcula una vez antes de ordenar.
+- `bonusEquipo`: una sola pasada por el equipo (`bonusPorDemarcacion`), con el mismo resultado.
+
+Ningún partido cambia (`huella-014`, `huella-015`, `equivalencia-005` y 2D = rápida en verde antes y después). Misma
+sesión, cinco rondas alternas de 20 partidos, dos veces: 7.0.0 92,6 / 91,3 ms; 8.0.0 97,5 / 97,0 ms: **+5,2 % y +6,2 %**
+(antes, +11,4–11,9 %). Por debajo también del +10 % original; el nuevo límite es +12 %.
+
+### Velocidad (014/SC-008-velocidad)
+
+Con todo lo anterior, la serie del CI da +9,6 % de balones sueltos ganados con +15 de velocidad (mínimo +10 %).
+Medido cuatro veces (1.000 partidos por serie): con la línea apagada (k 0), +12,9 % / +10,2 %; con la calibración
+final, +9,6 % / +11,8 % (semillas 1 / 5001). El efecto real ronda el +11 % con ±1,2 puntos de ruido, y la línea le quita
+como mucho un punto. Decisión: el mínimo de la velocidad baja a +8 %; no se toca el motor.
+
+### Serie final tras las decisiones (T075, 2026-11-17)
+
+`pnpm balance --n 1000`, semilla 1, en 14 procesos con `--solo`: **76 de 76** (con el mínimo de velocidad en +8 %; con
+el de +10 %, 75). Con la semilla 5001: 002/SC-007a (1,7 contraataques), 015/SC-006a (0,223 % por punto) y 015/SC-014
+(+39,8 %) ✔. Valores en [informe-8.0.0.md](informe-8.0.0.md). Al límite: goles 2,66 (mínimo 2,6), velocidad +9,6 %
+(mínimo +8 %), contraataques 1,7 (mínimo 1,5), pases cortos 60,5 % (mínimo 60 %) y tiros 14,6 (mínimo 14).

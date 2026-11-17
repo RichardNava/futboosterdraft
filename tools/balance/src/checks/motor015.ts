@@ -1,20 +1,22 @@
 /**
  * Comprobaciones del motor 8.0.0 (spec 015; contracts/balance.md §B1): frecuencia del regateador (SC-002), Cabeceador
- * en los centrales (SC-003), desmarque contra marcaje (SC-004), control con presión (SC-005), Juego por las bandas
- * (SC-011) y segunda línea (SC-012). Series A/B sintéticas con las mismas semillas: solo cambia lo que se mide.
+ * en los centrales (SC-003), desmarque contra marcaje (SC-004), control con presión (SC-005), liderazgo (SC-006), Juego
+ * por las bandas (SC-011), segunda línea (SC-012) y táctica Contraataque (SC-014). Series A/B sintéticas con las mismas semillas: solo cambia lo que se mide.
  */
 import {
   ALTURAS_BLOQUE,
+  CASILLA_CENTRAL,
   ESTILOS_CON_BALON,
   FORMACIONES,
   FORMACIONES_IDS,
+  parametrosActuales,
   SISTEMAS_DEFENSIVOS,
   type Jugador,
   type ParametrosEquilibrado,
   type Tactica,
   type Virtud,
 } from '@fbd/domain';
-import type { EquipoPartido, MetricasJugador } from '@fbd/engine';
+import { bonusPortero, exposicionLinea, probabilidad, type EquipoPartido, type MetricasJugador } from '@fbd/engine';
 import type { GrupoComprobaciones } from '../cli';
 import { clonar, equipoSintetico } from '../equipos';
 import { mayorSignificativo, media, serie, type ResultadoSerie } from '../series';
@@ -170,6 +172,112 @@ export function comprobarSC005(n: number, semilla: number, parametros?: Parametr
   };
 }
 
+/** Los DEF titulares del equipo. */
+const defensasDe = (equipo: EquipoPartido) => equipo.titulares.filter((t) => t.jugador.demarcacion === 'DEF').map((t) => t.jugador.id);
+
+/**
+ * Mínimo de SC-006a: 1,5 % + 0,12 % por punto de liderazgo sobre 49 (decisión del 2026-11-17). Es proporcional a
+ * L − 36,5: exigirlo en cada liderazgo es exigir al menos un 0,12 % de bajada por punto sobre 36,5.
+ */
+export const minimoLinea = (liderazgo: number) => 0.015 + 0.0012 * (liderazgo - 49);
+const PENDIENTE_MINIMA = 0.0012;
+const ORIGEN_ESCALA = 49 - 0.015 / PENDIENTE_MINIMA;
+/** Liderazgos del central que se comprueban en SC-006a (Core va de 62 a 98). */
+const NIVELES_LIDER = [60, 80, 95] as const;
+/** Liderazgo de los demás defensas y del portero: sin efecto en la línea ni en el portero. */
+const SIN_LIDER = 30;
+
+/**
+ * SC-006 (decisiones del 2026-11-17). a) Línea: en 20 escenarios (diez formaciones, tácticas distintas, rivales de
+ * otra formación), con los demás defensas, el portero y los suplentes sin liderazgo, un central con liderazgo L baja la
+ * exposición de su línea (atacantes que un defensa rezagado deja en juego, en cada segundo en que defiende) frente a la
+ * misma línea sin líder. Cada nivel por separado tiene un ±3 % de ruido con 1.000 partidos, tanto como el mínimo de 60:
+ * se exige la escala con los tres niveles juntos (la bajada por punto de liderazgo sobre 36,5, ajustada por mínimos
+ * cuadrados, ≥ 0,12 %) y que los tres bajen. b) Portero: calculado sin series, un defensa en su área gana más un
+ * duelo con un portero de 95 que con uno de 70; la serie con el portero de 95 se queda como dato.
+ */
+export function comprobarSC006(n: number, semilla: number, parametros: ParametrosEquilibrado = parametrosActuales()): Comprobacion[] {
+  const ESCENARIOS = 20;
+  const partidos = Math.max(1, Math.round(n / ESCENARIOS));
+  const variantes = ['sin', ...NIVELES_LIDER.map(String), 'portero'];
+  const exposicion = new Map(variantes.map((v) => [v, { suma: 0, ticks: 0 }]));
+  const habilitaciones = new Map(variantes.map((v) => [v, 0]));
+  const duelos = new Map(variantes.map((v) => [v, 0]));
+  const campos = ['entradasGanadas', 'intercepciones', 'aereosGanados'] as const;
+  for (let k = 0; k < ESCENARIOS; k++) {
+    const estilo = ESTILOS_CON_BALON[k % ESTILOS_CON_BALON.length]!;
+    const alturaBloque = ALTURAS_BLOQUE[k % ALTURAS_BLOQUE.length]!;
+    const tactica: Tactica = { sistemaDefensivo: SISTEMAS_DEFENSIVOS[k % 2]!, alturaBloque, estiloConBalon: estilo, juegoVertical: estilo === 'contraataque', lineaAdelantada: alturaBloque === 'presion_alta' };
+    const inicial = equipoSintetico({ formacion: FORMACIONES_IDS[k % FORMACIONES_IDS.length]!, tactica, semilla: `sc006-${k}`, participanteId: 'a' });
+    const sinLider = (j: Jugador) => (j.demarcacion === 'DEF' || j.demarcacion === 'POR' ? conStat('liderazgo', SIN_LIDER)(j) : j);
+    const base = { ...cambiar(inicial, casillasDe(inicial, ['DEF', 'POR']), sinLider), suplentes: inicial.suplentes.map(sinLider) };
+    const central = base.titulares.some((t) => t.casillaId === CASILLA_CENTRAL) ? CASILLA_CENTRAL : 'DCI';
+    const rival = equipoSintetico({ formacion: FORMACIONES_IDS[(k + 3) % FORMACIONES_IDS.length]!, semilla: `sc006-b${k}`, participanteId: 'b' });
+    const ids = defensasDe(base);
+    for (const v of variantes) {
+      const equipo = v === 'sin' ? base : v === 'portero' ? cambiar(base, ['POR'], conStat('liderazgo', 95)) : cambiar(base, [central], conStat('liderazgo', Number(v)));
+      const e = exposicion.get(v)!;
+      const r = serie(equipo, rival, partidos, semilla + k, `sc006-${k}`, {
+        metricas: true,
+        parametros,
+        observador: (estado, ladoA) => {
+          if (estado.balon.posesion === ladoA || estado.espacio.accion?.tipo === 'saque') return;
+          e.suma += exposicionLinea(estado, ladoA);
+          e.ticks++;
+        },
+      });
+      habilitaciones.set(v, habilitaciones.get(v)! + suma(porPartido(r, ids, ['habilitaciones'])));
+      duelos.set(v, duelos.get(v)! + suma(porPartido(r, ids, campos)));
+    }
+  }
+  const total = partidos * ESCENARIOS;
+  const mediaDe = (v: string) => exposicion.get(v)!.suma / Math.max(1, exposicion.get(v)!.ticks);
+  const bajadas = NIVELES_LIDER.map((l) => ({ l, bajada: 1 - mediaDe(String(l)) / mediaDe('sin'), minimo: minimoLinea(l) }));
+  // Bajada por punto de liderazgo sobre el origen de la escala, por mínimos cuadrados con los tres niveles.
+  const xs = bajadas.map((b) => b.l - ORIGEN_ESCALA);
+  const pendiente = bajadas.reduce((t, b, i) => t + b.bajada * xs[i]!, 0) / xs.reduce((t, x) => t + x * x, 0);
+  const porPartidoDe = (m: Map<string, number>, v: string) => m.get(v)! / total;
+
+  // b) El duelo de referencia: conducción 80 contra 80 de un defensa en su área (zona 0).
+  const lid = parametros.liderazgo!;
+  const curva = parametros.curvas?.conduccion;
+  const ganaDefensa = (portero: number) =>
+    1 - probabilidad({ base: curva?.base ?? parametros.acciones.conduccion, atacante: 80, defensor: 80 + bonusPortero(portero, 0, lid), ...(curva ? { pendiente: curva.m } : {}) }, parametros) / 1000;
+  const [con70, con95] = [ganaDefensa(70), ganaDefensa(95)];
+  return [
+    {
+      id: '015/SC-006a',
+      descripcion: 'Liderazgo del defensa: en 20 escenarios, un central con liderazgo L baja la exposición de su línea al menos 1,5 % + 0,12 % por punto sobre 49',
+      ok: pendiente >= PENDIENTE_MINIMA && bajadas.every((b) => b.bajada > 0),
+      detalle:
+        `${(100 * pendiente).toFixed(3)} % por punto (mínimo 0,120 %) · ` +
+        bajadas.map((b) => `${b.l}: ${pct(-b.bajada)} (mínimo ${pct(-b.minimo)})`).join(' · ') +
+        ` · exposición sin líder ${mediaDe('sin').toFixed(4)} por segundo · habilitaciones por partido (sin / ${NIVELES_LIDER.join(' / ')}) ${variantes.slice(0, 4).map((v) => porPartidoDe(habilitaciones, v).toFixed(2)).join(' / ')}`,
+    },
+    {
+      id: '015/SC-006b',
+      descripcion: 'Liderazgo del portero: un defensa en su área gana más duelos con un portero de 95 que con uno de 70 (cálculo directo)',
+      ok: con95 > con70,
+      detalle: `conducción 80 contra 80 en el área: el defensa gana ${(100 * con70).toFixed(1)} % con 70 y ${(100 * con95).toFixed(1)} % con 95 · serie (dato): duelos ganados por los defensas ${porPartidoDe(duelos, 'sin').toFixed(2)} → ${porPartidoDe(duelos, 'portero').toFixed(2)} por partido`,
+    },
+  ];
+}
+
+/** SC-014: un 4-4-2 con táctica Contraataque y juego vertical hace al menos un 30 % más de contraataques (decisión del 2026-11-17). */
+export function comprobarSC014(n: number, semilla: number): Comprobacion {
+  const base = equipoSintetico({ semilla: 'sc014' });
+  const contra = { ...base, tactica: { ...base.tactica, estiloConBalon: 'contraataque' as const, juegoVertical: true } };
+  const rival = clonar(base, 'b');
+  const [sin, con] = [base, contra].map((a) => media(serie(a, rival, n, semilla, 'sc014').estadisticasA.map((s) => s.contraataques))) as [number, number];
+  const subida = rel(con, sin);
+  return {
+    id: '015/SC-014',
+    descripcion: 'Táctica Contraataque: con juego vertical, al menos un 30 % más de contraataques que con la táctica por defecto',
+    ok: subida >= 0.3,
+    detalle: `contraataques del equipo ${sin.toFixed(2)} → ${con.toFixed(2)} por partido (${pct(subida)})`,
+  };
+}
+
 /** SC-011: con Juego por las bandas, laterales y extremos tocan más el balón y el equipo centra más, significativo. */
 export function comprobarSC011(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'motor015' });
@@ -234,6 +342,8 @@ export function gruposMotor015(): GrupoComprobaciones[] {
     { ids: ['015/SC-003'], serie: 'sintetica', ejecutar: (o) => [comprobarSC003(o.n, o.seed)] },
     { ids: ['015/SC-004'], serie: 'sintetica', ejecutar: (o) => [comprobarSC004(o.n, o.seed)] },
     { ids: ['015/SC-005'], serie: 'sintetica', ejecutar: (o) => [comprobarSC005(o.n, o.seed)] },
+    { ids: ['015/SC-006a', '015/SC-006b'], serie: 'sintetica', ejecutar: (o) => comprobarSC006(o.n, o.seed) },
+    { ids: ['015/SC-014'], serie: 'sintetica', ejecutar: (o) => [comprobarSC014(o.n, o.seed)] },
     { ids: ['015/SC-011'], serie: 'sintetica', ejecutar: (o) => [comprobarSC011(o.n, o.seed)] },
     { ids: ['015/SC-012'], serie: 'sintetica', ejecutar: (o) => [comprobarSC012(o.n, o.seed)] },
   ];

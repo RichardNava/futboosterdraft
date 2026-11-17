@@ -68,8 +68,10 @@ La fórmula no cambia. La base y m de cada acción se leen de `parametros.duelos
 
 - **Plan del pase**: el resultado del desmarque (`Marca`: marcador o `null`, `libre` y el desplazamiento del pase) es
   una variable local de la resolución del pase en `paso()`; no se guarda en el estado entre ticks.
-- **Línea defensiva** (`objetivos.ts`): el x objetivo de cada defensa se corrige según `liderDeLinea`. No hay estado
-  nuevo, porque se calcula por tick con la línea que ya existe.
+- **Línea defensiva** (`objetivos.ts`): el x objetivo de cada defensa del equipo que defiende se acerca a la línea del
+  fuera de juego (el penúltimo defensor) en la fracción `correccionLinea(liderDeLinea(...))`. No hay estado nuevo: la
+  línea se calcula una vez en cada cálculo de objetivos (cada 4 ticks) y la usan los atacantes (`respetarLinea`) y los
+  defensas; el líder se busca entre los defensas de la línea con las posiciones de su forma, en la misma pasada.
 
 ## 7. Métricas por jugador (`tipos.ts`, `MetricasJugador`)
 
@@ -85,10 +87,14 @@ Se añaden contadores para el informe. No viajan en el protocolo ni cambian los 
 | `controlesPerdidos` | receptor | Controles con presión perdidos |
 | `duelosAereos` | cada participante | Duelos aéreos disputados (balón parado, remate de cabeza tapado, centro en el área) |
 | `aereosGanados` | ganador | Duelos aéreos ganados |
-| `habilitaciones` | defensa rezagado | Fueras de juego que su posición deshace (research R9) |
+| `habilitaciones` | defensa rezagado | Pases al espacio cuyo receptor estaría en fuera de juego con la línea de los demás y deja en juego el penúltimo defensor, si es de la línea defensiva (`habilitador` en `fueraDeJuego.ts`; solo al medir; research R9) |
 
 Las métricas que ya existían (`regates`, `regatesGanados`, `conducciones`, `conduccionesGanadas`, `golesCabeza`…) no
 cambian.
+
+La exposición de la línea (015/SC-006a, decisión del 2026-11-17) no es una métrica por jugador: `exposicionLinea`
+(`fueraDeJuego.ts`) cuenta los atacantes que deja en juego el penúltimo defensor en un momento dado, y la herramienta de
+equilibrado la suma en cada tick en que el equipo defiende.
 
 ## 8. Parámetros de equilibrado 8.0.0 (`parametros/index.ts`)
 

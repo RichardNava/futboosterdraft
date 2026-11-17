@@ -15,6 +15,7 @@ import { anotar } from '../metricas';
 import { atributo } from '../modificadores/atributos';
 import { desplazamientoAtaque, relajacion } from '../modificadores/formacionTactica';
 import { factorAutogol } from '../modificadores/defectos';
+import { bonusLiderPortero } from '../modificadores/liderazgo';
 import { ajusteDuelo, santoActivo, tiene } from '../modificadores/virtudes';
 import type { GrupoGol, TipoTiro as TipoTiroGol, ZonaRemate } from '../tipos';
 import { controlar, reponer, volar } from './animaciones';
@@ -382,7 +383,8 @@ export function rematarBalonParado(
     {
       base,
       atacante: (atributo(e, atacante, lanzador, 'centro') + atributo(e, atacante, rematador, 'aereo')) / 2,
-      defensor: marcador ? atributo(e, defensor, marcador, 'aereo') : 50,
+      // Spec 015 (US6, FR-016): el portero líder ayuda al defensa que marca en su área.
+      defensor: marcador ? atributo(e, defensor, marcador, 'aereo') + bonusLiderPortero(e, marcador) : 50,
       ajuste,
     },
     p,

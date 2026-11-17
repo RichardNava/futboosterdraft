@@ -13,7 +13,9 @@ si se cumple).
 | `015/SC-003` | `checks/motor015.ts` | sintética A/B: centrales con Cabeceador o sin ella | Más `aereosGanados` y más goles de cabeza a balón parado, con diferencia significativa |
 | `015/SC-004` | `checks/motor015.ts` | sintética A/B: el DC +15 de desmarque; los defensas rivales +15 de marcaje | Con desmarque, más `recibidoLibre` y más `pasesRecibidos` del DC por partido; con marcaje rival, menos `recibidoLibre` del DC; las tres significativas |
 | `015/SC-005` | `checks/motor015.ts` | sintética A/B: +15 de técnica en los jugadores de campo (DEF y MED la stat; DEL regate y creatividad, que la forman) | `controlesPerdidos / controlesPresion` ≥ 15 % menor (todos cuentan: los delanteros hacen la mayoría de los controles) |
-| `015/SC-006` | `checks/motor015.ts` | sintética A/B: central con 95 de liderazgo contra 70; portero con 95 contra 70 | `habilitaciones` ≥ 10 % menos; duelos ganados por los defensas cercanos al portero, mayores |
+| `015/SC-006a` | `checks/motor015.ts` | 20 escenarios (formaciones y tácticas), 1.000 partidos por variante: línea sin líder (defensas, portero y suplentes a 30) y central con 60, 80 y 95 | La exposición de la línea baja en los tres y la bajada por punto de liderazgo sobre 36,5 (mínimos cuadrados) es ≥ 0,12 %: la escala 1,5 % + 0,12 % × (L − 49). Las habilitaciones se informan |
+| `015/SC-006b` | `checks/motor015.ts` | cálculo directo (y la serie del portero de 95 como dato) | Un defensa en su área gana más una conducción 80 contra 80 con un portero de 95 que con uno de 70 |
+| `015/SC-014` | `checks/motor015.ts` | sintética A/B: 4-4-2 con Contraataque y juego vertical contra la táctica por defecto | ≥ 30 % más contraataques |
 
 | `015/SC-011` | `checks/motor015.ts` | sintética A/B: el mismo equipo con «Juego por las bandas» o «Equilibrado» | Más toques (pases, conducciones y regates) de LI, LD, EI y ED y más centros, los dos significativos |
 | `015/SC-012` | `checks/motor015.ts` | sintética | Defensas y medios marcan entre el 15 % y el 30 % de los goles de su equipo, sobre 20 equipos (diez formaciones, tácticas distintas) |
@@ -35,12 +37,12 @@ Se exige lo mismo que con la 7.0.0:
 - 001/SC-004.
 - 003/SC-001 a SC-003 (goles).
 - Todas las de la 005.
-- 002/SC-007a ≥ 130 pases completados (150 hasta el 2026-11-14) y ≥ 14 tiros (15 hasta el 2026-11-16) desde el cierre
-  de la tanda 2.
+- 002/SC-007a ≥ 130 pases completados (150 hasta el 2026-11-14), ≥ 14 tiros (15 hasta el 2026-11-16) y ≥ 1,5
+  contraataques (1,8 hasta el 2026-11-17, con 015/SC-014 a cambio).
 - Además: 002/SC-008 (medido desde el 2026-11-16 en las formaciones con 3 o más medios), 003/SC-009, 003/SC-005 y
   003/SC-007, que salieron de pendientes al cerrar la tanda 2.
 
 ## B4. Rendimiento (SC-009)
 
-`umbralMotor.ts`: tiempo por partido de la 8.0.0 ≤ 1,10 × el de la 7.0.0, medido en la misma máquina y la misma
-ejecución, y bajo el umbral absoluto que ya comprueba el CI.
+`umbralMotor.ts`: tiempo por partido de la 8.0.0 ≤ 1,12 × el de la 7.0.0 (1,10 hasta el 2026-11-17), medido en la
+misma máquina y la misma ejecución, y bajo el umbral absoluto que ya comprueba el CI.

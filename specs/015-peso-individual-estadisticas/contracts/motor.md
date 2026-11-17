@@ -25,8 +25,10 @@ desmarque?: { radioMarcaM: number; base: number; m: number; bonusLibre: number; 
 controlPresion?: { base: number; m: number };
 //  8.0.0 (tanda 2): { 0.5, 1 }   (base 1,0 de partida)
 
-liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; porcentajePortero: number; zonaMaxPortero: number };
-//  8.0.0 (tanda 3): { 12, 0.5, 0.5, 0.025, 1 }
+liderazgo?: { radioDefensaM: number; kDefensa: number; maxCorreccion: number; baseDefensa: number; porcentajePortero: number;
+              basePortero: number; zonaMaxPortero: number };
+//  8.0.0: { 20, 0.34, 0.8, 36.5, 0.025, 70, 1 }   (decisiones del 2026-11-17: base de la línea 70 → 36,5, la escala de
+//  SC-006a; portero relativo a 70; radio 12 de partida; research, «Tanda 3» y «Decisiones del 2026-11-17»)
 
 // Añadidos (tanda 1b; research R12 a R15)
 estrella?: { umbralVisionPase: number; escalaMedia: number; diferenciaArriesgar: number; repartoArriesgado: number;
@@ -91,11 +93,17 @@ El dominio añade el estilo con balón `bandas` a `ESTILOS_CON_BALON` (y al esqu
    - Solo tras un pase completado a un receptor marcado.
    - Enfrenta `tecnica` contra el `quite` del marcador. Si pierde, `perder()` con el marcador como recuperador, que le
      quita el balón de los pies sin carrera por un balón suelto (no cuenta en 014/SC-008).
-10. **Liderazgo** (FR-015/016):
-    - Portero de 90 de liderazgo ⇒ +2,25 al atributo defensor de un DEF en la zona ≤ `zonaMaxPortero`.
-    - Fuera de esa zona, +0.
-    - Con varios defensas líderes a ≤ `radioDefensaM`, cuenta el mayor.
-    - Liderazgo ≤ 70 ⇒ sin corrección.
+10. **Liderazgo** (FR-015/016; `modificadores/liderazgo.ts`):
+    - Portero: `porcentajePortero` × (L − `basePortero`) al atributo defensor de un DEF de su equipo en la zona ≤
+      `zonaMaxPortero` (`ajusteDuelo` y el duelo aéreo del balón parado): 90 ⇒ +0,5; 70 o menos ⇒ 0. Fuera de esa zona,
+      +0; el portero rival no cuenta.
+    - Defensa: su x objetivo se acerca a la línea del fuera de juego (el penúltimo defensor) en
+      min(`maxCorreccion`, `kDefensa` × (L − `baseDefensa`) / 25), con L el mayor liderazgo de los defensas de su línea
+      a ≤ `radioDefensaM` (no se acumulan). Liderazgo ≤ `baseDefensa` ⇒ sin corrección.
+    - `exposicionLinea`: los atacantes de campo que ese penúltimo defensor deja en juego en ese momento (la medida de
+      SC-006a, en cada tick en que el equipo defiende).
+    - `habilitador`: el penúltimo defensor, si es de la línea defensiva y el receptor estaría en fuera de juego con la
+      línea del siguiente; si no, nadie.
 11. **Determinismo**: misma semilla y versión ⇒ mismo partido en la rápida y en la 2D (SC-010, `huella-015.json`).
 12. **Coste** (FR-018): ningún duelo nuevo ordena listas ni reserva memoria por llamada. Localizar al marcador es un
     recorrido por los rivales.

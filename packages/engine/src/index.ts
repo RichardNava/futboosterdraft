@@ -14,6 +14,9 @@ export { ordenJugadores } from './espacio/paso';
 export { energiaDe } from './modificadores/cansancio';
 // Curva de un duelo (spec 015): la herramienta de equilibrado comprueba las de FR-002 sin jugar partidos.
 export { probabilidad } from './acciones/duelo';
+// Liderazgo (spec 015, SC-006): la herramienta de equilibrado mide la exposición de la línea y el bonus del portero.
+export { exposicionLinea } from './acciones/fueraDeJuego';
+export { bonusPortero } from './modificadores/liderazgo';
 // Efectos de los defectos en los stats (spec 005): la herramienta de equilibrado los mide en partidos reales.
 export { bonusProvocador, multiplicadorEquipo, multiplicadorIndividual } from './modificadores/defectos';
 export { encolarLote, validarDecision, type ResultadoDecision, type ResultadoLote } from './tramos/decisiones';

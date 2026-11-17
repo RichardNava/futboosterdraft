@@ -152,6 +152,41 @@ Términos:
   tienen 3 o más (4-3-3, 4-4-2 en rombo, 4-2-3-1, 3-5-2, 5-3-2 y 4-5-1); ningún mando del motor lo movía (research,
   «002/SC-008: por qué no llega al +10 %»). Con ella pasa 003/SC-009 y el CI se queda sin `--pendientes`.
 
+### Session 2026-11-16 (tanda 3)
+
+- Q: ¿A qué distancia es «cercano» un defensa de su líder (FR-015)? → A: 20 m, calibrado en la tanda 3: en fase
+  defensiva los defensas de una línea de cuatro están a 13–17 m entre sí; con 12 m el líder no alcanzaba a nadie y
+  solo se corregía a sí mismo (research, «Tanda 3»). La corrección se queda en la de partida (la mitad del hueco con un
+  líder de 95): con 0,8, un líder medio (~80) también corrige más y caen tres comprobaciones que pasaban.
+
+### Session 2026-11-16 (decisiones tras la tanda 3)
+
+- Q: Como todos los porteros suman el 2,5 % de su liderazgo (70–90 ⇒ +1,75 a +2,25), todos los equipos defienden
+  mejor y bajan los goles (2,76 → 2,67) y los contraataques; ¿qué se hace con el bonus del portero (FR-016)? → A:
+  Relativo a 70: suma el 2,5 % de lo que su liderazgo pasa de 70 (95 ⇒ +0,625; 90 ⇒ +0,5; 70 o menos ⇒ 0). La
+  diferencia entre porteros no cambia.
+- Q: ¿Cómo se comprueba la parte del portero de SC-006, si 0,625 puntos por duelo no se distinguen del azar en 1.000
+  partidos? → A: Con un cálculo directo, como 015/SC-001: la probabilidad de un duelo de referencia de un defensa en su
+  área es mayor con un portero de 95 que con uno de 70. La serie de partidos se queda como dato informativo.
+- Q: ¿Qué se exige al defensa líder de SC-006, si un central de 95 solo baja las habilitaciones un 1,7–7,1 % y un 10 %
+  por jugador se apilaría (cuatro líderes, 40 %, más el portero y las virtudes)? → A: Ser conservadores y medirlo en
+  muchos escenarios distintos. El mínimo exigido baja y depende del liderazgo: 1,5 % + 0,12 % por cada punto sobre 49
+  (49 ⇒ 1,5 %; 60 ⇒ 2,82 %; 95 ⇒ 7,02 %; 99 ⇒ 7,5 %), frente a la misma línea sin efecto de liderazgo. La mecánica
+  empieza a actuar por debajo de 49 (no en 70) y se calibra para cumplir la escala sin pasarse. Sin techo extra para
+  la línea entera: los líderes siguen sin sumarse (cada defensa usa el mayor liderazgo que tiene cerca).
+- Q: ¿Qué se hace con el mínimo de 1,8 contraataques de 002/SC-007a (1,7 en el caso normal: dos 4-4-2 iguales con la
+  táctica por defecto, unos 0,85 por equipo), que pasa o falla por azar? → A: Baja a 1,5: además, algunas jugadas que
+  en el fútbol real se llamarían contraataque no se cuentan (solo cuentan las que empiezan en campo propio y acaban en
+  tiro en menos de 150 s con 4 pases o menos). A cambio, se exige que la táctica sirva: un 4-4-2 con Contraataque y
+  juego vertical hace al menos un 30 % más de contraataques que el mismo equipo con la táctica por defecto (+42 % en la
+  sonda). Ceder la iniciativa ya lo comprueba 001/SC-006e (menos posesión); que la táctica también retrase el bloque
+  queda como idea para otra spec (hoy eso es la altura del bloque).
+- Q: ¿Qué se hace con SC-009 (la 8.0.0 a +11,4–11,9 % de la 7.0.0, casi todo de las tandas 1 y 2)? → A: Optimizar el
+  motor sin cambiar ningún partido (el remedio de R11 y lo que salga de perfilarlo) y aceptar hasta +12 %.
+- Q: Con las decisiones aplicadas, 014/SC-008-velocidad (+15 de velocidad ⇒ ≥ +10 % de balones sueltos ganados) da
+  +9,6 % en la serie del CI; medido cuatro veces sale entre +9,6 % y +12,9 % (en torno al +11 %, ±1,2 de ruido), y la
+  línea más ordenada le quita como mucho un punto. ¿Qué se hace? → A: Su mínimo baja a +8 %; no se toca el motor.
+
 ## User Scenarios & Testing *(mandatory)*
 
 Las historias siguen el orden de las tandas de calibración: la tanda 1 son US1 a US3; la tanda 2, US4 y US5; la tanda
@@ -289,7 +324,7 @@ duelos que con uno de 70.
 1. **Given** un defensa con liderazgo alto, **When** su línea defensiva se coloca, **Then** los defensas cercanos a él
    guardan mejor la distancia entre sí y rompen menos el fuera de juego.
 2. **Given** un portero con 90 de liderazgo, **When** un defensa cercano a él disputa un duelo, **Then** el atributo del
-   defensa en ese duelo sube 2,25 puntos (2,5 % de 90).
+   defensa en ese duelo sube 0,5 puntos (2,5 % de lo que pasa de 70; 2,25 hasta el 2026-11-17).
 
 ---
 
@@ -503,10 +538,12 @@ las conducciones ni los contraataques.
 
 - **FR-015**: El liderazgo de un defensa DEBE hacer que su línea defensiva se descoloque menos cerca de él: los
   defensas cercanos guardan mejor la distancia entre sí y rompen menos la línea del fuera de juego. Son cercanos los
-  defensas de su misma línea a menos de una distancia fija, que se calibra en la tanda 3. Con varios líderes cerca,
-  cuenta el mayor.
+  defensas de su misma línea a 20 m o menos (calibrado en la tanda 3). El efecto crece con el liderazgo desde 36,5 (la
+  escala de SC-006a) y, con varios líderes cerca, cuenta el mayor.
 - **FR-016**: El liderazgo del portero DEBE sumar a los defensas cercanos a él (los que están dentro de su área o en la
-  zona propia), en sus duelos, un 2,5 % de su liderazgo en puntos (90 de liderazgo ⇒ +2,25).
+  zona propia), en sus duelos, un 2,5 % de lo que su liderazgo pasa de 70, en puntos (90 ⇒ +0,5; 95 ⇒ +0,625; 70 o
+  menos ⇒ 0). Hasta el 2026-11-17 era el 2,5 % de todo su liderazgo (90 ⇒ +2,25), y como todos los porteros sumaban,
+  bajaba los goles de todos los partidos.
 
 **Añadidos — tanda 1b (clarificaciones del 2026-11-14)**
 
@@ -596,16 +633,21 @@ las conducciones ni los contraataques.
   diferencias son significativas.
 - **SC-005**: En series de 1.000 partidos, un jugador con 15 puntos más de técnica pierde al menos un 15 % menos balones
   en los controles con presión.
-- **SC-006**: En series de 1.000 partidos, una línea defensiva con un central de 95 de liderazgo rompe la línea del
-  fuera de juego al menos un 10 % menos que con uno de 70; y los defensas con un portero de 95 de liderazgo ganan más
-  duelos que con uno de 70.
+- **SC-006** (reformulado el 2026-11-17; antes, «un central de 95 rompe la línea al menos un 10 % menos que uno de 70»):
+  - **SC-006a**: En series de 1.000 partidos repartidas entre 20 escenarios (las diez formaciones, tácticas distintas,
+    rivales de otra formación), un central con liderazgo L baja la exposición de su línea (atacantes que un defensa
+    rezagado deja en juego en cada segundo en que defiende) al menos 1,5 % + 0,12 % por punto sobre 49 frente a la
+    misma línea sin efecto de liderazgo (49 ⇒ 1,5 %; 60 ⇒ 2,82 %; 95 ⇒ 7,02 %; 99 ⇒ 7,5 %). Se comprueba con
+    centrales de 60, 80 y 95: los tres bajan y la bajada por punto de liderazgo sobre 36,5 es de al menos 0,12 %.
+  - **SC-006b**: Calculado sin series, un defensa en su área gana más un duelo con un portero de 95 que con uno de 70.
+    La serie de partidos con el portero de 95 se informa como dato.
 - **SC-007**: Las siete comprobaciones hoy pendientes (014/SC-008-pase, 014/SC-008-remate y 014/SC-008-fisico, ya como
   curvas; 002/SC-008, 003/SC-009, 003/SC-005 y 003/SC-007) pasan y salen de la lista de pendientes del CI, que queda
   vacía; el informe de equilibrado completo pasa sin ninguna comprobación pendiente.
 - **SC-008**: Siguen en verde todos los criterios que pasaban con la 7.0.0, en particular 001/SC-004, los de goles de
   la 003 y los de la 005, y el mínimo de 130 pases completados (FR-020) al cerrar la tanda 2.
 - **SC-009**: La simulación de un partido sigue dentro del umbral de rendimiento del motor del CI, y no tarda más de
-  un 10 % que con la 7.0.0.
+  un 12 % que con la 7.0.0 (10 % hasta el 2026-11-17).
 - **SC-010**: La simulación rápida y la 2D siguen dando exactamente el mismo partido con la misma semilla (001/SC-008),
   con las referencias regeneradas para la 8.0.0.
 - **SC-011**: En series de 1.000 partidos, el mismo equipo con «Juego por las bandas» da más toques (pases,
@@ -615,10 +657,14 @@ las conducciones ni los contraataques.
   era el 40 % y se medía con un solo equipo hasta el 2026-11-15).
 - **SC-013**: En series de 1.000 partidos entre equipos equilibrados, hay entre 6 y 9 córners por partido (media
   buscada, 7,5) y siguen en verde los mínimos de 002/SC-007a y los criterios de FR-021.
+- **SC-014**: En series de 1.000 partidos, un 4-4-2 con la táctica Contraataque y juego vertical hace al menos un 30 %
+  más de contraataques que el mismo equipo con la táctica por defecto (añadido el 2026-11-17, cuando el mínimo del caso
+  normal de 002/SC-007a bajó a 1,5).
 
 ## Decisiones abiertas
 
-Ninguna: las ocho se resolvieron en [Clarifications](#clarifications) (sesión del 2026-11-14).
+Ninguna. Las ocho del plan se resolvieron el 2026-11-14 y las cinco que dejó la serie final de la tanda 3 (2026-11-16),
+el 2026-11-17 ([Clarifications](#session-2026-11-16-decisiones-tras-la-tanda-3)).
 
 ## Assumptions
 

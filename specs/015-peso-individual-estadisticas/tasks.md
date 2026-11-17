@@ -238,34 +238,46 @@ de 95 contra 70, los defensas cercanos ganan más duelos (SC-006).
 
 ### Tests for User Story 6
 
-- [ ] T064 [P] [US6] Crear `packages/engine/tests/liderazgo.test.ts` (invariante M2.10): portero de 90 de liderazgo ⇒ +2,25 al atributo defensor de un DEF en zona ≤ `zonaMaxPortero`, +0 fuera; corrección del defensa = `min(maxCorreccion, kDefensa × (L − 70) / 25)`, 0 con L ≤ 70; con varios líderes a ≤ `radioDefensaM` cuenta el mayor (no se acumulan); el portero solo suma el suyo
+- [X] T064 [P] [US6] Crear `packages/engine/tests/liderazgo.test.ts` (invariante M2.10): portero de 90 de liderazgo ⇒ +2,25 al atributo defensor de un DEF en zona ≤ `zonaMaxPortero`, +0 fuera; corrección del defensa = `min(maxCorreccion, kDefensa × (L − 70) / 25)`, 0 con L ≤ 70; con varios líderes a ≤ `radioDefensaM` cuenta el mayor (no se acumulan); el portero solo suma el suyo
 
 ### Implementation for User Story 6
 
-- [ ] T065 [US6] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `liderazgo: { radioDefensaM: 12, kDefensa: 0.5, maxCorreccion: 0.5, porcentajePortero: 0.025, zonaMaxPortero: 1 }`
-- [ ] T066 [US6] En `packages/engine/src/modificadores/atributos.ts`, con el bloque: `liderazgo` = POR y DEF su stat, MED y DEL 0
-- [ ] T067 [US6] Crear `packages/engine/src/modificadores/liderazgo.ts` con funciones puras `liderDeLinea(defensa, lineaDefensiva, params)` (mayor liderazgo entre los defensas de su línea a ≤ `radioDefensaM`, él incluido) y `bonusPortero(liderazgoPortero, zonaDefensa, params)`
-- [ ] T068 [US6] En `packages/engine/src/espacio/objetivos.ts`, con el bloque: acercar el x objetivo de cada defensa al x de la línea (penúltimo defensor, como en `packages/engine/src/acciones/fueraDeJuego.ts`) en la fracción de `liderDeLinea`, en la misma pasada en que ya se calcula la línea (FR-015, FR-018)
-- [ ] T069 [US6] En `ajusteDuelo` de `packages/engine/src/acciones/contexto.ts` (`aj.defensor`) y en los duelos aéreos de `packages/engine/src/acciones/tiro.ts`: sumar `bonusPortero` cuando defiende un DEF en las zonas 0..`zonaMaxPortero` de su equipo (FR-016)
-- [ ] T070 [US6] Anotar `habilitaciones` al defensa rezagado cuando un pase al espacio habría sido fuera de juego con la línea de los demás defensas y su posición lo deja en juego, en `packages/engine/src/acciones/fueraDeJuego.ts` o `juego.ts` (R9)
-- [ ] T071 [US6] Añadir `015/SC-006` a `tools/balance/src/checks/motor015.ts`: A/B central 95 contra 70 de liderazgo (`habilitaciones` ≥ 10 % menos) y portero 95 contra 70 (duelos ganados por los defensas cercanos, mayores)
-- [ ] T072 [US6] Calibrar `radioDefensaM` (clarificación: distancia fija calibrada en la tanda 3) y ejecutar `pnpm --filter @fbd/engine test liderazgo equivalencia014`
+- [X] T065 (radioDefensaM, kDefensa y maxCorreccion recalibrados en T072) [US6] Añadir a `PARAMETROS_V8` en `packages/domain/src/parametros/index.ts` el bloque `liderazgo: { radioDefensaM: 12, kDefensa: 0.5, maxCorreccion: 0.5, porcentajePortero: 0.025, zonaMaxPortero: 1 }`
+- [X] T066 (ya estaba desde la tanda 1: el atributo solo lo usa el bloque `liderazgo`; la línea y el portero leen la stat de la carta, sin cansancio, como los demás objetivos) [US6] En `packages/engine/src/modificadores/atributos.ts`, con el bloque: `liderazgo` = POR y DEF su stat, MED y DEL 0
+- [X] T067 (más `correccionLinea` y `bonusLiderPortero`) [US6] Crear `packages/engine/src/modificadores/liderazgo.ts` con funciones puras `liderDeLinea(defensa, lineaDefensiva, params)` (mayor liderazgo entre los defensas de su línea a ≤ `radioDefensaM`, él incluido) y `bonusPortero(liderazgoPortero, zonaDefensa, params)`
+- [X] T068 (la línea se calcula una vez en `calcularObjetivos` y la comparten `respetarLinea` y los defensas) [US6] En `packages/engine/src/espacio/objetivos.ts`, con el bloque: acercar el x objetivo de cada defensa al x de la línea (penúltimo defensor, como en `packages/engine/src/acciones/fueraDeJuego.ts`) en la fracción de `liderDeLinea`, en la misma pasada en que ya se calcula la línea (FR-015, FR-018)
+- [X] T069 (`ajusteDuelo` está en `modificadores/virtudes.ts`; cubre el pase, la conducción, el regate, el centro y el tiro tapado; el duelo aéreo del balón parado, en `rematarBalonParado`) [US6] En `ajusteDuelo` de `packages/engine/src/acciones/contexto.ts` (`aj.defensor`) y en los duelos aéreos de `packages/engine/src/acciones/tiro.ts`: sumar `bonusPortero` cuando defiende un DEF en las zonas 0..`zonaMaxPortero` de su equipo (FR-016)
+- [X] T070 (`habilitador` en `fueraDeJuego.ts`, anotado en `pasar` de `juego.ts` solo al medir) [US6] Anotar `habilitaciones` al defensa rezagado cuando un pase al espacio habría sido fuera de juego con la línea de los demás defensas y su posición lo deja en juego, en `packages/engine/src/acciones/fueraDeJuego.ts` o `juego.ts` (R9)
+- [X] T071 (con la línea sin líder: defensas, portero y suplentes a 70 de liderazgo) [US6] Añadir `015/SC-006` a `tools/balance/src/checks/motor015.ts`: A/B central 95 contra 70 de liderazgo (`habilitaciones` ≥ 10 % menos) y portero 95 contra 70 (duelos ganados por los defensas cercanos, mayores)
+- [X] T072 (20 m: los defensas de una línea de cuatro están a 13–17 m y con 12 el líder no alcanzaba a nadie; k y máximo se quedan en 0,5 (con 0,8, 68 de 74); ver research.md, «Tanda 3») [US6] Calibrar `radioDefensaM` (clarificación: distancia fija calibrada en la tanda 3) y ejecutar `pnpm --filter @fbd/engine test liderazgo equivalencia014`
 
 ---
 
 ## Phase 11: Polish & cierre de la tanda 3
 
-- [ ] T073 Crear `packages/engine/tests/fixtures/generarHuella015.ts` (modelo `generarHuella014.ts`/`huella014.ts`, 100 partidos y 20 drafts con `PARAMETROS_V8`), generar `packages/engine/tests/fixtures/huella-015.json` y crear `packages/engine/tests/equivalencia015.test.ts`, que compruebe la huella y la igualdad entre la simulación rápida y la 2D (SC-010). `huella-014.json` no se regenera
-- [ ] T074 Regenerar las referencias de equivalencia que usan `parametrosActuales()` (las que fijan `PARAMETROS_V7` se quedan), p. ej. con `packages/engine/tests/fixtures/regenerarEquivalencia005.ts` si depende de la versión actual
-- [ ] T075 (`--pendientes` ya quitado de `ci.yml` el 2026-11-16, al cumplirse 002/SC-008 y 003/SC-009; queda la serie final) Ejecutar la serie final `pnpm balance --n 1000` sin `--pendientes`: todas en verde (SC-006, SC-007, SC-008), y quitar `--pendientes` (y su comentario) de `.github/workflows/ci.yml`
-- [ ] T076 Medir con `pnpm --filter @fbd/balance umbral-motor`: ≤ 1,10 × T001 y bajo el umbral absoluto (SC-009)
-- [ ] T077 [P] Actualizar a mano `docs/juego/enfrentamientos.md` a la 8.0.0: tabla carta → atributo (quite, marcaje, técnica, liderazgo), curvas de FR-002, los dos duelos nuevos, §5.1, §7 y §8 resueltas (FR-023)
-- [ ] T078 [P] Regenerar `docs/juego/virtudes-y-defectos.md` con `pnpm --filter @fbd/domain rasgos:doc` (FR-023)
-- [ ] T079 [P] Escribir el informe de cierre `specs/015-peso-individual-estadisticas/informe-8.0.0.md` (modelo `specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md`) con los valores finales de los parámetros y el resultado de la serie
-- [ ] T080 Actualizar el estado de la spec 015 en `ROADMAP.md` y la línea «Especificación en curso» de `CLAUDE.md`
-- [ ] T081 Ejecutar `pnpm -r test && pnpm -r typecheck` y la guía de `specs/015-peso-individual-estadisticas/quickstart.md` (pasos 1 a 5); después, `graphify update .`
+- [X] T073 (la igualdad 2D = rápida = por ticks con la 8.0.0 va en `equivalencia.test.ts`, junto a sus ayudas; `huella014.ts` acepta los parámetros) Crear `packages/engine/tests/fixtures/generarHuella015.ts` (modelo `generarHuella014.ts`/`huella014.ts`, 100 partidos y 20 drafts con `PARAMETROS_V8`), generar `packages/engine/tests/fixtures/huella-015.json` y crear `packages/engine/tests/equivalencia015.test.ts`, que compruebe la huella y la igualdad entre la simulación rápida y la 2D (SC-010). `huella-014.json` no se regenera
+- [X] T074 (solo los escenarios de `tools/fixtures` dependen de la versión actual; `equivalencia-005.json` fija la 7.0.0) Regenerar las referencias de equivalencia que usan `parametrosActuales()` (las que fijan `PARAMETROS_V7` se quedan), p. ej. con `packages/engine/tests/fixtures/regenerarEquivalencia005.ts` si depende de la versión actual
+- [X] T075 (2026-11-17, tras las decisiones: 76 de 76 con la semilla 1; la del 2026-11-16 dio 71 de 74) Ejecutar la serie final `pnpm balance --n 1000` sin `--pendientes`: todas en verde (SC-006, SC-007, SC-008), y quitar `--pendientes` (y su comentario) de `.github/workflows/ci.yml`
+- [X] T076 (2026-11-17, tras optimizar: +5,2 % y +6,2 % sobre la 7.0.0 en la misma sesión; límite +12 % desde el 2026-11-17) Medir con `pnpm --filter @fbd/balance umbral-motor`: ≤ 1,12 × T001 y bajo el umbral absoluto (SC-009)
+- [X] T077 [P] Actualizar a mano `docs/juego/enfrentamientos.md` a la 8.0.0: tabla carta → atributo (quite, marcaje, técnica, liderazgo), curvas de FR-002, los dos duelos nuevos, §5.1, §7 y §8 resueltas (FR-023)
+- [X] T078 (sin cambios: ya estaba al día desde la tanda 1) [P] Regenerar `docs/juego/virtudes-y-defectos.md` con `pnpm --filter @fbd/domain rasgos:doc` (FR-023)
+- [X] T079 (con 71 de 74 y las decisiones pendientes) [P] Escribir el informe de cierre `specs/015-peso-individual-estadisticas/informe-8.0.0.md` (modelo `specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md`) con los valores finales de los parámetros y el resultado de la serie
+- [X] T080 (INI-05 y la línea de CLAUDE.md: implementada, pendiente de decisión) Actualizar el estado de la spec 015 en `ROADMAP.md` y la línea «Especificación en curso» de `CLAUDE.md`
+- [X] T081 (2026-11-16: `pnpm test` 140 ficheros y 1.385 pruebas, `pnpm typecheck` y `pnpm lint` en verde; pasos 1 a 4 de la guía hechos en esta tanda, el 5 es en la aplicación y queda para la persona) Ejecutar `pnpm -r test && pnpm -r typecheck` y la guía de `specs/015-peso-individual-estadisticas/quickstart.md` (pasos 1 a 5); después, `graphify update .`
 
 ---
+
+## Phase 12: Decisiones del 2026-11-17 (tras la serie final de la tanda 3)
+
+**Purpose**: las cinco decisiones de spec.md (Clarifications, «decisiones tras la tanda 3»).
+
+- [X] T092 [US6] Portero relativo a 70: `basePortero` en el bloque `liderazgo` y `bonusPortero` = `porcentajePortero` × (L − `basePortero`) en `packages/engine/src/modificadores/liderazgo.ts`; pruebas en `liderazgo.test.ts`
+- [X] T093 [US6] 015/SC-006b en `tools/balance/src/checks/motor015.ts`: cálculo directo (conducción 80 contra 80 en el área con portero de 95 y de 70) y la serie del portero de 95 como dato
+- [X] T094 [US6] Línea con la escala de la persona: `baseDefensa` (36,5) en el bloque y en `correccionLinea`; `exposicionLinea` en `packages/engine/src/acciones/fueraDeJuego.ts` (exportada para la herramienta); 015/SC-006a en 20 escenarios con centrales de 60, 80 y 95 y la pendiente ≥ 0,12 % por punto; calibrar `kDefensa` (0,34)
+- [X] T095 Contraataques: mínimo de 002/SC-007a 1,8 → 1,5 en `tools/balance/src/checks/partido.ts` y en la spec 002
+- [X] T096 015/SC-014 en `motor015.ts`: 4-4-2 con Contraataque y juego vertical ≥ +30 % de contraataques
+- [X] T097 SC-009: perfilar la 8.0.0 y optimizar sin cambiar ningún partido (`colocarSubida` y `bonusEquipo`); límite +12 %
+- [X] T098 Documentar las decisiones en spec.md (FR-015, FR-016, SC-006, SC-009, SC-014), research.md, contracts, data-model, quickstart, `enfrentamientos.md` e `informe-8.0.0.md`
 
 ## Dependencies & Execution Order
 
