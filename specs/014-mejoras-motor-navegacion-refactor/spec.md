@@ -431,7 +431,9 @@ fijas.
   con la cara, el color, el porcentaje y la penalización que corresponden a su tramo.
 - **SC-008**: Para cada estadística principal, el informe de equilibrado muestra que el equipo con +15 puntos en esa
   estadística obtiene una ventaja medible en la acción que gobierna, tanto en el número de veces que la intenta como en
-  su tasa de éxito (al menos +10 % relativo en cada una).
+  su tasa de éxito (al menos +10 % relativo en cada una). Desde la spec 015, el pase, el remate y el físico se comprueban
+  como curvas (015/SC-001) y la velocidad exige +8 % (2026-11-17: su efecto ronda el +11 % con ±1,2 de ruido por serie;
+  [clarificaciones de la spec 015](../015-peso-individual-estadisticas/spec.md#clarifications)).
 - **SC-009**: Con los parámetros nuevos, la proporción de partidos con 6 o más goles de diferencia no supera la actual
   (el efecto de las estadísticas sobre el resultado se mide solo a través de SC-008, no con un objetivo de victorias).
 - **SC-010**: Al recorrer las pantallas principales con una conexión normal, en el 100 % de las navegaciones no se ve

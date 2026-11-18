@@ -70,20 +70,23 @@ export const VIRTUDES_GENERICAS = [
 export const VIRTUDES_POR = ['Parapenalties', 'OneToOne', 'Santo', 'Ordenabarreras', 'JugadorDeCampo'] as const;
 export const VIRTUDES_DEF = ['Infranqueable', 'Jerarquia', 'Volador', 'Libero', 'MuroDefensivo'] as const;
 export const VIRTUDES_MED = ['Llegador', 'BoxToBox', 'PrimerToque', 'Todocampista', 'JugadorEntreLineas'] as const;
-export const VIRTUDES_DEL = ['Matador', 'Rematador', 'Cabeceador', 'Desbordante', 'GuanteEnElPie'] as const;
+export const VIRTUDES_DEL = ['Matador', 'Rematador', 'Desbordante', 'GuanteEnElPie'] as const;
+/** Virtudes de cualquier jugador de campo (DEF, MED y DEL), nunca del portero (spec 015, contracts/catalogo.md §C1). */
+export const VIRTUDES_CAMPO = ['Cabeceador'] as const;
 
 export type VirtudGenerica = (typeof VIRTUDES_GENERICAS)[number];
 export type VirtudPOR = (typeof VIRTUDES_POR)[number];
 export type VirtudDEF = (typeof VIRTUDES_DEF)[number];
 export type VirtudMED = (typeof VIRTUDES_MED)[number];
 export type VirtudDEL = (typeof VIRTUDES_DEL)[number];
-export type Virtud = VirtudGenerica | VirtudPOR | VirtudDEF | VirtudMED | VirtudDEL;
+export type VirtudCampo = (typeof VIRTUDES_CAMPO)[number];
+export type Virtud = VirtudGenerica | VirtudPOR | VirtudDEF | VirtudMED | VirtudDEL | VirtudCampo;
 
 export const VIRTUDES_POR_DEMARCACION: Readonly<Record<Demarcacion, readonly Virtud[]>> = {
   POR: VIRTUDES_POR,
-  DEF: VIRTUDES_DEF,
-  MED: VIRTUDES_MED,
-  DEL: VIRTUDES_DEL,
+  DEF: [...VIRTUDES_DEF, ...VIRTUDES_CAMPO],
+  MED: [...VIRTUDES_MED, ...VIRTUDES_CAMPO],
+  DEL: [...VIRTUDES_DEL, ...VIRTUDES_CAMPO],
 };
 
 export const TODAS_LAS_VIRTUDES: readonly Virtud[] = [
@@ -92,6 +95,7 @@ export const TODAS_LAS_VIRTUDES: readonly Virtud[] = [
   ...VIRTUDES_DEF,
   ...VIRTUDES_MED,
   ...VIRTUDES_DEL,
+  ...VIRTUDES_CAMPO,
 ];
 
 /** Defectos (spec 005, FR-010 a FR-016): todos genéricos. */

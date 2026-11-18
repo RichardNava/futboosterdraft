@@ -3,7 +3,8 @@
  */
 export const SISTEMAS_DEFENSIVOS = ['zona', 'individual'] as const;
 export const ALTURAS_BLOQUE = ['catenaccio', 'medio', 'presion_alta'] as const;
-export const ESTILOS_CON_BALON = ['equilibrado', 'contraataque', 'combinativo'] as const;
+/** `bandas` (spec 015, añadidos): avanza por fuera; laterales, carrileros y extremos reciben más. */
+export const ESTILOS_CON_BALON = ['equilibrado', 'contraataque', 'combinativo', 'bandas'] as const;
 
 export interface Tactica {
   sistemaDefensivo: (typeof SISTEMAS_DEFENSIVOS)[number];

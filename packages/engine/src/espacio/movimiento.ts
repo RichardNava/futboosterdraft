@@ -33,6 +33,8 @@ interface Movil {
   id: number;
   pos: PosicionMovil;
   vmax: number;
+  /** Multiplicador de la velocidad, la aceleración y la frenada (colocación en un balón parado, spec 015). */
+  escala: number;
   objetivo: Punto;
   /** Posición prevista dentro de `ANTICIPACION` ticks si sigue a la misma velocidad. */
   px: number;
@@ -83,6 +85,10 @@ export function moverJugadores(estado: EstadoMotor): void {
   // En un córner, una falta al área o un penalti todos van a un sitio especial: todos tienen papel.
   const motivo = esp.accion?.tipo === 'saque' ? esp.accion.motivo : undefined;
   const balonParado = motivo === 'corner' || motivo === 'falta_area' || motivo === 'penalti';
+  // Spec 015 (balones fuera): en el córner todos se colocan más deprisa, a la escala del reloj (acelerar y frenar también),
+  // y en el saque de banda, el que saca.
+  const colocacion = estado.parametros.fueraDeCampo?.velocidadColocacion ?? 1;
+  const escalaDe = (id: number) => (motivo === 'corner' || (motivo === 'banda' && esp.accion?.deId === id) ? colocacion : 1);
   for (const lado of ['local', 'visitante'] as const) {
     const equipo = estado.equipos[lado];
     // La bonificación de equipo depende solo de la demarcación: una vez por equipo y paso.
@@ -101,17 +107,19 @@ export function moverJugadores(estado: EstadoMotor): void {
       if (estado.balon.portadorId === j.id && estado.balon.posesion === lado) vmax = Math.round(vmax * p.factorVelocidadConBalon);
       // El que va a sacar una reanudación acude a la carrera (spec 014, FR-001): el saque espera a que llegue.
       if (esp.accion?.tipo === 'saque' && esp.accion.deId === j.id) vmax = p.velocidadJugadorMax;
-      moviles.push({ id: j.id, pos, vmax, objetivo, px: pos.x + pos.vx * ANTICIPACION, py: pos.y + pos.vy * ANTICIPACION, fx: 0, fy: 0 });
+      const escala = escalaDe(j.id);
+      if (escala !== 1) vmax = Math.round(vmax * escala);
+      moviles.push({ id: j.id, pos, vmax, escala, objetivo, px: pos.x + pos.vx * ANTICIPACION, py: pos.y + pos.vy * ANTICIPACION, fx: 0, fy: 0 });
     }
   }
   separar(moviles, p.radioSeparacion);
-  const radioFrenada = 2 * p.frenada;
   for (const m of moviles) {
     const pos = m.pos;
     const dx = m.objetivo.x - pos.x;
     const dy = m.objetivo.y - pos.y;
     const d = isqrt(dx * dx + dy * dy);
     // Llegada suave: la velocidad deseada baja al acercarse, para frenar a tiempo.
+    const radioFrenada = Math.round(2 * p.frenada * m.escala);
     const rapidez = Math.min(m.vmax, isqrt(dividir(radioFrenada * d, dt)));
     let deseadaX = m.fx;
     let deseadaY = m.fy;
@@ -120,10 +128,11 @@ export function moverJugadores(estado: EstadoMotor): void {
       deseadaY += dividir(dy * rapidez, d);
     }
     // Frena antes de las líneas del campo, con margen, en vez de chocar con ellas.
-    if (deseadaX > 0) deseadaX = Math.min(deseadaX, isqrt(dividir(p.frenada * (LARGO - pos.x), dt)));
-    else if (deseadaX < 0) deseadaX = Math.max(deseadaX, -isqrt(dividir(p.frenada * pos.x, dt)));
-    if (deseadaY > 0) deseadaY = Math.min(deseadaY, isqrt(dividir(p.frenada * (ANCHO - pos.y), dt)));
-    else if (deseadaY < 0) deseadaY = Math.max(deseadaY, -isqrt(dividir(p.frenada * pos.y, dt)));
+    const frenada = Math.round(p.frenada * m.escala);
+    if (deseadaX > 0) deseadaX = Math.min(deseadaX, isqrt(dividir(frenada * (LARGO - pos.x), dt)));
+    else if (deseadaX < 0) deseadaX = Math.max(deseadaX, -isqrt(dividir(frenada * pos.x, dt)));
+    if (deseadaY > 0) deseadaY = Math.min(deseadaY, isqrt(dividir(frenada * (ANCHO - pos.y), dt)));
+    else if (deseadaY < 0) deseadaY = Math.max(deseadaY, -isqrt(dividir(frenada * pos.y, dt)));
     const vmax2 = m.vmax * m.vmax;
     let n2 = deseadaX * deseadaX + deseadaY * deseadaY;
     if (n2 > vmax2) {
@@ -134,7 +143,7 @@ export function moverJugadores(estado: EstadoMotor): void {
     }
     // Aceleración o frenada máximas por tick (por `dt` ticks en este paso).
     const frenando = n2 < pos.vx * pos.vx + pos.vy * pos.vy;
-    const maxCambio = (frenando ? p.frenada : p.aceleracion) * dt;
+    const maxCambio = Math.round((frenando ? p.frenada : p.aceleracion) * dt * m.escala);
     let cx = deseadaX - pos.vx;
     let cy = deseadaY - pos.vy;
     const c2 = cx * cx + cy * cy;

@@ -12,6 +12,7 @@ import {
   NIVELES,
   TODAS_LAS_VIRTUDES,
   VIRTUDES_DEF,
+  VIRTUDES_CAMPO,
   VIRTUDES_DEL,
   VIRTUDES_MED,
   VIRTUDES_POR,
@@ -23,7 +24,8 @@ import {
 } from './tipos';
 
 export type TipoRasgo = 'virtud' | 'defecto';
-export type AmbitoRasgo = 'generico' | Demarcacion;
+/** `campo`: cualquier jugador de campo (DEF, MED y DEL), no el portero (spec 015). */
+export type AmbitoRasgo = 'generico' | 'campo' | Demarcacion;
 
 export interface DefinicionRasgo {
   id: Rasgo;
@@ -136,7 +138,7 @@ const VIRTUDES: Readonly<Record<Virtud, Entrada>> = {
   Presionador: {
     nombre: 'Presionador',
     descripcion: 'Ejerce más presión sin balón, aumentando sus labores defensivas.',
-    efecto: 'Provoca más pérdidas del rival cuando presiona.',
+    efecto: 'Provoca más pérdidas del rival cuando presiona. Desde la 8.0.0, además, +0,05 al multiplicador de su quite.',
     activacion: 'Sin el balón.',
     acumulacion: PROPIA,
     impacto: 0.45,
@@ -346,9 +348,10 @@ const VIRTUDES: Readonly<Record<Virtud, Entrada>> = {
   },
   Cabeceador: {
     nombre: 'Cabeceador',
-    descripcion: 'Más probabilidad de gol en remates de cabeza.',
-    efecto: 'Más probabilidad de gol de cabeza.',
-    activacion: 'Al rematar de cabeza.',
+    descripcion: 'Domina el juego aéreo en las dos áreas: remata mejor de cabeza y gana más balones por arriba, en ataque y en defensa.',
+    efecto:
+      'Más probabilidad de gol de cabeza y más peso al elegir rematador. Desde la 8.0.0, +15 puntos de probabilidad a su favor en todos los duelos aéreos de las dos áreas (córner y falta lateral, remate de cabeza tapado y centro dentro del área), sea atacante o defensor, y más opciones de ser el defensor que marca en el balón parado.',
+    activacion: 'En los duelos aéreos de las dos áreas.',
     acumulacion: PROPIA,
     impacto: 0.5,
   },
@@ -472,7 +475,7 @@ const DEFINICION_DEFECTOS: Readonly<Record<Defecto, Entrada>> = {
   Chupon: {
     nombre: 'Chupón',
     descripcion: 'Apenas pasa el balón a sus compañeros.',
-    efecto: 'El peso de la opción «pase» en sus decisiones se multiplica por `defectos.chupon` (0,5). Un portero conserva sus acciones.',
+    efecto: 'El peso de la opción «pase» en sus decisiones se multiplica por `defectos.chupon` (0,5). Un portero conserva sus acciones. Desde la 8.0.0, además, −0,05 al multiplicador de su quite.',
     activacion: 'Con el balón.',
     acumulacion: PROPIA,
     impacto: 0.45,
@@ -518,6 +521,7 @@ function ambitoVirtud(v: Virtud): AmbitoRasgo {
   if ((VIRTUDES_DEF as readonly Virtud[]).includes(v)) return 'DEF';
   if ((VIRTUDES_MED as readonly Virtud[]).includes(v)) return 'MED';
   if ((VIRTUDES_DEL as readonly Virtud[]).includes(v)) return 'DEL';
+  if ((VIRTUDES_CAMPO as readonly Virtud[]).includes(v)) return 'campo';
   return 'generico';
 }
 

@@ -63,7 +63,7 @@ test('FR-056: la carta se elige por el hueco del pie y con doble clic se confirm
 });
 
 test('FR-052 a FR-054: goleadores en la franja del 2D, goles resaltados y resultado en dos columnas', async ({ page }) => {
-  test.setTimeout(400_000);
+  test.setTimeout(700_000);
   await page.setViewportSize({ width: 1366, height: 768 });
   const id = await partidaTrasDraft(page);
   // Alineación saboteada: el rival marca casi seguro.
@@ -74,9 +74,14 @@ test('FR-052 a FR-054: goleadores en la franja del 2D, goles resaltados y result
   await expect(page.locator('.campo-2d canvas')).toBeVisible();
   await page.getByRole('button', { name: 'x8' }).click();
 
-  // En cuanto se ve un gol: goleador en la franja y gol resaltado en «Lo que ha pasado».
-  await expect(page.locator('.franja-2d .goleadores-2d li').first()).toBeVisible({ timeout: 300_000 });
-  await expect(page.locator('.franja-2d .goleadores-2d li').first()).toContainText(/\d+'/);
+  // En cuanto se ve un gol: goleador en la franja y gol resaltado en «Lo que ha pasado». El 2D se para en el descanso:
+  // si la primera parte acaba sin goles (pasa a veces, aun con el portero saboteado), se sigue.
+  const goleador = page.locator('.franja-2d .goleadores-2d li').first();
+  const seguir = page.getByRole('button', { name: 'Seguir' });
+  await expect(goleador.or(seguir)).toBeVisible({ timeout: 300_000 });
+  if (!(await goleador.isVisible())) await seguir.click();
+  await expect(goleador).toBeVisible({ timeout: 300_000 });
+  await expect(goleador).toContainText(/\d+'/);
   const gol = page.locator('.partido-2d-lateral .evento.evento-gol').first();
   await expect(gol).toBeVisible();
   expect(Number(await gol.locator('.evento-texto > span').first().evaluate((el) => getComputedStyle(el).fontWeight))).toBeGreaterThanOrEqual(700);

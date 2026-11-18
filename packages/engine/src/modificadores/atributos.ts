@@ -5,7 +5,7 @@
  * penalización por posición (`statsEfectivos`), las bonificaciones de equipo de las virtudes y el
  * cansancio aplicados.
  */
-import { FORMACIONES, statsEfectivos, type Demarcacion } from '@fbd/domain';
+import { FORMACIONES, statsEfectivos, type Demarcacion, type Jugador, type ParametrosEquilibrado } from '@fbd/domain';
 import type { EquipoEstado, EstadoMotor, JugadorEnPartido } from '../estado/estado';
 import { bonusProvocador, conRasgos005, equipoConMultiplicadores, multiplicadorEquipo, multiplicadorIndividual } from './defectos';
 import { bonusEquipo } from './virtudes';
@@ -22,12 +22,27 @@ export type Atributo =
   | 'aereo'
   | 'desmarque'
   | 'centro'
-  | 'parada';
+  | 'parada'
+  // Spec 015 (data-model §4): solo los usan los duelos de los bloques `desmarque`, `controlPresion` y `liderazgo`.
+  | 'marcaje'
+  | 'tecnica'
+  | 'liderazgo';
 
 type S = Record<string, number>;
 const media = (s: S) => Object.values(s).reduce((a, b) => a + b, 0) / Object.values(s).length;
 
-const TRADUCCION: Readonly<Record<Demarcacion, (s: S) => Record<Atributo, number>>> = {
+/**
+ * Multiplicador del quite de la 8.0.0 (spec 015, FR-004/005, research R3): base por demarcación (MED con MD en su carta,
+ * no en su casilla) + Presionador − Mal defensor. Sin el bloque `quite`, `null`: el quite de la 7.0.0.
+ */
+function multQuite(j: Jugador, p: ParametrosEquilibrado): number | null {
+  const q = p.quite;
+  if (!q || j.demarcacion === 'POR') return null;
+  const base = j.demarcacion === 'MED' ? (j.posicion.includes('MD') ? q.MED_MD : q.MED) : q[j.demarcacion];
+  return base + (j.virtudes.includes('Presionador') ? q.presionador : 0) - (j.defectos.includes('MalDefensor') ? q.malDefensor : 0);
+}
+
+const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null, p: ParametrosEquilibrado) => Record<Atributo, number>>> = {
   POR: (s) => ({
     pase: s.distribucion!,
     vision: s.distribucion!,
@@ -41,48 +56,61 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S) => Record<Atributo, number
     desmarque: 20,
     centro: s.distribucion! * 0.7,
     parada: (s.agilidad! + s.colocacion!) / 2,
+    marcaje: 50,
+    tecnica: s.distribucion!,
+    liderazgo: s.liderazgo!,
   }),
-  DEF: (s) => ({
+  DEF: (s, m, p) => ({
     pase: s.tecnica!,
     vision: s.tecnica!,
     regate: (s.tecnica! + s.velocidad!) / 2,
     remate: (s.anticipacion! + s.tecnica!) / 2 - 8,
     velocidad: s.velocidad!,
-    quite: s.tackling!,
+    quite: m === null ? s.tackling! : s.tackling! * m,
     anticipacion: s.anticipacion!,
     fisico: s.marcaje!,
     aereo: s.anticipacion!,
-    desmarque: s.velocidad! * 0.8,
+    // Con el bloque `desmarque` (spec 015, FR-012), su velocidad entera: es la stat con la que se desmarca.
+    desmarque: p.desmarque ? s.velocidad! : s.velocidad! * 0.8,
     centro: s.tecnica!,
     parada: media(s) * 0.5,
+    marcaje: s.marcaje!,
+    tecnica: s.tecnica!,
+    liderazgo: s.liderazgo!,
   }),
-  MED: (s) => ({
+  MED: (s, m) => ({
     pase: s.pase!,
     vision: s.vision!,
     regate: s.tecnica!,
     remate: s.disparo!,
     velocidad: s.velocidad!,
-    quite: s.posicionamiento!,
+    quite: m === null ? s.posicionamiento! : ((s.posicionamiento! + s.velocidad!) / 2) * m,
     anticipacion: s.posicionamiento!,
     fisico: (s.posicionamiento! + s.velocidad!) / 2,
     aereo: s.posicionamiento! * 0.85,
     desmarque: s.vision!,
     centro: s.pase!,
     parada: media(s) * 0.5,
+    marcaje: s.posicionamiento!,
+    tecnica: s.tecnica!,
+    liderazgo: 0,
   }),
-  DEL: (s) => ({
+  DEL: (s, m) => ({
     pase: s.creatividad!,
     vision: s.creatividad!,
     regate: s.regate!,
     remate: s.finalizacion!,
     velocidad: s.velocidad!,
-    quite: s.agresividad! * 0.8,
+    quite: m === null ? s.agresividad! * 0.8 : ((s.agresividad! + s.velocidad!) / 2) * m,
     anticipacion: s.agresividad! * 0.8,
     fisico: s.agresividad!,
     aereo: (s.finalizacion! + s.desmarque!) / 2,
     desmarque: s.desmarque!,
     centro: s.creatividad!,
     parada: media(s) * 0.5,
+    marcaje: s.agresividad!,
+    tecnica: (s.regate! + s.creatividad!) / 2,
+    liderazgo: 0,
   }),
 };
 
@@ -136,7 +164,7 @@ function entradaAtributos(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorE
       casilla: j.casillaId,
       posicion: j.posicion,
       bonus,
-      valores: TRADUCCION[j.jugador.demarcacion](efectivos),
+      valores: TRADUCCION[j.jugador.demarcacion](efectivos, multQuite(j.jugador, estado.parametros), estado.parametros),
       media: media(efectivos),
     };
     cacheAtributos.set(j, entrada);

@@ -4,13 +4,13 @@
  */
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { parametrosActuales } from '@fbd/domain';
+import { PARAMETROS_V7 } from '@fbd/domain';
 import { draftHuella, partidoHuella, SEMILLAS_DRAFTS, SEMILLAS_PARTIDOS, type Huella } from './huella014';
 
 const huella: Huella = {
-  version: parametrosActuales().version,
-  partidos: SEMILLAS_PARTIDOS.map(partidoHuella),
-  drafts: SEMILLAS_DRAFTS.map(draftHuella),
+  version: PARAMETROS_V7.version,
+  partidos: SEMILLAS_PARTIDOS.map((i) => partidoHuella(i)),
+  drafts: SEMILLAS_DRAFTS.map((i) => draftHuella(i)),
 };
 const ruta = fileURLToPath(new URL('./huella-014.json', import.meta.url));
 writeFileSync(ruta, `${JSON.stringify(huella)}\n`);

@@ -20,7 +20,7 @@ const amplitud = (e: EquipoEstado) => e.perfil.amplitud;
  * Pesos de cada acción según la zona del balón, la táctica y la formación del equipo atacante. El tiro no está
  * aquí: lo añade `pesosConEspacio` con la distancia y el ángulo reales del tirador (spec 003, research R6).
  */
-export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: number): [TipoAccion, number][] {
+export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: number, p?: EstadoMotor['parametros']): [TipoAccion, number][] {
   const enBanda = carril !== 1;
   const base: Record<number, [TipoAccion, number][]> = {
     0: [
@@ -66,6 +66,8 @@ export function pesosAcciones(atacante: EquipoEstado, zona: number, carril: numb
     if (t.estiloConBalon === 'combinativo') f *= { pase_corto: 1.4, pase_largo: 0.5, regate: 0.9 }[accion as string] ?? 1;
     if (t.estiloConBalon === 'contraataque') f *= { pase_largo: 1.6, pase_espacio: 1.5, pase_corto: 0.8 }[accion as string] ?? 1;
     if (t.juegoVertical) f *= { centro: 1.6, pase_largo: 1.3, pase_espacio: 1.3 }[accion as string] ?? 1;
+    // Spec 015, añadidos (R13): por las bandas se centra más.
+    if (t.estiloConBalon === 'bandas' && accion === 'centro' && p?.bandas) f *= p.bandas.centro;
     if (t.alturaBloque === 'catenaccio') f *= { pase_largo: 1.3, pase_espacio: 1.2, regate: 0.8 }[accion as string] ?? 1;
     // Las formaciones ofensivas buscan más el último pase (el tiro, en `pesosConEspacio`).
     if (accion === 'pase_espacio' || accion === 'regate') f *= 1 + 0.08 * o;
@@ -135,7 +137,9 @@ export function probabilidadAvance(estado: EstadoMotor, atacante: EquipoEstado, 
   return Math.min(0.85, Math.max(0.15, p));
 }
 
-/** Probabilidad (0–1) de que el balón vaya a una banda tras avanzar (amplitud y juego vertical). */
-export function probabilidadBanda(atacante: EquipoEstado): number {
-  return Math.min(0.85, Math.max(0.2, 0.45 + 0.08 * amplitud(atacante) + (atacante.tactica.juegoVertical ? 0.15 : 0)));
+/** Probabilidad (0–1) de que el balón vaya a una banda tras avanzar (amplitud, juego vertical y por las bandas). */
+export function probabilidadBanda(atacante: EquipoEstado, p?: EstadoMotor['parametros']): number {
+  // Spec 015, añadidos (R13): con Juego por las bandas, el balón va más a menudo por fuera.
+  const bandas = atacante.tactica.estiloConBalon === 'bandas' ? (p?.bandas?.probabilidadBanda ?? 0) : 0;
+  return Math.min(0.85, Math.max(0.2, 0.45 + 0.08 * amplitud(atacante) + (atacante.tactica.juegoVertical ? 0.15 : 0) + bandas));
 }

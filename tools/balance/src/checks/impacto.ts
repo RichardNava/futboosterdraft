@@ -15,7 +15,7 @@ import { errorEstandar, media, serie } from '../series';
 import type { Comprobacion } from './partido';
 
 /** Casilla del jugador que recibe el rasgo, según su ámbito (los genéricos, el delantero centro). */
-const CASILLA: Record<string, string> = { POR: 'POR', DEF: 'DCI', MED: 'MC-1', DEL: 'DC', generico: 'DC' };
+const CASILLA: Record<string, string> = { POR: 'POR', DEF: 'DCI', MED: 'MC-1', DEL: 'DC', campo: 'DC', generico: 'DC' };
 
 /** Rasgos que actúan desde el banquillo: se dan a un suplente. */
 const EN_BANQUILLO: ReadonlySet<Rasgo> = new Set(['Rebelde', 'Revulsivo']);

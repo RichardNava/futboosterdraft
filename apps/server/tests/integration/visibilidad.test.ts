@@ -141,9 +141,11 @@ describe('auditoría de visibilidad (FR-054a)', () => {
     // Las tablas de goleadores y asistentes (spec 002, US9) tampoco cuentan el partido que B no ha visto.
     const total = async (u: UsuarioPrueba, cual: string) =>
       ((await peticion(srv.url, `/api/partidas/${partidaId}/torneo/${cual}?todos=true`, { cookie: u.cookie })).cuerpo.filas as { total: number }[]).reduce((x, f) => x + f.total, 0);
-    const eventosPartido = (await peticion(srv.url, `/api/partidos/${prep.partidoId}`, { cookie: humanos[0]!.cookie })).cuerpo.eventos as { tipo: string; jugadores: { rol: string }[] }[];
-    const golesPartido = eventosPartido.filter((e) => e.tipo === 'gol').length;
-    const asistenciasPartido = eventosPartido.filter((e) => e.tipo === 'gol' && e.jugadores.some((j) => j.rol === 'asistente')).length;
+    const eventosPartido = (await peticion(srv.url, `/api/partidos/${prep.partidoId}`, { cookie: humanos[0]!.cookie })).cuerpo.eventos as { tipo: string; jugadores: { rol: string }[]; datos: { enPropia?: boolean } }[];
+    // Los goles en propia no cuentan para nadie en las tablas (aportacionesDePartido).
+    const golesValidos = eventosPartido.filter((e) => e.tipo === 'gol' && !e.datos.enPropia);
+    const golesPartido = golesValidos.length;
+    const asistenciasPartido = golesValidos.filter((e) => e.jugadores.some((j) => j.rol === 'asistente')).length;
     expect((await total(humanos[0]!, 'goleadores')) - (await total(humanos[1]!, 'goleadores'))).toBe(golesPartido);
     expect((await total(humanos[0]!, 'asistentes')) - (await total(humanos[1]!, 'asistentes'))).toBe(asistenciasPartido);
 

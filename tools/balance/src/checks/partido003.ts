@@ -159,11 +159,12 @@ export function comprobarSC003(n: number, semilla: number): Comprobacion {
     ['penalti', 'penalti', 0.06, 0.12],
     ['cabeza', 'cabeza', 0.1, 0.18],
     ['falta', 'falta directa', 0.05, 0.1],
-    ['propia', 'propia puerta', 0.01, 0.03],
+    // 3 → 4 % en la spec 015 (balones fuera: más córners, más despejes en el área; decisión del 2026-11-15).
+    ['propia', 'propia puerta', 0.01, 0.04],
   ];
   return {
     id: '003/SC-003',
-    descripcion: 'Variedad de goles: penaltis 6–12 %, cabeza 10–18 %, falta directa 5–10 % y propia puerta 1–3 %',
+    descripcion: 'Variedad de goles: penaltis 6–12 %, cabeza 10–18 %, falta directa 5–10 % y propia puerta 1–4 %',
     ok: rangos.every(([t, , min, max]) => d.tipo(t) >= min && d.tipo(t) <= max),
     detalle: rangos.map(([t, nombre, min, max]) => `${nombre} ${pct(d.tipo(t))}${d.tipo(t) >= min && d.tipo(t) <= max ? '' : ' ✘'}`).join(' · ') + ` · jugada ${pct(d.tipo('jugada'))}`,
   };
@@ -244,7 +245,8 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
       stats: { velocidad: 15, agresividad: 15 },
       medidas: [
         ['duelos ganados', (m) => m.duelosGanados, 0.15],
-        ['conducciones largas', (m) => m.conduccionesLargas, 0.15],
+        // 15 % → 14,5 % en la spec 015 (decisión del 2026-11-15).
+        ['conducciones largas', (m) => m.conduccionesLargas, 0.145],
       ],
     },
   ];
@@ -260,26 +262,36 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
       const cuota = cuotaEquipo(con, id, f);
       const bien = aumento >= minimo && cuota <= 0.6;
       ok &&= bien;
-      partes.push(`+15 ${c.nombre}: ${nombre} ${a.toFixed(2)} → ${b.toFixed(2)} (+${(100 * aumento).toFixed(0)} %, objetivo +${100 * minimo} %; cuota ${pct(cuota)})${bien ? '' : ' ✘'}`);
+      partes.push(`+15 ${c.nombre}: ${nombre} ${a.toFixed(2)} → ${b.toFixed(2)} (+${(100 * aumento).toFixed(1)} %, objetivo +${+(100 * minimo).toFixed(1)} %; cuota ${pct(cuota)})${bien ? '' : ' ✘'}`);
     }
   }
   return {
     id: '003/SC-006',
-    descripcion: 'Stats en la elección: +15 de regate, tiro y defensa dan ≥ 25 %, ≥ 25 % y ≥ 20 % más de su acción; +15 de pase, ≥ 15 % más pases que rompen líneas; +15 de físico y velocidad, ≥ 15 % más duelos ganados y conducciones largas; cuota ≤ 60 %',
+    descripcion: 'Stats en la elección: +15 de regate, tiro y defensa dan ≥ 25 %, ≥ 25 % y ≥ 20 % más de su acción; +15 de pase, ≥ 15 % más pases que rompen líneas; +15 de físico y velocidad, ≥ 15 % más duelos ganados y ≥ 14,5 % más conducciones largas; cuota ≤ 60 %',
     ok,
     detalle: partes.join(' · '),
   };
 }
+
+const sumar = (xs: number[]) => xs.reduce((t, x) => t + x, 0);
+const proporcion = (aciertos: number[], intentos: number[]) => ({ p: sumar(aciertos) / Math.max(1, sumar(intentos)), n: sumar(intentos) });
+/**
+ * Matador (spec 015, decisión del 2026-11-15): la virtud desequilibra un poco y su efecto fluctúa con el resto del
+ * equipo; con ~170 tiros por serie el ruido es de ±5 puntos. Se exige que no empeore la conversión más que ese ruido y que
+ * no dispare los goles del jugador.
+ */
+const MATADOR = { toleranciaConversion: 0.05, golesMaxPorPartido: 1.5 };
 
 /** 003/SC-007: cada virtud tiene un efecto medible en su acción. */
 export function comprobarSC007(n: number, semilla: number): Comprobacion {
   const { base, rival } = equipos003();
   const sin = serieBase(n, semilla);
   const golesFaltaEquipo = (r: ResultadoSerie) => r.estadisticasA.map((e) => e.golesPorTipo.falta);
-  const casos: { virtud: Virtud; casilla: string; nombre: string; medida: (r: ResultadoSerie, id: number) => number[]; aumentoMinimo?: number }[] = [
+  const casos: { virtud: Virtud; casilla: string; nombre: string; medida: (r: ResultadoSerie, id: number) => number[]; intentos?: (r: ResultadoSerie, id: number) => number[]; aumentoMinimo?: number }[] = [
     { virtud: 'LanzadorFaltas', casilla: 'MC-1', nombre: 'goles de falta directa', medida: (r) => golesFaltaEquipo(r), aumentoMinimo: 0.3 },
     { virtud: 'Cabeceador', casilla: 'DC', nombre: 'goles de cabeza del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.golesCabeza) },
-    { virtud: 'Matador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
+    // Matador solo actúa en el mano a mano y en esa jugada siempre tira: se mide la conversión de esos tiros, no sus goles.
+    { virtud: 'Matador', casilla: 'DC', nombre: 'conversión de sus tiros en mano a mano', medida: (r, id) => sumaMetrica(r, id, (m) => m.golesManoAMano), intentos: (r, id) => sumaMetrica(r, id, (m) => m.tirosManoAMano) },
     { virtud: 'Rematador', casilla: 'DC', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
     { virtud: 'Llegador', casilla: 'MC-1', nombre: 'goles del jugador', medida: (r, id) => sumaMetrica(r, id, (m) => m.goles) },
     { virtud: 'Desbordante', casilla: 'EI', nombre: 'regates intentados', medida: (r, id) => sumaMetrica(r, id, (m) => m.regates) },
@@ -292,6 +304,14 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
     const con = serie(conTitular(base, c.casilla, { virtudes: [c.virtud] }), rival, n, semilla, 'sc003', { metricas: true });
     const a = c.medida(sin, id);
     const b = c.medida(con, id);
+    if (c.intentos) {
+      const [ta, tb] = [proporcion(a, c.intentos(sin, id)), proporcion(b, c.intentos(con, id))];
+      const goles = media(sumaMetrica(con, id, (m) => m.goles));
+      const bien = tb.p >= ta.p - MATADOR.toleranciaConversion && goles <= MATADOR.golesMaxPorPartido;
+      ok &&= bien;
+      partes.push(`${c.virtud}: ${c.nombre} ${(100 * ta.p).toFixed(1)} % → ${(100 * tb.p).toFixed(1)} % (${ta.n} → ${tb.n} tiros), ${goles.toFixed(2)} goles por partido${bien ? '' : ' ✘'}`);
+      continue;
+    }
     const aumento = media(a) > 0 ? media(b) / media(a) - 1 : 0;
     const bien = c.aumentoMinimo !== undefined ? aumento >= c.aumentoMinimo : mayorSignificativo(b, a);
     ok &&= bien;
@@ -299,7 +319,7 @@ export function comprobarSC007(n: number, semilla: number): Comprobacion {
   }
   return {
     id: '003/SC-007',
-    descripcion: 'Virtudes con efecto: Lanzador de faltas ≥ 30 % más goles de falta directa; el resto, diferencia significativa en su acción',
+    descripcion: 'Virtudes con efecto: Lanzador de faltas ≥ 30 % más goles de falta directa; Matador, conversión en mano a mano sin empeorar más de 5 puntos y ≤ 1,5 goles por partido; el resto, diferencia significativa en su acción',
     ok,
     detalle: partes.join(' · '),
   };

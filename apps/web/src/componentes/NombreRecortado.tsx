@@ -4,7 +4,8 @@
  * - con el ratón, al señalarlo 400 ms;
  * - con el teclado, al enfocar el control que lo contiene (la carta, el enlace, la fila);
  * - con el dedo, al mantenerlo pulsado 500 ms (se cancela si el dedo se mueve más de 10 px). Esa pulsación no
- *   cuenta como elección: el `click` siguiente se anula en fase de captura, y no se abre el menú del navegador.
+ *   cuenta como elección: al levantar el dedo se mira cuánto duró de verdad y, si fue larga, se anula en fase de
+ *   captura el `click` de ese gesto (el siguiente toque ya cuenta), y no se abre el menú del navegador.
  * El texto completo está siempre en el DOM, así que los lectores de pantalla lo leen entero.
  */
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ElementType, type PointerEvent } from 'react';
@@ -13,20 +14,23 @@ interface PunteroBasico {
   pointerType: string;
   clientX: number;
   clientY: number;
+  /** Momento del evento (ms): la duración se mide con él, no con el temporizador, que puede llegar tarde. */
+  timeStamp: number;
 }
 
 interface DetectorPulsacion {
   bajar(e: PunteroBasico): void;
   mover(e: PunteroBasico): void;
-  subir(): void;
-  /** `true` (una sola vez) si la pulsación larga se disparó y el clic que la sigue no debe contar. */
+  /** Al levantar el dedo: `true` si fue una pulsación larga, cuyo clic no debe contar. Sin evento (cancelada), `false`. */
+  subir(e?: { timeStamp: number }): boolean;
+  /** `true` (una sola vez) tras una pulsación larga: el clic que la sigue no debe contar. */
   anularClic(): boolean;
 }
 
 /** Lógica pura de la pulsación larga táctil (probada en tests/unit/nombreRecortado.test.ts). */
 export function crearDetectorPulsacion(opciones: { retardoMs: number; toleranciaPx: number; alDisparar: () => void }): DetectorPulsacion {
   let temporizador: ReturnType<typeof setTimeout> | null = null;
-  let origen: { x: number; y: number } | null = null;
+  let origen: { x: number; y: number; t: number } | null = null;
   let anular = false;
   const parar = () => {
     if (temporizador !== null) clearTimeout(temporizador);
@@ -37,10 +41,9 @@ export function crearDetectorPulsacion(opciones: { retardoMs: number; tolerancia
       if (e.pointerType !== 'touch') return;
       parar();
       anular = false;
-      origen = { x: e.clientX, y: e.clientY };
+      origen = { x: e.clientX, y: e.clientY, t: e.timeStamp };
       temporizador = setTimeout(() => {
         temporizador = null;
-        anular = true;
         opciones.alDisparar();
       }, opciones.retardoMs);
     },
@@ -51,9 +54,11 @@ export function crearDetectorPulsacion(opciones: { retardoMs: number; tolerancia
         origen = null;
       }
     },
-    subir() {
+    subir(e) {
       parar();
+      anular = origen !== null && e !== undefined && e.timeStamp - origen.t >= opciones.retardoMs;
       origen = null;
+      return anular;
     },
     anularClic() {
       if (!anular) return false;
@@ -142,20 +147,31 @@ export function NombreRecortado({ texto, como: Elemento = 'span', lineas = 1, cl
       retardoMs: RETARDO_TACTIL_MS,
       toleranciaPx: TOLERANCIA_PX,
       alDisparar: () => {
-        // El clic que sigue a la pulsación larga no elige la carta ni la fila (fase de captura), esté o no recortado.
-        const anular = (e: Event) => {
-          if (!detector.anularClic()) return;
-          e.preventDefault();
-          e.stopPropagation();
-        };
-        window.addEventListener('click', anular, { capture: true, once: true });
-        window.setTimeout(() => window.removeEventListener('click', anular, { capture: true }), 1000);
         if (!recortadoRef.current) return;
         mostrar();
         temporizador.current = window.setTimeout(ocultar, VISIBLE_TRAS_TOQUE_MS);
       },
     }),
   );
+
+  // El clic de una pulsación larga no elige la carta ni la fila (fase de captura), esté o no recortado. Solo el de ese
+  // gesto: si el navegador no lo genera, el siguiente toque (otro `pointerdown`) lo desarma y sí cuenta.
+  const anularClicDelGesto = () => {
+    const anular = (e: Event) => {
+      if (!detector.anularClic()) return;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    const desarmar = () => {
+      window.removeEventListener('click', anular, { capture: true });
+      window.removeEventListener('pointerdown', desarmar, { capture: true });
+      detector.anularClic();
+    };
+    window.addEventListener('click', anular, { capture: true, once: true });
+    window.addEventListener('pointerdown', desarmar, { capture: true, once: true });
+    // Por si no llega ni clic ni toque (p. ej., después se usa el teclado).
+    window.setTimeout(desarmar, 1000);
+  };
 
   // Teclado: la etiqueta aparece al enfocar el control que contiene el nombre.
   useEffect(() => {
@@ -192,7 +208,7 @@ export function NombreRecortado({ texto, como: Elemento = 'span', lineas = 1, cl
         onPointerLeave={alSalir}
         onPointerDown={(e: PointerEvent) => detector.bajar(e)}
         onPointerMove={(e: PointerEvent) => detector.mover(e)}
-        onPointerUp={() => detector.subir()}
+        onPointerUp={(e: PointerEvent) => detector.subir(e) && anularClicDelGesto()}
         onPointerCancel={() => detector.subir()}
         onContextMenu={(e: Event) => e.preventDefault()}
       >

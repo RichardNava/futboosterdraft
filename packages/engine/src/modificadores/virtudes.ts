@@ -37,6 +37,7 @@
  */
 import type { Defecto, Rasgo, Virtud } from '@fbd/domain';
 import { minutoDeJuego, rival, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } from '../estado/estado';
+import { bonusLiderPortero } from './liderazgo';
 
 /**
  * Si el jugador tiene un rasgo (spec 005). Virtudes y defectos no comparten nombres, así que basta con buscar en las dos
@@ -44,10 +45,6 @@ import { minutoDeJuego, rival, type EquipoEstado, type EstadoMotor, type Jugador
  */
 const tiene = (j: JugadorEnPartido, r: Rasgo): boolean =>
   j.jugador.virtudes.includes(r as Virtud) || j.jugador.defectos.includes(r as Defecto);
-
-function algunoEnCampo(equipo: EquipoEstado, s: Virtud): boolean {
-  return equipo.jugadores.some((j) => j.enCampo && tiene(j, s));
-}
 
 /** El equipo va por detrás en el marcador. */
 function vaPerdiendo(estado: EstadoMotor, equipo: EquipoEstado): boolean {
@@ -81,18 +78,12 @@ export function bonusPorDemarcacion(estado: EstadoMotor, equipo: EquipoEstado): 
   };
 }
 
-/** Bonificación de equipo a todos los stats de un jugador (sin acumulación entre jugadores, FR-038). */
+/**
+ * Bonificación de equipo a todos los stats de un jugador (sin acumulación entre jugadores, FR-038). Una sola pasada por
+ * el equipo (`bonusPorDemarcacion`): se pide en cada atributo (spec 015, SC-009).
+ */
 export function bonusEquipo(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido): number {
-  if (!j.enCampo) return 0;
-  const s = estado.parametros.virtudes;
-  let bonus = 0;
-  if (algunoEnCampo(equipo, 'Capitania')) bonus += s.capitania;
-  if (vaPerdiendo(estado, equipo) && algunoEnCampo(equipo, 'FortalezaMental')) bonus += s.fortalezaMental;
-  const dem = j.jugador.demarcacion;
-  if (dem === 'DEF' && algunoEnCampo(equipo, 'Jerarquia')) bonus += s.jerarquia;
-  if (dem === 'MED' && algunoEnCampo(equipo, 'Libero')) bonus += s.libero;
-  if ((dem === 'DEF' || dem === 'DEL') && algunoEnCampo(equipo, 'BoxToBox')) bonus += s.boxToBox;
-  return bonus;
+  return j.enCampo ? bonusPorDemarcacion(estado, equipo)[j.jugador.demarcacion] : 0;
 }
 
 /** Santo: desde el minuto 80, en toda la prórroga, y en eliminatoria yendo ganando o empatado. */
@@ -117,6 +108,8 @@ export function ajusteDuelo(
     // Intimidante: −1 a los atributos enfrentados del rival más cercano.
     if (tiene(defensor, 'Intimidante')) a -= s.intimidante;
     if (tiene(atacante, 'Intimidante')) d -= s.intimidante;
+    // Spec 015 (US6, FR-016): el portero líder ayuda al defensa de su zona.
+    d += bonusLiderPortero(estado, defensor);
   }
   if (tiene(atacante, 'Aura')) prob += s.bonusProbabilidadLeve;
   if (defensor && tiene(defensor, 'Aura')) prob -= s.bonusProbabilidadLeve;

@@ -7,7 +7,7 @@ export const TacticaEntrada = z.object({
   sistemaDefensivo: z.enum(['zona', 'individual']),
   alturaBloque: z.enum(['catenaccio', 'medio', 'presion_alta']),
   lineaAdelantada: z.boolean(),
-  estiloConBalon: z.enum(['equilibrado', 'contraataque', 'combinativo']),
+  estiloConBalon: z.enum(['equilibrado', 'contraataque', 'combinativo', 'bandas']),
   juegoVertical: z.boolean(),
 });
 

@@ -31,6 +31,8 @@ function metricasVacias(): MetricasJugador {
     golesFalta: 0,
     golesCabeza: 0,
     goles: 0,
+    golesManoAMano: 0,
+    tirosManoAMano: 0,
     fuerasDeJuego: 0,
     fuerasDeJuegoIncoherentes: 0,
     manoAMano: 0,
@@ -42,6 +44,15 @@ function metricasVacias(): MetricasJugador {
     conduccionesGanadas: 0,
     sueltosDisputados: 0,
     sueltosGanados: 0,
+    duelosDesmarque: 0,
+    recibidoLibre: 0,
+    marcajesGanados: 0,
+    pasesRecibidos: 0,
+    controlesPresion: 0,
+    controlesPerdidos: 0,
+    duelosAereos: 0,
+    aereosGanados: 0,
+    habilitaciones: 0,
   };
 }
 

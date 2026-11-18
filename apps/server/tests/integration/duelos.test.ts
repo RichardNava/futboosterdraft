@@ -1,6 +1,7 @@
 /**
  * Modo Duelo de jugadores (spec 005, T060; FR-060 a FR-069; contracts/http-api.md).
  */
+import { VERSION_CATALOGO_ACTUAL } from '@fbd/domain';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
@@ -42,7 +43,7 @@ describe('modo Duelo de jugadores (spec 005, US3)', () => {
     }
     const p = await crearDuelos(u);
     expect(p.duelos).toEqual({ formacion: '4-3-3', estadoForma: true });
-    expect(p.versionCatalogo).toBe(2);
+    expect(p.versionCatalogo).toBe(VERSION_CATALOGO_ACTUAL);
   });
 
   it('PUT /duelos: solo el anfitrión, solo en duelos, idempotente, validado y fijo al empezar el draft', async () => {

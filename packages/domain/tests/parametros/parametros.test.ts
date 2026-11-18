@@ -11,6 +11,7 @@ import {
   PARAMETROS_V6_2,
   PARAMETROS_V6_3,
   PARAMETROS_V7,
+  PARAMETROS_V8,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -234,8 +235,7 @@ describe('parámetros de equilibrado 6.3.0 (spec 013)', () => {
 });
 
 describe('parámetros de equilibrado 7.0.0 (spec 014, research R14)', () => {
-  it('los partidos nuevos usan la 7.0.0 y solo se simula la 7.x', () => {
-    expect(parametrosActuales()).toBe(PARAMETROS_V7);
+  it('la 7.0.0 se sigue simulando y la versión mayor mínima es la 7', () => {
     expect(parametrosPorVersion('7.0.0')).toBe(PARAMETROS_V7);
     expect(VERSION_MAYOR_SOPORTADA).toBe(7);
   });
@@ -250,5 +250,43 @@ describe('parámetros de equilibrado 7.0.0 (spec 014, research R14)', () => {
     expect(p.acciones).not.toHaveProperty('probabilidadManoAMano');
     expect(p.acciones).not.toHaveProperty('probabilidadFueraDeJuegoBase');
     expect(p.tacticas.lineaAdelantada).not.toHaveProperty('fuerasDeJuegoProvocados');
+  });
+});
+
+describe('parámetros de equilibrado 8.0.0 (spec 015, research R1)', () => {
+  const BLOQUES = ['curvas', 'quite', 'aereo', 'desmarque', 'controlPresion', 'liderazgo', 'estrella', 'bandas', 'subidaArea', 'segundaLinea', 'fueraDeCampo'] as const;
+
+  it('los partidos nuevos usan la 8.0.0 y la 7.0.0 sigue disponible', () => {
+    expect(parametrosActuales().version).toBe('8.0.0');
+    expect(parametrosActuales()).toBe(PARAMETROS_V8);
+    expect(parametrosPorVersion('8.0.0')).toBe(PARAMETROS_V8);
+    expect(parametrosPorVersion('7.0.0')).toBe(PARAMETROS_V7);
+    expect(VERSION_MAYOR_SOPORTADA).toBe(7);
+  });
+
+  it('la 7.0.0 no tiene ninguno de los bloques nuevos', () => {
+    for (const b of BLOQUES) expect(PARAMETROS_V7).not.toHaveProperty(b);
+  });
+
+  it('la 8.0.0 hereda de la 7.0.0 y solo añade bloques, el factor de regate y las recalibraciones (T043, tras los añadidos y balones fuera)', () => {
+    const { version, decision, disciplina, defectos, espacio, acciones, tiro, ...resto } = PARAMETROS_V8;
+    const sinBloques = Object.fromEntries(Object.entries(resto).filter(([k]) => !(BLOQUES as readonly string[]).includes(k)));
+    const { version: _v7, decision: decision7, disciplina: disciplina7, defectos: defectos7, espacio: espacio7, acciones: acciones7, tiro: tiro7, ...resto7 } = PARAMETROS_V7;
+    expect(sinBloques).toEqual(resto7);
+    // El despeje en el área busca el campo contrario: la mitad de autogoles al despejar (decisión del 2026-11-15).
+    expect(tiro).toEqual({ ...tiro7, autogol: { ...tiro7.autogol, despejeCentro: tiro7.autogol.despejeCentro / 2 } });
+    expect(disciplina).toEqual({ ...disciplina7, factorFaltaArea: 0.34 });
+    expect(defectos).toEqual({ ...defectos7, malDefensor: 0.5 });
+    expect(espacio).toEqual({ ...espacio7, velocidadJugadorMin: 14 });
+    expect(acciones).toEqual({
+      ...acciones7,
+      probabilidadCornerTrasParada: 0.45,
+      probabilidadCornerTrasDespeje: 0.6,
+      puerta: { ...acciones7.puerta, lejano: 0.1 },
+      gol: { ...acciones7.gol, lejano: -0.1 },
+    });
+    expect(version).toBe('8.0.0');
+    expect({ ...decision.factores, regate: decision7.factores.regate }).toEqual(decision7.factores);
+    expect(decision.factores.regate).toEqual({ k: 1.1, min: 0.6, max: 4.0 });
   });
 });

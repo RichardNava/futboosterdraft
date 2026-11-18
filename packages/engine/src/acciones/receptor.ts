@@ -18,10 +18,12 @@ import { dist2, dividir, isqrt } from '../espacio/aritmetica';
 import { anguloTiro, AREA, decimasDeMetros, distanciaPorteria, ULTIMO_TERCIO } from '../espacio/campo';
 import { papelLlegada } from '../espacio/objetivos';
 import { aEquipo, type Punto } from '../espacio/geometria';
-import { atributo } from '../modificadores/atributos';
+import { FORMACIONES } from '@fbd/domain';
+import { atributo, mediaEfectiva } from '../modificadores/atributos';
 import { tiene } from '../modificadores/virtudes';
 import type { Lado } from '../tipos';
 import { elegirPonderado, esPortero, holgura, mejorDefensor, radioDe, type Contexto } from './contexto';
+import { marcadorDe, probabilidadDesmarque } from './desmarque';
 import { enFueraDeJuego, factorPericia } from './fueraDeJuego';
 import { pesoTiro } from './pesoTiro';
 
@@ -50,6 +52,54 @@ interface OpcionesReceptor {
   objetivo?: Punto;
   /** Solo estos candidatos (p. ej. los que cumplen el motivo de un pase largo). */
   candidatos?: readonly JugadorEnPartido[];
+}
+
+/** Laterales, carrileros y extremos: los que más reciben con Juego por las bandas (spec 015, añadidos, R13). */
+const BANDA = new Set(['LI', 'LD', 'CI', 'CD', 'EI', 'ED']);
+
+/** Posición en la que juega (la de su zona o la primera de su casilla). */
+function posicionDe(equipo: EquipoEstado, j: JugadorEnPartido): string | undefined {
+  return j.posicion ?? (j.casillaId ? FORMACIONES[equipo.formacion].casillas.find((c) => c.id === j.casillaId)?.posicionesAdmitidas[0] : undefined);
+}
+
+/** Candidato a recibir con lo que hace falta para buscar a la estrella. */
+export interface Candidato {
+  j: JugadorEnPartido;
+  peso: number;
+  /** Línea de pase sin rivales a `lineaClaraM` o menos y receptor libre. */
+  clara: boolean;
+  media: number;
+}
+
+/**
+ * Buscar a la estrella (spec 015, añadidos, R12; FR-025): con línea clara, más peso cuanta más media; un marcado solo lo
+ * busca el pasador con (visión + pase)/2 > `umbralVisionPase`: lo prioriza si supera en más de `diferenciaArriesgar` a la
+ * mejor opción clara y, si no, se la juega en `repartoArriesgado` de las veces frente a ella. Pura, milésimas enteras.
+ */
+export function pesosEstrella(candidatos: readonly Candidato[], visionPase: number, e: NonNullable<EstadoMotor['parametros']['estrella']>): number[] {
+  const conMedia = candidatos.map((c) => (c.clara ? Math.max(1, Math.round(c.peso * 2 ** ((c.media - 70) / e.escalaMedia))) : c.peso));
+  if (visionPase <= e.umbralVisionPase) return conMedia;
+  let mejor = -1;
+  for (let i = 0; i < candidatos.length; i++) if (candidatos[i]!.clara && (mejor < 0 || conMedia[i]! > conMedia[mejor]!)) mejor = i;
+  if (mejor < 0) return conMedia;
+  const referencia = conMedia[mejor]!;
+  return conMedia.map((peso, i) => {
+    const c = candidatos[i]!;
+    if (c.clara) return peso;
+    return c.media - candidatos[mejor]!.media > e.diferenciaArriesgar
+      ? Math.max(peso, Math.round(referencia * e.prioridadEstrella))
+      : Math.max(1, Math.round((referencia * e.repartoArriesgado) / (1 - e.repartoArriesgado)));
+  });
+}
+
+/** Línea de pase sin ningún rival de campo a `radio` o menos (coordenadas del equipo `lado`). */
+function lineaClara(estado: EstadoMotor, lado: Lado, a: Punto, b: Punto, radio: number): boolean {
+  for (const r of estado.equipos[rival(lado)].jugadores) {
+    if (!r.enCampo || esPortero(r)) continue;
+    const q = posicionEquipo(estado, lado, r.id);
+    if (q && distanciaASegmento(q, a, b) <= radio) return false;
+  }
+  return true;
 }
 
 function posicionEquipo(estado: EstadoMotor, lado: Lado, id: number): Punto | null {
@@ -137,7 +187,11 @@ export function pesosReceptor(
   // Un compañero en fuera de juego apenas se busca; menos cuanta más visión tiene el pasador (spec 014, research R4).
   const fdj = estado.parametros.fueraDeJuego!;
   const factorFuera = Math.round(1000 * fdj.pesoReceptor * (1 - factorPericia(atributo(estado, equipo, portador, 'vision'))));
-  const porRango: Record<Rango, [JugadorEnPartido, number][]> = { corto: [], medio: [], largo: [] };
+  const estrella = estado.parametros.estrella;
+  const bandas = equipo.tactica.estiloConBalon === 'bandas' ? estado.parametros.bandas : undefined;
+  const radioClara = estrella ? decimasDeMetros(estrella.lineaClaraM) : 0;
+  const desmarque = estado.parametros.desmarque;
+  const porRango: Record<Rango, Candidato[]> = { corto: [], medio: [], largo: [] };
   for (const j of opciones.candidatos ?? equipo.jugadores) {
     if (!j.enCampo || j.id === portador.id || j.id === excluido || (esPortero(j) && !enCampoPropio)) continue;
     const q = posicionEquipo(estado, equipo.lado, j.id);
@@ -167,9 +221,31 @@ export function pesosReceptor(
       dividir(dividir(cercania * factorLibre * conVision * Math.round(1000 * factorPasador(estado, equipo, j)), 10_000_000) * factorLlegada, 1000) *
       (tiene(j, 'Carismatico') ? 3 : 2);
     const conFuera = enFueraDeJuego(estado, equipo, j, yo.x) ? dividir(peso * factorFuera, 1000) : peso;
-    porRango[rangoDe(estado, d2)].push([j, Math.max(1, conFuera)]);
+    const conBanda = bandas && BANDA.has(posicionDe(equipo, j) ?? '') ? Math.round(conFuera * bandas.receptorBanda) : conFuera;
+    // Desmarque (spec 015, FR-013): × (1 + pesoEleccion × (p − 0,5)), con p su probabilidad de ganar el duelo (1 sin marcador).
+    let conDesmarque = conBanda;
+    if (desmarque) {
+      const marcador = marcadorDe(estado, j, estado.equipos[rivalLado], desmarque.radioMarcaM);
+      const pm = marcador
+        ? probabilidadDesmarque(atributo(estado, equipo, j, 'desmarque'), atributo(estado, estado.equipos[rivalLado], marcador, 'marcaje'), estado.parametros)
+        : 1000;
+      conDesmarque = Math.round((conBanda * (1000 + desmarque.pesoEleccion * (pm - 500))) / 1000);
+    }
+    porRango[rangoDe(estado, d2)].push({
+      j,
+      peso: Math.max(1, conDesmarque),
+      clara: estrella !== undefined && libre >= LIBRE * LIBRE && lineaClara(estado, equipo.lado, yo, q, radioClara),
+      media: estrella ? mediaEfectiva(estado, equipo, j) : 0,
+    });
   }
-  for (const rango of RANGOS[tipo]) if (porRango[rango].length > 0) return porRango[rango];
+  for (const rango of RANGOS[tipo]) {
+    const lista = porRango[rango];
+    if (lista.length === 0) continue;
+    if (!estrella) return lista.map((c) => [c.j, c.peso]);
+    const visionPase = (atributo(estado, equipo, portador, 'vision') + atributo(estado, equipo, portador, 'pase')) / 2;
+    const pesos = pesosEstrella(lista, visionPase, estrella);
+    return lista.map((c, i) => [c.j, pesos[i]!]);
+  }
   return [];
 }
 

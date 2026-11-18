@@ -4,6 +4,7 @@
  * SC-005 lo sustituye SC-011 de la spec 002 (checks/colocacion.ts). Todas usan semillas fijas, así que el
  * resultado es reproducible.
  */
+import { CASILLA_CENTRAL, FORMACIONES, FORMACIONES_IDS, POSICIONES_POR_DEMARCACION } from '@fbd/domain';
 import type { EstadisticasEquipo } from '@fbd/engine';
 import type { GrupoComprobaciones } from '../cli';
 import { clonar, conPaseDeMedios, conStatsDesplazados, equipoSintetico, type OpcionesEquipo } from '../equipos';
@@ -133,7 +134,12 @@ function comprobarSC015(n: number, semilla: number): Comprobacion {
  */
 function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   const base = equipoSintetico({ semilla: 'sc007-2d' });
-  const r = serie(base, clonar(base, 'b'), n, semilla, 'sc007-2d');
+  let saquesBanda = 0;
+  const r = serie(base, clonar(base, 'b'), n, semilla, 'sc007-2d', {
+    alTerminar: (final) => {
+      saquesBanda += final.eventos.filter((ev) => ev.tipo === 'interrupcion' && ev.datos.motivo === 'fuera_de_banda').length;
+    },
+  });
   const ambos = (campo: Campo) => media(r.estadisticasA.map((e, i) => e[campo] + r.estadisticasB[i]![campo]));
   let posesiones = 0;
   let largas = 0;
@@ -144,46 +150,80 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
     }
   }
   const umbrales: [Campo, string, number][] = [
-    ['pasesCompletados', 'pases completados', 150],
+    // 150 → 130 en la spec 015 (añadidos: más regate de la estrella, menos pase; decisión del 2026-11-14).
+    ['pasesCompletados', 'pases completados', 130],
     ['centros', 'centros', 9],
-    ['tiros', 'tiros', 15],
+    // 15 → 14 en la spec 015 (tanda 2: con el delantero marcado llegan menos balones al área; decisión del 2026-11-16).
+    ['tiros', 'tiros', 14],
     ['conducciones', 'conducciones', 30],
     ['paredes', 'paredes', 3],
-    ['cambiosOrientacion', 'cambios de orientación', 5],
-    ['contraataques', 'contraataques', 2],
+    // 5 → 4 en la spec 015 (balones fuera: los córners ocupan el lugar de saques de puerta y recuperaciones en banda, de
+    // donde salen; apenas se aprecia en la simulación; decisión del 2026-11-15).
+    ['cambiosOrientacion', 'cambios de orientación', 4],
+    // 2 → 1,8 → 1,5 en la spec 015 (decisiones del 2026-11-15 y 2026-11-17: el caso normal ronda 1,8 y oscila con el
+    // azar; algunas jugadas que en el fútbol real serían contraataque no cuentan). 015/SC-014 exige que la táctica
+    // Contraataque haga al menos un 30 % más.
+    ['contraataques', 'contraataques', 1.5],
   ];
   const valores = umbrales.map(([campo, nombre, minimo]) => ({ nombre, minimo, valor: ambos(campo) }));
   const proporcion = posesiones ? largas / posesiones : 0;
+  const corners = ambos('corners');
+  const banda = saquesBanda / n;
   return [
     {
       id: '002/SC-007a',
-      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 150 pases completados, 9 centros, 15 tiros, 30 conducciones, 3 paredes, 5 cambios de orientación y 2 contraataques',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 14 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,5 contraataques',
       ok: valores.every((v) => v.valor >= v.minimo),
       detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
     },
     {
       id: '002/SC-007b',
-      descripcion: 'Al menos el 30 % de las posesiones con 3 o más pases seguidos',
-      ok: proporcion >= 0.3,
+      descripcion: 'Al menos el 25 % de las posesiones con 3 o más pases seguidos',
+      ok: proporcion >= 0.25,
       detalle: `${(proporcion * 100).toFixed(1)} % de ${posesiones} posesiones`,
+    },
+    {
+      id: '015/SC-013',
+      descripcion: 'Balones fuera: entre 6 y 9 córners por partido entre equipos equilibrados',
+      ok: corners >= 6 && corners <= 9,
+      detalle: `${corners.toFixed(2)} córners y ${banda.toFixed(2)} saques de banda por partido`,
     },
   ];
 }
 
-/** 002/SC-008: +10 de pase en los centrocampistas titulares → ≥ 10 % más pases completados (en número absoluto). */
+/**
+ * Formaciones con al menos 3 centrocampistas en la carta de sus casillas (como el equipo sintético). En el 4-4-2, 3-4-3,
+ * 5-4-1 y 3-3-3-1 los de banda son extremos o carrileros y solo quedan 2.
+ */
+export const FORMACIONES_TRES_MEDIOS = FORMACIONES_IDS.filter(
+  (f) => FORMACIONES[f].casillas.filter((c) => c.id !== CASILLA_CENTRAL && POSICIONES_POR_DEMARCACION.MED.includes(c.posicionesAdmitidas[0]!)).length >= 3,
+);
+
+/**
+ * 002/SC-008: +10 de pase en los centrocampistas titulares → ≥ 10 % más pases completados (en número absoluto). Hasta el
+ * 2026-11-16 se medía solo en un 4-4-2, que en el juego tiene 2 medios: ahora se reparten los partidos entre las
+ * formaciones con 3 o más (decisión del 2026-11-16).
+ */
 function comprobarSC008Pase(n: number, semilla: number): Comprobacion {
-  const base = equipoSintetico({ semilla: 'sc008-2d' });
   const rival = equipoSintetico({ semilla: 'referencia', participanteId: 'rival' });
-  const sin = serie(base, rival, n, semilla, 'sc008-2d');
-  const con = serie(conPaseDeMedios(base, 10), rival, n, semilla, 'sc008-2d');
-  const a = media(col(sin, 'pasesCompletados'));
-  const b = media(col(con, 'pasesCompletados'));
+  const partidos = Math.max(1, Math.round(n / FORMACIONES_TRES_MEDIOS.length));
+  let a = 0;
+  let b = 0;
+  const partes: string[] = [];
+  for (const [k, formacion] of FORMACIONES_TRES_MEDIOS.entries()) {
+    const base = equipoSintetico({ formacion, semilla: `sc008-${formacion}` });
+    const sin = media(col(serie(base, rival, partidos, semilla + k, `sc008-${formacion}`), 'pasesCompletados'));
+    const con = media(col(serie(conPaseDeMedios(base, 10), rival, partidos, semilla + k, `sc008-${formacion}`), 'pasesCompletados'));
+    a += sin;
+    b += con;
+    partes.push(`${formacion} ${sin > 0 ? `${con >= sin ? '+' : ''}${((con / sin - 1) * 100).toFixed(1)}` : '?'} %`);
+  }
   const aumento = a > 0 ? b / a - 1 : 0;
   return {
     id: '002/SC-008',
-    descripcion: '+10 de pase en los centrocampistas titulares: ≥ 10 % más pases completados',
+    descripcion: '+10 de pase en los centrocampistas titulares (formaciones con 3 o más): ≥ 10 % más pases completados',
     ok: aumento >= 0.1,
-    detalle: `${b.toFixed(1)} frente a ${a.toFixed(1)} pases completados por partido (+${(aumento * 100).toFixed(1)} %)`,
+    detalle: `${(b / FORMACIONES_TRES_MEDIOS.length).toFixed(1)} frente a ${(a / FORMACIONES_TRES_MEDIOS.length).toFixed(1)} pases completados por partido (+${(aumento * 100).toFixed(1)} %) · ${partes.join(' · ')}`,
   };
 }
 
@@ -194,7 +234,7 @@ export function gruposPartido(): GrupoComprobaciones[] {
     { ids: ['SC-006a', 'SC-006b', 'SC-006c', 'SC-006d', 'SC-006e'], serie: 'sintetica', ejecutar: (o) => comprobarSC006(o.n, o.seed) },
     { ids: ['SC-007'], serie: 'sintetica', ejecutar: (o) => [comprobarSC007(o.n, o.seed)] },
     { ids: ['SC-015'], serie: 'sintetica', ejecutar: (o) => [comprobarSC015(o.n, o.seed)] },
-    { ids: ['002/SC-007a', '002/SC-007b'], serie: 'sintetica', ejecutar: (o) => comprobarSC007Partido2D(o.n, o.seed) },
+    { ids: ['002/SC-007a', '002/SC-007b', '015/SC-013'], serie: 'sintetica', ejecutar: (o) => comprobarSC007Partido2D(o.n, o.seed) },
     { ids: ['002/SC-008'], serie: 'sintetica', ejecutar: (o) => [comprobarSC008Pase(o.n, o.seed)] },
   ];
 }

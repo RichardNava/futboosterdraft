@@ -161,6 +161,92 @@ export interface ParametrosEquilibrado {
    * atacante (FR-011: la provoca la posición de los defensas, no un sorteo).
    */
   fueraDeJuego?: { toleranciaM: number; holguraMaxM: number; pesoReceptor: number; holguraLineaAdelantada: number };
+  /**
+   * Desde la 8.0.0 (spec 015, research R1): bloques opcionales; sin ellos, el motor hace lo de la 7.0.0.
+   *
+   * `curvas`: base y m (multiplicador de `duelo.pendiente`) propios de cada acción (R2); las ausentes usan `acciones.*` y
+   * `pendientePase`. Se llama `curvas` y no `duelos` (como en contracts/motor.md) porque `duelos` ya es el modo Duelo de
+   * la spec 005, que `parametrosEfectivos` siempre rellena.
+   */
+  curvas?: Partial<Record<AccionCurva, { base: number; m: number }>>;
+  /** Spec 015 (R3): multiplicador del quite por demarcación, y lo que suman Presionador y restan Mal defensor. */
+  quite?: { DEF: number; MED_MD: number; MED: number; DEL: number; presionador: number; malDefensor: number };
+  /** Spec 015 (R5): Cabeceador en los duelos aéreos (probabilidad) y en la elección del marcador a balón parado. */
+  aereo?: { bonusCabeceador: number; seleccionCabeceador: number };
+  /**
+   * Spec 015 (R7): duelo de desmarque contra marcaje antes del pase. Marca al receptor el rival de campo más cercano a
+   * `radioMarcaM` o menos; el duelo usa `base` y `m` (multiplicador de `duelo.pendiente`). Libre (gana o nadie le marca),
+   * el pase lleva +`bonusLibre` de desplazamiento; marcado, −`penalizacionMarcado`. Al elegir receptor, su peso se
+   * multiplica por 1 + `pesoEleccion` × (p − 0,5), con p su probabilidad de ganar el duelo (1 sin marcador).
+   */
+  desmarque?: { radioMarcaM: number; base: number; m: number; bonusLibre: number; penalizacionMarcado: number; pesoEleccion: number };
+  /** Spec 015 (R8): técnica contra quite al controlar marcado (tras perder el desmarque), con `base` y `m`. */
+  controlPresion?: { base: number; m: number };
+  /**
+   * Spec 015 (R9): liderazgo del defensa (línea) y del portero (defensas cercanos). La línea corrige
+   * min(`maxCorreccion`, `kDefensa` × (L − `baseDefensa`) / 25); el portero suma `porcentajePortero` × (L − `basePortero`).
+   */
+  liderazgo?: {
+    radioDefensaM: number;
+    kDefensa: number;
+    maxCorreccion: number;
+    baseDefensa: number;
+    porcentajePortero: number;
+    basePortero: number;
+    zonaMaxPortero: number;
+  };
+  /**
+   * Spec 015, añadidos (R12): buscar a la estrella. Con línea de pase clara, el receptor pesa `2^((media − 70)/escalaMedia)`.
+   * Si el mejor está marcado, un pasador con (visión + pase)/2 > `umbralVisionPase` se la juega: con más de
+   * `diferenciaArriesgar` puntos de media sobre la mejor opción clara, el marcado pesa `prioridadEstrella` veces lo que
+   * ella; si no, `repartoArriesgado` frente a 1 − `repartoArriesgado`. (`pendienteDesmarque`, el anticipo del desmarque en
+   * el pase, lo sustituyó el bloque `desmarque` en la tanda 2.)
+   */
+  estrella?: {
+    umbralVisionPase: number;
+    escalaMedia: number;
+    diferenciaArriesgar: number;
+    repartoArriesgado: number;
+    prioridadEstrella: number;
+    lineaClaraM: number;
+  };
+  /** Spec 015, añadidos (R13): táctica «Juego por las bandas». Sin el bloque, el estilo juega como el equilibrado. */
+  bandas?: { probabilidadBanda: number; receptorBanda: number; centro: number };
+  /**
+   * Spec 015, añadidos (R14): a balón parado colgado al área suben todos menos `retaguardiaDEF` defensas y
+   * `retaguardiaMED` medios sin Cabeceador; el rival defiende con `defensoresArea` en el área. El portero sube solo en la
+   * última jugada (los últimos `ultimaJugadaS` segundos del descuento de la segunda parte o de la prórroga) si su equipo
+   * pierde de uno; si aún hay contraataque y está a más de `porteriaVaciaM` de su portería, se tira a puerta vacía.
+   */
+  subidaArea?: { retaguardiaDEF: number; retaguardiaMED: number; defensoresArea: number; ultimaJugadaS: number; porteriaVaciaM: number };
+  /**
+   * Spec 015, añadidos (R15): fuera de su zona. Los medios centro llegan a la frontal (`xInterior`, décimas del equipo)
+   * y el mano a mano empieza ya `desdeCampoPropioM` metros dentro del campo propio.
+   */
+  segundaLinea?: { xInterior: number; desdeCampoPropioM: number };
+  /**
+   * Spec 015 (balones fuera): despejes, desvíos y rechaces que se van del campo, y reanudaciones a la escala del reloj.
+   * Un centro que despeja un defensor sale a córner con `centroDespejado`. Un pase cortado o una entrada ganada en los
+   * últimos `margenFondoM` metros salen a córner con `desvio`; a menos de `margenBandaM` de una banda salen por ella con
+   * `desvioBanda`, y el saque es de uno u otro equipo al 50 % (si es del que defendía, cuenta como recuperación). En el
+   * córner todos se colocan a `velocidadColocacion` veces su velocidad (en el saque de banda, el que saca) y se saca tras
+   * `paradaCorner` segundos o, si aún no están, como mucho `esperaCorner` después; el saque de banda lo hace el jugador de
+   * campo más cercano, tras `paradaBanda` segundos. Con más córners, cada uno es menos peligroso: la probabilidad de ganar
+   * el remate y la de falta en el duelo aéreo se multiplican por `peligroCorner`, y el despeje aleja el balón del área.
+   * Sin el bloque, la 7.0.0 (córner de 90 + 150 s; saque de banda de 10 s por un jugador al azar).
+   */
+  fueraDeCampo?: {
+    centroDespejado: number;
+    desvio: number;
+    desvioBanda: number;
+    margenFondoM: number;
+    margenBandaM: number;
+    paradaCorner: number;
+    esperaCorner: number;
+    paradaBanda: number;
+    velocidadColocacion: number;
+    peligroCorner: number;
+  };
   lesiones: {
     probabilidadPorEntrada: number;
     /** Reducción relativa de la probabilidad de lesión con Robusto. */
@@ -426,6 +512,9 @@ export function parametrosEfectivos(p: ParametrosEquilibrado): ParametrosComplet
   return c;
 }
 
+/** Acciones con curva propia en la 8.0.0 (spec 015, R2). */
+export type AccionCurva = 'regate' | 'conduccion' | 'pase_corto';
+
 /** Stats que influyen en la elección de acciones (research R9). */
 export type FactorDecision = 'regate' | 'remate' | 'pase' | 'vision' | 'fisico';
 
@@ -570,6 +659,69 @@ export const PARAMETROS_V7: ParametrosEquilibrado = {
   tacticas: { ...PARAMETROS_V6_3.tacticas, lineaAdelantada: LINEA_ADELANTADA_V7 },
 };
 
+/**
+ * Parámetros 8.0.0 (spec 015): cada duelo enfrenta las dos stats implicadas con una curva propia, quite por demarcación,
+ * el regateador lo intenta más y Cabeceador en cualquier jugador de campo. Todo cuelga de bloques opcionales (research
+ * R1), así que la 7.0.0 se sigue simulando igual. Se edita en el sitio entre las tandas de calibración.
+ */
+export const PARAMETROS_V8: ParametrosEquilibrado = {
+  ...PARAMETROS_V7,
+  version: '8.0.0',
+  curvas: { regate: { base: -0.32, m: 1.1 }, conduccion: { base: 0.25, m: 1.15 }, pase_corto: { base: 1.57, m: 1.27 } },
+  // Calibración tras los añadidos: la velocidad pesa más en la carrera (014/SC-008-velocidad) y el tiro lejano va más a
+  // puerta y entra algo más (003/SC-002).
+  espacio: { ...PARAMETROS_V7.espacio, velocidadJugadorMin: 14 },
+  acciones: {
+    ...PARAMETROS_V7.acciones,
+    // Balones fuera (spec 015): más tiros parados y bloqueados acaban en córner.
+    probabilidadCornerTrasParada: 0.45,
+    probabilidadCornerTrasDespeje: 0.6,
+    puerta: { ...PARAMETROS_V7.acciones.puerta, lejano: 0.1 },
+    gol: { ...PARAMETROS_V7.acciones.gol, lejano: -0.1 },
+  },
+  // MED_MD 0,9 → 0,92 y MED 0,85 → 0,87 tras la serie de cierre (014/SC-008-defensa, 2026-11-15).
+  quite: { DEF: 1.0, MED_MD: 0.92, MED: 0.87, DEL: 0.8, presionador: 0.05, malDefensor: 0.05 },
+  aereo: { bonusCabeceador: 0.15, seleccionCabeceador: 10 },
+  estrella: { umbralVisionPase: 80, escalaMedia: 4, diferenciaArriesgar: 5, repartoArriesgado: 0.4, prioridadEstrella: 1.5, lineaClaraM: 3 },
+  // Tanda 2 (US4 y US5, research R7 y R8): desmarque contra marcaje antes del pase y control con presión. bonusLibre
+  // 0,5 → 0,25 y controlPresion.base 1 → 0,5 en la calibración (research, «Tanda 2»).
+  desmarque: { radioMarcaM: 3, base: 0, m: 1, bonusLibre: 0.25, penalizacionMarcado: 0.4, pesoEleccion: 1 },
+  controlPresion: { base: 0.5, m: 1 },
+  // Tanda 3 (US6, research R9): el defensa líder ordena su línea y el portero líder ayuda a los defensas de su zona.
+  // radioDefensaM 12 → 20 en la calibración: los defensas de una línea de cuatro están a 13–17 m (research, «Tanda 3»).
+  // Decisiones del 2026-11-17: la línea corrige en proporción a L − 36,5 (la escala de SC-006a: 0,12 % por punto, 1,5 %
+  // con 49) y el portero suma el 2,5 % de lo que su liderazgo pasa de 70.
+  liderazgo: { radioDefensaM: 20, kDefensa: 0.34, maxCorreccion: 0.8, baseDefensa: 36.5, porcentajePortero: 0.025, basePortero: 70, zonaMaxPortero: 1 },
+  bandas: { probabilidadBanda: 0.2, receptorBanda: 1.5, centro: 1.3 },
+  subidaArea: { retaguardiaDEF: 1, retaguardiaMED: 1, defensoresArea: 8, ultimaJugadaS: 60, porteriaVaciaM: 30 },
+  segundaLinea: { xInterior: 7900, desdeCampoPropioM: 10 },
+  fueraDeCampo: {
+    centroDespejado: 0.9,
+    desvio: 0.25,
+    desvioBanda: 0.5,
+    margenFondoM: 22,
+    margenBandaM: 15,
+    paradaCorner: 20,
+    esperaCorner: 15,
+    paradaBanda: 6,
+    velocidadColocacion: 4,
+    peligroCorner: 0.3,
+  },
+  // Con balones fuera hay el triple de córners y de despejes en el área: el que despeja busca el campo contrario, así que
+  // sus despejes acaban en la propia portería la mitad de veces que en la 7.0.0 (003/SC-003; decisión del 2026-11-15).
+  tiro: { ...PARAMETROS_V7.tiro, autogol: { ...PARAMETROS_V7.tiro.autogol, despejeCentro: PARAMETROS_V7.tiro.autogol.despejeCentro / 2 } },
+  // Recalibrados por FR-021 (T043): con el regate siempre ofrecido sube el penalti, y el quite cambia el peso del defecto.
+  disciplina: { ...PARAMETROS_V7.disciplina, factorFaltaArea: 0.34 },
+  defectos: { ...PARAMETROS_V7.defectos!, malDefensor: 0.5 },
+  decision: {
+    ...PARAMETROS_V7.decision,
+    // k 0,7 → 1,1 y max 3 → 4 con los añadidos (SC-002b rebajado al 80 %).
+    factores: { ...PARAMETROS_V7.decision.factores, regate: { k: 1.1, min: 0.6, max: 4.0 } },
+  },
+};
+
+
+
 /** Reparto de un nivel; las versiones anteriores a la 6.3.0 tienen el de siempre (4, 2, 1 y 1 alta) en todos. */
 export function repartoDe(p: ParametrosEquilibrado, nivel: NivelRareza): RepartoSobre {
   return p.sobres.niveles?.[nivel] ?? { superclase: 4, crack: 2, legendario: 1, altas: 1, probGoatEnAlta: p.sobres.probGoatEnAlta };
@@ -584,6 +736,7 @@ const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V6_2.version]: PARAMETROS_V6_2,
   [PARAMETROS_V6_3.version]: PARAMETROS_V6_3,
   [PARAMETROS_V7.version]: PARAMETROS_V7,
+  [PARAMETROS_V8.version]: PARAMETROS_V8,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -601,10 +754,10 @@ export function versionMayor(version: string): number {
 
 /** Parámetros vigentes para partidos nuevos. */
 export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V7;
+  return PARAMETROS_V8;
 }
 
-/** Versión mayor mínima que el motor actual puede simular (spec 014, research R14: solo la 7.x). */
+/** Versión mayor mínima que el motor actual puede simular (spec 014, research R14: la 7.x; la 015 añade la 8.x sin retirarla). */
 export const VERSION_MAYOR_SOPORTADA = 7;
 
 /** Parámetros de una versión concreta, para reproducir un partido (FR-040). Las anteriores a la 7.x lanzan `VersionNoSoportada` (research R14). */

@@ -18,9 +18,10 @@ export type DecisionManoAMano = 'tiro' | { pase: JugadorEnPartido } | 'conduccio
 
 const PORTERIA: Punto = { x: LARGO, y: CENTRO_Y };
 
-/** Portador en campo rival con solo el portero por delante (un rival a su altura cuenta si está en el pasillo). */
+/** Portador en campo rival (o algo antes, R15) con solo el portero por delante (un rival a su altura cuenta si está en el pasillo). */
 export function esManoAMano(estado: EstadoMotor, _atacante: EquipoEstado, _portador: JugadorEnPartido, en: Entorno | null): en is Entorno {
-  if (!en || en.yo.x <= LARGO / 2) return false;
+  // Spec 015, añadidos (R15): con `segundaLinea`, también desde unos metros dentro del campo propio (terreno por delante).
+  if (!en || en.yo.x <= LARGO / 2 - decimasDeMetros(estado.parametros.segundaLinea?.desdeCampoPropioM ?? 0)) return false;
   const m = estado.parametros.manoAMano!;
   const pasillo = decimasDeMetros(m.pasilloM);
   const desde = en.yo.x - decimasDeMetros(m.margenAtrasM);
