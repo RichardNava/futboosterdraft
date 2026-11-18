@@ -61,8 +61,9 @@ del sobre de la tienda. «Expansión» es solo el nombre visible (research R1). 
 **Scale/Scope**: 95 fichas nuevas y 1 cambio en el Core; 96 retratos, 96 fondos, 8 imágenes de expansión, 9 sobres
 y 1 icono; unos 30 ficheros de código y 11 de pruebas tocados (ver la estructura).
 
-Sin NEEDS CLARIFICATION: las seis dudas están resueltas en la spec (Clarifications 2026-11-18). Queda una
-**dependencia de material**: `esquema-tienda.png`, que la spec enlaza pero no está en la carpeta (ver «Riesgos»).
+Sin NEEDS CLARIFICATION: las seis dudas están resueltas en la spec (Clarifications 2026-11-18). El esquema de la
+tarjeta lo entregó la persona como imagen de guía, que no se guarda en el proyecto. Queda descrito con palabras en
+FR-017 y con medidas en [contracts/ui.md §2](contracts/ui.md).
 
 ## Constitution Check
 
@@ -100,7 +101,6 @@ specs/016-expansiones-reales/
 │   ├── http-api.md          # Fase 1: tienda, compra, cosméticos, desfragmentar
 │   ├── ui.md                # Fase 1: Fragmentos, tarjeta, modal, confirmación, textos
 │   └── datos-expansiones.md # Fase 1: fichas y guion `expansiones`
-├── esquema-tienda.png       # PENDIENTE: lo aporta la persona (FR-017)
 ├── sumario.md               # Generado por el guion (implementación)
 ├── revision-retratos.webp   # Generado por el guion (implementación)
 ├── fuentes/                 # Copia de las listas y rarezas de ./expansiones (cierre)
@@ -156,7 +156,6 @@ tocan.
 
 ## Orden de implementación sugerido
 
-0. **Antes de empezar**: la persona guarda `esquema-tienda.png` en la carpeta de la spec. Solo bloquea el paso 6.
 1. **Base**: migración 0017, esquema y tipos de dominio y protocolo; desfragmentar a 25/75/125/175 con su prueba
    (FR-018). Retirada en el seed con su prueba de dos pasadas (FR-009 a FR-012). Borrar `cartas-prueba.json` y
    adaptar las 11 pruebas (R16). Al acabar, la suite pasa sin expansiones: la tienda sale vacía.
@@ -173,20 +172,21 @@ tocan.
 8. **Cierre**: suite completa, `pnpm balance`, e2e y recorridos del [quickstart](quickstart.md); copiar las fuentes a
    `fuentes/` y borrar `./expansiones` cuando la persona lo apruebe; ROADMAP, CLAUDE.md y `graphify update .`.
 
-US3 y US4 no dependen de US1 y se pueden hacer en paralelo tras el paso 1. US2 en la interfaz necesita US1 (datos) y
-el esquema.
+US3 y US4 no dependen de US1 y se pueden hacer en paralelo tras el paso 1. US2 en la interfaz necesita US1 (datos).
 
 ## Riesgos
 
-- **`esquema-tienda.png` no está**: la spec lo da por guardado (aclaración 6), pero no está en la carpeta. El paso 6
-  se hace con la descripción escrita de [contracts/ui.md](contracts/ui.md) y se ajusta cuando llegue la imagen.
+- **Icono que sobresale**: al quedar por delante de la tarjeta y fuera de ella, puede pisar la tarjeta vecina o el
+  título de la sección si la rejilla no le reserva sitio. [contracts/ui.md §2](contracts/ui.md) fija los márgenes, y se
+  comprueba a 360 px y en escritorio (recorrido 23 del quickstart).
 - **Chroma y camisetas verdes**: la inundación desde el borde evita lo peor, pero algún pelo fino o una camiseta de un
   verde muy saturado puede dar problemas. Para eso están la hoja de revisión y los ajustes por carta (R7). Si una carta
   no sale bien de forma automática, se pide a la persona el retrato suelto.
 - **Volumen de datos**: 95 fichas reales a mano es la parte más larga. Se hace en lotes validados para no acumular
   errores, y SC-003 se comprueba por muestreo en el recorrido 3.
-- **Balance**: Kimmich sustituye a Verratti en el Core. Si un criterio de la 015 cambia de estado, se mide, se explica
-  y se propone; los umbrales los decide la persona.
+- **Balance**: Kimmich sustituye a Verratti en el Core con una media de 88 como mínimo (la de Verratti), así que el
+  efecto debería ser mínimo. Se pasa `pnpm balance`; si un criterio de la 015 cambia de estado, se mide, se explica y
+  se propone, y los umbrales los decide la persona.
 - **Economía**: con desfragmentar más generoso, un sobre de la tienda devuelve 510 de 1000. Sigue por debajo del
   precio (FR-018), pero acelera la obtención de fragmentos para quien desfragmenta. Se anota en el ROADMAP para la spec
   de economía.

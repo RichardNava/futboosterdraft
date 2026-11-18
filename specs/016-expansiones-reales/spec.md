@@ -38,8 +38,16 @@ precio."
   colecciones de prueba (posesión, compras, plantillas y partidas terminadas que las citen) antes de cargar las
   expansiones (FR-010 a FR-012).
 - Q: El esquema de la tarjeta de expansión no está en el repositorio, ¿se aporta como imagen o basta la descripción
-  escrita? → A: La persona guarda la imagen en `specs/016-expansiones-reales/esquema-tienda.png` y la spec la enlaza
-  como referencia de FR-017.
+  escrita? → A: La persona entregó el esquema como imagen (`esquema_shop.jpg`) solo como guía: no se guarda en el
+  proyecto. Su contenido queda descrito con palabras en FR-017 y, con medidas, en
+  [contracts/ui.md §2](contracts/ui.md).
+- Q: ¿Los dos botones de la tarjeta («Comprar» y «Ver detalle») tienen el mismo tamaño? → A: Sí: los dos ocupan
+  exactamente lo mismo, en ancho y en alto (FR-017).
+- Q: Al salir del Core, ¿Verratti se trata como cualquier carta de expansión, también para desfragmentar? → A: Sí:
+  deja de ser del Core y se comporta como el resto de cartas de Estrellas Fulgurantes; se puede desfragmentar
+  (FR-007, FR-018).
+- Q: ¿Qué media debe tener Kimmich al entrar en el Core? → A: Como GOAT, una media de 88 como mínimo (la de Verratti
+  es 88), para que la sustitución apenas afecte al Core. Se pasa `pnpm balance` tras el cambio (FR-007).
 
 ## Contexto
 
@@ -107,9 +115,10 @@ comprarla y comprobar el saldo final, las cartas recibidas, la compensación y e
 **Acceptance Scenarios**:
 
 1. **Given** la tienda abierta, **When** se mira la sección de expansiones, **Then** cada una de las cuatro aparece en una
-   tarjeta con su nombre real, una breve descripción de su contenido, el botón «Comprar» con el precio en fragmentos,
-   el botón «Ver detalle» con icono de lupa y su icono de tienda sobresaliendo por la esquina superior derecha de la
-   tarjeta, según el [esquema de la persona](esquema-tienda.png).
+   tarjeta con su nombre real arriba a la izquierda, debajo una breve descripción de su contenido, abajo los botones
+   «Comprar» con el precio en fragmentos (izquierda) y «Ver detalle» con icono de lupa (derecha), del mismo ancho y
+   alto, y su icono de tienda
+   grande sobresaliendo por la esquina superior derecha de la tarjeta, como describe FR-017.
 2. **Given** una tarjeta de expansión, **When** se pulsa «Ver detalle», **Then** se abre un modal con el nombre de la
    expansión, el cartel grande, el botón de compra con su precio y la lista de sus 24 jugadores, en la que se distinguen
    los que el usuario ya tiene.
@@ -179,7 +188,8 @@ la colección (desfragmentar) y el perfil, y comprobar que el fragmento se repre
   la compensación completa (6×175 + 6×125 + 6×75 + 6×25 = 2400 fragmentos, el mismo precio) y el sobre de regalo. La
   tienda se lo indica antes de comprar.
 - **Verratti en cuentas existentes**: todos los registrados tienen hoy a Verratti por ser del Core. Lo conservan; al
-  comprar Estrellas Fulgurantes cuenta como carta ya poseída (compensación de GOAT). Kimmich se entrega a todos los
+  comprar Estrellas Fulgurantes cuenta como carta ya poseída (compensación de GOAT). Como ya no es del Core, se puede
+  desfragmentar (175); si alguien lo hace y luego compra la expansión, lo recibe como carta nueva. Kimmich se entrega a todos los
   registrados, como cualquier carta del Core.
 - **Verratti en plantillas guardadas o partidas en curso**: siguen funcionando; la carta no cambia, solo su pertenencia.
 - **Cuentas con cartas o colecciones de prueba**: el juego no está en producción, así que se borran sin compensación.
@@ -217,7 +227,9 @@ la colección (desfragmentar) y el perfil, y comprobar que el fragmento se repre
 - **FR-006**: Todas las cartas de expansión DEBEN pasar las mismas reglas de validación del catálogo que las del Core.
 - **FR-007**: Joshua Kimmich (D-4) DEBE pasar al Core y Marco Verratti (id 299) DEBE pasar a Estrellas Fulgurantes; el
   Core sigue teniendo 300 cartas y el recuento de niveles por demarcación del Core no se descompensa (ambos son GOAT de
-  medio campo).
+  medio campo). La carta de Kimmich DEBE tener una media de 88 como mínimo (la de Verratti es 88), y tras el cambio se
+  DEBE pasar `pnpm balance`. Verratti pasa a comportarse como cualquier otra carta de expansión; en particular, se
+  puede desfragmentar.
 - **FR-008**: Kimmich DEBE entregarse a todos los usuarios registrados como el resto de cartas del Core; quien ya tenga
   a Verratti lo DEBE conservar.
 
@@ -246,8 +258,18 @@ la colección (desfragmentar) y el perfil, y comprobar que el fragmento se repre
   de la tienda, filtros, resúmenes de compra, colección). El Core sigue llamándose Core.
 - **FR-017**: Cada expansión DEBE mostrarse en la tienda con su nombre, una breve descripción de su contenido (número de
   jugadores, reparto por rareza y sobre de regalo), el botón «Comprar» con el precio en fragmentos, el botón «Ver
-  detalle» con icono de lupa y su icono de tienda, colocado como en el esquema de la persona
-  ([esquema-tienda.png](esquema-tienda.png): sobresale por la esquina superior derecha de la tarjeta).
+  detalle» con icono de lupa y su icono de tienda, colocados según el esquema de la persona:
+  - la tarjeta es un rectángulo apaisado de esquinas redondeadas, unas 2,5 veces más ancho que alto;
+  - **nombre**: arriba a la izquierda, en un bloque que ocupa algo más de la mitad del ancho de la tarjeta; es el texto
+    más grande;
+  - **descripción**: debajo del nombre, alineada a su izquierda, en la misma columna izquierda;
+  - **botones**: en una fila a lo ancho de la parte inferior, con el mismo margen interior que el resto: «Comprar» con
+    el precio a la izquierda y «Ver detalle» con la lupa detrás del texto a la derecha; los dos ocupan exactamente lo
+    mismo, en ancho (la mitad de la fila cada uno, menos el hueco entre ellos) y en alto;
+  - **icono de tienda**: un cuadrado grande, de casi la altura de la tarjeta, en la esquina superior derecha y por
+    delante de ella: asoma por arriba alrededor de un tercio de su altura y sobresale un poco por la derecha; su borde
+    izquierdo queda hacia el 60 % del ancho de la tarjeta, sin tapar el nombre, y su borde inferior acaba justo encima
+    de la fila de botones, sin tocarlos.
 - **FR-018**: Los valores de desfragmentar una carta DEBEN pasar a ser 25 / 75 / 125 / 175 (Superclase / Crack /
   Legendario / GOAT), para que compensación y desfragmentación coincidan. Comprar un sobre de cartas de la tienda y
   desfragmentarlo DEBE seguir dando menos fragmentos de los que cuesta (valor esperado ≈ 500 frente a 1000).

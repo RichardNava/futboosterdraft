@@ -73,9 +73,11 @@ virtudes y los defectos siguen las bandas de media por nivel y el reparto de ras
 nivel y demarcación. Se hace por expansión, en cuatro lotes, y cada lote se valida con el guion de R5 antes de pasar al
 siguiente. Las erratas de nombre se corrigen en la ficha («Roméo Lavia», «Keylor Navas»…) y se anotan en el sumario.
 
-La ficha de Kimmich se hace igual. Como sustituye a Verratti en el Core (los dos GOAT de `MED`), se pasa
-`pnpm balance` tras el cambio. Si algún criterio cambia de estado, se informa a la persona con el valor medido y una
-propuesta, sin tocar umbrales (memoria *umbrales-decide-persona*).
+La ficha de Kimmich se hace igual, con una condición que fijó la persona: su **media debe ser de 88 como mínimo**, la
+misma que la de Verratti, al que sustituye en el Core (los dos son GOAT de `MED`). La media es el promedio de las seis
+estadísticas, y los GOAT del Core van hoy de 87,67 a 96,67. El guion `core-real` lo comprueba. Con eso, la sustitución
+apenas toca el Core. Aun así se pasa `pnpm balance` tras el cambio. Si algún criterio cambia de estado, se informa a
+la persona con el valor medido y una propuesta, sin tocar umbrales (memoria *umbrales-decide-persona*).
 
 **Razón**: FR-003 pide los mismos criterios, y SC-003 exige datos personales verificables.
 
@@ -227,8 +229,9 @@ esperado de desfragmentar un sobre de la tienda pasa a 4 × 25 + 2 × 75 + 125 +
 debajo de los 1000 que cuesta, así que `validarParametrosEconomia` sigue pasando (FR-018). Se actualizan los textos y
 documentos que citan los valores antiguos (`grep` de «desfragment» en `apps/web` y `docs/`).
 
-Efecto: Verratti deja de ser del Core, así que quien lo tiene puede desfragmentarlo (175). Es coherente con que sea una
-carta de expansión, y si lo hace y luego compra Estrellas Fulgurantes, lo recibe como carta nueva.
+Verratti deja de ser del Core y se comporta como cualquier carta de expansión (confirmado por la persona): quien lo
+tiene puede desfragmentarlo (175), y si lo hace y luego compra Estrellas Fulgurantes, lo recibe como carta nueva. No
+hace falta código específico: `desfragmentar` ya solo bloquea las cartas del Core.
 
 ## R14. Sobres: catálogo, regalo y packs
 
@@ -259,9 +262,13 @@ La tienda de cosméticos filtra `vendible`.
   `GET /api/tienda`, sin ruta nueva: son 96 resúmenes de carta (≈ 20 KB), y el modal se abre sin esperar.
 - La tarjeta y el modal se hacen con los componentes de la casa (`Dialogo`, `Icono` con la lupa y `CartaResumen`). El
   detalle va a dos columnas en escritorio (cartel | lista) y apilado en móvil (Principio XI).
-- **Dependencia**: FR-017 remite a `esquema-tienda.png`, que todavía no está en la carpeta de la spec. La tarea de la
-  tarjeta queda bloqueada hasta que la persona lo guarde. Mientras tanto, [contracts/ui.md](contracts/ui.md) describe la
-  colocación por escrito, según la spec: icono sobresaliendo por la esquina superior derecha.
+- **Esquema de la tarjeta**: la persona lo entregó como imagen de guía y no se guarda en el proyecto. La disposición
+  queda escrita en FR-017 y, con proporciones, en [contracts/ui.md §2](contracts/ui.md):
+  - nombre y descripción en la columna izquierda;
+  - «Comprar + precio» a la izquierda y «Ver detalle + lupa» a la derecha, en la fila inferior y con el mismo ancho
+    y alto;
+  - el icono de tienda, cuadrado y grande, por delante de la esquina superior derecha, sobresaliendo por arriba y un
+    poco por la derecha.
 
 ## R16. Pruebas que usaban las cartas de prueba
 

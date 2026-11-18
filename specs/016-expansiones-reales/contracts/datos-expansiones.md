@@ -63,8 +63,8 @@ Los sobres 25–33 no los procesa este guion, sino `imagenes --sobres` (research
 1. `validarLote` sobre `core-real.json` + `expansiones-reales.json` + `colecciones.json`, sin errores (FR-006).
 2. Por expansión: números 1..N sin huecos, `sobre_regalo` presente y, en las cuatro de esta spec, 24 cartas y 6 por
    nivel (SC-001; es una comprobación de datos, no una regla del dominio).
-3. Core: 300 cartas, Kimmich (376) dentro y Verratti (299) fuera, y el mismo recuento por demarcación y nivel que antes
-   del cambio (FR-007).
+3. Core: 300 cartas, Kimmich (376) dentro y con media ≥ 88, Verratti (299) fuera, y el mismo recuento por demarcación y
+   nivel que antes del cambio (FR-007).
 4. Cada carta de expansión tiene su retrato y su fondo en disco. Ningún `.webp` de `retratos-propios/` queda sin ficha
    en los dos ficheros.
 5. Peso medio de retrato + fondo de las cartas de expansión ≤ 1,10 × el del Core (SC-009).

@@ -19,7 +19,7 @@ Mismo formato y reglas que `core-real.json` (contrato de la 008): `{ "version": 
 
 ### 1.2 `core-real.json` (cambia)
 
-Sale la ficha 299 (Verratti) y entra la 376 (Joshua Kimmich, GOAT, `MED`). Siguen siendo 300 fichas, con el mismo
+Sale la ficha 299 (Verratti) y entra la 376 (Joshua Kimmich, GOAT, `MED`, media ≥ 88). Siguen siendo 300 fichas, con el mismo
 recuento por demarcación y nivel (FR-007).
 
 ### 1.3 `colecciones.json` (cambia)

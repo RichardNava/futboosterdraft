@@ -40,11 +40,11 @@ Si `pnpm balance` cambia el estado de algún criterio, se informa a la persona a
 | 1 | Leer `sumario.md` | 4 expansiones × 24 cartas, 6 por nivel; todas las comprobaciones en ✅ | SC-001, FR-006 |
 | 2 | Abrir `revision-retratos.webp` y revisar las 96 | Sin halo verde, sin cortes, mismo encuadre; los porteros de verde conservan la camiseta | SC-002, FR-013 |
 | 3 | Elegir 10 fichas al azar del sumario y contrastarlas con sus enlaces | Nacimiento, nacionalidad, altura y demarcación coinciden | SC-003 |
-| 4 | Colección → filtrar por «Core» | 300 cartas; Kimmich está y Verratti no | US1-4, FR-007 |
+| 4 | Colección → filtrar por «Core» | 300 cartas; Kimmich está, como GOAT y con media ≥ 88, y Verratti no | US1-4, FR-007 |
 | 5 | Con una cuenta antigua que tenía a Verratti: Colección | Verratti sigue (ahora en Estrellas Fulgurantes) y Kimmich aparece | FR-008 |
 | 6 | Con la BD de antes del seed: buscar «All Stars» en la tienda y en la colección | No existe; ninguna cuenta tiene cartas, compras ni partidas de prueba | US1-5, SC-007 |
 | 7 | `pnpm seed` otra vez | La retirada informa 0 en todo y nada cambia | FR-012, SC-007 |
-| 8 | Tienda → sección «Expansiones» | 4 tarjetas con nombre, descripción (24 · reparto · sobre), «Ver detalle» con lupa, «Comprar · [◆] 2.400», icono sobresaliendo arriba a la derecha como en el esquema | US2-1, FR-017 |
+| 8 | Tienda → sección «Expansiones» | 4 tarjetas como en [ui.md §2](contracts/ui.md): nombre arriba a la izquierda, descripción debajo (24 · reparto · sobre), abajo «Comprar · [◆] 2.400» a la izquierda y «Ver detalle» con lupa a la derecha, y el icono de tienda por delante de la esquina superior derecha, asomando por arriba y un poco por la derecha, sin tapar el nombre ni los botones | US2-1, FR-017 |
 | 9 | «Ver detalle» de cualquiera | Modal con nombre, cartel grande, 24 jugadores agrupados por nivel, los tuyos marcados con su compensación, botón de compra; el sobre del cartel es el de regalo | US2-2, FR-019, US3-5 |
 | 10 | Usuario con ≥ 2400 y ninguna carta: comprar A | Saldo − 2400, 24 cartas nuevas, sobre 7 en el perfil, resumen con las 24 y el sobre | US2-3, FR-025 |
 | 11 | Usuario con 1 GOAT, 2 Crack y 3 Superclase de B (de sobres): comprar B | Saldo − 2400 + 400; 18 cartas nuevas; desglose con las 6 repetidas y su importe | US2-4, FR-021, FR-023, SC-004 |
@@ -54,7 +54,7 @@ Si `pnpm balance` cambia el estado de algún criterio, se informa a la persona a
 | 15 | Usuario que ya compró el sobre 4 (antes de la spec): comprar C | Lo conserva; la compra no falla; «Ya tenías este sobre» | US3-4 |
 | 16 | Tienda de cosméticos → sobres y packs | Sin 1, 4, 7 ni 28; con 25–27 y 29–33 a 250 / 0,50 €; packs 2, 3 y 7 con su composición, todos de 5 | US3-2, US3-3, SC-006 |
 | 17 | Comprar un sobre de cartas de la tienda | 8 cartas de las expansiones que no tenías | FR-024 |
-| 18 | Desfragmentar una Superclase, un Crack, un Legendario y un GOAT de expansión | +25, +75, +125, +175; Kimmich no se puede | FR-018 |
+| 18 | Desfragmentar una Superclase, un Crack, un Legendario y un GOAT de expansión | +25, +75, +125, +175; Verratti también se puede (+175); Kimmich no | FR-018, FR-007 |
 | 19 | Recorrer barra, tienda, confirmaciones, colección (desfragmentar e historial), perfil, crear partida y campeón, en tema claro y oscuro | Siempre el icono nuevo junto a la cantidad, legible | US4-1, SC-008 |
 | 20 | Con NVDA o VoiceOver, leer el saldo y un precio | «2.400 fragmentos»; el icono no se anuncia | US4-2, FR-031 |
 | 21 | Crear una partida con una expansión activa y jugar el draft | Las cartas de expansión salen con retrato y fondo, sin errores | US1 (prueba independiente) |
