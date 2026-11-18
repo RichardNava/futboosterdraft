@@ -612,9 +612,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/visibilidad.test.ts": {
-    "mtime": 1792484980.7513633,
-    "seen": 1792485016.6160204,
-    "ast_hash": "dd3e83a8929970d226507d20e72de0dc",
+    "mtime": 1794958593.6661887,
+    "seen": 1794958728.696183,
+    "ast_hash": "36dc95a3198492ccd827c8b537103e99",
     "semantic_hash": ""
   },
   "apps/server/tests/unit/actor.test.ts": {
@@ -3108,9 +3108,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/duelos.test.ts": {
-    "mtime": 1792757964.1253924,
-    "seen": 1792758030.9074314,
-    "ast_hash": "9bfdf822a6917a884f44a97b5ea86b28",
+    "mtime": 1794958592.8264167,
+    "seen": 1794958728.686528,
+    "ast_hash": "fef7d3135861762d6b2358b092af5281",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/migracion-0010.test.ts": {
@@ -5292,9 +5292,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/desglose.test.ts": {
-    "mtime": 1793707215.890328,
-    "seen": 1793711136.4469147,
-    "ast_hash": "9f7acafde02c9db195d09a89cfeee00f",
+    "mtime": 1794958594.4960265,
+    "seen": 1794958728.6859472,
+    "ast_hash": "41f9a2ba0e42189235a85e34b6827094",
     "semantic_hash": ""
   },
   "apps/server/tests/unit/desglose.test.ts": {
