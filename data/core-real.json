@@ -2566,7 +2566,9 @@
         "Potente",
         "Incansable"
       ],
-      "defectos": ["Canchero"],
+      "defectos": [
+        "Canchero"
+      ],
       "nivel": "GOAT",
       "imagen": "/cartas/retratos-propios/nuno-mendes.webp",
       "imagen_bg": "/cartas/fondos/jugadores/81.webp"
@@ -3350,7 +3352,7 @@
         "vision": 72,
         "disparo": 75
       },
-      "media": 76.50,
+      "media": 76.5,
       "virtudes": [
         "PrimerToque"
       ],
@@ -6390,8 +6392,7 @@
         "Presionador",
         "Desbordante"
       ],
-      "defectos": [
-      ],
+      "defectos": [],
       "nivel": "Crack",
       "imagen": "/cartas/retratos-propios/anthony-gordon.webp",
       "imagen_bg": "/cartas/fondos/jugadores/201.webp"
@@ -7186,7 +7187,7 @@
       },
       "media": 83.33,
       "virtudes": [
-        "Matador",        
+        "Matador",
         "Robusto"
       ],
       "defectos": [],
@@ -7402,7 +7403,8 @@
       "altura": 184,
       "demarcacion": "DEL",
       "posicion": [
-        "ED","MCO"
+        "ED",
+        "MCO"
       ],
       "historia": "Extremo zurdo formado en el Reading que brilló en el Crystal Palace. En el Bayern de Múnich se convirtió en uno de los mejores asistentes de Europa. Plata olímpica en París 2024 con Francia.",
       "stats": {
@@ -9542,41 +9544,6 @@
       "imagen_bg": "/cartas/fondos/jugadores/298.webp"
     },
     {
-      "id": 299,
-      "nombre": "Marco",
-      "apellidos": "Verratti",
-      "nombre_carta": "Verratti",
-      "nacionalidad": "ITA",
-      "fecha_nacimiento": "1992-11-05",
-      "altura": 165,
-      "demarcacion": "MED",
-      "posicion": [
-        "MC",
-        "MD"
-      ],
-      "historia": "Centrocampista formado en el Pescara que pasó once temporadas en el PSG, con el que ganó nueve Ligue 1. Campeón de la Eurocopa 2020 con Italia. En 2023 se fue a la liga de Catar.",
-      "stats": {
-        "velocidad": 78,
-        "tecnica": 95,
-        "pase": 95,
-        "posicionamiento": 88,
-        "vision": 92,
-        "disparo": 80
-      },
-      "media": 88,
-      "virtudes": [
-        "Elegante",
-        "PrimerToque",
-        "Filigranas"
-      ],
-      "defectos": [
-        "Impulsivo"
-      ],
-      "nivel": "GOAT",
-      "imagen": "/cartas/retratos-propios/marco-verratti.webp",
-      "imagen_bg": "/cartas/fondos/jugadores/299.webp"
-    },
-    {
       "id": 300,
       "nombre": "Robert",
       "apellidos": "Lewandowski",
@@ -9608,6 +9575,41 @@
       "nivel": "GOAT",
       "imagen": "/cartas/retratos-propios/robert-lewandowski.webp",
       "imagen_bg": "/cartas/fondos/jugadores/300.webp"
+    },
+    {
+      "id": 376,
+      "nombre": "Joshua Walter",
+      "apellidos": "Kimmich",
+      "nombre_carta": "Kimmich",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1995-02-08",
+      "altura": 177,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC",
+        "LD"
+      ],
+      "historia": "Centrocampista formado en el Stuttgart y el RB Leipzig que se convirtió en un pilar del Bayern de Múnich como lateral derecho y mediocentro. Ganó la Liga de Campeones de 2020, con la asistencia del gol de la final, y nueve Bundesligas. Capitán de Alemania.",
+      "stats": {
+        "velocidad": 80,
+        "tecnica": 90,
+        "pase": 94,
+        "posicionamiento": 92,
+        "vision": 93,
+        "disparo": 84
+      },
+      "media": 88.83,
+      "virtudes": [
+        "Versatil",
+        "LanzadorFaltas",
+        "Capitania",
+        "Motivador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/joshua-kimmich.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/376.webp"
     }
   ]
 }

@@ -24,6 +24,8 @@ const EXCEPCIONES: readonly RegExp[] = [
   /^apps\/server\/drizzle\/meta\/000\d_snapshot\.json$/,
   /^apps\/server\/drizzle\/0010_virtudes_defectos\.sql$/,
   /^specs\/005-virtudes-defectos\//,
+  // Listas del origen de la spec 016, copiadas tal cual (enlaces a «Special:MediaSearch» de Wikimedia).
+  /^specs\/016-expansiones-reales\/fuentes\//,
   /^apps\/web\/public\/fuentes\/LICENCIA$/,
   /^packages\/domain\/tests\/sinSpecials\.test\.ts$/,
 ];

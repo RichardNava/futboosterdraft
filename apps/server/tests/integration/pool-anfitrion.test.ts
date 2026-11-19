@@ -6,7 +6,7 @@ import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
-import { crearRegistradoConColeccion, darCartas } from '../helpers/economia';
+import { cartasCore, cartasDePago, crearRegistradoConColeccion, darCartas, montarColeccionPago } from '../helpers/economia';
 import { esperarEstado } from '../helpers/partidas';
 import { crearInvitado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
@@ -14,8 +14,13 @@ describe('pool del anfitrión (spec 006)', () => {
   let bd: BdPruebas;
   let srv: ServidorPruebas;
 
+  let core: Set<number>;
+
   beforeAll(async () => {
     bd = await iniciarBdPruebas();
+    // Spec 016 (R16): cartas de pago que no dependen del contenido de ninguna expansión.
+    await montarColeccionPago(bd.db, { id: 'pago-a', primerId: 9001, nuevas: 48 });
+    core = await cartasCore(bd.db);
   });
   beforeEach(async () => {
     await srv?.cerrar();
@@ -42,17 +47,21 @@ describe('pool del anfitrión (spec 006)', () => {
 
   it('el registrado juega con la foto de sus activas: ninguna inactiva sale en la mesa y reactivar no cambia la foto', { timeout: 120_000 }, async () => {
     const u = await crearRegistradoConColeccion(srv);
-    const prueba = Array.from({ length: 75 }, (_, i) => 301 + i);
+    const prueba = await cartasDePago(bd.db);
     await darCartas(bd.db, u.id, prueba);
-    // Por cada carta de prueba se desactiva una de Core de su misma combinación: el mínimo sigue cumpliéndose.
+    // Por cada carta de pago se desactiva una de Core de su misma combinación: el mínimo sigue cumpliéndose.
+    const deCore = sql`select jugador_id from colecciones_cartas where coleccion_id = 'core'`;
     await bd.db.execute(sql`
       update cartas_usuario cu set activa = false
       from (
         select core.id from (
           select j.id, j.demarcacion, j.nivel, row_number() over (partition by j.demarcacion, j.nivel order by j.id) as n
-          from jugadores j where j.id <= 300
+          from jugadores j where j.id in (${deCore})
         ) core
-        join (select demarcacion, nivel, count(*) as extra from jugadores where id > 300 group by demarcacion, nivel) p
+        join (
+          select demarcacion, nivel, count(*) as extra from jugadores
+          where id in (${sql.raw(prueba.join(',') || 'null')}) group by demarcacion, nivel
+        ) p
           on p.demarcacion = core.demarcacion and p.nivel = core.nivel
         where core.n <= p.extra
       ) d
@@ -60,10 +69,10 @@ describe('pool del anfitrión (spec 006)', () => {
     const coleccion = (await peticion(srv.url, '/api/coleccion', { cookie: u.cookie })).cuerpo;
     expect(coleccion.minimo.cumple).toBe(true);
     const inactivas = new Set<number>(coleccion.cartas.filter((c: any) => !c.activa).map((c: any) => c.id));
-    expect(inactivas.size).toBeGreaterThan(60);
+    expect(inactivas.size).toBeGreaterThan(40);
 
     const { partidaId, pool, elegidas } = await jugarDraft(u);
-    expect(pool).toHaveLength(375 - inactivas.size);
+    expect(pool).toHaveLength(core.size + prueba.length - inactivas.size);
     expect(pool!.some((id) => inactivas.has(id))).toBe(false);
     expect(elegidas.length).toBeGreaterThan(0);
     expect(elegidas.every((id) => pool!.includes(id))).toBe(true);
@@ -77,6 +86,6 @@ describe('pool del anfitrión (spec 006)', () => {
     const u = await crearInvitado(srv.url);
     const { pool, elegidas } = await jugarDraft(u);
     expect(pool).toBeNull();
-    expect(elegidas.every((id) => id <= 300)).toBe(true);
+    expect(elegidas.every((id) => core.has(id))).toBe(true);
   });
 });

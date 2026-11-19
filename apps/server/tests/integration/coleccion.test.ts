@@ -1,19 +1,26 @@
 /**
- * Colección propia, colección activa y desfragmentar (spec 006, US1, US2 y US3; T032, T044, T055).
+ * Colección propia, colección activa y desfragmentar (spec 006, US1, US2 y US3; T032, T044, T055). Spec 016: las
+ * cartas que no son de Core vienen de una colección de pago de pruebas (research R16) y desfragmentar da 25/75/125/175.
  */
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { iniciarServidorPruebas, type ServidorPruebas } from '../helpers/app';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
-import { crearRegistradoConColeccion, darCartas, saldoYSuma } from '../helpers/economia';
+import { crearRegistradoConColeccion, darCartas, montarColeccionPago, saldoYSuma } from '../helpers/economia';
 import { crearInvitado, crearRegistrado, peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
 describe('colección (spec 006)', () => {
   let bd: BdPruebas;
   let srv: ServidorPruebas;
+  /** Ids de la colección de pago de pruebas: 6 GOAT, 6 Legendario, 6 Crack y 6 Superclase. */
+  let pago: number[];
+  /** Una carta que no es de Core (la primera Superclase de la colección de pruebas). */
+  let extra: number;
 
   beforeAll(async () => {
     bd = await iniciarBdPruebas();
+    pago = (await montarColeccionPago(bd.db, { id: 'coleccion-prueba', primerId: 9001 })).ids;
+    extra = pago[18]!;
   });
   beforeEach(async () => {
     await srv?.cerrar();
@@ -31,13 +38,13 @@ describe('colección (spec 006)', () => {
     peticion(srv.url, `/api/coleccion/cartas/${id}`, { metodo: 'PUT', cookie, cuerpo: { activa } });
   const desfragmentar = (cookie: string, id: number) => peticion(srv.url, `/api/coleccion/cartas/${id}/desfragmentar`, { metodo: 'POST', cookie });
 
-  /** Usuario con la carta de prueba 301 (una de sobra en su combinación) y una carta de Core de esa combinación. */
+  /** Usuario con una carta que no es de Core (una de sobra en su combinación) y una carta de Core de esa combinación. */
   async function conUnaDeSobra() {
     const u = await crearRegistradoConColeccion(srv);
-    await darCartas(bd.db, u.id, [301]);
+    await darCartas(bd.db, u.id, [extra]);
     const lista = await cartas(u);
-    const c301 = lista.find((c) => c.id === 301);
-    const core = lista.find((c) => c.esCore && c.demarcacion === c301.demarcacion && c.nivel === c301.nivel);
+    const otra = lista.find((c) => c.id === extra);
+    const core = lista.find((c) => c.esCore && c.demarcacion === otra.demarcacion && c.nivel === otra.nivel);
     return { u, core: core.id as number };
   }
 
@@ -64,7 +71,10 @@ describe('colección (spec 006)', () => {
       }
       expect(r.cuerpo.minimo).toEqual({ cumple: true, incumplidas: [] });
       expect(r.cuerpo.saldo).toBe(0);
-      expect(r.cuerpo.colecciones.map((c: any) => c.id)).toEqual(['core', 'all-stars', 'top-argentinos']);
+      const ids = r.cuerpo.colecciones.map((c: any) => c.id);
+      expect(ids[0]).toBe('core');
+      expect(ids).toContain('coleccion-prueba');
+      expect(ids).not.toContain('all-stars');
       await coleccion(u.cookie);
       const n = await bd.db.execute<{ n: number }>(sql`select count(*)::int as n from cartas_usuario where usuario_id = ${u.id}`);
       expect(n.rows[0]!.n).toBe(300);
@@ -94,14 +104,14 @@ describe('colección (spec 006)', () => {
 
     it('una carta no poseída da 404 CARTA_NO_POSEIDA', async () => {
       const u = await crearRegistradoConColeccion(srv);
-      const r = await cambiar(u.cookie, 301, false);
+      const r = await cambiar(u.cookie, extra, false);
       expect(r.estado).toBe(404);
       expect(r.cuerpo.error.codigo).toBe('CARTA_NO_POSEIDA');
     });
 
     it('dos desactivaciones simultáneas de la última carta sobrante: solo se aplica una', async () => {
       const { u, core } = await conUnaDeSobra();
-      const [a, b] = await Promise.all([cambiar(u.cookie, 301, false), cambiar(u.cookie, core, false)]);
+      const [a, b] = await Promise.all([cambiar(u.cookie, extra, false), cambiar(u.cookie, core, false)]);
       expect([a.estado, b.estado].sort()).toEqual([200, 422]);
       expect((await coleccion(u.cookie)).cuerpo.minimo.cumple).toBe(true);
     });
@@ -115,11 +125,10 @@ describe('colección (spec 006)', () => {
       expect(r.cuerpo.error.codigo).toBe('CARTA_CORE');
     });
 
-    it('suma 25/50/75/100 según el nivel, quita la carta, no suma dos veces y queda en el historial', async () => {
+    it('suma 25/75/125/175 según el nivel, quita la carta, no suma dos veces y queda en el historial (spec 016, FR-018)', async () => {
       const u = await crearRegistradoConColeccion(srv);
-      const catalogo: any[] = (await peticion(srv.url, '/api/catalogo/jugadores')).cuerpo.filter((c: any) => c.id > 300);
-      const una = (nivel: string) => catalogo.find((c) => c.nivel === nivel).id as number;
-      const ids = [una('Superclase'), una('Crack'), una('Legendario'), una('GOAT')];
+      // Superclase, Crack, Legendario y GOAT de la colección de pruebas (bloques de 6 por nivel).
+      const ids = [pago[18]!, pago[12]!, pago[6]!, pago[0]!];
       await darCartas(bd.db, u.id, ids);
       const valores = [];
       for (const id of ids) {
@@ -127,15 +136,15 @@ describe('colección (spec 006)', () => {
         expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
         valores.push(r.cuerpo.fragmentos);
       }
-      expect(valores).toEqual([25, 50, 75, 100]);
+      expect(valores).toEqual([25, 75, 125, 175]);
       const otra = await desfragmentar(u.cookie, ids[0]!);
       expect(otra.estado).toBe(404);
       expect(otra.cuerpo.error.codigo).toBe('CARTA_NO_POSEIDA');
-      expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 250, suma: 250 });
+      expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 400, suma: 400 });
       expect((await cartas(u)).some((c) => ids.includes(c.id))).toBe(false);
 
       const h = await peticion(srv.url, '/api/fragmentos/movimientos', { cookie: u.cookie });
-      expect(h.cuerpo.saldo).toBe(250);
+      expect(h.cuerpo.saldo).toBe(400);
       expect(h.cuerpo.movimientos).toHaveLength(4);
       expect(h.cuerpo.movimientos.every((m: any) => m.motivo === 'desfragmentacion' && m.descripcion.startsWith('Carta desfragmentada'))).toBe(true);
       const fechas: string[] = h.cuerpo.movimientos.map((m: any) => m.creadoEn);
@@ -145,11 +154,23 @@ describe('colección (spec 006)', () => {
       expect(antes.cuerpo.movimientos.length).toBeLessThan(4);
     });
 
+    it('Verratti (299) ya no es del Core y da 175; Kimmich (376) sí lo es: 422 CARTA_CORE (spec 016, FR-007, FR-018)', async () => {
+      const u = await crearRegistradoConColeccion(srv);
+      expect((await cartas(u)).find((c) => c.id === 376)).toMatchObject({ esCore: true, valorFragmentos: null });
+      const kimmich = await desfragmentar(u.cookie, 376);
+      expect(kimmich.estado).toBe(422);
+      expect(kimmich.cuerpo.error.codigo).toBe('CARTA_CORE');
+      await darCartas(bd.db, u.id, [299]);
+      const r = await desfragmentar(u.cookie, 299);
+      expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
+      expect(r.cuerpo.fragmentos).toBe(175);
+    });
+
     it('desfragmentar una activa que rompería el mínimo da 422 MINIMO_ACTIVO', async () => {
       const { u, core } = await conUnaDeSobra();
-      // Con una carta de Core de la misma combinación desactivada, la 301 pasa a ser imprescindible.
+      // Con una carta de Core de la misma combinación desactivada, la otra pasa a ser imprescindible.
       expect((await cambiar(u.cookie, core, false)).estado).toBe(200);
-      const r = await desfragmentar(u.cookie, 301);
+      const r = await desfragmentar(u.cookie, extra);
       expect(r.estado).toBe(422);
       expect(r.cuerpo.error.codigo).toBe('MINIMO_ACTIVO');
     });

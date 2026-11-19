@@ -26,6 +26,7 @@ export function registrarRutasCosmeticos(app: FastifyInstance, auth: Auth, econo
     const registrado = usuario?.tipo === 'registrado' ? usuario : null;
     const poseidos = registrado ? await cosmeticos.poseidos(registrado.id) : new Set<string>();
     const lista = cosmeticos.todos().filter((c) => c.activo || poseidos.has(c.id));
+    const regalos = await economia.regalos();
     return {
       cosmeticos: lista.map((c) => ({
         id: c.id,
@@ -34,6 +35,9 @@ export function registrarRutasCosmeticos(app: FastifyInstance, auth: Auth, econo
         gratuito: c.gratuito,
         precioCentimos: c.precioCentimos,
         precioFragmentos: c.precioFragmentos,
+        // Spec 016 (FR-026): los sobres de regalo no se venden sueltos.
+        vendible: c.vendible !== false,
+        regaloDe: c.vendible === false ? (regalos.get(c.id) ?? null) : null,
         // Celebraciones (spec 012): con sus datos, para la vista previa y el selector del perfil.
         ...(c.datos ? { datos: c.datos } : {}),
         ...(registrado ? { poseido: c.gratuito || poseidos.has(c.id) } : {}),

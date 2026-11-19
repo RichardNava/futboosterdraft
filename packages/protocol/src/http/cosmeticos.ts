@@ -16,6 +16,10 @@ export interface Cosmetico {
   poseido?: boolean;
   /** Solo celebraciones (spec 012). */
   datos?: DatosCelebracion;
+  /** false en los sobres de regalo de una expansión (spec 016, FR-026). */
+  vendible: boolean;
+  /** Expansión que lo regala, si `vendible` es false (el nombre, para «Se consigue con la expansión…»). */
+  regaloDe: { id: string; nombre: string } | null;
 }
 
 export interface PackCosmeticos {

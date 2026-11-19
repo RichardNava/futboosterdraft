@@ -30,7 +30,7 @@ const carta = (id: number, extra: Partial<CartaPoseida>): CartaPoseida => ({
 const cartas = [
   carta(1, {}),
   carta(2, { nombre: 'Íker', apellidos: 'Baruvia Urirdez', nombreCarta: 'Íker Baruvia', nacionalidad: 'ESP', demarcacion: 'DEF', nivel: 'GOAT', media: 90, activa: false }),
-  carta(3, { nombre: 'Álvaro', apellidos: 'Calnas Dorel', nombreCarta: 'Álvaro Calnas', nacionalidad: 'ARG', demarcacion: 'DEL', nivel: 'Crack', media: 82, colecciones: ['all-stars', 'top-argentinos'], esCore: false }),
+  carta(3, { nombre: 'Álvaro', apellidos: 'Calnas Dorel', nombreCarta: 'Álvaro Calnas', nacionalidad: 'ARG', demarcacion: 'DEL', nivel: 'Crack', media: 82, colecciones: ['remontada-historica', 'idolos-dorados'], esCore: false }),
 ];
 
 describe('filtrado de la colección (R15)', () => {
@@ -49,14 +49,14 @@ describe('filtrado de la colección (R15)', () => {
     expect(filtrarCartas(cartas, '', { ...FILTROS_INICIALES, estado: 'inactivas' }).map((c) => c.id)).toEqual([2]);
     expect(filtrarCartas(cartas, '', { ...FILTROS_INICIALES, nivel: 'Crack' }).map((c) => c.id)).toEqual([3]);
     expect(filtrarCartas(cartas, '', { ...FILTROS_INICIALES, demarcacion: 'POR' }).map((c) => c.id)).toEqual([1]);
-    expect(filtrarCartas(cartas, '', { ...FILTROS_INICIALES, coleccion: 'top-argentinos' }).map((c) => c.id)).toEqual([3]);
+    expect(filtrarCartas(cartas, '', { ...FILTROS_INICIALES, coleccion: 'idolos-dorados' }).map((c) => c.id)).toEqual([3]);
   });
 
   it.each([
     ['nombre', 'asc', [3, 2, 1]],
     ['nombre', 'desc', [1, 2, 3]],
     ['nacionalidad', 'desc', [2, 1, 3]],
-    ['coleccion', 'asc', [3, 1, 2]],
+    ['coleccion', 'asc', [1, 2, 3]],
     ['nivel', 'desc', [2, 3, 1]],
     ['demarcacion', 'asc', [1, 2, 3]],
     ['media', 'desc', [2, 3, 1]],

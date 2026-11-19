@@ -85,6 +85,16 @@ test('en la 2D, «Gestionar equipo» detiene la reproducción y al volver sigue 
   const antes = await minutoDe();
   await page.getByRole('button', { name: 'Gestionar equipo' }).click();
   await expect(page.getByTestId('gestion-equipo')).toBeVisible();
+  // Spec 016, ronda 2: con el balón en juego también se ve la energía; el porcentaje en una línea y el indicador
+  // apoyado justo encima del círculo de posición, sin taparlo.
+  const fichas = page.getByTestId('gestion-equipo').locator('.ficha-equipo');
+  await expect(fichas.locator('.indicador-energia')).toHaveCount(await fichas.count());
+  const ficha = fichas.first();
+  const [indicador, porcentaje, posicion] = await Promise.all(
+    ['.indicador-energia', '.indicador-energia-porcentaje', '.ficha-equipo-posicion'].map((s) => ficha.locator(s).boundingBox()),
+  );
+  expect(porcentaje!.height).toBeLessThan(16);
+  expect(indicador!.y + indicador!.height).toBeLessThanOrEqual(posicion!.y + 1);
   // A x8 serían más de 2 minutos de juego: con la gestión abierta, la reproducción no avanza.
   await page.waitForTimeout(4000);
   await page.getByRole('button', { name: 'Volver sin cambios' }).click();

@@ -34,6 +34,8 @@ export interface Cosmetico {
   precioFragmentos: number | null;
   /** false = retirado: no se vende ni se ofrece a quien no lo tiene. */
   activo: boolean;
+  /** false = solo se consigue con su expansión (spec 016, FR-026); ausente = vendible. */
+  vendible?: boolean;
   orden: number;
   /** Solo celebraciones (spec 012). */
   datos?: DatosCelebracion | null;

@@ -1,0 +1,35 @@
+GOAT (6)
+--------------
+1,Cuti Romero
+2,Falcao
+3,Harry Maguire
+4,Keylor Navas
+5,Gundogan
+6,Antoine Griezmann
+
+Legendario (6)
+--------------
+7,David Luiz
+8,Joao Felix
+9,Mikel Merino
+10,Guillermo Ochoa
+11,Theo Hernandez
+12,Kingsley Coman
+
+Crack   (6)
+--------------
+13,Scott McTominay
+14,Nani
+15,Bremer
+16,Wojciech Szczęsny
+17,Diogo Dalot
+18,Youri Tielemans
+
+Superclase (6)
+--------------
+19,Romeo Lavia
+20,Strahinja Pavlović
+21,Yunus Musah
+22,Vedat Muriqi
+23,Carlos Soler
+24,Joane Gadou

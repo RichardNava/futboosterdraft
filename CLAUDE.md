@@ -4,9 +4,10 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 
 - Principios del proyecto: [.specify/memory/constitution.md](.specify/memory/constitution.md)
 - Iniciativas, prioridades y estado de cada spec: [ROADMAP.md](ROADMAP.md)
-- Especificación en curso: [specs/015-peso-individual-estadisticas/](specs/015-peso-individual-estadisticas/) (implementada el 2026-11-17, 76 de 76 en `pnpm balance`: ver su [informe-8.0.0.md](specs/015-peso-individual-estadisticas/informe-8.0.0.md); falta el recorrido a mano del quickstart; la anterior es la 014)
-- Datos del catálogo: `data/core-real.json` y `data/cartas-prueba.json` (cartas), `data/colecciones.json` (pertenencia) y `data/cosmeticos.json` (escudos, sobres y packs); `pnpm seed` los carga todos
+- Especificación en curso: [specs/016-expansiones-reales/](specs/016-expansiones-reales/) (implementada el 2026-11-18: cuatro expansiones de 24 jugadores reales; falta la revisión de los retratos y los recorridos a mano del [quickstart](specs/016-expansiones-reales/quickstart.md); la anterior es la 015)
+- Datos del catálogo: `data/core-real.json` (Core) y `data/expansiones-reales.json` (cartas de las expansiones), `data/colecciones.json` (pertenencia, número y sobre de regalo de cada expansión) y `data/cosmeticos.json` (escudos, sobres y packs); `pnpm seed` los carga todos y retira las colecciones de prueba si quedan
 - Las 300 cartas de Core son jugadores reales y su única fuente es `data/core-real.json`; `pnpm --filter @fbd/fixtures core-real` lo valida (solo retratos propios, en `/cartas/retratos-propios/`) y regenera `specs/008-datos-reales-core/sumario.md`
+- Expansiones (spec 016): `pnpm --filter @fbd/fixtures expansiones -- [--origen <dir>] [--solo A|B|C|D]` genera retratos, fondos, iconos, carteles y el icono del fragmento desde el material de origen, valida las expansiones y escribe `specs/016-expansiones-reales/sumario.md`; en el código, una expansión es una colección de pago (`coleccion`)
 - Imágenes de cosméticos: `pnpm --filter @fbd/fixtures imagenes -- --escudos <dir> --sobres <dir>` (WebP en `apps/web/public/cosmeticos/`; completa `data/cosmeticos.json` sin pisar lo editado)
 - Identidad de las cartas (plan B de derechos de imagen): `pnpm --filter @fbd/server ajuste identidad_cartas <real|alternativa>`, sin reiniciar y solo para las partidas nuevas
 - Ilustraciones de fondo de Core: `pnpm --filter @fbd/fixtures fondos-core -- --origen <dir>` (WebP en `apps/web/public/cartas/fondos/jugadores/<id>.webp`; escribe `imagen_bg` en `data/core-real.json`)

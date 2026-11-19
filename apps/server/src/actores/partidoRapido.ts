@@ -445,7 +445,8 @@ export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando
     /** Minuto de juego en que acaba el tramo (la reproducción 2D lo usa para el reloj del marcador). */
     minuto: minutoMostrable(r.estado.reloj),
     acciones: r.acciones,
-    ...(r.fotogramas ? { fotogramas: r.fotogramas } : {}),
+    // En la 2D, también la energía con que acaba el tramo: la gestión abierta con el balón en juego la necesita.
+    ...(r.fotogramas ? { fotogramas: r.fotogramas, energia: energiaEnCampo(r.estado) } : {}),
     provisional: false,
   };
   emitirAParticipantes(c, ctx, p.fila, tramo);

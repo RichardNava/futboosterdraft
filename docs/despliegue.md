@@ -16,7 +16,7 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 - `dist/seed.js`: la carga del catálogo.
 - `drizzle/`: las migraciones.
 - `web/`: la web compilada.
-- `data/`: las cartas (`core-real.json`, `cartas-prueba.json`) y las colecciones (`colecciones.json`).
+- `data/`: las cartas (`core-real.json`, `expansiones-reales.json`), las colecciones (`colecciones.json`) y los cosméticos (`cosmeticos.json`).
 - Las dependencias de producción.
 
 ## 2. Variables de entorno
@@ -124,7 +124,7 @@ location / {
 
 ## 4. Cargar el catálogo
 
-La primera vez, y cada vez que cambien las cartas o las colecciones, carga el catálogo. Por defecto lee `data/core-real.json`, `data/cartas-prueba.json` y `data/colecciones.json` (spec 006). La carga es idempotente (*upsert* por `id`) y va en una transacción: si cualquier fichero tiene un error, rechaza el lote entero (FR-024). Informa del recuento por demarcación × nivel de cada colección y, si una colección de pago ya vendida gana cartas, de lo que entrega a sus compradores.
+La primera vez, y cada vez que cambien las cartas o las colecciones, carga el catálogo. Por defecto lee `data/core-real.json`, `data/expansiones-reales.json`, `data/colecciones.json` y `data/cosmeticos.json` (specs 006 y 016). Antes de cargar retira las colecciones de prueba `all-stars` y `top-argentinos` si aún existen, con las partidas, cartas, movimientos y compras que las citan (spec 016, FR-009 a FR-012): hazlo con el servidor parado y sin partidas en curso; la segunda vez informa 0 en todo. La carga es idempotente (*upsert* por `id`) y va en una transacción: si cualquier fichero tiene un error, rechaza el lote entero (FR-024). Informa del recuento por demarcación × nivel de cada colección y, si una colección de pago ya vendida gana cartas, de lo que entrega a sus compradores.
 
 ```bash
 docker exec futboosterdraft node dist/seed.js

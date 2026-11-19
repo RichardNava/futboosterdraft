@@ -7,7 +7,7 @@ import { CampoEquipo } from './CampoEquipo';
 import { cambiarFormacion, colocacionDe, mover, RADIO_FICHA, soltar, titularesDe, type DestinoSoltar, type EstadoCampo } from './campoEquipoEstado';
 import type { CartaResumen } from './CartaJugador';
 import { EditorLanzadores } from './EditorLanzadores';
-import { Icono } from './Icono';
+import { Icono, type NombreIcono } from './Icono';
 import type { EstadoEquipo } from './estadoEquipoEnPartido';
 import { PanelTactica } from './PanelTactica';
 import { Dialogo } from './Dialogo';
@@ -97,8 +97,8 @@ interface Props {
   enviar: (decisiones: DecisionGestion[]) => Promise<{ ok: boolean; error?: { mensaje?: string; indice?: number } }>;
   /** Se cierra la pantalla; `aplicado` si se confirmaron cambios. */
   onCerrar: (aplicado: boolean) => void;
-  /** Parada de «control total» (spec 012): qué ha pasado y cuántos cambios quedan. */
-  aviso?: string | null;
+  /** Parada de «control total» (spec 012): qué ha pasado y cuántos cambios quedan, con el icono de cada lance. */
+  aviso?: { texto: string; iconos: readonly NombreIcono[] } | null;
   /** Lesionados de la parada (ronda 5): no se sigue sin sustituirlos mientras queden cambios y suplentes. */
   lesionadosParada?: ReadonlySet<number>;
   /** Resultado y minuto del partido en la 2D (ronda 5): al llegar en una parada, se sabe qué ha pasado. */
@@ -246,7 +246,10 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
       </header>
       {aviso && (
         <p className="aviso-parada" role="status">
-          <Icono nombre="lesion" /> {aviso}
+          {aviso.iconos.map((i) => (
+            <Icono key={i} nombre={i} className={`icono-${i}`} />
+          ))}{' '}
+          {aviso.texto}
           {debeSustituir && ' Arrastra un suplente sobre el lesionado para sustituirlo.'}
         </p>
       )}

@@ -7,6 +7,7 @@
 import { useState, type ReactNode } from 'react';
 import { ErrorApi } from '../api/cliente';
 import { Dialogo } from './Dialogo';
+import { Fragmentos } from './Fragmentos';
 
 export const formatoEuros = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 /** «1.000 fragmentos»: en español, sin `always` no se agrupan los números de cuatro cifras. */
@@ -53,7 +54,7 @@ export function DialogoPagoPrueba<T>({ titulo, resumen, precioCentimos, precioFr
       <h2 id="titulo-pago">{titulo}</h2>
       <div className="pago-resumen">{resumen}</div>
       <p className="pago-precio">
-        {precioCentimos !== undefined ? formatoEuros.format(precioCentimos / 100) : `${formatoFragmentos.format(precioFragmentos)} fragmentos`}
+        {precioCentimos !== undefined ? formatoEuros.format(precioCentimos / 100) : <Fragmentos cantidad={precioFragmentos} tamano={24} />}
       </p>
       {error && (
         <p className="error" role="alert">

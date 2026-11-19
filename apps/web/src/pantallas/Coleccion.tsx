@@ -12,7 +12,7 @@ import { Link } from 'react-router';
 import { cambiarActiva, desfragmentar, ErrorApi, obtenerMovimientos } from '../api/cliente';
 import { CartaJugador } from '../componentes/CartaJugador';
 import { Dialogo } from '../componentes/Dialogo';
-import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
+import { Fragmentos } from '../componentes/Fragmentos';
 import { EstadoVacio } from '../componentes/EstadoVacio';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { FichaCartaColeccion } from '../componentes/FichaCartaColeccion';
@@ -208,7 +208,7 @@ export function Coleccion() {
             <dt>Fragmentos</dt>
             <dd>
               <button type="button" className="texto saldo" onClick={() => setHistorial(true)} aria-label={`Fragmentos: ${datos.saldo}. Ver historial`}>
-                {formatoFragmentos.format(datos.saldo)}
+                <Fragmentos cantidad={datos.saldo} />
               </button>
             </dd>
           </div>
@@ -416,7 +416,9 @@ function HistorialFragmentos({ saldo, onCerrar }: { saldo: number; onCerrar: () 
   const fecha = new Intl.DateTimeFormat('es-ES', { dateStyle: 'short', timeStyle: 'short' });
   return (
     <Dialogo etiquetadoPor="titulo-historial" alEscape={onCerrar} alPulsarFondo={onCerrar}>
-      <h2 id="titulo-historial">Fragmentos: {formatoFragmentos.format(saldo)}</h2>
+      <h2 id="titulo-historial">
+        Fragmentos: <Fragmentos cantidad={saldo} tamano={24} />
+      </h2>
       {movimientos === null ? (
         <p>Cargando…</p>
       ) : movimientos.length === 0 ? (
@@ -436,8 +438,7 @@ function HistorialFragmentos({ saldo, onCerrar }: { saldo: number; onCerrar: () 
                 <td>{fecha.format(new Date(m.creadoEn))}</td>
                 <td>{m.descripcion}</td>
                 <td className={m.importe > 0 ? 'positivo' : 'negativo'}>
-                  {m.importe > 0 ? '+' : '−'}
-                  {formatoFragmentos.format(Math.abs(m.importe))}
+                  <Fragmentos cantidad={m.importe} signo />
                 </td>
               </tr>
             ))}

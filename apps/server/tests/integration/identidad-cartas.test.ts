@@ -16,7 +16,7 @@ import { avanzarHasta } from '../helpers/torneo';
 import { peticion, type UsuarioPrueba } from '../helpers/usuarios';
 
 const leer = (f: string) => (JSON.parse(readFileSync(new URL(`../../../../data/${f}`, import.meta.url), 'utf8')) as { jugadores: Jugador[] }).jugadores;
-const REALES = [...leer('core-real.json'), ...leer('cartas-prueba.json')];
+const REALES = [...leer('core-real.json'), ...leer('expansiones-reales.json')];
 
 describe('identidad de las cartas (spec 011, US4)', () => {
   let bd: BdPruebas;
@@ -72,7 +72,7 @@ describe('identidad de las cartas (spec 011, US4)', () => {
     const u = await crearRegistradoConColeccion(srv);
     await fijarAjuste('alternativa');
     srv.reloj.avanzar(CADUCIDAD_MS);
-    await bd.db.execute(sql`insert into movimientos_fragmentos (usuario_id, importe, motivo, referencia) values (${u.id}, 50, 'duplicado', '301')`);
+    await bd.db.execute(sql`insert into movimientos_fragmentos (usuario_id, importe, motivo, referencia) values (${u.id}, 25, 'duplicado', '1')`);
     const respuestas = {
       catalogo: await peticion(srv.url, '/api/catalogo/jugadores'),
       ficha: await peticion(srv.url, '/api/catalogo/jugadores/1'),
@@ -88,7 +88,7 @@ describe('identidad de las cartas (spec 011, US4)', () => {
       expect(texto, nombre).not.toContain('/cartas/retratos');
     }
     expect(respuestas.ficha.cuerpo).toMatchObject({ nombre_carta: expect.stringMatching(/^(Portero|Defensa|Centrocampista|Delantero) 1$/), historia: '' });
-    expect(respuestas.movimientos.cuerpo.movimientos[0].descripcion).toMatch(/^Carta repetida: (Portero|Defensa|Centrocampista|Delantero) 301$/);
+    expect(respuestas.movimientos.cuerpo.movimientos[0].descripcion).toMatch(/^Carta repetida: (Portero|Defensa|Centrocampista|Delantero) 1$/);
     // De vuelta a «real», los nombres vuelven.
     await fijarAjuste('real');
     srv.reloj.avanzar(CADUCIDAD_MS);

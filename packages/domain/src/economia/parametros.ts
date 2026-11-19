@@ -25,7 +25,7 @@ export interface ParametrosEconomia {
 
 export const PARAMETROS_ECONOMIA: Readonly<ParametrosEconomia> = {
   recompensaTorneo: 10,
-  desfragmentar: { Superclase: 25, Crack: 50, Legendario: 75, GOAT: 100 },
+  desfragmentar: { Superclase: 25, Crack: 75, Legendario: 125, GOAT: 175 },
   precioSobreFragmentos: 1000,
   precioSobreCentimos: 99,
   // Retirados por la spec 011 (FR-002): sin licencia de imagen, el dinero real no compra fragmentos.

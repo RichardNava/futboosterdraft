@@ -15,6 +15,7 @@ import { IndicadorNavegacion } from '../componentes/IndicadorNavegacion';
 import { useAvisos } from '../estado/avisos';
 import { Escudo } from '../componentes/arte/Escudo';
 import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
+import { Fragmentos } from '../componentes/Fragmentos';
 import { useSaldo } from '../estado/saldo';
 
 const FONDOS_PANTALLA = 11;
@@ -241,8 +242,7 @@ export function Marco() {
             </div>
             {esRegistrado && saldo !== null && (
               <Link to="/tienda" className="saldo-navegacion" aria-label={`Fragmentos: ${formatoFragmentos.format(saldo)}. Ir a la tienda`} title="Ir a la tienda">
-                <Icono nombre="cristal" tamano={18} />
-                {formatoFragmentos.format(saldo)}
+                <Fragmentos cantidad={saldo} tamano={18} />
               </Link>
             )}
             <MenuNavegacion enlaces={listaEnlaces(false)} sonido={interruptorSonido(true)} />

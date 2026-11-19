@@ -11,14 +11,27 @@ export interface ResumenCompra {
   fragmentos: number;
   duplicados: { id: number; nivel: Nivel; nombreCarta: string; fragmentos: number }[];
   saldo: number;
+  /** Cosméticos entregados con la compra: el sobre de regalo de la expansión, o vacío (spec 016, FR-025). */
+  cosmeticos: string[];
+}
+
+/** Una carta de una expansión en su detalle (spec 016, FR-019). */
+export interface CartaExpansion {
+  /** Con la identidad de la cuenta (plan B, spec 011). */
+  carta: CartaResumen;
+  /** Posición dentro de la expansión, 1..N. */
+  numero: number;
+  poseida: boolean;
+  /** Fragmentos que daría al comprar la expansión si `poseida`; 0 si no. */
+  compensacion: number;
 }
 
 export interface ProductoColeccion {
   id: string;
   nombre: string;
   descripcion: string;
-  /** Precio en euros para cuando haya licencia de imagen; no se ofrece (spec 011, FR-002). */
-  precioCentimos: number;
+  /** Precio en euros para cuando haya licencia de imagen; no se ofrece (spec 011, FR-002). null en las expansiones (spec 016, FR-020). */
+  precioCentimos: number | null;
   /** Único precio de venta mientras no haya licencia de imagen (spec 011, FR-002). */
   precioFragmentos: number;
   numCartas: number;
@@ -28,6 +41,17 @@ export interface ProductoColeccion {
   adquirida: boolean;
   /** Fragmentos que se recibirían si ya se tienen todas sus cartas (US5, escenario 4). */
   soloFragmentos: number | null;
+  /** Spec 016: las N cartas en orden de `numero`. */
+  cartas: CartaExpansion[];
+  /** Suma de `cartas[].compensacion` si se compra ahora. */
+  compensacion: number;
+  sobreRegalo: { id: string; nombre: string; poseido: boolean } | null;
+  /** `/expansiones/<id>/icono-256.webp` */
+  icono: string;
+  /** `/expansiones/<id>/icono-512.webp` */
+  iconoGrande: string;
+  /** `/expansiones/<id>/cartel.webp` */
+  cartel: string;
 }
 
 export interface ProductoSobre {

@@ -10,7 +10,7 @@ describe('cartasPortada', () => {
   it('saca una carta por nivel, de Core y entre las cuatro de media más alta, con los campos de la carta', () => {
     const catalogo = [
       ...[90, 89, 88, 87, 50].map((m, i) => carta(i + 1, 'GOAT', m)),
-      carta(10, 'GOAT', 99, ['all-stars']),
+      carta(10, 'GOAT', 99, ['remontada-historica']),
       carta(20, 'Crack', 80),
     ];
     const [crack, goat] = cartasPortada(catalogo, () => 0.99);

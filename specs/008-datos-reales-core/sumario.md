@@ -23,13 +23,13 @@ Huecos: **25**. Excesos: **25**. Huecos − excesos = **0** (lo que falta para l
 |---|---:|---:|---:|---:|---|
 | POR | 30 | 0 | 30 | 8 |  |
 | LI | 18 | 15 | 33 | 8 |  |
-| LD | 15 | 11 | 26 | 8 |  |
+| LD | 15 | 12 | 27 | 8 |  |
 | DCI | 19 | 12 | 31 | 16 |  |
 | DCD | 29 | 7 | 36 | 16 |  |
 | CI | 2 | 14 | 16 | 8 |  |
 | CD | 4 | 8 | 12 | 8 |  |
-| MD | 21 | 22 | 43 | 8 |  |
-| MC | 38 | 30 | 68 | 16 |  |
+| MD | 22 | 21 | 43 | 8 |  |
+| MC | 37 | 31 | 68 | 16 |  |
 | MII | 4 | 13 | 17 | 8 |  |
 | MID | 5 | 17 | 22 | 8 |  |
 | MCO | 28 | 22 | 50 | 8 |  |
@@ -46,11 +46,11 @@ Huecos: **25**. Excesos: **25**. Huecos − excesos = **0** (lo que falta para l
 | ESP | 35 | más del 10 % |
 | FRA | 32 | más del 10 % |
 | BRA | 23 |  |
-| DEU | 19 |  |
+| DEU | 20 |  |
 | PRT | 16 |  |
 | ARG | 15 |  |
 | NLD | 15 |  |
-| ITA | 11 |  |
+| ITA | 10 |  |
 | BEL | 8 |  |
 | HRV | 8 |  |
 | SEN | 7 |  |
@@ -95,7 +95,7 @@ Huecos: **25**. Excesos: **25**. Huecos − excesos = **0** (lo que falta para l
 | Superclase | 3 % | 15 % | -12 pts |
 | Crack | 24 % | 25 % | -1 pts |
 | Legendario | 33 % | 35 % | -2 pts |
-| GOAT | 47 % | 50 % | -3 pts |
+| GOAT | 44 % | 50 % | -6 pts |
 
 Los defectos reflejan la valoración honesta de cada jugador (FR-011); una desviación grande se corrige revisando fichas.
 
@@ -105,7 +105,7 @@ Los defectos reflejan la valoración honesta de cada jugador (FR-011); una desvi
   - [16] Donnarumma (media 88) → Legendario
   - [18] Oblak (media 88) → Legendario
 - **MED Crack**: sobran 1.
-  - [161] Zubimendi (media 83) → Legendario
+  - [121] Arda Güler (media 83) → Legendario
 - **DEL Superclase**: sobran 9.
   - Ningún nivel vecino tiene hueco: el exceso se compensa eligiendo menos cartas de otro nivel.
 - **DEL Crack**: sobran 6.

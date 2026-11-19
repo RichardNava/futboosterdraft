@@ -7,6 +7,7 @@ import type { CartaPoseida } from '@fbd/protocol';
 import { useState } from 'react';
 import { CartaJugador } from './CartaJugador';
 import { Dialogo } from './Dialogo';
+import { Fragmentos } from './Fragmentos';
 import { InterruptorActiva } from './InterruptorActiva';
 
 interface Props {
@@ -39,7 +40,9 @@ export function FichaCartaColeccion({ carta, nombresColecciones, motivoMinimo, o
     return (
       <Dialogo rol="alertdialog" etiquetadoPor="titulo-desfragmentar" alEscape={() => setConfirmando(false)}>
         <h2 id="titulo-desfragmentar">¿Desfragmentar {carta.nombreCarta}?</h2>
-        <p>Recibirás {carta.valorFragmentos} fragmentos. Esta acción no se puede deshacer</p>
+        <p>
+          Recibirás <Fragmentos cantidad={carta.valorFragmentos ?? 0} />. Esta acción no se puede deshacer
+        </p>
         <div className="acciones">
           <button type="button" className="secundario" onClick={() => setConfirmando(false)} autoFocus>
             Cancelar
@@ -76,7 +79,7 @@ export function FichaCartaColeccion({ carta, nombresColecciones, motivoMinimo, o
             <p className="nota">Las cartas de Core no se pueden desfragmentar</p>
           ) : (
             <button type="button" className="secundario" onClick={() => setConfirmando(true)}>
-              Desfragmentar (+{carta.valorFragmentos})
+              Desfragmentar (<Fragmentos cantidad={carta.valorFragmentos ?? 0} signo />)
             </button>
           )}
           <div className="acciones">

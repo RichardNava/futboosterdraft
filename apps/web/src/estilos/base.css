@@ -4538,13 +4538,16 @@ html {
 
 /*
  * Indicador de energía en la chapa de «Gestionar equipo» (spec 014, contrato U1): porcentaje, cara y penalización en
- * una columna pegada al retrato, encima del círculo de posición. Posición absoluta: la rejilla del campo no crece
- * (Principio XI). Sin animación.
+ * una columna centrada sobre el círculo de posición y apoyada justo encima de él, sin taparlo (spec 016, ronda 2): el
+ * porcentaje en una línea y la cara debajo; la penalización, si la hay, encima del porcentaje. Posición absoluta: la
+ * rejilla del campo no crece (Principio XI). Sin animación.
  */
 .indicador-energia {
   position: absolute;
-  top: calc(-1 * var(--espacio-3));
-  left: calc(50% + var(--ficha-retrato) / 2 - 2px);
+  /* El borde superior del círculo de posición (ver .ficha-equipo-posicion) y su centro. */
+  top: calc(var(--ficha-retrato) - var(--ficha-circulo) - 1px);
+  left: calc(50% + var(--ficha-retrato) / 2 - 3px + var(--ficha-circulo) / 2);
+  transform: translate(-50%, -100%);
   z-index: 3;
   display: grid;
   justify-items: center;
@@ -4552,7 +4555,12 @@ html {
   font-size: 0.7rem;
   font-weight: 700;
   line-height: 1;
+  white-space: nowrap;
   pointer-events: none;
+}
+
+.indicador-energia-penalizacion {
+  order: -1;
 }
 
 .indicador-energia-porcentaje {
@@ -4607,10 +4615,7 @@ html {
 }
 
 @media (max-width: 640px) {
-  /* En móvil la cara va superpuesta en la esquina del retrato. */
   .indicador-energia {
-    top: calc(-1 * var(--espacio-2));
-    left: calc(50% + var(--ficha-retrato) / 2 - 10px);
     font-size: 0.6rem;
   }
 

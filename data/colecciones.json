@@ -305,125 +305,452 @@
         296,
         297,
         298,
-        299,
-        300
+        300,
+        376
       ]
     },
     {
-      "id": "all-stars",
-      "nombre": "All Stars",
-      "descripcion": "Estrellas de todas las selecciones (colección de prueba).",
+      "id": "remontada-historica",
+      "nombre": "Remontada Histórica",
+      "descripcion": "24 jugadores: 6 GOAT, 6 Legendario, 6 Crack y 6 Superclase. Regala el sobre 7.",
       "tipo": "pago",
-      "precio_centimos": 499,
-      "precio_fragmentos": 5000,
+      "precio_fragmentos": 2400,
+      "sobre_regalo": "sobre-7",
       "destacadas": [
-        341,
-        342,
-        315
-      ],
-      "cartas": [
-        238,
-        248,
-        17,
         301,
         302,
-        303,
-        304,
-        305,
-        306,
-        307,
-        308,
-        309,
-        310,
-        311,
-        312,
-        313,
-        314,
-        315,
-        316,
-        317,
-        318,
-        319,
-        320,
-        321,
-        322,
-        323,
-        324,
-        325,
-        326,
-        327,
-        328,
-        329,
-        330,
-        331,
-        332,
-        333,
-        334,
-        335,
-        336,
-        337,
-        338,
-        339,
-        340,
-        341,
-        342
+        303
+      ],
+      "cartas": [
+        {
+          "id": 301,
+          "numero": 1
+        },
+        {
+          "id": 302,
+          "numero": 2
+        },
+        {
+          "id": 303,
+          "numero": 3
+        },
+        {
+          "id": 304,
+          "numero": 4
+        },
+        {
+          "id": 305,
+          "numero": 5
+        },
+        {
+          "id": 306,
+          "numero": 6
+        },
+        {
+          "id": 307,
+          "numero": 7
+        },
+        {
+          "id": 308,
+          "numero": 8
+        },
+        {
+          "id": 309,
+          "numero": 9
+        },
+        {
+          "id": 310,
+          "numero": 10
+        },
+        {
+          "id": 311,
+          "numero": 11
+        },
+        {
+          "id": 312,
+          "numero": 12
+        },
+        {
+          "id": 313,
+          "numero": 13
+        },
+        {
+          "id": 314,
+          "numero": 14
+        },
+        {
+          "id": 315,
+          "numero": 15
+        },
+        {
+          "id": 316,
+          "numero": 16
+        },
+        {
+          "id": 317,
+          "numero": 17
+        },
+        {
+          "id": 318,
+          "numero": 18
+        },
+        {
+          "id": 319,
+          "numero": 19
+        },
+        {
+          "id": 320,
+          "numero": 20
+        },
+        {
+          "id": 321,
+          "numero": 21
+        },
+        {
+          "id": 322,
+          "numero": 22
+        },
+        {
+          "id": 323,
+          "numero": 23
+        },
+        {
+          "id": 324,
+          "numero": 24
+        }
       ]
     },
     {
-      "id": "top-argentinos",
-      "nombre": "Top Argentinos",
-      "descripcion": "Lo mejor de la selección argentina (colección de prueba).",
+      "id": "idolos-dorados",
+      "nombre": "Ídolos Dorados",
+      "descripcion": "24 jugadores: 6 GOAT, 6 Legendario, 6 Crack y 6 Superclase. Regala el sobre 1.",
       "tipo": "pago",
-      "precio_centimos": 399,
-      "precio_fragmentos": 4000,
+      "precio_fragmentos": 2400,
+      "sobre_regalo": "sobre-1",
       "destacadas": [
-        373,
-        339,
-        366
+        325,
+        326,
+        327
       ],
       "cartas": [
-        100,
-        64,
-        15,
-        302,
-        316,
-        320,
-        322,
-        335,
-        339,
-        343,
-        344,
-        345,
-        346,
-        347,
-        348,
+        {
+          "id": 325,
+          "numero": 1
+        },
+        {
+          "id": 326,
+          "numero": 2
+        },
+        {
+          "id": 327,
+          "numero": 3
+        },
+        {
+          "id": 328,
+          "numero": 4
+        },
+        {
+          "id": 329,
+          "numero": 5
+        },
+        {
+          "id": 330,
+          "numero": 6
+        },
+        {
+          "id": 331,
+          "numero": 7
+        },
+        {
+          "id": 332,
+          "numero": 8
+        },
+        {
+          "id": 333,
+          "numero": 9
+        },
+        {
+          "id": 334,
+          "numero": 10
+        },
+        {
+          "id": 335,
+          "numero": 11
+        },
+        {
+          "id": 336,
+          "numero": 12
+        },
+        {
+          "id": 337,
+          "numero": 13
+        },
+        {
+          "id": 338,
+          "numero": 14
+        },
+        {
+          "id": 339,
+          "numero": 15
+        },
+        {
+          "id": 340,
+          "numero": 16
+        },
+        {
+          "id": 341,
+          "numero": 17
+        },
+        {
+          "id": 342,
+          "numero": 18
+        },
+        {
+          "id": 343,
+          "numero": 19
+        },
+        {
+          "id": 344,
+          "numero": 20
+        },
+        {
+          "id": 345,
+          "numero": 21
+        },
+        {
+          "id": 346,
+          "numero": 22
+        },
+        {
+          "id": 347,
+          "numero": 23
+        },
+        {
+          "id": 348,
+          "numero": 24
+        }
+      ]
+    },
+    {
+      "id": "saque-ardiente",
+      "nombre": "Saque Ardiente",
+      "descripcion": "24 jugadores: 6 GOAT, 6 Legendario, 6 Crack y 6 Superclase. Regala el sobre 4.",
+      "tipo": "pago",
+      "precio_fragmentos": 2400,
+      "sobre_regalo": "sobre-4",
+      "destacadas": [
         349,
         350,
-        351,
-        352,
-        353,
-        354,
-        355,
-        356,
-        357,
-        358,
-        359,
-        360,
-        361,
-        362,
-        363,
-        364,
-        365,
-        366,
-        367,
-        368,
-        369,
-        370,
-        371,
-        372,
+        351
+      ],
+      "cartas": [
+        {
+          "id": 349,
+          "numero": 1
+        },
+        {
+          "id": 350,
+          "numero": 2
+        },
+        {
+          "id": 351,
+          "numero": 3
+        },
+        {
+          "id": 352,
+          "numero": 4
+        },
+        {
+          "id": 353,
+          "numero": 5
+        },
+        {
+          "id": 354,
+          "numero": 6
+        },
+        {
+          "id": 355,
+          "numero": 7
+        },
+        {
+          "id": 356,
+          "numero": 8
+        },
+        {
+          "id": 357,
+          "numero": 9
+        },
+        {
+          "id": 358,
+          "numero": 10
+        },
+        {
+          "id": 359,
+          "numero": 11
+        },
+        {
+          "id": 360,
+          "numero": 12
+        },
+        {
+          "id": 361,
+          "numero": 13
+        },
+        {
+          "id": 362,
+          "numero": 14
+        },
+        {
+          "id": 363,
+          "numero": 15
+        },
+        {
+          "id": 364,
+          "numero": 16
+        },
+        {
+          "id": 365,
+          "numero": 17
+        },
+        {
+          "id": 366,
+          "numero": 18
+        },
+        {
+          "id": 367,
+          "numero": 19
+        },
+        {
+          "id": 368,
+          "numero": 20
+        },
+        {
+          "id": 369,
+          "numero": 21
+        },
+        {
+          "id": 370,
+          "numero": 22
+        },
+        {
+          "id": 371,
+          "numero": 23
+        },
+        {
+          "id": 372,
+          "numero": 24
+        }
+      ]
+    },
+    {
+      "id": "estrellas-fulgurantes",
+      "nombre": "Estrellas Fulgurantes",
+      "descripcion": "24 jugadores: 6 GOAT, 6 Legendario, 6 Crack y 6 Superclase. Regala el sobre 28.",
+      "tipo": "pago",
+      "precio_fragmentos": 2400,
+      "sobre_regalo": "sobre-28",
+      "destacadas": [
         373,
         374,
         375
+      ],
+      "cartas": [
+        {
+          "id": 373,
+          "numero": 1
+        },
+        {
+          "id": 374,
+          "numero": 2
+        },
+        {
+          "id": 375,
+          "numero": 3
+        },
+        {
+          "id": 299,
+          "numero": 4
+        },
+        {
+          "id": 377,
+          "numero": 5
+        },
+        {
+          "id": 378,
+          "numero": 6
+        },
+        {
+          "id": 379,
+          "numero": 7
+        },
+        {
+          "id": 380,
+          "numero": 8
+        },
+        {
+          "id": 381,
+          "numero": 9
+        },
+        {
+          "id": 382,
+          "numero": 10
+        },
+        {
+          "id": 383,
+          "numero": 11
+        },
+        {
+          "id": 384,
+          "numero": 12
+        },
+        {
+          "id": 385,
+          "numero": 13
+        },
+        {
+          "id": 386,
+          "numero": 14
+        },
+        {
+          "id": 387,
+          "numero": 15
+        },
+        {
+          "id": 388,
+          "numero": 16
+        },
+        {
+          "id": 389,
+          "numero": 17
+        },
+        {
+          "id": 390,
+          "numero": 18
+        },
+        {
+          "id": 391,
+          "numero": 19
+        },
+        {
+          "id": 392,
+          "numero": 20
+        },
+        {
+          "id": 393,
+          "numero": 21
+        },
+        {
+          "id": 394,
+          "numero": 22
+        },
+        {
+          "id": 395,
+          "numero": 23
+        },
+        {
+          "id": 396,
+          "numero": 24
+        }
       ]
     }
   ]

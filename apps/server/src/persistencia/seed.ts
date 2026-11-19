@@ -7,7 +7,9 @@
  * transacción, entrega las cartas añadidas a los compradores de colecciones ya vendidas (data-model §4.3) e informa
  * del recuento por demarcación × nivel de cada colección.
  *
- * Uso: pnpm seed                       (data/core-real.json + data/cartas-prueba.json + data/colecciones.json)
+ * Antes de cargar nada retira las colecciones de prueba `all-stars` y `top-argentinos` si aún existen (spec 016, R11).
+ *
+ * Uso: pnpm seed                       (data/core-real.json + data/expansiones-reales.json + data/colecciones.json)
  *      pnpm seed --file a.json --file b.json --colecciones c.json
  */
 import '../entorno';
@@ -37,6 +39,7 @@ import {
   colecciones as tablaColecciones,
   coleccionesCartas,
   coleccionesUsuario,
+  compras,
   cosmeticos as tablaCosmeticos,
   jugadores as tablaJugadores,
   packsCosmeticos,
@@ -49,7 +52,7 @@ const esquemaJugadores = require('@fbd/protocol/schemas/player-data.schema.json'
 const esquemaColecciones = require('@fbd/protocol/schemas/colecciones.schema.json') as object;
 
 export const FICHEROS_POR_DEFECTO = {
-  cartas: ['data/core-real.json', 'data/cartas-prueba.json'],
+  cartas: ['data/core-real.json', 'data/expansiones-reales.json'],
   colecciones: 'data/colecciones.json',
   cosmeticos: 'data/cosmeticos.json',
 };
@@ -147,6 +150,73 @@ export function informeColecciones(jugadores: readonly Jugador[], colecciones: r
     .join('\n\n');
 }
 
+/** Colecciones de prueba de la spec 006 que retira la 016 (FR-009). */
+export const COLECCIONES_PRUEBA = ['all-stars', 'top-argentinos'] as const;
+
+export interface RecuentoRetirada {
+  partidas: number;
+  cartasUsuario: number;
+  movimientos: number;
+  coleccionesUsuario: number;
+  compras: number;
+  colecciones: number;
+}
+
+type Transaccion = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
+
+/**
+ * Retira las colecciones de prueba y todo lo que las cita (spec 016, data-model §3; FR-009 a FR-012). Las cartas se
+ * identifican por su pertenencia a esas colecciones, nunca por rango de ids: en una segunda pasada ya no queda ninguna
+ * y no hace nada. `saldos_fragmentos` no se toca (FR-011).
+ */
+export async function retirarColeccionesPrueba(tx: Transaccion): Promise<RecuentoRetirada> {
+  const recuento: RecuentoRetirada = { partidas: 0, cartasUsuario: 0, movimientos: 0, coleccionesUsuario: 0, compras: 0, colecciones: 0 };
+  const prueba = (await tx.select({ id: tablaColecciones.id }).from(tablaColecciones).where(inArray(tablaColecciones.id, [...COLECCIONES_PRUEBA]))).map(
+    (f) => f.id,
+  );
+  if (prueba.length === 0) return recuento;
+  const cartas = (
+    await tx.selectDistinct({ id: coleccionesCartas.jugadorId }).from(coleccionesCartas).where(inArray(coleccionesCartas.coleccionId, prueba))
+  ).map((f) => f.id);
+  const comprasPrueba = [
+    ...(await tx.select({ id: coleccionesUsuario.compraId }).from(coleccionesUsuario).where(inArray(coleccionesUsuario.coleccionId, prueba))),
+    // Las compras de sobres de la tienda solo podían sacar cartas de prueba: eran el único pool de pago.
+    ...(await tx.select({ id: compras.id }).from(compras).where(eq(compras.productoTipo, 'sobre'))),
+  ].map((f) => f.id);
+  const filas = (r: { rowCount: number | null }) => r.rowCount ?? 0;
+
+  if (cartas.length) {
+    const lista = sql.join(
+      cartas.map((c) => sql`${c}`),
+      sql`, `,
+    );
+    recuento.partidas = filas(
+      await tx.execute(sql`
+        delete from partidas where id in (
+          select pa.partida_id from participantes pa join plantillas pl on pl.participante_id = pa.id
+            where pl.jugadores && array[${lista}]::integer[]
+          union
+          select m.partida_id from mesas m join elecciones e on e.mesa_id = m.id where e.jugador_id in (${lista})
+        )`),
+    );
+    recuento.cartasUsuario = filas(await tx.delete(cartasUsuario).where(inArray(cartasUsuario.jugadorId, cartas)));
+  }
+  const deCartas = cartas.length
+    ? sql`(${inArray(movimientosFragmentos.motivo, ['desfragmentacion', 'duplicado'])} and ${inArray(movimientosFragmentos.referencia, cartas.map(String))})`
+    : sql`false`;
+  const deCompras = comprasPrueba.length ? inArray(movimientosFragmentos.referencia, comprasPrueba) : sql`false`;
+  recuento.movimientos = filas(await tx.delete(movimientosFragmentos).where(sql`${deCartas} or ${deCompras}`));
+  recuento.coleccionesUsuario = filas(await tx.delete(coleccionesUsuario).where(inArray(coleccionesUsuario.coleccionId, prueba)));
+  if (comprasPrueba.length) recuento.compras = filas(await tx.delete(compras).where(inArray(compras.id, comprasPrueba)));
+  recuento.colecciones = filas(await tx.delete(tablaColecciones).where(inArray(tablaColecciones.id, prueba)));
+  return recuento;
+}
+
+export interface ResultadoCarga {
+  entregas: EntregaSeed[];
+  retirada: RecuentoRetirada;
+}
+
 export interface EntregaSeed {
   usuarioId: string;
   coleccionId: string;
@@ -157,10 +227,13 @@ export interface EntregaSeed {
 /**
  * Inserta o actualiza el catálogo (idempotente) en una transacción. Las cartas añadidas a una colección de pago ya
  * vendida se entregan a sus compradores: activas si no las tenían, o un movimiento `duplicado` si ya las tenían.
+ * Antes de insertar ninguna carta retira las colecciones de prueba (spec 016, R11). Los cosméticos deben estar
+ * cargados antes, por la referencia de `sobre_regalo`.
  */
-export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[], colecciones: readonly Coleccion[] = []): Promise<EntregaSeed[]> {
+export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[], colecciones: readonly Coleccion[] = []): Promise<ResultadoCarga> {
   const porId = new Map(jugadores.map((j) => [j.id, j]));
   return db.transaction(async (tx) => {
+    const retirada = await retirarColeccionesPrueba(tx);
     for (const j of jugadores) {
       const fila = {
         id: j.id,
@@ -203,6 +276,7 @@ export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[
         precioFragmentos: c.precioFragmentos ?? null,
         destacadas: c.destacadas ?? [],
         orden,
+        sobreRegalo: c.sobreRegalo ?? null,
       };
       await tx.insert(tablaColecciones).values(fila).onConflictDoUpdate({ target: tablaColecciones.id, set: fila });
 
@@ -213,8 +287,11 @@ export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[
       await tx.delete(coleccionesCartas).where(and(eq(coleccionesCartas.coleccionId, c.id), notInArray(coleccionesCartas.jugadorId, ids)));
       await tx
         .insert(coleccionesCartas)
-        .values(c.cartas.map((x) => ({ coleccionId: c.id, jugadorId: x.id, version: x.version })))
-        .onConflictDoUpdate({ target: [coleccionesCartas.coleccionId, coleccionesCartas.jugadorId], set: { version: sql`excluded.version` } });
+        .values(c.cartas.map((x) => ({ coleccionId: c.id, jugadorId: x.id, version: x.version, numero: x.numero ?? null })))
+        .onConflictDoUpdate({
+          target: [coleccionesCartas.coleccionId, coleccionesCartas.jugadorId],
+          set: { version: sql`excluded.version`, numero: sql`excluded.numero` },
+        });
 
       const nuevas = ids.filter((id) => !anteriores.has(id));
       if (c.tipo !== 'pago' || nuevas.length === 0 || anteriores.size === 0) continue;
@@ -247,7 +324,7 @@ export async function cargarCatalogo(db: BaseDatos, jugadores: readonly Jugador[
         entregas.push(entrega);
       }
     }
-    return entregas;
+    return { entregas, retirada };
   });
 }
 
@@ -262,6 +339,8 @@ export interface CosmeticoJson {
   precio_fragmentos?: number;
   orden: number;
   activo?: boolean;
+  /** false: solo se consigue con su expansión (spec 016, FR-026). */
+  vendible?: boolean;
   /** Solo celebraciones (spec 012). */
   datos?: DatosCelebracion;
 }
@@ -279,8 +358,12 @@ export interface CatalogoCosmeticosJson {
   packs: PackJson[];
 }
 
-/** Ids únicos, precios de los de pago y packs de exactamente 5 cosméticos activos, de pago y del tipo del pack. */
-export function validarCosmeticos(c: CatalogoCosmeticosJson): ErrorSeed[] {
+/**
+ * Ids únicos, precios de los de pago y packs de exactamente 5 cosméticos activos, vendibles, de pago y del tipo del pack.
+ * Con `colecciones` (spec 016, data-model §1.4), cada `sobre_regalo` es un sobre activo, de pago y no vendible, y no es
+ * el regalo de más de una colección.
+ */
+export function validarCosmeticos(c: CatalogoCosmeticosJson, colecciones: readonly Pick<Coleccion, 'id' | 'sobreRegalo'>[] = []): ErrorSeed[] {
   const errores: ErrorSeed[] = [];
   const porId = new Map<string, CosmeticoJson>();
   const ids = new Set<string>();
@@ -299,12 +382,23 @@ export function validarCosmeticos(c: CatalogoCosmeticosJson): ErrorSeed[] {
     const validos = new Set(
       p.cosmeticos.filter((id) => {
         const x = porId.get(id);
-        return x !== undefined && x.activo !== false && !x.gratuito && x.tipo === p.tipo;
+        return x !== undefined && x.activo !== false && x.vendible !== false && !x.gratuito && x.tipo === p.tipo;
       }),
     );
     if (p.cosmeticos.length !== 5 || validos.size !== 5) {
-      errores.push({ id: p.id, regla: 'pack', mensaje: `El pack ${p.id} debe tener 5 cosméticos distintos, activos, de pago y de tipo ${p.tipo}` });
+      errores.push({ id: p.id, regla: 'pack', mensaje: `El pack ${p.id} debe tener 5 cosméticos distintos, activos, vendibles, de pago y de tipo ${p.tipo}` });
     }
+  }
+  const regalos = new Map<string, string>();
+  for (const col of colecciones) {
+    if (!col.sobreRegalo) continue;
+    const x = porId.get(col.sobreRegalo);
+    if (!x || x.tipo !== 'sobre' || x.activo === false || x.gratuito || x.vendible !== false) {
+      errores.push({ id: col.id, regla: 'sobre_regalo', mensaje: `El sobre de regalo ${col.sobreRegalo} debe ser un sobre activo, de pago y no vendible` });
+    }
+    const otra = regalos.get(col.sobreRegalo);
+    if (otra) errores.push({ id: col.id, regla: 'sobre_regalo', mensaje: `El sobre ${col.sobreRegalo} ya es el regalo de ${otra}` });
+    regalos.set(col.sobreRegalo, col.id);
   }
   return errores;
 }
@@ -321,6 +415,7 @@ export async function cargarCosmeticos(db: BaseDatos, c: CatalogoCosmeticosJson)
         precioCentimos: x.gratuito ? null : (x.precio_centimos ?? null),
         precioFragmentos: x.gratuito ? null : (x.precio_fragmentos ?? null),
         activo: x.activo !== false,
+        vendible: x.vendible !== false,
         orden: x.orden,
         datos: x.datos ?? null,
       };
@@ -335,10 +430,14 @@ export async function cargarCosmeticos(db: BaseDatos, c: CatalogoCosmeticosJson)
   });
 }
 
-/** Lee y valida `data/cosmeticos.json`. */
-export function leerCosmeticos(base: string, fichero: string = FICHEROS_POR_DEFECTO.cosmeticos): { catalogo: CatalogoCosmeticosJson; errores: ErrorSeed[] } {
+/** Lee y valida `data/cosmeticos.json`; con `colecciones`, también sus sobres de regalo. */
+export function leerCosmeticos(
+  base: string,
+  fichero: string = FICHEROS_POR_DEFECTO.cosmeticos,
+  colecciones: readonly Pick<Coleccion, 'id' | 'sobreRegalo'>[] = [],
+): { catalogo: CatalogoCosmeticosJson; errores: ErrorSeed[] } {
   const catalogo = JSON.parse(readFileSync(resolve(base, fichero), 'utf-8')) as CatalogoCosmeticosJson;
-  return { catalogo, errores: validarCosmeticos(catalogo) };
+  return { catalogo, errores: validarCosmeticos(catalogo, colecciones) };
 }
 
 /** Lee y valida un lote desde disco (rutas relativas a `base`). */
@@ -359,7 +458,7 @@ function opciones(args: readonly string[]): { cartas: string[]; colecciones: str
 async function principal(): Promise<void> {
   const o = opciones(process.argv.slice(2).filter((a) => a !== '--'));
   const { jugadores, colecciones, errores } = leerLote(process.env.INIT_CWD ?? process.cwd(), o.cartas, o.colecciones);
-  const cosmeticos = leerCosmeticos(process.env.INIT_CWD ?? process.cwd());
+  const cosmeticos = leerCosmeticos(process.env.INIT_CWD ?? process.cwd(), FICHEROS_POR_DEFECTO.cosmeticos, colecciones);
   errores.push(...cosmeticos.errores);
   if (errores.length) {
     for (const e of errores.slice(0, 50)) console.error(`  [${String(e.id ?? '-')}] ${e.regla}: ${e.mensaje}`);
@@ -367,9 +466,15 @@ async function principal(): Promise<void> {
   }
   const conexion = conectar(urlBaseDatos());
   try {
-    const entregas = await cargarCatalogo(conexion.db, jugadores, colecciones);
+    // Primero los cosméticos: `colecciones.sobre_regalo` los referencia (spec 016).
     await cargarCosmeticos(conexion.db, cosmeticos.catalogo);
+    const { entregas, retirada } = await cargarCatalogo(conexion.db, jugadores, colecciones);
     const { cosmeticos: c, packs } = cosmeticos.catalogo;
+    console.log(
+      `Retirada de las colecciones de prueba: ${retirada.partidas} partidas, ${retirada.cartasUsuario} cartas de usuario, ` +
+        `${retirada.movimientos} movimientos, ${retirada.coleccionesUsuario} colecciones de usuario, ${retirada.compras} compras ` +
+        `y ${retirada.colecciones} colecciones.`,
+    );
     console.log(`Cargadas ${jugadores.length} cartas, ${colecciones.length} colecciones, ${c.length} cosméticos y ${packs.length} packs.\n`);
     console.log(informeColecciones(jugadores, colecciones));
     for (const e of entregas) {

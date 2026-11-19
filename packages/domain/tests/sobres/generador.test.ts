@@ -15,6 +15,11 @@ const core = (
   }
 ).jugadores;
 const porId = new Map(core.map((j) => [j.id, j]));
+/** El Core de antes de la spec 016 (Verratti en lugar de Kimmich), con el que se grabó la regresión de G4. */
+const verratti = (
+  JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/expansiones-reales.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }
+).jugadores.find((j) => j.id === 299)!;
+const coreAnterior = [...core.filter((j) => j.id !== 376), verratti].sort((a, b) => a.id - b.id);
 
 function composicion(cartas: number[]) {
   const dem: Record<string, number> = { POR: 0, DEF: 0, MED: 0, DEL: 0 };
@@ -129,7 +134,7 @@ describe('generarMesa por nivel de rareza (spec 013)', () => {
     expect(Object.keys(fixture)).toHaveLength(100);
     for (const [clave, esperado] of Object.entries(fixture)) {
       const [n, texto] = clave.split('|') as [string, string];
-      const mesa = generarMesa(core, Number(n), semillaDesdeTexto(texto), PARAMETROS_V6_2, reparto);
+      const mesa = generarMesa(coreAnterior, Number(n), semillaDesdeTexto(texto), PARAMETROS_V6_2, reparto);
       expect(mesa.map((s) => [s.ronda, s.asientoOrigen, ...s.cartas]), clave).toEqual(esperado);
     }
   });

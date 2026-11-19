@@ -1,0 +1,36 @@
+GOAT (6)
+--------------
+1,Santi Cazorla
+2,Nicolas Otamendi
+3,Hugo Lloris
+4,Paolo Guerrero
+5,Heung-Min Son
+6,Arturo Vidal
+
+Legendario (6)
+--------------
+7.Pedro Rodriguez (Pedrito)
+8,Olivier Giroud
+9,Kyle Walker
+10,Aymeric Laporte
+11,Ruben Neves
+12,Caoimhín Kelleher
+
+Crack   (6)
+--------------
+13,Ashley Young
+14,Wesley Fofana
+15,Mason Mount
+16,Darwin Nuñez
+17,Adrien Rabiot
+18,Christian Pulisic
+
+Superclase (6)
+--------------
+19,Youssef En-Nesyri
+20,Sam Beukema
+21,Ante Budimir
+22,Takefusa Kubo
+23,Djordje Petrović
+24,Emre Can
+

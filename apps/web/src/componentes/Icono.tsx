@@ -34,7 +34,7 @@ export type NombreIcono =
   | 'estrella'
   | 'penalti'
   | 'tienda'
-  | 'cristal'
+  | 'lupa'
   | 'candado';
 
 /** Contorno del perfil de una cara mirando a la derecha (frente, nariz, boca, barbilla y cuello), para el icono `duelo`. */
@@ -142,7 +142,8 @@ const TRAZOS: Record<NombreIcono, ReactNode> = {
   // Defecto de una carta (spec 005, FR-021): triángulo hacia abajo, para no depender del color.
   // Bolsa de la tienda (spec 006).
   tienda: <path d="M5 8h14l-1.2 12H6.2zM9 8V6.5a3 3 0 016 0V8" />,
-  cristal: <path d="M7 4h10l4 5-9 11L3 9zM3 9h18M10 4l2 5 2-5M12 20l-2-11M12 20l2-11" />,
+  // Ver detalle (spec 016, contracts/ui.md §2).
+  lupa: <path d="M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zM15.2 15.2L20 20" />,
   // Cosmético bloqueado (spec 011, contracts/ui.md §3).
   candado: <path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3M12 15v2" />,
   defecto: <path d="M5 6h14l-7 12z" />,

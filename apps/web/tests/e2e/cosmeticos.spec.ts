@@ -71,7 +71,8 @@ test.describe('escudos', () => {
 test.describe('sobres', () => {
   test('con dos diseños en carrusel, las aperturas de la tienda alternan los dos (US2)', async ({ page }) => {
     await registrar(page);
-    for (const id of ['sobre-1', 'sobre-2']) {
+    // Spec 016: el sobre 1 es el regalo de una expansión y ya no se vende suelto.
+    for (const id of ['sobre-2', 'sobre-3']) {
       const r = await page.request.post(`/api/tienda/cosmeticos/${id}/comprar`, {
         data: { idCompra: crypto.randomUUID(), moneda: 'eur' },
       });
@@ -82,7 +83,7 @@ test.describe('sobres', () => {
     await page.getByRole('switch', { name: 'Carrusel' }).click();
     await expect(page.getByRole('switch', { name: 'Carrusel' })).toBeChecked();
     const carrusel = page.getByRole('group', { name: 'Sobres del carrusel' });
-    for (const nombre of ['Sobre 1', 'Sobre 2']) {
+    for (const nombre of ['Sobre 2', 'Sobre 3']) {
       await carrusel.getByRole('checkbox', { name: nombre }).click();
       await expect(carrusel.getByRole('checkbox', { name: nombre })).toHaveAttribute('aria-checked', 'true');
     }
@@ -102,7 +103,7 @@ test.describe('sobres', () => {
         .getByRole('button', { name: 'Seguir comprando' })
         .click();
     }
-    expect(vistos.map((s) => /sobre-(\d)\.webp/.exec(s)?.[1]).sort()).toEqual(['1', '2']);
+    expect(vistos.map((s) => /sobre-(\d)\.webp/.exec(s)?.[1]).sort()).toEqual(['2', '3']);
   });
 });
 

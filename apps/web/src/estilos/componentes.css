@@ -192,6 +192,19 @@ a:hover {
   white-space: nowrap;
 }
 
+/* Cantidad de fragmentos con su icono (spec 016, Fragmentos.tsx): el icono, a la altura de la línea base del número. */
+.fragmentos {
+  white-space: nowrap;
+}
+
+.fragmentos-icono {
+  display: inline-block;
+  min-width: 16px;
+  min-height: 16px;
+  margin-inline-end: 0.2em;
+  vertical-align: -0.2em;
+}
+
 /* ---------- Foco (FR-030) ---------- */
 
 :focus-visible {

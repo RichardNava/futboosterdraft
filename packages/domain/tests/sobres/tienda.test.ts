@@ -8,8 +8,9 @@ import { semillaDesdeTexto } from '../../src/rng/xoshiro';
 import { ErrorPoolInsuficiente } from '../../src/sobres/generador';
 import { generarSobreTienda } from '../../src/sobres/tienda';
 
+// Spec 016 (R16): un pool cualquiera con cartas de todo; las del Core sirven.
 const prueba = (
-  JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/cartas-prueba.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }
+  JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/core-real.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }
 ).jugadores;
 const porId = new Map(prueba.map((j) => [j.id, j]));
 const cuenta = (ids: number[], campo: 'demarcacion' | 'nivel') =>

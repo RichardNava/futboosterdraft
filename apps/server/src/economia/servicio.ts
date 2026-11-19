@@ -63,7 +63,7 @@ type Ejecutor = BaseDatos | Tx;
 type FilaCarta = typeof cartasUsuario.$inferSelect;
 type Moneda = 'eur' | 'fragmentos';
 
-const MENSAJE_SOBRE_NO_DISPONIBLE = 'Ya tienes casi todas las cartas de las colecciones de pago: quedan menos de 8 por conseguir';
+const MENSAJE_SOBRE_NO_DISPONIBLE = 'Ya tienes casi todas las cartas de las expansiones: quedan menos de 8 por conseguir';
 
 /** Texto del historial para cada movimiento (FR-018). */
 function descripcion(motivo: MotivoMovimiento, nombreCarta: string | undefined): string {
@@ -79,7 +79,7 @@ function descripcion(motivo: MotivoMovimiento, nombreCarta: string | undefined):
     case 'compra_sobre':
       return 'Compra de un sobre';
     case 'compra_coleccion':
-      return 'Compra de una colección';
+      return 'Compra de una expansión';
     case 'compra_cosmetico':
       return 'Compra de un cosmético';
     case 'nivel_rareza':
@@ -267,10 +267,11 @@ export class ServicioEconomia {
       ),
     );
     const restantes = (await this.cartasDePago()).filter((id) => !poseidas.has(id)).length;
+    const sobres = await this.cosmeticos.poseidos(usuarioId);
     const p = PARAMETROS_ECONOMIA;
     return {
       saldo,
-      colecciones: (await this.coleccionesDePago()).map((c) => this.productoColeccion(c, poseidas, compradas.has(c.id))),
+      colecciones: (await this.coleccionesDePago()).map((c) => this.productoColeccion(c, poseidas, compradas.has(c.id), sobres)),
       sobre: {
         precioFragmentos: p.precioSobreFragmentos,
         precioCentimos: p.precioSobreCentimos,
@@ -318,8 +319,18 @@ export class ServicioEconomia {
       if (nuevas.length) await tx.insert(cartasUsuario).values(nuevas.map((jugadorId) => ({ usuarioId, jugadorId, via: 'coleccion' as const })));
       const duplicados = ids.filter((id) => poseidas.has(id)).map((id) => ({ id, fragmentos: valorDesfragmentar(this.catalogo.jugador(id).nivel) }));
       for (const d of duplicados) await this.sumar(tx, usuarioId, d.fragmentos, 'duplicado', String(d.id));
-      return { cartas: nuevas, fragmentos: duplicados.reduce((a, d) => a + d.fragmentos, 0), duplicados };
+      // Spec 016 (FR-025, US3-4): el sobre de regalo, en la misma transacción; si ya se tenía, se conserva.
+      const regalo = coleccion.sobreRegalo;
+      if (regalo) await tx.insert(cosmeticosUsuario).values({ usuarioId, cosmeticoId: regalo, compraId: idCompra }).onConflictDoNothing();
+      return { cartas: nuevas, cosmeticos: regalo ? [regalo] : [], fragmentos: duplicados.reduce((a, d) => a + d.fragmentos, 0), duplicados };
     });
+  }
+
+  /** Sobre de regalo → colección que lo regala (spec 016, `regaloDe` de `GET /api/cosmeticos`). */
+  async regalos(): Promise<Map<string, { id: string; nombre: string }>> {
+    return new Map(
+      (await this.coleccionesDePago()).flatMap((c) => (c.sobreRegalo ? [[c.sobreRegalo, { id: c.id, nombre: c.nombre }] as const] : [])),
+    );
   }
 
   /** Compra un paquete de fragmentos (pago de prueba, idempotente por `idCompra`). */
@@ -343,6 +354,7 @@ export class ServicioEconomia {
     const importe = moneda === 'eur' ? c.precioCentimos! : c.precioFragmentos!;
     const r = await this.comprar(usuarioId, idCompra, { tipo: 'cosmetico', id: c.id, moneda, importe }, async (tx) => {
       if ((await this.cosmeticos.poseidos(usuarioId, tx)).has(c.id)) throw errores.conflicto('COSMETICO_POSEIDO', 'Ya tienes este cosmético');
+      if (c.vendible === false) throw errores.regla('COSMETICO_NO_VENDIBLE', 'Este sobre solo se consigue con su expansión');
       if (moneda === 'fragmentos') await this.cobrar(tx, usuarioId, importe, idCompra, 'compra_cosmetico');
       await tx.insert(cosmeticosUsuario).values({ usuarioId, cosmeticoId: c.id, compraId: idCompra });
       return { cartas: [], fragmentos: 0, duplicados: [], cosmeticos: [c.id] };
@@ -585,18 +597,32 @@ export class ServicioEconomia {
     return [...new Set((await this.coleccionesDePago()).flatMap((c) => this.catalogo.cartasDe(c.id)))];
   }
 
-  private productoColeccion(c: typeof colecciones.$inferSelect, poseidas: ReadonlySet<number>, adquirida: boolean): ProductoColeccion {
-    const ids = this.catalogo.cartasDe(c.id);
+  private productoColeccion(
+    c: typeof colecciones.$inferSelect,
+    poseidas: ReadonlySet<number>,
+    adquirida: boolean,
+    sobresPoseidos: ReadonlySet<string>,
+  ): ProductoColeccion {
+    // Spec 016 (FR-019): en el orden de su número dentro de la colección; sin número, por id.
+    const numero = (id: number) => this.catalogo.numeroEn(c.id, id) ?? id;
+    const ids = this.catalogo.cartasDe(c.id).sort((a, b) => numero(a) - numero(b));
     const cartas = ids.map((id) => this.catalogo.jugador(id));
     const porNivel = Object.fromEntries(NIVELES.map((n) => [n, cartas.filter((j) => j.nivel === n).length])) as Record<Nivel, number>;
     const mejores = [...cartas].sort((a: Jugador, b: Jugador) => NIVELES.indexOf(b.nivel) - NIVELES.indexOf(a.nivel) || b.media - a.media).slice(0, 3);
     const muestra = c.destacadas.length ? c.destacadas : mejores.map((j) => j.id);
     const tengo = ids.filter((id) => poseidas.has(id));
+    const detalle = ids.map((id) => ({
+      carta: this.catalogo.resumen(id),
+      numero: numero(id),
+      poseida: poseidas.has(id),
+      compensacion: poseidas.has(id) ? valorDesfragmentar(this.catalogo.jugador(id).nivel) : 0,
+    }));
+    const regalo = c.sobreRegalo ? this.cosmeticos.cosmetico(c.sobreRegalo) : undefined;
     return {
       id: c.id,
       nombre: c.nombre,
       descripcion: c.descripcion,
-      precioCentimos: c.precioCentimos!,
+      precioCentimos: c.precioCentimos,
       precioFragmentos: c.precioFragmentos!,
       numCartas: ids.length,
       porNivel,
@@ -604,6 +630,12 @@ export class ServicioEconomia {
       poseidas: tengo.length,
       adquirida,
       soloFragmentos: tengo.length === ids.length ? tengo.reduce((a, id) => a + valorDesfragmentar(this.catalogo.jugador(id).nivel), 0) : null,
+      cartas: detalle,
+      compensacion: detalle.reduce((a, x) => a + x.compensacion, 0),
+      sobreRegalo: regalo ? { id: regalo.id, nombre: regalo.nombre, poseido: sobresPoseidos.has(regalo.id) } : null,
+      icono: `/expansiones/${c.id}/icono-256.webp`,
+      iconoGrande: `/expansiones/${c.id}/icono-512.webp`,
+      cartel: `/expansiones/${c.id}/cartel.webp`,
     };
   }
 }
