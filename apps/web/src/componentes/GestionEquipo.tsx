@@ -358,7 +358,12 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
         </Dialogo>
       )}
       <BarraPrincipal
-        principal={{ etiqueta: 'Confirmar cambios', onClick: confirmar, motivoDesactivado: motivoSustituir ?? (validarTactica(borrador.tactica).length > 0 ? 'La táctica no es válida' : null) }}
+        principal={{
+          etiqueta: 'Confirmar cambios',
+          onClick: confirmar,
+          motivoDesactivado: motivoSustituir ?? (validarTactica(borrador.tactica).length > 0 ? 'La táctica no es válida' : null),
+          motivoGrave: motivoSustituir !== null,
+        }}
         secundarios={[{ etiqueta: 'Volver sin cambios', onClick: volver, motivoDesactivado: motivoSustituir }]}
         estado={hayCambios ? `${decisiones.length} cambio${decisiones.length > 1 ? 's' : ''} sin confirmar` : 'Sin cambios'}
       />

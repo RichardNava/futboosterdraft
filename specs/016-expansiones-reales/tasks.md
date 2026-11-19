@@ -413,6 +413,25 @@ temas; `git grep -n 'nombre="cristal"' apps/web/src` no devuelve nada (quickstar
 
 ---
 
+## Phase 9: Ronda 3 (2026-11-19)
+
+- [X] T082 «Comenzar partido» sin pestañeo, en rápida y en 2D. Causa: `Partido` pedía a la API una modalidad ya conocida
+  (esqueleto de campo y, en la 2D, el `Marco` pasaba a compacto después), y la pantalla del partido abre su propia
+  conexión y espera el `estado` (otro esqueleto). Arreglo: `AvisoPartido` deja la modalidad en `usePartidaActiva` antes
+  de navegar y `Partido` arranca con ella (la API la sigue confirmando); `PantallaCargando` admite `diferida`, que solo
+  muestra el esqueleto, con un fundido, si la espera pasa de 400 ms (`componentes.css`); la usan las tres pantallas del
+  partido. E2e en `navegacion.spec.ts` (un esqueleto con opacidad en cualquier fotograma lo hace fallar; sin el arreglo,
+  falla)
+- [X] T083 Motivo del botón bloqueado por una baja, en rojo: «Sustituye a X (lesionado/sancionado) para continuar»
+  en la pantalla del torneo y «Sustituye al lesionado para seguir» en «Gestionar equipo» (`motivoGrave` en
+  `AccionBarra` y `BotonAvanzar`; `.motivo.grave` en `base.css`). Primero se puso en rojo el aviso de parada de
+  «control total» por error y se deshizo. E2e en `torneo.spec.ts` y `control-total.spec.ts`
+- [X] T084 `gestion-equipo.spec.ts`: dos pruebas daban por hecho que se llega al descanso con los 5 cambios; una lesión
+  en la primera parte se sustituye sola y fallaban a veces. Ahora cuentan desde lo que quede (18 de 18 con
+  `--repeat-each=3`)
+
+---
+
 ## Dependencies & Execution Order
 
 ### Fases

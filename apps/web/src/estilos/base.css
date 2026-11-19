@@ -3896,6 +3896,12 @@ html {
   font-weight: 500;
 }
 
+/* Una baja por sustituir (spec 016, ronda 3): en rojo para que llame la atención. */
+.barra-principal-estado .motivo.grave {
+  color: var(--color-error);
+  font-weight: 700;
+}
+
 .barra-principal-botones {
   display: flex;
   flex-wrap: wrap;

@@ -19,9 +19,12 @@ test('en el descanso de la rápida: «Gestionar equipo» y «Seguir» principale
 
   const gestion = page.getByTestId('gestion-equipo');
   await expect(gestion).toBeVisible();
-  await expect(gestion.getByText('Sustituciones restantes: 5')).toBeVisible();
+  // Una lesión en la primera parte se sustituye sola: se llega al descanso con 5 cambios o con alguno menos.
+  const restantes = gestion.getByText(/^Sustituciones restantes:/).locator('strong');
+  const antes = Number(await restantes.textContent());
+  expect(antes).toBeGreaterThanOrEqual(1);
   await sustituirEnGestion(page, 'DC');
-  await expect(gestion.getByText('Sustituciones restantes: 4')).toBeVisible();
+  await expect(restantes).toHaveText(String(antes - 1));
 
   // Hasta 5 sustituciones; la sexta se rechaza con un mensaje.
   for (const casilla of ['SD', 'EI', 'ED', 'MC-1']) {
@@ -138,8 +141,11 @@ test('gestionar equipo con la distribución de Formación', async ({ page }) => 
   await expect(gestion.getByTestId('campo-equipo')).toBeVisible();
   await page.setViewportSize({ width: 1024, height: 768 });
 
+  // Una lesión en la primera parte se sustituye sola: se cuenta desde lo que quede, no desde 5.
+  const restantes = gestion.getByText(/^Sustituciones restantes:/).locator('strong');
+  const antes = Number(await restantes.textContent());
   await sustituirEnGestion(page, 'DC');
-  await expect(gestion.getByText('Sustituciones restantes: 4')).toBeVisible();
+  await expect(restantes).toHaveText(String(antes - 1));
   await page.getByRole('button', { name: 'Confirmar cambios' }).click();
   await expect(gestion).toBeHidden();
 });

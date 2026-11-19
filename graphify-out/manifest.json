@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/AvisoPartido.tsx": {
-    "mtime": 1794557077.4756608,
-    "seen": 1794592739.6313775,
-    "ast_hash": "7f2e2d0c99c980eeb55812c268621df3",
+    "mtime": 1795128543.2218263,
+    "seen": 1795130045.1534307,
+    "ast_hash": "1437dcba0fdee0f9754849dffa6e0844",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BandejaAvisos.tsx": {
@@ -750,9 +750,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BotonAvanzar.tsx": {
-    "mtime": 1794556996.8051062,
-    "seen": 1794592739.6313825,
-    "ast_hash": "ba3ef64852bbeb8ad2ebe0238da16c38",
+    "mtime": 1795130663.253431,
+    "seen": 1795131157.7562394,
+    "ast_hash": "afbd95ee00485c385bb20a5a7295e08d",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaJugador.tsx": {
@@ -870,21 +870,21 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido.tsx": {
-    "mtime": 1792592850.802076,
-    "seen": 1792645202.6971853,
-    "ast_hash": "cd3b464ef891b864a0962ffe3d2be360",
+    "mtime": 1795128543.2222528,
+    "seen": 1795130045.1660125,
+    "ast_hash": "8ca2d5949168c7fda005e994f70bd195",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido2D.tsx": {
-    "mtime": 1795125116.8541057,
-    "seen": 1795125988.46568,
-    "ast_hash": "29a49619b97e7f68ab6f116002cf818a",
+    "mtime": 1795130663.2546504,
+    "seen": 1795131157.7681863,
+    "ast_hash": "2babccf3afde29311464d82d68197d32",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PartidoRapido.tsx": {
-    "mtime": 1794557265.4195213,
-    "seen": 1794592739.6365983,
-    "ast_hash": "a650796a50ec7c26f1572563d06dd1e7",
+    "mtime": 1795128543.2222528,
+    "seen": 1795130045.166016,
+    "ast_hash": "3e65d944dbcbf9fdf58f23d8ba12d6b7",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Plantillas.tsx": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Torneo.tsx": {
-    "mtime": 1794535417.3166165,
-    "seen": 1794592739.6368897,
-    "ast_hash": "38d22e6f3f599421501a433c7f6a18e8",
+    "mtime": 1795130663.2541258,
+    "seen": 1795131157.7690566,
+    "ast_hash": "da4bfae36406af4cd38d532e2a24191d",
     "semantic_hash": ""
   },
   "apps/web/src/sonido/sonido.ts": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/navegacion.spec.ts": {
-    "mtime": 1794532984.369367,
-    "seen": 1794592739.6412659,
-    "ast_hash": "5601c3f882ec97444b19d4df817b57ff",
+    "mtime": 1795128562.5261872,
+    "seen": 1795130045.1713462,
+    "ast_hash": "7fba4e8f2ed177d90eff5e9c6822d2da",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/partido-2d.spec.ts": {
@@ -1014,9 +1014,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/torneo.spec.ts": {
-    "mtime": 1794185894.9550989,
-    "seen": 1794185941.0637627,
-    "ast_hash": "b30d8ff2fc659ad8c3296d22ad950873",
+    "mtime": 1795130671.631393,
+    "seen": 1795131157.7748835,
+    "ast_hash": "312e4ba787c9388a34d50ea2a49c8ddf",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/interpolacion.test.ts": {
@@ -2382,9 +2382,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BarraPrincipal.tsx": {
-    "mtime": 1794556996.7831054,
-    "seen": 1794592739.6313808,
-    "ast_hash": "787e4c5653454374b5ca63fc64d0658c",
+    "mtime": 1795130663.253123,
+    "seen": 1795131157.7562363,
+    "ast_hash": "eeed4e442256c776a8be8bac63bb6ce7",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Camiseta.tsx": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/GestionEquipo.tsx": {
-    "mtime": 1795125116.8541057,
-    "seen": 1795125988.4563897,
-    "ast_hash": "bf60e236144ff8b14eb6fc230dce2746",
+    "mtime": 1795130663.2541258,
+    "seen": 1795131157.758791,
+    "ast_hash": "32bff61ada507a9cfbfb309a8a8ba548",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ResultadoPartido.tsx": {
@@ -2490,9 +2490,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/gestion-equipo.spec.ts": {
-    "mtime": 1795125643.7315333,
-    "seen": 1795125988.4713447,
-    "ast_hash": "5e35ceb377f5dbb1a139674335c894ea",
+    "mtime": 1795129859.2708695,
+    "seen": 1795130045.171101,
+    "ast_hash": "98f58922f75aa7a4797508cba092b63f",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/identidad.spec.ts": {
@@ -2796,9 +2796,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Esqueleto.tsx": {
-    "mtime": 1794556996.9185107,
-    "seen": 1794592739.632558,
-    "ast_hash": "bab01703f7a9499ed23ca2bd99b4b0e6",
+    "mtime": 1795128626.144006,
+    "seen": 1795130045.155771,
+    "ast_hash": "036f1aab6b4a7aa609cb9ef4ccfa5675",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/EstadoVacio.tsx": {
@@ -8502,9 +8502,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/control-total.spec.ts": {
-    "mtime": 1794578901.4351246,
-    "seen": 1794592739.638371,
-    "ast_hash": "12b612c326e9331f415392e8e5711f8e",
+    "mtime": 1795130671.6323917,
+    "seen": 1795131157.770815,
+    "ast_hash": "46ea65e728125120fad49bd2b023d6a4",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/celebracion.test.ts": {
@@ -11453,30 +11453,6 @@
     "ast_hash": "9396f5956c9c49e670547ae672ed0d5c",
     "semantic_hash": ""
   },
-  "expansiones/Expansion A/jugadores_expansionA.json": {
-    "mtime": 1794661843.8693192,
-    "seen": 1795036871.1674197,
-    "ast_hash": "31eb76d5411de683549fe2b831a9ff64",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_expansionB.json": {
-    "mtime": 1794669064.9436276,
-    "seen": 1795036871.167426,
-    "ast_hash": "fa82c1aeaa8b3ec1a86601f4b357f3dd",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_expansionC.json": {
-    "mtime": 1794662370.5821972,
-    "seen": 1795036871.1674306,
-    "ast_hash": "02d7d69e55c36d5b4d97d567b2827b7e",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/jugadores_expansionD.json": {
-    "mtime": 1794755679.9636672,
-    "seen": 1795036871.1674345,
-    "ast_hash": "8f40ded1bb083a44491d7b6302757954",
-    "semantic_hash": ""
-  },
   "packages/domain/tests/catalogo/datos016.test.ts": {
     "mtime": 1795035663.2782283,
     "seen": 1795036871.1925068,
@@ -11517,30 +11493,6 @@
     "mtime": 1795034934.791286,
     "seen": 1795036871.2424548,
     "ast_hash": "7ca94655ff66712d1220973aa389dfbd",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/rareza_A.txt": {
-    "mtime": 1794684458.1817882,
-    "seen": 1795036871.273834,
-    "ast_hash": "1b6039d0beeb7f573432b79f77dda91d",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/rareza_B.txt": {
-    "mtime": 1794684580.013923,
-    "seen": 1795036871.2738388,
-    "ast_hash": "6b76b3fed7d3b95eeb42089e1273f116",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/rareza_C.txt": {
-    "mtime": 1794684698.581326,
-    "seen": 1795036871.2738433,
-    "ast_hash": "ffe7fdea83344e0af7eb8ad979408e73",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/rareza_D.txt": {
-    "mtime": 1794747340.5575106,
-    "seen": 1795036871.2738469,
-    "ast_hash": "b12e95e4d010abb0b838613ebfb0b943",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/checklists/requirements.md": {
@@ -11628,9 +11580,9 @@
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/tasks.md": {
-    "mtime": 1795125951.359511,
-    "seen": 1795125988.5649805,
-    "ast_hash": "cb33b6056fc86abba94bda7944c90a96",
+    "mtime": 1795130780.6560612,
+    "seen": 1795131157.859197,
+    "ast_hash": "d2b2af13ae56b979a74cc33119a196bd",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/AUT.svg": {
@@ -13017,738 +12969,6 @@
     "mtime": 1795035611.904,
     "seen": 1795036871.5678358,
     "ast_hash": "cf8bffd1da12f930da4d7fdbf0c2e7e6",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/cartel/cartel_shop_A.png": {
-    "mtime": 1794677872.5013118,
-    "seen": 1795036871.5680194,
-    "ast_hash": "b1a31b60d3884d139c02052711696cf4",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/cartel/icono_shop_A.png": {
-    "mtime": 1794679865.192489,
-    "seen": 1795036871.5680244,
-    "ast_hash": "be7c2efef7edb2429674b7ffcd8784d4",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/10_I\u00f1igo_Martinez_A.png": {
-    "mtime": 1794667338.1716578,
-    "seen": 1795036871.5680287,
-    "ast_hash": "0693126d3a4981efcea736812d583be8",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/11_Roque_SantaCruz_A.png": {
-    "mtime": 1794667228.041538,
-    "seen": 1795036871.568032,
-    "ast_hash": "76f0ffdf13959b249cbc607423df1a1e",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/12_Lukas_Podolski_A.png": {
-    "mtime": 1794667100.3467076,
-    "seen": 1795036871.5680354,
-    "ast_hash": "7ca55ad70dd5b868781d61379a8c29fb",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/13_Carlos_Bacca_A.png": {
-    "mtime": 1794666959.556681,
-    "seen": 1795036871.568038,
-    "ast_hash": "eeae43239af147ce1d27271cb67428ce",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/14_Ever_Banega_A.png": {
-    "mtime": 1794666835.0227041,
-    "seen": 1795036871.568042,
-    "ast_hash": "71ce6071a2e427279f9535764f4a5c93",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/15_Francisco_Trincao_A.png": {
-    "mtime": 1794666790.9608538,
-    "seen": 1795036871.568045,
-    "ast_hash": "1a0c081175c99918f19f9af42b8831e3",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/16_Fernando_Muslera_A.png": {
-    "mtime": 1794665974.6508791,
-    "seen": 1795036871.5680475,
-    "ast_hash": "f77a9fd3311e89e9d179ca9ea4b575f3",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/17_Alejandro_Balde_A.png": {
-    "mtime": 1794666614.5471709,
-    "seen": 1795036871.56805,
-    "ast_hash": "875f9e5196e8aa020a5020d8d8164007",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/18_Cesar_Azpilicueta_A.png": {
-    "mtime": 1794666533.7377996,
-    "seen": 1795036871.568053,
-    "ast_hash": "9652724c03981405bf80f6f43d69225a",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/19_Gylfi_Sigurdsson_A.png": {
-    "mtime": 1794666998.4688032,
-    "seen": 1795036871.568056,
-    "ast_hash": "bac1cb52563ca5275a33cb73203271f2",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/1_Thomas_Muller_A.png": {
-    "mtime": 1794667987.6282635,
-    "seen": 1795036871.5680592,
-    "ast_hash": "2514e51a0f0e6a437e08abc96119a53c",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/20_Crysencio_Summerville_A.png": {
-    "mtime": 1794668230.5384066,
-    "seen": 1795036871.5680616,
-    "ast_hash": "eb16861c8c25996b1c4a1d9027f950da",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/21_Edouard_Mendy_A.png": {
-    "mtime": 1794668161.78486,
-    "seen": 1795036871.5680645,
-    "ast_hash": "57637fd234ec65672469f4b3c3138c7c",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/22_Nathan_Zeze_A.png": {
-    "mtime": 1794668126.4419591,
-    "seen": 1795036871.5680678,
-    "ast_hash": "6257356b13c09afbaa20cb2c32f4d7e1",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/23_Konrad_Laimer_A.png": {
-    "mtime": 1794668090.6751208,
-    "seen": 1795036871.5680704,
-    "ast_hash": "66fbf096cc76bfe7144fb6be433c1121",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/24_Yerry_Mina_A.png": {
-    "mtime": 1794668044.4152887,
-    "seen": 1795036871.5680737,
-    "ast_hash": "b43eab33d649005212e2e791aeaa357f",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/2_Ter_Stegen_A.png": {
-    "mtime": 1794667924.9962447,
-    "seen": 1795036871.5680764,
-    "ast_hash": "e281c8f323c6596af4d1ca88d6b42b87",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/3_Thiago_Silva_A.png": {
-    "mtime": 1794667838.9812863,
-    "seen": 1795036871.5680785,
-    "ast_hash": "986a316372695480d920a2bca34c70f1",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/4_David_Alaba_A.png": {
-    "mtime": 1794667779.954935,
-    "seen": 1795036871.5680814,
-    "ast_hash": "dc9786da0fae058421a00cb675912cb5",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/5_Ngolo_Kante_A.png": {
-    "mtime": 1794667692.6581376,
-    "seen": 1795036871.5680842,
-    "ast_hash": "d681bc05fe95272cbf3c61a55b8a8b3d",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/6_Alexis_Sanchez_A.png": {
-    "mtime": 1794667625.2068107,
-    "seen": 1795036871.5680869,
-    "ast_hash": "4079422605bd6ad78f12d64ab83b0f54",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/7_Isco_Alarcon_A.png": {
-    "mtime": 1794667537.007039,
-    "seen": 1795036871.568089,
-    "ast_hash": "e3e98b3c1e488f6323cc94502269cc22",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/8_Juan_Cuadrado_A.png": {
-    "mtime": 1794667487.878146,
-    "seen": 1795036871.5680919,
-    "ast_hash": "2bb2e47fc110acf7bf405d2e6e2fa52a",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/imagen_bg/9_Yann_Sommer_A.png": {
-    "mtime": 1794667405.695445,
-    "seen": 1795036871.5680945,
-    "ast_hash": "b5db3d174d99f42b52285bad3ab55fa1",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/retratos/pagina_1A_19_24.png": {
-    "mtime": 1794664033.8505092,
-    "seen": 1795036871.568098,
-    "ast_hash": "b94f7d71e02f3cbbddd7f86df3da7e4d",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion A/retratos/pagina_1A_1_18.png": {
-    "mtime": 1794662895.9236786,
-    "seen": 1795036871.5681007,
-    "ast_hash": "ea98b125d2e5744ba4aaf7534cc8eb01",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/cartel/cartel_shop_B.png": {
-    "mtime": 1794678554.1472344,
-    "seen": 1795036871.5681033,
-    "ast_hash": "d3be80a29253fd827f2033c2f63f2def",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/cartel/icono_shop_B.png": {
-    "mtime": 1794680072.2570388,
-    "seen": 1795036871.5681057,
-    "ast_hash": "8e9123cf89e4593ee995c1bbd5926d30",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/01_Cristian_Romero_B.png": {
-    "mtime": 1794668997.7980483,
-    "seen": 1795036871.5681088,
-    "ast_hash": "44a75318003e54ceffb71c1b85e3e592",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/02_Radamel_Falcao_B.png": {
-    "mtime": 1794668936.0588639,
-    "seen": 1795036871.5681112,
-    "ast_hash": "0c3fe578040f6b1e28b8e04d82c731ec",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/03_Harry_Maguire_B.png": {
-    "mtime": 1794668886.9565563,
-    "seen": 1795036871.5681136,
-    "ast_hash": "9b46d2029333549429e53cb252125243",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/04_Keylor_Navas_B.png": {
-    "mtime": 1794668848.5877738,
-    "seen": 1795036871.5681164,
-    "ast_hash": "47ee6a0098c73d0dcba3f16da63423ed",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/05_Ilkay_Gundogan_B.png": {
-    "mtime": 1794668781.9705467,
-    "seen": 1795036871.5681188,
-    "ast_hash": "ee027c39e512cc22c8411a355769e604",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/06_Antoine_Griezmann_B.png": {
-    "mtime": 1794668601.252195,
-    "seen": 1795036871.5681217,
-    "ast_hash": "c8d7bf199f303b237b1d5b8d88c12f9b",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/07_David_Luiz_B.png": {
-    "mtime": 1794669553.5899842,
-    "seen": 1795036871.568125,
-    "ast_hash": "85789c384b83f769c27eeade13e50403",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/08_Joao_Felix_B.png": {
-    "mtime": 1794669518.2298298,
-    "seen": 1795036871.5681283,
-    "ast_hash": "111422187120afbcb82a06f54d4715f0",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/09_Mikel_Merino_B.png": {
-    "mtime": 1794669477.9779747,
-    "seen": 1795036871.5681303,
-    "ast_hash": "3447a43d829048d6dde69a6f59147d22",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/10_Guillermo_Ochoa_B.png": {
-    "mtime": 1794669385.6532362,
-    "seen": 1795036871.568132,
-    "ast_hash": "4f70f54936d4357442d0b4a900c43dbe",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/11_Theo_Hernandez_B.png": {
-    "mtime": 1794669354.058302,
-    "seen": 1795036871.568133,
-    "ast_hash": "7d467ba5693b8750dca4a81d3c09593e",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/12_Kingsley_Coman_B.png": {
-    "mtime": 1794669282.0356457,
-    "seen": 1795036871.5681345,
-    "ast_hash": "8d3ba263f4380e92909bd957667f412e",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/13_Scott_McTominay_B.png": {
-    "mtime": 1794670397.1041203,
-    "seen": 1795036871.5681367,
-    "ast_hash": "c6f9a47b386940962990175136901816",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/14_Nani_B.png": {
-    "mtime": 1794670329.0313792,
-    "seen": 1795036871.568139,
-    "ast_hash": "c81f9e7f23ecf574242935ae1d18889f",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/15_Gleison_Bremer_B.png": {
-    "mtime": 1794670289.4370067,
-    "seen": 1795036871.568141,
-    "ast_hash": "d8009402a6a810e8775ac841cdc09d45",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/16_Wojciech_Szczesny_B.png": {
-    "mtime": 1794670211.2901464,
-    "seen": 1795036871.5681431,
-    "ast_hash": "17625d9e72c757662f47e24f02ad8516",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/17_Diogo_Dalot_B.png": {
-    "mtime": 1794670187.595308,
-    "seen": 1795036871.5681443,
-    "ast_hash": "5699dcdfc938023078c4353bf7c1b2b3",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/18_Youri_Tielemans_B.png": {
-    "mtime": 1794670141.3780763,
-    "seen": 1795036871.5681462,
-    "ast_hash": "7e34f8e50c73995522b51bf40df9cd92",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/19_Romeo_Lavia_B.png": {
-    "mtime": 1794671157.976233,
-    "seen": 1795036871.568149,
-    "ast_hash": "ce55cf9c90bc3a76858697fe2d66ccd4",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/20_Strahinja_Pavlovic_B.png": {
-    "mtime": 1794671125.6017115,
-    "seen": 1795036871.5681512,
-    "ast_hash": "2446aecde7138fbbd7418f71f4975eb9",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/21_Yunus_Musah_B.png": {
-    "mtime": 1794671092.8853452,
-    "seen": 1795036871.568153,
-    "ast_hash": "3918bf5a0350957aff5a63d2af64e4cf",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/22_Vedat_Muriqi_B.png": {
-    "mtime": 1794671050.858066,
-    "seen": 1795036871.568161,
-    "ast_hash": "589e3c60f60141031ae72c217f1269c2",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/23_Carlos_Soler_B.png": {
-    "mtime": 1794671025.9886103,
-    "seen": 1795036871.568164,
-    "ast_hash": "7f6cd59a06dffdc9c00b00835bff55c5",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/jugadores_bg/24_Joane_Gadou_B.png": {
-    "mtime": 1794670907.3587127,
-    "seen": 1795036871.5681658,
-    "ast_hash": "66b8485cdfd637ec58e597513705af58",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/retratos/pagina_1B_13_24.png": {
-    "mtime": 1794664296.2892177,
-    "seen": 1795036871.568168,
-    "ast_hash": "6467e21b66a8c592e7ab8898e9a16435",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion B/retratos/pagina_1B_1_12.png": {
-    "mtime": 1794664016.706711,
-    "seen": 1795036871.56817,
-    "ast_hash": "1f78ea7493b5a6951318816d0f593cd7",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/cartel/cartel_shop_C.png": {
-    "mtime": 1794678854.563919,
-    "seen": 1795036871.5681717,
-    "ast_hash": "73c435805d167ac489586bded0bb2416",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/cartel/icono_shop_C.png": {
-    "mtime": 1794680025.2061412,
-    "seen": 1795036871.5681732,
-    "ast_hash": "78ba1bcd22ad9dd369da535fd9c75f5c",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/10_Aymeric_Jean_Louis_G\u00e9rard_Alphonse_Laporte_C.png": {
-    "mtime": 1794676099.046991,
-    "seen": 1795036871.5681756,
-    "ast_hash": "46e9d7048b74febe78786bdc5ed2a93a",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/11_R\u00faben_Diogo_da_Silva_Neves_C.png": {
-    "mtime": 1794676071.5341237,
-    "seen": 1795036871.5681782,
-    "ast_hash": "436865932d1810ad06bc6939123cc1ac",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/12_Caoimh\u00edn_Odhr\u00e1n_Kelleher_C.png": {
-    "mtime": 1794676033.9387875,
-    "seen": 1795036871.5681806,
-    "ast_hash": "9c0cd4dd3c26fa8428f440f5614a8cde",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/13_Ashley_Simon_Young_C.png": {
-    "mtime": 1794676792.6836889,
-    "seen": 1795036871.5681827,
-    "ast_hash": "0232ba1c4e268cde5011415d8089fa89",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/14_Wesley_Fofana_C.png": {
-    "mtime": 1794676755.9314134,
-    "seen": 1795036871.5681844,
-    "ast_hash": "921eea6c6387507b1a6f46eba1b09890",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/15_Mason_Tony_Mount_C.png": {
-    "mtime": 1794676684.321969,
-    "seen": 1795036871.568186,
-    "ast_hash": "393781717645dd53c44097614d65b7e2",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/16_Darwin_Gabriel_N\u00fa\u00f1ez_Ribeiro_C.png": {
-    "mtime": 1794676646.3154068,
-    "seen": 1795036871.5681884,
-    "ast_hash": "9b06783064c1419d22a40625a199dfec",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/17_Adrien_Thibault_Marie_Rabiot_C.png": {
-    "mtime": 1794676609.3496864,
-    "seen": 1795036871.5681899,
-    "ast_hash": "8438434b07a4ca04ba98bbd507959c27",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/18_Christian_Mate_Pulisic_C.png": {
-    "mtime": 1794676566.8674037,
-    "seen": 1795036871.5681915,
-    "ast_hash": "e1d5849b06695e35eca96976de827132",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/19_Youssef_En-Nesyri_C.png": {
-    "mtime": 1794677140.330845,
-    "seen": 1795036871.5681932,
-    "ast_hash": "96e979edb4a27cdc61c7869882ceb06d",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/1_Santiago_Cazorla_Gonz\u00e1lez_C.png": {
-    "mtime": 1794675246.571372,
-    "seen": 1795036871.568195,
-    "ast_hash": "1eb161a877122c0ab3468251495687ea",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/20_Sam_Beukema_C.png": {
-    "mtime": 1794677084.4918978,
-    "seen": 1795036871.5681992,
-    "ast_hash": "95edf7b6432474b629dd9d32714ef368",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/21_Ante_Budimir_C.png": {
-    "mtime": 1794677020.217652,
-    "seen": 1795036871.568202,
-    "ast_hash": "c8719dadddb745ded7237a0a62119ef7",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/22_Takefusa_Kubo_C.png": {
-    "mtime": 1794676978.4006796,
-    "seen": 1795036871.5682049,
-    "ast_hash": "897650d6744f79d7c349da5eac99e463",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/23_\u0110or\u0111e_Petrovi\u0107_C.png": {
-    "mtime": 1794676934.595145,
-    "seen": 1795036871.5682075,
-    "ast_hash": "40efb76f6585cd7818fd4aa3c516181e",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/24_Emre_Can_C.png": {
-    "mtime": 1794676899.1391327,
-    "seen": 1795036871.5682092,
-    "ast_hash": "dac3e0203b894b1d0f8902601580bbe9",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/2_Nicol\u00e1s_Hern\u00e1n_Otamendi_C.png": {
-    "mtime": 1794675207.1036878,
-    "seen": 1795036871.5682113,
-    "ast_hash": "3c358975cf172ab3d8133f1376ee4e13",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/3_Hugo_Hadrien_Dominique_Lloris_C.png": {
-    "mtime": 1794675157.896871,
-    "seen": 1795036871.5682127,
-    "ast_hash": "611ead02116055aac8d5e99e380a6737",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/4_Jos\u00e9_Paolo_Guerrero_Gonzales_C.png": {
-    "mtime": 1794675114.2920184,
-    "seen": 1795036871.568215,
-    "ast_hash": "b66bbf1948c27a536e4cc4d91b7b5dd6",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/5_Son_Heung-min_C.png": {
-    "mtime": 1794675087.4705768,
-    "seen": 1795036871.5682163,
-    "ast_hash": "3b70fd4b6454cc279827d008ce2d2d2f",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/6_Arturo_Erasmo_Vidal_Pardo_C.png": {
-    "mtime": 1794675060.1727397,
-    "seen": 1795036871.5682182,
-    "ast_hash": "c791c28e71b9dc9f9a5c63840b32dbf2",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/7_Pedro_Eliezer_Rodr\u00edguez_Ledesma_C.png": {
-    "mtime": 1794676259.7547858,
-    "seen": 1795036871.5682204,
-    "ast_hash": "99fba3242d149cca77b1c749f404221b",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/8_Olivier_Jonathan_Giroud_C.png": {
-    "mtime": 1794676187.6900992,
-    "seen": 1795036871.568222,
-    "ast_hash": "c3c8f2e10256a8a15e16ad2012151a9e",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/jugadores_bg/9_Kyle_Andrew_Walker_C.png": {
-    "mtime": 1794676139.2023654,
-    "seen": 1795036871.5682235,
-    "ast_hash": "24f915e3b97c9a27cd24938f26ebbc02",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/retratos/pagina_1C_1_6.png": {
-    "mtime": 1794664223.9725823,
-    "seen": 1795036871.5682254,
-    "ast_hash": "42e1083c0c71426675c95ea7f425e5ff",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion C/retratos/pagina_1C_7_24.png": {
-    "mtime": 1794664442.2377613,
-    "seen": 1795036871.5682275,
-    "ast_hash": "b999df78f9cd0e06ac6d41626d52a581",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/cartel/cartel_shop_D.png": {
-    "mtime": 1794755135.7484727,
-    "seen": 1795036871.5682304,
-    "ast_hash": "93f6d5217649b8a9d9b5a783edfff7df",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/cartel/icono_shop_D.png": {
-    "mtime": 1794756234.8449705,
-    "seen": 1795036871.568233,
-    "ast_hash": "64116232416a1e8307c7f1798bc9e987",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/10_Joe_Hart_D.png": {
-    "mtime": 1794751157.5362263,
-    "seen": 1795036871.568235,
-    "ast_hash": "75695e371a8aa61afb1239c920e473aa",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/11_Leroy_San\u00e9_D.png": {
-    "mtime": 1794751068.9567251,
-    "seen": 1795036871.568238,
-    "ast_hash": "c664e8d1654f1191e5dcb07bbe651efb",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/12_Kalidou_Koulibaly_D.png": {
-    "mtime": 1794751000.9503348,
-    "seen": 1795036871.5682404,
-    "ast_hash": "1bded58146ff2b09a7a3c5cb0dc6ebfb",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/13_Mauro_Icardi_D.png": {
-    "mtime": 1794751930.2504866,
-    "seen": 1795036871.5682433,
-    "ast_hash": "d68397a1bd21f81a32e1797d33280780",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/14_Kalvin_Phillips_D.png": {
-    "mtime": 1794751830.8189623,
-    "seen": 1795036871.5682461,
-    "ast_hash": "f93aaf05c905802892c2576b61ed73ab",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/15_Tanguy_Ndombele_D.png": {
-    "mtime": 1794751521.1750667,
-    "seen": 1795036871.5682483,
-    "ast_hash": "ec321b2451c7e3acea84c7a62bed622c",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/16_Jack_Grealish_D.png": {
-    "mtime": 1794751710.8843718,
-    "seen": 1795036871.568251,
-    "ast_hash": "13a5d9b7bd4bb6ba5b22dd9992702492",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/17_Serge_Gnabry_D.png": {
-    "mtime": 1794751652.2173092,
-    "seen": 1795036871.568254,
-    "ast_hash": "3cc5bbfd063154df9cd4275e20e8cec7",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/18_Ben_Chilwell_D.png": {
-    "mtime": 1794751770.6457653,
-    "seen": 1795036871.5682569,
-    "ast_hash": "e4d86363c58463a209499450fcf59780",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/19_Franck_Kessie_D.png": {
-    "mtime": 1794753283.3951042,
-    "seen": 1795036871.568259,
-    "ast_hash": "bf04821e5abbf67e0d35b245c7e9ed4c",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/1_Romelu_Lukaku_D.png": {
-    "mtime": 1794750799.801649,
-    "seen": 1795036871.5682619,
-    "ast_hash": "35c155c854958fc17e5e21bee4c578ad",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/20_Arthur_Melo_D.png": {
-    "mtime": 1794753239.8343353,
-    "seen": 1795036871.5682635,
-    "ast_hash": "8c9b6c3ffda5e865be977f3ceb85aca6",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/21_Federico_Chiesa_D.png": {
-    "mtime": 1794753174.4250598,
-    "seen": 1795036871.5682654,
-    "ast_hash": "877a1eaf5361048f4d65507c0937378a",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/22_Milan_Skriniar_D.png": {
-    "mtime": 1794753133.2070954,
-    "seen": 1795036871.5682673,
-    "ast_hash": "07ed48b752d40233628fd06412fca8c9",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/23_Loris_Karius_D.png": {
-    "mtime": 1794753023.469441,
-    "seen": 1795036871.5682695,
-    "ast_hash": "3b8aecb04a80696422cf2901bc7b2814",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/24_Timo_Werner_D.png": {
-    "mtime": 1794752957.545311,
-    "seen": 1795036871.5682726,
-    "ast_hash": "39bc33c7b644bdc0524e9d8203007a5b",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/2_Paul_Pogba_D.png": {
-    "mtime": 1794750743.8532588,
-    "seen": 1795036871.5682745,
-    "ast_hash": "b089879ec53436ff217dc7b0f5e66c76",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/3_Kim_Min-jae_D.png": {
-    "mtime": 1794753411.5105848,
-    "seen": 1795036871.568277,
-    "ast_hash": "12843a7e3576eed35901258d73e258f4",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/4_Joshua_Kimmich_D.png": {
-    "mtime": 1794750410.7122395,
-    "seen": 1795036871.5682788,
-    "ast_hash": "1323e5b48b03132b87a5417d6c70d283",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/5_Philippe_Coutinho_D.png": {
-    "mtime": 1794750183.165479,
-    "seen": 1795036871.5682802,
-    "ast_hash": "da5e631975666c580d49490f0de71eb6",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/6_Raheem_Sterling_D.png": {
-    "mtime": 1794750112.9132018,
-    "seen": 1795036871.5682826,
-    "ast_hash": "6bc08b347274ace51ba7292f453c988b",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/7_Jadon_Sancho_D.png": {
-    "mtime": 1794753487.1355772,
-    "seen": 1795036871.5682845,
-    "ast_hash": "8b20e75e376efbf784930f53101d12ae",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/8_Sergej_Milinkovi\u0107-Savi\u0107_D.png": {
-    "mtime": 1794751225.3723505,
-    "seen": 1795036871.5682867,
-    "ast_hash": "7797f7a6f54b966e7777084113ba3d47",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/imagen_bg/9_Dele_Alli_D.png": {
-    "mtime": 1794751190.9342172,
-    "seen": 1795036871.568289,
-    "ast_hash": "31f2df2536c71f3ec4b4afe5f1e54b2a",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/retratos/pagina_1D_19_24.png": {
-    "mtime": 1794748643.9515996,
-    "seen": 1795036871.5682914,
-    "ast_hash": "06eec1b2cd6cbbfceb51d833dc2b42d0",
-    "semantic_hash": ""
-  },
-  "expansiones/Expansion D/retratos/pagina_1D_1_18.png": {
-    "mtime": 1794748052.367731,
-    "seen": 1795036871.568293,
-    "ast_hash": "372b88f783905f110c2ceebd55d3188d",
-    "semantic_hash": ""
-  },
-  "expansiones/icono/fragmento.png": {
-    "mtime": 1794957948.2495832,
-    "seen": 1795036871.5682948,
-    "ast_hash": "8143e2b4ebf110c416014956adf4f48e",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_25.png": {
-    "mtime": 1794954770.4437356,
-    "seen": 1795036871.5682967,
-    "ast_hash": "dc75a5b70546683a3de2c579b3765365",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_26.png": {
-    "mtime": 1794954770.282582,
-    "seen": 1795036871.5682988,
-    "ast_hash": "f7aa426dab01799a6fe17c2b3f860a29",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_27.png": {
-    "mtime": 1794954770.353747,
-    "seen": 1795036871.5683005,
-    "ast_hash": "b520eafb3a9565a05b639ff83b99bf35",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_28.png": {
-    "mtime": 1794954770.4084678,
-    "seen": 1795036871.5683022,
-    "ast_hash": "7827873f4c9507ee7c51bcf1bfef3a39",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_29.png": {
-    "mtime": 1794954770.4734335,
-    "seen": 1795036871.5683036,
-    "ast_hash": "4cbafd5af02d6e89e2b788dcfb6ef249",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_30.png": {
-    "mtime": 1794954770.4854393,
-    "seen": 1795036871.5683055,
-    "ast_hash": "c577e24aa413b19628aae75386ec8622",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_31.png": {
-    "mtime": 1794954770.3177917,
-    "seen": 1795036871.5683067,
-    "ast_hash": "f132f960a5192da838e6b21409c30297",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_32.png": {
-    "mtime": 1794954770.4571028,
-    "seen": 1795036871.568308,
-    "ast_hash": "099b64f906235dd5980c41aad9a697a0",
-    "semantic_hash": ""
-  },
-  "expansiones/sobres/sobre_33.png": {
-    "mtime": 1794954754.9099698,
-    "seen": 1795036871.5683095,
-    "ast_hash": "d1e3bbef9cb445c6d6c4ab6ad459f539",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/revision-retratos.webp": {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { abrirPartido } from '../api/cliente';
 import { useConexion, useCuentaAtras } from '../conexion/useConexion';
+import { usePartidaActiva } from '../estado/partidaActiva';
 import type { AccionBarra } from './BarraPrincipal';
 import { SelectorModo, type Modalidad } from './SelectorModo';
 
@@ -63,7 +64,9 @@ export function usePreparacionPartido(partidaId: string): EstadoPreparacion | nu
   const partidoId = prep.partidoId;
   const modalidad = elegida ?? prep.modalidadPreferida ?? 'rapida';
   const abrir = async () => {
-    const { modo } = await abrirPartido(partidoId, modalidad);
+    const { modo, modalidad: abierta } = await abrirPartido(partidoId, modalidad);
+    // La pantalla del partido se monta ya con su modalidad: sin esqueleto propio ni salto del Marco (spec 016, ronda 3).
+    if (modo === 'directo') usePartidaActiva.getState().actualizar({ modalidadPartido: abierta });
     navegar(modo === 'directo' ? `/partidas/${partidaId}/partido/${partidoId}` : `/partidas/${partidaId}/reproduccion/${partidoId}`);
   };
   return {

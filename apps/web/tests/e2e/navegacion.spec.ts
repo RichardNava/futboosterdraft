@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from '@playwright/test';
+import { partidaTrasDraft } from './ayudas';
 
 /**
  * Navegación libre (US6; FR-017 a FR-021): escenario D, paso 3 (modal de abandono en un draft con otro
@@ -219,3 +220,29 @@ test('con la red lenta, dos enlaces seguidos no dejan indicador del primero (FR-
   await expect(page.locator('.indicador-navegacion')).toHaveCount(0);
   await expect(page).toHaveURL(/\/mis-partidas$/);
 });
+
+/**
+ * Spec 016, ronda 3: «Comenzar partido» sin pestañeo. En cada fotograma se anota cualquier esqueleto visible (con
+ * opacidad): el de la pantalla del partido solo aparece si la espera pasa de 400 ms.
+ */
+for (const modo of ['Simulación rápida', 'Simulación 2D'] as const) {
+  test(`«Comenzar partido» en ${modo} sin esqueleto visible`, async ({ page }) => {
+    test.setTimeout(120_000);
+    const partidaId = await partidaTrasDraft(page);
+    await page.goto(`/partidas/${partidaId}/torneo`);
+    await page.getByLabel(modo).check();
+    await page.evaluate(() => {
+      const w = window as unknown as { __visibles: string[] };
+      w.__visibles = [];
+      const mirar = () => {
+        for (const el of document.querySelectorAll('.esqueleto'))
+          if (Number(getComputedStyle(el).opacity) > 0) w.__visibles.push(`${location.pathname}:${el.className}`);
+        requestAnimationFrame(mirar);
+      };
+      requestAnimationFrame(mirar);
+    });
+    await page.getByRole('button', { name: 'Comenzar partido' }).click();
+    await expect(page.locator(modo === 'Simulación 2D' ? '.campo-2d canvas' : '.resultado')).toBeVisible();
+    expect(await page.evaluate(() => (window as unknown as { __visibles: string[] }).__visibles)).toEqual([]);
+  });
+}

@@ -264,7 +264,7 @@ export function Partido2D() {
     lateral.current?.scrollTo({ top: lateral.current.scrollHeight, behavior: movimientoReducido() ? 'auto' : 'smooth' });
   }, [eventosVistos.length, gestion]);
 
-  if (!inicio) return <PantallaCargando forma="campo" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} />;
+  if (!inicio) return <PantallaCargando forma="campo" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} diferida />;
 
   const miLado = miId === inicio.local.id ? 'local' : miId === inicio.visitante.id ? 'visitante' : null;
   const nombresEquipo = { local: inicio.local.nombre, visitante: inicio.visitante.nombre };

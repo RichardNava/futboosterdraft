@@ -1040,6 +1040,17 @@ span.error {
   max-width: 420px;
 }
 
+/* Esqueleto diferido (spec 016, ronda 3): invisible los primeros 400 ms y luego entra con un fundido. */
+.cargando-diferida > .esqueleto {
+  animation: esqueleto-aparece var(--duracion-media) var(--curva-salida) 400ms backwards;
+}
+
+@keyframes esqueleto-aparece {
+  from {
+    opacity: 0;
+  }
+}
+
 @keyframes esqueleto-barrido {
   from {
     background-position: 100% 0;

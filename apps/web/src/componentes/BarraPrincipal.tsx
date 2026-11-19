@@ -11,6 +11,8 @@ export interface AccionBarra {
   a?: string;
   /** Motivo por el que no se puede pulsar: el botón queda visible con `aria-disabled` y el motivo a su lado. */
   motivoDesactivado?: string | null;
+  /** El motivo va en rojo: una baja (lesión o sanción) que obliga a cambiar a un jugador (spec 016, ronda 3). */
+  motivoGrave?: boolean;
   /** Ayuda resumida al pasar el cursor o enfocar el botón; sin ella, la de `AYUDA_ACCION` para su etiqueta. */
   ayuda?: string;
 }
@@ -136,6 +138,7 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
   };
 
   const motivo = principal?.motivoDesactivado;
+  const claseMotivo = principal?.motivoGrave ? 'motivo grave' : 'motivo';
   return (
     <div className="barra-principal" role="region" aria-label="Acciones">
       <div className="barra-principal-estado">
@@ -149,7 +152,7 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
           </span>
         )}
         {motivo ? (
-          <span id={idMotivo} className="motivo" hidden={ayuda !== null} style={{ '--caracteres': motivo.length } as CSSProperties}>
+          <span id={idMotivo} className={claseMotivo} hidden={ayuda !== null} style={{ '--caracteres': motivo.length } as CSSProperties}>
             {motivo}
           </span>
         ) : (

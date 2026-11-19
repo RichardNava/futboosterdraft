@@ -418,7 +418,7 @@ export function Torneo() {
         <BarraPrincipal principal={accionDuelos} />
       ) : preparacion && vista.modo !== 'duelos' ? (
         <BarraPrincipal
-          principal={{ ...preparacion.accion, onClick: recargarSiBaja(preparacion.accion.onClick), motivoDesactivado: bloqueo.motivoDesactivado }}
+          principal={{ ...preparacion.accion, onClick: recargarSiBaja(preparacion.accion.onClick), motivoDesactivado: bloqueo.motivoDesactivado, motivoGrave: true }}
           estado={bloqueo.nota}
         />
       ) : (
@@ -426,6 +426,7 @@ export function Torneo() {
           <BotonAvanzar
             situacion="fin_jornada"
             motivoDesactivado={bloqueo.motivoDesactivado}
+            motivoGrave
             estado={bloqueo.nota}
             onAvanzar={recargarSiBaja(async () => {
               await siguienteJornada(partidaId!);
