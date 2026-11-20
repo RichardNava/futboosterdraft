@@ -37,3 +37,35 @@ test('red caída ⇒ «No hay conexión con el servidor»', async ({ page }) => 
   await expect(page.getByRole('alert')).toContainText('No hay conexión con el servidor. Inténtalo en unos segundos.');
   expect(await cajaEscena(page)).toEqual(antes);
 });
+
+// Spec 013 (FR-027): «¿Has olvidado la contraseña?» pide el enlace y el enlace del correo abre la contraseña nueva.
+test('credenciales malas ⇒ recuperar la contraseña sin decir si hay cuenta', async ({ page }) => {
+  await abrirLogin(page);
+  await page.getByRole('button', { name: 'Entrar' }).click();
+  await page.getByRole('button', { name: '¿Has olvidado la contraseña?' }).click();
+  await expect(page.getByRole('heading', { name: 'Recuperar la contraseña' })).toBeVisible();
+  await page.getByLabel('Correo electrónico').fill('nadie@pruebas.test');
+  await page.getByRole('button', { name: 'Enviar enlace' }).click();
+  await expect(page.getByRole('status')).toContainText('Si hay una cuenta con ese correo');
+});
+
+test('enlace del correo ⇒ contraseña nueva; enlace caducado ⇒ pedir otro', async ({ page }) => {
+  let respuesta = { status: 200, body: { status: true } as object };
+  await page.route('**/api/auth/restablecer', (r) => r.fulfill({ status: respuesta.status, contentType: 'application/json', body: JSON.stringify(respuesta.body) }));
+  await page.goto('/?restablecer=abc');
+  await expect(page.getByRole('heading', { name: 'Elige una contraseña nueva' })).toBeVisible();
+  await page.getByLabel('Contraseña nueva', { exact: true }).fill('otra-contraseña');
+  await page.getByRole('button', { name: 'Guardar contraseña' }).click();
+  await expect(page.getByRole('status')).toContainText('Contraseña cambiada');
+  await page.getByRole('button', { name: 'Iniciar sesión' }).click();
+  await expect(page.getByRole('heading', { name: 'Iniciar sesión' })).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+
+  respuesta = { status: 400, body: { code: 'INVALID_TOKEN', message: 'Invalid token' } };
+  await page.goto('/?restablecer=caducado');
+  await page.getByLabel('Contraseña nueva', { exact: true }).fill('otra-contraseña');
+  await page.getByRole('button', { name: 'Guardar contraseña' }).click();
+  await expect(page.getByRole('alert')).toContainText('El enlace no es válido o ha caducado.');
+  await page.getByRole('button', { name: 'Pedir otro enlace' }).click();
+  await expect(page.getByRole('heading', { name: 'Recuperar la contraseña' })).toBeVisible();
+});

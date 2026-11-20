@@ -465,13 +465,14 @@ html {
  * El foco conserva su grosor aunque la rejilla esté escalada (FR-030): el navegador ajusta el contorno a píxeles
  * enteros antes de aplicar la escala, así que se parte de 3 px para no quedar nunca por debajo de 2. Con la rejilla
  * ampliada más de 1,5 veces, 3 px / escala bajaría de 2 y se redondearía a 1: nunca menos de 2 antes de la escala.
+ * 3,1 y no 3: con algunas escalas (p. ej. 1,061), 3 / escala × escala queda en 2,99… y se redondeaba a 2 px de pantalla.
  */
 .draft .rejilla-cartas :focus-visible {
-  outline-width: max(2px, calc(3px / var(--escala-rejilla, 1)));
+  outline-width: max(2px, calc(3.1px / var(--escala-rejilla, 1)));
 }
 
 .draft .rejilla-cartas .carta-cuerpo[role='button']:focus-visible {
-  outline-width: max(2px, calc(3px / var(--escala-rejilla, 1)));
+  outline-width: max(2px, calc(3.1px / var(--escala-rejilla, 1)));
 }
 
 .draft .rejilla-cartas[data-cartas='1'] {

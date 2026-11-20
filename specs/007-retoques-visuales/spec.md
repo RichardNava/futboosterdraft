@@ -176,6 +176,10 @@ Quien juega ve el nuevo sobre oficial (foil verde con franjas lima y el escudo d
 
 - **FR-021**: Al terminar de usar los recursos, el directorio `temp/` MUST eliminarse y ningún fichero de la aplicación debe depender de él.
 
+**Navegación (segunda ronda, T062; añadido el 2026-11-20 por trazabilidad)**
+
+- **FR-022**: Mientras se juega una partida (draft o torneo) en la que la persona sigue activa, la barra de navegación MUST ofrecer «Abandonar». Pide confirmación con el diálogo de confirmación existente; al confirmar, la persona deja la partida (un NPC ocupa su plaza, como en el abandono que ya existía) y vuelve al inicio. Al cancelar no cambia nada. Fuera de una partida, o si ya no se está activo en ella, el botón no aparece.
+
 ### Key Entities
 
 - **Marco de rareza**: imagen base de la carta para una rareza concreta (cuatro en total); define el contorno y el fondo sobre el que se componen los datos.
@@ -196,6 +200,7 @@ Quien juega ve el nuevo sobre oficial (foil verde con franjas lima y el escudo d
 - **SC-006**: En el modo Duelos no aparecen las tablas de goleadores ni asistentes; en los demás modos siguen apareciendo.
 - **SC-007**: El repositorio no contiene el directorio `temp/` al cerrar la spec.
 - **SC-008**: El 100 % de las apariciones de un sobre muestran el nuevo diseño, y la apertura de sobres conserva todas las fases de animación que tenía.
+- **SC-009**: Desde cualquier pantalla de una partida activa, abandonarla lleva dos acciones («Abandonar» y confirmar) y termina en el inicio con la plaza ocupada por un NPC; en las pantallas fuera de una partida el botón no aparece (e2e en `navegacion.spec.ts`).
 
 ## Assumptions
 

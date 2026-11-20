@@ -2,7 +2,8 @@
  * Rutas de sesión del contrato HTTP y hooks de autorización (T026).
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { errores } from '../http/errores';
+import { cuerpoError, errores } from '../http/errores';
+import { Limitador } from '../http/limitador';
 import { apodoValido, aUsuarioSesion, type Auth, type UsuarioSesion } from './auth';
 
 declare module 'fastify' {
@@ -114,6 +115,28 @@ export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: O
       throw errores.validacion('DATOS_INVALIDOS', 'Faltan el correo o la contraseña');
     }
     const respuesta = await auth.api.signInEmail({ body: { email, password }, headers: cabecerasWeb(req), asResponse: true });
+    return reenviar(reply, respuesta);
+  });
+
+  // Recuperar la contraseña (spec 013, FR-027). Sin sesión, así que se limita por IP: 5 seguidas y luego 1 por minuto.
+  const limiteRecuperacion = new Limitador({ capacidad: 5, porSegundo: 1 / 60 });
+  app.post<{ Body: { email?: string } }>('/api/auth/recuperar', async (req, reply) => {
+    if (!limiteRecuperacion.permitir(req.ip)) {
+      return reply.code(429).send(cuerpoError('DEMASIADAS_PETICIONES', 'Demasiados intentos; espera un minuto'));
+    }
+    const { email } = req.body ?? {};
+    if (typeof email !== 'string') throw errores.validacion('DATOS_INVALIDOS', 'Falta el correo');
+    // Responde igual exista o no la cuenta (FR-027: no revelar si el email existe).
+    const respuesta = await auth.api.requestPasswordReset({ body: { email }, headers: cabecerasWeb(req), asResponse: true });
+    return reenviar(reply, respuesta);
+  });
+
+  app.post<{ Body: { token?: string; password?: string } }>('/api/auth/restablecer', async (req, reply) => {
+    const { token, password } = req.body ?? {};
+    if (typeof token !== 'string' || typeof password !== 'string') {
+      throw errores.validacion('DATOS_INVALIDOS', 'Faltan el enlace o la contraseña');
+    }
+    const respuesta = await auth.api.resetPassword({ body: { token, newPassword: password }, headers: cabecerasWeb(req), asResponse: true });
     return reenviar(reply, respuesta);
   });
 

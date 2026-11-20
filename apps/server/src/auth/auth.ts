@@ -17,6 +17,8 @@ interface OpcionesAuth {
   urlPublica: string;
   /** Al registrarse un invitado: pasa sus partidas al nuevo usuario antes de borrar el anónimo. */
   alVincularInvitado?: (invitadoId: string, nuevoUsuarioId: string) => Promise<void>;
+  /** Envía el enlace para restablecer la contraseña (spec 013, FR-027). */
+  enviarRecuperacion?: (email: string, enlace: string) => Promise<void>;
 }
 
 /** Better Auth con correo y contraseña, invitados anónimos y sesiones en la base de datos. */
@@ -30,7 +32,15 @@ export function crearAuth(db: BaseDatos, opciones: OpcionesAuth) {
       provider: 'pg',
       schema: { user: usuarios, session: sesiones, account: cuentas, verification: verificaciones },
     }),
-    emailAndPassword: { enabled: true, minPasswordLength: 8 },
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 8,
+      revokeSessionsOnPasswordReset: true,
+      // Sin esperar al correo: si no, el tiempo de respuesta revelaría si el email tiene cuenta.
+      sendResetPassword: async ({ user, token }) => {
+        void opciones.enviarRecuperacion?.(user.email, `${opciones.urlPublica}/?restablecer=${encodeURIComponent(token)}`);
+      },
+    },
     plugins: [
       anonymous({
         generateName: () => `Invitado-${Math.floor(1000 + Math.random() * 9000)}`,

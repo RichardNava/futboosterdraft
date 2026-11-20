@@ -102,6 +102,8 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     secreto: config.secreto,
     urlPublica: config.urlPublica,
     alVincularInvitado: (invitadoId, nuevoId) => g().alVincularInvitado(invitadoId, nuevoId),
+    // `avisos` se crea más abajo; solo se usa al pedir una recuperación, con el servidor ya montado.
+    enviarRecuperacion: (email, enlace) => avisos.enviarRecuperacion(email, enlace),
   });
 
   const pasarela = new Pasarela({

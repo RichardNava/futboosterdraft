@@ -2,7 +2,7 @@ import { enCache } from '../api/cache';
 import type { Jugador, Nivel } from '@fbd/domain';
 import { useEffect, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { api } from '../api/cliente';
+import { api, ErrorApi } from '../api/cliente';
 import { AvisoAcceso } from '../componentes/AvisoAcceso';
 import { BandejaAvisos } from '../componentes/BandejaAvisos';
 import { CartaJugador, type CartaResumen } from '../componentes/CartaJugador';
@@ -12,7 +12,7 @@ import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { useSesion } from '../estado/sesion';
 import { destinoPartida, type PartidaResumen } from './MisPartidas';
 
-type Modo = 'menu' | 'login' | 'registro';
+type Modo = 'menu' | 'login' | 'registro' | 'recuperar';
 
 const masReciente = (enCurso: PartidaResumen[]) => [...enCurso].sort((a, b) => Date.parse(b.actualizadaEn) - Date.parse(a.actualizadaEn))[0] ?? null;
 
@@ -46,10 +46,12 @@ function usePartidaEnCurso(activa: boolean): PartidaResumen | null | undefined {
 export function Inicio() {
   const { usuario, entrarComoInvitado, iniciarSesion, registrarse, cerrarSesion } = useSesion();
   const navegar = useNavigate();
-  const [parametros] = useSearchParams();
+  const [parametros, setParametros] = useSearchParams();
   const acceso = parametros.get('acceso');
+  // Enlace del correo para restablecer la contraseña (spec 013, FR-027).
+  const tokenRestablecer = parametros.get('restablecer');
   const pideAcceso = acceso === 'entrar' || acceso === 'registro';
-  const [modo, setModo] = useState<Modo>(acceso === 'entrar' ? 'login' : acceso === 'registro' ? 'registro' : 'menu');
+  const [modo, setModo] = useState<Modo>(tokenRestablecer ? 'recuperar' : acceso === 'entrar' ? 'login' : acceso === 'registro' ? 'registro' : 'menu');
   const [error, setError] = useState<unknown>(null);
   const [enviando, setEnviando] = useState(false);
   const enCurso = usePartidaEnCurso(usuario !== null);
@@ -82,7 +84,7 @@ export function Inicio() {
 
   // Spec 013 (FR-026, FR-028): en los formularios, el aviso va arriba, sobre su cabecera, sin cambiar su altura.
   const errorVisible = error !== null && modo === 'menu' && <AvisoAcceso error={error} />;
-  const avisoFormulario = error !== null && modo !== 'menu' ? <AvisoAcceso error={error} /> : null;
+  const avisoFormulario = error !== null && modo !== 'menu' ? <AvisoAcceso error={error} onRecuperar={() => setModo('recuperar')} /> : null;
 
   if (usuario) {
     return (
@@ -163,7 +165,17 @@ export function Inicio() {
               </button>
             </div>
           )}
-          {modo !== 'menu' && (
+          {modo === 'recuperar' && (
+            <FormularioRecuperar
+              token={tokenRestablecer}
+              onVolver={() => {
+                setError(null);
+                setParametros({}, { replace: true });
+                setModo('login');
+              }}
+            />
+          )}
+          {modo !== 'menu' && modo !== 'recuperar' && (
             <FormularioCuenta
               modo={modo}
               onEnviar={enviarFormulario}
@@ -245,6 +257,82 @@ function EscenaPortada() {
   );
 }
 
+/**
+ * Recuperar la contraseña (spec 013, FR-027). Sin `token`, pide el correo y envía el enlace, sin decir si hay cuenta;
+ * con el `token` del enlace, pide la contraseña nueva.
+ */
+function FormularioRecuperar({ token, onVolver }: { token: string | null; onVolver: () => void }) {
+  const [error, setError] = useState<unknown>(null);
+  const [enviando, setEnviando] = useState(false);
+  const [hecho, setHecho] = useState(false);
+  const [pedirOtro, setPedirOtro] = useState(false);
+  const conToken = token !== null && !pedirOtro;
+
+  const enviar = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const datos = new FormData(e.currentTarget);
+    setError(null);
+    setEnviando(true);
+    try {
+      if (conToken) await api('/api/auth/restablecer', { cuerpo: { token, password: String(datos.get('password') ?? '') } });
+      else await api('/api/auth/recuperar', { cuerpo: { email: String(datos.get('email') ?? '') } });
+      setHecho(true);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const caducado = error instanceof ErrorApi && error.codigo === 'INVALID_TOKEN';
+  return (
+    <form className="formulario panel formulario-cuenta" onSubmit={(e) => void enviar(e)} aria-labelledby="titulo-cuenta">
+      <h2 id="titulo-cuenta">{conToken ? 'Elige una contraseña nueva' : 'Recuperar la contraseña'}</h2>
+      <div className="aviso-acceso-ranura">
+        {caducado ? (
+          <div className="aviso-acceso" role="alert">
+            <p>El enlace no es válido o ha caducado.</p>
+            <button
+              type="button"
+              className="texto"
+              onClick={() => {
+                setError(null);
+                setPedirOtro(true);
+              }}
+            >
+              Pedir otro enlace
+            </button>
+          </div>
+        ) : (
+          error !== null && <AvisoAcceso error={error} />
+        )}
+      </div>
+      {hecho ? (
+        <p role="status">{conToken ? 'Contraseña cambiada. Ya puedes iniciar sesión con ella.' : 'Si hay una cuenta con ese correo, te hemos enviado un enlace para elegir otra contraseña. Caduca en una hora.'}</p>
+      ) : conToken ? (
+        <label>
+          Contraseña nueva
+          <input name="password" type="password" required minLength={8} autoComplete="new-password" />
+        </label>
+      ) : (
+        <label>
+          Correo electrónico
+          <input name="email" type="email" required autoComplete="email" />
+        </label>
+      )}
+      <div className="acciones">
+        {!hecho && (
+          <button type="submit" className="boton-principal" data-principal="" disabled={enviando}>
+            {conToken ? 'Guardar contraseña' : 'Enviar enlace'}
+          </button>
+        )}
+        <button type="button" className={hecho ? 'boton-principal' : 'texto'} {...(hecho ? { 'data-principal': '' } : {})} onClick={onVolver}>
+          {hecho && conToken ? 'Iniciar sesión' : 'Volver'}
+        </button>
+      </div>
+    </form>
+  );
+}
 
 function FormularioCuenta({
   modo,

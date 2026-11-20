@@ -1,17 +1,17 @@
 # Graph Report - futboosterdraft  (2026-11-20)
 
 ## Corpus Check
-- 1034 files · ~2,674,334 words
+- 1034 files · ~2,674,416 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 22 file(s) not represented in the graph (top: (none) 9, .css 6, .woff2 5)
 
 ## Summary
-- 9204 nodes · 23111 edges · 377 communities (347 shown, 30 thin omitted)
+- 9204 nodes · 23110 edges · 377 communities (347 shown, 30 thin omitted)
 - Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 2331 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e90fecd9`
+- Built from commit: `eee69036`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

@@ -1,6 +1,6 @@
 # Roadmap de Fútboosterdraft
 
-**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 (actualizado el 2026-11-02) · **Constitución**: 1.3.0
+**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 (actualizado el 2026-11-20) · **Constitución**: 1.3.0
 
 Este documento es la *spec de specs* del proyecto: agrupa las especificaciones de `specs/` en iniciativas de
 producto, fija su orden y dice cuándo se da por cerrada cada una. No sustituye a las specs: cada iniciativa remite
@@ -158,7 +158,9 @@ cuesta simular los partidos.
   comprobaciones que no se pueden medir con el tamaño de muestra actual.
 - **Specs**: [003](specs/003-mejoras-ux-simulacion/spec.md) (T033, T034; [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md),
   [calibracion-npc.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-npc.md)), [005](specs/005-virtudes-defectos/spec.md) (FR-051, research R2).
-- **Prioridad / estado**: P0 · **Parcial**: hecho el 2026-11-01 (parámetros 5.0.0); reabierta por el motor 7.0.0.
+- **Prioridad / estado**: P0 · **Implementada, sin validar**: hecho el 2026-11-01 (parámetros 5.0.0); reabierta por
+  el motor 7.0.0 y cerrada de nuevo en las estadísticas con la 8.0.0 (spec 015: `pnpm balance --n 1000` 76 de 76 y el
+  CI sin `--pendientes` desde el 2026-11-16). Faltan los recorridos a mano de los quickstart de la 014 y la 015.
 - **Spec 014 (implementada el 2026-11-13, sin validar)**: [spec](specs/014-mejoras-motor-navegacion-refactor/spec.md).
   Motor 7.0.0: el balón solo se mueve cuando alguien lo juega, fuera de juego y mano a mano por posición (sin
   sorteos), sin ida y vuelta, energía visible en la gestión y más peso de las estadísticas. Navegación sin pestañeo
@@ -268,14 +270,16 @@ cuesta simular los partidos.
 - **Alcance**: 006 US1–US7: colección propia y activa con su mínimo, fragmentos (torneos ganados y desfragmentar),
   tienda de sobres, colecciones y fragmentos con **pago simulado**, cartas con bandera, escudo e imagen de fondo.
 - **Specs**: [006](specs/006-preparacion-bd-cartas/spec.md).
-- **Prioridad / estado**: P1 · **Implementada, sin validar**. No hay `checklists/validacion.md` de la 006.
+- **Prioridad / estado**: P1 · **Implementada, sin validar**. [validacion.md](specs/006-preparacion-bd-cartas/checklists/validacion.md)
+  creado el 2026-11-20 con las pruebas automáticas (SC-007 incluido); faltan los escenarios A–O a mano.
 - **Evidencia**: 110 de 112 tareas marcadas; tests de integración estabilizados (commits `c56b889`, `f1ab80b`). Sin cerrar:
   - T103: escenarios manuales A–O de [quickstart.md](specs/006-preparacion-bd-cartas/quickstart.md), incluido 360 px en «Colección» y «Tienda».
   - T087: escudos oficiales; desactivados (`ESCUDOS_ACTIVOS = false`) por licencia sin revisar. **Bloquea producción**
     ([docs/despliegue.md](docs/despliegue.md)).
-  - 006/SC-007 (idempotencia de compras con dobles pulsaciones y cortes) debe quedar registrado en la validación.
+  - ~~006/SC-007 (idempotencia de compras con dobles pulsaciones y cortes) debe quedar registrado en la validación~~
+    (registrado el 2026-11-20).
 - **Criterios de cierre**:
-  1. `specs/006-preparacion-bd-cartas/checklists/validacion.md` creado con pruebas automáticas y escenarios A–O.
+  1. `specs/006-preparacion-bd-cartas/checklists/validacion.md` creado con pruebas automáticas (hecho) y escenarios A–O.
   2. T103 marcada.
   3. Escudos con licencia revisada y activados, o retirados de FR-044 por decisión registrada (T087).
 
@@ -429,22 +433,25 @@ cuesta simular los partidos.
   servidor; «Mis partidas» paginada; aviso de inicio de sesión arriba; descripción de rasgo sin parpadeo; media del
   equipo entera con zoom y «Mi perfil» en dos columnas. `pnpm balance` («Rareza del draft») en verde. Pendiente: el
   recorrido a mano del [quickstart](specs/013-mejora-cartas-rareza-draft/quickstart.md), borrar `jugadores_bg/` con
-  el visto bueno de la persona y la recuperación de contraseña que pide 013/FR-027 (no existe en la aplicación).
+  el visto bueno de la persona. La recuperación de contraseña que pide 013/FR-027 se hizo el 2026-11-20 (013/T086:
+  enlace por correo, de un solo uso y que caduca en una hora).
 - **Prioridad / estado**: P1 · **Parcial**. 007: 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
 - **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
   (rarezas y presentación de la carta de la 006).
-- **Evidencia**: sin `checklists/validacion.md`. Sin cerrar:
+- **Evidencia**: [007/validacion.md](specs/007-retoques-visuales/checklists/validacion.md) (2026-11-20). Sin cerrar:
   - ~~007/SC-007~~: `temp/` se borró en el commit `368a990`; T050 marcada el 2026-11-02 y `test ! -d temp` en verde.
-  - T052: `pnpm typecheck`, `pnpm lint`, `pnpm test` y `pnpm e2e` completos. T063 solo cubrió unitarias de web y las e2e afectadas.
+  - ~~T052: `pnpm typecheck`, `pnpm lint`, `pnpm test` y `pnpm e2e` completos~~: en verde el 2026-11-20 y registrada en
+    [007/validacion.md](specs/007-retoques-visuales/checklists/validacion.md). Quedan SC-002, SC-003 y SC-004 con personas
+    y decidir el alcance de SC-004b (la carpeta de sonidos pesa 1,26 MB por las specs 012 y 013).
   - 007/SC-004 (ningún efecto agudo o molesto en una escucha de prueba) y SC-003 (carga no más lenta) necesitan
     una comprobación con personas; entran en la sesión común de INI-01 a INI-03.
-  - Trazabilidad: el botón «Abandonar» en la barra de navegación (T062) se implementó en la segunda ronda sin
-    requisito en la spec 007; hay que añadirlo a su `spec.md` o a la de la funcionalidad de abandono (Principio X).
+  - ~~Trazabilidad: el botón «Abandonar» en la barra de navegación (T062) se implementó en la segunda ronda sin
+    requisito en la spec 007~~: recogido como 007/FR-022 y SC-009 (2026-11-20).
 - **Criterios de cierre**:
   1. ~~`temp/` eliminado del repositorio (T050) y T051 repetida en verde~~ (cumplido).
-  2. T052 en verde y registrada en `specs/007-retoques-visuales/checklists/validacion.md`.
+  2. ~~T052 en verde y registrada en `specs/007-retoques-visuales/checklists/validacion.md`~~ (cumplido).
   3. SC-001 a SC-008 comprobados en esa validación.
-  4. «Abandonar» recogido como requisito con su criterio de aceptación.
+  4. ~~«Abandonar» recogido como requisito con su criterio de aceptación~~ (cumplido).
 
 ---
 
@@ -466,7 +473,9 @@ cuesta simular los partidos.
 
 | Comprobación | Dónde | Iniciativa |
 |---|---|---|
-| 7 comprobaciones de `balance` en `--pendientes` y 003/SC-001c | `.github/workflows/ci.yml`, `calibracion-motor.md` | INI-05 |
+| ~~7 comprobaciones de `balance` en `--pendientes` y 003/SC-001c~~: el CI ya no usa `--pendientes` (2026-11-16, spec 015; 76 de 76) | `.github/workflows/ci.yml` | INI-05 |
+| Recorridos a mano de los quickstart de la 014 y la 015 (paso 5) | `specs/014-…/quickstart.md`, `specs/015-…/quickstart.md` | INI-05 |
+| Recorridos a mano de la 012 (T076, T089, T100, T106, T116), la 013 (T073) y la 008 (T012, T022) | `tasks.md` de cada spec | INI-15, INI-11 |
 | FR-028a: 25 / 40 ms por partido (CI a 120 ms) | `pnpm --filter @fbd/engine bench` | INI-06 |
 | 001/SC-017: carga de 100 partidas | `tools/load/beta-100.js` | INI-07 |
 | Pruebas con personas: 001/SC-003; 002/SC-001, SC-009, SC-007a; 003/SC-008, SC-011–SC-014, SC-016, SC-019; 004/SC-003, SC-004, SC-010 | checklists `validacion.md` | INI-01 a INI-03 |
@@ -475,6 +484,6 @@ cuesta simular los partidos.
 | Escenarios manuales A–O de la 006 | `specs/006-preparacion-bd-cartas/quickstart.md` | INI-08 |
 | Licencia de los escudos | `docs/despliegue.md` | INI-08, INI-10 |
 | Tests intermitentes: `torneo-asincrono` con la máquina cargada; `torneo.spec.ts` y la regla de 10 minutos sin conexión con el reloj simulado | 002, 003 y 004 `validacion.md` | INI-07 |
-| Tareas hechas sin marcar: T036 (003), T144 (001) | `tasks.md` | INI-05, INI-01 |
-| Batería completa tras la 007 (T052) | `pnpm typecheck`, `lint`, `test`, `e2e` | INI-15 |
+| Tareas hechas sin marcar: T144 (001) | `tasks.md` | INI-01 |
+| ~~Batería completa tras la 007 (T052)~~: en verde el 2026-11-20 | `pnpm typecheck`, `lint`, `test`, `e2e` | INI-15 |
 | Escucha de prueba de los sonidos (007/SC-004) | sesión con personas | INI-15 |

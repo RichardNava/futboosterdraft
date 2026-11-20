@@ -218,7 +218,7 @@ rasgado (FR-017 a FR-020; research R4).
 - [X] T049 [P] Actualizar `docs/diseno/DESIGN.md` en las secciones de la carta, el sobre y el logo: proporción 2 : 3, marcos por nivel y su `--carta-marco`, texto claro, sobre en `<img>` y nueva `--proporcion-sobre`.
 - [X] T050 Borrar el directorio `temp/` de la raíz del repositorio (FR-021, SC-007) cuando T003–T006 y T022 estén terminadas y revisadas. **Hecho** en el commit `368a990` (2026-10-29).
 - [X] T051 Ejecutar las comprobaciones de recursos de quickstart.md: tamaños de fondos, marcos, sobre y logo; `du -cb apps/web/public/sonidos/*.mp3 | tail -1` ≤ 307200; `test ! -d temp`; `grep -rn "temp/" apps/web/src apps/web/index.html apps/web/tests` sin resultados; `grep -rln "favicon.svg\|\.wav" apps/web/src apps/web/index.html` sin resultados.
-- [ ] T052 Ejecutar `pnpm typecheck`, `pnpm lint` (incluye `lint:tokens`), `pnpm test` y `pnpm e2e`, y dejar todo en verde.
+- [X] T052 Ejecutar `pnpm typecheck`, `pnpm lint` (incluye `lint:tokens`), `pnpm test` y `pnpm e2e`, y dejar todo en verde.
 - [X] T053 Ejecutar `graphify update .` desde la raíz del repositorio para actualizar el grafo tras los cambios de código.
 
 ---
@@ -253,7 +253,7 @@ en una sesión real es lo siguiente:
   - cabecera (media, demarcación, bandera y retrato) más abajo, con margen respecto al marco.
 - [X] T060 [US1] Esquinas que asomaban tras el marco: el color de reserva queda dentro del interior del marco y la carta elegida usa `drop-shadow` (sigue el chaflán) en lugar de `outline` (rectangular).
 - [X] T061 [US1] Media en ámbar que pasa a dorado al acercarse a 100 (`--carta-media-oro` calculado en `CartaJugador.tsx`, color en `cartas.css`).
-- [X] T062 Botón «Abandonar» en la barra de navegación mientras se juega una partida (draft o torneo) en la que sigues activo: confirma con el diálogo existente, llama a `POST /api/partidas/:id/abandonar` (un NPC ocupa la plaza) y vuelve al inicio (`Marco.tsx`, e2e en `navegacion.spec.ts`).
+- [X] T062 (FR-022, SC-009) Botón «Abandonar» en la barra de navegación mientras se juega una partida (draft o torneo) en la que sigues activo: confirma con el diálogo existente, llama a `POST /api/partidas/:id/abandonar` (un NPC ocupa la plaza) y vuelve al inicio (`Marco.tsx`, e2e en `navegacion.spec.ts`).
 - [X] T063 Validar: `pnpm typecheck`, `pnpm lint`, pruebas unitarias de web y e2e afectados; capturas de `/_pruebas/cartas`; `graphify update .`.
 
 ---

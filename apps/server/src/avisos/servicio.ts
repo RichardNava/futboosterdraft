@@ -63,6 +63,28 @@ export class ServicioAvisos {
     await this.db.update(avisos).set({ enviadoEmailEn: new Date(this.reloj.ahora()) }).where(eq(avisos.id, avisoId));
   }
 
+  /** Correo con el enlace para restablecer la contraseña (spec 013, FR-027). Nunca lanza: los fallos van al registro. */
+  async enviarRecuperacion(email: string, enlace: string): Promise<void> {
+    if (!this.transporte) {
+      this.logger.warn('Sin SMTP_URL: no se envía el correo para restablecer la contraseña');
+      return;
+    }
+    try {
+      await this.transporte.sendMail({
+        from: 'Fútboosterdraft <avisos@futboosterdraft.local>',
+        to: email,
+        subject: 'Fútboosterdraft: restablecer la contraseña',
+        text: `Para elegir una contraseña nueva, abre este enlace (caduca en una hora):
+
+${enlace}
+
+Si no lo has pedido tú, ignora este correo.`,
+      });
+    } catch (err) {
+      this.logger.warn({ err }, 'No se pudo enviar el correo para restablecer la contraseña');
+    }
+  }
+
   /** Avisos de un usuario (solo los no leídos si se pide). */
   async listar(usuarioId: string, soloNoLeidos: boolean) {
     const condicion = soloNoLeidos ? and(eq(avisos.usuarioId, usuarioId), eq(avisos.leido, false)) : eq(avisos.usuarioId, usuarioId);

@@ -249,6 +249,10 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 - [X] T084 Tienda: en «Todo», el pase premium va el primero y destacado en oro (`Tienda.tsx`, `coleccion.css`); en «Funcionalidades» sigue en su sitio
 - [X] T085 `partido-rapido.test.ts` (eliminatoria con empate): 40 intentos en lugar de 20; con la suite entera no salió ningún empate en 20 (aislado pasa en 11 s)
 
+## Phase 14: Recuperar la contraseña (FR-027, 2026-11-20)
+
+- [X] T086 [US5] «¿Has olvidado la contraseña?» llevaba a ninguna parte: no había recuperación. Servidor: `POST /api/auth/recuperar` (responde igual exista o no la cuenta; limitado a 5 seguidas y 1 por minuto por IP) y `POST /api/auth/restablecer` sobre el restablecimiento de Better Auth (`auth/rutas.ts`, `auth/auth.ts`); el correo con el enlace `/?restablecer=<token>` (caduca en una hora) sale por el SMTP de los avisos sin esperarlo, para no revelar por el tiempo si la cuenta existe (`ServicioAvisos.enviarRecuperacion`); cambiar la contraseña cierra las sesiones abiertas y el enlace sirve una sola vez. Web: `FormularioRecuperar` en la portada (`Inicio.tsx`), con «Pedir otro enlace» si ha caducado. Pruebas: `tests/integration/recuperar-contrasena.test.ts` (con Mailpit) y dos e2e en `acceso.spec.ts`
+
 ---
 
 ## Dependencies & Execution Order

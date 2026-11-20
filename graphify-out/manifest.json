@@ -150,9 +150,9 @@
     "semantic_hash": "36421750385f4073f056a6151f3f3711"
   },
   "apps/server/drizzle/meta/_journal.json": {
-    "mtime": 1795032876.2390213,
-    "seen": 1795036871.0834363,
-    "ast_hash": "771652658fb05c2c2693f3593b28de92",
+    "mtime": 1795154545.0551784,
+    "seen": 1795196316.0938056,
+    "ast_hash": "fc6beca770fcae2a6e5bce13c69b8083",
     "semantic_hash": ""
   },
   "apps/server/package.json": {
@@ -216,9 +216,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/actores/partidoRapido.ts": {
-    "mtime": 1795125027.5576515,
-    "seen": 1795125988.4308574,
-    "ast_hash": "1a3b270184f6dc97ca58855186d98bab",
+    "mtime": 1795154545.056178,
+    "seen": 1795196316.0956287,
+    "ast_hash": "2bb569b0f7b2be79e202149137dd68cd",
     "semantic_hash": ""
   },
   "apps/server/src/actores/pausa.ts": {
@@ -258,21 +258,21 @@
     "semantic_hash": ""
   },
   "apps/server/src/auth/auth.ts": {
-    "mtime": 1794556996.8935122,
-    "seen": 1794592739.6204174,
-    "ast_hash": "33dfca91d88cbce25f5ca8563ff35244",
+    "mtime": 1795194278.6679714,
+    "seen": 1795196316.096708,
+    "ast_hash": "f53c6382ac5889087cbe8637cc1ac6f6",
     "semantic_hash": ""
   },
   "apps/server/src/auth/rutas.ts": {
-    "mtime": 1794556996.6911204,
-    "seen": 1794592739.6204193,
-    "ast_hash": "11fed1cfc1fa82a7f593710362a4cf95",
+    "mtime": 1795194278.6689713,
+    "seen": 1795196316.0967104,
+    "ast_hash": "3962d4d430abc8f3223def7d6972b124",
     "semantic_hash": ""
   },
   "apps/server/src/avisos/servicio.ts": {
-    "mtime": 1794556996.8945122,
-    "seen": 1794592739.6204212,
-    "ast_hash": "6bb2e61ecef38c6c027c92186e53a206",
+    "mtime": 1795194278.6683276,
+    "seen": 1795196316.096712,
+    "ast_hash": "3f06e0ccc9cb65a85379da4de244d7ae",
     "semantic_hash": ""
   },
   "apps/server/src/entorno.ts": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/catalogo.ts": {
-    "mtime": 1795033251.470098,
-    "seen": 1795036871.0955877,
-    "ast_hash": "64d0f8db6b2dad1c165a9478aae22d18",
+    "mtime": 1795154545.0581777,
+    "seen": 1795196316.1006796,
+    "ast_hash": "63f710ead6f42e6c783507e1fe36109e",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/draft.ts": {
@@ -450,9 +450,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/seed.ts": {
-    "mtime": 1795033144.8220215,
-    "seen": 1795036871.0971053,
-    "ast_hash": "01323ea2c9939807e256142c9315380e",
+    "mtime": 1795154545.0581777,
+    "seen": 1795196316.101763,
+    "ast_hash": "755a938c1c5b23129ac7875dacc06493",
     "semantic_hash": ""
   },
   "apps/server/src/programador/reloj.ts": {
@@ -468,9 +468,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/servidor.ts": {
-    "mtime": 1794556996.8799188,
-    "seen": 1794592739.621064,
-    "ast_hash": "838a3f81f386664de40996277cd2a837",
+    "mtime": 1795194278.6683276,
+    "seen": 1795196316.1021633,
+    "ast_hash": "166b46a521e391a38f389764f7d06f40",
     "semantic_hash": ""
   },
   "apps/server/src/ws/pasarela.ts": {
@@ -504,9 +504,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/helpers/bd.ts": {
-    "mtime": 1795033144.8225813,
-    "seen": 1795036871.1019387,
-    "ast_hash": "5976b9249b6003e704142de23887b222",
+    "mtime": 1795154545.0591774,
+    "seen": 1795196316.1035912,
+    "ast_hash": "63769444e46e27457711081f75be7b9f",
     "semantic_hash": ""
   },
   "apps/server/tests/helpers/clienteWs.ts": {
@@ -528,10 +528,10 @@
     "semantic_hash": "5927c2dbbc6cf57cb6f984c4a015caa8"
   },
   "apps/server/tests/helpers/usuarios.ts": {
-    "mtime": 1792153826.4101133,
-    "seen": 1792327978.0274892,
-    "ast_hash": "76e3fa5d19e0cc6c9a88b38f6ab43ed4",
-    "semantic_hash": "76e3fa5d19e0cc6c9a88b38f6ab43ed4"
+    "mtime": 1795194389.3189654,
+    "seen": 1795196316.1040792,
+    "ast_hash": "e084016f6b7edb147d2fc86cafc2d94b",
+    "semantic_hash": ""
   },
   "apps/server/tests/integration/auth.test.ts": {
     "mtime": 1793055174.876793,
@@ -642,9 +642,9 @@
     "semantic_hash": "06a2cf72424d65fa5a47f3c083f31d25"
   },
   "apps/server/tests/unit/seed.test.ts": {
-    "mtime": 1795033328.4562647,
-    "seen": 1795036871.1170242,
-    "ast_hash": "637a7f1284639fc3d0686c2a87ea6b01",
+    "mtime": 1795154545.0621777,
+    "seen": 1795196316.1102946,
+    "ast_hash": "eee1571e771777808630af3d817e796b",
     "semantic_hash": ""
   },
   "apps/server/tsconfig.json": {
@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/Marco.tsx": {
-    "mtime": 1795036329.2057848,
-    "seen": 1795036871.1198428,
-    "ast_hash": "220fbcb86732a8e4074e38606dff7594",
+    "mtime": 1795154545.175287,
+    "seen": 1795196316.1115396,
+    "ast_hash": "cc3212599e0df3f6062606b7c712e51c",
     "semantic_hash": ""
   },
   "apps/web/src/app/Rutas.tsx": {
@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/AvisoPartido.tsx": {
-    "mtime": 1795128543.2218263,
-    "seen": 1795130045.1534307,
-    "ast_hash": "1437dcba0fdee0f9754849dffa6e0844",
+    "mtime": 1795154545.1762867,
+    "seen": 1795196316.1127913,
+    "ast_hash": "d71b74edaf256d7c8d3bd88fe5613819",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BandejaAvisos.tsx": {
@@ -750,9 +750,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BotonAvanzar.tsx": {
-    "mtime": 1795130663.253431,
-    "seen": 1795131157.7562394,
-    "ast_hash": "afbd95ee00485c385bb20a5a7295e08d",
+    "mtime": 1795154545.177288,
+    "seen": 1795196316.1129193,
+    "ast_hash": "cf54a039b9fa64001321e08b8e1a4ba9",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaJugador.tsx": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/CrearPartida.tsx": {
-    "mtime": 1795047484.3749442,
-    "seen": 1795047561.457479,
-    "ast_hash": "bab51296aca5e31f77e28dcdfda72dd8",
+    "mtime": 1795154545.1865766,
+    "seen": 1795196316.121959,
+    "ast_hash": "4a81c403fedaa8a3963f78ba4e936f95",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Draft.tsx": {
@@ -858,9 +858,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Inicio.tsx": {
-    "mtime": 1794532922.4131756,
-    "seen": 1794592739.6361573,
-    "ast_hash": "f487bb75484d93839ef5815882a4787f",
+    "mtime": 1795194361.266901,
+    "seen": 1795196316.1222029,
+    "ast_hash": "c081425e3eb5de5de9c701ce45af8c13",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/MisPartidas.tsx": {
@@ -870,21 +870,21 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido.tsx": {
-    "mtime": 1795128543.2222528,
-    "seen": 1795130045.1660125,
-    "ast_hash": "8ca2d5949168c7fda005e994f70bd195",
+    "mtime": 1795154545.1875768,
+    "seen": 1795196316.12245,
+    "ast_hash": "979ceb68baa9c1d95b0c379900822eda",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido2D.tsx": {
-    "mtime": 1795130663.2546504,
-    "seen": 1795131157.7681863,
-    "ast_hash": "2babccf3afde29311464d82d68197d32",
+    "mtime": 1795154545.1875768,
+    "seen": 1795196316.1224523,
+    "ast_hash": "1aff5d40e6fc125501fa649f009be9de",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PartidoRapido.tsx": {
-    "mtime": 1795128543.2222528,
-    "seen": 1795130045.166016,
-    "ast_hash": "3e65d944dbcbf9fdf58f23d8ba12d6b7",
+    "mtime": 1795154545.1885774,
+    "seen": 1795196316.1224542,
+    "ast_hash": "2adc029b98358c9b10c54b60a5ece7cc",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Plantillas.tsx": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Torneo.tsx": {
-    "mtime": 1795130663.2541258,
-    "seen": 1795131157.7690566,
-    "ast_hash": "da4bfae36406af4cd38d532e2a24191d",
+    "mtime": 1795154545.1895764,
+    "seen": 1795196316.1230674,
+    "ast_hash": "5bccf2ea36091d4f642c1738053f60d2",
     "semantic_hash": ""
   },
   "apps/web/src/sonido/sonido.ts": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/navegacion.spec.ts": {
-    "mtime": 1795128562.5261872,
-    "seen": 1795130045.1713462,
-    "ast_hash": "7fba4e8f2ed177d90eff5e9c6822d2da",
+    "mtime": 1795154545.191577,
+    "seen": 1795196316.1272156,
+    "ast_hash": "610bbcaba10c8795e1789def366c452b",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/partido-2d.spec.ts": {
@@ -1014,9 +1014,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/torneo.spec.ts": {
-    "mtime": 1795130671.631393,
-    "seen": 1795131157.7748835,
-    "ast_hash": "312e4ba787c9388a34d50ea2a49c8ddf",
+    "mtime": 1795154545.1925764,
+    "seen": 1795196316.1280897,
+    "ast_hash": "10e5cbf9da963c62f7b697d265c4eb9c",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/interpolacion.test.ts": {
@@ -1170,15 +1170,15 @@
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/tipos.ts": {
-    "mtime": 1795032911.8693862,
-    "seen": 1795036871.1763098,
-    "ast_hash": "438b00676de9120d6f592c2ee9fae68c",
+    "mtime": 1795154545.387785,
+    "seen": 1795196316.1348748,
+    "ast_hash": "fce8ac7c7152eedcdf2d24ee3f252877",
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/validar.ts": {
-    "mtime": 1795032911.8703854,
-    "seen": 1795036871.1763146,
-    "ast_hash": "c4689d5dfa11d6aad6d3d3135614a25c",
+    "mtime": 1795154545.387785,
+    "seen": 1795196316.1348765,
+    "ast_hash": "05eebd385015ab5198cf57ff994c77b2",
     "semantic_hash": ""
   },
   "packages/domain/src/draft/mesa.ts": {
@@ -1326,9 +1326,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/catalogo/validar.test.ts": {
-    "mtime": 1795032934.0633652,
-    "seen": 1795036871.1933742,
-    "ast_hash": "da9cb0c1bebff5b07fec8677e32f0149",
+    "mtime": 1795154545.3897848,
+    "seen": 1795196316.1407213,
+    "ast_hash": "0995c30c6ed7cbe8bb0af6444515b34c",
     "semantic_hash": ""
   },
   "packages/domain/tests/draft/mesa.test.ts": {
@@ -1410,9 +1410,9 @@
     "semantic_hash": "c8edf9fa1cba289e0feafd7d3a6ceced"
   },
   "packages/domain/tests/sobres/generador.test.ts": {
-    "mtime": 1795035839.3823478,
-    "seen": 1795036871.2027595,
-    "ast_hash": "343c33f09b04ccf7785c8a7caffd007e",
+    "mtime": 1795154545.3917837,
+    "seen": 1795196316.1439898,
+    "ast_hash": "23d9f00e65e6be41f4b84db46afef683",
     "semantic_hash": ""
   },
   "packages/domain/tests/torneo/bajas.test.ts": {
@@ -1710,9 +1710,9 @@
     "semantic_hash": "342df548eb28f2f03c013837082ccfad"
   },
   "packages/protocol/schemas/player-data.schema.json": {
-    "mtime": 1795035064.7500737,
-    "seen": 1795036871.2298293,
-    "ast_hash": "059ccbf257dcd38c37634e97af3d5f67",
+    "mtime": 1795154545.392786,
+    "seen": 1795196316.156554,
+    "ast_hash": "2b76e0981a5b5463eae5573e48d052c1",
     "semantic_hash": ""
   },
   "packages/protocol/src/http/alineacion.ts": {
@@ -1764,9 +1764,9 @@
     "semantic_hash": "58db4dca479ba77b06943e26adcff86a"
   },
   "packages/protocol/src/ws/partido.ts": {
-    "mtime": 1795125027.556652,
-    "seen": 1795125988.5084174,
-    "ast_hash": "cb01558511361e9cbb9185c00c993795",
+    "mtime": 1795154545.3937845,
+    "seen": 1795196316.1577725,
+    "ast_hash": "54088affcb92d3f3834dc696582fbd1b",
     "semantic_hash": ""
   },
   "packages/protocol/src/ws/partido2d.ts": {
@@ -1878,9 +1878,9 @@
     "semantic_hash": ""
   },
   "tools/fixtures/package.json": {
-    "mtime": 1795032876.2388105,
-    "seen": 1795036871.2406054,
-    "ast_hash": "d5def3947dbe21b04afe8fdcf6102a6e",
+    "mtime": 1795154545.4057844,
+    "seen": 1795196316.1637714,
+    "ast_hash": "d3f9517a9c10e5443dcebd00f0bf2cfe",
     "semantic_hash": ""
   },
   "tools/fixtures/src/escenarios.ts": {
@@ -2052,9 +2052,9 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1795132003.1109204,
-    "seen": 1795133246.451841,
-    "ast_hash": "e1f1e04addb2d67088eec9f15cd3638a",
+    "mtime": 1795154545.054179,
+    "seen": 1795196316.1824207,
+    "ast_hash": "aa68151112365a3a613c7f4ce009d793",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2076,9 +2076,9 @@
     "semantic_hash": "5d9adb618448c82498a1711504f10c9e"
   },
   "docs/despliegue.md": {
-    "mtime": 1795036668.0541134,
-    "seen": 1795036871.2730792,
-    "ast_hash": "0d8de5dadf36f4f9674ce66ea9dc1632",
+    "mtime": 1795154545.1986165,
+    "seen": 1795196316.1827807,
+    "ast_hash": "b6f48cc3c1170554eb8fb1848d7445b2",
     "semantic_hash": ""
   },
   "pnpm-workspace.yaml": {
@@ -2382,9 +2382,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BarraPrincipal.tsx": {
-    "mtime": 1795130663.253123,
-    "seen": 1795131157.7562363,
-    "ast_hash": "eeed4e442256c776a8be8bac63bb6ce7",
+    "mtime": 1795154545.1762867,
+    "seen": 1795196316.1129172,
+    "ast_hash": "de4edb5cdd67576129d387a00e65e44d",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Camiseta.tsx": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/GestionEquipo.tsx": {
-    "mtime": 1795130663.2541258,
-    "seen": 1795131157.758791,
-    "ast_hash": "32bff61ada507a9cfbfb309a8a8ba548",
+    "mtime": 1795154545.1802878,
+    "seen": 1795196316.1145916,
+    "ast_hash": "0988c64120f9359c57c7e06d7bf6f5e9",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ResultadoPartido.tsx": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PantallaCampeon.tsx": {
-    "mtime": 1795036329.3306627,
-    "seen": 1795036871.1435812,
-    "ast_hash": "fa8f85dfd00b23e751fdb99eda2efa4d",
+    "mtime": 1795154545.1865766,
+    "seen": 1795196316.122326,
+    "ast_hash": "e3213b64f041ec6e69db6ab030724948",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PantallaDerrota.tsx": {
@@ -2490,9 +2490,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/gestion-equipo.spec.ts": {
-    "mtime": 1795129859.2708695,
-    "seen": 1795130045.171101,
-    "ast_hash": "98f58922f75aa7a4797508cba092b63f",
+    "mtime": 1795154545.1905775,
+    "seen": 1795196316.1269777,
+    "ast_hash": "e2eb65128c6fceee1a7ade71f708dbd9",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/identidad.spec.ts": {
@@ -2790,15 +2790,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Dialogo.tsx": {
-    "mtime": 1795036098.466474,
-    "seen": 1795036871.124854,
-    "ast_hash": "6e8679e31add36650c2dd2cdb7aa34da",
+    "mtime": 1795154545.1782868,
+    "seen": 1795196316.1136782,
+    "ast_hash": "7602f4d4ceac7d1db4516ab8d183031c",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Esqueleto.tsx": {
-    "mtime": 1795128626.144006,
-    "seen": 1795130045.155771,
-    "ast_hash": "036f1aab6b4a7aa609cb9ef4ccfa5675",
+    "mtime": 1795154545.1792872,
+    "seen": 1795196316.1141822,
+    "ast_hash": "fb0366eb66af365e01b1b2e3a68ab7aa",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/EstadoVacio.tsx": {
@@ -2808,9 +2808,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Icono.tsx": {
-    "mtime": 1795036349.5269973,
-    "seen": 1795036871.127189,
-    "ast_hash": "77be8c5169c51c2a30eb4f984fd7cbd6",
+    "mtime": 1795154545.1812878,
+    "seen": 1795196316.1145937,
+    "ast_hash": "b82ba3f954775b01c7ac1116d2db766a",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Insignia.tsx": {
@@ -3270,9 +3270,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/sinSpecials.test.ts": {
-    "mtime": 1795035839.381361,
-    "seen": 1795036871.202432,
-    "ast_hash": "ffbd04c9c100beacc23d50693e9849dd",
+    "mtime": 1795154545.390785,
+    "seen": 1795196316.143856,
+    "ast_hash": "0a01828188836d41f6dc9a9a580fa244",
     "semantic_hash": ""
   },
   "packages/engine/src/modificadores/defectos.ts": {
@@ -3522,9 +3522,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/economia/servicio.ts": {
-    "mtime": 1795036281.2119904,
-    "seen": 1795036871.089599,
-    "ast_hash": "3645792f34b98442a7cec43dfb51e3a8",
+    "mtime": 1795154545.056178,
+    "seen": 1795196316.0967145,
+    "ast_hash": "070b79dd21a9830e2b260dd93a610d68",
     "semantic_hash": ""
   },
   "apps/server/src/http/coleccion.ts": {
@@ -3540,21 +3540,21 @@
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/coleccion.ts": {
-    "mtime": 1795032890.7285347,
-    "seen": 1795036871.094474,
-    "ast_hash": "ac08ae0f9a982902125643149c923fe7",
+    "mtime": 1795154545.0571778,
+    "seen": 1795196316.0996747,
+    "ast_hash": "f8b303dff69d35e0c416e35a558fe49d",
     "semantic_hash": ""
   },
   "apps/server/tests/helpers/economia.ts": {
-    "mtime": 1795033512.8781908,
-    "seen": 1795036871.10223,
-    "ast_hash": "49f7b776dd5400ffd66e3da5afe91073",
+    "mtime": 1795154545.0591774,
+    "seen": 1795196316.1037154,
+    "ast_hash": "6202a89b013a839707950665b218e7df",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/coleccion.test.ts": {
-    "mtime": 1795035921.8219967,
-    "seen": 1795036871.1043863,
-    "ast_hash": "27fe04bc56726119618f6f4231e84931",
+    "mtime": 1795154545.0601773,
+    "seen": 1795196316.10498,
+    "ast_hash": "ce2b26a4513c14c17c7b1da67b9d4792",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/migracion-0011.test.ts": {
@@ -3564,9 +3564,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/pool-anfitrion.test.ts": {
-    "mtime": 1795033549.9739773,
-    "seen": 1795036871.1101649,
-    "ast_hash": "e673272a76eb83b585df864d214c0130",
+    "mtime": 1795154545.0611775,
+    "seen": 1795196316.107935,
+    "ast_hash": "a6791a729c21b73a07ae10b6541873d8",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/recompensa.test.ts": {
@@ -3576,27 +3576,27 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/tienda.test.ts": {
-    "mtime": 1795033761.7485142,
-    "seen": 1795036871.1113043,
-    "ast_hash": "c194de757253738b0f7e509e4afe2da7",
+    "mtime": 1795154545.0611775,
+    "seen": 1795196316.108631,
+    "ast_hash": "d5714734ef4d7393ba1a4a90c3907278",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ConfirmacionCompra.tsx": {
-    "mtime": 1795036159.734386,
-    "seen": 1795036871.1248436,
-    "ast_hash": "074b88d87221a8848a2337d5d85bda1e",
+    "mtime": 1795154545.177288,
+    "seen": 1795196316.1136734,
+    "ast_hash": "7b92998c55f0b7cbea1f1425dbfae89e",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/DialogoPagoPrueba.tsx": {
-    "mtime": 1795036329.2221706,
-    "seen": 1795036871.124858,
-    "ast_hash": "4af916a6089f1ef97f24034502f9b9d6",
+    "mtime": 1795154545.1782868,
+    "seen": 1795196316.1136801,
+    "ast_hash": "25fb1ea35067b808cd49af0e8c4ae079",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/FichaCartaColeccion.tsx": {
-    "mtime": 1795036329.2616625,
-    "seen": 1795036871.1266625,
-    "ast_hash": "56c9ffe9ac63940067f1c2a33ab9454a",
+    "mtime": 1795154545.1792872,
+    "seen": 1795196316.1144314,
+    "ast_hash": "55270000b5bd55a4bdd0b518dc0fd70d",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/InterruptorActiva.tsx": {
@@ -3606,15 +3606,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Coleccion.tsx": {
-    "mtime": 1795036769.776649,
-    "seen": 1795036871.1427045,
-    "ast_hash": "a1670a0fe4f2956c7ce6a293b82a885d",
+    "mtime": 1795154545.1865766,
+    "seen": 1795196316.1219568,
+    "ast_hash": "4de0b3c6c40cf2d1dcce5225f34e044a",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Tienda.tsx": {
-    "mtime": 1795124792.1191525,
-    "seen": 1795125988.46655,
-    "ast_hash": "3ccb9628dbdf1c8dfb6bd9b61887aaa3",
+    "mtime": 1795154545.1885774,
+    "seen": 1795196316.1230657,
+    "ast_hash": "be24a8f668fc5c49a658e970aa976d8d",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/coleccion/filtrado.ts": {
@@ -3636,27 +3636,27 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/tienda.spec.ts": {
-    "mtime": 1795124946.8761635,
-    "seen": 1795125988.4723675,
-    "ast_hash": "62b277aa3a8fc8526c8f83f219296898",
+    "mtime": 1795154545.191577,
+    "seen": 1795196316.1278434,
+    "ast_hash": "ab2b48a535af5bc7e053212677f23e82",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/filtradoColeccion.test.ts": {
-    "mtime": 1795033888.8605878,
-    "seen": 1795036871.1623132,
-    "ast_hash": "d87bad726d4f2f927c1dcf8e34ea6146",
+    "mtime": 1795154545.1935766,
+    "seen": 1795196316.1293182,
+    "ast_hash": "bd60508b3fff44f5e6238c4ce0217264",
     "semantic_hash": ""
   },
   "data/colecciones.json": {
-    "mtime": 1795035585.3692727,
-    "seen": 1795036871.1670833,
-    "ast_hash": "d5c73e6ef1f9f71ff8e932f2405ed349",
+    "mtime": 1795154545.194577,
+    "seen": 1795196316.1311538,
+    "ast_hash": "3060f4a8e6d099f1d8dd647d1af57bb6",
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/selecciones.ts": {
-    "mtime": 1795035064.7421806,
-    "seen": 1795036871.1763022,
-    "ast_hash": "1ac182dfac3168f59dffee210dd76f88",
+    "mtime": 1795154545.3867872,
+    "seen": 1795196316.1348724,
+    "ast_hash": "3fb4a858b28ae334378aef84b5063838",
     "semantic_hash": ""
   },
   "packages/domain/src/coleccion/minimo.ts": {
@@ -3666,9 +3666,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/economia/parametros.ts": {
-    "mtime": 1795032950.7164848,
-    "seen": 1795036871.1797101,
-    "ast_hash": "329c212ee7093b69ce3cd53975545972",
+    "mtime": 1795154545.3887856,
+    "seen": 1795196316.1362438,
+    "ast_hash": "7055ecec39092cc56e5aa330137baadd",
     "semantic_hash": ""
   },
   "packages/domain/src/sobres/tienda.ts": {
@@ -3678,9 +3678,9 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/catalogo/datos006.test.ts": {
-    "mtime": 1795033798.1730626,
-    "seen": 1795036871.1924956,
-    "ast_hash": "c639a9d30ea50d8ef166f528284af686",
+    "mtime": 1795154545.3897848,
+    "seen": 1795196316.1402218,
+    "ast_hash": "74aaf0f5d85eb3221f8144f6faaa4c57",
     "semantic_hash": ""
   },
   "packages/domain/tests/catalogo/selecciones.test.ts": {
@@ -3696,21 +3696,21 @@
     "semantic_hash": ""
   },
   "packages/domain/tests/economia/parametros.test.ts": {
-    "mtime": 1795032958.0625105,
-    "seen": 1795036871.1953802,
-    "ast_hash": "e4203039356dc71513083172aef0de56",
+    "mtime": 1795154545.390785,
+    "seen": 1795196316.1417081,
+    "ast_hash": "6c29af965caeb00b58bc88d1836127ed",
     "semantic_hash": ""
   },
   "packages/domain/tests/sobres/tienda.test.ts": {
-    "mtime": 1795033798.1730626,
-    "seen": 1795036871.2030392,
-    "ast_hash": "5f4cfbbe22cff2ab9e02389ee01fcb4d",
+    "mtime": 1795154545.3917837,
+    "seen": 1795196316.144112,
+    "ast_hash": "04148392e2baf9d2f993e7d13562af5f",
     "semantic_hash": ""
   },
   "packages/protocol/schemas/colecciones.schema.json": {
-    "mtime": 1795033027.9592972,
-    "seen": 1795036871.2298243,
-    "ast_hash": "37f27b3f4eb9a07da9c6d913f221be09",
+    "mtime": 1795154545.392786,
+    "seen": 1795196316.1565516,
+    "ast_hash": "b04428a82a7d59e9fb0d4d848ee95fdd",
     "semantic_hash": ""
   },
   "packages/protocol/src/http/coleccion.ts": {
@@ -3720,15 +3720,15 @@
     "semantic_hash": ""
   },
   "packages/protocol/src/http/tienda.ts": {
-    "mtime": 1795032950.714775,
-    "seen": 1795036871.2314231,
-    "ast_hash": "d2684a7ab72c2cfad064461808197ca0",
+    "mtime": 1795154545.3937845,
+    "seen": 1795196316.1572905,
+    "ast_hash": "8d06b69c60a5f22e3a233239d5e29d00",
     "semantic_hash": ""
   },
   "tools/balance/src/checks/colecciones.ts": {
-    "mtime": 1795033798.1730626,
-    "seen": 1795036871.234237,
-    "ast_hash": "ad4db02f8814f90e298434b398f754e8",
+    "mtime": 1795154545.4057844,
+    "seen": 1795196316.1586199,
+    "ast_hash": "7d6fee19d6b13de7325617b471f2565c",
     "semantic_hash": ""
   },
   "tools/fixtures/src/migrarCartas006.ts": {
@@ -4806,15 +4806,15 @@
     "semantic_hash": ""
   },
   "specs/007-retoques-visuales/spec.md": {
-    "mtime": 1793585145.1985931,
-    "seen": 1793585250.6742318,
-    "ast_hash": "e8ba06288b43917efaa434cd02930350",
+    "mtime": 1795194531.9134524,
+    "seen": 1795196316.1929486,
+    "ast_hash": "3d580a3a12f62943c4c625a15e3c2b5c",
     "semantic_hash": ""
   },
   "specs/007-retoques-visuales/tasks.md": {
-    "mtime": 1793585150.6550727,
-    "seen": 1793585250.6742349,
-    "ast_hash": "0fe71179b094775c2149b563baa2cfd3",
+    "mtime": 1795196279.8746054,
+    "seen": 1795196316.1929512,
+    "ast_hash": "c342e43e7763b1e22d976be4ac3ff226",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/marcos/goat.svg": {
@@ -4932,15 +4932,15 @@
     "semantic_hash": ""
   },
   "data/core-real.json": {
-    "mtime": 1795035585.3612664,
-    "seen": 1795036871.1670895,
-    "ast_hash": "9c9ff03880effbbb30c1e20257762ef9",
+    "mtime": 1795154545.1970434,
+    "seen": 1795196316.1311567,
+    "ast_hash": "4684fdf5cb30d432aa9603f44f9dd0fe",
     "semantic_hash": ""
   },
   "tools/fixtures/src/coreReal.ts": {
-    "mtime": 1795034648.5013392,
-    "seen": 1795036871.2408276,
-    "ast_hash": "45941d9169f1e7060d847cd8383a8291",
+    "mtime": 1795154545.4067848,
+    "seen": 1795196316.1638935,
+    "ast_hash": "18c87bcc8680ef28d9a8db13a33d2235",
     "semantic_hash": ""
   },
   "tools/fixtures/tests/sumarioCore.test.ts": {
@@ -4950,9 +4950,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1795132003.1109204,
-    "seen": 1795133246.4519603,
-    "ast_hash": "2062da35c9edb60ec78d67266e2c08ee",
+    "mtime": 1795196279.9225657,
+    "seen": 1795196316.1825392,
+    "ast_hash": "e0a8190d9dbaad0f8e9bf57fbc361f30",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -5004,9 +5004,9 @@
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/sumario.md": {
-    "mtime": 1795110105.2940383,
-    "seen": 1795125988.5492828,
-    "ast_hash": "c2b46d9690d4124a011a3a5357ae5602",
+    "mtime": 1795154545.394785,
+    "seen": 1795196316.1939163,
+    "ast_hash": "d986efc13853ca18745e2b0aa39ff53c",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/tasks.md": {
@@ -5460,9 +5460,9 @@
     "semantic_hash": ""
   },
   "docs/juego/sonidos.md": {
-    "mtime": 1795124792.1200264,
-    "seen": 1795125988.5361729,
-    "ast_hash": "4e0a1cb1f10e91c25819b56281f88d53",
+    "mtime": 1795154545.1996155,
+    "seen": 1795196316.183025,
+    "ast_hash": "bb62f9d4d64d75cd8b9209781f068dce",
     "semantic_hash": ""
   },
   "apps/web/public/sonidos/calculoDuelo.wav": {
@@ -5490,9 +5490,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/unit/cartasPortada.test.ts": {
-    "mtime": 1795033798.1739118,
-    "seen": 1795036871.1606863,
-    "ast_hash": "fb2dc3b93b2a81eb5f4c38cfc847eefe",
+    "mtime": 1795154545.1925764,
+    "seen": 1795196316.1285794,
+    "ast_hash": "1b637b870f66b94645b1f4d5b2aa8057",
     "semantic_hash": ""
   },
   "packages/domain/tests/tmp/x.test.ts": {
@@ -5520,15 +5520,15 @@
     "semantic_hash": ""
   },
   "apps/server/src/http/cosmeticos.ts": {
-    "mtime": 1795033251.649502,
-    "seen": 1795036871.090938,
-    "ast_hash": "bfd9e2c04bb0f9e9030b4a4ec557cb71",
+    "mtime": 1795154545.0571778,
+    "seen": 1795196316.0975482,
+    "ast_hash": "3e0574c49ccd52c3043cd319ee96e529",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/esquema/cosmeticos.ts": {
-    "mtime": 1795032890.7290583,
-    "seen": 1795036871.0944788,
-    "ast_hash": "0ef10aec2b0275d70716080b67d01ab9",
+    "mtime": 1795154545.0581777,
+    "seen": 1795196316.099677,
+    "ast_hash": "72b678c46f6f8e4c75be1c1b128a22d7",
     "semantic_hash": ""
   },
   "apps/server/src/persistencia/repos/cosmeticos.ts": {
@@ -5544,9 +5544,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/cosmeticos.test.ts": {
-    "mtime": 1795036281.2119904,
-    "seen": 1795036871.1043913,
-    "ast_hash": "b55edc3c92d896ae90ae1dc74facdf2e",
+    "mtime": 1795154545.0601773,
+    "seen": 1795196316.104982,
+    "ast_hash": "f33d70ad51fd689388499fc386efb645",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/escudo-partida.test.ts": {
@@ -5556,9 +5556,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/identidad-cartas.test.ts": {
-    "mtime": 1795033539.9406593,
-    "seen": 1795036871.1066058,
-    "ast_hash": "99609ebd20862efde75a993c84eecf6d",
+    "mtime": 1795154545.0601773,
+    "seen": 1795196316.1060462,
+    "ast_hash": "28430e8d56fc402ece3e43f504f90a6d",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/migracion-0014.test.ts": {
@@ -5574,9 +5574,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/SelectorSobre.tsx": {
-    "mtime": 1795036281.212993,
-    "seen": 1795036871.1315544,
-    "ast_hash": "0e9ee091f8ec19ba102b640f55386fa7",
+    "mtime": 1795154545.1812878,
+    "seen": 1795196316.1164277,
+    "ast_hash": "f8e566f2e6a220a784e157197ca9dc6f",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/SobreDecorativo.tsx": {
@@ -5586,9 +5586,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/TiendaCosmeticos.tsx": {
-    "mtime": 1795124893.1928506,
-    "seen": 1795125988.4588234,
-    "ast_hash": "dfa8266d888bf1d431437fb910dba62a",
+    "mtime": 1795154545.182287,
+    "seen": 1795196316.1166797,
+    "ast_hash": "798ab4d19974cabc1f3735008231f038",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/arte/rasgadura.ts": {
@@ -5616,9 +5616,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/cosmeticos.spec.ts": {
-    "mtime": 1795036474.4890661,
-    "seen": 1795036871.150744,
-    "ast_hash": "e9d3981cc03338992eec43049dd8aefa",
+    "mtime": 1795154545.1905775,
+    "seen": 1795196316.1246607,
+    "ast_hash": "243e6c395efef2ac59c4907f19f0024b",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/chapa.test.ts": {
@@ -5628,15 +5628,15 @@
     "semantic_hash": ""
   },
   "apps/web/tests/unit/rasgadura.test.ts": {
-    "mtime": 1795033888.8615468,
-    "seen": 1795036871.1647081,
-    "ast_hash": "e95d373e5fc13a5f3ead46f7bda99110",
+    "mtime": 1795154545.1935766,
+    "seen": 1795196316.1303034,
+    "ast_hash": "bf8b2518aa96f8d71fa0ab1690dae858",
     "semantic_hash": ""
   },
   "data/cosmeticos.json": {
-    "mtime": 1795033008.8478284,
-    "seen": 1795036871.1670942,
-    "ast_hash": "be0fc91416f6f0c6f962a1dc4db0da50",
+    "mtime": 1795154545.1970434,
+    "seen": 1795196316.1311586,
+    "ast_hash": "6a1e9b5d2fb73895c4f4394e4eb3cdd4",
     "semantic_hash": ""
   },
   "packages/domain/src/catalogo/identidad.ts": {
@@ -5664,9 +5664,9 @@
     "semantic_hash": ""
   },
   "packages/domain/src/cosmeticos/tipos.ts": {
-    "mtime": 1795033251.7287703,
-    "seen": 1795036871.1784654,
-    "ast_hash": "0d02d8798f7d1b8bf452c116f4d2d9ed",
+    "mtime": 1795154545.3887856,
+    "seen": 1795196316.1356103,
+    "ast_hash": "9e2fb04dc02c260fccb8740f2ac12261",
     "semantic_hash": ""
   },
   "packages/domain/tests/catalogo/identidad.test.ts": {
@@ -5688,9 +5688,9 @@
     "semantic_hash": ""
   },
   "packages/protocol/src/http/cosmeticos.ts": {
-    "mtime": 1795036281.2116659,
-    "seen": 1795036871.230608,
-    "ast_hash": "4b1afc76b7a25afa085b9dc8678836de",
+    "mtime": 1795154545.392786,
+    "seen": 1795196316.1569266,
+    "ast_hash": "369823dfeccec44d0abd1cc6aa45be2d",
     "semantic_hash": ""
   },
   "tools/fixtures/src/cosmeticos.ts": {
@@ -8490,9 +8490,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/textoParada.ts": {
-    "mtime": 1795125116.8531435,
-    "seen": 1795125988.462331,
-    "ast_hash": "803738d2e63d227cd58896e7abeb4fba",
+    "mtime": 1795154545.183288,
+    "seen": 1795196316.1200082,
+    "ast_hash": "0ef59829e48fec5f441182d35336ee3b",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/useDistribucion.ts": {
@@ -8502,9 +8502,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/control-total.spec.ts": {
-    "mtime": 1795130671.6323917,
-    "seen": 1795131157.770815,
-    "ast_hash": "46ea65e728125120fad49bd2b023d6a4",
+    "mtime": 1795154545.1895764,
+    "seen": 1795196316.1246579,
+    "ast_hash": "c53abbfc3ed1855b8117cf260d024694",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/celebracion.test.ts": {
@@ -8514,9 +8514,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/unit/textoBloqueoBajas.test.ts": {
-    "mtime": 1795125116.8709881,
-    "seen": 1795125988.4759986,
-    "ast_hash": "6e0357a6ebd3723fdcb95f5d1c500491",
+    "mtime": 1795154545.194577,
+    "seen": 1795196316.1306705,
+    "ast_hash": "b59943c1d78b9f331e3577c5720f5980",
     "semantic_hash": ""
   },
   "packages/domain/src/cosmeticos/celebraciones.ts": {
@@ -9090,9 +9090,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/acceso.spec.ts": {
-    "mtime": 1794271645.8598814,
-    "seen": 1794272531.7168252,
-    "ast_hash": "248c3cbb310c83f449cee91d2d5a9586",
+    "mtime": 1795194478.4700034,
+    "seen": 1795196316.1238003,
+    "ast_hash": "bccaa7b7d5224ca332867424155cd216",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/perfil.spec.ts": {
@@ -9162,9 +9162,9 @@
     "semantic_hash": ""
   },
   "tools/fixtures/src/fondosCore.ts": {
-    "mtime": 1795034648.6296654,
-    "seen": 1795036871.2412598,
-    "ast_hash": "9de76ec7ef1617b912efb55007e1867e",
+    "mtime": 1795154545.4077852,
+    "seen": 1795196316.1641877,
+    "ast_hash": "14b61f3546411c04f206dc0d7460e822",
     "semantic_hash": ""
   },
   "tools/fixtures/tests/fondosCore.test.ts": {
@@ -9228,9 +9228,9 @@
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/tasks.md": {
-    "mtime": 1794526284.435509,
-    "seen": 1794526308.4394908,
-    "ast_hash": "e5a44fc9b87d7ab9e65d5833e1848dc0",
+    "mtime": 1795194515.1641119,
+    "seen": 1795196316.2021258,
+    "ast_hash": "f109a56b049cee425ec9adb371f0b3d1",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/1.webp": {
@@ -11112,9 +11112,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/IndicadorEnergia.tsx": {
-    "mtime": 1795125069.885276,
-    "seen": 1795125988.4565225,
-    "ast_hash": "2c5af7a7c533323616b577c9842a2e41",
+    "mtime": 1795154545.1812878,
+    "seen": 1795196316.1145968,
+    "ast_hash": "b93534d75dd16b1fd866bf086928a7f6",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/IndicadorNavegacion.tsx": {
@@ -11184,9 +11184,9 @@
     "semantic_hash": ""
   },
   "packages/engine/tests/fixtures/huella014.ts": {
-    "mtime": 1795045879.4866054,
-    "seen": 1795047561.4996421,
-    "ast_hash": "a16a14f86ccef18af1b955c6d4793748",
+    "mtime": 1795154545.3917837,
+    "seen": 1795196316.1536913,
+    "ast_hash": "01a7683d0de8dd89bdf713a3e8363165",
     "semantic_hash": ""
   },
   "packages/engine/tests/fueraDeJuego.test.ts": {
@@ -11412,1569 +11412,1587 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/retirada-prueba.test.ts": {
-    "mtime": 1795033394.8028345,
-    "seen": 1795036871.1110957,
-    "ast_hash": "7aa171ccff0283484b1c24720a664a09",
+    "mtime": 1795154545.0611775,
+    "seen": 1795196316.1084747,
+    "ast_hash": "37573be8d378a0f352cd67bbe77ec18d",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/DetalleExpansion.tsx": {
-    "mtime": 1795124894.1808543,
-    "seen": 1795125988.4547358,
-    "ast_hash": "fa2ee666a7179addbaacd3df34e53886",
+    "mtime": 1795154545.1782868,
+    "seen": 1795196316.1136763,
+    "ast_hash": "63ca2b7a8d115595489582501b0854f3",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Fragmentos.tsx": {
-    "mtime": 1795036329.1365135,
-    "seen": 1795036871.1269245,
-    "ast_hash": "7869fdfdd06086d6fbad96496f9f8935",
+    "mtime": 1795154545.1802878,
+    "seen": 1795196316.1145885,
+    "ast_hash": "c1d7ce6676f37803502cb09eb530b84a",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/TarjetaExpansion.tsx": {
-    "mtime": 1795124894.2083192,
-    "seen": 1795125988.4588206,
-    "ast_hash": "0d50880c3ee7a8e3202e7eb25e7acc33",
+    "mtime": 1795154545.182287,
+    "seen": 1795196316.116677,
+    "ast_hash": "3ad6a3b02d650b2c0839d652dd86afc4",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/detalleExpansion.test.ts": {
-    "mtime": 1795124932.7189362,
-    "seen": 1795125988.4740565,
-    "ast_hash": "a8430855737acae4154e75c5f5b48217",
+    "mtime": 1795154545.1925764,
+    "seen": 1795196316.1291924,
+    "ast_hash": "6078af807380d4ee5944d057b62af7be",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/fragmentos.test.ts": {
-    "mtime": 1795033932.8723419,
-    "seen": 1795036871.162602,
-    "ast_hash": "6fc0631b4d8ea9730310447ae2aabbcc",
+    "mtime": 1795154545.1935766,
+    "seen": 1795196316.1294436,
+    "ast_hash": "b9378ff7b84270c4b9ce8af5c704bf04",
     "semantic_hash": ""
   },
   "data/expansiones-reales.json": {
-    "mtime": 1795035585.3570464,
-    "seen": 1795036871.167099,
-    "ast_hash": "9396f5956c9c49e670547ae672ed0d5c",
+    "mtime": 1795154545.1986165,
+    "seen": 1795196316.1311605,
+    "ast_hash": "83ea5f26222748e5324cf1ab4453f19e",
     "semantic_hash": ""
   },
   "packages/domain/tests/catalogo/datos016.test.ts": {
-    "mtime": 1795035663.2782283,
-    "seen": 1795036871.1925068,
-    "ast_hash": "71f9627ed6997ed501ea90c99d6dfe1d",
+    "mtime": 1795154545.3897848,
+    "seen": 1795196316.1402245,
+    "ast_hash": "19fc7ae1b499ed280bce9105bf5de6f7",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/jugadores_expansionA.json": {
-    "mtime": 1795035639.0453665,
-    "seen": 1795036871.2340453,
+    "mtime": 1795154545.396785,
+    "seen": 1795196316.1584907,
     "ast_hash": "31eb76d5411de683549fe2b831a9ff64",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/jugadores_expansionB.json": {
-    "mtime": 1795035639.1224606,
-    "seen": 1795036871.2340503,
+    "mtime": 1795154545.396785,
+    "seen": 1795196316.1584933,
     "ast_hash": "fa82c1aeaa8b3ec1a86601f4b357f3dd",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/jugadores_expansionC.json": {
-    "mtime": 1795035639.2122023,
-    "seen": 1795036871.2340539,
+    "mtime": 1795154545.396785,
+    "seen": 1795196316.158495,
     "ast_hash": "02d7d69e55c36d5b4d97d567b2827b7e",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/jugadores_expansionD.json": {
-    "mtime": 1795035639.3066747,
-    "seen": 1795036871.2340567,
+    "mtime": 1795154545.3977835,
+    "seen": 1795196316.1584966,
     "ast_hash": "8f40ded1bb083a44491d7b6302757954",
     "semantic_hash": ""
   },
   "tools/fixtures/src/expansiones.ts": {
-    "mtime": 1795035638.912456,
-    "seen": 1795036871.2412543,
-    "ast_hash": "81f0e90102d7f70a4527ada5418432a5",
+    "mtime": 1795154545.4067848,
+    "seen": 1795196316.1641843,
+    "ast_hash": "7c834d785738d5b8b394f12ee2f6c991",
     "semantic_hash": ""
   },
   "tools/fixtures/tests/expansiones.test.ts": {
-    "mtime": 1795034934.791286,
-    "seen": 1795036871.2424548,
-    "ast_hash": "7ca94655ff66712d1220973aa389dfbd",
+    "mtime": 1795154545.4077852,
+    "seen": 1795196316.164865,
+    "ast_hash": "28a1d3df7a3ed47c456cc8ead0e89c40",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/checklists/requirements.md": {
-    "mtime": 1795027673.4667087,
-    "seen": 1795036871.3128803,
-    "ast_hash": "a90ede23d5ac2759b5d1ae25bf1d58d7",
+    "mtime": 1795154545.394785,
+    "seen": 1795196316.2051241,
+    "ast_hash": "cd02a892423ac319f85c83ef1c56a890",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/contracts/datos-expansiones.md": {
-    "mtime": 1795031925.1139219,
-    "seen": 1795036871.312887,
-    "ast_hash": "8d2819bf599f32d627aa3743ae832e24",
+    "mtime": 1795154545.395786,
+    "seen": 1795196316.205127,
+    "ast_hash": "8a30f868467308bf209f603a2dd4b686",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/contracts/http-api.md": {
-    "mtime": 1795028870.0913956,
-    "seen": 1795036871.3129077,
-    "ast_hash": "c3379842a38f32b0f80252ce0e4967cd",
+    "mtime": 1795154545.395786,
+    "seen": 1795196316.2051287,
+    "ast_hash": "5bb4116281e136e320373738de8f1a7e",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/contracts/ui.md": {
-    "mtime": 1795031920.3077846,
-    "seen": 1795036871.312913,
-    "ast_hash": "0f537914f2712d0ed0b3b981179921ac",
+    "mtime": 1795154545.395786,
+    "seen": 1795196316.2051315,
+    "ast_hash": "687c1f402bf76217bb8923b5d5529fbe",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/data-model.md": {
-    "mtime": 1795031924.261455,
-    "seen": 1795036871.312917,
-    "ast_hash": "5a34d4b4417730ced8b9cb1029f82691",
+    "mtime": 1795154545.395786,
+    "seen": 1795196316.2051342,
+    "ast_hash": "fd66fdc85ba97e9329c9a5eb70c0ba1d",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/rareza_A.txt": {
-    "mtime": 1795035639.0716748,
-    "seen": 1795036871.3129206,
+    "mtime": 1795154545.3977835,
+    "seen": 1795196316.2051363,
     "ast_hash": "1b6039d0beeb7f573432b79f77dda91d",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/rareza_B.txt": {
-    "mtime": 1795035639.1608398,
-    "seen": 1795036871.312924,
+    "mtime": 1795154545.3977835,
+    "seen": 1795196316.2051382,
     "ast_hash": "6b76b3fed7d3b95eeb42089e1273f116",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/rareza_C.txt": {
-    "mtime": 1795035639.253268,
-    "seen": 1795036871.3129275,
+    "mtime": 1795154545.3987846,
+    "seen": 1795196316.2051396,
     "ast_hash": "ffe7fdea83344e0af7eb8ad979408e73",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/fuentes/rareza_D.txt": {
-    "mtime": 1795035639.342371,
-    "seen": 1795036871.3129308,
+    "mtime": 1795154545.3987846,
+    "seen": 1795196316.2051415,
     "ast_hash": "b12e95e4d010abb0b838613ebfb0b943",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/plan.md": {
-    "mtime": 1795031926.1189134,
-    "seen": 1795036871.312934,
-    "ast_hash": "90671844505f324d820ef4ec8fda1007",
+    "mtime": 1795154545.3987846,
+    "seen": 1795196316.2051435,
+    "ast_hash": "069190f4816137afd3e641dd0446080f",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/quickstart.md": {
-    "mtime": 1795031927.9672492,
-    "seen": 1795036871.3129368,
-    "ast_hash": "d1081028c7a1f3b5d19670a5dc1b2429",
+    "mtime": 1795154545.3997848,
+    "seen": 1795196316.205145,
+    "ast_hash": "282145996e5ef299209cf232380549d9",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/research.md": {
-    "mtime": 1795031923.2749913,
-    "seen": 1795036871.3129394,
-    "ast_hash": "1d18cf2486b8f6bd9c67375202caf820",
+    "mtime": 1795154545.3997848,
+    "seen": 1795196316.2051463,
+    "ast_hash": "cdfea1932d9af28bf1e4770a88847306",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/spec.md": {
-    "mtime": 1795132003.10996,
-    "seen": 1795133246.476727,
-    "ast_hash": "4c536343ca918f54ade45ab4b70be870",
+    "mtime": 1795154545.4047837,
+    "seen": 1795196316.205148,
+    "ast_hash": "d708a0c26ee9e3c07366e3ab0568c27a",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/sumario.md": {
-    "mtime": 1795035640.7866223,
-    "seen": 1795036871.3129454,
-    "ast_hash": "5ab65698df22c0e15075b01186a32490",
+    "mtime": 1795154545.4047837,
+    "seen": 1795196316.2051494,
+    "ast_hash": "b05e9315ad53e39330fdc717e41f7160",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/tasks.md": {
-    "mtime": 1795132003.10996,
-    "seen": 1795133246.4768467,
-    "ast_hash": "a6f145cb64e8a9ea0e8ce285c6a30a0c",
+    "mtime": 1795154545.4047837,
+    "seen": 1795196316.2051513,
+    "ast_hash": "f3d71b1c252f2ea9fe9fac2836b79429",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/AUT.svg": {
-    "mtime": 1795035064.462985,
-    "seen": 1795036871.3135037,
-    "ast_hash": "a0e5865313bbfd0ee7411ad59832192b",
+    "mtime": 1795154545.0621777,
+    "seen": 1795196316.2054048,
+    "ast_hash": "995365d4a39e5958df56246878f497a3",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/CRI.svg": {
-    "mtime": 1795035064.499632,
-    "seen": 1795036871.316095,
-    "ast_hash": "8f9e3dcc8f47407f57dd2eca6721d415",
+    "mtime": 1795154545.0621777,
+    "seen": 1795196316.206554,
+    "ast_hash": "7920dae7b41757a0cf78eb619a2175f4",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/ISL.svg": {
-    "mtime": 1795035064.5293531,
-    "seen": 1795036871.3194444,
-    "ast_hash": "dd9622551b169bddb9e9f99d9b97cb54",
+    "mtime": 1795154545.0631776,
+    "seen": 1795196316.208366,
+    "ast_hash": "3e470d1e2996bef4c46dbd690c5c91e0",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/KOR.svg": {
-    "mtime": 1795035064.54952,
-    "seen": 1795036871.3199809,
-    "ast_hash": "2a183310b78d3d4fe57f88abcc491fcd",
+    "mtime": 1795154545.0631776,
+    "seen": 1795196316.2086124,
+    "ast_hash": "59dfc8e0872b88e75d2bb09496931f89",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/PER.svg": {
-    "mtime": 1795035064.6429687,
-    "seen": 1795036871.3215814,
-    "ast_hash": "5156eee1494fa9ccb9ff78c95f6053d0",
+    "mtime": 1795154545.0631776,
+    "seen": 1795196316.2094584,
+    "ast_hash": "b6aec00cfad6bd6c5513211ca02d05d5",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/PRY.svg": {
-    "mtime": 1795035064.6619914,
-    "seen": 1795036871.3219583,
-    "ast_hash": "98e0fb12753083c222eaa987941d9853",
+    "mtime": 1795154545.0631776,
+    "seen": 1795196316.2097025,
+    "ast_hash": "d5409b74d2a09798b5acf2ea2503a372",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/XKX.svg": {
-    "mtime": 1795035064.6206303,
-    "seen": 1795036871.324255,
-    "ast_hash": "20ebf98231858eee3327b8c1a0006af8",
+    "mtime": 1795154545.0641775,
+    "seen": 1795196316.2112648,
+    "ast_hash": "1351d331f597942bbcd7caea7ce909cb",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/301.webp": {
-    "mtime": 1795035592.795,
-    "seen": 1795036871.3755014,
+    "mtime": 1795154545.0641775,
+    "seen": 1795196316.24087,
     "ast_hash": "04f226823dca57c8fc4d2021239177ad",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/302.webp": {
-    "mtime": 1795035592.951,
-    "seen": 1795036871.375507,
+    "mtime": 1795154545.0651777,
+    "seen": 1795196316.2408726,
     "ast_hash": "bec13027d57139c49994a514dcb8b07f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/303.webp": {
-    "mtime": 1795035593.108,
-    "seen": 1795036871.3755114,
+    "mtime": 1795154545.0651777,
+    "seen": 1795196316.240875,
     "ast_hash": "96efede596995375f419b785193e5de5",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/304.webp": {
-    "mtime": 1795035593.263,
-    "seen": 1795036871.3755145,
+    "mtime": 1795154545.066178,
+    "seen": 1795196316.2408772,
     "ast_hash": "8d65e0bdc2d0016cb114d1fe4bf85829",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/305.webp": {
-    "mtime": 1795035593.429,
-    "seen": 1795036871.375519,
+    "mtime": 1795154545.066178,
+    "seen": 1795196316.240879,
     "ast_hash": "22a792f090d59cc0ef79c31ea27398d4",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/306.webp": {
-    "mtime": 1795035593.587,
-    "seen": 1795036871.3755229,
+    "mtime": 1795154545.0671775,
+    "seen": 1795196316.240881,
     "ast_hash": "e9940dd17bbd235ad2071b9476dcd42f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/307.webp": {
-    "mtime": 1795035593.757,
-    "seen": 1795036871.3755262,
+    "mtime": 1795154545.0671775,
+    "seen": 1795196316.2408826,
     "ast_hash": "cbbf1989799743f16e89805b1d60a99b",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/308.webp": {
-    "mtime": 1795035593.942,
-    "seen": 1795036871.3755302,
+    "mtime": 1795154545.068203,
+    "seen": 1795196316.2408845,
     "ast_hash": "7b73cdb3186875fa7738a1f95794cdb5",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/309.webp": {
-    "mtime": 1795035594.099,
-    "seen": 1795036871.3755338,
+    "mtime": 1795154545.068203,
+    "seen": 1795196316.2408862,
     "ast_hash": "a3159f288f350446b7263e9a93fc4c06",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/310.webp": {
-    "mtime": 1795035594.25,
-    "seen": 1795036871.375803,
+    "mtime": 1795154545.069203,
+    "seen": 1795196316.2410152,
     "ast_hash": "29ae39b570b699550725ab3ac00f239a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/311.webp": {
-    "mtime": 1795035594.423,
-    "seen": 1795036871.3758075,
+    "mtime": 1795154545.0702653,
+    "seen": 1795196316.241017,
     "ast_hash": "aed37b7f95b966e911af921c0cce8c88",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/312.webp": {
-    "mtime": 1795035594.587,
-    "seen": 1795036871.3758109,
+    "mtime": 1795154545.0702653,
+    "seen": 1795196316.2410188,
     "ast_hash": "8fee2cf2079a923ee9e3953f9c7bb4f7",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/313.webp": {
-    "mtime": 1795035594.806,
-    "seen": 1795036871.3758144,
+    "mtime": 1795154545.071265,
+    "seen": 1795196316.2410204,
     "ast_hash": "e57d22c2eb7168e3bbe6a8f244701990",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/314.webp": {
-    "mtime": 1795035594.998,
-    "seen": 1795036871.3758173,
+    "mtime": 1795154545.071265,
+    "seen": 1795196316.241022,
     "ast_hash": "c7f23b2b4b72602a551d05f71a36b24d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/315.webp": {
-    "mtime": 1795035595.189,
-    "seen": 1795036871.3758206,
+    "mtime": 1795154545.072266,
+    "seen": 1795196316.2410238,
     "ast_hash": "f23a8e38c131674321e9987e93359b84",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/316.webp": {
-    "mtime": 1795035595.364,
-    "seen": 1795036871.375824,
+    "mtime": 1795154545.072266,
+    "seen": 1795196316.2410257,
     "ast_hash": "b91201def4f0a8b8c8557353f4963fe6",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/317.webp": {
-    "mtime": 1795035595.545,
-    "seen": 1795036871.3758278,
+    "mtime": 1795154545.0732656,
+    "seen": 1795196316.2410276,
     "ast_hash": "352a69faf71ffd17a9c00147930ee0df",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/318.webp": {
-    "mtime": 1795035595.726,
-    "seen": 1795036871.375831,
+    "mtime": 1795154545.0732656,
+    "seen": 1795196316.241029,
     "ast_hash": "7acdbe14e66f6eb5b040c4b9bdce45ff",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/319.webp": {
-    "mtime": 1795035595.871,
-    "seen": 1795036871.3758335,
+    "mtime": 1795154545.074265,
+    "seen": 1795196316.2410307,
     "ast_hash": "af42710172f3d1e1d698938b3901fc4f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/320.webp": {
-    "mtime": 1795035596.021,
-    "seen": 1795036871.3761005,
+    "mtime": 1795154545.074265,
+    "seen": 1795196316.2411604,
     "ast_hash": "158133038a29cac5c4afe0ac4d0ce257",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/321.webp": {
-    "mtime": 1795035596.158,
-    "seen": 1795036871.3761225,
+    "mtime": 1795154545.0752647,
+    "seen": 1795196316.2411628,
     "ast_hash": "bdb67da8e9601af05eeb99018e161381",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/322.webp": {
-    "mtime": 1795035596.31,
-    "seen": 1795036871.3761265,
+    "mtime": 1795154545.0752647,
+    "seen": 1795196316.2411647,
     "ast_hash": "9af764a79c88c7ffb9b421ad18b6d464",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/323.webp": {
-    "mtime": 1795035596.461,
-    "seen": 1795036871.3761299,
+    "mtime": 1795154545.0762684,
+    "seen": 1795196316.2411664,
     "ast_hash": "a829c374e24ca7a254d0e8ba058e7797",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/324.webp": {
-    "mtime": 1795035596.609,
-    "seen": 1795036871.3761337,
+    "mtime": 1795154545.0772657,
+    "seen": 1795196316.2411685,
     "ast_hash": "810be2a10e3a09ec7717aa2c9b90ff55",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/325.webp": {
-    "mtime": 1795035596.754,
-    "seen": 1795036871.3761368,
+    "mtime": 1795154545.0772657,
+    "seen": 1795196316.24117,
     "ast_hash": "acb7f00c58d2f82b82dbd8ed6d818b65",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/326.webp": {
-    "mtime": 1795035596.908,
-    "seen": 1795036871.3761404,
+    "mtime": 1795154545.0782652,
+    "seen": 1795196316.2411714,
     "ast_hash": "a76127b25aad36c3dbd2a5cf6eb54e4d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/327.webp": {
-    "mtime": 1795035597.054,
-    "seen": 1795036871.3761437,
+    "mtime": 1795154545.0782652,
+    "seen": 1795196316.2411733,
     "ast_hash": "a176b4a234559dde54dd642bb23924d1",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/328.webp": {
-    "mtime": 1795035597.191,
-    "seen": 1795036871.376147,
+    "mtime": 1795154545.079265,
+    "seen": 1795196316.2411747,
     "ast_hash": "ea15f4e05fbb3853e6a5bc12a853356f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/329.webp": {
-    "mtime": 1795035597.343,
-    "seen": 1795036871.3761506,
+    "mtime": 1795154545.079265,
+    "seen": 1795196316.2411776,
     "ast_hash": "bc5d0a1ca4b3f35764ef9afc58171d1e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/330.webp": {
-    "mtime": 1795035597.488,
-    "seen": 1795036871.3764257,
+    "mtime": 1795154545.0802648,
+    "seen": 1795196316.2413065,
     "ast_hash": "bbb0424e0675b7abaa70debd8ab4358f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/331.webp": {
-    "mtime": 1795035597.664,
-    "seen": 1795036871.376431,
+    "mtime": 1795154545.081372,
+    "seen": 1795196316.2413087,
     "ast_hash": "0832c2a6d71652bab29d6222735d7ea1",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/332.webp": {
-    "mtime": 1795035597.824,
-    "seen": 1795036871.3764348,
+    "mtime": 1795154545.082472,
+    "seen": 1795196316.2413104,
     "ast_hash": "36d537640de5a9d81d96f718ab6e7a0d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/333.webp": {
-    "mtime": 1795035597.973,
-    "seen": 1795036871.3764377,
+    "mtime": 1795154545.0830553,
+    "seen": 1795196316.2413123,
     "ast_hash": "bc48b63d68317d50ac2541e47ed89204",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/334.webp": {
-    "mtime": 1795035598.124,
-    "seen": 1795036871.3764408,
+    "mtime": 1795154545.083997,
+    "seen": 1795196316.2413135,
     "ast_hash": "8fecd8902c2f69d9f7fa196e234708c8",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/335.webp": {
-    "mtime": 1795035598.276,
-    "seen": 1795036871.376444,
+    "mtime": 1795154545.0845027,
+    "seen": 1795196316.2413151,
     "ast_hash": "f63ffcf6a89c2b9b810b3fa318f5035b",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/336.webp": {
-    "mtime": 1795035598.439,
-    "seen": 1795036871.3764472,
+    "mtime": 1795154545.0845027,
+    "seen": 1795196316.2413168,
     "ast_hash": "8672a3c406d624bfcfac8c9ab3a6ddc4",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/337.webp": {
-    "mtime": 1795035598.596,
-    "seen": 1795036871.3764503,
+    "mtime": 1795154545.085739,
+    "seen": 1795196316.2413185,
     "ast_hash": "3723a82c6c79721d29f25439e1580214",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/338.webp": {
-    "mtime": 1795035598.739,
-    "seen": 1795036871.3764532,
+    "mtime": 1795154545.085739,
+    "seen": 1795196316.24132,
     "ast_hash": "0aefff476301d7e27abe470fac23ee3d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/339.webp": {
-    "mtime": 1795035598.892,
-    "seen": 1795036871.376456,
+    "mtime": 1795154545.0867383,
+    "seen": 1795196316.2413216,
     "ast_hash": "4701f4b89d7c3a1ba5de503b8cde15e6",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/340.webp": {
-    "mtime": 1795035599.033,
-    "seen": 1795036871.3767307,
+    "mtime": 1795154545.0867383,
+    "seen": 1795196316.241451,
     "ast_hash": "1e1a19357d621487d82ab7ff29171387",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/341.webp": {
-    "mtime": 1795035599.186,
-    "seen": 1795036871.3767347,
+    "mtime": 1795154545.0877392,
+    "seen": 1795196316.2414532,
     "ast_hash": "e5c28a5a69992abc8ab9567106586e6f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/342.webp": {
-    "mtime": 1795035599.338,
-    "seen": 1795036871.376738,
+    "mtime": 1795154545.088742,
+    "seen": 1795196316.2414546,
     "ast_hash": "63a0a375b2428d15dcea1af78b0aeb68",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/343.webp": {
-    "mtime": 1795035599.5,
-    "seen": 1795036871.3767412,
+    "mtime": 1795154545.088742,
+    "seen": 1795196316.241456,
     "ast_hash": "5775036967db9703fb9d1711f91355cd",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/344.webp": {
-    "mtime": 1795035599.666,
-    "seen": 1795036871.3767447,
+    "mtime": 1795154545.0901,
+    "seen": 1795196316.2414582,
     "ast_hash": "761b90f1959a7b20c9fb80150235364c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/345.webp": {
-    "mtime": 1795035599.828,
-    "seen": 1795036871.3767483,
+    "mtime": 1795154545.0901,
+    "seen": 1795196316.2414596,
     "ast_hash": "c1b075c2599e142a5c3f26a24e86d37a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/346.webp": {
-    "mtime": 1795035599.996,
-    "seen": 1795036871.3767517,
+    "mtime": 1795154545.0910995,
+    "seen": 1795196316.2414615,
     "ast_hash": "4d1b05ff2cf22aac2cd31ca5f3542948",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/347.webp": {
-    "mtime": 1795035600.216,
-    "seen": 1795036871.3767557,
+    "mtime": 1795154545.0920997,
+    "seen": 1795196316.241464,
     "ast_hash": "af791df774e90eda98a88fcd04bb6310",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/348.webp": {
-    "mtime": 1795035600.408,
-    "seen": 1795036871.3767588,
+    "mtime": 1795154545.0920997,
+    "seen": 1795196316.2414656,
     "ast_hash": "c06201d6ed7b02c0399d80beab4cad13",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/349.webp": {
-    "mtime": 1795035600.626,
-    "seen": 1795036871.3767624,
+    "mtime": 1795154545.0930998,
+    "seen": 1795196316.2414672,
     "ast_hash": "8c456cd8798014cd0847db72192d559f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/350.webp": {
-    "mtime": 1795035600.793,
-    "seen": 1795036871.377052,
+    "mtime": 1795154545.0930998,
+    "seen": 1795196316.241602,
     "ast_hash": "662a23f93144f32b81af7f07e7989124",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/351.webp": {
-    "mtime": 1795035600.965,
-    "seen": 1795036871.377056,
+    "mtime": 1795154545.094394,
+    "seen": 1795196316.241604,
     "ast_hash": "86e757833ba2c87b351d577b3bc37956",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/352.webp": {
-    "mtime": 1795035601.142,
-    "seen": 1795036871.3770604,
+    "mtime": 1795154545.094394,
+    "seen": 1795196316.2416067,
     "ast_hash": "00f05a8007bfaf057441f0bd686194ca",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/353.webp": {
-    "mtime": 1795035601.295,
-    "seen": 1795036871.3770635,
+    "mtime": 1795154545.0953925,
+    "seen": 1795196316.2416081,
     "ast_hash": "4223754e9eb88103366cb69d385a278b",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/354.webp": {
-    "mtime": 1795035601.487,
-    "seen": 1795036871.3770673,
+    "mtime": 1795154545.0953925,
+    "seen": 1795196316.2416103,
     "ast_hash": "71f16fd19f540a17bc77c03452e89f4e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/355.webp": {
-    "mtime": 1795035601.656,
-    "seen": 1795036871.377071,
+    "mtime": 1795154545.096395,
+    "seen": 1795196316.241612,
     "ast_hash": "f8b6b0900fbcf5599ed4f05f3befe0aa",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/356.webp": {
-    "mtime": 1795035601.841,
-    "seen": 1795036871.3770747,
+    "mtime": 1795154545.097393,
+    "seen": 1795196316.2416139,
     "ast_hash": "2601e6153d2900d79aa8d78bec675b22",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/357.webp": {
-    "mtime": 1795035602.003,
-    "seen": 1795036871.377078,
+    "mtime": 1795154545.097393,
+    "seen": 1795196316.2416158,
     "ast_hash": "8be867368abe684b7d714e11ec266fc4",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/358.webp": {
-    "mtime": 1795035602.199,
-    "seen": 1795036871.3770816,
+    "mtime": 1795154545.0983949,
+    "seen": 1795196316.2416174,
     "ast_hash": "a5e4a1f996870e9b6f7594af191985b0",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/359.webp": {
-    "mtime": 1795035602.371,
-    "seen": 1795036871.3770847,
+    "mtime": 1795154545.0993934,
+    "seen": 1795196316.2416189,
     "ast_hash": "77b3b47f8395d37acc4d7d753da63d73",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/360.webp": {
-    "mtime": 1795035602.528,
-    "seen": 1795036871.3773782,
+    "mtime": 1795154545.0993934,
+    "seen": 1795196316.2417483,
     "ast_hash": "80c80d5742298b17905f757fd7548d74",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/361.webp": {
-    "mtime": 1795035602.737,
-    "seen": 1795036871.377383,
+    "mtime": 1795154545.100393,
+    "seen": 1795196316.2417502,
     "ast_hash": "477c23765e8f3e68f99b016abbc53f4b",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/362.webp": {
-    "mtime": 1795035602.934,
-    "seen": 1795036871.3773868,
+    "mtime": 1795154545.1013932,
+    "seen": 1795196316.2417524,
     "ast_hash": "9ac6bc05566e135b5e1025e78e8fb306",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/363.webp": {
-    "mtime": 1795035603.18,
-    "seen": 1795036871.3773909,
+    "mtime": 1795154545.102392,
+    "seen": 1795196316.241754,
     "ast_hash": "cdd029df327428f8c41bac205300988c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/364.webp": {
-    "mtime": 1795035603.386,
-    "seen": 1795036871.3773944,
+    "mtime": 1795154545.102392,
+    "seen": 1795196316.241757,
     "ast_hash": "185d76b98071e93f15686dabe3c8329f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/365.webp": {
-    "mtime": 1795035603.593,
-    "seen": 1795036871.377398,
+    "mtime": 1795154545.103393,
+    "seen": 1795196316.241759,
     "ast_hash": "3f92b6bed1b806d59f733ffdbbd3dad6",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/366.webp": {
-    "mtime": 1795035603.783,
-    "seen": 1795036871.3774014,
+    "mtime": 1795154545.103393,
+    "seen": 1795196316.2417605,
     "ast_hash": "09c926e4a2fae6d0b6cdf55ffaf859e4",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/367.webp": {
-    "mtime": 1795035603.971,
-    "seen": 1795036871.3774047,
+    "mtime": 1795154545.1043928,
+    "seen": 1795196316.2417622,
     "ast_hash": "924d0c233c8a4697850be3fcb271bcd5",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/368.webp": {
-    "mtime": 1795035604.176,
-    "seen": 1795036871.3774076,
+    "mtime": 1795154545.1054761,
+    "seen": 1795196316.2417638,
     "ast_hash": "d91c4965be392dae12e747724ddd8ff4",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/369.webp": {
-    "mtime": 1795035604.387,
-    "seen": 1795036871.377411,
+    "mtime": 1795154545.1054761,
+    "seen": 1795196316.2417653,
     "ast_hash": "8aefb44f49f501732cc8643807cb2c6f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/370.webp": {
-    "mtime": 1795035604.577,
-    "seen": 1795036871.3776886,
+    "mtime": 1795154545.1064754,
+    "seen": 1795196316.2418945,
     "ast_hash": "665b5668e155c0ed7ee8e8de987ab039",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/371.webp": {
-    "mtime": 1795035604.765,
-    "seen": 1795036871.377693,
+    "mtime": 1795154545.1064754,
+    "seen": 1795196316.2418966,
     "ast_hash": "bdff50485e83ea6cb25549c413775e72",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/372.webp": {
-    "mtime": 1795035604.958,
-    "seen": 1795036871.377697,
+    "mtime": 1795154545.1074767,
+    "seen": 1795196316.2418985,
     "ast_hash": "535ef072e6c8eec89453b547090d9072",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/373.webp": {
-    "mtime": 1795035605.129,
-    "seen": 1795036871.3777008,
+    "mtime": 1795154545.1084766,
+    "seen": 1795196316.2419007,
     "ast_hash": "20c2c66893e4d34d96b413310a8dda30",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/374.webp": {
-    "mtime": 1795035605.321,
-    "seen": 1795036871.3777041,
+    "mtime": 1795154545.1084766,
+    "seen": 1795196316.2419026,
     "ast_hash": "f338eda9e1e4db7f2502895fb6a43a2d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/375.webp": {
-    "mtime": 1795035605.513,
-    "seen": 1795036871.3777077,
+    "mtime": 1795154545.1094759,
+    "seen": 1795196316.241904,
     "ast_hash": "a162a9bf62da9b47402a0b713c98a1b9",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/376.webp": {
-    "mtime": 1795035605.711,
-    "seen": 1795036871.377711,
+    "mtime": 1795154545.1094759,
+    "seen": 1795196316.2419057,
     "ast_hash": "21b0c02e1116045ad7848845c679af80",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/377.webp": {
-    "mtime": 1795035605.868,
-    "seen": 1795036871.3777146,
+    "mtime": 1795154545.1104903,
+    "seen": 1795196316.2419076,
     "ast_hash": "80ee270761d4060ed5540b608ce55d15",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/378.webp": {
-    "mtime": 1795035606.055,
-    "seen": 1795036871.377718,
+    "mtime": 1795154545.1114902,
+    "seen": 1795196316.2419093,
     "ast_hash": "257c8eeae244dc5b3884e05588223f84",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/379.webp": {
-    "mtime": 1795035606.267,
-    "seen": 1795036871.3777215,
+    "mtime": 1795154545.1114902,
+    "seen": 1795196316.241911,
     "ast_hash": "0766ae4974080662c5ce097fadca4688",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/380.webp": {
-    "mtime": 1795035606.504,
-    "seen": 1795036871.3780086,
+    "mtime": 1795154545.1125467,
+    "seen": 1795196316.2420404,
     "ast_hash": "ebe9a53543a73111bfc1d8f1c9061b7f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/381.webp": {
-    "mtime": 1795035606.704,
-    "seen": 1795036871.3780148,
+    "mtime": 1795154545.1135466,
+    "seen": 1795196316.2420425,
     "ast_hash": "2130c3b654b898c4d2a05b8c9c95ca93",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/382.webp": {
-    "mtime": 1795035606.908,
-    "seen": 1795036871.378019,
+    "mtime": 1795154545.1135466,
+    "seen": 1795196316.242045,
     "ast_hash": "77921077f1ba98f76ed0c452e1d26926",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/383.webp": {
-    "mtime": 1795035607.106,
-    "seen": 1795036871.3780231,
+    "mtime": 1795154545.1145463,
+    "seen": 1795196316.2420468,
     "ast_hash": "42861642cf6d460dbbe7f90a4529f117",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/384.webp": {
-    "mtime": 1795035607.305,
-    "seen": 1795036871.378027,
+    "mtime": 1795154545.1155462,
+    "seen": 1795196316.2420485,
     "ast_hash": "d04b3616a421d16187cf0c6bb6407220",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/385.webp": {
-    "mtime": 1795035607.531,
-    "seen": 1795036871.37803,
+    "mtime": 1795154545.1155462,
+    "seen": 1795196316.24205,
     "ast_hash": "6e0d67ba9374ed0bc0c21c519c943a05",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/386.webp": {
-    "mtime": 1795035607.739,
-    "seen": 1795036871.3780334,
+    "mtime": 1795154545.116547,
+    "seen": 1795196316.242052,
     "ast_hash": "78efd9cb845e7684c6f93ff9f36c3756",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/387.webp": {
-    "mtime": 1795035607.926,
-    "seen": 1795036871.378037,
+    "mtime": 1795154545.116547,
+    "seen": 1795196316.242054,
     "ast_hash": "a5979c8db314cc48bb199f171770eb12",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/388.webp": {
-    "mtime": 1795035608.13,
-    "seen": 1795036871.37804,
+    "mtime": 1795154545.1175468,
+    "seen": 1795196316.2420557,
     "ast_hash": "0374692e6f00a606862f7ff119b9cb36",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/389.webp": {
-    "mtime": 1795035608.348,
-    "seen": 1795036871.3780437,
+    "mtime": 1795154545.1175468,
+    "seen": 1795196316.2420573,
     "ast_hash": "d85413a830043eaaef8ffef50997a01c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/390.webp": {
-    "mtime": 1795035608.609,
-    "seen": 1795036871.378329,
+    "mtime": 1795154545.1185465,
+    "seen": 1795196316.2421873,
     "ast_hash": "7cbe1fc16a959bee4bbaca126fb11285",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/391.webp": {
-    "mtime": 1795035608.848,
-    "seen": 1795036871.378333,
+    "mtime": 1795154545.1196873,
+    "seen": 1795196316.2421894,
     "ast_hash": "64211d031f1c4aebdcc9573cc313f9ad",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/392.webp": {
-    "mtime": 1795035609.053,
-    "seen": 1795036871.378337,
+    "mtime": 1795154545.1196873,
+    "seen": 1795196316.242191,
     "ast_hash": "7d05f8bb22648f3bac58fba3bfadb228",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/393.webp": {
-    "mtime": 1795035609.215,
-    "seen": 1795036871.3783402,
+    "mtime": 1795154545.120687,
+    "seen": 1795196316.242193,
     "ast_hash": "a293c5da1e46e830eff73e329f5d6532",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/394.webp": {
-    "mtime": 1795035609.381,
-    "seen": 1795036871.3783436,
+    "mtime": 1795154545.120687,
+    "seen": 1795196316.2421942,
     "ast_hash": "a6cfbfc0e6c1c4fccb572608f0d64847",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/395.webp": {
-    "mtime": 1795035609.531,
-    "seen": 1795036871.3783467,
+    "mtime": 1795154545.1216862,
+    "seen": 1795196316.2421956,
     "ast_hash": "524c09b93cbbd99227ed135adf991ed1",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/396.webp": {
-    "mtime": 1795035609.686,
-    "seen": 1795036871.3783503,
+    "mtime": 1795154545.1216862,
+    "seen": 1795196316.2421978,
     "ast_hash": "36c37bf3923bd1bb821c6e16f2032182",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/adrien-rabiot.webp": {
-    "mtime": 1795035603.4753046,
-    "seen": 1795036871.4023933,
+    "mtime": 1795154545.1226864,
+    "seen": 1795196316.2529435,
     "ast_hash": "32088d563e0567a4b79e7c5c1848fdb6",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/alejandro-balde.webp": {
-    "mtime": 1795035595.4374783,
-    "seen": 1795036871.4029942,
+    "mtime": 1795154545.1226864,
+    "seen": 1795196316.2531996,
     "ast_hash": "8da49a80442e675e470b2cdaace76630",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/alexis-sanchez.webp": {
-    "mtime": 1795035593.4833791,
-    "seen": 1795036871.4052577,
+    "mtime": 1795154545.1226864,
+    "seen": 1795196316.2542138,
     "ast_hash": "c318624ff8675a97cd3a3db668ed3364",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/ante-budimir.webp": {
-    "mtime": 1795035604.2483497,
-    "seen": 1795036871.4078045,
+    "mtime": 1795154545.123687,
+    "seen": 1795196316.2553458,
     "ast_hash": "e8bc894e8bd36351dd83607ede31a431",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/antoine-griezmann.webp": {
-    "mtime": 1795035597.3923638,
-    "seen": 1795036871.4079988,
+    "mtime": 1795154545.123687,
+    "seen": 1795196316.2554739,
     "ast_hash": "2295e3f86c2e9842b84d91bd08c0cdfb",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/arthur-melo.webp": {
-    "mtime": 1795035608.9166024,
-    "seen": 1795036871.4088032,
+    "mtime": 1795154545.123687,
+    "seen": 1795196316.256142,
     "ast_hash": "121c36f640f8848099294ac1f3ba7360",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/arturo-vidal.webp": {
-    "mtime": 1795035601.3566844,
-    "seen": 1795036871.4088068,
+    "mtime": 1795154545.1246862,
+    "seen": 1795196316.2561445,
     "ast_hash": "b9448a21c5cc924eba652b31d07012b3",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/ashley-young.webp": {
-    "mtime": 1795035602.6056514,
-    "seen": 1795036871.4088094,
+    "mtime": 1795154545.1249232,
+    "seen": 1795196316.2561471,
     "ast_hash": "337e287821708aaaa078b057c97eb347",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/aymeric-laporte.webp": {
-    "mtime": 1795035602.0700214,
-    "seen": 1795036871.4089851,
+    "mtime": 1795154545.1249232,
+    "seen": 1795196316.256277,
     "ast_hash": "c23d5e303ca97aabe5cd1aca85afa8c1",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/ben-chilwell.webp": {
-    "mtime": 1795035608.4500632,
-    "seen": 1795036871.4094439,
+    "mtime": 1795154545.1249232,
+    "seen": 1795196316.2566538,
     "ast_hash": "6a6d8ff872314015284e85ab8d1cc29a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/caoimhin-kelleher.webp": {
-    "mtime": 1795035602.4245212,
-    "seen": 1795036871.4124253,
+    "mtime": 1795154545.125959,
+    "seen": 1795196316.2581627,
     "ast_hash": "060ab69aca01bd8cc1408d5c9f6aae55",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/carlos-bacca.webp": {
-    "mtime": 1795035594.6628375,
-    "seen": 1795036871.4124305,
+    "mtime": 1795154545.125959,
+    "seen": 1795196316.2581654,
     "ast_hash": "da02ad0487fbe2eddd08881d2c2d38b2",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/carlos-soler.webp": {
-    "mtime": 1795035600.082545,
-    "seen": 1795036871.412984,
+    "mtime": 1795154545.125959,
+    "seen": 1795196316.2584178,
     "ast_hash": "3936e8ef23dae7eef40834dd702a11c9",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/cesar-azpilicueta.webp": {
-    "mtime": 1795035595.6208167,
-    "seen": 1795036871.4135952,
+    "mtime": 1795154545.1269581,
+    "seen": 1795196316.2586708,
     "ast_hash": "666d37b0f4ca73e47946549c701bbe76",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/christian-pulisic.webp": {
-    "mtime": 1795035603.6692257,
-    "seen": 1795036871.4142418,
+    "mtime": 1795154545.1269581,
+    "seen": 1795196316.258934,
     "ast_hash": "082affaa2dd6e6bc1324d4e66bc31b30",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/cristian-romero.webp": {
-    "mtime": 1795035596.6557603,
-    "seen": 1795036871.4154146,
+    "mtime": 1795154545.127959,
+    "seen": 1795196316.2593114,
     "ast_hash": "625c3c8f73b315d90d06f17a7e4596b9",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/crysencio-summerville.webp": {
-    "mtime": 1795035595.9215486,
-    "seen": 1795036871.4157453,
+    "mtime": 1795154545.127959,
+    "seen": 1795196316.2594378,
     "ast_hash": "930d3158ebe1292f27e5be2df7b8f511",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/darwin-nunez.webp": {
-    "mtime": 1795035603.2551188,
-    "seen": 1795036871.416553,
+    "mtime": 1795154545.127959,
+    "seen": 1795196316.2599454,
     "ast_hash": "df53ac489b5edfb933f75ac7f1de5926",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/david-alaba.webp": {
-    "mtime": 1795035593.16687,
-    "seen": 1795036871.4165568,
+    "mtime": 1795154545.1289592,
+    "seen": 1795196316.2599483,
     "ast_hash": "5c802b3bdaef3ad575b556fbae05a0d2",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/david-luiz.webp": {
-    "mtime": 1795035597.5473385,
-    "seen": 1795036871.416704,
+    "mtime": 1795154545.1289592,
+    "seen": 1795196316.2600758,
     "ast_hash": "8f36dc5b008ce221e3a7992c1836e34f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/dele-alli.webp": {
-    "mtime": 1795035606.5862744,
-    "seen": 1795036871.417454,
+    "mtime": 1795154545.1289592,
+    "seen": 1795196316.260574,
     "ast_hash": "3f4db645cae71a15e8dcbcda1c04f902",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/diogo-dalot.webp": {
-    "mtime": 1795035599.0880382,
-    "seen": 1795036871.4179692,
+    "mtime": 1795154545.1299586,
+    "seen": 1795196316.2609584,
     "ast_hash": "bd1cb66b526e57e07741670cd19f6f8c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/djordje-petrovic.webp": {
-    "mtime": 1795035604.65731,
-    "seen": 1795036871.4179723,
+    "mtime": 1795154545.1299586,
+    "seen": 1795196316.260961,
     "ast_hash": "b83505fd62835d9330e1e30bfd188e5a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/edouard-mendy.webp": {
-    "mtime": 1795035596.0713682,
-    "seen": 1795036871.4190767,
+    "mtime": 1795154545.1299586,
+    "seen": 1795196316.2618454,
     "ast_hash": "50fa363c037d6831e22b8b58d299d863",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/emre-can.webp": {
-    "mtime": 1795035604.83863,
-    "seen": 1795036871.4197311,
+    "mtime": 1795154545.1309586,
+    "seen": 1795196316.262349,
     "ast_hash": "3559d25f1c1ca9d9412c42423429a6ce",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/ever-banega.webp": {
-    "mtime": 1795035594.8892334,
-    "seen": 1795036871.420481,
+    "mtime": 1795154545.1309586,
+    "seen": 1795196316.2629807,
     "ast_hash": "5b47e93ca28598c5ec7347d2dbff718d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/federico-chiesa.webp": {
-    "mtime": 1795035609.1065,
-    "seen": 1795036871.4208012,
+    "mtime": 1795154545.1309586,
+    "seen": 1795196316.2632341,
     "ast_hash": "421bc68d8b2a77cbc2f71691c73f1575",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/fernando-muslera.webp": {
-    "mtime": 1795035595.26169,
-    "seen": 1795036871.4217384,
+    "mtime": 1795154545.1319585,
+    "seen": 1795196316.2637432,
     "ast_hash": "9ab504893c7e00b5e3490b517639c4b8",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/francisco-trincao.webp": {
-    "mtime": 1795035595.0793176,
-    "seen": 1795036871.422516,
+    "mtime": 1795154545.1319585,
+    "seen": 1795196316.2641459,
     "ast_hash": "ad29f208a5278e03c8331475e267c7de",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/franck-kessie.webp": {
-    "mtime": 1795035608.6837914,
-    "seen": 1795036871.422521,
+    "mtime": 1795154545.1319585,
+    "seen": 1795196316.2641492,
     "ast_hash": "af83846f0f2ae3bf35f6af1a4faed328",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/gleison-bremer.webp": {
-    "mtime": 1795035598.7900136,
-    "seen": 1795036871.4253905,
+    "mtime": 1795154545.1329582,
+    "seen": 1795196316.2656841,
     "ast_hash": "9a7c162c9e3b04ff971406b19f5cc37c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/guillermo-ochoa.webp": {
-    "mtime": 1795035598.029473,
-    "seen": 1795036871.4263794,
+    "mtime": 1795154545.1329582,
+    "seen": 1795196316.2662103,
     "ast_hash": "61d1f0bb2a11e74f7eb001a950e57483",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/gylfi-sigurdsson.webp": {
-    "mtime": 1795035595.7771108,
-    "seen": 1795036871.4263847,
+    "mtime": 1795154545.1329582,
+    "seen": 1795196316.2662132,
     "ast_hash": "43e68a78cdeaf650de290411d4d202b7",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/harry-maguire.webp": {
-    "mtime": 1795035596.9565537,
-    "seen": 1795036871.4268494,
+    "mtime": 1795154545.1339583,
+    "seen": 1795196316.2664766,
     "ast_hash": "5856064dd84d49b938dfba34f3e91875",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/hugo-lloris.webp": {
-    "mtime": 1795035600.8675354,
-    "seen": 1795036871.427348,
+    "mtime": 1795154545.1339583,
+    "seen": 1795196316.2667308,
     "ast_hash": "cfae3a2086f10b32aaec7c231effbd95",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/ilkay-gundogan.webp": {
-    "mtime": 1795035597.2360065,
-    "seen": 1795036871.428685,
+    "mtime": 1795154545.1339583,
+    "seen": 1795196316.2676184,
     "ast_hash": "b0c578655c20a1da4b478313391062c3",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/inigo-martinez.webp": {
-    "mtime": 1795035594.1599445,
-    "seen": 1795036871.4286902,
+    "mtime": 1795154545.1339583,
+    "seen": 1795196316.267621,
     "ast_hash": "dfc72a4bd425d2e1a1eb60f97d032b46",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/isco.webp": {
-    "mtime": 1795035593.6580825,
-    "seen": 1795036871.4286935,
+    "mtime": 1795154545.1349587,
+    "seen": 1795196316.267623,
     "ast_hash": "47a28552a344e40ff4a75cda5b674919",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/jack-grealish.webp": {
-    "mtime": 1795035608.0146272,
-    "seen": 1795036871.4289453,
+    "mtime": 1795154545.1349587,
+    "seen": 1795196316.2677512,
     "ast_hash": "5e910d932de7c6dec4677e0b4a1f4395",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/jadon-sancho.webp": {
-    "mtime": 1795035606.1187465,
-    "seen": 1795036871.4291837,
+    "mtime": 1795154545.1349587,
+    "seen": 1795196316.267879,
     "ast_hash": "e3b0a8d5b8ed0ca7dccc9a07b44b4a5f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/joane-gadou.webp": {
-    "mtime": 1795035600.2864685,
-    "seen": 1795036871.4330378,
+    "mtime": 1795154545.1359591,
+    "seen": 1795196316.2695026,
     "ast_hash": "123a36d428ecb0b5292a863b46a88a04",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/joao-felix.webp": {
-    "mtime": 1795035597.7157118,
-    "seen": 1795036871.4332917,
+    "mtime": 1795154545.1359591,
+    "seen": 1795196316.269629,
     "ast_hash": "9bfe549fdf6061a3d27b4aae63fc20b7",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/joe-hart.webp": {
-    "mtime": 1795035606.7694492,
-    "seen": 1795036871.4338903,
+    "mtime": 1795154545.1359591,
+    "seen": 1795196316.2698872,
     "ast_hash": "6303d8e8530915127499b85959de0733",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/joshua-kimmich.webp": {
-    "mtime": 1795035605.5791342,
-    "seen": 1795036871.4355721,
+    "mtime": 1795154545.1369586,
+    "seen": 1795196316.2707644,
     "ast_hash": "dedef240553c51769fb734ed5ec37549",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/juan-cuadrado.webp": {
-    "mtime": 1795035593.818536,
-    "seen": 1795036871.4360468,
+    "mtime": 1795154545.1369586,
+    "seen": 1795196316.2710173,
     "ast_hash": "11df225e20172ed87e02a0c9718032ac",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/kalidou-koulibaly.webp": {
-    "mtime": 1795035607.185047,
-    "seen": 1795036871.438124,
+    "mtime": 1795154545.137959,
+    "seen": 1795196316.2721405,
     "ast_hash": "39c3c268d014eb54780f81c3b6d593bc",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/kalvin-phillips.webp": {
-    "mtime": 1795035607.6250007,
-    "seen": 1795036871.4381275,
+    "mtime": 1795154545.137959,
+    "seen": 1795196316.2721434,
     "ast_hash": "3afd222ef8a16c06799c5eb9c5019149",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/keylor-navas.webp": {
-    "mtime": 1795035597.0970302,
-    "seen": 1795036871.439226,
+    "mtime": 1795154545.137959,
+    "seen": 1795196316.2727723,
     "ast_hash": "aaa436a70f77f455ea56d75473dafefa",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/kim-min-jae.webp": {
-    "mtime": 1795035605.3961737,
-    "seen": 1795036871.4394174,
+    "mtime": 1795154545.1389906,
+    "seen": 1795196316.2729018,
     "ast_hash": "eacef313bc97518dd8ad81ef81b5cc3e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/kingsley-coman.webp": {
-    "mtime": 1795035598.3314452,
-    "seen": 1795036871.4394202,
+    "mtime": 1795154545.1389906,
+    "seen": 1795196316.2729042,
     "ast_hash": "28800765b19de108188689f581d6003b",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/konrad-laimer.webp": {
-    "mtime": 1795035596.3626492,
-    "seen": 1795036871.4395835,
+    "mtime": 1795154545.1389906,
+    "seen": 1795196316.2730317,
     "ast_hash": "eff49e8459a36c3745594571f27dbafa",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/kyle-walker.webp": {
-    "mtime": 1795035601.8892436,
-    "seen": 1795036871.4397585,
+    "mtime": 1795154545.139992,
+    "seen": 1795196316.2731602,
     "ast_hash": "295729e7118cce14bce467b9ab88ac29",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/leroy-sane.webp": {
-    "mtime": 1795035607.0052345,
-    "seen": 1795036871.4410305,
+    "mtime": 1795154545.139992,
+    "seen": 1795196316.2740397,
     "ast_hash": "84a8a993a123bb553510003b6d3b713d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/loris-karius.webp": {
-    "mtime": 1795035609.437503,
-    "seen": 1795036871.442126,
+    "mtime": 1795154545.139992,
+    "seen": 1795196316.2745385,
     "ast_hash": "fd9d7c6fb21ab9be201f0c7a532bfd61",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/lukas-podolski.webp": {
-    "mtime": 1795035594.4855318,
-    "seen": 1795036871.443534,
+    "mtime": 1795154545.140991,
+    "seen": 1795196316.2752948,
     "ast_hash": "373485de8cda0bded9ff548f23b71afd",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/marc-andre-ter-stegen.webp": {
-    "mtime": 1795035592.853397,
-    "seen": 1795036871.4450655,
+    "mtime": 1795154545.140991,
+    "seen": 1795196316.276048,
     "ast_hash": "46a6fdae588446f2f2535ecb26b0e4cd",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/mason-mount.webp": {
-    "mtime": 1795035603.010682,
-    "seen": 1795036871.4489417,
+    "mtime": 1795154545.140991,
+    "seen": 1795196316.2776725,
     "ast_hash": "f30bb9e61b9fdb24bd54bea8cda35e0e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/mauro-icardi.webp": {
-    "mtime": 1795035607.4146948,
-    "seen": 1795036871.4506202,
+    "mtime": 1795154545.1419919,
+    "seen": 1795196316.278573,
     "ast_hash": "16cb5c91f379e25aa8473a4d1350dee5",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/mikel-merino.webp": {
-    "mtime": 1795035597.8757923,
-    "seen": 1795036871.4516804,
+    "mtime": 1795154545.1419919,
+    "seen": 1795196316.279328,
     "ast_hash": "7d9480312cb337234a2c80f36a278d2a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/milan-skriniar.webp": {
-    "mtime": 1795035609.2742016,
-    "seen": 1795036871.451684,
+    "mtime": 1795154545.1419919,
+    "seen": 1795196316.279331,
     "ast_hash": "7495c7004841dc5be246cc8fba157362",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/nani.webp": {
-    "mtime": 1795035598.644937,
-    "seen": 1795036871.4540029,
+    "mtime": 1795154545.1429913,
+    "seen": 1795196316.2805822,
     "ast_hash": "1bb7305a8d1280bb8eb57324d5f4159d",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/nathan-zeze.webp": {
-    "mtime": 1795035596.209975,
-    "seen": 1795036871.4541903,
+    "mtime": 1795154545.1429913,
+    "seen": 1795196316.2807155,
     "ast_hash": "9506de535e96e6c539510e25ce51c2d8",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/ngolo-kante.webp": {
-    "mtime": 1795035593.3297832,
-    "seen": 1795036871.4546049,
+    "mtime": 1795154545.1429913,
+    "seen": 1795196316.2809703,
     "ast_hash": "eae74d760247b84b1bcf6135d9b8a4d3",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/nicolas-otamendi.webp": {
-    "mtime": 1795035600.6754937,
-    "seen": 1795036871.4561186,
+    "mtime": 1795154545.144034,
+    "seen": 1795196316.281868,
     "ast_hash": "56551948e05bd4e9ab80e860f2166e23",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/olivier-giroud.webp": {
-    "mtime": 1795035601.715384,
-    "seen": 1795036871.4573483,
+    "mtime": 1795154545.144034,
+    "seen": 1795196316.2825189,
     "ast_hash": "8c173a09b7e46feba973f0702cac3f00",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/paolo-guerrero.webp": {
-    "mtime": 1795035601.0236037,
-    "seen": 1795036871.4584403,
+    "mtime": 1795154545.144034,
+    "seen": 1795196316.2831562,
     "ast_hash": "dda78865eb31570d2d60dc1bab143a56",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/paul-pogba.webp": {
-    "mtime": 1795035605.1858718,
-    "seen": 1795036871.4586594,
+    "mtime": 1795154545.1450343,
+    "seen": 1795196316.2832901,
     "ast_hash": "8ea29ec3271093c24b8a06252ac0550a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/pedro-rodriguez.webp": {
-    "mtime": 1795035601.544635,
-    "seen": 1795036871.459927,
+    "mtime": 1795154545.1450343,
+    "seen": 1795196316.2839348,
     "ast_hash": "88e1040005b8d9230d15118817d19015",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/philippe-coutinho.webp": {
-    "mtime": 1795035605.764115,
-    "seen": 1795036871.4604628,
+    "mtime": 1795154545.1450343,
+    "seen": 1795196316.2841873,
     "ast_hash": "e8f2459145c09fbd23d7baedd42df149",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/radamel-falcao.webp": {
-    "mtime": 1795035596.7977402,
-    "seen": 1795036871.4613047,
+    "mtime": 1795154545.146034,
+    "seen": 1795196316.2845688,
     "ast_hash": "b81e30bd872f48c7dd2d459cf6cb0a97",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/raheem-sterling.webp": {
-    "mtime": 1795035605.9364595,
-    "seen": 1795036871.4613123,
+    "mtime": 1795154545.146034,
+    "seen": 1795196316.2845714,
     "ast_hash": "496052910579160f0db5d85ab2991e25",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/romelu-lukaku.webp": {
-    "mtime": 1795035605.0193064,
-    "seen": 1795036871.467009,
+    "mtime": 1795154545.146034,
+    "seen": 1795196316.2866082,
     "ast_hash": "26f533aada455d2b84b21b6589880e5a",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/romeo-lavia.webp": {
-    "mtime": 1795035599.3993084,
-    "seen": 1795036871.467014,
+    "mtime": 1795154545.1470356,
+    "seen": 1795196316.2866106,
     "ast_hash": "1374cae95cb11ec3824add4a44a7de08",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/roque-santa-cruz.webp": {
-    "mtime": 1795035594.3198197,
-    "seen": 1795036871.4672186,
+    "mtime": 1795154545.1470356,
+    "seen": 1795196316.2867398,
     "ast_hash": "25a0b0b6aa78b0dbf987226666caaf6e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/ruben-neves.webp": {
-    "mtime": 1795035602.2570417,
-    "seen": 1795036871.4674954,
+    "mtime": 1795154545.1470356,
+    "seen": 1795196316.2868726,
     "ast_hash": "1b744f374a53ac31daf1834711a64ef5",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/sam-beukema.webp": {
-    "mtime": 1795035604.0725298,
-    "seen": 1795036871.468366,
+    "mtime": 1795154545.1480336,
+    "seen": 1795196316.2872555,
     "ast_hash": "b6de16a0680b24a5139e3c2f66671ae4",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/santi-cazorla.webp": {
-    "mtime": 1795035600.4652107,
-    "seen": 1795036871.4686458,
+    "mtime": 1795154545.1480336,
+    "seen": 1795196316.2873845,
     "ast_hash": "bb155ff82238bfb7715e38f6c5db07c0",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/scott-mctominay.webp": {
-    "mtime": 1795035598.4907072,
-    "seen": 1795036871.4689195,
+    "mtime": 1795154545.1480336,
+    "seen": 1795196316.2875133,
     "ast_hash": "ccfb45b55b6ea4f24a86a3c2af3148d7",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/serge-gnabry.webp": {
-    "mtime": 1795035608.2223415,
-    "seen": 1795036871.4694586,
+    "mtime": 1795154545.1490333,
+    "seen": 1795196316.2877645,
     "ast_hash": "d13604251729fc1a0eeec12bb349590c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/sergej-milinkovic-savic.webp": {
-    "mtime": 1795035606.374217,
-    "seen": 1795036871.4694636,
+    "mtime": 1795154545.1490333,
+    "seen": 1795196316.2877667,
     "ast_hash": "3af1fe4748dd7a8cc17a39f5f0b95868",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/son-heung-min.webp": {
-    "mtime": 1795035601.1970408,
-    "seen": 1795036871.4697406,
+    "mtime": 1795154545.1490333,
+    "seen": 1795196316.287901,
     "ast_hash": "11ca6c7d5a150b3de04ac409f9eec443",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/strahinja-pavlovic.webp": {
-    "mtime": 1795035599.5587025,
-    "seen": 1795036871.4697459,
+    "mtime": 1795154545.1500342,
+    "seen": 1795196316.2879038,
     "ast_hash": "61f4c48cf0a3c5e983d03043b5732dee",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/takefusa-kubo.webp": {
-    "mtime": 1795035604.4686742,
-    "seen": 1795036871.4697495,
+    "mtime": 1795154545.1500342,
+    "seen": 1795196316.2879055,
     "ast_hash": "a2fda2e34bed1ff2811ac86cf88a6e6f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/tanguy-ndombele.webp": {
-    "mtime": 1795035607.8153336,
-    "seen": 1795036871.4697528,
+    "mtime": 1795154545.1500342,
+    "seen": 1795196316.2879076,
     "ast_hash": "67630e9ef315b207ffcd4a7d12613ab6",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/theo-hernandez.webp": {
-    "mtime": 1795035598.1741693,
-    "seen": 1795036871.4697561,
+    "mtime": 1795154545.151034,
+    "seen": 1795196316.287909,
     "ast_hash": "1afa46a32bbe4464f54163e4d17edfb2",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/thiago-silva.webp": {
-    "mtime": 1795035593.007243,
-    "seen": 1795036871.4700787,
+    "mtime": 1795154545.151034,
+    "seen": 1795196316.2880366,
     "ast_hash": "0152ebbbbdb4d237b34a8fd430dff093",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/thomas-muller.webp": {
-    "mtime": 1795035592.6753948,
-    "seen": 1795036871.4703948,
+    "mtime": 1795154545.151034,
+    "seen": 1795196316.2881656,
     "ast_hash": "4779d88d56724bc0c9d07639c536b4a8",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/timo-werner.webp": {
-    "mtime": 1795035609.5809948,
-    "seen": 1795036871.470675,
+    "mtime": 1795154545.1520333,
+    "seen": 1795196316.2882936,
     "ast_hash": "ea260ccb4f82939ef3e08b5a3f217b28",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/vedat-muriqi.webp": {
-    "mtime": 1795035599.8913925,
-    "seen": 1795036871.4720056,
+    "mtime": 1795154545.1520333,
+    "seen": 1795196316.2889256,
     "ast_hash": "e0ef2e81506aa455aa0e39c6fe41656c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/wesley-fofana.webp": {
-    "mtime": 1795035602.8227196,
-    "seen": 1795036871.4738588,
+    "mtime": 1795154545.1520333,
+    "seen": 1795196316.2898037,
     "ast_hash": "150351854122b38c0c66ff2abf68aa6c",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/wojciech-szczesny.webp": {
-    "mtime": 1795035598.9399207,
-    "seen": 1795036871.4743936,
+    "mtime": 1795154545.1530344,
+    "seen": 1795196316.2900617,
     "ast_hash": "785909cda9ea0b031321312fa6e56f00",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/yann-sommer.webp": {
-    "mtime": 1795035594.0085492,
-    "seen": 1795036871.475193,
+    "mtime": 1795154545.1530344,
+    "seen": 1795196316.2904394,
     "ast_hash": "c1b4283b0a10dac278701afde83ed609",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/yerry-mina.webp": {
-    "mtime": 1795035596.5130525,
-    "seen": 1795036871.4754677,
+    "mtime": 1795154545.1530344,
+    "seen": 1795196316.2905672,
     "ast_hash": "f2572b918d4ebe7a0fe5c947460a4165",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/youri-tielemans.webp": {
-    "mtime": 1795035599.2390883,
-    "seen": 1795036871.475473,
+    "mtime": 1795154545.1540687,
+    "seen": 1795196316.2905693,
     "ast_hash": "943a0456d435578bbd83bc55ddee9f2e",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/youssef-en-nesyri.webp": {
-    "mtime": 1795035603.8558517,
-    "seen": 1795036871.475477,
+    "mtime": 1795154545.1540687,
+    "seen": 1795196316.2905715,
     "ast_hash": "aefb71b0b940f6533299e65ade59c883",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/retratos-propios/yunus-musah.webp": {
-    "mtime": 1795035599.7267642,
-    "seen": 1795036871.475481,
+    "mtime": 1795154545.1540687,
+    "seen": 1795196316.2905736,
     "ast_hash": "632d3ca1a736814633ae3721885f5abe",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-25-mini.webp": {
-    "mtime": 1795032986.795,
-    "seen": 1795036871.5143325,
+    "mtime": 1795154545.1550677,
+    "seen": 1795196316.3099937,
     "ast_hash": "7314d885fc0e3f4c820446a4d34f6434",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-25.webp": {
-    "mtime": 1795032986.69,
-    "seen": 1795036871.514338,
+    "mtime": 1795154545.1550677,
+    "seen": 1795196316.3099964,
     "ast_hash": "c0d2eb32eaa41172a7a7b8f445a7ed8e",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-26-mini.webp": {
-    "mtime": 1795032987.099,
-    "seen": 1795036871.514344,
+    "mtime": 1795154545.15607,
+    "seen": 1795196316.3099985,
     "ast_hash": "3124f6699b2583ccfb499ef1d31d1427",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-26.webp": {
-    "mtime": 1795032986.999,
-    "seen": 1795036871.514348,
+    "mtime": 1795154545.15607,
+    "seen": 1795196316.3100004,
     "ast_hash": "37bb488f87fc4e704329d8b2f5277965",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-27-mini.webp": {
-    "mtime": 1795032987.418,
-    "seen": 1795036871.5143516,
+    "mtime": 1795154545.1570675,
+    "seen": 1795196316.3100019,
     "ast_hash": "e4b57bc57ab20642b4852ef40ce5c4c7",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-27.webp": {
-    "mtime": 1795032987.327,
-    "seen": 1795036871.5143554,
+    "mtime": 1795154545.1570675,
+    "seen": 1795196316.3100038,
     "ast_hash": "ebb63340d95a0ef9bbcc840b2891fdf6",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-28-mini.webp": {
-    "mtime": 1795032987.711,
-    "seen": 1795036871.5143597,
+    "mtime": 1795154545.1580672,
+    "seen": 1795196316.310006,
     "ast_hash": "75538dddf31f0a940be69e0668b43c33",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-28.webp": {
-    "mtime": 1795032987.621,
-    "seen": 1795036871.5143642,
+    "mtime": 1795154545.1580672,
+    "seen": 1795196316.3100078,
     "ast_hash": "aaef9e95afb33e448d9ed3033acb5c24",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-29-mini.webp": {
-    "mtime": 1795032988.033,
-    "seen": 1795036871.5143688,
+    "mtime": 1795154545.1590679,
+    "seen": 1795196316.3100097,
     "ast_hash": "e4af59cf47155f2a37c1d0198e1a0fab",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-29.webp": {
-    "mtime": 1795032987.938,
-    "seen": 1795036871.514373,
+    "mtime": 1795154545.160142,
+    "seen": 1795196316.3100111,
     "ast_hash": "3ebf661560c256e4fe5fa56f6ca83e9b",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-30-mini.webp": {
-    "mtime": 1795032988.354,
-    "seen": 1795036871.5583181,
+    "mtime": 1795154545.160142,
+    "seen": 1795196316.3340223,
     "ast_hash": "fe572f1be55f5b192241a705ac3a3113",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-30.webp": {
-    "mtime": 1795032988.256,
-    "seen": 1795036871.5583425,
+    "mtime": 1795154545.1611423,
+    "seen": 1795196316.334026,
     "ast_hash": "d1cb368120eb42bdf5049ce32980edae",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-31-mini.webp": {
-    "mtime": 1795032988.678,
-    "seen": 1795036871.5583467,
+    "mtime": 1795154545.1611423,
+    "seen": 1795196316.3340292,
     "ast_hash": "b56bf2c4f7a65ee0b173dda64d4f5633",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-31.webp": {
-    "mtime": 1795032988.588,
-    "seen": 1795036871.5583506,
+    "mtime": 1795154545.1621418,
+    "seen": 1795196316.3340323,
     "ast_hash": "0bb778133acf2447ff96793e53e05729",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-32-mini.webp": {
-    "mtime": 1795032988.991,
-    "seen": 1795036871.5583541,
+    "mtime": 1795154545.1621418,
+    "seen": 1795196316.3340347,
     "ast_hash": "c079d9129ed8dd9bb400e6ce171f0fa4",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-32.webp": {
-    "mtime": 1795032988.9,
-    "seen": 1795036871.558358,
+    "mtime": 1795154545.1631415,
+    "seen": 1795196316.3340375,
     "ast_hash": "834868eb4daca1c4894ecd75933f0f25",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-33-mini.webp": {
-    "mtime": 1795032989.292,
-    "seen": 1795036871.5583615,
+    "mtime": 1795154545.1631415,
+    "seen": 1795196316.3340402,
     "ast_hash": "d927333431989ed2e79c92b626a835be",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/sobres/sobre-33.webp": {
-    "mtime": 1795032989.2,
-    "seen": 1795036871.5583646,
+    "mtime": 1795154545.1641417,
+    "seen": 1795196316.3340435,
     "ast_hash": "bd96ee95c0392a46178ccf06d014c8ed",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/estrellas-fulgurantes/cartel.webp": {
-    "mtime": 1795035611.616,
-    "seen": 1795036871.5648448,
+    "mtime": 1795154545.165142,
+    "seen": 1795196316.3381112,
     "ast_hash": "69de7e3cc8d52ac5a0db3023bb822880",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/estrellas-fulgurantes/icono-256.webp": {
-    "mtime": 1795035611.253,
-    "seen": 1795036871.564851,
+    "mtime": 1795154545.166183,
+    "seen": 1795196316.3381145,
     "ast_hash": "22be17826a3483351a9eec90a8836d43",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/estrellas-fulgurantes/icono-512.webp": {
-    "mtime": 1795035611.421,
-    "seen": 1795036871.5648537,
+    "mtime": 1795154545.166183,
+    "seen": 1795196316.338117,
     "ast_hash": "39effd6507c185d811af1cd4d74480e1",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/idolos-dorados/cartel.webp": {
-    "mtime": 1795035610.656,
-    "seen": 1795036871.564856,
+    "mtime": 1795154545.1681826,
+    "seen": 1795196316.338119,
     "ast_hash": "62fd1e9c1e92e234f07c4e65f757ec48",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/idolos-dorados/icono-256.webp": {
-    "mtime": 1795035610.273,
-    "seen": 1795036871.5648603,
+    "mtime": 1795154545.1681826,
+    "seen": 1795196316.3381217,
     "ast_hash": "f7cdf0a9680119fc36a58bb5aa053f44",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/idolos-dorados/icono-512.webp": {
-    "mtime": 1795035610.458,
-    "seen": 1795036871.564863,
+    "mtime": 1795154545.169183,
+    "seen": 1795196316.3381243,
     "ast_hash": "93b4e060bc7977502e83e5581731cc16",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/remontada-historica/cartel.webp": {
-    "mtime": 1795035610.179,
-    "seen": 1795036871.5648665,
+    "mtime": 1795154545.1701832,
+    "seen": 1795196316.3381264,
     "ast_hash": "0232b9abe67dd2d6f73701024f149be9",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/remontada-historica/icono-256.webp": {
-    "mtime": 1795035609.787,
-    "seen": 1795036871.5648694,
+    "mtime": 1795154545.1711833,
+    "seen": 1795196316.3381286,
     "ast_hash": "1a4eb68021ee2da13d8372672feee5fd",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/remontada-historica/icono-512.webp": {
-    "mtime": 1795035609.97,
-    "seen": 1795036871.5648718,
+    "mtime": 1795154545.1711833,
+    "seen": 1795196316.338131,
     "ast_hash": "8d25ea2046bd454c68496a21ab7ad7ba",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/saque-ardiente/cartel.webp": {
-    "mtime": 1795035611.125,
-    "seen": 1795036871.5648737,
+    "mtime": 1795154545.1732867,
+    "seen": 1795196316.338133,
     "ast_hash": "cf20815ebf5293a9f6e29be01b06fa53",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/saque-ardiente/icono-256.webp": {
-    "mtime": 1795035610.747,
-    "seen": 1795036871.564876,
+    "mtime": 1795154545.1732867,
+    "seen": 1795196316.338135,
     "ast_hash": "6efb7ed0a0081e045825fd70c64d612e",
     "semantic_hash": ""
   },
   "apps/web/public/expansiones/saque-ardiente/icono-512.webp": {
-    "mtime": 1795035610.931,
-    "seen": 1795036871.5648794,
+    "mtime": 1795154545.1742861,
+    "seen": 1795196316.3381376,
     "ast_hash": "a1ef43e7358776d828563922dc62b164",
     "semantic_hash": ""
   },
   "apps/web/public/iconos/fragmento-32.webp": {
-    "mtime": 1795035611.868,
-    "seen": 1795036871.5678318,
+    "mtime": 1795154545.1742861,
+    "seen": 1795196316.3400273,
     "ast_hash": "efa8ff7e3e473c6faaf888b18e2f594f",
     "semantic_hash": ""
   },
   "apps/web/public/iconos/fragmento-64.webp": {
-    "mtime": 1795035611.904,
-    "seen": 1795036871.5678358,
+    "mtime": 1795154545.1742861,
+    "seen": 1795196316.3400307,
     "ast_hash": "cf8bffd1da12f930da4d7fdbf0c2e7e6",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/revision-retratos.webp": {
-    "mtime": 1795035614.624,
-    "seen": 1795036871.5683107,
+    "mtime": 1795154545.4037874,
+    "seen": 1795196316.3401902,
     "ast_hash": "e0b82ba1e157c45f6eb62ddaffa40812",
+    "semantic_hash": ""
+  },
+  "apps/server/tests/integration/recuperar-contrasena.test.ts": {
+    "mtime": 1795194389.319765,
+    "seen": 1795196316.108334,
+    "ast_hash": "f16cc4c51a9ef03048ee83729d3f94f1",
+    "semantic_hash": ""
+  },
+  "specs/006-preparacion-bd-cartas/checklists/validacion.md": {
+    "mtime": 1795196279.9227338,
+    "seen": 1795196316.1911173,
+    "ast_hash": "0347a598a74a904cfa509881284c28c6",
+    "semantic_hash": ""
+  },
+  "specs/007-retoques-visuales/checklists/validacion.md": {
+    "mtime": 1795196279.873594,
+    "seen": 1795196316.1923532,
+    "ast_hash": "a4917588c508b74b0601bf064d360acc",
     "semantic_hash": ""
   }
 }

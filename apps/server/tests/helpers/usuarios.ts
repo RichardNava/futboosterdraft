@@ -7,6 +7,7 @@ export interface UsuarioPrueba {
   id: string;
   tipo: 'registrado' | 'invitado';
   apodo: string;
+  email: string | null;
   cookie: string;
 }
 
