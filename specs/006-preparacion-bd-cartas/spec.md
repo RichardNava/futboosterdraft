@@ -39,7 +39,8 @@ Correspondencia de términos: lo que la descripción llama rareza **«Común»**
   media al desfragmentar un sobre, así que no hay bucle de fragmentos (FR-024).
 - Q: ¿Escudo oficial de cada federación o emblema propio? → A: De momento, escudos oficiales. Antes de la versión
   definitiva de producción se investigarán sus implicaciones legales y, si las hay, se sustituirán o se suprimirán
-  (FR-044).
+  (FR-044). **Revisado el 2026-11-20**: no hay ni habrá escudos oficiales de ningún club, selección o marca; las
+  cartas solo muestran la bandera.
 - Q: ¿La rareza «Común» es el nivel Superclase? → A: Sí, confirmado.
 - Nota del usuario: al abrir un sobre de la tienda se muestra una animación similar a la de apertura de sobres del
   draft (FR-030).
@@ -447,11 +448,9 @@ cantidad del paquete y que el movimiento aparece en el historial como compra.
   derivan su bandera y su escudo. Como en el fútbol las selecciones de Inglaterra, Escocia, Gales e Irlanda del
   Norte son distintas, la nacionalidad DEBE identificar la selección, no solo el Estado: se usan códigos de tres
   letras y `GBR` se sustituye por `ENG`, `SCO`, `WAL` o `NIR`.
-- **FR-044**: Todas las cartas DEBEN mostrar la bandera y el escudo de su selección en la esquina superior
-  izquierda, debajo de la media y la demarcación, en todas las pantallas en que aparecen. Los escudos son, de
-  momento, los oficiales de cada federación. Las imágenes de escudos DEBEN poder sustituirse o suprimirse de forma
-  centralizada, sin tocar las cartas, porque antes de la versión definitiva de producción se revisarán sus
-  implicaciones legales (ver Assumptions).
+- **FR-044**: Todas las cartas DEBEN mostrar la bandera de su selección en la esquina superior izquierda, debajo de
+  la media y la demarcación, en todas las pantallas en que aparecen. Las cartas NO muestran escudos oficiales de
+  ningún club, selección o marca (decisión del 2026-11-20; ver Assumptions).
 - **FR-045**: Cada carta DEBE tener una **imagen de fondo** que se muestra con una opacidad de entre el 20 % y el
   30 %, indicada en el campo obligatorio `imagen_bg`. Si la carta no tiene imagen propia, `imagen_bg` contiene de
   forma explícita la ruta de la imagen genérica de su demarcación: disparo (DEL), pase (MED), entrada o despeje
@@ -541,9 +540,8 @@ poseída. El análisis completo de alternativas se documenta en el plan (FR-007)
 
 - **«Común» = Superclase**: la rareza «Común» de la descripción corresponde al nivel Superclase del juego
   (confirmado por el usuario).
-- **Escudos oficiales**: se usan provisionalmente. Antes de la versión definitiva de producción se investigarán sus
-  implicaciones legales (marcas registradas de las federaciones) y, si las hay, se sustituirán por emblemas propios
-  o se suprimirán. Hasta entonces es un riesgo abierto que bloquea el paso a producción.
+- **Escudos oficiales**: no hay ni habrá escudos oficiales de ningún club, selección o marca (decisión del
+  2026-11-20). No es un riesgo abierto ni bloquea el paso a producción.
 - **Usuarios**: «Colección», «Tienda», los fragmentos y las compras son solo para usuarios registrados. Los
   invitados siguen jugando con Core completa y sin economía.
 - **Recompensa**: «ganar un torneo» significa ser el campeón final. En el MVP la recompensa es de 10 fragmentos

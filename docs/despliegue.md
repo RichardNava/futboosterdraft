@@ -135,7 +135,7 @@ docker exec futboosterdraft node dist/seed.js --file data/core-real.json --file 
 
 Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas.md` (esquemas en `packages/protocol/schemas/`).
 
-> **Riesgo abierto que bloquea producción: escudos de las selecciones.** Las cartas pueden mostrar el escudo oficial de cada selección junto a su bandera (FR-044), pero su licencia no está revisada. Hasta entonces los escudos están desactivados (`ESCUDOS_ACTIVOS = false` en `apps/web/src/textos/selecciones.ts`) y la carpeta `apps/web/public/escudos/` no existe. Para activarlos: obtener los escudos con licencia, guardarlos como `apps/web/public/escudos/{CODIGO}.svg` (códigos de `SELECCIONES`) y poner la constante a `true`. Las banderas son de `flag-icons` (MIT; `apps/web/public/banderas/LICENSE`).
+> **Banderas y escudos.** Las cartas muestran la bandera de su selección (FR-044), de `flag-icons` (MIT; `apps/web/public/banderas/LICENSE`). No hay ni habrá escudos oficiales de ningún club, selección o marca (decisión del 2026-11-20).
 >
 > **Pagos simulados.** Todas las compras en euros de la tienda son de prueba (`compras.simulada = true`, FR-031): no hay pasarela de pago.
 

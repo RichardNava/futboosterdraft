@@ -39,12 +39,12 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009, 010 | P0 | Parcial | INI-06 |
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
 | [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Hecho | — |
-| [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-08, INI-09 |
+| [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-09 |
 | [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1), 011, 016 | P1 | Parcial | INI-08, INI-05 |
-| [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
+| [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
-| [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012, 013 | P1 | Parcial | INI-03, INI-04, INI-08 |
+| [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012, 013 | P1 | Hecho | INI-03, INI-04, INI-08 |
 
 Los ids siguen el orden en que se registran, no el de prioridad: INI-15 se añadió al aparecer la spec 007.
 
@@ -57,13 +57,12 @@ graph LR
   INI05 --> INI06[INI-06 Rendimiento] --> INI07[INI-07 Carga beta]
   INI01 --> INI08[INI-08 Colecciones y tienda]
   INI07 --> INI10[INI-10 Producción]
-  INI08 --> INI10
   INI09[INI-09 Gobernanza] --> INI10
   INI08 --> INI11[INI-11 Catálogo definitivo]
   INI05 --> INI11
   INI10 --> INI12[INI-12 Pagos reales]
-  INI11 --> INI12
-  INI12 --> INI14[INI-14 Cosméticos y premium]
+  INI08 --> INI14[INI-14 Cosméticos y premium]
+  INI14 --> INI12
   INI05 --> INI13[INI-13 Modos adicionales]
   INI09 --> INI13
   INI03 --> INI15[INI-15 Retoques visuales y sonoros]
@@ -268,20 +267,22 @@ cuesta simular los partidos.
 - **Objetivo**: la estructura de colecciones y el esqueleto de la monetización, respetando que todos juegan con las
   mismas reglas de draft (Principio VII).
 - **Alcance**: 006 US1–US7: colección propia y activa con su mínimo, fragmentos (torneos ganados y desfragmentar),
-  tienda de sobres, colecciones y fragmentos con **pago simulado**, cartas con bandera, escudo e imagen de fondo.
+  tienda de sobres, colecciones y fragmentos con **pago simulado**, cartas con bandera e imagen de fondo.
 - **Specs**: [006](specs/006-preparacion-bd-cartas/spec.md).
 - **Prioridad / estado**: P1 · **Implementada, sin validar**. [validacion.md](specs/006-preparacion-bd-cartas/checklists/validacion.md)
   creado el 2026-11-20 con las pruebas automáticas (SC-007 incluido); faltan los escenarios A–O a mano.
 - **Evidencia**: 110 de 112 tareas marcadas; tests de integración estabilizados (commits `c56b889`, `f1ab80b`). Sin cerrar:
   - T103: escenarios manuales A–O de [quickstart.md](specs/006-preparacion-bd-cartas/quickstart.md), incluido 360 px en «Colección» y «Tienda».
-  - T087: escudos oficiales; desactivados (`ESCUDOS_ACTIVOS = false`) por licencia sin revisar. **Bloquea producción**
-    ([docs/despliegue.md](docs/despliegue.md)).
+  - ~~T087: escudos oficiales; desactivados (`ESCUDOS_ACTIVOS = false`) por licencia sin revisar. Bloquea producción~~:
+    decidido el 2026-11-20 que no hay ni habrá escudos oficiales de ningún club, selección o marca. FR-044 queda solo
+    con la bandera, T087 se cierra y deja de bloquear producción.
   - ~~006/SC-007 (idempotencia de compras con dobles pulsaciones y cortes) debe quedar registrado en la validación~~
     (registrado el 2026-11-20).
 - **Criterios de cierre**:
   1. `specs/006-preparacion-bd-cartas/checklists/validacion.md` creado con pruebas automáticas (hecho) y escenarios A–O.
   2. T103 marcada.
-  3. Escudos con licencia revisada y activados, o retirados de FR-044 por decisión registrada (T087).
+  3. ~~Escudos con licencia revisada y activados, o retirados de FR-044 por decisión registrada (T087)~~ (retirados
+     el 2026-11-20).
 
 ## INI-09 Gobernanza y documentación al día
 
@@ -309,11 +310,11 @@ cuesta simular los partidos.
 - **Objetivo**: poder abrir la beta a personas ajenas al proyecto con datos persistentes y sin riesgos legales abiertos.
 - **Alcance propuesto** (a concretar en su spec): despliegue según [docs/despliegue.md](docs/despliegue.md); SMTP
   real; copias de seguridad y restauración probadas; registros y métricas mínimos para diagnosticar partidas
-  bloqueadas; revisión de seguridad de autenticación y de la tienda; textos legales (privacidad, condiciones);
-  resolución de los riesgos que bloquean producción (escudos).
-- **Specs**: ninguna. **Requiere spec nueva** (p. ej. `011-beta-produccion`; la 010 se reserva para la latencia de INI-07).
+  bloqueadas; revisión de seguridad de autenticación y de la tienda; textos legales (privacidad, condiciones).
+- **Specs**: ninguna. **Requiere spec nueva** (la 010 se reserva para la latencia de INI-07).
 - **Prioridad / estado**: P0 · **Pendiente**.
-- **Dependencias**: INI-07 (la carga debe aguantar), INI-08 (escudos), INI-09.
+- **Dependencias**: INI-07 (la carga debe aguantar), INI-09. Desde el 2026-11-20 no depende de INI-08: los escudos
+  oficiales se retiraron y ya no hay riesgo de licencias que bloquee producción.
 - **Criterios de cierre**: los criterios de éxito de su spec, como mínimo: despliegue reproducible desde la imagen
   Docker, restauración de una copia probada, ningún riesgo abierto que bloquee producción en `docs/despliegue.md`.
 
@@ -322,14 +323,15 @@ cuesta simular los partidos.
 - **Objetivo**: pasar del Core ficticio de 300 cartas y las 75 de prueba al catálogo real, que es para lo que la 006
   preparó el modelo («fase previa a la creación de la base de datos de las cartas»).
 - **Alcance propuesto**: contenido de Core y de las primeras colecciones de pago (40–50 cartas cada una); imágenes
-  propias de GOAT y Legendarias; historias de las cartas; validación de equilibrio del nuevo pool con `pnpm balance --serie core`;
-  política de derechos de imagen y nombres de jugadores reales, si se usan.
+  propias de GOAT y Legendarias; historias de las cartas; validación de equilibrio del nuevo pool con `pnpm balance --serie core`.
 - **Specs**: [008](specs/008-datos-reales-core/spec.md) (fase 0.1: las 300 cartas de Core son jugadores reales, con
   retratos; fuente `data/core-real.json`). La base es [006](specs/006-preparacion-bd-cartas/spec.md) FR-001 a FR-012. Las
-  colecciones de pago, las historias y la política de derechos **requieren spec nueva**.
+  historias de las cartas **requieren spec nueva**.
 - **Prioridad / estado**: P1 · **Parcial**. 008: T012 y T022 (comprobaciones manuales en `pnpm dev`) abiertas.
-  Con nombres y retratos de futbolistas reales, la política de derechos de imagen es ya un riesgo para producción
-  (INI-10), no solo para el catálogo definitivo.
+- **Monetización (decisión del 2026-11-20)**: nada relacionado con los jugadores se monetiza, ni directa ni
+  indirectamente. El dinero real solo compra cosméticos y las funciones del pase premium, y las cartas, los sobres y
+  las expansiones se consiguen con fragmentos. Los derechos de imagen no bloquean producción (INI-10) ni el cierre de
+  esta iniciativa.
 - **Hecho (2026-11-03): una sola fuente para la colección Core.** Se retiró `data/core.json`; el seed, los tests y
   `tools/` leen `data/core-real.json` (versión `2.0.0`), y `pnpm --filter @fbd/fixtures core-real` ya solo lo valida y
   regenera `specs/008-datos-reales-core/sumario.md`. Los e2e `cartas`, `coleccion`, `partido-rapido`, `dorsales` y
@@ -356,15 +358,16 @@ cuesta simular los partidos.
   quien desfragmenta: a revisar en la spec de economía.
 - **Dependencias**: INI-08 (modelo de colecciones) e INI-05 (el equilibrio del catálogo se mide con el motor ya calibrado).
 - **Criterios de cierre**: los de su spec, como mínimo: `pnpm seed` carga el catálogo nuevo; validación del catálogo
-  en verde; serie Core dentro de los criterios estadísticos; derechos de todo el contenido revisados.
+  en verde; serie Core dentro de los criterios estadísticos.
 
 ## INI-12 Pagos reales
 
-- **Objetivo**: sustituir el pago simulado (006/FR-031) por una pasarela real con facturas.
-- **Alcance propuesto**: pasarela, facturación, reembolsos, conciliación con el saldo de fragmentos y auditoría de compras.
+- **Objetivo**: sustituir el pago simulado (006/FR-031) por una pasarela real con facturas para lo único que se vende
+  con dinero real: cosméticos y el pase premium.
+- **Alcance propuesto**: pasarela, facturación, reembolsos y auditoría de compras.
 - **Specs**: ninguna. **Requiere spec nueva**; debe respetar el Principio VII (sin ventajas fuera de las reglas de draft).
 - **Prioridad / estado**: P2 · **Pendiente**.
-- **Dependencias**: INI-10 (entorno de producción) e INI-11 (algo que vender).
+- **Dependencias**: INI-10 (entorno de producción). Lo que se vende ya existe: cosméticos (INI-14) y pase premium (013).
 - **Criterios de cierre**: los de su spec, como mínimo: 006/SC-007 (cada compra se cobra una vez) con la pasarela real
   en su entorno de pruebas, y revisión de seguridad aprobada.
 
@@ -380,13 +383,13 @@ cuesta simular los partidos.
 
 - **Objetivo**: ampliar la tienda con cosméticos (006/FR-033) y versiones premium de las cartas (006/FR-003).
 - **Specs**: [011](specs/011-rework-tienda/spec.md) (monetización cosmética: 38 escudos y 31 diseños de sobre, sueltos
-  o en packs fijos, con fragmentos o euros simulados). Mientras no haya licencia de imagen, el dinero real solo compra
-  cosméticos (constitución 1.4.0, Principio VII); las versiones premium de cartas quedan fuera.
+  o en packs fijos, con fragmentos o euros simulados). El dinero real solo compra cosméticos y el pase premium
+  (constitución 1.4.0, Principio VII, y decisión del 2026-11-20); las versiones premium de cartas quedan fuera.
 - **Prioridad / estado**: P2 · **Implementada** (011, cerrada el 2026-11-08). Hecho: catálogo de cosméticos en
   `data/cosmeticos.json`, escudos en el marcador, el resumen y el 2D, sobres con carrusel y rasgadura propia, venta en
   la tienda (por secciones y con previsualización a tamaño grande) y tienda de cartas solo en fragmentos. Recorridos
   manuales 1–17 del quickstart aprobados (T068, T077) y `pnpm e2e` en verde. Las versiones premium de cartas siguen
-  fuera hasta tener licencia de imagen.
+  fuera.
 - **Riesgo (economía de fragmentos, 011 research R11)**: sin venta de fragmentos, solo entran por torneos ganados (10),
   duplicados y desfragmentar; un cosmético de 250 fragmentos equivale a unos 25 torneos ganados y una colección a
   cientos. Requiere una spec de economía que revise `recompensaTorneo`.
@@ -432,17 +435,22 @@ cuesta simular los partidos.
   premium de 30 días (fragmentos o euros, y de cortesía por CLI); la pestaña se recupera sola cuando vuelve el
   servidor; «Mis partidas» paginada; aviso de inicio de sesión arriba; descripción de rasgo sin parpadeo; media del
   equipo entera con zoom y «Mi perfil» en dos columnas. `pnpm balance` («Rareza del draft») en verde. Pendiente: el
-  recorrido a mano del [quickstart](specs/013-mejora-cartas-rareza-draft/quickstart.md), borrar `jugadores_bg/` con
-  el visto bueno de la persona. La recuperación de contraseña que pide 013/FR-027 se hizo el 2026-11-20 (013/T086:
+  recorrido a mano del [quickstart](specs/013-mejora-cartas-rareza-draft/quickstart.md). `jugadores_bg/` ya está
+  borrado (lo borró la persona responsable). La recuperación de contraseña que pide 013/FR-027 se hizo el 2026-11-20 (013/T086:
   enlace por correo, de un solo uso y que caduca en una hora).
-- **Prioridad / estado**: P1 · **Parcial**. 007: 62 de 63 tareas marcadas, incluida la segunda ronda de correcciones (T054–T063).
+- **Prioridad / estado**: P1 · **Hecho** (cerrada por decisión el 2026-11-20). 007: 62 de 63 tareas marcadas, incluida
+  la segunda ronda de correcciones (T054–T063). Lo que quedaba con personas (007/SC-002, SC-003 y SC-004; 012/SC-009)
+  pasa a la sesión común de INI-01 a INI-03, y los recorridos a mano de la 012 y la 013 siguen en "Comprobaciones
+  pendientes", pero ya no impiden cerrar esta iniciativa.
+- **Decisión (2026-11-20) sobre 007/SC-004b**: la carpeta de sonidos (1,26 MB por las specs 012 y 013) entra en el
+  límite. Si complica el paso a producción, se intentará reducir entonces.
 - **Dependencias**: INI-03 (sistema de diseño y [DESIGN.md](docs/diseno/DESIGN.md)), INI-04 (modo Duelos) e INI-08
   (rarezas y presentación de la carta de la 006).
 - **Evidencia**: [007/validacion.md](specs/007-retoques-visuales/checklists/validacion.md) (2026-11-20). Sin cerrar:
   - ~~007/SC-007~~: `temp/` se borró en el commit `368a990`; T050 marcada el 2026-11-02 y `test ! -d temp` en verde.
   - ~~T052: `pnpm typecheck`, `pnpm lint`, `pnpm test` y `pnpm e2e` completos~~: en verde el 2026-11-20 y registrada en
-    [007/validacion.md](specs/007-retoques-visuales/checklists/validacion.md). Quedan SC-002, SC-003 y SC-004 con personas
-    y decidir el alcance de SC-004b (la carpeta de sonidos pesa 1,26 MB por las specs 012 y 013).
+    [007/validacion.md](specs/007-retoques-visuales/checklists/validacion.md). SC-002, SC-003 y SC-004 con personas
+    pasan a la sesión común; ~~decidir el alcance de SC-004b~~ (decidido el 2026-11-20: entra en el límite).
   - 007/SC-004 (ningún efecto agudo o molesto en una escucha de prueba) y SC-003 (carga no más lenta) necesitan
     una comprobación con personas; entran en la sesión común de INI-01 a INI-03.
   - ~~Trazabilidad: el botón «Abandonar» en la barra de navegación (T062) se implementó en la segunda ronda sin
@@ -450,7 +458,8 @@ cuesta simular los partidos.
 - **Criterios de cierre**:
   1. ~~`temp/` eliminado del repositorio (T050) y T051 repetida en verde~~ (cumplido).
   2. ~~T052 en verde y registrada en `specs/007-retoques-visuales/checklists/validacion.md`~~ (cumplido).
-  3. SC-001 a SC-008 comprobados en esa validación.
+  3. ~~SC-001 a SC-008 comprobados en esa validación~~ (cerrada por decisión el 2026-11-20; los criterios con
+     personas pasan a la sesión común de INI-01 a INI-03).
   4. ~~«Abandonar» recogido como requisito con su criterio de aceptación~~ (cumplido).
 
 ---
@@ -469,21 +478,30 @@ cuesta simular los partidos.
    con `--pendientes` y un umbral de 120 ms frente a los 25 ms del requisito: este roadmap no las da por cumplidas.
 6. **Lo que no tiene spec no se implementa** (INI-10 a INI-14): primero `/speckit-specify`.
 
+## Decisiones de la persona responsable (2026-11-20)
+
+1. **Sin escudos oficiales**: no hay ni habrá escudos oficiales de ningún club, selección o marca. 006/FR-044 queda
+   solo con la bandera, T087 se cierra y deja de bloquear producción (INI-08, INI-10).
+2. **Monetización**: nada relacionado con los jugadores se monetiza, ni directa ni indirectamente. El dinero real solo
+   compra cosméticos y las funciones del pase premium. Los derechos de imagen no bloquean ninguna iniciativa.
+3. **Sonidos (007/SC-004b)**: los 1,26 MB entran en el límite; si complican el paso a producción, se intentará reducirlos.
+   INI-15 se cierra.
+
 ## Comprobaciones pendientes (resumen)
 
 | Comprobación | Dónde | Iniciativa |
 |---|---|---|
 | ~~7 comprobaciones de `balance` en `--pendientes` y 003/SC-001c~~: el CI ya no usa `--pendientes` (2026-11-16, spec 015; 76 de 76) | `.github/workflows/ci.yml` | INI-05 |
 | Recorridos a mano de los quickstart de la 014 y la 015 (paso 5) | `specs/014-…/quickstart.md`, `specs/015-…/quickstart.md` | INI-05 |
-| Recorridos a mano de la 012 (T076, T089, T100, T106, T116), la 013 (T073) y la 008 (T012, T022) | `tasks.md` de cada spec | INI-15, INI-11 |
+| Recorridos a mano de la 012 (T076, T089, T100, T106, T116), la 013 (T073) y la 008 (T012, T022) | `tasks.md` de cada spec | INI-11 (los de la 012 y la 013 ya no bloquean INI-15, cerrada) |
 | FR-028a: 25 / 40 ms por partido (CI a 120 ms) | `pnpm --filter @fbd/engine bench` | INI-06 |
 | 001/SC-017: carga de 100 partidas | `tools/load/beta-100.js` | INI-07 |
 | Pruebas con personas: 001/SC-003; 002/SC-001, SC-009, SC-007a; 003/SC-008, SC-011–SC-014, SC-016, SC-019; 004/SC-003, SC-004, SC-010 | checklists `validacion.md` | INI-01 a INI-03 |
 | 60 fps en un portátil medio con el navegador visible | 002/FR-025b | INI-01, INI-02 |
 | Correo con SMTP real | 001 escenario E | INI-01, INI-10 |
 | Escenarios manuales A–O de la 006 | `specs/006-preparacion-bd-cartas/quickstart.md` | INI-08 |
-| Licencia de los escudos | `docs/despliegue.md` | INI-08, INI-10 |
+| ~~Licencia de los escudos~~: no habrá escudos oficiales (2026-11-20) | 006/FR-044, T087 | INI-08, INI-10 |
 | Tests intermitentes: `torneo-asincrono` con la máquina cargada; `torneo.spec.ts` y la regla de 10 minutos sin conexión con el reloj simulado | 002, 003 y 004 `validacion.md` | INI-07 |
 | Tareas hechas sin marcar: T144 (001) | `tasks.md` | INI-01 |
 | ~~Batería completa tras la 007 (T052)~~: en verde el 2026-11-20 | `pnpm typecheck`, `lint`, `test`, `e2e` | INI-15 |
-| Escucha de prueba de los sonidos (007/SC-004) | sesión con personas | INI-15 |
+| Escucha de prueba de los sonidos (007/SC-004) | sesión con personas | Sesión común (INI-01 a INI-03) |

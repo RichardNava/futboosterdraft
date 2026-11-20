@@ -56,4 +56,5 @@ Sin recorrer. Hay que hacerlos a mano en `pnpm dev` siguiendo [quickstart.md](..
 
 ## Pendiente fuera de esta validación
 
-- T087: escudos oficiales con licencia sin revisar (`ESCUDOS_ACTIVOS = false`). Bloquea producción (INI-08, INI-10).
+- ~~T087: escudos oficiales con licencia sin revisar (`ESCUDOS_ACTIVOS = false`). Bloquea producción (INI-08, INI-10).~~
+  Cerrada el 2026-11-20: no habrá escudos oficiales y no bloquea producción.
