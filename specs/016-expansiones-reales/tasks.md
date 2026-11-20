@@ -210,7 +210,7 @@ sin errores (quickstart, recorridos 1–7 y 21–22).
   → `sobre-4`, `estrellas-fulgurantes` 373–396 → `sobre-28`, con Verratti `{ "id": 299, "numero": 4 }` y sin 376), cada
   una con `nombre` visible, `descripcion`, `"tipo": "pago"`, `"precio_fragmentos": 2400`, **sin** `precio_centimos`,
   `sobre_regalo`, `destacadas` y `cartas` como `{ "id", "numero" }` (data-model §1.3)
-- [ ] T038 [US1] Generar imágenes: `pnpm --filter @fbd/fixtures expansiones -- --origen ../../expansiones`. **Parar** y
+- [X] T038 [US1] Generar imágenes: `pnpm --filter @fbd/fixtures expansiones -- --origen ../../expansiones`. **Parar** y
   pedir a la persona que revise `revision-retratos.webp` (SC-002) y que el sobre de cada cartel coincide con su
   `sobre_regalo` (US3-5). Si un retrato sale mal, ajustar su tolerancia en `data/expansiones-ajustes.json` o pedir el
   retrato suelto
@@ -365,9 +365,9 @@ temas; `git grep -n 'nombre="cristal"' apps/web/src` no devuelve nada (quickstar
 
 - [X] T069 Suite completa desde la raíz: `pnpm typecheck`, `pnpm test`, `pnpm test:equivalence` (sin cambios),
   `pnpm balance` y `pnpm e2e`
-- [ ] T070 Pedir a la persona los recorridos a mano de [quickstart.md](quickstart.md) §2 (1–25), en especial el 2
+- [X] T070 Pedir a la persona los recorridos a mano de [quickstart.md](quickstart.md) §2 (1–25), en especial el 2
   (retratos), el 3 (10 fichas al azar), el 23 (360 px y 1366 × 768) y el 24 (cronometrado, SC-005)
-- [ ] T071 [P] Copiar las cuatro `jugadores_expansionX.json` y los `rareza_X.txt` a
+- [X] T071 [P] Copiar las cuatro `jugadores_expansionX.json` y los `rareza_X.txt` a
   `specs/016-expansiones-reales/fuentes/`; borrar `./expansiones/` solo cuando la persona dé por buenas las imágenes
 - [X] T072 [P] Actualizar `CLAUDE.md` (spec en curso, `data/expansiones-reales.json` en los datos del catálogo, comando
   `pnpm --filter @fbd/fixtures expansiones`, sin `cartas-prueba.json`), `docs/despliegue.md` (sin cartas de prueba) y
@@ -399,8 +399,9 @@ temas; `git grep -n 'nombre="cristal"' apps/web/src` no devuelve nada (quickstar
 - [X] T080 Aviso de parada con el icono del lance: balón en un gol, cruz roja en una lesión, tarjeta roja en una
   expulsión (`iconosParada` en `textoParada.ts`; `aviso` de `GestionEquipo` pasa a `{ texto, iconos }`), con su prueba
   unitaria
-- [ ] T081 Nueva curva de fatiga (30' a 85 %, +10 % en el descanso, desde el 55') — **aplazada** a la próxima versión
-  del motor: cambia `packages/engine`, que esta spec no toca. Apuntada en [ROADMAP.md](../../ROADMAP.md) (INI-05)
+- [X] T081 Nueva curva de fatiga (30' a 85 %, +10 % en el descanso, desde el 55') — **trasladada** a la próxima
+  versión del motor, de acuerdo con la persona: cambia `packages/engine`, que esta spec no toca. Pendiente en
+  [ROADMAP.md](../../ROADMAP.md) (INI-05), no aquí
 
 **Notas de la ronda 2**:
 
@@ -518,8 +519,11 @@ US1 sola se puede comprobar (cartas en el draft y en la colección), pero no tie
 - **Interfaz**: «Te faltan» es un botón desactivado con lo que falta y una pista para lectores; no hay una sección de
   «cómo conseguir fragmentos». A 1366 × 768, las cuatro tarjetas no caben enteras junto a la cabecera de la tienda: hay
   que desplazarse para ver la segunda fila (recorrido 23).
-- **T038**: imágenes generadas y comprobadas (las 5 comprobaciones en ✅); falta que la persona revise
-  `revision-retratos.webp` y los carteles.
+- **T038**: imágenes generadas y comprobadas (las 5 comprobaciones en ✅); la persona revisó `revision-retratos.webp`
+  y los carteles y los dio por buenos.
+- **Cierre (2026-11-20)**: la persona hizo los recorridos a mano (T070), dio por buenas las imágenes (T038) y borró
+  `./expansiones/` (T071); el material que queda de las expansiones son las listas y rarezas de `fuentes/`. Spec
+  cerrada.
 - **T044**: `pnpm balance` con el catálogo nuevo: 76 de 76 comprobaciones superadas (9528 s), las mismas que en la 015;
   ningún criterio cambia de estado.
 - **T069**: `pnpm test` en verde tras grabar las huellas de draft de las specs 014 y 015 con el Core de antes (como G4;

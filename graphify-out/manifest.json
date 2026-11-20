@@ -2052,9 +2052,9 @@
     "semantic_hash": "e85bd795c8a1bad1168a223eec732604"
   },
   "CLAUDE.md": {
-    "mtime": 1795036668.043777,
-    "seen": 1795036871.272504,
-    "ast_hash": "bb92585be93e07837216185c7ac47afe",
+    "mtime": 1795132003.1109204,
+    "seen": 1795133246.451841,
+    "ast_hash": "e1f1e04addb2d67088eec9f15cd3638a",
     "semantic_hash": ""
   },
   "README.md": {
@@ -4950,9 +4950,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1795125148.7984314,
-    "seen": 1795125988.5355375,
-    "ast_hash": "08e8ae1e7d93cb116ccdff386012c37b",
+    "mtime": 1795132003.1109204,
+    "seen": 1795133246.4519603,
+    "ast_hash": "2062da35c9edb60ec78d67266e2c08ee",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -11568,9 +11568,9 @@
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/spec.md": {
-    "mtime": 1795031916.739169,
-    "seen": 1795036871.3129423,
-    "ast_hash": "f4d16d16e3b752b71dd6c2c0688b9d50",
+    "mtime": 1795132003.10996,
+    "seen": 1795133246.476727,
+    "ast_hash": "4c536343ca918f54ade45ab4b70be870",
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/sumario.md": {
@@ -11580,9 +11580,9 @@
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/tasks.md": {
-    "mtime": 1795130780.6560612,
-    "seen": 1795131157.859197,
-    "ast_hash": "d2b2af13ae56b979a74cc33119a196bd",
+    "mtime": 1795132003.10996,
+    "seen": 1795133246.4768467,
+    "ast_hash": "a6f145cb64e8a9ea0e8ce285c6a30a0c",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/AUT.svg": {

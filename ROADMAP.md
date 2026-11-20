@@ -339,12 +339,14 @@ cuesta simular los partidos.
   Hecho (2026-11-05): los 300 retratos están en `apps/web/public/cartas/retratos-propios/` y la validación de Core
   rechaza los de terceros («retratos de terceros: 0» en el sumario). Ninguna carta tiene aún identidad alternativa:
   en «alternativa» todas usan el nombre genérico (`Defensa 40`) y la silueta.
-- **Spec [016](specs/016-expansiones-reales/spec.md) (implementada el 2026-11-18, sin validar)**: las cuatro primeras
+- **Hecho (2026-11-20): [016](specs/016-expansiones-reales/spec.md).** Las cuatro primeras
   expansiones de pago (Remontada Histórica, Ídolos Dorados, Saque Ardiente y Estrellas Fulgurantes), de 24 jugadores
   reales cada una, a 2400 fragmentos y con un sobre de regalo; Kimmich entra en el Core y Verratti pasa a Estrellas
   Fulgurantes; se retiran las cartas y colecciones de prueba (en el seed, repetible). El catálogo queda en 396 cartas.
-  Siete selecciones nuevas (AUT, CRI, ISL, KOR, PER, PRY y XKX). Pendiente: revisión de los retratos
-  (`specs/016-expansiones-reales/revision-retratos.webp`) y recorridos a mano del quickstart.
+  Siete selecciones nuevas (AUT, CRI, ISL, KOR, PER, PRY y XKX). Retratos y carteles revisados y recorridos a mano
+  del quickstart aprobados; en la revisión se añadieron la carta ampliable en el detalle, el sobre de regalo ampliable
+  y el sonido de compra. El material de origen (`./expansiones/`) se retiró; quedan las listas y rarezas en
+  `specs/016-expansiones-reales/fuentes/`.
 - **Nota de economía (spec 016, R13)**: desfragmentar pasa a 25 / 75 / 125 / 175, así que un sobre de la tienda
   devuelve de media 510 de los 1000 que cuesta (antes 355). Sigue por debajo del precio, pero acelera los fragmentos de
   quien desfragmenta: a revisar en la spec de economía.

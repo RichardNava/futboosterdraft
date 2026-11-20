@@ -1,13 +1,13 @@
 # Graph Report - futboosterdraft  (2026-11-20)
 
 ## Corpus Check
-- 1034 files · ~2,674,263 words
+- 1034 files · ~2,674,334 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 22 file(s) not represented in the graph (top: (none) 9, .css 6, .woff2 5)
 
 ## Summary
-- 9204 nodes · 23110 edges · 377 communities (347 shown, 30 thin omitted)
-- Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 2330 edges (avg confidence: 0.93)
+- 9204 nodes · 23111 edges · 377 communities (347 shown, 30 thin omitted)
+- Extraction: 90% EXTRACTED · 10% INFERRED · 0% AMBIGUOUS · INFERRED: 2331 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
@@ -1839,7 +1839,7 @@ Nodes (3): Entrega incremental, Implementation Strategy, MVP primero (solo US1)
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `vitest` connect `vitest` to `partida/partida.ts`, `partidoRapido.ts`, `seed.ts`, `JugadorEnPartido`, `peticion`, `juego.ts`, `parametrosActuales`, `FormacionId`, `Partido2D.tsx`, `usuarios.ts`, `semillaDesdeTexto`, `estado.ts`, `generarCore.ts`, `package.json`, `defectos.ts`, `actores/draft.ts`, `crearServidor`, `actores/torneo.ts`, `visibilidad.test.ts`, `Duelos.tsx`, `fondosCore.ts`, `receptor.ts`, ``apps/web` (74)`, `Marco.tsx`, `peticion`, `sonido.ts`, `Inicio.tsx`, `catalogo/tipos.ts`, `equipaciones.ts`, `Alineacion.tsx`, `seed.ts`, `drizzle-orm`, `equiposEquivalencia005.ts`, `validarJugador`, `ServiciosPartida`, `cosmeticos/tipos.ts`, `Tienda.tsx`, `semillaDesdeTexto`, `api`, `funciones.ts`, `rasgaduraDe`, `cache.ts`, `.participante`, `motor015.ts`, `db.ts`, `servidor.ts`, `sala.ts`, ``apps/web` (74)`, `Coleccion.tsx`, `interpolacion.ts`, `partido003.ts`, `src/errores.ts`, `expansiones.test.ts`, `integration/desglose.test.ts`, `domain/src/index.ts`, `Pasarela`, `ws/partido.ts`, `react-router`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `parametrosActuales()` (e.g. with `Implementation` and `R7. Parámetros 4.0.0 y reproducibilidad (FR-017, FR-072, SC-003)`) actually correct?**
   _`parametrosActuales()` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `@fbd/ai`, `@fbd/domain`, `@fbd/engine` to the rest of the system?**

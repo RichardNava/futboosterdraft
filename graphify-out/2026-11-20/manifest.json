@@ -750,9 +750,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BotonAvanzar.tsx": {
-    "mtime": 1794556996.8051062,
-    "seen": 1794592739.6313825,
-    "ast_hash": "ba3ef64852bbeb8ad2ebe0238da16c38",
+    "mtime": 1795130663.253431,
+    "seen": 1795131157.7562394,
+    "ast_hash": "afbd95ee00485c385bb20a5a7295e08d",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaJugador.tsx": {
@@ -876,9 +876,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Partido2D.tsx": {
-    "mtime": 1795128543.2393909,
-    "seen": 1795130045.1660144,
-    "ast_hash": "c01309b799ffec69c2e75b7e8e641592",
+    "mtime": 1795130663.2546504,
+    "seen": 1795131157.7681863,
+    "ast_hash": "2babccf3afde29311464d82d68197d32",
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/PartidoRapido.tsx": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/pantallas/Torneo.tsx": {
-    "mtime": 1794535417.3166165,
-    "seen": 1794592739.6368897,
-    "ast_hash": "38d22e6f3f599421501a433c7f6a18e8",
+    "mtime": 1795130663.2541258,
+    "seen": 1795131157.7690566,
+    "ast_hash": "da4bfae36406af4cd38d532e2a24191d",
     "semantic_hash": ""
   },
   "apps/web/src/sonido/sonido.ts": {
@@ -1014,9 +1014,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/torneo.spec.ts": {
-    "mtime": 1794185894.9550989,
-    "seen": 1794185941.0637627,
-    "ast_hash": "b30d8ff2fc659ad8c3296d22ad950873",
+    "mtime": 1795130671.631393,
+    "seen": 1795131157.7748835,
+    "ast_hash": "312e4ba787c9388a34d50ea2a49c8ddf",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/interpolacion.test.ts": {
@@ -2382,9 +2382,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/BarraPrincipal.tsx": {
-    "mtime": 1794556996.7831054,
-    "seen": 1794592739.6313808,
-    "ast_hash": "787e4c5653454374b5ca63fc64d0658c",
+    "mtime": 1795130663.253123,
+    "seen": 1795131157.7562363,
+    "ast_hash": "eeed4e442256c776a8be8bac63bb6ce7",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/Camiseta.tsx": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/GestionEquipo.tsx": {
-    "mtime": 1795128543.2232592,
-    "seen": 1795130045.1564405,
-    "ast_hash": "6782d2b05fccf2ccfc4d5c69b62e3e0f",
+    "mtime": 1795130663.2541258,
+    "seen": 1795131157.758791,
+    "ast_hash": "32bff61ada507a9cfbfb309a8a8ba548",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/ResultadoPartido.tsx": {
@@ -8502,9 +8502,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/control-total.spec.ts": {
-    "mtime": 1795128636.0888789,
-    "seen": 1795130045.1686199,
-    "ast_hash": "76169cb20a22d82e03a647bfc6d4dac4",
+    "mtime": 1795130671.6323917,
+    "seen": 1795131157.770815,
+    "ast_hash": "46ea65e728125120fad49bd2b023d6a4",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/celebracion.test.ts": {
@@ -11580,9 +11580,9 @@
     "semantic_hash": ""
   },
   "specs/016-expansiones-reales/tasks.md": {
-    "mtime": 1795130008.615626,
-    "seen": 1795130045.2582097,
-    "ast_hash": "04f13afb97907b0bd96acab92ebeb640",
+    "mtime": 1795130780.6560612,
+    "seen": 1795131157.859197,
+    "ast_hash": "d2b2af13ae56b979a74cc33119a196bd",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/AUT.svg": {

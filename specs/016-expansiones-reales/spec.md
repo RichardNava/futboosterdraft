@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-18
 
-**Status**: Draft
+**Status**: Implementada (cerrada el 2026-11-20) — imágenes revisadas y recorridos manuales aprobados ([ROADMAP](../../ROADMAP.md) INI-11)
 
 **Input**: User description: "Spec 016 — Expansiones reales. Crear las cuatro primeras expansiones de pago con jugadores
 reales a partir del material de `./expansiones` (A = Remontada Histórica, B = Ídolos Dorados, C = Saque Ardiente,
