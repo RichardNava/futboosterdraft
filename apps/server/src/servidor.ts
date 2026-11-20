@@ -61,6 +61,8 @@ interface ConfigServidor {
   ajustes?: ServicioAjustes;
   /** Servidor SMTP para los avisos por correo (opcional). */
   smtpUrl?: string;
+  /** Remitente de los correos; un proveedor real exige uno de un dominio verificado. */
+  smtpRemitente?: string;
   /** Límites de peticiones HTTP y mensajes WebSocket por sesión (por defecto, los de `http/limitador.ts`). */
   limites?: { http?: OpcionesLimitador; ws?: OpcionesLimitador };
   /** Hilos de simulación (spec 009); 0, el valor por defecto, simula en el hilo principal. */
@@ -143,7 +145,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     calculo,
   });
   ref.gestor = gestor;
-  const avisos = new ServicioAvisos(config.db, config.reloj, logger, config.smtpUrl, config.urlPublica, (aviso) => {
+  const avisos = new ServicioAvisos(config.db, config.reloj, logger, { url: config.smtpUrl, remitente: config.smtpRemitente }, config.urlPublica, (aviso) => {
     // Envío en vivo al participante del usuario en esa partida, si está conectado.
     void gestor.obtener(aviso.partidaId).then((c) => {
       const p = c?.participanteDeUsuario(aviso.usuarioId);

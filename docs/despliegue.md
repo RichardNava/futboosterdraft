@@ -28,6 +28,7 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 | `PUBLIC_URL` | Sí | `http://localhost:5173` | URL pública de la web, p. ej. `https://futboosterdraft.example`. Es el único origen desde el que un navegador puede abrir el WebSocket, y también se usa en los enlaces de los correos. |
 | `PORT` | No | `3000` | Puerto HTTP del contenedor. |
 | `SMTP_URL` | No | — | Servidor de correo para los avisos del modo asíncrono (FR-056b), p. ej. `smtps://usuario:clave@smtp.example:465`. Sin él, los avisos solo aparecen en la aplicación. |
+| `SMTP_FROM` | Con un proveedor real | `Fútboosterdraft <avisos@futboosterdraft.local>` | Remitente de los correos, p. ej. `Fútboosterdraft <avisos@tudominio.es>`. Los proveedores reales rechazan o mandan a spam los remitentes de dominios no verificados; el de por defecto solo sirve con Mailpit. |
 | `LOG_LEVEL` | No | `info` | Nivel de los logs (pino, JSON en la salida estándar). |
 | `MIGRAR_AL_ARRANCAR` | No | (activado) | `false` desactiva las migraciones al arrancar. |
 | `HILOS_SIMULACION` | No | núcleos − 1 (mínimo 1) | Hilos de trabajo que simulan los partidos (spec 009). `0` simula en el hilo principal, como antes de la spec 009: úsalo como interruptor de emergencia si los hilos dan problemas. Un valor no válido usa el de por defecto y avisa en el log. Ver «Hilos de simulación». |

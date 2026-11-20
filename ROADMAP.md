@@ -91,8 +91,13 @@ cuesta simular los partidos.
   - 001/SC-003: 5 personas nuevas completan draft y alineación en < 30 min sin ayuda.
   - Correo real de avisos con un proveedor SMTP (solo probado con Mailpit).
   - Reproducción 2D a 60 fps en un portátil medio con el navegador visible (002/FR-025b).
-  - T144 sigue sin marcar en [001/tasks.md](specs/001-draft-manager-mvp/tasks.md) aunque la validación está registrada.
+  - T144 sin marcar en [001/tasks.md](specs/001-draft-manager-mvp/tasks.md): su propio estado incluye los tres puntos
+    anteriores, así que se marca cuando estén hechos.
   - 001/SC-017 (carga) se trata en INI-07.
+  - **2026-11-20**: el remitente de los correos es configurable (`SMTP_FROM`; antes era fijo en
+    `@futboosterdraft.local`, que un proveedor real rechaza) y la guía para cerrar los tres puntos (fragmento de consola
+    para medir los fps, pasos del correo y protocolo de la sesión SC-003) está en
+    [001/validacion.md](specs/001-draft-manager-mvp/checklists/validacion.md#cómo-cerrar-los-puntos-pendientes-ini-01).
 - **Criterios de cierre**:
   1. 001/SC-003 medido con al menos 5 personas y registrado en `validacion.md`.
   2. Aviso de correo recibido en un buzón externo real.
@@ -502,6 +507,6 @@ cuesta simular los partidos.
 | Escenarios manuales A–O de la 006 | `specs/006-preparacion-bd-cartas/quickstart.md` | INI-08 |
 | ~~Licencia de los escudos~~: no habrá escudos oficiales (2026-11-20) | 006/FR-044, T087 | INI-08, INI-10 |
 | Tests intermitentes: `torneo-asincrono` con la máquina cargada; `torneo.spec.ts` y la regla de 10 minutos sin conexión con el reloj simulado | 002, 003 y 004 `validacion.md` | INI-07 |
-| Tareas hechas sin marcar: T144 (001) | `tasks.md` | INI-01 |
+| T144 (001): se marca al cerrar SC-003, el correo real y los 60 fps | `tasks.md` | INI-01 |
 | ~~Batería completa tras la 007 (T052)~~: en verde el 2026-11-20 | `pnpm typecheck`, `lint`, `test`, `e2e` | INI-15 |
 | Escucha de prueba de los sonidos (007/SC-004) | sesión con personas | Sesión común (INI-01 a INI-03) |

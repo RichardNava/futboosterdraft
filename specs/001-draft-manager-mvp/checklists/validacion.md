@@ -94,3 +94,76 @@ Las pruebas automáticas y los escenarios A a F se cumplen. Quedan abiertos tres
 1. **SC-017**: falta repetir la carga en un entorno representativo.
 2. **SC-003**: falta la sesión con usuarios.
 3. **60 fps**: falta comprobarlo en un portátil medio con el navegador visible.
+
+## Cómo cerrar los puntos pendientes (INI-01)
+
+Guía añadida el 2026-11-20. Cuando se haga cada punto, anotar el resultado en la tabla de «Comprobaciones manuales»
+y, con los tres hechos, marcar T144.
+
+### 60 fps en un portátil medio
+
+1. En el portátil, conectado a la corriente y con el navegador en primer plano a pantalla completa, abrir un
+   partido en la 2D a x1.
+2. Abrir las herramientas de desarrollo (F12 → Consola), pegar esto y dejar el partido corriendo 30 segundos:
+
+   ```js
+   (() => {
+     const t = []; let prev = performance.now(); const fin = prev + 30000;
+     const paso = (ahora) => {
+       t.push(ahora - prev); prev = ahora;
+       if (ahora < fin) return requestAnimationFrame(paso);
+       t.sort((a, b) => a - b);
+       const media = 1000 / (t.reduce((s, x) => s + x, 0) / t.length);
+       const p95 = t[Math.floor(t.length * 0.95)], peor = t[t.length - 1];
+       console.log(`fps medio ${media.toFixed(1)} · intervalo p95 ${p95.toFixed(1)} ms · peor ${peor.toFixed(1)} ms (${(1000 / peor).toFixed(0)} fps)`);
+     };
+     requestAnimationFrame(paso);
+   })();
+   ```
+
+3. Anotar el modelo del portátil (CPU, RAM, pantalla), el navegador y la línea que imprime. El criterio es 60 fps y
+   nunca por debajo de 30 (un intervalo de más de 33,3 ms). Con una pantalla de 120 Hz, el fps medio sale cerca de 120.
+
+### Correo con un proveedor SMTP real
+
+1. Arrancar el servidor con `SMTP_URL` del proveedor y `SMTP_FROM` con un remitente de un dominio verificado en él
+   (ver [docs/despliegue.md](../../../docs/despliegue.md)). Sin `SMTP_FROM`, el remitente `@futboosterdraft.local`
+   lo rechaza o lo manda a spam casi cualquier proveedor.
+2. Prueba rápida: «¿Has olvidado la contraseña?» con un usuario cuyo correo sea un buzón externo (Gmail, Outlook…).
+3. Prueba del criterio: escenario E del [quickstart](../quickstart.md) (torneo asíncrono) con ese usuario, y comprobar
+   que el aviso de jornada abierta llega al buzón externo, no a la carpeta de spam.
+
+### SC-003: sesión con 5 personas
+
+**Criterio** (spec, SC-003): una persona nueva completa su primer draft y deja la alineación lista sin ayuda en menos
+de 30 minutos, en al menos el 90 % de los casos. **Con 5 personas, el 90 % exige que lo consigan las 5** (4 de 5 es
+el 80 %).
+
+**Preparación**
+- Personas que no hayan visto el juego. Cada una en su equipo, con el navegador limpio y la aplicación abierta en la
+  portada (en `pnpm dev` o en un entorno desplegado).
+- Cada persona juega sola contra NPC, para que no espere a nadie y el tiempo sea solo suyo.
+- La sesión puede compartirse con las pruebas con personas de INI-02, INI-03, INI-08 e INI-15 (ver ROADMAP), pero
+  esta tarea se hace primero, porque luego la persona ya no es nueva.
+
+**Consigna** (leerla tal cual, sin añadir nada): «Crea una partida contra la máquina, haz el draft y deja tu equipo
+listo para jugar el primer partido. Piensa en voz alta. No puedo ayudarte; si te atascas del todo, dímelo y paramos».
+
+**Durante la prueba**
+- Cronometrar desde que pulsa «Nueva partida» hasta que pulsa «Confirmar alineación».
+- No contestar preguntas sobre el juego. Si la persona se rinde o pide ayuda, la prueba de esa persona cuenta como
+  fallida (anotar el minuto y el motivo).
+- Anotar cada atasco: pantalla, qué buscaba y cuánto tardó en salir.
+
+**Resultados**
+
+| Persona | Perfil (juega a juegos de cartas o de fútbol: sí/no) | Tiempo | Sin ayuda | Cumple | Atascos |
+|---|---|---|---|---|---|
+| 1 | | | | | |
+| 2 | | | | | |
+| 3 | | | | | |
+| 4 | | | | | |
+| 5 | | | | | |
+
+Los atascos que se repitan en dos o más personas se registran como hallazgos (como H1–H14 en la 003) antes de dar
+el criterio por cumplido.

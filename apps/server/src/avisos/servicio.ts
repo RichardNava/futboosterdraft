@@ -28,12 +28,13 @@ export class ServicioAvisos {
     private readonly db: BaseDatos,
     private readonly reloj: Reloj,
     private readonly logger: Logger,
-    smtpUrl: string | undefined,
+    smtp: { url?: string | undefined; remitente?: string | undefined },
     private readonly urlPublica: string,
     /** Envío en vivo (mensaje `aviso` por WebSocket). */
     private readonly enVivo: (aviso: NuevoAviso & { id: string }) => void,
   ) {
-    this.transporte = smtpUrl ? nodemailer.createTransport(smtpUrl) : null;
+    const from = smtp.remitente || 'Fútboosterdraft <avisos@futboosterdraft.local>';
+    this.transporte = smtp.url ? nodemailer.createTransport(smtp.url, { from }) : null;
   }
 
   /** Guarda los avisos en una consulta (spec 010, R13) y después envía cada uno en vivo y por correo. */
@@ -55,7 +56,6 @@ export class ServicioAvisos {
     const usuario = (await this.db.select().from(usuarios).where(eq(usuarios.id, a.usuarioId)).limit(1))[0];
     if (!usuario || usuario.isAnonymous) return;
     await this.transporte.sendMail({
-      from: 'Fútboosterdraft <avisos@futboosterdraft.local>',
       to: usuario.email,
       subject: `Fútboosterdraft: ${a.texto}`,
       text: `${a.texto}\n\n${this.urlPublica}/partidas/${a.partidaId}/torneo`,
@@ -71,7 +71,6 @@ export class ServicioAvisos {
     }
     try {
       await this.transporte.sendMail({
-        from: 'Fútboosterdraft <avisos@futboosterdraft.local>',
         to: email,
         subject: 'Fútboosterdraft: restablecer la contraseña',
         text: `Para elegir una contraseña nueva, abre este enlace (caduca en una hora):

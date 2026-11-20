@@ -28,6 +28,7 @@ async function principal(): Promise<void> {
     secreto,
     urlPublica: process.env.PUBLIC_URL ?? 'http://localhost:5173',
     smtpUrl: process.env.SMTP_URL,
+    smtpRemitente: process.env.SMTP_FROM,
     hilosSimulacion: hilos,
     // Desglose por fases (spec 010, FR-003): activado en todos los entornos; MEDIR_FASES=0 lo apaga.
     medirFases: process.env.MEDIR_FASES !== '0',

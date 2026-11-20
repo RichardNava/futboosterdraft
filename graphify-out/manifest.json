@@ -270,9 +270,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/avisos/servicio.ts": {
-    "mtime": 1795194278.6683276,
-    "seen": 1795196316.096712,
-    "ast_hash": "3f06e0ccc9cb65a85379da4de244d7ae",
+    "mtime": 1795198377.7318463,
+    "seen": 1795198473.5588927,
+    "ast_hash": "28b624fac99f331a434b305244588394",
     "semantic_hash": ""
   },
   "apps/server/src/entorno.ts": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/main.ts": {
-    "mtime": 1793589283.8279688,
-    "seen": 1793590320.2077887,
-    "ast_hash": "47ae059a3043bd53a554477b2667d03a",
+    "mtime": 1795198377.5108693,
+    "seen": 1795198473.5608888,
+    "ast_hash": "0bcab560ef68dcc5e67e3b2157ab52e5",
     "semantic_hash": ""
   },
   "apps/server/src/observabilidad/logger.ts": {
@@ -468,9 +468,9 @@
     "semantic_hash": ""
   },
   "apps/server/src/servidor.ts": {
-    "mtime": 1795194278.6683276,
-    "seen": 1795196316.1021633,
-    "ast_hash": "166b46a521e391a38f389764f7d06f40",
+    "mtime": 1795198377.4408717,
+    "seen": 1795198473.564683,
+    "ast_hash": "b2e230e9d53dc4fcfad2becfbdca77f8",
     "semantic_hash": ""
   },
   "apps/server/src/ws/pasarela.ts": {
@@ -2076,9 +2076,9 @@
     "semantic_hash": "5d9adb618448c82498a1711504f10c9e"
   },
   "docs/despliegue.md": {
-    "mtime": 1795154545.1986165,
-    "seen": 1795196316.1827807,
-    "ast_hash": "b6f48cc3c1170554eb8fb1848d7445b2",
+    "mtime": 1795198377.8132477,
+    "seen": 1795198473.6595821,
+    "ast_hash": "b1698840da677a39d6fff16623806d72",
     "semantic_hash": ""
   },
   "pnpm-workspace.yaml": {
@@ -2094,10 +2094,10 @@
     "semantic_hash": "7af1fd22d4e5b94a11da2116597b3b83"
   },
   "specs/001-draft-manager-mvp/checklists/validacion.md": {
-    "mtime": 1792153826.4522295,
-    "seen": 1792327978.0283291,
-    "ast_hash": "fbbe020c76c8e9c0ad98040d95fa9206",
-    "semantic_hash": "fbbe020c76c8e9c0ad98040d95fa9206"
+    "mtime": 1795198437.5409172,
+    "seen": 1795198473.6603124,
+    "ast_hash": "3a22e7677f67550272af3261d2539e78",
+    "semantic_hash": ""
   },
   "specs/001-draft-manager-mvp/contracts/engine-api.md": {
     "mtime": 1792757964.2259035,
@@ -4158,15 +4158,15 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/spec.md": {
-    "mtime": 1793585145.2611487,
-    "seen": 1793585250.6732292,
-    "ast_hash": "02136d3e4f687ea1311d5d366452ade4",
+    "mtime": 1795197752.0086439,
+    "seen": 1795198473.669376,
+    "ast_hash": "15f9290de5024976c1a6cf4498ed48a8",
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/tasks.md": {
-    "mtime": 1793055175.5617566,
-    "seen": 1793088076.7655115,
-    "ast_hash": "72776a5f1d8fa96fffd5dc7b460df532",
+    "mtime": 1795197752.0770829,
+    "seen": 1795198473.6693785,
+    "ast_hash": "26050a177ffce47d06d0205f97a5f2db",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/ARG.svg": {
@@ -4950,9 +4950,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1795196279.9225657,
-    "seen": 1795196316.1825392,
-    "ast_hash": "e0a8190d9dbaad0f8e9bf57fbc361f30",
+    "mtime": 1795198438.2289686,
+    "seen": 1795198473.6593409,
+    "ast_hash": "9f5d2fa9775bc68d57bc9de549c39ebf",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -12984,9 +12984,9 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/checklists/validacion.md": {
-    "mtime": 1795196279.9227338,
-    "seen": 1795196316.1911173,
-    "ast_hash": "0347a598a74a904cfa509881284c28c6",
+    "mtime": 1795197752.14623,
+    "seen": 1795198473.6684983,
+    "ast_hash": "ba88c720d09a48ee408acae1eb4b5a97",
     "semantic_hash": ""
   },
   "specs/007-retoques-visuales/checklists/validacion.md": {
