@@ -10,7 +10,7 @@ personas.
 | `pnpm typecheck` | ✔ |
 | `pnpm lint` | ✔ |
 | `pnpm test` (unitarias) | ✔ salvo los 5 escenarios de `tools/fixtures` (pendientes de regenerar, T036) |
-| `pnpm test:integration` | ✔ 122 de 122 (`torneo-asincrono` falla solo con la máquina muy cargada; aislado pasa) |
+| `pnpm test:integration` | ✔ 122 de 122 (`torneo-asincrono` falla solo con la máquina muy cargada; aislado pasa; el 2026-11-20 ya no se reproduce: 27 de 27 en tres pasadas con la CPU saturada) |
 | e2e: `apertura`, `torneo-final`, `torneo`, `identidad`, `boton-principal`, `modo-partido`, `alineacion`, `gestion-equipo`, `finalizar`, `cartas` | ✔ |
 | `pnpm balance --n 500 --serie todas` | 19 de 23 (ver [calibracion-motor.md](./calibracion-motor.md)) |
 | `pnpm balance --torneos 100 --solo 003/SC-010` | ver [calibracion-npc.md](./calibracion-npc.md) |

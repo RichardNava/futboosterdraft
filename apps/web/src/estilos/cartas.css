@@ -328,10 +328,6 @@ img.carta-fondo-accion {
   box-shadow: 0 0 0 1px rgb(0 0 0 / 25%);
 }
 
-.carta-procedencia .carta-escudo {
-  box-shadow: none;
-}
-
 .carta-bandera-codigo {
   font-size: clamp(0.55rem, 5cqi, 0.75rem);
   font-weight: 800;

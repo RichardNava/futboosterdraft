@@ -98,7 +98,7 @@ Las pruebas automáticas y los escenarios A a F se cumplen. Quedan abiertos tres
 ## Cómo cerrar los puntos pendientes (INI-01)
 
 Guía añadida el 2026-11-20. Cuando se haga cada punto, anotar el resultado en la tabla de «Comprobaciones manuales»
-y, con los tres hechos, marcar T144.
+(T144 ya está marcada).
 
 ### 60 fps en un portátil medio
 

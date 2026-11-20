@@ -60,6 +60,10 @@ export async function comprobarDiseno(page: Page, nombre: string, opciones: Opci
       await page.setViewportSize({ width: ancho, height: alto });
       // Deja que la maquetación y los observadores de tamaño se asienten.
       await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+      // Capturas para la revisión visual a ojo (004/T074, checklists/visual.md): CAPTURAS=<carpeta> pnpm e2e diseno/inventario.
+      if (process.env.CAPTURAS && (ancho === 360 || ancho === 1366)) {
+        await page.screenshot({ path: `${process.env.CAPTURAS}/${nombre.replace(/[^\p{L}\p{N} ()-]/gu, '')} - ${ancho}.png`, fullPage: true });
+      }
 
       // 1. Sin desplazamiento horizontal de la página (FR-031).
       const { scrollWidth, clientWidth, culpables } = await page.evaluate(() => {

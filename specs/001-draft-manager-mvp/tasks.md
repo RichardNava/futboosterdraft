@@ -625,8 +625,8 @@ description: "Lista de tareas del MVP de Fútboosterdraft"
   - Auditoría para comprobar que ninguna respuesta filtra información no visible (FR-054a): una prueba que recorre todos los mensajes emitidos en un torneo de prueba.
 - [X] T142 [P] Crear el despliegue: `Dockerfile` multietapa con pnpm (`corepack enable`, `pnpm install --frozen-lockfile`, `pnpm -r build`, imagen final con Node 22 que sirve la API, el WebSocket y la web) y `docs/despliegue.md` con las variables de entorno, las migraciones al arrancar, `/healthz` y `/metrics`.
 - [X] T143 [P] Revisar la accesibilidad y los textos de `apps/web/src/`: todos los textos en español, contraste de los colores de nivel y equipo, navegación con teclado en el draft y la alineación, y alternativa a arrastrar y soltar (seleccionar y colocar).
-- [ ] T144 Ejecutar la validación completa de [quickstart.md](./quickstart.md):
-  - *Estado*: hecho todo lo automático y los escenarios A–F (resultados en `checklists/validacion.md`). Pendiente: sesión SC-003 con 5 usuarios, 60 fps en un portátil con navegador visible y repetir SC-017 en un entorno representativo.
+- [X] T144 Ejecutar la validación completa de [quickstart.md](./quickstart.md):
+  - *Estado*: hecho todo lo automático y los escenarios A–F (resultados en `checklists/validacion.md`). Marcada el 2026-11-20 por decisión de la persona responsable: SC-003, el correo real y los 60 fps siguen como criterios de cierre de INI-01 (ROADMAP), y SC-017 en INI-07.
   - toda la tabla de pruebas automáticas, `pnpm balance --n 1000` y los escenarios A a F;
   - registrar los resultados en `specs/001-draft-manager-mvp/checklists/validacion.md`;
   - comprobación manual de que la reproducción 2D va a 60 fps en un portátil medio;

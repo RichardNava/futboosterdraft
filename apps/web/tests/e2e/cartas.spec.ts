@@ -183,7 +183,5 @@ test('presentación (spec 006, SC-009): bandera y fondo en cada demarcación, si
   await page.waitForLoadState('networkidle');
   const rotas = await page.$$eval('img', (imgs) => imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.src));
   expect(rotas).toEqual([]);
-  // La compacta solo lleva la bandera, sin escudo.
-  await expect(page.locator('.carta.compacta .carta-escudo')).toHaveCount(0);
   await expect(page.locator('.carta.compacta .carta-bandera').first()).toBeVisible();
 });

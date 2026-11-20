@@ -2845,6 +2845,8 @@ html {
 }
 
 .marcador-2d .goles-2d {
+  /* Que se recorten los nombres, nunca el resultado: a 360 px el visitante tapaba sus goles (004/T074). */
+  flex-shrink: 0;
   padding: 0 var(--espacio-3);
   border-radius: var(--radio);
   background: var(--color-lienzo);
@@ -3442,6 +3444,20 @@ html {
   border-radius: var(--radio-panel);
   background: var(--color-panel);
   box-shadow: var(--sombra-elevada);
+}
+
+/* En móvil el botón puede quedar en cualquier punto de la fila y, anclada a él, la lista se salía de la pantalla:
+   se ancla al contenedor posicionado más cercano, con los márgenes de la página (004/T074). */
+@media (max-width: 719.98px) {
+  .bandeja-avisos {
+    position: static;
+  }
+
+  .lista-avisos {
+    left: var(--espacio-4);
+    right: var(--espacio-4);
+    width: auto;
+  }
 }
 
 .lista-avisos li {

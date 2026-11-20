@@ -2,7 +2,7 @@ import { CLAVES_STATS, type Demarcacion, type Nivel } from '@fbd/domain';
 import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
 import { useTextosRasgos } from '../estado/catalogo';
 import { ABREVIATURA_STAT, ETIQUETA_NIVEL } from '../textos/niveles';
-import { nombreSeleccion, rutaBandera, rutaEscudo } from '../textos/selecciones';
+import { nombreSeleccion, rutaBandera } from '../textos/selecciones';
 import { Icono } from './Icono';
 import { colocarJunto, NombreRecortado } from './NombreRecortado';
 
@@ -171,14 +171,6 @@ function Bandera({ codigo }: { codigo: string }) {
   return <img className="carta-bandera" src={rutaBandera(codigo)} alt={nombreSeleccion(codigo)} title={nombreSeleccion(codigo)} onError={() => setFallo(true)} />;
 }
 
-/** Escudo de la selección (FR-044): decorativo; si no hay o no carga, no se muestra (FR-048). */
-function Escudo({ codigo }: { codigo: string }) {
-  const [fallo, setFallo] = useState(false);
-  const ruta = rutaEscudo(codigo);
-  if (!ruta || fallo) return null;
-  return <img className="carta-escudo" src={ruta} alt="" onError={() => setFallo(true)} />;
-}
-
 /**
  * Imagen superior o fondo de acción (R7; FR-045 a FR-048). Un `.svg` se pinta como máscara con el color del nivel
  * (`currentColor`); si no carga, la máscara queda vacía, sin icono roto. Otra imagen va en un `<img>` que, si falla,
@@ -204,7 +196,6 @@ function ContenidoCompleto({ jugador }: { jugador: CartaResumen }) {
           {jugador.nacionalidad && (
             <span className="carta-procedencia">
               <Bandera key={jugador.nacionalidad} codigo={jugador.nacionalidad} />
-              <Escudo key={`e-${jugador.nacionalidad}`} codigo={jugador.nacionalidad} />
             </span>
           )}
         </div>

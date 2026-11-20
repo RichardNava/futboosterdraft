@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/campo2d/renderizador.ts": {
-    "mtime": 1794556996.747393,
-    "seen": 1794592739.6313655,
-    "ast_hash": "25110c2b8624a8f1058e13cb92e568fb",
+    "mtime": 1795201339.9858422,
+    "seen": 1795201841.1444466,
+    "ast_hash": "42b8fb64b00d105b3523a5a8ae360ed2",
     "semantic_hash": ""
   },
   "apps/web/src/campo2d/tramos.ts": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaJugador.tsx": {
-    "mtime": 1794271583.023611,
-    "seen": 1794272531.7037241,
-    "ast_hash": "c0ec4741d3b14646095ef96cfded99a1",
+    "mtime": 1795199219.0639808,
+    "seen": 1795201841.1460598,
+    "ast_hash": "856edd3dab72889baebb7f467b591d79",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/DistintivoBaja.tsx": {
@@ -960,9 +960,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/cartas.spec.ts": {
-    "mtime": 1793714748.4383664,
-    "seen": 1793715172.465823,
-    "ast_hash": "769c0ab44098a7bc3c31e277907958e1",
+    "mtime": 1795199220.035566,
+    "seen": 1795201841.1601355,
+    "ast_hash": "17588613215e1f6607253796cc168e20",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/dorsales.spec.ts": {
@@ -2094,9 +2094,9 @@
     "semantic_hash": "7af1fd22d4e5b94a11da2116597b3b83"
   },
   "specs/001-draft-manager-mvp/checklists/validacion.md": {
-    "mtime": 1795198437.5409172,
-    "seen": 1795198473.6603124,
-    "ast_hash": "3a22e7677f67550272af3261d2539e78",
+    "mtime": 1795198690.0433557,
+    "seen": 1795201841.2262676,
+    "ast_hash": "68e11150015bd38e23979ee711a09357",
     "semantic_hash": ""
   },
   "specs/001-draft-manager-mvp/contracts/engine-api.md": {
@@ -2148,9 +2148,9 @@
     "semantic_hash": ""
   },
   "specs/001-draft-manager-mvp/tasks.md": {
-    "mtime": 1792757964.2289038,
-    "seen": 1792758030.9438715,
-    "ast_hash": "6cba4606c6e65837dee0f1d8d111f355",
+    "mtime": 1795198689.8941584,
+    "seen": 1795201841.2273173,
+    "ast_hash": "9ba392c112a6941464497143c3a41f47",
     "semantic_hash": ""
   },
   "specs/002-mejoras-mvp/checklists/requirements.md": {
@@ -2760,9 +2760,9 @@
     "semantic_hash": ""
   },
   "specs/003-mejoras-ux-simulacion/checklists/validacion.md": {
-    "mtime": 1793707353.386939,
-    "seen": 1793711136.5419624,
-    "ast_hash": "c16025efb714552b6a69799669bff6d7",
+    "mtime": 1795199427.7540348,
+    "seen": 1795201841.2294626,
+    "ast_hash": "a49d50c8f7d740e72b664afdf6aeb798",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/dificultad.spec.ts": {
@@ -2856,9 +2856,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/diseno/comprobaciones.ts": {
-    "mtime": 1794556996.7093952,
-    "seen": 1794592739.6388028,
-    "ast_hash": "1dde0f5b7804db2e21e365da4d0c94e2",
+    "mtime": 1795199286.3072827,
+    "seen": 1795201841.1607492,
+    "ast_hash": "91ef3a35bc4b981ac82624c1f3da1df5",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/diseno/estados.spec.ts": {
@@ -2976,9 +2976,9 @@
     "semantic_hash": ""
   },
   "specs/004-mejoras-visuales-diseno/checklists/visual.md": {
-    "mtime": 1792592850.91685,
-    "seen": 1792645202.7238667,
-    "ast_hash": "5608e0b329b44b6073c1d98aa93b432b",
+    "mtime": 1795201805.6994457,
+    "seen": 1795201841.231199,
+    "ast_hash": "5c9471b7bc58e344b657903c52b656b7",
     "semantic_hash": ""
   },
   "specs/004-mejoras-visuales-diseno/contracts/ui.md": {
@@ -3018,9 +3018,9 @@
     "semantic_hash": ""
   },
   "specs/004-mejoras-visuales-diseno/tasks.md": {
-    "mtime": 1792757964.2389042,
-    "seen": 1792758030.946392,
-    "ast_hash": "1132f56fce481025bef43c912251d218",
+    "mtime": 1795201805.7511823,
+    "seen": 1795201841.2320225,
+    "ast_hash": "1f8e5ce47875446a4d0e6c54add10639",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaMesa.tsx": {
@@ -3624,9 +3624,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/textos/selecciones.ts": {
-    "mtime": 1794556996.8051062,
-    "seen": 1794592739.6370425,
-    "ast_hash": "3daea4babcb3ba999931ec6b0ac6658b",
+    "mtime": 1795199218.0717661,
+    "seen": 1795201841.159275,
+    "ast_hash": "f852bf7c913b0410a25012cb1aed6032",
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/coleccion.spec.ts": {
@@ -4950,9 +4950,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1795198438.2289686,
-    "seen": 1795198473.6593409,
-    "ast_hash": "9f5d2fa9775bc68d57bc9de549c39ebf",
+    "mtime": 1795201814.2594383,
+    "seen": 1795201841.2249572,
+    "ast_hash": "92ff44241e578bf914febb90e496fc80",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {

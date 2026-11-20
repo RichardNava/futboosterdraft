@@ -91,8 +91,8 @@ cuesta simular los partidos.
   - 001/SC-003: 5 personas nuevas completan draft y alineación en < 30 min sin ayuda.
   - Correo real de avisos con un proveedor SMTP (solo probado con Mailpit).
   - Reproducción 2D a 60 fps en un portátil medio con el navegador visible (002/FR-025b).
-  - T144 sin marcar en [001/tasks.md](specs/001-draft-manager-mvp/tasks.md): su propio estado incluye los tres puntos
-    anteriores, así que se marca cuando estén hechos.
+  - ~~T144 sin marcar~~: marcada el 2026-11-20 por decisión de la persona responsable; los tres puntos anteriores
+    siguen abiertos como criterios de cierre 1 a 3.
   - 001/SC-017 (carga) se trata en INI-07.
   - **2026-11-20**: el remitente de los correos es configurable (`SMTP_FROM`; antes era fijo en
     `@futboosterdraft.local`, que un proveedor real rechaza) y la guía para cerrar los tres puntos (fragmento de consola
@@ -102,7 +102,7 @@ cuesta simular los partidos.
   1. 001/SC-003 medido con al menos 5 personas y registrado en `validacion.md`.
   2. Aviso de correo recibido en un buzón externo real.
   3. 60 fps (nunca < 30) medidos en un portátil medio.
-  4. T144 marcada.
+  4. ~~T144 marcada~~ (2026-11-20).
 
 ## INI-02 Experiencia de juego y ritmo
 
@@ -132,10 +132,12 @@ cuesta simular los partidos.
 - **Prioridad / estado**: P1 · **Implementada, sin validar**.
 - **Evidencia**: lint de tokens, unitarias, 22 e2e de diseño (en CI) e integración en verde; tipografías dentro de
   presupuesto (SC-009). Sin cerrar:
-  - T074: recorrer [checklists/visual.md](specs/004-mejoras-visuales-diseno/checklists/visual.md) a 1366 × 768 y 360 × 640.
+  - ~~T074: recorrer [checklists/visual.md](specs/004-mejoras-visuales-diseno/checklists/visual.md) a 1366 × 768 y 360 × 640~~:
+    hecho el 2026-11-20 con capturas del inventario; tres fallos corregidos (bandeja de avisos y marcador de la 2D a 360 px,
+    nombres cortados en el borde del campo 2D) y cinco observaciones de diseño anotadas en la lista.
   - T076: SC-003 (prueba de cinco segundos, 10 personas), SC-004 y SC-010 (5 personas); las tablas de
     [004/checklists/validacion.md](specs/004-mejoras-visuales-diseno/checklists/validacion.md) están vacías.
-- **Criterios de cierre**: T074 y T076 hechas, con las tablas de `validacion.md` rellenas y SC-003, SC-004 y SC-010 cumplidos.
+- **Criterios de cierre**: ~~T074~~ (hecha) y T076 hechas, con las tablas de `validacion.md` rellenas y SC-003, SC-004 y SC-010 cumplidos.
 - **Nota**: conviene hacer la sesión con personas de INI-01, INI-02, INI-03 e INI-08 a la vez (ver "Decisiones").
 
 ## INI-04 Virtudes, defectos y modo Duelo
@@ -332,7 +334,7 @@ cuesta simular los partidos.
 - **Specs**: [008](specs/008-datos-reales-core/spec.md) (fase 0.1: las 300 cartas de Core son jugadores reales, con
   retratos; fuente `data/core-real.json`). La base es [006](specs/006-preparacion-bd-cartas/spec.md) FR-001 a FR-012. Las
   historias de las cartas **requieren spec nueva**.
-- **Prioridad / estado**: P1 · **Parcial**. 008: T012 y T022 (comprobaciones manuales en `pnpm dev`) abiertas.
+- **Prioridad / estado**: P1 · **Parcial**. 008: T012 y T022 ya están marcadas; falta la spec de las historias de las cartas.
 - **Monetización (decisión del 2026-11-20)**: nada relacionado con los jugadores se monetiza, ni directa ni
   indirectamente. El dinero real solo compra cosméticos y las funciones del pase premium, y las cartas, los sobres y
   las expansiones se consiguen con fragmentos. Los derechos de imagen no bloquean producción (INI-10) ni el cierre de
@@ -498,7 +500,7 @@ cuesta simular los partidos.
 |---|---|---|
 | ~~7 comprobaciones de `balance` en `--pendientes` y 003/SC-001c~~: el CI ya no usa `--pendientes` (2026-11-16, spec 015; 76 de 76) | `.github/workflows/ci.yml` | INI-05 |
 | Recorridos a mano de los quickstart de la 014 y la 015 (paso 5) | `specs/014-…/quickstart.md`, `specs/015-…/quickstart.md` | INI-05 |
-| Recorridos a mano de la 012 (T076, T089, T100, T106, T116), la 013 (T073) y la 008 (T012, T022) | `tasks.md` de cada spec | INI-11 (los de la 012 y la 013 ya no bloquean INI-15, cerrada) |
+| Recorridos a mano de la 012 (T076, T089, T100, T106, T116) y la 013 (T073), y los quickstart de la 006 (T103, escenarios A–O), la 014 y la 015 | `tasks.md` y `quickstart.md` de cada spec | INI-05, INI-08 (los de la 012 y la 013 ya no bloquean INI-15, cerrada) |
 | FR-028a: 25 / 40 ms por partido (CI a 120 ms) | `pnpm --filter @fbd/engine bench` | INI-06 |
 | 001/SC-017: carga de 100 partidas | `tools/load/beta-100.js` | INI-07 |
 | Pruebas con personas: 001/SC-003; 002/SC-001, SC-009, SC-007a; 003/SC-008, SC-011–SC-014, SC-016, SC-019; 004/SC-003, SC-004, SC-010 | checklists `validacion.md` | INI-01 a INI-03 |
@@ -506,7 +508,7 @@ cuesta simular los partidos.
 | Correo con SMTP real | 001 escenario E | INI-01, INI-10 |
 | Escenarios manuales A–O de la 006 | `specs/006-preparacion-bd-cartas/quickstart.md` | INI-08 |
 | ~~Licencia de los escudos~~: no habrá escudos oficiales (2026-11-20) | 006/FR-044, T087 | INI-08, INI-10 |
-| Tests intermitentes: `torneo-asincrono` con la máquina cargada; `torneo.spec.ts` y la regla de 10 minutos sin conexión con el reloj simulado | 002, 003 y 004 `validacion.md` | INI-07 |
-| T144 (001): se marca al cerrar SC-003, el correo real y los 60 fps | `tasks.md` | INI-01 |
+| ~~Tests intermitentes~~: `torneo.spec.ts` y la regla de 10 minutos, arreglado el 2026-11-03 (lo juega un usuario registrado, INI-11); `torneo-asincrono` no se reproduce (2026-11-20: 27 de 27 en tres pasadas con 14 hilos de carga ocupando los 12 núcleos) | 002, 003 y 004 `validacion.md` | INI-07 |
+| ~~T144 (001)~~: marcada el 2026-11-20 | `tasks.md` | INI-01 |
 | ~~Batería completa tras la 007 (T052)~~: en verde el 2026-11-20 | `pnpm typecheck`, `lint`, `test`, `e2e` | INI-15 |
 | Escucha de prueba de los sonidos (007/SC-004) | sesión con personas | Sesión común (INI-01 a INI-03) |

@@ -278,6 +278,12 @@ function fondoCampo(ctx: CanvasRenderingContext2D, ancho: number): void {
 function texto(ctx: CanvasRenderingContext2D, t: string, x: number, y: number, tam: number, interfaz: ColoresInterfaz): void {
   ctx.font = `600 ${tam}px ${interfaz.letra}`;
   ctx.lineWidth = Math.max(2, tam / 4);
+  if (ctx.textAlign === 'center') {
+    // Centrado sobre un jugador pegado a la banda o al fondo, el nombre se cortaba en el borde del lienzo (004/T074).
+    const anchoLienzo = ctx.canvas.width / (ctx.getTransform().a || 1);
+    const mitad = ctx.measureText(t).width / 2 + ctx.lineWidth;
+    x = Math.min(Math.max(x, mitad), anchoLienzo - mitad);
+  }
   ctx.strokeStyle = interfaz.velo;
   ctx.strokeText(t, x, y);
   ctx.fillStyle = interfaz.texto;
