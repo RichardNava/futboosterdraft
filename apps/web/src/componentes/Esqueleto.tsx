@@ -19,12 +19,15 @@ export function Esqueleto({ forma, cantidad, texto = 'Cargando…' }: { forma: F
   );
 }
 
-/** Pantalla entera mientras carga: el esqueleto dentro de la columna de la pantalla. */
-export function PantallaCargando({ forma, texto }: { forma: FormaEsqueleto; texto?: string }) {
+/**
+ * Pantalla entera mientras carga: el esqueleto dentro de la columna de la pantalla. `diferida` (spec 016, ronda 3): el
+ * esqueleto solo aparece si la espera se alarga, para que una carga corta (abrir un partido) no dé un pestañeo.
+ */
+export function PantallaCargando({ forma, texto, diferida = false }: { forma: FormaEsqueleto; texto?: string; diferida?: boolean }) {
   // Spec 013 (FR-023): el aviso visible lo pinta el `Marco`; aquí, el texto para lectores de pantalla.
   const conectando = useConectandoLargo();
   return (
-    <main className="pantalla">
+    <main className={diferida ? 'pantalla cargando-diferida' : 'pantalla'}>
       <Esqueleto forma={forma} texto={conectando ? 'Conectando con el servidor…' : texto} />
     </main>
   );

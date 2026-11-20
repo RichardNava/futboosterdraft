@@ -25,7 +25,7 @@ import { efectoDeEvento, goleadorDe } from '../componentes/sonidosPartido';
 import { reproducir } from '../sonido/sonido';
 import { useAmbiente } from '../sonido/ambiente';
 import { SelectorModoIncidencias } from '../componentes/SelectorModoIncidencias';
-import { textoParada, type IncidenciaVista } from '../componentes/textoParada';
+import { iconosParada, textoParada, type IncidenciaVista } from '../componentes/textoParada';
 import type { ModoIncidencias } from '@fbd/domain';
 import { CELEBRACION_DEL_JUEGO, DURACION_MAXIMA_CELEBRACION_JUEGO_MS } from '@fbd/domain';
 
@@ -33,6 +33,8 @@ interface Tramo extends TramoRecibido {
   eventos: (TramoRecibido['eventos'][number] & EventoVista)[];
   marcador: Marcador;
   minuto?: string;
+  /** Energía al final del tramo (spec 016, ronda 2). */
+  energia?: EnergiaJugador[];
 }
 
 /** Suma minutos al último número de un minuto mostrable ("67'" → "69'", "45+2'" → "45+3'"). */
@@ -100,7 +102,7 @@ export function Partido2D() {
   const [aplicacion, setAplicacion] = useState<{ tick: number; minuto: string } | null>(null);
   const [avisoRival, setAvisoRival] = useState<string | null>(null);
   const [miId, setMiId] = useState<string | null>(null);
-  // Energía de la última pausa del servidor (spec 014, FR-016): solo se pinta en la gestión abierta en una pausa.
+  // Energía de la última pausa del servidor (spec 014, FR-016). Con el balón en juego, la gestión usa la del tramo.
   const [energia, setEnergia] = useState<EnergiaJugador[] | null>(null);
   // Tras «Finalizar partido» se ven los eventos según llegan y el resumen en cuanto llega el final.
   const [finalizando, setFinalizando] = useState(false);
@@ -262,7 +264,7 @@ export function Partido2D() {
     lateral.current?.scrollTo({ top: lateral.current.scrollHeight, behavior: movimientoReducido() ? 'auto' : 'smooth' });
   }, [eventosVistos.length, gestion]);
 
-  if (!inicio) return <PantallaCargando forma="campo" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} />;
+  if (!inicio) return <PantallaCargando forma="campo" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} diferida />;
 
   const miLado = miId === inicio.local.id ? 'local' : miId === inicio.visitante.id ? 'visitante' : null;
   const nombresEquipo = { local: inicio.local.nombre, visitante: inicio.visitante.nombre };
@@ -339,6 +341,10 @@ export function Partido2D() {
     const lesionadosParada = new Set(parada?.abierta && parada.motivo === 'incidencia' ? parada.incidencias.filter((i) => i.motivo === 'lesion').map((i) => i.jugadorId) : []);
     const vistos = conEnEspera(eventosVistos, aplicadas, enEspera, miLado, tick);
     const estadoEquipo = estadoEquipoEnPartido(inicio.alineaciones[miLado], vistos.eventos, miLado, tick, vistos.decisiones, fase === 'pre_prorroga' || fase === 'prorroga', lesionadosParada);
+    // En una pausa, la del servidor; con el balón en juego, la del último tramo ya visto (nunca la de lo simulado por
+    // delante de la reproducción).
+    const energiaGestion =
+      enPausa || parada?.abierta ? energia : ([...tramos].reverse().find((t) => t.energia && t.hastaTick <= tick)?.energia ?? null);
     const jugadoresPropios = new Map([...inicio.alineaciones[miLado].titulares.map((t) => t.jugador), ...inicio.alineaciones[miLado].suplentes].map((j) => [j.id, j]));
     return (
       <GestionEquipo
@@ -348,10 +354,17 @@ export function Partido2D() {
         colores={coloresDe(inicio.equipaciones[miLado])}
         enviar={enviarLote}
         onCerrar={cerrarGestion}
-        aviso={!parada?.abierta ? null : parada.motivo === 'gol' ? TEXTO_PARADA_GOL : textoParada(parada.incidencias, nombre, parada.restantes)}
+        aviso={
+          !parada?.abierta
+            ? null
+            : {
+                texto: parada.motivo === 'gol' ? TEXTO_PARADA_GOL : textoParada(parada.incidencias, nombre, parada.restantes),
+                iconos: iconosParada(parada.motivo, parada.motivo === 'gol' ? [] : parada.incidencias),
+              }
+        }
         lesionadosParada={lesionadosParada}
         marcador={`${nombresEquipo.local} ${marcador.local} – ${marcador.visitante} ${nombresEquipo.visitante} · ${minuto}`}
-        {...(energia && (enPausa || parada?.abierta) ? { energia: mapaEnergia(energia) } : {})}
+        {...(energiaGestion ? { energia: mapaEnergia(energiaGestion) } : {})}
       />
     );
   }

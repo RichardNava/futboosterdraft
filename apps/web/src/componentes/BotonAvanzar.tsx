@@ -43,6 +43,8 @@ interface Props {
   onAvanzar: (requestId: string) => Promise<unknown> | void;
   /** Motivo por el que no se puede avanzar: el botón sigue visible, con `aria-disabled` (FR-007). */
   motivoDesactivado?: string | null;
+  /** Motivo en rojo (una baja por sustituir). */
+  motivoGrave?: boolean;
   secundarios?: AccionBarra[];
   estado?: React.ReactNode;
 }
@@ -51,7 +53,7 @@ interface Props {
  * Botón para avanzar sin esperar a que venza un temporizador (002/US2; research R18), siempre como botón principal
  * de la `BarraPrincipal` (spec 003, FR-006, FR-007), con la etiqueta de cada situación.
  */
-export function BotonAvanzar({ situacion, contraHumano, onAvanzar, motivoDesactivado, secundarios, estado }: Props) {
+export function BotonAvanzar({ situacion, contraHumano, onAvanzar, motivoDesactivado, motivoGrave = false, secundarios, estado }: Props) {
   const etiqueta = situacion === 'preparacion' && contraHumano ? 'Ver partido' : ETIQUETA_AVANCE[situacion];
-  return <BarraPrincipal principal={{ etiqueta, onClick: () => onAvanzar(crypto.randomUUID()), motivoDesactivado: motivoDesactivado ?? null }} secundarios={secundarios} estado={estado} />;
+  return <BarraPrincipal principal={{ etiqueta, onClick: () => onAvanzar(crypto.randomUUID()), motivoDesactivado: motivoDesactivado ?? null, motivoGrave }} secundarios={secundarios} estado={estado} />;
 }

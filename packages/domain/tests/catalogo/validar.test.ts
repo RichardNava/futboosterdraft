@@ -180,13 +180,13 @@ describe('validarCatalogo (spec 006, data-model §1.2)', () => {
   const extra = { id: 301, demarcacion: 'DEL' as const, nivel: 'GOAT' as const };
   const cartas = [...core, extra];
   const colCore = { id: 'core', nombre: 'Core', descripcion: 'Básica', tipo: 'basica', cartas: core.map((c) => c.id) };
-  const pago = { id: 'all-stars', nombre: 'All Stars', descripcion: 'Pago', tipo: 'pago', precio_centimos: 499, precio_fragmentos: 5000, destacadas: [301], cartas: [1, { id: 301, version: 'normal' }] };
+  const pago = { id: 'una-expansion', nombre: 'Una expansión', descripcion: 'Pago', tipo: 'pago', precio_centimos: 499, precio_fragmentos: 5000, destacadas: [301], cartas: [1, { id: 301, version: 'normal' }] };
   const mensajes = (colecciones: unknown, lista = cartas) => validarCatalogo(lista, colecciones).errores.map((e) => e.mensaje).join(' | ');
 
   it('acepta un catálogo válido y normaliza las entradas', () => {
     const r = validarCatalogo(cartas, [colCore, pago]);
     expect(r.errores).toEqual([]);
-    expect(r.colecciones[1]).toMatchObject({ id: 'all-stars', precioCentimos: 499, cartas: [{ id: 1, version: 'normal' }, { id: 301, version: 'normal' }] });
+    expect(r.colecciones[1]).toMatchObject({ id: 'una-expansion', precioCentimos: 499, cartas: [{ id: 1, version: 'normal' }, { id: 301, version: 'normal' }] });
   });
 
   it.each<[string, unknown[], RegExp]>([
@@ -195,13 +195,31 @@ describe('validarCatalogo (spec 006, data-model §1.2)', () => {
     ['versión desconocida', [colCore, { ...pago, cartas: [{ id: 301, version: 'premium' }] }], /Versión desconocida/],
     ['carta huérfana', [colCore], /301 no pertenece/],
     ['dos básicas', [colCore, { ...pago, tipo: 'basica', precio_centimos: undefined, precio_fragmentos: undefined }], /exactamente una colección básica/],
-    ['pago sin precio', [colCore, { ...pago, precio_centimos: undefined }], /precio_centimos > 0/],
+    ['precio en euros no positivo', [colCore, { ...pago, precio_centimos: 0 }], /precio_centimos debe ser un entero > 0/],
+    ['número repetido', [colCore, { ...pago, cartas: [{ id: 1, numero: 1 }, { id: 301, numero: 1 }] }], /números repetidos/],
+    ['número con hueco', [colCore, { ...pago, cartas: [{ id: 1, numero: 1 }, { id: 301, numero: 3 }] }], /de 1 a 2 sin huecos/],
+    ['mezcla con y sin número', [colCore, { ...pago, cartas: [1, { id: 301, numero: 1 }] }], /todas las de la colección/],
+    ['número no positivo', [colCore, { ...pago, cartas: [{ id: 1, numero: 0 }, { id: 301, numero: 1 }] }], /Número inválido/],
     ['pago sin precio en fragmentos', [colCore, { ...pago, precio_fragmentos: undefined }], /precio_fragmentos > 0/],
     ['destacadas fuera de cartas', [colCore, { ...pago, destacadas: [2] }], /destacadas/],
     ['id repetido', [colCore, pago, { ...pago }], /repetido/],
     ['id con mayúsculas', [colCore, { ...pago, id: 'All-Stars' }], /kebab-case/],
   ])('rechaza: %s', (_t, colecciones, mensaje) => {
     expect(mensajes(colecciones)).toMatch(mensaje);
+  });
+
+  it('una colección de pago sin precio en euros es válida; números y sobre de regalo se normalizan (spec 016)', () => {
+    const exp = { ...pago, precio_centimos: undefined, sobre_regalo: 'sobre-28', cartas: [{ id: 301, numero: 2 }, { id: 1, numero: 1 }] };
+    const r = validarCatalogo(cartas, [colCore, exp]);
+    expect(r.errores).toEqual([]);
+    expect(r.colecciones[1]).toMatchObject({ sobreRegalo: 'sobre-28', cartas: [{ id: 301, version: 'normal', numero: 2 }, { id: 1, version: 'normal', numero: 1 }] });
+    expect(r.colecciones[1]!.precioCentimos).toBeUndefined();
+  });
+
+  it('el número de cartas, el reparto y el precio son datos: una de 40 cartas con otro precio pasa (FR-032)', () => {
+    const extras = Array.from({ length: 40 }, (_, i) => ({ id: 401 + i, demarcacion: 'MED' as const, nivel: i < 30 ? ('Crack' as const) : ('GOAT' as const) }));
+    const grande = { id: 'grande', nombre: 'Grande', descripcion: 'Pago', tipo: 'pago', precio_fragmentos: 3999, cartas: extras.map((c, i) => ({ id: c.id, numero: i + 1 })) };
+    expect(validarCatalogo([...cartas, ...extras], [colCore, pago, grande]).errores).toEqual([]);
   });
 
   it('acepta una Core que no cumple DISTRIBUCION_CORE (spec 008, R8)', () => {

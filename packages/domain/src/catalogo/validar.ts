@@ -304,7 +304,8 @@ export interface ResultadoCatalogo {
 
 /**
  * Validación cruzada de cartas y colecciones (spec 006, data-model §1.2). `colecciones` es la lista del fichero
- * `data/colecciones.json` (`precio_centimos`, entradas de `cartas` como `id` o `{ id, version }`).
+ * `data/colecciones.json` (`precio_fragmentos`, `precio_centimos` opcional, `sobre_regalo` y entradas de `cartas` como
+ * `id` o `{ id, version?, numero? }`). El número de cartas, el reparto y el precio son datos, no reglas (spec 016, FR-032).
  */
 export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcacion' | 'nivel'>[], colecciones: unknown): ResultadoCatalogo {
   const errores: ErrorCatalogo[] = [];
@@ -328,7 +329,7 @@ export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcaci
     const tipo = entrada?.tipo;
     if (tipo !== 'basica' && tipo !== 'pago') error(id, `Tipo de colección desconocido: ${String(tipo)}`);
     const precio = entrada?.precio_centimos;
-    if (tipo === 'pago' && (!Number.isInteger(precio) || (precio as number) <= 0)) error(id, 'Una colección de pago necesita precio_centimos > 0');
+    if (precio !== undefined && (!Number.isInteger(precio) || (precio as number) <= 0)) error(id, 'precio_centimos debe ser un entero > 0');
     const precioFragmentos = entrada?.precio_fragmentos;
     if (tipo === 'pago' && (!Number.isInteger(precioFragmentos) || (precioFragmentos as number) <= 0)) {
       error(id, 'Una colección de pago necesita precio_fragmentos > 0');
@@ -338,18 +339,32 @@ export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcaci
     const lista: Coleccion['cartas'] = [];
     const vistas = new Set<number>();
     for (const c of Array.isArray(entrada?.cartas) ? (entrada.cartas as unknown[]) : []) {
-      const carta = typeof c === 'number' ? { id: c, version: 'normal' } : (c as { id?: unknown; version?: unknown });
+      const carta = typeof c === 'number' ? { id: c, version: 'normal' } : { version: 'normal', ...(c as { id?: unknown; version?: unknown; numero?: unknown }) };
       const cid = carta?.id as number;
+      const numero = 'numero' in carta ? carta.numero : undefined;
+      if (numero !== undefined && (!Number.isInteger(numero) || (numero as number) < 1)) error(id, `Número inválido de la carta ${String(cid)}: ${String(numero)}`);
       if (!incluye(VERSIONES_CARTA, carta?.version)) error(id, `Versión desconocida de la carta ${String(cid)}: ${String(carta?.version)}`);
       if (!porId.has(cid)) error(id, `La carta ${String(cid)} no existe`);
       else if (vistas.has(cid)) error(id, `La carta ${cid} aparece dos veces`);
       else {
         vistas.add(cid);
         usadas.add(cid);
-        lista.push({ id: cid, version: carta.version as Coleccion['cartas'][number]['version'] });
+        lista.push({
+          id: cid,
+          version: carta.version as Coleccion['cartas'][number]['version'],
+          ...(numero !== undefined ? { numero: numero as number } : {}),
+        });
       }
     }
     if (!Array.isArray(entrada?.cartas) || lista.length === 0) error(id, 'La colección no tiene cartas');
+    const numeros = lista.flatMap((c) => (c.numero === undefined ? [] : [c.numero]));
+    if (numeros.length > 0) {
+      if (numeros.length !== lista.length) error(id, 'Si una carta lleva número, todas las de la colección deben llevarlo');
+      else if (new Set(numeros).size !== numeros.length) error(id, 'Hay números repetidos en la colección');
+      else if (Math.max(...numeros) !== numeros.length) error(id, `Los números deben ir de 1 a ${numeros.length} sin huecos`);
+    }
+    const sobreRegalo = entrada?.sobre_regalo;
+    if (sobreRegalo !== undefined && (typeof sobreRegalo !== 'string' || sobreRegalo === '')) error(id, 'sobre_regalo debe ser el id de un sobre');
 
     const destacadas = entrada?.destacadas;
     if (destacadas !== undefined && (!Array.isArray(destacadas) || destacadas.some((d) => !vistas.has(d as number)))) {
@@ -364,6 +379,7 @@ export function validarCatalogo(cartas: readonly Pick<Jugador, 'id' | 'demarcaci
       ...(precio !== undefined ? { precioCentimos: precio as number } : {}),
       ...(precioFragmentos !== undefined ? { precioFragmentos: precioFragmentos as number } : {}),
       ...(Array.isArray(destacadas) ? { destacadas: destacadas as number[] } : {}),
+      ...(typeof sobreRegalo === 'string' ? { sobreRegalo } : {}),
       cartas: lista,
     });
   }

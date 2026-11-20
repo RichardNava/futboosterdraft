@@ -156,7 +156,7 @@ export function PartidoRapido() {
   const nombres = useMemo(() => (inicio ? nombresDePartido(inicio) : new Map<number, string>()), [inicio]);
 
   if (!inicio) {
-    return <PantallaCargando forma="filas" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} />;
+    return <PantallaCargando forma="filas" texto={conectada ? 'Esperando el inicio del partido…' : 'Conectando…'} diferida />;
   }
   const nombre = (id: number) => nombres.get(id) ?? String(id);
 

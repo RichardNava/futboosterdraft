@@ -1,10 +1,11 @@
 /**
  * Validación y sumario de la colección Core (spec 008, research R7 y R11; contracts/datos-core-real.md).
  *
- * 1. Valida `data/core-real.json` (`validarColeccion`) y las invariantes del contrato: ids 1–N sin huecos, un
- *    retrato propio existente y distinto por ficha que cubra todos los de `apps/web/public/cartas/retratos-propios/`
- *    (spec 011, FR-021: ningún retrato de terceros, `/cartas/retratos/`), y el fondo
- *    genérico de su demarcación.
+ * 1. Valida `data/core-real.json` (`validarColeccion`) y las invariantes del contrato: los ids son exactamente los de
+ *    la colección `core` de `data/colecciones.json` (spec 016, R3: ya no 1–N; Kimmich es la 376), un retrato propio
+ *    existente y distinto por ficha, y entre esta y `data/expansiones-reales.json` se usan todos los de
+ *    `apps/web/public/cartas/retratos-propios/` (spec 011, FR-021: ningún retrato de terceros, `/cartas/retratos/`),
+ *    y su propia ilustración de fondo. Kimmich (376) sustituye a Verratti con una media de 88 como mínimo (R4).
  * 2. Escribe `specs/008-datos-reales-core/sumario.md` con `sumarioCore` (FR-017 a FR-020).
  *
  * Si hay errores, los imprime como `[id] regla: mensaje`, sale con código 1 y no escribe nada. Es idempotente.
@@ -275,13 +276,28 @@ interface ErrorFusion {
   mensaje: string;
 }
 
-/** Comprobaciones del contrato §1 además de `validarColeccion`. */
-export function validarCoreReal(jugadores: readonly Jugador[], retratos: readonly string[]): ErrorFusion[] {
+/** Kimmich sustituye a Verratti en el Core: su media no puede bajar de la de Verratti (spec 016, research R4). */
+export const KIMMICH = { id: 376, mediaMinima: 88 } as const;
+
+/**
+ * Comprobaciones del contrato §1 además de `validarColeccion`. `idsCore`: los de la colección `core`;
+ * `otrasImagenes`: los retratos de las fichas de las expansiones, que también cubren `retratos-propios/`.
+ */
+export function validarCoreReal(
+  jugadores: readonly Jugador[],
+  retratos: readonly string[],
+  idsCore: ReadonlySet<number>,
+  otrasImagenes: readonly string[] = [],
+): ErrorFusion[] {
   const errores: ErrorFusion[] = validarColeccion(jugadores);
   const ids = new Set(jugadores.map((j) => j.id));
-  for (let id = 1; id <= jugadores.length; id++) if (!ids.has(id)) errores.push({ id, regla: 'id', mensaje: `Falta el id ${id}` });
+  for (const id of idsCore) if (!ids.has(id)) errores.push({ id, regla: 'id', mensaje: `Falta la carta ${id} de la colección core` });
+  const kimmich = jugadores.find((j) => j.id === KIMMICH.id);
+  if (idsCore.has(KIMMICH.id) && kimmich && kimmich.media < KIMMICH.mediaMinima) {
+    errores.push({ id: KIMMICH.id, regla: 'media', mensaje: `Kimmich sustituye a Verratti: su media (${kimmich.media}) debe ser ≥ ${KIMMICH.mediaMinima}` });
+  }
   for (const j of jugadores) {
-    if (!Number.isInteger(j.id) || j.id < 1 || j.id > jugadores.length) errores.push({ id: j.id, regla: 'id', mensaje: `El id debe estar entre 1 y ${jugadores.length}` });
+    if (!idsCore.has(j.id)) errores.push({ id: j.id, regla: 'id', mensaje: 'La carta no está en la colección core de colecciones.json' });
     if (j.imagen.startsWith(PREFIJO_TERCEROS)) errores.push({ id: j.id, regla: 'imagen', mensaje: `Retrato de terceros (FR-021): ${j.imagen}` });
     else if (!RUTA_RETRATO.test(j.imagen)) errores.push({ id: j.id, regla: 'imagen', mensaje: `"imagen" debe ser ${PREFIJO_PROPIO}<slug>.webp` });
     else if (!retratos.includes(j.imagen.slice(PREFIJO_PROPIO.length))) errores.push({ id: j.id, regla: 'imagen', mensaje: `No existe ${j.imagen}` });
@@ -295,8 +311,10 @@ export function validarCoreReal(jugadores: readonly Jugador[], retratos: readonl
     if (usadas.has(j.imagen)) errores.push({ id: j.id, regla: 'imagen', mensaje: `Retrato repetido con el id ${usadas.get(j.imagen)}` });
     usadas.set(j.imagen, j.id);
   }
+  const deOtras = new Set(otrasImagenes);
   for (const r of retratos) {
-    if (!usadas.has(`${PREFIJO_PROPIO}${r}`)) errores.push({ id: undefined, regla: 'imagen', mensaje: `El retrato ${r} no lo usa ninguna ficha` });
+    const ruta = `${PREFIJO_PROPIO}${r}`;
+    if (!usadas.has(ruta) && !deOtras.has(ruta)) errores.push({ id: undefined, regla: 'imagen', mensaje: `El retrato ${r} no lo usa ninguna ficha` });
   }
   return errores;
 }
@@ -309,9 +327,17 @@ function principal(): void {
   // shortcut: el esquema JSON no se comprueba aquí (ajv solo está en apps/server); validarColeccion aplica las mismas
   // reglas de campos y valores, y `pnpm seed` valida el esquema de core-real.json.
   const real = JSON.parse(readFileSync(rutaReal, 'utf-8')) as { version: string; jugadores: Jugador[] };
+  const expansiones = JSON.parse(readFileSync(resolve(RAIZ, 'data/expansiones-reales.json'), 'utf-8')) as { jugadores: Jugador[] };
+  const { colecciones } = JSON.parse(readFileSync(resolve(RAIZ, 'data/colecciones.json'), 'utf-8')) as { colecciones: { id: string; cartas: (number | { id: number })[] }[] };
+  const idsCore = new Set((colecciones.find((c) => c.id === 'core')?.cartas ?? []).map((c) => (typeof c === 'number' ? c : c.id)));
   const retratos = existsSync(dirRetratos) ? readdirSync(dirRetratos).filter((f) => f.endsWith('.webp')) : [];
   const errores = Array.isArray(real.jugadores)
-    ? validarCoreReal(real.jugadores, retratos)
+    ? validarCoreReal(
+        real.jugadores,
+        retratos,
+        idsCore,
+        expansiones.jugadores.map((j) => j.imagen),
+      )
     : [{ id: undefined, regla: 'campos', mensaje: '"jugadores" debe ser una lista' }];
 
   const jugadores = [...real.jugadores].sort((a, b) => a.id - b.id);

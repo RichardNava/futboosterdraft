@@ -37,9 +37,9 @@ describe('cosméticos (spec 011, US3)', () => {
 
   it('GET /api/cosmeticos: sin sesión sin poseído ni saldo; con sesión, poseído, packs disponibles y saldo', async () => {
     const anonimo = (await catalogo()).cuerpo;
-    // 69 de la 011 + las 6 celebraciones activas de la 012 (Discoteca y Fuegos desde la ronda 4).
-    expect(anonimo.cosmeticos).toHaveLength(75);
-    expect(anonimo.packs).toHaveLength(10);
+    // 69 de la 011 + las 6 celebraciones activas de la 012 (Discoteca y Fuegos desde la ronda 4) + los sobres 25–33 de la 016.
+    expect(anonimo.cosmeticos).toHaveLength(84);
+    expect(anonimo.packs).toHaveLength(11);
     expect(anonimo.saldo).toBeUndefined();
     expect(anonimo.cosmeticos[0].poseido).toBeUndefined();
     const u = await crearRegistradoConColeccion(srv);
@@ -48,6 +48,33 @@ describe('cosméticos (spec 011, US3)', () => {
     expect(conSesion.cosmeticos.find((c: any) => c.id === 'sobre-original').poseido).toBe(true);
     expect(conSesion.cosmeticos.find((c: any) => c.id === 'escudo-premium-1')).toMatchObject({ poseido: false, precioCentimos: 25, precioFragmentos: 250 });
     expect(conSesion.packs.every((p: any) => p.disponible === true)).toBe(true);
+  });
+
+  it('sobres de regalo (spec 016, US3): vendible y regaloDe, no se compran sueltos y los packs tienen 5 vendibles (SC-006)', async () => {
+    const { cosmeticos, packs } = (await catalogo()).cuerpo;
+    const de = (id: string) => cosmeticos.find((c: any) => c.id === id);
+    expect(de('sobre-28')).toMatchObject({ vendible: false, regaloDe: { id: 'estrellas-fulgurantes', nombre: 'Estrellas Fulgurantes' } });
+    expect(['sobre-1', 'sobre-4', 'sobre-7'].map((id) => de(id).regaloDe.id)).toEqual(['idolos-dorados', 'saque-ardiente', 'remontada-historica']);
+    expect(de('sobre-25')).toMatchObject({ vendible: true, regaloDe: null, precioFragmentos: 250, precioCentimos: 50 });
+    const vendible = new Map<string, boolean>(cosmeticos.map((c: any) => [c.id, c.vendible]));
+    for (const p of packs) {
+      expect(p.cosmeticos, p.id).toHaveLength(5);
+      expect(p.cosmeticos.every((id: string) => vendible.get(id)), p.id).toBe(true);
+    }
+    expect(packs.find((p: any) => p.id === 'pack-sobres-7').cosmeticos).toEqual(['sobre-29', 'sobre-30', 'sobre-31', 'sobre-32', 'sobre-33']);
+
+    const u = await crearRegistradoConColeccion(srv);
+    await fijarSaldo(bd.db, u.id, 1000);
+    const r = await comprar(u, 'sobre-28', 'fragmentos');
+    expect(r.estado).toBe(422);
+    expect(r.cuerpo.error).toMatchObject({ codigo: 'COSMETICO_NO_VENDIBLE', mensaje: 'Este sobre solo se consigue con su expansión' });
+    expect(await saldoYSuma(bd.db, u.id)).toEqual({ saldo: 1000, suma: 1000 });
+    // Si ya lo tiene, manda el 409 de siempre.
+    const previa = randomUUID();
+    await bd.db.execute(sql`insert into compras (id, usuario_id, producto_tipo, producto_id, moneda, importe, estado, resultado)
+      values (${previa}, ${u.id}, 'cosmetico', 'sobre-28', 'fragmentos', 250, 'completada', '{"cartas":[],"fragmentos":0,"duplicados":[]}'::jsonb)`);
+    await bd.db.execute(sql`insert into cosmeticos_usuario (usuario_id, cosmetico_id, compra_id) values (${u.id}, 'sobre-28', ${previa})`);
+    expect((await comprar(u, 'sobre-28', 'fragmentos')).cuerpo.error.codigo).toBe('COSMETICO_POSEIDO');
   });
 
   it('con fragmentos: cargo de 250 y un movimiento compra_cosmetico; después es elegible en el perfil', async () => {

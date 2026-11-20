@@ -6,6 +6,8 @@ import { api, ErrorApi } from '../api/cliente';
 import { Aviso } from '../componentes/Aviso';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Icono } from '../componentes/Icono';
+import { Fragmentos } from '../componentes/Fragmentos';
+import { formatoFragmentos } from '../componentes/DialogoPagoPrueba';
 import { SelectorTramos } from '../componentes/SelectorTramos';
 import { SobreDecorativo } from '../componentes/SobreDecorativo';
 import { mostrarAviso } from '../estado/avisos';
@@ -235,6 +237,7 @@ export function CrearPartida() {
                       <button
                         type="button"
                         className="alternativa rareza-desbloquear"
+                        aria-label={`${formatoFragmentos.format(costeRareza)} fragmentos: desbloquear la rareza en este torneo`}
                         data-ayuda={`Paga ${costeRareza} fragmentos para elegir la rareza del draft en este torneo; se cobran al crear la partida si el nivel no es Moderado.`}
                         onClick={() =>
                           (niveles?.saldo ?? 0) >= costeRareza
@@ -242,8 +245,7 @@ export function CrearPartida() {
                             : mostrarAviso('error', 'No dispones de los fragmentos necesarios', { id: 'rareza-sin-fragmentos', duracionMs: 4000 })
                         }
                       >
-                        <Icono nombre="cristal" tamano={18} /> {costeRareza}
-                        <span className="solo-lectores"> fragmentos: desbloquear la rareza en este torneo</span>
+                        <Fragmentos cantidad={costeRareza} tamano={18} />
                       </button>
                       {/* Ronda 4: acceso directo a la compra del pase premium en la tienda. */}
                       <Link

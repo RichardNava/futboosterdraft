@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { CartaJugador } from './CartaJugador';
 import { Dialogo } from './Dialogo';
+import { Fragmentos } from './Fragmentos';
+import { SobreArte } from './arte/SobreArte';
 import { Trofeo } from './arte/Trofeo';
 
 const DURACION_MS = 1200;
@@ -16,10 +18,12 @@ interface Props {
   nombre: string;
   resumen: ResumenCompra;
   onSeguir: () => void;
+  /** Sobre que regala la expansión (spec 016, FR-023) y si ya se tenía antes de comprarla. */
+  sobreRegalo?: { id: string; nombre: string; poseido: boolean } | null;
 }
 
 /** Confirmación de la compra de una colección: el sello «Adquirida» y el resumen de cartas y fragmentos. */
-export function ConfirmacionCompra({ nombre, resumen, onSeguir }: Props) {
+export function ConfirmacionCompra({ nombre, resumen, onSeguir, sobreRegalo = null }: Props) {
   const reducido = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
   const [fase, setFase] = useState<'animacion' | 'resumen'>(reducido ? 'resumen' : 'animacion');
   const sello = useRef<HTMLDivElement>(null);
@@ -57,10 +61,16 @@ export function ConfirmacionCompra({ nombre, resumen, onSeguir }: Props) {
 
   return (
     <Dialogo etiquetadoPor="titulo-confirmacion" alEscape={onSeguir} alPulsarFondo={onSeguir}>
-      <h2 id="titulo-confirmacion">{nombre}: adquirida</h2>
+      <h2 id="titulo-confirmacion">{nombre}: expansión adquirida</h2>
       <p>
         {resumen.cartas.length} cartas nuevas
-        {resumen.duplicados.length > 0 && ` y ${resumen.fragmentos} fragmentos por ${resumen.duplicados.length} cartas que ya tenías`}.
+        {resumen.duplicados.length > 0 && (
+          <>
+            {' '}
+            y <Fragmentos cantidad={resumen.fragmentos} signo /> por {resumen.duplicados.length} cartas que ya tenías
+          </>
+        )}
+        .
       </p>
       {resumen.cartas.length > 0 && (
         <ul className="lista-compacta resumen-cartas" aria-label="Cartas recibidas">
@@ -77,15 +87,28 @@ export function ConfirmacionCompra({ nombre, resumen, onSeguir }: Props) {
             {resumen.duplicados.map((d) => (
               <tr key={d.id}>
                 <td>{d.nombreCarta}</td>
-                <td className="positivo">+{d.fragmentos}</td>
+                <td className="positivo">
+                  <Fragmentos cantidad={d.fragmentos} signo />
+                </td>
               </tr>
             ))}
             <tr>
               <th scope="row">Total</th>
-              <td className="positivo">+{resumen.fragmentos}</td>
+              <td className="positivo">
+                <Fragmentos cantidad={resumen.fragmentos} signo />
+              </td>
             </tr>
           </tbody>
         </table>
+      )}
+      {sobreRegalo && resumen.cosmeticos.includes(sobreRegalo.id) && (
+        <section className="confirmacion-sobre-regalo" aria-labelledby="titulo-sobre-regalo">
+          <SobreArte diseno={sobreRegalo.id} mini />
+          <div>
+            <h3 id="titulo-sobre-regalo">Sobre de regalo</h3>
+            <p>{sobreRegalo.poseido ? 'Ya tenías este sobre' : `«${sobreRegalo.nombre}», ya en tu perfil`}</p>
+          </div>
+        </section>
       )}
       <div className="acciones">
         <Link className="boton secundario" to="/coleccion">

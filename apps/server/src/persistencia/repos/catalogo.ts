@@ -24,6 +24,8 @@ export class Catalogo {
     /** Colecciones de cada carta. */
     private readonly pertenencia: ReadonlyMap<number, readonly string[]>,
     readonly version = VERSION_CATALOGO_ACTUAL,
+    /** Número de cada carta dentro de cada colección: `coleccion:jugador` → 1..N (spec 016, FR-005). */
+    private readonly numeros: ReadonlyMap<string, number> = new Map(),
   ) {}
 
   /** El mismo catálogo con las cartas en una versión anterior (se calcula una vez por versión). */
@@ -31,7 +33,7 @@ export class Catalogo {
     if (version >= this.version) return this;
     let vista = this.vistas.get(version);
     if (!vista) {
-      vista = new Catalogo(new Map([...this.porId].map(([id, j]) => [id, cartaEnVersion(j, version)])), this.pertenencia, version);
+      vista = new Catalogo(new Map([...this.porId].map(([id, j]) => [id, cartaEnVersion(j, version)])), this.pertenencia, version, this.numeros);
       this.vistas.set(version, vista);
     }
     return vista;
@@ -47,6 +49,7 @@ export class Catalogo {
       new Map([...this.porId].map(([id, j]) => [id, conIdentidad(j, identidad)])),
       this.pertenencia,
       this.version,
+      this.numeros,
     );
     return this.vistaAlternativa;
   }
@@ -55,10 +58,12 @@ export class Catalogo {
   static async cargar(db: BaseDatos): Promise<Catalogo> {
     const filas = await db.select().from(jugadores);
     const pertenencia = new Map<number, string[]>();
+    const numeros = new Map<string, number>();
     for (const f of await db.select().from(coleccionesCartas)) {
       pertenencia.set(f.jugadorId, [...(pertenencia.get(f.jugadorId) ?? []), f.coleccionId]);
+      if (f.numero !== null) numeros.set(`${f.coleccionId}:${f.jugadorId}`, f.numero);
     }
-    return new Catalogo(new Map(filas.map((f) => [f.id, filaAJugador(f) as Jugador])), pertenencia);
+    return new Catalogo(new Map(filas.map((f) => [f.id, filaAJugador(f) as Jugador])), pertenencia, VERSION_CATALOGO_ACTUAL, numeros);
   }
 
   /** Catálogo de pruebas: sin `pertenencia`, todas las cartas son de Core. */
@@ -96,6 +101,11 @@ export class Catalogo {
   /** Ids de las cartas de una colección. */
   cartasDe(coleccionId: string): number[] {
     return [...this.porId.keys()].filter((id) => this.coleccionesDe(id).includes(coleccionId));
+  }
+
+  /** Número de la carta dentro de la colección (1..N), o null si la colección no numera sus cartas (spec 016). */
+  numeroEn(coleccionId: string, jugadorId: number): number | null {
+    return this.numeros.get(`${coleccionId}:${jugadorId}`) ?? null;
   }
 
   /** Media de cada carta por id. */

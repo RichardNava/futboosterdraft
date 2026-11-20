@@ -1,13 +1,14 @@
 /**
  * Tienda (spec 006, US4 y US5; FR-025 a FR-031; contracts/ui.md «Tienda»): el sobre de 8 cartas nuevas y las
  * colecciones de pago. Spec 011 (FR-002): las cartas solo se pagan con fragmentos y ya no se venden fragmentos.
+ * Spec 016: las colecciones de pago se llaman «Expansiones» en la interfaz; cada una con su tarjeta, su detalle y su
+ * sobre de regalo, y los fragmentos con su icono (`Fragmentos`).
  * Spec 011 (US3): escudos y sobres cosméticos; un invitado ve el catálogo y, al comprar, se le pide cuenta (US3-3).
  * Retoques de la spec 011: secciones (Todo, Cosméticos, Colecciones, Funcionalidades y Modos de juego) con sus
  * subsecciones, en la URL para poder enlazarlas; lo que aún no se vende se ve como «Próximamente».
  * Tras un sobre, la apertura del draft y la revelación de las 8 cartas; tras una colección, su confirmación.
  */
 import { cargarApi, enCache, poner } from '../api/cache';
-import { NIVELES } from '@fbd/domain';
 import type { ProductoColeccion, RespuestaCompraPase, RespuestaTienda, ResumenCompra } from '@fbd/protocol';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router';
@@ -17,7 +18,10 @@ import { reproducir } from '../sonido/sonido';
 import { AperturaSobre } from '../componentes/AperturaSobre';
 import { CartaJugador } from '../componentes/CartaJugador';
 import { ConfirmacionCompra } from '../componentes/ConfirmacionCompra';
-import { DialogoPagoPrueba, formatoEuros, formatoFragmentos } from '../componentes/DialogoPagoPrueba';
+import { DetalleExpansion } from '../componentes/DetalleExpansion';
+import { DialogoPagoPrueba, formatoEuros } from '../componentes/DialogoPagoPrueba';
+import { Fragmentos } from '../componentes/Fragmentos';
+import { TarjetaExpansion } from '../componentes/TarjetaExpansion';
 import { PantallaCargando } from '../componentes/Esqueleto';
 import { EstadoVacio } from '../componentes/EstadoVacio';
 import { SobreArte } from '../componentes/arte/SobreArte';
@@ -28,13 +32,12 @@ import { useSesion } from '../estado/sesion';
 import { useEscalaRejilla } from '../componentes/useEscalaRejilla';
 import { mostrarAviso } from '../estado/avisos';
 import { useSaldo } from '../estado/saldo';
-import { ETIQUETA_NIVEL } from '../textos/niveles';
 
 type Pago = { tipo: 'coleccion'; producto: ProductoColeccion } | { tipo: 'pase'; moneda: 'fragmentos' | 'eur' };
 
 type Resultado =
   | { tipo: 'sobre'; resumen: ResumenCompra; abierto: boolean; diseno: string }
-  | { tipo: 'coleccion'; nombre: string; resumen: ResumenCompra };
+  | { tipo: 'coleccion'; nombre: string; resumen: ResumenCompra; sobreRegalo: ProductoColeccion['sobreRegalo'] };
 
 /** Secciones de la tienda y sus subsecciones (retoques de la spec 011). «Todo» las muestra todas, sin subsecciones. */
 type SeccionTienda = 'todo' | 'cosmeticos' | 'colecciones' | 'funcionalidades' | 'modos';
@@ -60,11 +63,11 @@ const SECCIONES: DefinicionSeccion[] = [
   },
   {
     id: 'colecciones',
-    texto: 'Colecciones',
+    texto: 'Expansiones',
     icono: 'cartas',
     subsecciones: [
       { id: 'sobre', texto: 'Sobre de cartas' },
-      { id: 'colecciones', texto: 'Colecciones de jugadores' },
+      { id: 'colecciones', texto: 'Expansiones' },
     ],
   },
   {
@@ -271,13 +274,13 @@ export function Tienda() {
           <section className="tienda-seccion-bloque" aria-labelledby="titulo-colecciones">
             <CabeceraSeccion
               id="colecciones"
-              titulo="Colecciones"
-              descripcion="Sobres de cartas y colecciones de jugadores."
+              titulo="Expansiones"
+              descripcion="Jugadores reales para tu colección, siempre con fragmentos."
               enTodo={seccion === 'todo'}
               ruta={ruta}
             />
             <EstadoVacio
-              mensaje="Las cartas son para cuentas registradas: crea la tuya para comprar sobres, colecciones y cosméticos."
+              mensaje="Las cartas son para cuentas registradas: crea la tuya para comprar sobres, expansiones y cosméticos."
               accion={
                 <Link className="boton secundario" to="/?acceso=registro">
                   Crear cuenta
@@ -298,6 +301,7 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
   const [tienda, setTienda] = useState<RespuestaTienda | null>(() => enCache<RespuestaTienda>('/api/tienda', { fresco: true }) ?? null);
   const [error, setError] = useState<string | null>(null);
   const [pago, setPago] = useState<Pago | null>(null);
+  const [detalle, setDetalle] = useState<string | null>(null);
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [comprandoSobre, setComprandoSobre] = useState(false);
   // Un idCompra por intento de compra con fragmentos: se conserva si la petición falla por la conexión (FR-032).
@@ -355,6 +359,7 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
   const faltan = sobre.faltan ?? 0;
   const verColecciones = seccion === 'todo' || seccion === 'colecciones';
   const verSub = (s: string) => seccion === 'todo' || sub === null || sub === s;
+  const detalleAbierto = tienda.colecciones.find((c) => c.id === detalle);
   const tarjetaPase = (
     <TarjetaPase pase={tienda.pasePremium} saldo={tienda.saldo} onComprar={(moneda) => setPago({ tipo: 'pase', moneda })} />
   );
@@ -364,8 +369,9 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
       <header className="cabecera-pantalla tienda-cabecera">
         <h1>Tienda</h1>
         <p className="tienda-saldo">
-          <Icono nombre="cristal" tamano={20} />
-          <strong>{formatoFragmentos.format(tienda.saldo)}</strong> fragmentos
+          <strong>
+            <Fragmentos cantidad={tienda.saldo} tamano={24} />
+          </strong>
         </p>
         <Link className="boton secundario" to="/coleccion">
           Colección
@@ -380,8 +386,8 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
         <section className="tienda-seccion-bloque" aria-labelledby="titulo-colecciones">
           <CabeceraSeccion
             id="colecciones"
-            titulo="Colecciones"
-            descripcion="Cartas nuevas para tu colección, siempre con fragmentos."
+            titulo="Expansiones"
+            descripcion="Jugadores reales para tu colección, siempre con fragmentos."
             enTodo={seccion === 'todo'}
             ruta={ruta}
           />
@@ -392,8 +398,7 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
                 <div>
                   <h3 id="titulo-sobre">Sobre de 8 cartas</h3>
                   <p>
-                    8 cartas que aún no tienes de las colecciones de pago, con el reparto de un sobre del
-                    draft.
+                    8 cartas que aún no tienes de las expansiones, con el reparto de un sobre del draft.
                   </p>
                   {!sobre.disponible ? (
                     <p className="nota" role="status">
@@ -409,11 +414,11 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
                         aria-describedby={faltan > 0 ? 'faltan-sobre' : undefined}
                         onClick={() => (faltan > 0 ? undefined : void sobreConFragmentos())}
                       >
-                        Comprar por {formatoFragmentos.format(sobre.precioFragmentos)} fragmentos
+                        Comprar por <Fragmentos cantidad={sobre.precioFragmentos} />
                       </button>
                       {faltan > 0 && (
                         <span id="faltan-sobre" className="motivo">
-                          Te faltan {formatoFragmentos.format(faltan)}
+                          Te faltan <Fragmentos cantidad={faltan} />
                         </span>
                       )}
                     </div>
@@ -422,74 +427,24 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
               </section>
             )}
 
-            {verSub('colecciones') &&
-              tienda.colecciones.map((c) => (
-                <article
-                  key={c.id}
-                  className={c.adquirida ? 'panel tienda-producto adquirida' : 'panel tienda-producto'}
-                  data-coleccion={c.id}
-                >
-                  <h3>{c.nombre}</h3>
-                  <p>{c.descripcion}</p>
-                  <p className="nota">
-                    {c.numCartas} cartas:{' '}
-                    {NIVELES.filter((n) => c.porNivel[n])
-                      .map((n) => `${c.porNivel[n]} ${ETIQUETA_NIVEL[n]}`)
-                      .join(', ')}
-                  </p>
-                  <ul className="lista-compacta" aria-label={`Muestra de ${c.nombre}`}>
-                    {c.muestra.map((j) => (
-                      <li key={j.id}>
-                        <CartaJugador jugador={j} compacta />
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="progreso-coleccion">
-                    <span>
-                      Tienes {c.poseidas} de {c.numCartas}
-                    </span>
-                    <progress
-                      max={c.numCartas}
-                      value={c.poseidas}
-                      aria-label={`Cartas de ${c.nombre} que tienes`}
-                    />
-                  </div>
-                  {c.adquirida ? (
-                    <p className="sello-adquirida pequeno">Adquirida</p>
-                  ) : (
-                    <>
-                      {c.soloFragmentos !== null && (
-                        <p className="nota">
-                          Ya tienes todas sus cartas: solo recibirías {c.soloFragmentos} fragmentos
-                        </p>
-                      )}
-                      <button
-                        type="button"
-                        className="boton-principal"
-                        aria-disabled={tienda.saldo < c.precioFragmentos || undefined}
-                        aria-describedby={tienda.saldo < c.precioFragmentos ? `faltan-${c.id}` : undefined}
-                        onClick={() =>
-                          tienda.saldo < c.precioFragmentos
-                            ? undefined
-                            : setPago({ tipo: 'coleccion', producto: c })
-                        }
-                      >
-                        Comprar por {formatoFragmentos.format(c.precioFragmentos)} fragmentos
-                      </button>
-                      {tienda.saldo < c.precioFragmentos && (
-                        <span id={`faltan-${c.id}`} className="motivo">
-                          Te faltan {formatoFragmentos.format(c.precioFragmentos - tienda.saldo)}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </article>
-              ))}
+            {verSub('colecciones') && tienda.colecciones.length > 0 && (
+              <div className="tienda-expansiones">
+                {tienda.colecciones.map((c) => (
+                  <TarjetaExpansion
+                    key={c.id}
+                    producto={c}
+                    saldo={tienda.saldo}
+                    onComprar={() => setPago({ tipo: 'coleccion', producto: c })}
+                    onVerDetalle={() => setDetalle(c.id)}
+                  />
+                ))}
+              </div>
+            )}
             {seccion === 'colecciones' && sub === null && (
               <Proximamente
-                titulo="Más tipos de colección"
+                titulo="Más expansiones"
                 icono="cartas"
-                texto="Colecciones temáticas y de temporada para completar con tus cartas."
+                texto="Nuevas expansiones de jugadores para completar tu colección."
               />
             )}
           </div>
@@ -502,21 +457,33 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
         premium={seccion === 'todo' ? false : tarjetaPase}
       />
 
+      {detalleAbierto && (
+        <DetalleExpansion
+          producto={detalleAbierto}
+          saldo={tienda.saldo}
+          onCerrar={() => setDetalle(null)}
+          onComprar={() => {
+            setDetalle(null);
+            setPago({ tipo: 'coleccion', producto: detalleAbierto });
+          }}
+        />
+      )}
       {pago?.tipo === 'coleccion' && (
         <DialogoPagoPrueba
           titulo={pago.producto.nombre}
           resumen={
             <p>
-              {pago.producto.numCartas} cartas; tienes {pago.producto.poseidas}. Las que ya tengas se
-              convierten en fragmentos.
+              {pago.producto.numCartas} jugadores; tienes {pago.producto.poseidas}. Las que ya tengas se convierten en
+              fragmentos{pago.producto.sobreRegalo ? ` y te llevas «${pago.producto.sobreRegalo.nombre}»` : ''}.
             </p>
           }
           precioFragmentos={pago.producto.precioFragmentos}
           comprar={(id) => comprarColeccion(pago.producto.id, id)}
           onHecho={(r) => {
             setPago(null);
+            reproducir('cajaRegistradora');
             trasComprar(r);
-            setResultado({ tipo: 'coleccion', nombre: pago.producto.nombre, resumen: r });
+            setResultado({ tipo: 'coleccion', nombre: pago.producto.nombre, resumen: r, sobreRegalo: pago.producto.sobreRegalo });
           }}
           onCancelar={() => setPago(null)}
         />
@@ -552,6 +519,7 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
         <ConfirmacionCompra
           nombre={resultado.nombre}
           resumen={resultado.resumen}
+          sobreRegalo={resultado.sobreRegalo}
           onSeguir={() => setResultado(null)}
         />
       )}
@@ -662,14 +630,14 @@ function TarjetaPase({
             aria-describedby={faltan > 0 ? 'faltan-pase' : undefined}
             onClick={() => (faltan > 0 ? undefined : onComprar('fragmentos'))}
           >
-            {activo ? 'Ampliar' : 'Comprar'} por {formatoFragmentos.format(pase.precioFragmentos)} fragmentos
+            {activo ? 'Ampliar' : 'Comprar'} por <Fragmentos cantidad={pase.precioFragmentos} />
           </button>
           <button type="button" className="secundario" onClick={() => onComprar('eur')}>
             {formatoEuros.format(pase.precioCentimos / 100)}
           </button>
           {faltan > 0 && (
             <span id="faltan-pase" className="motivo">
-              Te faltan {formatoFragmentos.format(faltan)}
+              Te faltan <Fragmentos cantidad={faltan} />
             </span>
           )}
         </div>

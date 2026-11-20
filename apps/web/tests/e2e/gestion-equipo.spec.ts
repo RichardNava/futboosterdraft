@@ -19,9 +19,12 @@ test('en el descanso de la rápida: «Gestionar equipo» y «Seguir» principale
 
   const gestion = page.getByTestId('gestion-equipo');
   await expect(gestion).toBeVisible();
-  await expect(gestion.getByText('Sustituciones restantes: 5')).toBeVisible();
+  // Una lesión en la primera parte se sustituye sola: se llega al descanso con 5 cambios o con alguno menos.
+  const restantes = gestion.getByText(/^Sustituciones restantes:/).locator('strong');
+  const antes = Number(await restantes.textContent());
+  expect(antes).toBeGreaterThanOrEqual(1);
   await sustituirEnGestion(page, 'DC');
-  await expect(gestion.getByText('Sustituciones restantes: 4')).toBeVisible();
+  await expect(restantes).toHaveText(String(antes - 1));
 
   // Hasta 5 sustituciones; la sexta se rechaza con un mensaje.
   for (const casilla of ['SD', 'EI', 'ED', 'MC-1']) {
@@ -85,6 +88,16 @@ test('en la 2D, «Gestionar equipo» detiene la reproducción y al volver sigue 
   const antes = await minutoDe();
   await page.getByRole('button', { name: 'Gestionar equipo' }).click();
   await expect(page.getByTestId('gestion-equipo')).toBeVisible();
+  // Spec 016, ronda 2: con el balón en juego también se ve la energía; el porcentaje en una línea y el indicador
+  // apoyado justo encima del círculo de posición, sin taparlo.
+  const fichas = page.getByTestId('gestion-equipo').locator('.ficha-equipo');
+  await expect(fichas.locator('.indicador-energia')).toHaveCount(await fichas.count());
+  const ficha = fichas.first();
+  const [indicador, porcentaje, posicion] = await Promise.all(
+    ['.indicador-energia', '.indicador-energia-porcentaje', '.ficha-equipo-posicion'].map((s) => ficha.locator(s).boundingBox()),
+  );
+  expect(porcentaje!.height).toBeLessThan(16);
+  expect(indicador!.y + indicador!.height).toBeLessThanOrEqual(posicion!.y + 1);
   // A x8 serían más de 2 minutos de juego: con la gestión abierta, la reproducción no avanza.
   await page.waitForTimeout(4000);
   await page.getByRole('button', { name: 'Volver sin cambios' }).click();
@@ -128,8 +141,11 @@ test('gestionar equipo con la distribución de Formación', async ({ page }) => 
   await expect(gestion.getByTestId('campo-equipo')).toBeVisible();
   await page.setViewportSize({ width: 1024, height: 768 });
 
+  // Una lesión en la primera parte se sustituye sola: se cuenta desde lo que quede, no desde 5.
+  const restantes = gestion.getByText(/^Sustituciones restantes:/).locator('strong');
+  const antes = Number(await restantes.textContent());
   await sustituirEnGestion(page, 'DC');
-  await expect(gestion.getByText('Sustituciones restantes: 4')).toBeVisible();
+  await expect(restantes).toHaveText(String(antes - 1));
   await page.getByRole('button', { name: 'Confirmar cambios' }).click();
   await expect(gestion).toBeHidden();
 });

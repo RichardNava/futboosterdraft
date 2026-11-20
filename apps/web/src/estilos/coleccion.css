@@ -1046,3 +1046,325 @@
     padding-top: var(--espacio-8);
   }
 }
+
+/* ---------- Expansiones (spec 016, contracts/ui.md §2) ---------- */
+
+/*
+ * Tarjeta W ≈ 2,5 H con el icono de tienda por delante de la esquina superior derecha: el contenedor reserva arriba el
+ * tercio que asoma y a la derecha lo que sobresale, así el icono no pisa la tarjeta vecina ni el título de la sección.
+ * Las medidas van en unidades del contenedor (cqw = 1 % del ancho de la expansión).
+ */
+.tienda-expansiones {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: var(--espacio-4);
+}
+
+@media (min-width: 1024px) {
+  .tienda-expansiones {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.expansion {
+  container-type: inline-size;
+  position: relative;
+}
+
+.expansion-tarjeta {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--espacio-3);
+  min-height: 38cqw;
+  margin-top: 12cqw;
+  margin-right: 5cqw;
+  padding: var(--espacio-4);
+}
+
+.expansion.adquirida .expansion-tarjeta {
+  border-color: var(--color-oro);
+}
+
+/* La columna del texto nunca entra bajo el icono: el nombre pasa a dos líneas antes. */
+.expansion-texto {
+  display: grid;
+  align-content: start;
+  gap: var(--espacio-2);
+  max-width: 57cqw;
+}
+
+.expansion-nombre {
+  margin: 0;
+  font-size: var(--titulo-pequeno);
+  line-height: var(--interlineado-titulo-pequeno);
+}
+
+.expansion-descripcion,
+.expansion-texto .nota {
+  margin: 0;
+}
+
+/* Los dos botones miden lo mismo en ancho y alto aunque un texto sea más largo. */
+.expansion-botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  gap: var(--espacio-2);
+}
+
+.expansion-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
+  min-height: var(--objetivo-tactil);
+  margin: 0;
+  text-align: center;
+}
+
+.expansion-botones .sello-adquirida {
+  justify-self: stretch;
+}
+
+.expansion-icono {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36cqw;
+  height: 36cqw;
+  pointer-events: none;
+}
+
+/* Móvil: el icono a ≈ 40 % del ancho y, si no caben, los botones apilados con el mismo tamaño. */
+@container (max-width: 420px) {
+  .expansion-icono {
+    width: 40cqw;
+    height: 40cqw;
+  }
+
+  .expansion-tarjeta {
+    margin-top: 14cqw;
+  }
+
+  .expansion-texto {
+    max-width: 52cqw;
+  }
+
+  .expansion-botones {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Detalle: cartel | lista con desplazamiento propio y el pie siempre visible (Principio XI). */
+.modal.modal-expansion {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--espacio-3);
+  width: min(960px, 100%);
+  /* Alto definido: así la fila del cuerpo se ajusta y solo la lista se desplaza. */
+  height: min(90vh, 760px);
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.detalle-expansion-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.detalle-expansion-cabecera h2 {
+  margin: 0;
+}
+
+.detalle-expansion-cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--espacio-4);
+  min-height: 0;
+}
+
+.detalle-expansion-cartel {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  object-position: top;
+  border-radius: var(--radio-panel);
+}
+
+.detalle-expansion-lista {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.detalle-expansion-nivel {
+  margin: var(--espacio-3) 0 var(--espacio-1);
+  font-size: var(--texto-subtitulo);
+}
+
+.detalle-expansion-nivel.nivel-goat {
+  color: var(--nivel-goat);
+}
+
+.detalle-expansion-nivel.nivel-legendario {
+  color: var(--nivel-legendario);
+}
+
+.detalle-expansion-nivel.nivel-crack {
+  color: var(--nivel-crack);
+}
+
+.detalle-expansion-nivel.nivel-superclase {
+  color: var(--nivel-superclase);
+}
+
+.detalle-expansion-cartas {
+  display: grid;
+  gap: var(--espacio-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detalle-expansion-cartas li {
+  border-radius: var(--radio);
+}
+
+/* Cada fila abre la carta completa (Previsualizacion). */
+.detalle-expansion-fila {
+  display: grid;
+  grid-template-columns: 2ch 36px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--espacio-2);
+  width: 100%;
+  padding: var(--espacio-1) var(--espacio-2);
+  border: 0;
+  border-radius: var(--radio);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.detalle-expansion-fila:hover {
+  background: var(--color-accion-tenue);
+}
+
+.detalle-expansion-fila:focus-visible {
+  outline: var(--contorno-foco) solid var(--color-accion);
+  outline-offset: -2px;
+}
+
+/* «De regalo» y el sobre en pequeño, que se amplía al pulsarlo. */
+.expansion-regalo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-1);
+  vertical-align: middle;
+}
+
+.expansion-regalo-sobre {
+  display: inline-flex;
+  padding: 2px;
+  border: 0;
+  border-radius: var(--radio);
+  background: none;
+  cursor: zoom-in;
+  transition: transform var(--duracion-corta) var(--curva-salida);
+}
+
+.expansion-regalo-sobre:hover {
+  transform: scale(1.08);
+}
+
+.expansion-regalo-sobre .sobre-arte {
+  width: auto;
+  height: 2.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expansion-regalo-sobre {
+    transition: none;
+  }
+}
+
+.detalle-expansion-cartas li.poseida {
+  background: var(--color-accion-tenue);
+}
+
+.detalle-expansion-numero,
+.detalle-expansion-demarcacion {
+  color: var(--color-texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.detalle-expansion-retrato {
+  width: 36px;
+  height: 47px;
+  object-fit: cover;
+}
+
+.detalle-expansion-nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detalle-expansion-pie {
+  display: grid;
+  gap: var(--espacio-2);
+  padding-top: var(--espacio-3);
+  border-top: 1px solid var(--color-divisor);
+}
+
+.detalle-expansion-pie p {
+  margin: 0;
+}
+
+.detalle-expansion-pie .expansion-botones {
+  grid-template-columns: minmax(0, 20rem);
+  justify-content: end;
+}
+
+@media (max-width: 720px) {
+  .detalle-expansion-cuerpo {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .detalle-expansion-cartel {
+    height: auto;
+    max-height: 40vh;
+    justify-self: center;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .detalle-expansion-fila {
+    grid-template-columns: 2ch 36px minmax(0, 1fr) auto;
+  }
+
+  .detalle-expansion-tienes {
+    grid-column: 3 / -1;
+  }
+}
+
+/* Confirmación: el sobre de regalo (FR-023). */
+.confirmacion-sobre-regalo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.confirmacion-sobre-regalo h3,
+.confirmacion-sobre-regalo p {
+  margin: 0;
+}
+
+.confirmacion-sobre-regalo .sobre-arte {
+  width: 56px;
+}

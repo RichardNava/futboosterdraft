@@ -2,7 +2,7 @@
  * Selector del diseño del sobre (spec 011, US2; contracts/ui.md §4; solo en «Mi perfil»): un interruptor
  * «Carrusel»; apagado, se elige un favorito; encendido, se marcan varios que se alternan sin repetirse. Cada
  * miniatura muestra la versión rasgada al pasar el ratón o al enfocarla. Los bloqueados llevan candado y «Ver en
- * la tienda».
+ * la tienda»; los sobres de regalo (spec 016, FR-026), «Se consigue con la expansión…».
  */
 import type { Aspecto, Cosmetico } from '@fbd/protocol';
 import { Link } from 'react-router';
@@ -79,14 +79,17 @@ export function SelectorSobre({ aspecto, onCambiar, desactivado = false }: Props
               </li>
             );
           })}
-          {bloqueados.map((c) => (
-            <li key={c.id} className="cosmetico-bloqueado">
-              <span className="opcion-cosmetico" title={`${c.nombre}: bloqueado`}>
-                <Miniatura c={c} />
-                <Icono nombre="candado" etiqueta={`${c.nombre} (bloqueado)`} className="candado" />
-              </span>
-            </li>
-          ))}
+          {bloqueados.map((c) => {
+            const motivo = c.regaloDe ? `Se consigue con la expansión ${c.regaloDe.nombre}` : 'bloqueado';
+            return (
+              <li key={c.id} className="cosmetico-bloqueado">
+                <span className="opcion-cosmetico" title={`${c.nombre}: ${motivo}`}>
+                  <Miniatura c={c} />
+                  <Icono nombre="candado" etiqueta={`${c.nombre} (${motivo})`} className="candado" />
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </div>
       {bloqueados.length > 0 && (

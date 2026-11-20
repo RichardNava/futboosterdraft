@@ -1,0 +1,3192 @@
+{
+  "version": "1.0.0",
+  "jugadores": [
+    {
+      "id": 299,
+      "nombre": "Marco",
+      "apellidos": "Verratti",
+      "nombre_carta": "Verratti",
+      "nacionalidad": "ITA",
+      "fecha_nacimiento": "1992-11-05",
+      "altura": 165,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD"
+      ],
+      "historia": "Centrocampista formado en el Pescara que pasó once temporadas en el PSG, con el que ganó nueve Ligue 1. Campeón de la Eurocopa 2020 con Italia. En 2023 se fue a la liga de Catar.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 95,
+        "pase": 95,
+        "posicionamiento": 88,
+        "vision": 92,
+        "disparo": 80
+      },
+      "media": 88,
+      "virtudes": [
+        "Elegante",
+        "PrimerToque",
+        "Filigranas"
+      ],
+      "defectos": [
+        "Impulsivo"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/marco-verratti.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/299.webp"
+    },
+    {
+      "id": 301,
+      "nombre": "Thomas",
+      "apellidos": "Müller",
+      "nombre_carta": "Müller",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1989-09-13",
+      "altura": 185,
+      "demarcacion": "DEL",
+      "posicion": [
+        "SD",
+        "MCO",
+        "ED"
+      ],
+      "historia": "Delantero de la cantera del Bayern de Múnich, con el que ganó dos Ligas de Campeones (2013 y 2020) y trece Bundesligas, un récord. Campeón del Mundo con Alemania en 2014 y Bota de Oro del Mundial 2010. En 2025 se fue al Vancouver Whitecaps.",
+      "stats": {
+        "velocidad": 78,
+        "regate": 84,
+        "finalizacion": 90,
+        "desmarque": 97,
+        "creatividad": 93,
+        "agresividad": 88
+      },
+      "media": 88.33,
+      "virtudes": [
+        "Incansable",
+        "GuanteEnElPie",
+        "Carismatico",
+        "Motivador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/thomas-muller.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/301.webp"
+    },
+    {
+      "id": 302,
+      "nombre": "Marc-André",
+      "apellidos": "ter Stegen",
+      "nombre_carta": "Ter Stegen",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1992-04-30",
+      "altura": 187,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero formado en el Borussia Mönchengladbach que fichó por el Barcelona en 2014. Ganó la Liga de Campeones de 2015 y seis LaLiga, y llegó a ser capitán del equipo. Campeón de la Copa Confederaciones 2017 con Alemania.",
+      "stats": {
+        "agilidad": 90,
+        "colocacion": 90,
+        "distribucion": 93,
+        "aereo": 84,
+        "defensa": 90,
+        "liderazgo": 86
+      },
+      "media": 88.83,
+      "virtudes": [
+        "JugadorDeCampo",
+        "OneToOne",
+        "Santo",
+        "Capitania"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/marc-andre-ter-stegen.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/302.webp"
+    },
+    {
+      "id": 303,
+      "nombre": "Thiago Emiliano",
+      "apellidos": "da Silva",
+      "nombre_carta": "Thiago Silva",
+      "nacionalidad": "BRA",
+      "fecha_nacimiento": "1984-09-22",
+      "altura": 183,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central brasileño que triunfó en el Milan, campeón de la Serie A en 2011, y fue capitán del PSG durante ocho temporadas. Ganó la Liga de Campeones de 2021 con el Chelsea y la Copa Confederaciones 2013 con Brasil. En 2024 volvió al Fluminense.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 86,
+        "tackling": 91,
+        "anticipacion": 95,
+        "marcaje": 92,
+        "liderazgo": 95
+      },
+      "media": 89.17,
+      "virtudes": [
+        "Jerarquia",
+        "Libero",
+        "Capitania",
+        "Elegante"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/thiago-silva.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/303.webp"
+    },
+    {
+      "id": 304,
+      "nombre": "David Olatukunbo",
+      "apellidos": "Alaba",
+      "nombre_carta": "Alaba",
+      "nacionalidad": "AUT",
+      "fecha_nacimiento": "1992-06-24",
+      "altura": 180,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI",
+        "LI",
+        "MC"
+      ],
+      "historia": "Formado en el Austria de Viena y el Bayern de Múnich, ganó dos Ligas de Campeones (2013 y 2020) y diez Bundesligas como lateral y central. En el Real Madrid sumó otras dos Ligas de Campeones (2022 y 2024). Capitán de Austria.",
+      "stats": {
+        "velocidad": 82,
+        "tecnica": 91,
+        "tackling": 87,
+        "anticipacion": 91,
+        "marcaje": 87,
+        "liderazgo": 90
+      },
+      "media": 88,
+      "virtudes": [
+        "Versatil",
+        "LanzadorFaltas",
+        "Elegante",
+        "Jerarquia"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/david-alaba.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/304.webp"
+    },
+    {
+      "id": 305,
+      "nombre": "N'Golo",
+      "apellidos": "Kanté",
+      "nombre_carta": "Kanté",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1991-03-29",
+      "altura": 168,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Centrocampista que pasó por el Caen y ganó la Premier League de 2016 con el Leicester City y la de 2017 con el Chelsea, con el que también ganó la Liga de Campeones de 2021. Campeón del Mundo con Francia en 2018. En 2023 se fue al Al-Ittihad.",
+      "stats": {
+        "velocidad": 88,
+        "tecnica": 88,
+        "pase": 87,
+        "posicionamiento": 98,
+        "vision": 88,
+        "disparo": 80
+      },
+      "media": 88.17,
+      "virtudes": [
+        "Incansable",
+        "RecuperadorTrasPerdida",
+        "BoxToBox",
+        "Presionador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/ngolo-kante.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/305.webp"
+    },
+    {
+      "id": 306,
+      "nombre": "Alexis Alejandro",
+      "apellidos": "Sánchez Sánchez",
+      "nombre_carta": "Alexis Sánchez",
+      "nacionalidad": "CHL",
+      "fecha_nacimiento": "1988-12-19",
+      "altura": 169,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "DC",
+        "SD"
+      ],
+      "historia": "Delantero chileno que salió del Cobreloa y triunfó en el Udinese, el Barcelona, campeón de LaLiga de 2013, y el Arsenal. Máximo goleador de la historia de Chile, con la que ganó las Copas América de 2015 y 2016. Ganó la Serie A de 2021 con el Inter.",
+      "stats": {
+        "velocidad": 90,
+        "regate": 91,
+        "finalizacion": 87,
+        "desmarque": 86,
+        "creatividad": 88,
+        "agresividad": 90
+      },
+      "media": 88.67,
+      "virtudes": [
+        "Desbordante",
+        "Incansable",
+        "Presionador",
+        "Matador"
+      ],
+      "defectos": [
+        "Chupon",
+        "Provocador"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/alexis-sanchez.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/306.webp"
+    },
+    {
+      "id": 307,
+      "nombre": "Francisco Román",
+      "apellidos": "Alarcón Suárez",
+      "nombre_carta": "Isco",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1992-04-21",
+      "altura": 176,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO",
+        "MII",
+        "MC"
+      ],
+      "historia": "Mediapunta formado en el Valencia que explotó en el Málaga y fue Golden Boy en 2012. Ganó cinco Ligas de Campeones con el Real Madrid. Desde 2023 juega en el Real Betis, donde recuperó su mejor nivel.",
+      "stats": {
+        "velocidad": 74,
+        "tecnica": 93,
+        "pase": 88,
+        "posicionamiento": 80,
+        "vision": 90,
+        "disparo": 82
+      },
+      "media": 84.5,
+      "virtudes": [
+        "Filigranas",
+        "JugadorEntreLineas",
+        "PrimerToque"
+      ],
+      "defectos": [
+        "Fatigado"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/isco.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/307.webp"
+    },
+    {
+      "id": 308,
+      "nombre": "Juan Guillermo",
+      "apellidos": "Cuadrado Bello",
+      "nombre_carta": "Cuadrado",
+      "nacionalidad": "COL",
+      "fecha_nacimiento": "1988-05-26",
+      "altura": 176,
+      "demarcacion": "DEF",
+      "posicion": [
+        "CD",
+        "LD",
+        "ED"
+      ],
+      "historia": "Carrilero colombiano que se dio a conocer en el Udinese y la Fiorentina. En la Juventus ganó cinco Serie A seguidas. Jugó los Mundiales de 2014 y 2018 con Colombia.",
+      "stats": {
+        "velocidad": 92,
+        "tecnica": 89,
+        "tackling": 80,
+        "anticipacion": 82,
+        "marcaje": 78,
+        "liderazgo": 82
+      },
+      "media": 83.83,
+      "virtudes": [
+        "Incansable",
+        "Llegador",
+        "Filigranas"
+      ],
+      "defectos": [
+        "Provocador"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/juan-cuadrado.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/308.webp"
+    },
+    {
+      "id": 309,
+      "nombre": "Yann",
+      "apellidos": "Sommer",
+      "nombre_carta": "Sommer",
+      "nacionalidad": "CHE",
+      "fecha_nacimiento": "1988-12-17",
+      "altura": 183,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero suizo formado en el Basilea que pasó más de ocho temporadas en el Borussia Mönchengladbach. Ganó la Bundesliga de 2023 con el Bayern de Múnich y la Serie A de 2024 con el Inter. Paró un penalti a Mbappé en la tanda de la Eurocopa 2020.",
+      "stats": {
+        "agilidad": 90,
+        "colocacion": 86,
+        "distribucion": 86,
+        "aereo": 78,
+        "defensa": 86,
+        "liderazgo": 82
+      },
+      "media": 84.67,
+      "virtudes": [
+        "Parapenalties",
+        "Santo",
+        "JugadorDeCampo"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/yann-sommer.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/309.webp"
+    },
+    {
+      "id": 310,
+      "nombre": "Iñigo",
+      "apellidos": "Martínez Berridi",
+      "nombre_carta": "Iñigo Martínez",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1991-05-17",
+      "altura": 182,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI"
+      ],
+      "historia": "Central zurdo de la cantera de la Real Sociedad que pasó cinco temporadas en el Athletic Club, con el que ganó la Supercopa de 2021. En el Barcelona ganó LaLiga de 2025.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 84,
+        "tackling": 86,
+        "anticipacion": 87,
+        "marcaje": 85,
+        "liderazgo": 88
+      },
+      "media": 83.67,
+      "virtudes": [
+        "Jerarquia",
+        "Cabeceador",
+        "Libero"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/inigo-martinez.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/310.webp"
+    },
+    {
+      "id": 311,
+      "nombre": "Roque Luis",
+      "apellidos": "Santa Cruz Cantero",
+      "nombre_carta": "Santa Cruz",
+      "nacionalidad": "PRY",
+      "fecha_nacimiento": "1981-08-16",
+      "altura": 193,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero paraguayo que llegó muy joven al Bayern de Múnich, con el que ganó la Liga de Campeones de 2001 y cinco Bundesligas. Marcó 19 goles en la Premier League de 2007-08 con el Blackburn Rovers. Disputó tres Mundiales con Paraguay.",
+      "stats": {
+        "velocidad": 76,
+        "regate": 82,
+        "finalizacion": 88,
+        "desmarque": 86,
+        "creatividad": 82,
+        "agresividad": 84
+      },
+      "media": 83,
+      "virtudes": [
+        "Rematador",
+        "Cabeceador",
+        "Elegante"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/roque-santa-cruz.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/311.webp"
+    },
+    {
+      "id": 312,
+      "nombre": "Lukas Josef",
+      "apellidos": "Podolski",
+      "nombre_carta": "Podolski",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1985-06-04",
+      "altura": 182,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "DC",
+        "SD"
+      ],
+      "historia": "Delantero zurdo del Colonia que jugó en el Bayern de Múnich, el Arsenal, con el que ganó la FA Cup de 2014, y el Inter. Campeón del Mundo con Alemania en 2014 y mejor jugador joven del Mundial 2006.",
+      "stats": {
+        "velocidad": 84,
+        "regate": 82,
+        "finalizacion": 90,
+        "desmarque": 82,
+        "creatividad": 80,
+        "agresividad": 86
+      },
+      "media": 84,
+      "virtudes": [
+        "Matador",
+        "Potente",
+        "Carismatico"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/lukas-podolski.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/312.webp"
+    },
+    {
+      "id": 313,
+      "nombre": "Carlos Arturo",
+      "apellidos": "Bacca Ahumada",
+      "nombre_carta": "Bacca",
+      "nacionalidad": "COL",
+      "fecha_nacimiento": "1986-09-08",
+      "altura": 181,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero colombiano que despegó en el Club Brujas y ganó dos Europa League seguidas con el Sevilla (2014 y 2015), con dos goles en la segunda final. Después marcó goles en el Milan y el Villarreal.",
+      "stats": {
+        "velocidad": 80,
+        "regate": 78,
+        "finalizacion": 88,
+        "desmarque": 86,
+        "creatividad": 72,
+        "agresividad": 80
+      },
+      "media": 80.67,
+      "virtudes": [
+        "Matador",
+        "Rematador"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/carlos-bacca.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/313.webp"
+    },
+    {
+      "id": 314,
+      "nombre": "Éver Maximiliano David",
+      "apellidos": "Banega",
+      "nombre_carta": "Banega",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1988-06-29",
+      "altura": 175,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MCO"
+      ],
+      "historia": "Centrocampista formado en Boca Juniors que ganó tres Europa League con el Sevilla (2015, 2016 y 2020). Pasó también por el Valencia y el Inter. Campeón olímpico con Argentina en Pekín 2008.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 86,
+        "pase": 88,
+        "posicionamiento": 80,
+        "vision": 88,
+        "disparo": 76
+      },
+      "media": 81.67,
+      "virtudes": [
+        "PrimerToque",
+        "LanzadorFaltas"
+      ],
+      "defectos": [
+        "Indisciplinado"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/ever-banega.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/314.webp"
+    },
+    {
+      "id": 315,
+      "nombre": "Francisco",
+      "apellidos": "Machado Mota de Castro Trincão",
+      "nombre_carta": "Trincão",
+      "nacionalidad": "PRT",
+      "fecha_nacimiento": "1999-12-29",
+      "altura": 184,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI"
+      ],
+      "historia": "Extremo zurdo formado en el Sporting de Braga que pasó por el Barcelona y el Wolverhampton. En el Sporting de Portugal ganó las ligas de 2024 y 2025.",
+      "stats": {
+        "velocidad": 86,
+        "regate": 86,
+        "finalizacion": 80,
+        "desmarque": 78,
+        "creatividad": 82,
+        "agresividad": 70
+      },
+      "media": 80.33,
+      "virtudes": [
+        "Desbordante",
+        "Filigranas"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/francisco-trincao.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/315.webp"
+    },
+    {
+      "id": 316,
+      "nombre": "Néstor Fernando",
+      "apellidos": "Muslera Micol",
+      "nombre_carta": "Muslera",
+      "nacionalidad": "URY",
+      "fecha_nacimiento": "1986-06-16",
+      "altura": 190,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero uruguayo que pasó por la Lazio y fue durante catorce temporadas el guardameta del Galatasaray, con el que ganó ocho ligas turcas. Semifinalista del Mundial 2010 y campeón de la Copa América 2011 con Uruguay.",
+      "stats": {
+        "agilidad": 84,
+        "colocacion": 82,
+        "distribucion": 76,
+        "aereo": 82,
+        "defensa": 82,
+        "liderazgo": 84
+      },
+      "media": 81.67,
+      "virtudes": [
+        "Parapenalties",
+        "Capitania"
+      ],
+      "defectos": [
+        "Impulsivo"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/fernando-muslera.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/316.webp"
+    },
+    {
+      "id": 317,
+      "nombre": "Alejandro",
+      "apellidos": "Balde Martínez",
+      "nombre_carta": "Balde",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "2003-10-18",
+      "altura": 175,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI",
+        "CI"
+      ],
+      "historia": "Lateral izquierdo de La Masia que se hizo titular en el Barcelona con 19 años y ganó LaLiga de 2023 y la de 2025. Internacional con España desde el Mundial 2022.",
+      "stats": {
+        "velocidad": 92,
+        "tecnica": 82,
+        "tackling": 76,
+        "anticipacion": 76,
+        "marcaje": 74,
+        "liderazgo": 70
+      },
+      "media": 78.33,
+      "virtudes": [
+        "Llegador",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/alejandro-balde.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/317.webp"
+    },
+    {
+      "id": 318,
+      "nombre": "César",
+      "apellidos": "Azpilicueta Tanco",
+      "nombre_carta": "Azpilicueta",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1989-08-28",
+      "altura": 178,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LD",
+        "DCD",
+        "LI"
+      ],
+      "historia": "Defensa navarro de la cantera de Osasuna que pasó por el Marsella y fue once temporadas en el Chelsea: dos Premier League, dos Europa League y la Liga de Campeones de 2021 como capitán. Después jugó en el Atlético de Madrid.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 80,
+        "tackling": 84,
+        "anticipacion": 85,
+        "marcaje": 84,
+        "liderazgo": 88
+      },
+      "media": 82.83,
+      "virtudes": [
+        "Capitania",
+        "Versatil"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/cesar-azpilicueta.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/318.webp"
+    },
+    {
+      "id": 319,
+      "nombre": "Gylfi Þór",
+      "apellidos": "Sigurðsson",
+      "nombre_carta": "Gylfi Sigurðsson",
+      "nacionalidad": "ISL",
+      "fecha_nacimiento": "1989-09-08",
+      "altura": 186,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO",
+        "MC"
+      ],
+      "historia": "Mediapunta islandés de gran golpeo que jugó en el Swansea, el Tottenham y el Everton. Pieza clave de la Islandia que llegó a los cuartos de final de la Eurocopa 2016 y jugó el Mundial 2018.",
+      "stats": {
+        "velocidad": 70,
+        "tecnica": 80,
+        "pase": 80,
+        "posicionamiento": 72,
+        "vision": 80,
+        "disparo": 84
+      },
+      "media": 77.67,
+      "virtudes": [
+        "LanzadorFaltas"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/gylfi-sigurdsson.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/319.webp"
+    },
+    {
+      "id": 320,
+      "nombre": "Crysencio Jilbert",
+      "apellidos": "Summerville",
+      "nombre_carta": "Summerville",
+      "nacionalidad": "NLD",
+      "fecha_nacimiento": "2001-10-30",
+      "altura": 174,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "ED"
+      ],
+      "historia": "Extremo formado en el Feyenoord que brilló en el Leeds United, mejor jugador del Championship en 2024. Ese verano fichó por el West Ham.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 84,
+        "finalizacion": 76,
+        "desmarque": 74,
+        "creatividad": 76,
+        "agresividad": 66
+      },
+      "media": 77.33,
+      "virtudes": [
+        "Desbordante"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/crysencio-summerville.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/320.webp"
+    },
+    {
+      "id": 321,
+      "nombre": "Édouard Osoque",
+      "apellidos": "Mendy",
+      "nombre_carta": "Mendy",
+      "nacionalidad": "SEN",
+      "fecha_nacimiento": "1992-03-01",
+      "altura": 194,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero que pasó un año sin equipo antes de despegar en el Rennes. Ganó la Liga de Campeones de 2021 con el Chelsea y fue elegido mejor portero de la FIFA. Campeón de la Copa de África de 2021 con Senegal.",
+      "stats": {
+        "agilidad": 80,
+        "colocacion": 80,
+        "distribucion": 70,
+        "aereo": 82,
+        "defensa": 78,
+        "liderazgo": 76
+      },
+      "media": 77.67,
+      "virtudes": [
+        "Santo"
+      ],
+      "defectos": [
+        "Torpe"
+      ],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/edouard-mendy.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/321.webp"
+    },
+    {
+      "id": 322,
+      "nombre": "Nathan",
+      "apellidos": "Zézé",
+      "nombre_carta": "Zézé",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "2005-06-18",
+      "altura": 190,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central formado en el Nantes, de ascendencia marfileña, que se hizo titular en la Ligue 1 con 19 años. En 2025 fichó por el Neom saudí. Se le valora por su mejor rendimiento hasta hoy.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 68,
+        "tackling": 76,
+        "anticipacion": 72,
+        "marcaje": 74,
+        "liderazgo": 68
+      },
+      "media": 72.67,
+      "virtudes": [
+        "Potente"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/nathan-zeze.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/322.webp"
+    },
+    {
+      "id": 323,
+      "nombre": "Konrad",
+      "apellidos": "Laimer",
+      "nombre_carta": "Laimer",
+      "nacionalidad": "AUT",
+      "fecha_nacimiento": "1997-05-27",
+      "altura": 180,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD",
+        "LD"
+      ],
+      "historia": "Centrocampista austriaco formado en el Red Bull Salzburgo que destacó en el RB Leipzig. En 2023 fichó por el Bayern de Múnich, con el que ganó la Bundesliga de 2025.",
+      "stats": {
+        "velocidad": 86,
+        "tecnica": 76,
+        "pase": 74,
+        "posicionamiento": 78,
+        "vision": 72,
+        "disparo": 70
+      },
+      "media": 76,
+      "virtudes": [
+        "Presionador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/konrad-laimer.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/323.webp"
+    },
+    {
+      "id": 324,
+      "nombre": "Yerry Fernando",
+      "apellidos": "Mina González",
+      "nombre_carta": "Yerry Mina",
+      "nacionalidad": "COL",
+      "fecha_nacimiento": "1994-09-23",
+      "altura": 195,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI",
+        "DCD"
+      ],
+      "historia": "Central colombiano de gran juego aéreo que pasó por el Palmeiras, el Barcelona y el Everton. Marcó tres goles de cabeza en el Mundial 2018 con Colombia.",
+      "stats": {
+        "velocidad": 70,
+        "tecnica": 68,
+        "tackling": 78,
+        "anticipacion": 74,
+        "marcaje": 76,
+        "liderazgo": 78
+      },
+      "media": 74,
+      "virtudes": [
+        "Cabeceador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/yerry-mina.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/324.webp"
+    },
+    {
+      "id": 325,
+      "nombre": "Cristian Gabriel",
+      "apellidos": "Romero",
+      "nombre_carta": "Cuti Romero",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1998-04-27",
+      "altura": 185,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central formado en Belgrano que se hizo un nombre en el Genoa y la Atalanta. Capitán del Tottenham, con el que ganó la Europa League de 2025. Campeón del Mundo en 2022 y de dos Copas América con Argentina.",
+      "stats": {
+        "velocidad": 80,
+        "tecnica": 84,
+        "tackling": 93,
+        "anticipacion": 90,
+        "marcaje": 92,
+        "liderazgo": 90
+      },
+      "media": 88.17,
+      "virtudes": [
+        "Intimidante",
+        "MuroDefensivo",
+        "Jerarquia",
+        "Capitania"
+      ],
+      "defectos": [
+        "Agresivo",
+        "Impulsivo"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/cristian-romero.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/325.webp"
+    },
+    {
+      "id": 326,
+      "nombre": "Radamel Falcao",
+      "apellidos": "García Zárate",
+      "nombre_carta": "Falcao",
+      "nacionalidad": "COL",
+      "fecha_nacimiento": "1986-02-10",
+      "altura": 177,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero colombiano formado en River Plate que ganó dos Europa League seguidas, con el Oporto en 2011 y el Atlético de Madrid en 2012, y fue el máximo goleador de las dos. Ganó la Ligue 1 de 2017 con el Mónaco. Máximo goleador de la historia de Colombia.",
+      "stats": {
+        "velocidad": 82,
+        "regate": 86,
+        "finalizacion": 96,
+        "desmarque": 94,
+        "creatividad": 84,
+        "agresividad": 90
+      },
+      "media": 88.67,
+      "virtudes": [
+        "Matador",
+        "Rematador",
+        "Cabeceador",
+        "Carismatico"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/radamel-falcao.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/326.webp"
+    },
+    {
+      "id": 327,
+      "nombre": "Jacob Harry",
+      "apellidos": "Maguire",
+      "nombre_carta": "Maguire",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1993-03-05",
+      "altura": 194,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI",
+        "DCD"
+      ],
+      "historia": "Central formado en el Sheffield United que pasó por el Hull City y el Leicester City. En 2019 fichó por el Manchester United, del que fue capitán, en el traspaso de defensa más caro de la época. Semifinalista del Mundial 2018 y subcampeón de la Eurocopa 2020 con Inglaterra.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 84,
+        "tackling": 92,
+        "anticipacion": 93,
+        "marcaje": 92,
+        "liderazgo": 95
+      },
+      "media": 88,
+      "virtudes": [
+        "Cabeceador",
+        "Jerarquia",
+        "Capitania",
+        "Robusto"
+      ],
+      "defectos": [
+        "Torpe"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/harry-maguire.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/327.webp"
+    },
+    {
+      "id": 328,
+      "nombre": "Keylor Antonio",
+      "apellidos": "Navas Gamboa",
+      "nombre_carta": "Keylor Navas",
+      "nacionalidad": "CRI",
+      "fecha_nacimiento": "1986-12-15",
+      "altura": 185,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero costarricense que destacó en el Levante y ganó tres Ligas de Campeones seguidas con el Real Madrid (2016, 2017 y 2018). Llevó a Costa Rica a los cuartos de final del Mundial 2014. Después jugó en el PSG.",
+      "stats": {
+        "agilidad": 93,
+        "colocacion": 90,
+        "distribucion": 82,
+        "aereo": 84,
+        "defensa": 92,
+        "liderazgo": 88
+      },
+      "media": 88.17,
+      "virtudes": [
+        "Santo",
+        "OneToOne",
+        "FortalezaMental",
+        "Parapenalties"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/keylor-navas.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/328.webp"
+    },
+    {
+      "id": 329,
+      "nombre": "İlkay",
+      "apellidos": "Gündoğan",
+      "nombre_carta": "Gündoğan",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1990-10-24",
+      "altura": 180,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MCO",
+        "MD"
+      ],
+      "historia": "Centrocampista formado en el Bochum y el Núremberg que ganó la Bundesliga de 2012 con el Borussia Dortmund. Capitán del Manchester City del triplete de 2023, con cinco Premier League, y autor de los dos goles de la final de la FA Cup de ese año. Fue capitán de Alemania.",
+      "stats": {
+        "velocidad": 74,
+        "tecnica": 92,
+        "pase": 92,
+        "posicionamiento": 90,
+        "vision": 92,
+        "disparo": 88
+      },
+      "media": 88,
+      "virtudes": [
+        "Llegador",
+        "PrimerToque",
+        "Capitania",
+        "Elegante"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/ilkay-gundogan.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/329.webp"
+    },
+    {
+      "id": 330,
+      "nombre": "Antoine",
+      "apellidos": "Griezmann",
+      "nombre_carta": "Griezmann",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1991-03-21",
+      "altura": 176,
+      "demarcacion": "DEL",
+      "posicion": [
+        "SD",
+        "DC",
+        "ED"
+      ],
+      "historia": "Delantero formado en la Real Sociedad que se convirtió en el máximo goleador de la historia del Atlético de Madrid, con el que ganó la Europa League de 2018. Campeón del Mundo con Francia en 2018 y máximo goleador de la Eurocopa 2016.",
+      "stats": {
+        "velocidad": 84,
+        "regate": 90,
+        "finalizacion": 92,
+        "desmarque": 92,
+        "creatividad": 94,
+        "agresividad": 84
+      },
+      "media": 89.33,
+      "virtudes": [
+        "GuanteEnElPie",
+        "Incansable",
+        "LanzadorFaltas",
+        "Matador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/antoine-griezmann.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/330.webp"
+    },
+    {
+      "id": 331,
+      "nombre": "David",
+      "apellidos": "Luiz Moreira Marinho",
+      "nombre_carta": "David Luiz",
+      "nacionalidad": "BRA",
+      "fecha_nacimiento": "1987-04-22",
+      "altura": 189,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI",
+        "MD"
+      ],
+      "historia": "Central brasileño que salió del Vitória y triunfó en el Benfica. Con el Chelsea ganó la Liga de Campeones de 2012, dos Europa League y la Premier League de 2017. Campeón de la Copa Confederaciones 2013 con Brasil.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 86,
+        "tackling": 82,
+        "anticipacion": 84,
+        "marcaje": 80,
+        "liderazgo": 88
+      },
+      "media": 83,
+      "virtudes": [
+        "Carismatico",
+        "LanzadorFaltas",
+        "Libero"
+      ],
+      "defectos": [
+        "Impulsivo"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/david-luiz.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/331.webp"
+    },
+    {
+      "id": 332,
+      "nombre": "João Félix",
+      "apellidos": "Sequeira",
+      "nombre_carta": "João Félix",
+      "nacionalidad": "PRT",
+      "fecha_nacimiento": "1999-11-10",
+      "altura": 181,
+      "demarcacion": "DEL",
+      "posicion": [
+        "SD",
+        "EI",
+        "MCO"
+      ],
+      "historia": "Delantero formado en el Benfica que ganó el Golden Boy de 2019 y ese año fichó por el Atlético de Madrid por 126 millones de euros, con el que ganó LaLiga de 2021. Después jugó cedido en el Chelsea y el Barcelona.",
+      "stats": {
+        "velocidad": 82,
+        "regate": 90,
+        "finalizacion": 84,
+        "desmarque": 84,
+        "creatividad": 88,
+        "agresividad": 72
+      },
+      "media": 83.33,
+      "virtudes": [
+        "Filigranas",
+        "Elegante",
+        "GuanteEnElPie"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/joao-felix.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/332.webp"
+    },
+    {
+      "id": 333,
+      "nombre": "Mikel",
+      "apellidos": "Merino Zazón",
+      "nombre_carta": "Merino",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1996-06-22",
+      "altura": 189,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD",
+        "DC"
+      ],
+      "historia": "Centrocampista navarro de la cantera de Osasuna que pasó por el Dortmund y el Newcastle antes de triunfar en la Real Sociedad, con la que ganó la Copa del Rey de 2020. Marcó el gol que eliminó a Alemania en la Eurocopa 2024, que ganó con España. En 2024 fichó por el Arsenal.",
+      "stats": {
+        "velocidad": 74,
+        "tecnica": 86,
+        "pase": 86,
+        "posicionamiento": 88,
+        "vision": 84,
+        "disparo": 84
+      },
+      "media": 83.67,
+      "virtudes": [
+        "BoxToBox",
+        "Cabeceador",
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/mikel-merino.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/333.webp"
+    },
+    {
+      "id": 334,
+      "nombre": "Francisco Guillermo",
+      "apellidos": "Ochoa Magaña",
+      "nombre_carta": "Memo Ochoa",
+      "nacionalidad": "MEX",
+      "fecha_nacimiento": "1985-07-13",
+      "altura": 183,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero mexicano formado en el América que jugó en Francia, España e Italia. Fue convocado por México para cinco Mundiales seguidos, de 2006 a 2022, en los que dejó paradas memorables como las de 2014 ante Brasil.",
+      "stats": {
+        "agilidad": 92,
+        "colocacion": 84,
+        "distribucion": 74,
+        "aereo": 78,
+        "defensa": 86,
+        "liderazgo": 86
+      },
+      "media": 83.33,
+      "virtudes": [
+        "Santo",
+        "OneToOne",
+        "Carismatico"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/guillermo-ochoa.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/334.webp"
+    },
+    {
+      "id": 335,
+      "nombre": "Theo Bernard François",
+      "apellidos": "Hernández",
+      "nombre_carta": "Theo Hernández",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1997-10-06",
+      "altura": 184,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI",
+        "CI"
+      ],
+      "historia": "Lateral izquierdo formado en el Atlético de Madrid que pasó por el Real Madrid y la Real Sociedad. En el Milan ganó la Serie A de 2022. Subcampeón del mundo con Francia en 2022 tras marcar en la semifinal ante Marruecos.",
+      "stats": {
+        "velocidad": 94,
+        "tecnica": 86,
+        "tackling": 82,
+        "anticipacion": 82,
+        "marcaje": 80,
+        "liderazgo": 78
+      },
+      "media": 83.67,
+      "virtudes": [
+        "Llegador",
+        "Potente",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/theo-hernandez.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/335.webp"
+    },
+    {
+      "id": 336,
+      "nombre": "Kingsley Junior",
+      "apellidos": "Coman",
+      "nombre_carta": "Coman",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1996-06-13",
+      "altura": 179,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "ED"
+      ],
+      "historia": "Extremo formado en el PSG que ganó la liga en Francia, Italia y Alemania. Marcó el gol de la final de la Liga de Campeones de 2020 con el Bayern de Múnich. Subcampeón del mundo con Francia en 2022.",
+      "stats": {
+        "velocidad": 93,
+        "regate": 90,
+        "finalizacion": 80,
+        "desmarque": 82,
+        "creatividad": 82,
+        "agresividad": 72
+      },
+      "media": 83.17,
+      "virtudes": [
+        "Desbordante",
+        "Filigranas",
+        "Revulsivo"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/kingsley-coman.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/336.webp"
+    },
+    {
+      "id": 337,
+      "nombre": "Scott Francis",
+      "apellidos": "McTominay",
+      "nombre_carta": "McTominay",
+      "nacionalidad": "SCO",
+      "fecha_nacimiento": "1996-12-08",
+      "altura": 193,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD"
+      ],
+      "historia": "Centrocampista de la cantera del Manchester United. En 2024 fichó por el Nápoles, con el que ganó la Serie A de 2025 y fue elegido mejor jugador del campeonato. Gran llegador con Escocia.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 80,
+        "pase": 78,
+        "posicionamiento": 84,
+        "vision": 76,
+        "disparo": 86
+      },
+      "media": 80.33,
+      "virtudes": [
+        "Llegador",
+        "BoxToBox"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/scott-mctominay.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/337.webp"
+    },
+    {
+      "id": 338,
+      "nombre": "Luís Carlos",
+      "apellidos": "Almeida da Cunha",
+      "nombre_carta": "Nani",
+      "nacionalidad": "PRT",
+      "fecha_nacimiento": "1986-11-17",
+      "altura": 175,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI"
+      ],
+      "historia": "Extremo nacido en Cabo Verde y formado en el Sporting de Portugal que ganó cuatro Premier League y la Liga de Campeones de 2008 con el Manchester United. Campeón de Europa con Portugal en 2016.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 88,
+        "finalizacion": 80,
+        "desmarque": 76,
+        "creatividad": 80,
+        "agresividad": 74
+      },
+      "media": 81,
+      "virtudes": [
+        "Desbordante",
+        "Filigranas"
+      ],
+      "defectos": [
+        "Chupon"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/nani.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/338.webp"
+    },
+    {
+      "id": 339,
+      "nombre": "Gleison",
+      "apellidos": "Bremer Silva Nascimento",
+      "nombre_carta": "Bremer",
+      "nacionalidad": "BRA",
+      "fecha_nacimiento": "1997-03-18",
+      "altura": 188,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central brasileño que se dio a conocer en el Torino, donde fue elegido mejor defensa de la Serie A en 2022. Ese verano fichó por la Juventus. Jugó el Mundial 2022 con Brasil.",
+      "stats": {
+        "velocidad": 80,
+        "tecnica": 74,
+        "tackling": 86,
+        "anticipacion": 84,
+        "marcaje": 86,
+        "liderazgo": 80
+      },
+      "media": 81.67,
+      "virtudes": [
+        "MuroDefensivo",
+        "Cabeceador"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/gleison-bremer.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/339.webp"
+    },
+    {
+      "id": 340,
+      "nombre": "Wojciech Tomasz",
+      "apellidos": "Szczęsny",
+      "nombre_carta": "Szczęsny",
+      "nacionalidad": "POL",
+      "fecha_nacimiento": "1990-04-18",
+      "altura": 195,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero polaco formado en el Arsenal, con el que ganó dos FA Cup. En la Juventus ganó tres Serie A. Se retiró en 2024 y volvió para jugar en el Barcelona, con el que ganó LaLiga de 2025.",
+      "stats": {
+        "agilidad": 84,
+        "colocacion": 84,
+        "distribucion": 76,
+        "aereo": 82,
+        "defensa": 84,
+        "liderazgo": 78
+      },
+      "media": 81.33,
+      "virtudes": [
+        "Parapenalties",
+        "Santo"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/wojciech-szczesny.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/340.webp"
+    },
+    {
+      "id": 341,
+      "nombre": "José Diogo",
+      "apellidos": "Dalot Teixeira",
+      "nombre_carta": "Dalot",
+      "nacionalidad": "PRT",
+      "fecha_nacimiento": "1999-03-18",
+      "altura": 183,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LD",
+        "LI",
+        "CD"
+      ],
+      "historia": "Lateral formado en el Oporto que fichó por el Manchester United en 2018 y pasó una temporada cedido en el Milan. Con el United ganó la FA Cup de 2024. Internacional con Portugal.",
+      "stats": {
+        "velocidad": 86,
+        "tecnica": 80,
+        "tackling": 78,
+        "anticipacion": 78,
+        "marcaje": 76,
+        "liderazgo": 74
+      },
+      "media": 78.67,
+      "virtudes": [
+        "Llegador",
+        "Versatil"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/diogo-dalot.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/341.webp"
+    },
+    {
+      "id": 342,
+      "nombre": "Youri",
+      "apellidos": "Tielemans",
+      "nombre_carta": "Tielemans",
+      "nacionalidad": "BEL",
+      "fecha_nacimiento": "1997-05-07",
+      "altura": 176,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MCO"
+      ],
+      "historia": "Centrocampista formado en el Anderlecht. Con el Leicester City marcó el gol que ganó la final de la FA Cup de 2021. En 2023 fichó por el Aston Villa.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 84,
+        "pase": 86,
+        "posicionamiento": 78,
+        "vision": 84,
+        "disparo": 82
+      },
+      "media": 81,
+      "virtudes": [
+        "PrimerToque",
+        "LanzadorFaltas"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/youri-tielemans.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/342.webp"
+    },
+    {
+      "id": 343,
+      "nombre": "Roméo",
+      "apellidos": "Lavia",
+      "nombre_carta": "Lavia",
+      "nacionalidad": "BEL",
+      "fecha_nacimiento": "2004-01-06",
+      "altura": 181,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Mediocentro belga formado en el Anderlecht y el Manchester City. Tras destacar en el Southampton fichó en 2023 por el Chelsea, con el que ganó la Conference League y el Mundial de Clubes de 2025.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 78,
+        "pase": 76,
+        "posicionamiento": 80,
+        "vision": 74,
+        "disparo": 64
+      },
+      "media": 74.67,
+      "virtudes": [
+        "RecuperadorTrasPerdida"
+      ],
+      "defectos": [
+        "Fragil"
+      ],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/romeo-lavia.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/343.webp"
+    },
+    {
+      "id": 344,
+      "nombre": "Strahinja",
+      "apellidos": "Pavlović",
+      "nombre_carta": "Pavlović",
+      "nacionalidad": "SRB",
+      "fecha_nacimiento": "2001-05-24",
+      "altura": 194,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI"
+      ],
+      "historia": "Central zurdo serbio formado en el Partizan que se hizo un nombre en el Red Bull Salzburgo, campeón de Austria. En 2024 fichó por el Milan.",
+      "stats": {
+        "velocidad": 74,
+        "tecnica": 68,
+        "tackling": 80,
+        "anticipacion": 74,
+        "marcaje": 76,
+        "liderazgo": 72
+      },
+      "media": 74,
+      "virtudes": [
+        "Intimidante"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/strahinja-pavlovic.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/344.webp"
+    },
+    {
+      "id": 345,
+      "nombre": "Yunus Dimoara",
+      "apellidos": "Musah",
+      "nombre_carta": "Musah",
+      "nacionalidad": "USA",
+      "fecha_nacimiento": "2002-11-29",
+      "altura": 178,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MID"
+      ],
+      "historia": "Centrocampista nacido en Nueva York y formado en el Arsenal que debutó como profesional en el Valencia. Eligió a Estados Unidos, con el que jugó el Mundial 2022. Después pasó por el Milan.",
+      "stats": {
+        "velocidad": 82,
+        "tecnica": 80,
+        "pase": 74,
+        "posicionamiento": 72,
+        "vision": 74,
+        "disparo": 68
+      },
+      "media": 75,
+      "virtudes": [
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/yunus-musah.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/345.webp"
+    },
+    {
+      "id": 346,
+      "nombre": "Vedat",
+      "apellidos": "Muriqi",
+      "nombre_carta": "Muriqi",
+      "nacionalidad": "XKX",
+      "fecha_nacimiento": "1994-04-24",
+      "altura": 194,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero kosovar de gran juego aéreo que destacó en el Fenerbahçe. En el Mallorca, al que llegó en 2021, se convirtió en un ídolo y jugó la final de la Copa del Rey de 2024. Goleador y referencia de Kosovo.",
+      "stats": {
+        "velocidad": 66,
+        "regate": 70,
+        "finalizacion": 80,
+        "desmarque": 76,
+        "creatividad": 68,
+        "agresividad": 84
+      },
+      "media": 74,
+      "virtudes": [
+        "Cabeceador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/vedat-muriqi.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/346.webp"
+    },
+    {
+      "id": 347,
+      "nombre": "Carlos",
+      "apellidos": "Soler Barragán",
+      "nombre_carta": "Carlos Soler",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1997-01-02",
+      "altura": 180,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MID",
+        "MCO"
+      ],
+      "historia": "Centrocampista de la cantera del Valencia, con el que ganó la Copa del Rey de 2019. Medalla de plata en los Juegos de Tokio con España. Después jugó en el PSG.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 80,
+        "pase": 78,
+        "posicionamiento": 74,
+        "vision": 78,
+        "disparo": 74
+      },
+      "media": 76,
+      "virtudes": [
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/carlos-soler.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/347.webp"
+    },
+    {
+      "id": 348,
+      "nombre": "Kouakou Joane",
+      "apellidos": "Gadou",
+      "nombre_carta": "Gadou",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "2007-01-17",
+      "altura": 195,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central francés formado en el PSG que fichó con 17 años por el Red Bull Salzburgo. Se le valora por su mejor rendimiento hasta hoy.",
+      "stats": {
+        "velocidad": 80,
+        "tecnica": 66,
+        "tackling": 76,
+        "anticipacion": 72,
+        "marcaje": 74,
+        "liderazgo": 64
+      },
+      "media": 72,
+      "virtudes": [
+        "Potente"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/joane-gadou.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/348.webp"
+    },
+    {
+      "id": 349,
+      "nombre": "Santiago",
+      "apellidos": "Cazorla González",
+      "nombre_carta": "Cazorla",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1984-12-13",
+      "altura": 168,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO",
+        "MC",
+        "MII"
+      ],
+      "historia": "Centrocampista asturiano ambidiestro que brilló en el Villarreal y el Málaga y ganó dos FA Cup con el Arsenal. Campeón de Europa con España en 2008 y 2012. Volvió de una grave lesión de tobillo y en 2023 regresó al Real Oviedo, el club de su infancia.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 95,
+        "pase": 92,
+        "posicionamiento": 84,
+        "vision": 94,
+        "disparo": 88
+      },
+      "media": 88.17,
+      "virtudes": [
+        "Filigranas",
+        "PrimerToque",
+        "LanzadorFaltas",
+        "Elegante"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/santi-cazorla.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/349.webp"
+    },
+    {
+      "id": 350,
+      "nombre": "Nicolás Hernán",
+      "apellidos": "Otamendi",
+      "nombre_carta": "Otamendi",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1988-02-12",
+      "altura": 183,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central argentino formado en Vélez que ganó ligas con el Oporto y el Benfica y dos Premier League con el Manchester City. Campeón del Mundo en 2022 y de dos Copas América con Argentina.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 84,
+        "tackling": 93,
+        "anticipacion": 93,
+        "marcaje": 92,
+        "liderazgo": 94
+      },
+      "media": 88.67,
+      "virtudes": [
+        "MuroDefensivo",
+        "Jerarquia",
+        "Intimidante",
+        "Capitania"
+      ],
+      "defectos": [
+        "Agresivo",
+        "Provocador"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/nicolas-otamendi.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/350.webp"
+    },
+    {
+      "id": 351,
+      "nombre": "Hugo Hadrien Dominique",
+      "apellidos": "Lloris",
+      "nombre_carta": "Lloris",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1986-12-26",
+      "altura": 188,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero formado en el Niza que destacó en el Olympique de Lyon y fue capitán del Tottenham durante más de una década. Capitán de Francia, con la que fue campeón del Mundo en 2018 y subcampeón en 2022. En 2024 fichó por Los Angeles FC.",
+      "stats": {
+        "agilidad": 92,
+        "colocacion": 90,
+        "distribucion": 82,
+        "aereo": 82,
+        "defensa": 90,
+        "liderazgo": 92
+      },
+      "media": 88,
+      "virtudes": [
+        "OneToOne",
+        "Santo",
+        "Capitania",
+        "FortalezaMental"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/hugo-lloris.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/351.webp"
+    },
+    {
+      "id": 352,
+      "nombre": "José Paolo",
+      "apellidos": "Guerrero Gonzales",
+      "nombre_carta": "Paolo Guerrero",
+      "nacionalidad": "PER",
+      "fecha_nacimiento": "1984-01-01",
+      "altura": 185,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero peruano formado en el Bayern de Múnich que triunfó en el Hamburgo y en Brasil, donde marcó el gol del Corinthians en la final del Mundial de Clubes de 2012. Máximo goleador de la historia de Perú y tres veces máximo goleador de la Copa América.",
+      "stats": {
+        "velocidad": 80,
+        "regate": 84,
+        "finalizacion": 94,
+        "desmarque": 92,
+        "creatividad": 84,
+        "agresividad": 94
+      },
+      "media": 88,
+      "virtudes": [
+        "Matador",
+        "Rematador",
+        "Cabeceador",
+        "Potente"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/paolo-guerrero.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/352.webp"
+    },
+    {
+      "id": 353,
+      "nombre": "Heung-min",
+      "apellidos": "Son",
+      "nombre_carta": "Son",
+      "nacionalidad": "KOR",
+      "fecha_nacimiento": "1992-07-08",
+      "altura": 183,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "DC",
+        "SD"
+      ],
+      "historia": "Delantero surcoreano formado en el Hamburgo que pasó por el Bayer Leverkusen y diez temporadas en el Tottenham, del que fue capitán. Bota de Oro de la Premier League en 2022 y Premio Puskás en 2020. Ganó la Europa League de 2025 y después fichó por Los Angeles FC.",
+      "stats": {
+        "velocidad": 92,
+        "regate": 90,
+        "finalizacion": 93,
+        "desmarque": 88,
+        "creatividad": 86,
+        "agresividad": 82
+      },
+      "media": 88.5,
+      "virtudes": [
+        "Matador",
+        "Desbordante",
+        "Capitania",
+        "FairPlayer"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/son-heung-min.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/353.webp"
+    },
+    {
+      "id": 354,
+      "nombre": "Arturo Erasmo",
+      "apellidos": "Vidal Pardo",
+      "nombre_carta": "Arturo Vidal",
+      "nacionalidad": "CHL",
+      "fecha_nacimiento": "1987-05-22",
+      "altura": 180,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD",
+        "MCO"
+      ],
+      "historia": "Centrocampista chileno formado en Colo-Colo que ganó cuatro Serie A seguidas con la Juventus y tres Bundesligas con el Bayern de Múnich. Ganó también LaLiga con el Barcelona y la Serie A con el Inter. Campeón de las Copas América de 2015 y 2016 con Chile.",
+      "stats": {
+        "velocidad": 82,
+        "tecnica": 88,
+        "pase": 88,
+        "posicionamiento": 92,
+        "vision": 88,
+        "disparo": 90
+      },
+      "media": 88,
+      "virtudes": [
+        "BoxToBox",
+        "Incansable",
+        "Presionador",
+        "Intimidante"
+      ],
+      "defectos": [
+        "Agresivo",
+        "Polemico"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/arturo-vidal.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/354.webp"
+    },
+    {
+      "id": 355,
+      "nombre": "Pedro Eliezer",
+      "apellidos": "Rodríguez Ledesma",
+      "nombre_carta": "Pedro",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1987-07-28",
+      "altura": 169,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI",
+        "SD"
+      ],
+      "historia": "Extremo canario de La Masia que ganó tres Ligas de Campeones con el Barcelona y en 2009 marcó en seis competiciones distintas en un mismo año. Campeón del Mundo en 2010 y de Europa en 2012 con España. Ganó la Europa League de 2019 con el Chelsea y es ídolo de la Lazio.",
+      "stats": {
+        "velocidad": 86,
+        "regate": 86,
+        "finalizacion": 86,
+        "desmarque": 86,
+        "creatividad": 84,
+        "agresividad": 80
+      },
+      "media": 84.67,
+      "virtudes": [
+        "Desbordante",
+        "Incansable",
+        "Revulsivo"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/pedro-rodriguez.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/355.webp"
+    },
+    {
+      "id": 356,
+      "nombre": "Olivier Jonathan",
+      "apellidos": "Giroud",
+      "nombre_carta": "Giroud",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1986-09-30",
+      "altura": 193,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero que ganó la Ligue 1 de 2012 con el Montpellier, la Liga de Campeones de 2021 con el Chelsea y la Serie A de 2022 con el Milan. Campeón del Mundo con Francia en 2018 y máximo goleador de la historia de su selección. Premio Puskás en 2017.",
+      "stats": {
+        "velocidad": 72,
+        "regate": 80,
+        "finalizacion": 92,
+        "desmarque": 88,
+        "creatividad": 82,
+        "agresividad": 90
+      },
+      "media": 84,
+      "virtudes": [
+        "Rematador",
+        "Cabeceador",
+        "GuanteEnElPie"
+      ],
+      "defectos": [
+        "Fatigado"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/olivier-giroud.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/356.webp"
+    },
+    {
+      "id": 357,
+      "nombre": "Kyle Andrew",
+      "apellidos": "Walker",
+      "nombre_carta": "Walker",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1990-05-28",
+      "altura": 183,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LD",
+        "DCD",
+        "CD"
+      ],
+      "historia": "Lateral derecho de la cantera del Sheffield United que pasó por el Tottenham. En el Manchester City ganó seis Premier League y la Liga de Campeones de 2023. Subcampeón de las Eurocopas de 2020 y 2024 con Inglaterra.",
+      "stats": {
+        "velocidad": 94,
+        "tecnica": 80,
+        "tackling": 86,
+        "anticipacion": 84,
+        "marcaje": 84,
+        "liderazgo": 84
+      },
+      "media": 85.33,
+      "virtudes": [
+        "Potente",
+        "Incansable",
+        "Capitania"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/kyle-walker.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/357.webp"
+    },
+    {
+      "id": 358,
+      "nombre": "Aymeric Jean Louis Gérard Alphonse",
+      "apellidos": "Laporte",
+      "nombre_carta": "Laporte",
+      "nacionalidad": "ESP",
+      "fecha_nacimiento": "1994-05-27",
+      "altura": 189,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCI"
+      ],
+      "historia": "Central zurdo nacido en Francia y formado en el Athletic Club. En el Manchester City ganó cinco Premier League. Eligió jugar con España, con la que ganó la Liga de Naciones de 2023 y la Eurocopa 2024.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 86,
+        "tackling": 86,
+        "anticipacion": 88,
+        "marcaje": 86,
+        "liderazgo": 84
+      },
+      "media": 83.67,
+      "virtudes": [
+        "Libero",
+        "Elegante",
+        "Cabeceador"
+      ],
+      "defectos": [
+        "Impulsivo"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/aymeric-laporte.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/358.webp"
+    },
+    {
+      "id": 359,
+      "nombre": "Rúben Diogo",
+      "apellidos": "da Silva Neves",
+      "nombre_carta": "Rúben Neves",
+      "nacionalidad": "PRT",
+      "fecha_nacimiento": "1997-03-13",
+      "altura": 180,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Mediocentro de la cantera del Oporto, el capitán más joven de la historia de la Liga de Campeones. Fue el líder del Wolverhampton durante seis temporadas y en 2023 fichó por el Al-Hilal. Ganó la Liga de Naciones de 2019 con Portugal.",
+      "stats": {
+        "velocidad": 70,
+        "tecnica": 86,
+        "pase": 90,
+        "posicionamiento": 86,
+        "vision": 86,
+        "disparo": 86
+      },
+      "media": 84,
+      "virtudes": [
+        "LanzadorFaltas",
+        "PrimerToque",
+        "Elegante"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/ruben-neves.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/359.webp"
+    },
+    {
+      "id": 360,
+      "nombre": "Caoimhín Odhrán",
+      "apellidos": "Kelleher",
+      "nombre_carta": "Kelleher",
+      "nacionalidad": "IRL",
+      "fecha_nacimiento": "1998-11-23",
+      "altura": 188,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero irlandés de la cantera del Liverpool que ganó como titular las finales de la Copa de la Liga de 2022, en cuya tanda de penaltis marcó, y de 2024. En 2025 fichó por el Brentford.",
+      "stats": {
+        "agilidad": 88,
+        "colocacion": 84,
+        "distribucion": 80,
+        "aereo": 82,
+        "defensa": 86,
+        "liderazgo": 80
+      },
+      "media": 83.33,
+      "virtudes": [
+        "Parapenalties",
+        "Santo",
+        "OneToOne"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/caoimhin-kelleher.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/360.webp"
+    },
+    {
+      "id": 361,
+      "nombre": "Ashley Simon",
+      "apellidos": "Young",
+      "nombre_carta": "Ashley Young",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1985-07-09",
+      "altura": 175,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI",
+        "LD",
+        "CI"
+      ],
+      "historia": "Extremo reconvertido en lateral que brilló en el Aston Villa y ganó la Premier League de 2013 con el Manchester United, del que fue capitán. Ganó la Serie A de 2021 con el Inter y siguió jugando en la Premier pasados los 39 años.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 82,
+        "tackling": 78,
+        "anticipacion": 80,
+        "marcaje": 76,
+        "liderazgo": 84
+      },
+      "media": 79.67,
+      "virtudes": [
+        "Versatil",
+        "Capitania"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/ashley-young.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/361.webp"
+    },
+    {
+      "id": 362,
+      "nombre": "Wesley",
+      "apellidos": "Fofana",
+      "nombre_carta": "Wesley Fofana",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "2000-12-17",
+      "altura": 190,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD"
+      ],
+      "historia": "Central formado en el Saint-Étienne que ganó la FA Cup de 2021 con el Leicester City. En 2022 fichó por el Chelsea, donde las lesiones le han frenado a menudo.",
+      "stats": {
+        "velocidad": 86,
+        "tecnica": 74,
+        "tackling": 84,
+        "anticipacion": 82,
+        "marcaje": 82,
+        "liderazgo": 76
+      },
+      "media": 80.67,
+      "virtudes": [
+        "Potente",
+        "MuroDefensivo"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/wesley-fofana.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/362.webp"
+    },
+    {
+      "id": 363,
+      "nombre": "Mason Tony",
+      "apellidos": "Mount",
+      "nombre_carta": "Mount",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1999-01-10",
+      "altura": 181,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO",
+        "MC"
+      ],
+      "historia": "Centrocampista de la cantera del Chelsea, con el que ganó la Liga de Campeones de 2021 y fue dos veces su mejor jugador de la temporada. Subcampeón de la Eurocopa 2020 con Inglaterra. En 2023 fichó por el Manchester United.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 84,
+        "pase": 82,
+        "posicionamiento": 78,
+        "vision": 82,
+        "disparo": 82
+      },
+      "media": 80.67,
+      "virtudes": [
+        "Presionador",
+        "Llegador"
+      ],
+      "defectos": [
+        "Fragil"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/mason-mount.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/363.webp"
+    },
+    {
+      "id": 364,
+      "nombre": "Darwin Gabriel",
+      "apellidos": "Núñez Ribeiro",
+      "nombre_carta": "Darwin Núñez",
+      "nacionalidad": "URY",
+      "fecha_nacimiento": "1999-06-24",
+      "altura": 187,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC",
+        "EI"
+      ],
+      "historia": "Delantero uruguayo formado en Peñarol que explotó en el Benfica, con el que marcó 26 goles en la liga de 2022. Ganó la Premier League de 2025 con el Liverpool y después fichó por el Al-Hilal.",
+      "stats": {
+        "velocidad": 90,
+        "regate": 78,
+        "finalizacion": 80,
+        "desmarque": 84,
+        "creatividad": 72,
+        "agresividad": 88
+      },
+      "media": 82,
+      "virtudes": [
+        "Potente",
+        "Presionador"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/darwin-nunez.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/364.webp"
+    },
+    {
+      "id": 365,
+      "nombre": "Adrien Thibault Marie",
+      "apellidos": "Rabiot",
+      "nombre_carta": "Rabiot",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1995-04-03",
+      "altura": 188,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MII"
+      ],
+      "historia": "Centrocampista zurdo de la cantera del PSG, con el que ganó cinco ligas. En la Juventus ganó la Serie A de 2020. Subcampeón del mundo con Francia en 2022. Después jugó en el Olympique de Marsella.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 82,
+        "pase": 80,
+        "posicionamiento": 82,
+        "vision": 80,
+        "disparo": 78
+      },
+      "media": 80,
+      "virtudes": [
+        "BoxToBox",
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/adrien-rabiot.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/365.webp"
+    },
+    {
+      "id": 366,
+      "nombre": "Christian Mate",
+      "apellidos": "Pulisic",
+      "nombre_carta": "Pulisic",
+      "nacionalidad": "USA",
+      "fecha_nacimiento": "1998-09-18",
+      "altura": 177,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI",
+        "MCO"
+      ],
+      "historia": "Extremo estadounidense formado en el Borussia Dortmund. Ganó la Liga de Campeones de 2021 con el Chelsea, el primer estadounidense en jugar una final. En el Milan, al que llegó en 2023, se convirtió en uno de sus mejores jugadores. Capitán de Estados Unidos.",
+      "stats": {
+        "velocidad": 86,
+        "regate": 86,
+        "finalizacion": 80,
+        "desmarque": 80,
+        "creatividad": 82,
+        "agresividad": 76
+      },
+      "media": 81.67,
+      "virtudes": [
+        "Desbordante",
+        "Revulsivo"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/christian-pulisic.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/366.webp"
+    },
+    {
+      "id": 367,
+      "nombre": "Youssef",
+      "apellidos": "En-Nesyri",
+      "nombre_carta": "En-Nesyri",
+      "nacionalidad": "MAR",
+      "fecha_nacimiento": "1997-06-01",
+      "altura": 189,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero marroquí de gran salto que ganó la Europa League de 2020 y la de 2023 con el Sevilla. Semifinalista del Mundial 2022 con Marruecos tras marcar de cabeza a Portugal. En 2024 fichó por el Fenerbahçe.",
+      "stats": {
+        "velocidad": 80,
+        "regate": 70,
+        "finalizacion": 80,
+        "desmarque": 78,
+        "creatividad": 64,
+        "agresividad": 80
+      },
+      "media": 75.33,
+      "virtudes": [
+        "Cabeceador"
+      ],
+      "defectos": [
+        "Torpe"
+      ],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/youssef-en-nesyri.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/367.webp"
+    },
+    {
+      "id": 368,
+      "nombre": "Sam",
+      "apellidos": "Beukema",
+      "nombre_carta": "Beukema",
+      "nacionalidad": "NLD",
+      "fecha_nacimiento": "1998-11-17",
+      "altura": 188,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central neerlandés formado en el Go Ahead Eagles que destacó en el AZ Alkmaar y en el Bolonia, con el que jugó la Liga de Campeones y ganó la Copa de Italia de 2025.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 72,
+        "tackling": 78,
+        "anticipacion": 76,
+        "marcaje": 76,
+        "liderazgo": 72
+      },
+      "media": 75.33,
+      "virtudes": [
+        "Libero"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/sam-beukema.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/368.webp"
+    },
+    {
+      "id": 369,
+      "nombre": "Ante",
+      "apellidos": "Budimir",
+      "nombre_carta": "Budimir",
+      "nacionalidad": "HRV",
+      "fecha_nacimiento": "1991-07-22",
+      "altura": 190,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero croata que llegó a Osasuna en 2021 y se convirtió en uno de los goleadores más regulares de LaLiga. Jugó con Osasuna la final de la Copa del Rey de 2023 y fue convocado por Croacia.",
+      "stats": {
+        "velocidad": 66,
+        "regate": 70,
+        "finalizacion": 82,
+        "desmarque": 78,
+        "creatividad": 68,
+        "agresividad": 80
+      },
+      "media": 74,
+      "virtudes": [
+        "Rematador"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/ante-budimir.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/369.webp"
+    },
+    {
+      "id": 370,
+      "nombre": "Takefusa",
+      "apellidos": "Kubo",
+      "nombre_carta": "Kubo",
+      "nacionalidad": "JPN",
+      "fecha_nacimiento": "2001-06-04",
+      "altura": 173,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "MCO"
+      ],
+      "historia": "Extremo zurdo japonés formado en La Masia y en el Real Madrid. Tras varias cesiones se consolidó en la Real Sociedad, con la que jugó la Liga de Campeones. Internacional con Japón en el Mundial 2022.",
+      "stats": {
+        "velocidad": 84,
+        "regate": 84,
+        "finalizacion": 74,
+        "desmarque": 72,
+        "creatividad": 80,
+        "agresividad": 62
+      },
+      "media": 76,
+      "virtudes": [
+        "Desbordante"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/takefusa-kubo.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/370.webp"
+    },
+    {
+      "id": 371,
+      "nombre": "Đorđe",
+      "apellidos": "Petrović",
+      "nombre_carta": "Đ. Petrović",
+      "nacionalidad": "SRB",
+      "fecha_nacimiento": "1999-10-08",
+      "altura": 194,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero serbio formado en el Čukarički que destacó en el New England Revolution. Pasó por el Chelsea y el Estrasburgo y en 2025 fichó por el Bournemouth.",
+      "stats": {
+        "agilidad": 82,
+        "colocacion": 78,
+        "distribucion": 72,
+        "aereo": 80,
+        "defensa": 78,
+        "liderazgo": 70
+      },
+      "media": 76.67,
+      "virtudes": [
+        "Parapenalties"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/djordje-petrovic.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/371.webp"
+    },
+    {
+      "id": 372,
+      "nombre": "Emre",
+      "apellidos": "Can",
+      "nombre_carta": "Emre Can",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1994-01-12",
+      "altura": 186,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC",
+        "DCD"
+      ],
+      "historia": "Centrocampista formado en el Eintracht de Fráncfort y el Bayern de Múnich que pasó por el Liverpool y la Juventus. Capitán del Borussia Dortmund, finalista de la Liga de Campeones de 2024.",
+      "stats": {
+        "velocidad": 74,
+        "tecnica": 78,
+        "pase": 78,
+        "posicionamiento": 78,
+        "vision": 74,
+        "disparo": 76
+      },
+      "media": 76.33,
+      "virtudes": [
+        "Versatil"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/emre-can.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/372.webp"
+    },
+    {
+      "id": 373,
+      "nombre": "Romelu Menama",
+      "apellidos": "Lukaku Bolingoli",
+      "nombre_carta": "Lukaku",
+      "nacionalidad": "BEL",
+      "fecha_nacimiento": "1993-05-13",
+      "altura": 191,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero formado en el Anderlecht, máximo goleador de la historia de Bélgica. Ganó la Serie A de 2021 con el Inter, como mejor jugador del campeonato, y la de 2025 con el Nápoles. Jugó también en el Everton, el Manchester United y el Chelsea.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 82,
+        "finalizacion": 95,
+        "desmarque": 90,
+        "creatividad": 80,
+        "agresividad": 96
+      },
+      "media": 88.5,
+      "virtudes": [
+        "Matador",
+        "Potente",
+        "Robusto",
+        "Rematador"
+      ],
+      "defectos": [
+        "Torpe"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/romelu-lukaku.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/373.webp"
+    },
+    {
+      "id": 374,
+      "nombre": "Paul Labile",
+      "apellidos": "Pogba",
+      "nombre_carta": "Pogba",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1993-03-15",
+      "altura": 191,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MII"
+      ],
+      "historia": "Centrocampista formado en el Le Havre y el Manchester United que ganó cuatro Serie A seguidas con la Juventus y el Golden Boy de 2013. Campeón del Mundo con Francia en 2018, con un gol en la final. Tras una sanción por dopaje volvió en 2025 con el Mónaco.",
+      "stats": {
+        "velocidad": 82,
+        "tecnica": 92,
+        "pase": 90,
+        "posicionamiento": 84,
+        "vision": 90,
+        "disparo": 90
+      },
+      "media": 88,
+      "virtudes": [
+        "Potente",
+        "Filigranas",
+        "Elegante",
+        "BoxToBox"
+      ],
+      "defectos": [
+        "Estrellita",
+        "Fragil"
+      ],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/paul-pogba.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/374.webp"
+    },
+    {
+      "id": 375,
+      "nombre": "Min-jae",
+      "apellidos": "Kim",
+      "nombre_carta": "Kim Min-jae",
+      "nacionalidad": "KOR",
+      "fecha_nacimiento": "1996-11-15",
+      "altura": 190,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central surcoreano que destacó en el Fenerbahçe y fue elegido mejor defensa de la Serie A al ganar el título de 2023 con el Nápoles. Ese verano fichó por el Bayern de Múnich, con el que ganó la Bundesliga de 2025.",
+      "stats": {
+        "velocidad": 84,
+        "tecnica": 80,
+        "tackling": 92,
+        "anticipacion": 92,
+        "marcaje": 92,
+        "liderazgo": 88
+      },
+      "media": 88,
+      "virtudes": [
+        "MuroDefensivo",
+        "Robusto",
+        "Infranqueable",
+        "Volador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/kim-min-jae.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/375.webp"
+    },
+    {
+      "id": 377,
+      "nombre": "Philippe",
+      "apellidos": "Coutinho Correia",
+      "nombre_carta": "Coutinho",
+      "nacionalidad": "BRA",
+      "fecha_nacimiento": "1992-06-12",
+      "altura": 172,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO",
+        "MII",
+        "EI"
+      ],
+      "historia": "Mediapunta formado en el Vasco da Gama que se convirtió en estrella del Liverpool. Fichó por el Barcelona en 2018 y, cedido en el Bayern de Múnich, ganó el triplete de 2020. Campeón de la Copa América 2019 con Brasil.",
+      "stats": {
+        "velocidad": 82,
+        "tecnica": 94,
+        "pase": 90,
+        "posicionamiento": 82,
+        "vision": 92,
+        "disparo": 90
+      },
+      "media": 88.33,
+      "virtudes": [
+        "Filigranas",
+        "JugadorEntreLineas",
+        "LanzadorFaltas",
+        "Elegante"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/philippe-coutinho.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/377.webp"
+    },
+    {
+      "id": 378,
+      "nombre": "Raheem Shaquille",
+      "apellidos": "Sterling",
+      "nombre_carta": "Sterling",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1994-12-08",
+      "altura": 170,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "ED"
+      ],
+      "historia": "Extremo nacido en Jamaica y formado en el QPR y el Liverpool. Con el Manchester City ganó cuatro Premier League. Subcampeón de la Eurocopa 2020 con Inglaterra, en la que marcó tres goles.",
+      "stats": {
+        "velocidad": 94,
+        "regate": 90,
+        "finalizacion": 88,
+        "desmarque": 88,
+        "creatividad": 84,
+        "agresividad": 84
+      },
+      "media": 88,
+      "virtudes": [
+        "Desbordante",
+        "Incansable",
+        "Revulsivo",
+        "Matador"
+      ],
+      "defectos": [],
+      "nivel": "GOAT",
+      "imagen": "/cartas/retratos-propios/raheem-sterling.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/378.webp"
+    },
+    {
+      "id": 379,
+      "nombre": "Jadon Malik",
+      "apellidos": "Sancho",
+      "nombre_carta": "Sancho",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "2000-03-25",
+      "altura": 180,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI"
+      ],
+      "historia": "Extremo formado en el Watford y el Manchester City que explotó en el Borussia Dortmund, con el que llegó a la final de la Liga de Campeones de 2024. Ganó la Conference League de 2025 con el Chelsea. Subcampeón de la Eurocopa 2020 con Inglaterra.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 92,
+        "finalizacion": 82,
+        "desmarque": 82,
+        "creatividad": 88,
+        "agresividad": 70
+      },
+      "media": 83.67,
+      "virtudes": [
+        "Desbordante",
+        "Filigranas",
+        "GuanteEnElPie"
+      ],
+      "defectos": [
+        "Estrellita"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/jadon-sancho.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/379.webp"
+    },
+    {
+      "id": 380,
+      "nombre": "Sergej",
+      "apellidos": "Milinković-Savić",
+      "nombre_carta": "Milinković-Savić",
+      "nacionalidad": "SRB",
+      "fecha_nacimiento": "1995-02-27",
+      "altura": 192,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MCO"
+      ],
+      "historia": "Centrocampista serbio nacido en Lleida que fue la referencia de la Lazio durante ocho temporadas, con la que ganó la Copa de Italia de 2019. Campeón del Mundial sub-20 de 2015 con Serbia. En 2023 fichó por el Al-Hilal.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 88,
+        "pase": 86,
+        "posicionamiento": 84,
+        "vision": 86,
+        "disparo": 88
+      },
+      "media": 84,
+      "virtudes": [
+        "Cabeceador",
+        "Elegante",
+        "Llegador"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/sergej-milinkovic-savic.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/380.webp"
+    },
+    {
+      "id": 381,
+      "nombre": "Bamidele Jermaine",
+      "apellidos": "Alli",
+      "nombre_carta": "Dele Alli",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1996-04-11",
+      "altura": 188,
+      "demarcacion": "MED",
+      "posicion": [
+        "MCO",
+        "MC",
+        "SD"
+      ],
+      "historia": "Mediapunta formado en el Milton Keynes Dons que se convirtió en una estrella del Tottenham, dos veces mejor jugador joven de la Premier League. Semifinalista del Mundial 2018 con Inglaterra, en el que marcó.",
+      "stats": {
+        "velocidad": 80,
+        "tecnica": 86,
+        "pase": 82,
+        "posicionamiento": 82,
+        "vision": 84,
+        "disparo": 88
+      },
+      "media": 83.67,
+      "virtudes": [
+        "Llegador",
+        "JugadorEntreLineas",
+        "Filigranas"
+      ],
+      "defectos": [
+        "Estrellita"
+      ],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/dele-alli.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/381.webp"
+    },
+    {
+      "id": 382,
+      "nombre": "Charles Joseph John",
+      "apellidos": "Hart",
+      "nombre_carta": "Joe Hart",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1987-04-19",
+      "altura": 196,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero formado en el Shrewsbury Town que ganó dos Premier League con el Manchester City y cuatro Guantes de Oro. Titular de Inglaterra en el Mundial 2014 y en las Eurocopas de 2012 y 2016. Cerró su carrera en el Celtic, con el que ganó tres ligas escocesas.",
+      "stats": {
+        "agilidad": 86,
+        "colocacion": 86,
+        "distribucion": 76,
+        "aereo": 84,
+        "defensa": 84,
+        "liderazgo": 86
+      },
+      "media": 83.67,
+      "virtudes": [
+        "Santo",
+        "Capitania",
+        "Carismatico"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/joe-hart.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/382.webp"
+    },
+    {
+      "id": 383,
+      "nombre": "Leroy Aziz",
+      "apellidos": "Sané",
+      "nombre_carta": "Sané",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1996-01-11",
+      "altura": 183,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI"
+      ],
+      "historia": "Extremo zurdo formado en el Schalke 04 que ganó dos Premier League con el Manchester City y fue mejor jugador joven de la Premier en 2018. En el Bayern de Múnich, al que llegó en 2020, ganó varias Bundesligas. En 2025 fichó por el Galatasaray.",
+      "stats": {
+        "velocidad": 94,
+        "regate": 90,
+        "finalizacion": 84,
+        "desmarque": 82,
+        "creatividad": 84,
+        "agresividad": 72
+      },
+      "media": 84.33,
+      "virtudes": [
+        "Desbordante",
+        "LanzadorFaltas",
+        "Revulsivo"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/leroy-sane.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/383.webp"
+    },
+    {
+      "id": 384,
+      "nombre": "Kalidou",
+      "apellidos": "Koulibaly",
+      "nombre_carta": "Koulibaly",
+      "nacionalidad": "SEN",
+      "fecha_nacimiento": "1991-06-20",
+      "altura": 187,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central nacido en Francia que fue el pilar del Nápoles durante ocho temporadas. Capitán de Senegal, campeón de la Copa de África de 2021. Pasó por el Chelsea y en 2023 fichó por el Al-Hilal.",
+      "stats": {
+        "velocidad": 82,
+        "tecnica": 78,
+        "tackling": 88,
+        "anticipacion": 86,
+        "marcaje": 88,
+        "liderazgo": 86
+      },
+      "media": 84.67,
+      "virtudes": [
+        "MuroDefensivo",
+        "Robusto",
+        "Jerarquia"
+      ],
+      "defectos": [],
+      "nivel": "Legendario",
+      "imagen": "/cartas/retratos-propios/kalidou-koulibaly.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/384.webp"
+    },
+    {
+      "id": 385,
+      "nombre": "Mauro Emanuel",
+      "apellidos": "Icardi Rivero",
+      "nombre_carta": "Icardi",
+      "nacionalidad": "ARG",
+      "fecha_nacimiento": "1993-02-19",
+      "altura": 181,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC"
+      ],
+      "historia": "Delantero formado en La Masia que fue capitán del Inter y dos veces máximo goleador de la Serie A. Ganó dos ligas francesas con el PSG y es ídolo del Galatasaray, con el que ganó varias ligas turcas.",
+      "stats": {
+        "velocidad": 74,
+        "regate": 76,
+        "finalizacion": 92,
+        "desmarque": 90,
+        "creatividad": 70,
+        "agresividad": 82
+      },
+      "media": 80.67,
+      "virtudes": [
+        "Matador",
+        "Rematador"
+      ],
+      "defectos": [
+        "Polemico"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/mauro-icardi.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/385.webp"
+    },
+    {
+      "id": 386,
+      "nombre": "Kalvin Mark",
+      "apellidos": "Phillips",
+      "nombre_carta": "Kalvin Phillips",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1995-12-02",
+      "altura": 178,
+      "demarcacion": "MED",
+      "posicion": [
+        "MD",
+        "MC"
+      ],
+      "historia": "Mediocentro de la cantera del Leeds United, con el que ascendió a la Premier en 2020. Subcampeón de la Eurocopa 2020 con Inglaterra. En 2022 fichó por el Manchester City, con el que ganó el triplete de 2023.",
+      "stats": {
+        "velocidad": 74,
+        "tecnica": 80,
+        "pase": 82,
+        "posicionamiento": 86,
+        "vision": 80,
+        "disparo": 72
+      },
+      "media": 79,
+      "virtudes": [
+        "RecuperadorTrasPerdida",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/kalvin-phillips.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/386.webp"
+    },
+    {
+      "id": 387,
+      "nombre": "Tanguy",
+      "apellidos": "Ndombele Alvaro",
+      "nombre_carta": "Ndombele",
+      "nacionalidad": "FRA",
+      "fecha_nacimiento": "1996-12-28",
+      "altura": 181,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MCO"
+      ],
+      "historia": "Centrocampista formado en el Amiens que deslumbró en el Olympique de Lyon. En 2019 fichó por el Tottenham por un récord del club y ganó la Serie A de 2023 cedido en el Nápoles.",
+      "stats": {
+        "velocidad": 76,
+        "tecnica": 88,
+        "pase": 80,
+        "posicionamiento": 78,
+        "vision": 84,
+        "disparo": 74
+      },
+      "media": 80,
+      "virtudes": [
+        "Filigranas",
+        "PrimerToque"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/tanguy-ndombele.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/387.webp"
+    },
+    {
+      "id": 388,
+      "nombre": "Jack Peter",
+      "apellidos": "Grealish",
+      "nombre_carta": "Grealish",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1995-09-10",
+      "altura": 180,
+      "demarcacion": "DEL",
+      "posicion": [
+        "EI",
+        "MCO"
+      ],
+      "historia": "Mediapunta de la cantera del Aston Villa, al que devolvió a la Premier como capitán. En 2021 fichó por el Manchester City por un récord británico y ganó el triplete de 2023. Subcampeón de la Eurocopa 2020 con Inglaterra.",
+      "stats": {
+        "velocidad": 80,
+        "regate": 88,
+        "finalizacion": 74,
+        "desmarque": 76,
+        "creatividad": 86,
+        "agresividad": 72
+      },
+      "media": 79.33,
+      "virtudes": [
+        "Filigranas",
+        "GuanteEnElPie"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/jack-grealish.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/388.webp"
+    },
+    {
+      "id": 389,
+      "nombre": "Serge David",
+      "apellidos": "Gnabry",
+      "nombre_carta": "Gnabry",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1995-07-14",
+      "altura": 176,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI",
+        "SD"
+      ],
+      "historia": "Extremo formado en el Arsenal que triunfó en el Bayern de Múnich: varias Bundesligas y la Liga de Campeones de 2020, en la que marcó cuatro goles al Tottenham en un partido. Medalla de plata en Río 2016 con Alemania.",
+      "stats": {
+        "velocidad": 90,
+        "regate": 84,
+        "finalizacion": 84,
+        "desmarque": 82,
+        "creatividad": 78,
+        "agresividad": 74
+      },
+      "media": 82,
+      "virtudes": [
+        "Desbordante",
+        "Matador"
+      ],
+      "defectos": [
+        "Fragil"
+      ],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/serge-gnabry.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/389.webp"
+    },
+    {
+      "id": 390,
+      "nombre": "Benjamin James",
+      "apellidos": "Chilwell",
+      "nombre_carta": "Chilwell",
+      "nacionalidad": "ENG",
+      "fecha_nacimiento": "1996-12-21",
+      "altura": 178,
+      "demarcacion": "DEF",
+      "posicion": [
+        "LI",
+        "CI"
+      ],
+      "historia": "Lateral izquierdo formado en el Leicester City. En 2020 fichó por el Chelsea, con el que ganó la Liga de Campeones de 2021. Subcampeón de la Eurocopa 2020 con Inglaterra.",
+      "stats": {
+        "velocidad": 84,
+        "tecnica": 80,
+        "tackling": 78,
+        "anticipacion": 78,
+        "marcaje": 76,
+        "liderazgo": 76
+      },
+      "media": 78.67,
+      "virtudes": [
+        "Llegador",
+        "Incansable"
+      ],
+      "defectos": [],
+      "nivel": "Crack",
+      "imagen": "/cartas/retratos-propios/ben-chilwell.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/390.webp"
+    },
+    {
+      "id": 391,
+      "nombre": "Franck Yannick",
+      "apellidos": "Kessié",
+      "nombre_carta": "Kessié",
+      "nacionalidad": "CIV",
+      "fecha_nacimiento": "1996-12-19",
+      "altura": 183,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC",
+        "MD"
+      ],
+      "historia": "Centrocampista marfileño que destacó en la Atalanta y ganó la Serie A de 2022 con el Milan. Pasó por el Barcelona y en 2023 fichó por el Al-Ahli. Campeón de la Copa de África de 2023 con Costa de Marfil.",
+      "stats": {
+        "velocidad": 78,
+        "tecnica": 74,
+        "pase": 76,
+        "posicionamiento": 78,
+        "vision": 72,
+        "disparo": 78
+      },
+      "media": 76,
+      "virtudes": [
+        "Potente"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/franck-kessie.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/391.webp"
+    },
+    {
+      "id": 392,
+      "nombre": "Arthur Henrique",
+      "apellidos": "Ramos de Oliveira Melo",
+      "nombre_carta": "Arthur",
+      "nacionalidad": "BRA",
+      "fecha_nacimiento": "1996-08-12",
+      "altura": 171,
+      "demarcacion": "MED",
+      "posicion": [
+        "MC"
+      ],
+      "historia": "Centrocampista brasileño formado en el Grêmio, con el que ganó la Copa Libertadores de 2017. Jugó en el Barcelona y la Juventus. Campeón de la Copa América 2019 con Brasil.",
+      "stats": {
+        "velocidad": 70,
+        "tecnica": 82,
+        "pase": 82,
+        "posicionamiento": 76,
+        "vision": 76,
+        "disparo": 64
+      },
+      "media": 75,
+      "virtudes": [
+        "PrimerToque"
+      ],
+      "defectos": [
+        "DeCristal"
+      ],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/arthur-melo.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/392.webp"
+    },
+    {
+      "id": 393,
+      "nombre": "Federico",
+      "apellidos": "Chiesa",
+      "nombre_carta": "Chiesa",
+      "nacionalidad": "ITA",
+      "fecha_nacimiento": "1997-10-25",
+      "altura": 175,
+      "demarcacion": "DEL",
+      "posicion": [
+        "ED",
+        "EI"
+      ],
+      "historia": "Extremo formado en la Fiorentina que ganó la Eurocopa 2020 con Italia, con un gol en la semifinal. Pasó por la Juventus y en 2024 fichó por el Liverpool, con el que ganó la Premier League de 2025.",
+      "stats": {
+        "velocidad": 88,
+        "regate": 84,
+        "finalizacion": 78,
+        "desmarque": 76,
+        "creatividad": 74,
+        "agresividad": 72
+      },
+      "media": 78.67,
+      "virtudes": [
+        "Desbordante"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/federico-chiesa.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/393.webp"
+    },
+    {
+      "id": 394,
+      "nombre": "Milan",
+      "apellidos": "Škriniar",
+      "nombre_carta": "Škriniar",
+      "nacionalidad": "SVK",
+      "fecha_nacimiento": "1995-02-11",
+      "altura": 188,
+      "demarcacion": "DEF",
+      "posicion": [
+        "DCD",
+        "DCI"
+      ],
+      "historia": "Central eslovaco que destacó en la Sampdoria y ganó la Serie A de 2021 con el Inter. En 2023 fichó por el PSG. Capitán de Eslovaquia.",
+      "stats": {
+        "velocidad": 72,
+        "tecnica": 72,
+        "tackling": 80,
+        "anticipacion": 80,
+        "marcaje": 80,
+        "liderazgo": 78
+      },
+      "media": 77,
+      "virtudes": [
+        "MuroDefensivo"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/milan-skriniar.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/394.webp"
+    },
+    {
+      "id": 395,
+      "nombre": "Loris Sven",
+      "apellidos": "Karius",
+      "nombre_carta": "Karius",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1993-06-22",
+      "altura": 189,
+      "demarcacion": "POR",
+      "posicion": [
+        "POR"
+      ],
+      "historia": "Portero formado en el Stuttgart y el Manchester City que destacó en el Mainz. Fue titular del Liverpool en la final de la Liga de Campeones de 2018 y del Newcastle en la de la Copa de la Liga de 2023.",
+      "stats": {
+        "agilidad": 80,
+        "colocacion": 74,
+        "distribucion": 70,
+        "aereo": 78,
+        "defensa": 74,
+        "liderazgo": 70
+      },
+      "media": 74.33,
+      "virtudes": [
+        "JugadorDeCampo"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/loris-karius.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/395.webp"
+    },
+    {
+      "id": 396,
+      "nombre": "Timo",
+      "apellidos": "Werner",
+      "nombre_carta": "Werner",
+      "nacionalidad": "DEU",
+      "fecha_nacimiento": "1996-03-06",
+      "altura": 180,
+      "demarcacion": "DEL",
+      "posicion": [
+        "DC",
+        "EI"
+      ],
+      "historia": "Delantero de la cantera del Stuttgart que explotó en el RB Leipzig, uno de sus máximos goleadores. Ganó la Liga de Campeones de 2021 con el Chelsea. Campeón y máximo goleador de la Copa Confederaciones 2017 con Alemania.",
+      "stats": {
+        "velocidad": 92,
+        "regate": 76,
+        "finalizacion": 76,
+        "desmarque": 80,
+        "creatividad": 68,
+        "agresividad": 70
+      },
+      "media": 77,
+      "virtudes": [
+        "Desbordante"
+      ],
+      "defectos": [],
+      "nivel": "Superclase",
+      "imagen": "/cartas/retratos-propios/timo-werner.webp",
+      "imagen_bg": "/cartas/fondos/jugadores/396.webp"
+    }
+  ]
+}

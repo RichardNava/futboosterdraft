@@ -13,7 +13,8 @@ import { PantallaCargando } from '../componentes/Esqueleto';
  */
 export function Partido() {
   const { partidaId, partidoId } = useParams();
-  const [modalidad, setModalidad] = useState<'rapida' | '2d' | 'reproduccion' | null>(null);
+  // La elegida al pulsar «Comenzar partido» (AvisoPartido), si la hay; la API la confirma igualmente.
+  const [modalidad, setModalidad] = useState<'rapida' | '2d' | 'reproduccion' | null>(() => usePartidaActiva.getState().modalidadPartido);
   const actualizar = usePartidaActiva((s) => s.actualizar);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export function Partido() {
     };
   }, [partidoId, actualizar]);
 
-  if (modalidad === null) return <PantallaCargando forma="campo" texto="Cargando el partido…" />;
+  if (modalidad === null) return <PantallaCargando forma="campo" texto="Cargando el partido…" diferida />;
   if (modalidad === 'reproduccion') return <Navigate to={`/partidas/${partidaId}/reproduccion/${partidoId}`} replace />;
   return modalidad === '2d' ? <Partido2D /> : <PartidoRapido />;
 }

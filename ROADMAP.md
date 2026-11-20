@@ -40,7 +40,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
 | [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Hecho | — |
 | [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-08, INI-09 |
-| [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1), 011 | P1 | Parcial | INI-08, INI-05 |
+| [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1), 011, 016 | P1 | Parcial | INI-08, INI-05 |
 | [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10, INI-11 |
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
@@ -177,6 +177,11 @@ cuesta simular los partidos.
   `pnpm balance --n 1000` pasa 76 de 76 ([informe-8.0.0.md](specs/015-peso-individual-estadisticas/informe-8.0.0.md))
   y la 8.0.0 tarda un 5–6 % más que la 7.0.0. Pendiente: el recorrido a mano del
   [quickstart](specs/015-peso-individual-estadisticas/quickstart.md) (paso 5, en la aplicación).
+- **Para la próxima versión del motor (pedido el 2026-11-19, en la revisión de la spec 016)**: nueva curva de fatiga.
+  Primera parte: desde el minuto 30, −1 % de energía por minuto hasta un suelo de 85 %; en el descanso, +10 %; segunda
+  parte: desde el minuto 55 (hoy 65), −1 % por minuto. Las virtudes y defectos (Incansable, Motivador, Fatigado) y las
+  tácticas (presión alta, marcaje individual) la siguen modulando. Es un modelo nuevo (suelo por parte y recuperación en
+  el descanso), no un cambio de umbral: pide versión de parámetros, pruebas de equivalencia y `pnpm balance`.
 - **Evidencia**:
   - NPC: 003/SC-010, SC-010a y SC-010b cumplidos en la ronda 4. **Hecho.**
   - Motor: ronda 14 de [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md), estado
@@ -334,6 +339,17 @@ cuesta simular los partidos.
   Hecho (2026-11-05): los 300 retratos están en `apps/web/public/cartas/retratos-propios/` y la validación de Core
   rechaza los de terceros («retratos de terceros: 0» en el sumario). Ninguna carta tiene aún identidad alternativa:
   en «alternativa» todas usan el nombre genérico (`Defensa 40`) y la silueta.
+- **Hecho (2026-11-20): [016](specs/016-expansiones-reales/spec.md).** Las cuatro primeras
+  expansiones de pago (Remontada Histórica, Ídolos Dorados, Saque Ardiente y Estrellas Fulgurantes), de 24 jugadores
+  reales cada una, a 2400 fragmentos y con un sobre de regalo; Kimmich entra en el Core y Verratti pasa a Estrellas
+  Fulgurantes; se retiran las cartas y colecciones de prueba (en el seed, repetible). El catálogo queda en 396 cartas.
+  Siete selecciones nuevas (AUT, CRI, ISL, KOR, PER, PRY y XKX). Retratos y carteles revisados y recorridos a mano
+  del quickstart aprobados; en la revisión se añadieron la carta ampliable en el detalle, el sobre de regalo ampliable
+  y el sonido de compra. El material de origen (`./expansiones/`) se retiró; quedan las listas y rarezas en
+  `specs/016-expansiones-reales/fuentes/`.
+- **Nota de economía (spec 016, R13)**: desfragmentar pasa a 25 / 75 / 125 / 175, así que un sobre de la tienda
+  devuelve de media 510 de los 1000 que cuesta (antes 355). Sigue por debajo del precio, pero acelera los fragmentos de
+  quien desfragmenta: a revisar en la spec de economía.
 - **Dependencias**: INI-08 (modelo de colecciones) e INI-05 (el equilibrio del catálogo se mide con el motor ya calibrado).
 - **Criterios de cierre**: los de su spec, como mínimo: `pnpm seed` carga el catálogo nuevo; validación del catálogo
   en verde; serie Core dentro de los criterios estadísticos; derechos de todo el contenido revisados.

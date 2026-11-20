@@ -194,7 +194,10 @@ export interface Coleccion {
   /** Precio de venta mientras no haya licencia de imagen (spec 011, FR-002). */
   precioFragmentos?: number;
   destacadas?: number[];
-  cartas: { id: number; version: VersionCarta }[];
+  /** Sobre (cosmético) que regala al comprarla (spec 016, FR-025). */
+  sobreRegalo?: string;
+  /** `numero`: posición dentro de la colección, 1..N (spec 016, FR-005); ausente en el Core. */
+  cartas: { id: number; version: VersionCarta; numero?: number }[];
 }
 
 /** Valores de los stats de un jugador en el orden canónico de su demarcación. */

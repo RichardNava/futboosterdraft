@@ -5,6 +5,7 @@ import type { MotivoMovimiento, ViaCarta } from '@fbd/protocol';
 import { sql } from 'drizzle-orm';
 import { boolean, check, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { jugadores, usuarios } from './base';
+import { cosmeticos } from './cosmeticos';
 
 /** Tabla de colecciones de cartas. */
 export const colecciones = pgTable(
@@ -20,10 +21,11 @@ export const colecciones = pgTable(
     destacadas: integer('destacadas').array().notNull().default(sql`'{}'::integer[]`),
     /** Orden en la tienda. */
     orden: integer('orden').notNull(),
+    /** Sobre que regala la colección al comprarla (spec 016, FR-025; migración 0017). */
+    sobreRegalo: text('sobre_regalo').references(() => cosmeticos.id),
   },
   (t) => [
     check('colecciones_tipo_ck', sql`${t.tipo} in ('basica','pago')`),
-    check('colecciones_precio_ck', sql`${t.tipo} = 'basica' or ${t.precioCentimos} > 0`),
     check('colecciones_precio_fragmentos_ck', sql`${t.tipo} = 'basica' or coalesce(${t.precioFragmentos}, 0) > 0`),
   ],
 );
@@ -39,11 +41,14 @@ export const coleccionesCartas = pgTable(
       .notNull()
       .references(() => jugadores.id),
     version: text('version').notNull().default('normal'),
+    /** Número de la carta dentro de la colección, 1..N; null en el Core (spec 016, FR-005). */
+    numero: integer('numero'),
   },
   (t) => [
     primaryKey({ name: 'colecciones_cartas_pk', columns: [t.coleccionId, t.jugadorId] }),
     index('colecciones_cartas_jugador_idx').on(t.jugadorId),
     check('colecciones_cartas_version_ck', sql`${t.version} in ('normal')`),
+    check('colecciones_cartas_numero_ck', sql`${t.numero} is null or ${t.numero} >= 1`),
   ],
 );
 

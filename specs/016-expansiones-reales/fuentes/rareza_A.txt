@@ -1,0 +1,37 @@
+GOAT (6)
+--------------
+1,Thomas Müller
+2,Ter Stegen
+3,Thiago Silva
+4,David Alaba
+5,Kante
+6,Alexis Sanchez
+
+
+
+Legendario (6)
+--------------
+7,Isco
+8,Juan Cuadrado
+9,Yan Sommer
+10,Iñigo Martinez
+11,Roque Santa Cruz
+12,Lukas Podolski
+
+Crack   (6)
+--------------
+13,Carlos Bacca
+14,Ever Banega
+15,Francisco Trincao
+16,Fernando Muslera
+17,Alejandro Balde
+18,Cesar Azpilicueta
+
+Superclase (6)
+--------------
+19,Gylfi Sigurdsson
+20,Crysencio Summerville
+21,Edouard Mendy
+22,Nathan Zeze
+23,Konrad Laimer
+24,Yerri Kina

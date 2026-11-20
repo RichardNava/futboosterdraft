@@ -5,6 +5,7 @@ import { reproducir } from '../sonido/sonido';
 import { useSesion } from '../estado/sesion';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Trofeo } from '../componentes/arte/Trofeo';
+import { Fragmentos } from '../componentes/Fragmentos';
 
 interface Props {
   partidaId: string;
@@ -46,7 +47,9 @@ export function PantallaCampeon({ partidaId, campeon, recompensaFragmentos, onVo
       {/* Spec 006 (FR-019, SC-008): la recompensa del campeón registrado o la invitación a registrarse. */}
       {recompensaFragmentos ? (
         <p className="final-recompensa">
-          <strong>+{recompensaFragmentos} fragmentos</strong> · <Link to="/coleccion">Ver mi colección</Link>
+          <strong>
+            <Fragmentos cantidad={recompensaFragmentos} signo />
+          </strong> · <Link to="/coleccion">Ver mi colección</Link>
         </p>
       ) : (
         invitado && (

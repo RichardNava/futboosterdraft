@@ -18,6 +18,8 @@ export const cosmeticos = pgTable(
     precioCentimos: integer('precio_centimos'),
     precioFragmentos: integer('precio_fragmentos'),
     activo: boolean('activo').notNull().default(true),
+    /** false en los sobres que solo se consiguen con su expansión (spec 016, FR-026; migración 0017). */
+    vendible: boolean('vendible').notNull().default(true),
     orden: integer('orden').notNull(),
     /** Solo celebraciones (spec 012, migración 0015). */
     datos: jsonb('datos').$type<DatosCelebracion>(),

@@ -75,6 +75,18 @@ export const MsgPartidoInicio = z.object({
   modoIncidencias: ModoIncidenciasSchema.optional(),
 });
 
+/**
+ * Spec 014 (FR-016 a FR-018): energía y penalización de todos los jugadores en el campo de los dos equipos, calculadas
+ * por el motor.
+ */
+const EnergiaEnCampoSchema = z.array(
+  z.object({
+    jugadorId: z.number().int(),
+    energia: z.number().int().min(0).max(100),
+    penalizacion: z.number().int().min(0).max(100),
+  }),
+);
+
 export const MsgPartidoTramo = z.object({
   t: z.literal('partido.tramo'),
   partidoId: z.string(),
@@ -90,6 +102,8 @@ export const MsgPartidoTramo = z.object({
   acciones: z.array(AccionVisibleSchema),
   /** Solo en 2D: fotogramas v2 del tramo (research R5). */
   fotogramas: z.array(FotogramaSchema).optional(),
+  /** Solo en 2D: energía al final del tramo, para «Gestionar equipo» con el balón en juego (spec 016, ronda 2). */
+  energia: EnergiaEnCampoSchema.optional(),
   /** Los tramos ya enviados no se rehacen nunca (research R6). */
   provisional: z.literal(false),
 });
@@ -106,19 +120,8 @@ export const MsgPartidoPausa = z.object({
     .array(z.object({ jugadorId: z.number().int(), motivo: z.enum(['lesion', 'expulsion']), minuto: z.string(), tick: z.number() }))
     .optional(),
   sustitucionesRestantes: z.number().int().optional(),
-  /**
-   * Spec 014 (FR-016 a FR-018): energía y penalización de todos los jugadores en el campo de los dos equipos, calculadas
-   * por el motor. Opcional para no romper clientes abiertos durante un despliegue.
-   */
-  energia: z
-    .array(
-      z.object({
-        jugadorId: z.number().int(),
-        energia: z.number().int().min(0).max(100),
-        penalizacion: z.number().int().min(0).max(100),
-      }),
-    )
-    .optional(),
+  /** Spec 014: opcional para no romper clientes abiertos durante un despliegue. */
+  energia: EnergiaEnCampoSchema.optional(),
 });
 
 export const MsgPartidoDecisionAplicada = z.object({

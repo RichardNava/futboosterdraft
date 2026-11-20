@@ -51,6 +51,8 @@ test('control total en la 2D: parada por un lance propio, aviso y gestión del e
   const aviso = (await gestion.locator('.aviso-parada').textContent()) ?? '';
   if (/Lesión de .*Te queda/.test(aviso)) {
     await expect(volver).toHaveAttribute('aria-disabled', 'true');
+    // Spec 016, ronda 3: «Sustituye al lesionado para seguir», en rojo.
+    await expect(page.locator('.barra-principal-estado .motivo.grave')).toHaveText('Sustituye al lesionado para seguir');
     return;
   }
   // Sin cambios: se vuelve al partido y sigue.

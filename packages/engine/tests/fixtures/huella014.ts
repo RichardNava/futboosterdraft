@@ -4,10 +4,19 @@
  * cerrar el motor 7.0.0 y no se regenera durante la refactorización (FR-030): cualquier diferencia es un fallo.
  */
 import { createHash } from 'node:crypto';
-import { PARAMETROS_V7, semillaDesdeTexto, type ParametrosEquilibrado, type Tactica, type Virtud } from '@fbd/domain';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import {
+  PARAMETROS_V7,
+  semillaDesdeTexto,
+  type Jugador,
+  type ParametrosEquilibrado,
+  type Tactica,
+  type Virtud,
+} from '@fbd/domain';
 import { avanzar, crearPartido } from '../../src/index';
 import { clonar, equipoSintetico } from '../../../../tools/balance/src/equipos';
-import { draftMesa, electorNPC } from '../../../../tools/balance/src/checks/npc';
+import { core, draftMesa, electorNPC } from '../../../../tools/balance/src/checks/npc';
 
 const FORMACIONES = ['4-4-2', '4-3-3', '4-2-3-1', '3-5-2', '5-3-2', '3-4-3'] as const;
 const TACTICAS: Partial<Tactica>[] = [
@@ -46,27 +55,77 @@ export function partidoHuella(i: number, p: ParametrosEquilibrado = PARAMETROS_V
     tactica: TACTICAS[i % TACTICAS.length]!,
     virtudes: RASGOS[i % RASGOS.length]!,
   });
-  const visitante = clonar(equipoSintetico({ semilla: `huella-${i}-b`, formacion: FORMACIONES[(i + 3) % FORMACIONES.length], tactica: TACTICAS[(i + 2) % TACTICAS.length]! }), 'visitante');
+  const visitante = clonar(
+    equipoSintetico({
+      semilla: `huella-${i}-b`,
+      formacion: FORMACIONES[(i + 3) % FORMACIONES.length],
+      tactica: TACTICAS[(i + 2) % TACTICAS.length]!,
+    }),
+    'visitante',
+  );
   // Los ids de los jugadores sintéticos salen de un contador global: se comparan por su posición en las convocatorias.
-  const orden = new Map([...local.titulares.map((t) => t.jugador), ...local.suplentes, ...visitante.titulares.map((t) => t.jugador), ...visitante.suplentes].map((j, k) => [j.id, k]));
+  const orden = new Map(
+    [
+      ...local.titulares.map((t) => t.jugador),
+      ...local.suplentes,
+      ...visitante.titulares.map((t) => t.jugador),
+      ...visitante.suplentes,
+    ].map((j, k) => [j.id, k]),
+  );
   // La huella-014 es de la 7.0.0 (spec 015, research R1): se sigue simulando igual con el motor de la 8.0.0.
-  const r = avanzar(crearPartido({ version: p.version, parametros: p, semilla: semillaDesdeTexto(`huella-014-${i}`), eliminatoria: i % 4 === 0, local, visitante }), 'final', { fotogramas: true });
+  const r = avanzar(
+    crearPartido({
+      version: p.version,
+      parametros: p,
+      semilla: semillaDesdeTexto(`huella-014-${i}`),
+      eliminatoria: i % 4 === 0,
+      local,
+      visitante,
+    }),
+    'final',
+    { fotogramas: true },
+  );
   return {
     semilla: i,
     marcador: r.marcador,
-    eventos: r.estado.eventos.map((e) => [e.tipo, e.tick, e.equipo, e.jugadores.map((j) => orden.get(j.jugadorId) ?? -1)]),
+    eventos: r.estado.eventos.map((e) => [
+      e.tipo,
+      e.tick,
+      e.equipo,
+      e.jugadores.map((j) => orden.get(j.jugadorId) ?? -1),
+    ]),
     estadisticas: r.estadisticas,
     hashFotogramas: createHash('sha256').update(JSON.stringify(r.fotogramas)).digest('hex'),
   };
 }
 
+/** El Core de antes de la spec 016 (Verratti en lugar de Kimmich), con el que se grabaron los drafts de las huellas. */
+function coreAnterior(): Jugador[] {
+  const ruta = fileURLToPath(new URL('../../../../data/expansiones-reales.json', import.meta.url));
+  const verratti = (JSON.parse(readFileSync(ruta, 'utf-8')) as { jugadores: Jugador[] }).jugadores.find(
+    (j) => j.id === 299,
+  )!;
+  return [...core().filter((j) => j.id !== 376), verratti].sort((a, b) => a.id - b.id);
+}
+
 /** Draft `i` (1–20) de la huella: las cartas de cada NPC. */
-export function draftHuella(i: number, p: ParametrosEquilibrado = PARAMETROS_V7): { semilla: number; picks: Record<string, number[]> } {
+export function draftHuella(
+  i: number,
+  p: ParametrosEquilibrado = PARAMETROS_V7,
+): { semilla: number; picks: Record<string, number[]> } {
   const semilla = `huella-014-draft-${i}`;
   const { elegirDe } = electorNPC(semilla, PARTICIPANTES.length, p);
   const nivel = (pid: string) => pid.slice(0, pid.lastIndexOf('-')) as (typeof NIVELES_DRAFT)[number];
-  const plantillas = draftMesa(semilla, PARTICIPANTES, (pid, sobre, parcial, ronda, turno) => elegirDe(nivel(pid), pid, sobre, parcial, ronda, turno));
-  return { semilla: i, picks: Object.fromEntries(Object.entries(plantillas).map(([pid, js]) => [pid, js.map((j) => j.id)])) };
+  const plantillas = draftMesa(
+    semilla,
+    PARTICIPANTES,
+    (pid, sobre, parcial, ronda, turno) => elegirDe(nivel(pid), pid, sobre, parcial, ronda, turno),
+    coreAnterior(),
+  );
+  return {
+    semilla: i,
+    picks: Object.fromEntries(Object.entries(plantillas).map(([pid, js]) => [pid, js.map((j) => j.id)])),
+  };
 }
 
 export const SEMILLAS_PARTIDOS = Array.from({ length: 100 }, (_, i) => i + 1);

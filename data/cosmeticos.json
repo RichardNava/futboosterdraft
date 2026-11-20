@@ -375,6 +375,7 @@
       "gratuito": false,
       "precio_centimos": 50,
       "precio_fragmentos": 250,
+      "vendible": false,
       "orden": 7
     },
     {
@@ -402,6 +403,7 @@
       "gratuito": false,
       "precio_centimos": 50,
       "precio_fragmentos": 250,
+      "vendible": false,
       "orden": 10
     },
     {
@@ -429,6 +431,7 @@
       "gratuito": false,
       "precio_centimos": 50,
       "precio_fragmentos": 250,
+      "vendible": false,
       "orden": 13
     },
     {
@@ -583,6 +586,88 @@
       "precio_centimos": 50,
       "precio_fragmentos": 250,
       "orden": 30
+    },
+    {
+      "id": "sobre-25",
+      "tipo": "sobre",
+      "nombre": "Sobre 25",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 31
+    },
+    {
+      "id": "sobre-26",
+      "tipo": "sobre",
+      "nombre": "Sobre 26",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 32
+    },
+    {
+      "id": "sobre-27",
+      "tipo": "sobre",
+      "nombre": "Sobre 27",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 33
+    },
+    {
+      "id": "sobre-28",
+      "tipo": "sobre",
+      "nombre": "Sobre 28",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "vendible": false,
+      "orden": 34
+    },
+    {
+      "id": "sobre-29",
+      "tipo": "sobre",
+      "nombre": "Sobre 29",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 35
+    },
+    {
+      "id": "sobre-30",
+      "tipo": "sobre",
+      "nombre": "Sobre 30",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 36
+    },
+    {
+      "id": "sobre-31",
+      "tipo": "sobre",
+      "nombre": "Sobre 31",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 37
+    },
+    {
+      "id": "sobre-32",
+      "tipo": "sobre",
+      "nombre": "Sobre 32",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 38
+    },
+    {
+      "id": "sobre-33",
+      "tipo": "sobre",
+      "nombre": "Sobre 33",
+      "gratuito": false,
+      "precio_centimos": 50,
+      "precio_fragmentos": 250,
+      "orden": 39
     },
     {
       "id": "celebracion-clasica",
@@ -740,10 +825,10 @@
       "precio_centimos": 199,
       "cosmeticos": [
         "sobre-tinta-y-trama",
-        "sobre-1",
         "sobre-2",
         "sobre-3",
-        "sobre-4"
+        "sobre-25",
+        "sobre-26"
       ]
     },
     {
@@ -754,9 +839,9 @@
       "cosmeticos": [
         "sobre-5",
         "sobre-6",
-        "sobre-7",
         "sobre-8",
-        "sobre-9"
+        "sobre-9",
+        "sobre-27"
       ]
     },
     {
@@ -796,6 +881,19 @@
         "sobre-22",
         "sobre-23",
         "sobre-24"
+      ]
+    },
+    {
+      "id": "pack-sobres-7",
+      "tipo": "sobre",
+      "nombre": "Pack de sobres 7",
+      "precio_centimos": 199,
+      "cosmeticos": [
+        "sobre-29",
+        "sobre-30",
+        "sobre-31",
+        "sobre-32",
+        "sobre-33"
       ]
     }
   ]

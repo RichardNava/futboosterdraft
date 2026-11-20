@@ -55,7 +55,7 @@ export function CaraEnergia({ tramo }: { tramo: TramoEnergia }) {
   );
 }
 
-/** Indicador completo: porcentaje encima, cara y penalización debajo. */
+/** Indicador completo: porcentaje y, debajo, la cara; la penalización la sube el CSS por encima del porcentaje. */
 export function IndicadorEnergia({ energia, penalizacion }: { energia: number; penalizacion: number }) {
   const tramo = tramoEnergia(energia);
   const etiqueta = etiquetaEnergia(energia, penalizacion);

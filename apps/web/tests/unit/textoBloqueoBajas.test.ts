@@ -1,7 +1,7 @@
 /** Texto del botón bloqueado por bajas y de los avisos del equipo (spec 012, T060; FR-027, FR-029). */
 import { describe, expect, it } from 'vitest';
 import { textoAvisoEquipo, textoBloqueoBajas } from '../../src/componentes/textoBloqueoBajas';
-import { textoParada } from '../../src/componentes/textoParada';
+import { iconosParada, textoParada } from '../../src/componentes/textoParada';
 
 const nombres: Record<number, string> = { 1: 'Pérez', 2: 'García', 3: 'López' };
 const nombre = (id: number) => nombres[id] ?? String(id);
@@ -62,5 +62,15 @@ describe('textoParada (spec 012, FR-022)', () => {
         1,
       ),
     ).toBe("Lesión de Pérez (34') y expulsión de García (34'). Te queda 1 cambio.");
+  });
+});
+
+describe('iconosParada (spec 016, ronda 2)', () => {
+  const lance = (jugadorId: number, motivo: 'lesion' | 'expulsion') => ({ jugadorId, motivo, minuto: "34'", tick: 1 });
+  it('balón en el gol, cruz por lesión, tarjeta roja por expulsión, sin repetir', () => {
+    expect(iconosParada('gol', [])).toEqual(['gol']);
+    expect(iconosParada('incidencia', [lance(1, 'lesion')])).toEqual(['lesion']);
+    expect(iconosParada('incidencia', [lance(1, 'expulsion')])).toEqual(['roja']);
+    expect(iconosParada('incidencia', [lance(1, 'expulsion'), lance(2, 'lesion'), lance(3, 'lesion')])).toEqual(['roja', 'lesion']);
   });
 });

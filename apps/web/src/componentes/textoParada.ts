@@ -13,3 +13,12 @@ export function textoParada(incidencias: readonly IncidenciaVista[], nombre: (id
   const cambios = restantes === 0 ? 'No te quedan cambios.' : `Te ${restantes === 1 ? 'queda 1 cambio' : `quedan ${restantes} cambios`}.`;
   return `${lista}. ${cambios}`;
 }
+
+/**
+ * Iconos del aviso de parada (spec 016, ronda 2): el balón en un gol; en una incidencia, la cruz roja por las lesiones y
+ * la tarjeta roja por las expulsiones (la doble amarilla también llega como expulsión).
+ */
+export function iconosParada(motivo: 'gol' | 'incidencia', incidencias: readonly IncidenciaVista[]): ('gol' | 'lesion' | 'roja')[] {
+  if (motivo === 'gol') return ['gol'];
+  return [...new Set(incidencias.map((i) => (i.motivo === 'lesion' ? 'lesion' : 'roja') as 'lesion' | 'roja'))];
+}

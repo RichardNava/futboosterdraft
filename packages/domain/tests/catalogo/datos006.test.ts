@@ -9,13 +9,13 @@ const leer = <T>(fichero: string): T =>
   JSON.parse(readFileSync(fileURLToPath(new URL(`../../../../data/${fichero}`, import.meta.url)), 'utf-8')) as T;
 
 const core = leer<{ jugadores: Jugador[] }>('core-real.json').jugadores;
-const prueba = leer<{ jugadores: Jugador[] }>('cartas-prueba.json').jugadores;
+const expansiones = leer<{ jugadores: Jugador[] }>('expansiones-reales.json').jugadores;
 const ficheroColecciones = leer<{ colecciones: unknown[] }>('colecciones.json').colecciones;
-const cartas = [...core, ...prueba];
+const cartas = [...core, ...expansiones];
 const { colecciones, errores } = validarCatalogo(cartas, ficheroColecciones);
 const ids = (id: string) => new Set(colecciones.find((c) => c.id === id)!.cartas.map((c) => c.id));
-const comunes = (a: Set<number>, b: Set<number>) => [...a].filter((x) => b.has(x)).length;
 
+// Spec 016: las cartas y colecciones de prueba se retiraron; las comprobaciones de las expansiones están en datos016.
 describe('datos de la spec 006 (FR-005, FR-006)', () => {
   it('las cartas y las colecciones son válidas', () => {
     expect(validarColeccion(cartas)).toEqual([]);
@@ -23,26 +23,15 @@ describe('datos de la spec 006 (FR-005, FR-006)', () => {
   });
 
   // Desde la spec 008 el reparto de Core frente a DISTRIBUCION_CORE solo avisa (R8).
-  it('core tiene 300 cartas; all-stars 45 y top-argentinos 42', () => {
+  it('core tiene 300 cartas y cubre cada demarcación × nivel', () => {
     expect(ids('core').size).toBe(300);
-    expect(ids('all-stars').size).toBe(45);
-    expect(ids('top-argentinos').size).toBe(42);
+    const recuento = recuentoPorDemarcacionYNivel(core);
+    for (const d of DEMARCACIONES) for (const n of NIVELES) expect(recuento[d][n], `${d} ${n}`).toBeGreaterThan(0);
   });
 
-  it('las colecciones de pago comparten ≥ 5 cartas y cada una tiene ≥ 3 de Core', () => {
-    expect(comunes(ids('all-stars'), ids('top-argentinos'))).toBeGreaterThanOrEqual(5);
-    expect(comunes(ids('all-stars'), ids('core'))).toBeGreaterThanOrEqual(3);
-    expect(comunes(ids('top-argentinos'), ids('core'))).toBeGreaterThanOrEqual(3);
-  });
-
-  it('ninguna carta es GBR y Top Argentinos es todo ARG', () => {
+  it('ninguna carta es GBR y no quedan colecciones de prueba', () => {
     expect(cartas.filter((c) => c.nacionalidad === 'GBR')).toEqual([]);
-    expect(cartas.filter((c) => ids('top-argentinos').has(c.id) && c.nacionalidad !== 'ARG' && c.id > 342)).toEqual([]);
-  });
-
-  it('las cartas 301–375 cubren cada demarcación × nivel con ≥ 2', () => {
-    expect(prueba.map((c) => c.id)).toEqual(Array.from({ length: 75 }, (_, i) => 301 + i));
-    const recuento = recuentoPorDemarcacionYNivel(prueba);
-    for (const d of DEMARCACIONES) for (const n of NIVELES) expect(recuento[d][n], `${d} ${n}`).toBeGreaterThanOrEqual(2);
+    expect(colecciones.map((c) => c.id)).not.toContain('all-stars');
+    expect(colecciones.map((c) => c.id)).not.toContain('top-argentinos');
   });
 });

@@ -45,8 +45,8 @@ describe('rasgaduraDe', () => {
     }
   });
 
-  it('los 31 sobres del catálogo dan 31 polígonos distintos', () => {
-    expect(sobres).toHaveLength(31);
-    expect(new Set(sobres.map(rasgaduraDe)).size).toBe(31);
+  it('los 40 sobres del catálogo dan 40 polígonos distintos (spec 016: sobres 25–33)', () => {
+    expect(sobres).toHaveLength(40);
+    expect(new Set(sobres.map(rasgaduraDe)).size).toBe(40);
   });
 });

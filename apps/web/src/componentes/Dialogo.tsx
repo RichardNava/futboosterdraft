@@ -14,17 +14,19 @@ interface Props {
   etiqueta?: string;
   alEscape?: () => void;
   alPulsarFondo?: () => void;
+  /** Clase extra del panel (p. ej. un modal más ancho). */
+  clase?: string;
 }
 
 /** Diálogo modal accesible: foco atrapado, Escape y clic en el fondo. */
-export function Dialogo({ children, rol = 'dialog', etiquetadoPor, etiqueta, alEscape, alPulsarFondo }: Props) {
+export function Dialogo({ children, rol = 'dialog', etiquetadoPor, etiqueta, alEscape, alPulsarFondo, clase }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   useAtraparFoco(ref, alEscape);
   return (
     <div className="modal-fondo" role="presentation" onClick={alPulsarFondo}>
       <div
         ref={ref}
-        className="modal"
+        className={clase ? `modal ${clase}` : 'modal'}
         role={rol}
         aria-modal="true"
         aria-labelledby={etiquetadoPor}

@@ -38,6 +38,7 @@ añade filas en «Pendientes» con las acciones que deberían sonar, y pide que 
 | Partido 2D | Tarjeta amarilla | `tarjetaAmarilla` | tarjetaAmarilla.mp3 | 0,29 | Pitido y «oooh» de la grada (spec 012) |
 | Partido 2D | Tarjeta roja (también por doble amarilla) | `tarjetaRoja` | tarjetaRoja.mp3 | 0,23 | Dos pitidos y un «oooh» más largo (spec 012) |
 | Tienda | Compra de un sobre de cartas (con fragmentos) | `cajaRegistradora` | cajaRegistradora.mp3 | 0,64 | Caja registradora real (spec 012) |
+| Tienda | Compra de una expansión (spec 016) | `cajaRegistradora` | cajaRegistradora.mp3 | 0,64 | El mismo efecto |
 | Tienda | Compra de un diseño de sobre (suelto o dentro de un pack) | `cajaRegistradora` | cajaRegistradora.mp3 | 0,64 | El mismo efecto; los escudos y celebraciones comprados no suenan |
 | Torneo | Pantalla de campeón | `aplausos` | aplausos.mp3 | 0,34 | |
 | Torneo | Pantalla de derrota | `trompetas` | trompetas.mp3 | 0,75 | |

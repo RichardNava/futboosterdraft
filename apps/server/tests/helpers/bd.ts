@@ -1,6 +1,6 @@
 /**
  * Base de datos de pruebas: PostgreSQL 16 con Testcontainers (requiere Docker), migraciones
- * aplicadas y catálogo cargado (Core, cartas de prueba y colecciones de la spec 006).
+ * aplicadas y catálogo cargado (Core, expansiones y cosméticos).
  */
 import { fileURLToPath } from 'node:url';
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
@@ -27,10 +27,11 @@ export async function iniciarBdPruebas(): Promise<BdPruebas> {
   await aplicarMigraciones(conexion.db);
   const { jugadores, colecciones, errores } = leerLote(RAIZ, FICHEROS_POR_DEFECTO.cartas, FICHEROS_POR_DEFECTO.colecciones);
   if (errores.length) throw new Error(`Catálogo inválido: ${errores.length} errores`);
-  await cargarCatalogo(conexion.db, jugadores, colecciones);
-  const cosmeticos = leerCosmeticos(RAIZ);
+  const cosmeticos = leerCosmeticos(RAIZ, FICHEROS_POR_DEFECTO.cosmeticos, colecciones);
   if (cosmeticos.errores.length) throw new Error(`Cosméticos inválidos: ${cosmeticos.errores.length} errores`);
+  // Los cosméticos van antes: `colecciones.sobre_regalo` los referencia (spec 016).
   await cargarCosmeticos(conexion.db, cosmeticos.catalogo);
+  await cargarCatalogo(conexion.db, jugadores, colecciones);
 
   return {
     ...conexion,

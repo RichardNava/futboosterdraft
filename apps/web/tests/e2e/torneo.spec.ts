@@ -89,6 +89,8 @@ test('baja pendiente: botón bloqueado, aviso de intervención y Plantillas con 
   const principal = page.locator('[data-principal]');
   await expect(principal).toHaveAttribute('aria-disabled', 'true');
   await expect(page.getByText(/Sustituye a .+ \(lesionado\) para continuar/)).toBeVisible();
+  // Spec 016, ronda 3: el motivo, en rojo.
+  await expect(page.locator('.barra-principal-estado .motivo')).toHaveClass(/grave/);
   await page.getByRole('button', { name: /Avisos/ }).click();
   const aviso = page.locator('[data-aviso-equipo="baja_pendiente"]');
   await expect(aviso).toBeVisible();

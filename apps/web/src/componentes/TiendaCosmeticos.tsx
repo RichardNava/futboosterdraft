@@ -18,6 +18,7 @@ import { urlEscudo } from './chapa';
 import { Dialogo } from './Dialogo';
 import { Icono } from './Icono';
 import { DialogoPagoPrueba, formatoEuros, formatoFragmentos } from './DialogoPagoPrueba';
+import { Fragmentos } from './Fragmentos';
 import { CapaCelebracion } from './celebraciones/CapaCelebracion';
 import type { CelebracionElegida } from './celebraciones/tipos';
 
@@ -99,7 +100,7 @@ function PreviaCelebracion({ celebracion }: { celebracion: CelebracionElegida })
 }
 
 /** El cosmético a tamaño grande: el escudo como se ve en el juego, el sobre cerrado y abierto, la celebración en marcha. */
-function ArteGrande({ id, tipo, datos }: { id: string; tipo: TipoTienda; datos?: Cosmetico['datos'] }) {
+export function ArteGrande({ id, tipo, datos }: { id: string; tipo: TipoTienda; datos?: Cosmetico['datos'] }) {
   if (tipo === 'celebracion') return datos ? <PreviaCelebracion key={id} celebracion={{ id, datos } as CelebracionElegida} /> : null;
   if (tipo === 'escudo')
     return (
@@ -127,7 +128,7 @@ function ArteGrande({ id, tipo, datos }: { id: string; tipo: TipoTienda; datos?:
   );
 }
 
-function Previsualizacion({
+export function Previsualizacion({
   titulo,
   subtitulo,
   onCerrar,
@@ -239,8 +240,7 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre',
               : abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'fragmentos' })
           }
         >
-          <Icono nombre="cristal" tamano={14} />
-          {formatoFragmentos.format(c.precioFragmentos!)} fragmentos
+          <Fragmentos cantidad={c.precioFragmentos!} />
         </button>
         <button
           type="button"
@@ -284,7 +284,8 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre',
   return (
     <div className="tienda-cosmeticos">
       {BLOQUES.filter((b) => tipos.includes(b.tipo)).map((b) => {
-        const lista = catalogo.cosmeticos.filter((c) => c.tipo === b.tipo && !c.gratuito);
+        // Spec 016 (FR-026): los sobres de regalo de las expansiones no se venden sueltos.
+        const lista = catalogo.cosmeticos.filter((c) => c.tipo === b.tipo && !c.gratuito && c.vendible !== false);
         const packs = catalogo.packs.filter((p) => p.tipo === b.tipo);
         const tuyos = lista.filter((c) => c.poseido).length;
         return (
@@ -410,7 +411,12 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre',
           resumen={
             <p>
               {NOMBRE_TIPO[compra.cosmetico.tipo as TipoTienda]} para tu cuenta.
-              {compra.moneda === 'fragmentos' && ` Tienes ${formatoFragmentos.format(saldo)} fragmentos.`}
+              {compra.moneda === 'fragmentos' && (
+                <>
+                  {' '}
+                  Tienes <Fragmentos cantidad={saldo} />.
+                </>
+              )}
             </p>
           }
           {...(compra.moneda === 'eur'

@@ -1,0 +1,35 @@
+GOAT (6)
+--------------
+1,Romelu Lukaku
+2,Paul Pogba
+3,Kim Min-jae
+4,Joshua Kimmich
+5,Philippe Coutinho
+6,Raheem Sterling
+
+Legendario (6)
+--------------
+7,Jadon Sancho
+8,Sergej Milinković-Savić
+9,Delle Alli
+10,Joe Hart
+11,Leroy Sané
+12,Kalidou Koulibaly
+
+Crack   (6)
+--------------
+13,Mauro Icardi
+14,Kalvin Phillips
+15,Tanguy Ndombele
+16,Jack Grealish
+17,Serge Gnabry
+18,Ben Chilwell
+
+Superclase (6)
+--------------
+19,Franck Kessie
+20,Arthur Melo
+21,Federico Chiesa
+22,Milan Škriniar
+23,Loris Karius
+24,Timo Werner
