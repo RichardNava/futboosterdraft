@@ -1,6 +1,6 @@
 # Roadmap de Fútboosterdraft
 
-**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 (actualizado el 2026-11-20) · **Constitución**: 1.3.0
+**Estado**: propuesta, pendiente de aprobación · **Fecha**: 2026-10-29 (actualizado el 2026-11-21) · **Constitución**: 1.6.0
 
 Este documento es la *spec de specs* del proyecto: agrupa las especificaciones de `specs/` en iniciativas de
 producto, fija su orden y dice cuándo se da por cerrada cada una. No sustituye a las specs: cada iniciativa remite
@@ -35,16 +35,20 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-03](#ini-03-identidad-visual-y-accesibilidad) | Identidad visual y accesibilidad | 004 | P1 | Implementada, sin validar | INI-02 |
 | [INI-04](#ini-04-virtudes-defectos-y-modo-duelo) | Virtudes, defectos y modo Duelo | 005 | P1 | Implementada, sin validar | INI-01 |
 | [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005, 014, 015 | P0 | Hecho | INI-04 |
-| [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor | 001, 002 | P1 | Parcial | INI-05 |
-| [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009, 010 | P0 | Parcial | INI-06 |
+| [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor (se resuelve en INI-16) | 001, 002 | P1 | Parcial | INI-05 |
+| [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009, 010 | P0 | Parcial | INI-06, INI-16 |
 | [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Hecho | INI-01 |
 | [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Hecho | — |
-| [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-09 |
+| [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-09, INI-17 |
 | [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1), 011, 016 | P1 | Parcial | INI-08, INI-05 |
-| [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P2 | Pendiente | INI-10 |
-| [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales | sin spec | P3 | Idea | INI-05, INI-09 |
+| [INI-12](#ini-12-pagos-reales) | Pagos reales | sin spec | P0 | Pendiente | INI-10 |
+| [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales: Modo Ruleta | sin spec | P2 | Pendiente | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
 | [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012, 013 | P1 | Hecho | INI-03, INI-04, INI-08 |
+| [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento) | Rework del motor: fatiga, tácticas y rendimiento | sin spec | P0 | Pendiente | INI-05 |
+| [INI-17](#ini-17-auditoría-de-seguridad-y-roles) | Auditoría de seguridad y roles (RBAC) | sin spec | P0 | Pendiente | — |
+| [INI-18](#ini-18-multijugador-emparejamiento-y-recompensas) | Multijugador: emparejamiento y recompensas | sin spec | P2 | Pendiente | INI-07, INI-17 |
+| [INI-19](#ini-19-cosméticos-de-carta-y-de-campo) | Cosméticos de carta y de campo: dorsos, marcos y césped | sin spec | P2 | Pendiente | INI-14 |
 
 Los ids siguen el orden en que se registran, no el de prioridad: INI-15 se añadió al aparecer la spec 007.
 
@@ -68,9 +72,15 @@ graph LR
   INI03 --> INI15[INI-15 Retoques visuales y sonoros]
   INI04 --> INI15
   INI08 --> INI15
+  INI05 --> INI16[INI-16 Rework del motor] --> INI07
+  INI06 -.se resuelve en.-> INI16
+  INI17[INI-17 Seguridad y roles] --> INI10
+  INI07 --> INI18[INI-18 Multijugador]
+  INI17 --> INI18
+  INI14 --> INI19[INI-19 Cosméticos de carta y campo]
 ```
 
-**Camino crítico a la beta**: INI-07 → INI-10. INI-05 e INI-09 están hechas; la carga de INI-07 ya no la limita el
+**Camino crítico a la beta**: INI-16 → INI-07 → INI-10, con INI-17 en paralelo (también bloquea INI-10). INI-05 e INI-09 están hechas; la carga de INI-07 ya no la limita el
 motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010](specs/010-latencia-apertura-sobres/spec.md),
 implementada, sin validar en tres máquinas). Con 100 partidas en un equipo de 8 núcleos, el límite medido es la CPU que
 cuesta simular los partidos.
@@ -224,6 +234,8 @@ cuesta simular los partidos.
 - **Prioridad / estado**: P1 · **Parcial**. Medido: 82,9 ms (002), 103 ms (004) y 107 ms (005) sin fotogramas. El
   umbral bloqueante del CI se subió a 120 ms (commit `e850c11`) para que no falle, lo que no cumple el requisito.
 - **Dependencia**: tras INI-05, porque calibrar cambia el coste por partido y optimizar antes obliga a medir dos veces.
+- **2026-11-21**: el trabajo de esta iniciativa se hace dentro de la spec de [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento)
+  (una sola spec para todos los cambios del motor). Sus criterios de cierre no cambian y se comprueban allí.
 - **Criterios de cierre**:
   1. `pnpm --filter @fbd/engine bench` ≤ 25 / 40 ms en la máquina de referencia (que hay que fijar y documentar),
      o FR-028a revisado en su spec con un objetivo justificado.
@@ -268,7 +280,9 @@ cuesta simular los partidos.
   equipo de 8 núcleos la CPU está saturada (94 % de media, `node` 5,6 núcleos) y la apertura sigue en ~15 s de p95
   ([010/diagnostico.md](specs/010-latencia-apertura-sobres/diagnostico.md), «Uso de CPU con 100 partidas»). Requiere
   spec propia y se relaciona con [INI-06](#ini-06-rendimiento-del-motor); los resultados deben seguir idénticos
-  (`pnpm test:equivalence`) o, si cambian, justificarse con calibración (INI-05).
+  (`pnpm test:equivalence`) o, si cambian, justificarse con calibración (INI-05). **2026-11-21**: ese trabajo pasa a
+  [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento); la medición en tres máquinas sigue aquí y se
+  hace después de INI-16 para no medir dos veces.
 - **Criterios de cierre**:
   1. Guion actualizado al protocolo vigente (T153 y T128 marcadas; son la misma tarea).
   2. 001/SC-017 cumplido, con servidor, base de datos y generador de carga en máquinas separadas, y resultado registrado.
@@ -323,10 +337,11 @@ cuesta simular los partidos.
 - **Objetivo**: poder abrir la beta a personas ajenas al proyecto con datos persistentes y sin riesgos legales abiertos.
 - **Alcance propuesto** (a concretar en su spec): despliegue según [docs/despliegue.md](docs/despliegue.md); SMTP
   real; copias de seguridad y restauración probadas; registros y métricas mínimos para diagnosticar partidas
-  bloqueadas; revisión de seguridad de autenticación y de la tienda; textos legales (privacidad, condiciones).
+  bloqueadas; textos legales (privacidad, condiciones). La revisión de seguridad (autenticación, tienda y el resto)
+  pasa a [INI-17](#ini-17-auditoría-de-seguridad-y-roles) desde el 2026-11-21.
 - **Specs**: ninguna. **Requiere spec nueva** (la 010 se reserva para la latencia de INI-07).
 - **Prioridad / estado**: P0 · **Pendiente**.
-- **Dependencias**: INI-07 (la carga debe aguantar), INI-09. Desde el 2026-11-20 no depende de INI-08: los escudos
+- **Dependencias**: INI-07 (la carga debe aguantar), INI-09 e INI-17 (auditoría de seguridad hecha). Desde el 2026-11-20 no depende de INI-08: los escudos
   oficiales se retiraron y ya no hay riesgo de licencias que bloquee producción.
 - **Criterios de cierre**: los criterios de éxito de su spec, como mínimo: despliegue reproducible desde la imagen
   Docker, restauración de una copia probada, ningún riesgo abierto que bloquee producción en `docs/despliegue.md`.
@@ -368,7 +383,7 @@ cuesta simular los partidos.
   `specs/016-expansiones-reales/fuentes/`.
 - **Nota de economía (spec 016, R13)**: desfragmentar pasa a 25 / 75 / 125 / 175, así que un sobre de la tienda
   devuelve de media 510 de los 1000 que cuesta (antes 355). Sigue por debajo del precio, pero acelera los fragmentos de
-  quien desfragmenta: a revisar en la spec de economía.
+  quien desfragmenta: a revisar en la spec de economía ([INI-18](#ini-18-multijugador-emparejamiento-y-recompensas)).
 - **Dependencias**: INI-08 (modelo de colecciones) e INI-05 (el equilibrio del catálogo se mide con el motor ya calibrado).
 - **Criterios de cierre**: los de su spec, como mínimo: `pnpm seed` carga el catálogo nuevo; validación del catálogo
   en verde; serie Core dentro de los criterios estadísticos.
@@ -379,7 +394,8 @@ cuesta simular los partidos.
   con dinero real: cosméticos y el pase premium.
 - **Alcance propuesto**: pasarela, facturación, reembolsos y auditoría de compras.
 - **Specs**: ninguna. **Requiere spec nueva**; debe respetar el Principio VII (sin ventajas fuera de las reglas de draft).
-- **Prioridad / estado**: P2 · **Pendiente**.
+- **Prioridad / estado**: P0 · **Pendiente** (antes P2; desde el 2026-11-21 es condición para abrir la beta al público,
+  [spec 017](specs/017-auditoria-seguridad-roles/spec.md), D-1).
 - **Dependencias**: INI-10 (entorno de producción). Lo que se vende ya existe: cosméticos (INI-14) y pase premium (013).
 - **Criterios de cierre**: los de su spec, como mínimo: 006/SC-007 (cada compra se cobra una vez) con la pasarela real
   en su entorno de pruebas, y revisión de seguridad aprobada.
@@ -387,10 +403,22 @@ cuesta simular los partidos.
 ## INI-13 Modos de juego adicionales
 
 - **Objetivo**: nuevos modos además de liga, playoff, mixto y Duelo.
-- **Specs**: ninguna. La constitución lo lista en "Decisiones aún pendientes"; no está aprobado como requisito.
-- **Prioridad / estado**: P3 · **Idea**.
-- **Dependencias**: INI-05 (sin calibrar, un modo nuevo hereda los desequilibrios) e INI-09 (registrar Duelo primero).
-- **Criterios de cierre**: no se definen hasta que exista una spec aprobada.
+- **Alcance (2026-11-21)**: **Modo Ruleta**, para hasta 4 jugadores. El draft no se hace con sobres sino con tiradas
+  a una ruleta cuyas casillas son condiciones sobre los futbolistas (un atributo, una descripción, una virtud, un
+  defecto…). En cada tirada, cada jugador elige una entre 4 cartas que cumplen la condición que le ha salido.
+- **A concretar en la spec**: número de tiradas y su relación con la plantilla de 24; si la tirada es común o de cada
+  jugador; si una carta elegida por un jugador puede salirle a otro; qué pasa cuando menos de 4 cartas cumplen la
+  condición (con 396 cartas, una virtud rara puede no llegar); cómo se garantiza un once jugable (porteros); si hay
+  NPC cuando faltan jugadores; y qué torneo sigue al draft.
+- **Specs**: ninguna. **Requiere spec nueva**. La constitución 1.6.0 (2026-11-21) ya aprueba los modos adicionales
+  con su propia spec y registra el Modo Ruleta en "Decisiones resueltas". Su draft debe cumplir las reglas de un draft
+  alternativo del Principio II: igual para todos, validado por el servidor, selección simultánea, plantilla de tamaño
+  fijo y las mismas garantías ante desconexiones.
+- **Prioridad / estado**: P2 · **Pendiente** (antes P3 · Idea; aprobado como necesidad el 2026-11-21).
+- **Dependencias**: INI-05 (sin calibrar, un modo nuevo hereda los desequilibrios) e INI-09 (registrar Duelo primero),
+  ambas hechas. No toca el motor del partido, así que no depende de INI-16.
+- **Criterios de cierre**: los de su spec, como mínimo: partida completa de 4 humanos en e2e; ninguna tirada sin 4
+  cartas válidas o con una regla definida para ese caso; reglas del draft alternativo (Principio II) cumplidas.
 
 ## INI-14 Cosméticos y versiones premium de cartas
 
@@ -405,7 +433,8 @@ cuesta simular los partidos.
   fuera.
 - **Riesgo (economía de fragmentos, 011 research R11)**: sin venta de fragmentos, solo entran por torneos ganados (10),
   duplicados y desfragmentar; un cosmético de 250 fragmentos equivale a unos 25 torneos ganados y una colección a
-  cientos. Requiere una spec de economía que revise `recompensaTorneo`.
+  cientos. Requiere una spec de economía que revise `recompensaTorneo`; desde el 2026-11-21 se trata en
+  [INI-18](#ini-18-multijugador-emparejamiento-y-recompensas).
 - **Dependencias**: INI-08 (tienda y fragmentos). Los pagos reales (INI-12) solo hacen falta para cobrar de verdad.
 - **Criterios de cierre**: los de la 011 (SC-001 a SC-009); debe respetar el Principio VII.
 
@@ -479,6 +508,81 @@ cuesta simular los partidos.
      personas pasan a la sesión común de INI-01 a INI-03).
   4. ~~«Abandonar» recogido como requisito con su criterio de aceptación~~ (cumplido).
 
+## INI-16 Rework del motor: fatiga, tácticas y rendimiento
+
+- **Objetivo**: reunir en una sola spec todos los cambios del motor: que la fatiga y las tácticas pesen de verdad
+  en el partido y que simular cueste lo bastante poco para sostener la beta.
+- **Alcance propuesto**:
+  - Rework de la fatiga.
+  - Más impacto de las tácticas en el resultado.
+  - [INI-06](#ini-06-rendimiento-del-motor): 002/FR-028a (≤ 25 ms por partido sin fotogramas y ≤ 40 ms con
+    fotogramas), hoy en unos 107 ms con el CI tolerando 120 ms.
+  - El trabajo futuro de [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta): con 100 partidas en 8 núcleos la CPU
+    está al 94 % y la apertura de partidos sigue en ~15 s de p95.
+- **Orden dentro de la spec**: primero fatiga y tácticas, luego recalibrar y por último optimizar ("Decisiones",
+  punto 3: calibrar antes que optimizar). La fatiga y las tácticas cambian los resultados, así que la equivalencia
+  y las semillas se regeneran una vez, y la optimización posterior no debe volver a cambiarlos.
+- **Specs**: ninguna. **Requiere spec nueva**.
+- **Prioridad / estado**: P0 · **Pendiente**. Está en el camino crítico: el límite de INI-07 es el coste del motor.
+- **Riesgo**: cambiar fatiga y tácticas puede romper la calibración de INI-05 (76 de 76 en `pnpm balance`). Los
+  umbrales nuevos los decide la persona responsable a partir de las mediciones.
+- **Dependencias**: INI-05 (hecha). Desbloquea la medición final de INI-07.
+- **Criterios de cierre**: los de su spec, como mínimo: los de INI-06 (bench dentro de FR-028a o FR-028a revisado
+  con un objetivo justificado, `umbral-motor` del CI con ese objetivo, T086 marcada); `pnpm balance` en verde con los
+  umbrales aprobados; `pnpm test:equivalence` en verde tras la optimización; efecto de fatiga y tácticas medido y
+  documentado en [docs/juego/enfrentamientos.md](docs/juego/enfrentamientos.md).
+
+## INI-17 Auditoría de seguridad y roles
+
+- **Objetivo**: abrir la beta sin vulnerabilidades conocidas y con una administración controlada.
+- **Alcance propuesto**:
+  - Auditoría a fondo: autenticación y sesiones, recuperación de contraseña, WebSocket, tienda e idempotencia de
+    compras, validación de entradas, cabeceras, límites de peticiones, dependencias y secretos. Después, implementar
+    todo lo que salga.
+  - Gestión de roles (RBAC). Hoy no hay roles: la administración se hace por CLI (`ajuste`, `premium`).
+  - Crear `robots.txt` (no existe en `apps/web/public/`).
+- **Specs**: ninguna. **Requiere spec nueva**; la auditoría es su primera fase y su informe fija el alcance de la
+  implementación.
+- **Prioridad / estado**: P0 · **Pendiente**. Recoge la revisión de seguridad que antes estaba en INI-10.
+- **Dependencias**: ninguna. Puede ir en paralelo a INI-16. Bloquea INI-10 y debe repetirse en lo que añada INI-18.
+- **Criterios de cierre**: los de su spec, como mínimo: informe de la auditoría con cada hallazgo cerrado o aceptado
+  por decisión registrada; ningún hallazgo crítico o alto abierto; roles con pruebas de acceso denegado; `robots.txt`
+  publicado.
+
+## INI-18 Multijugador: emparejamiento y recompensas
+
+- **Objetivo**: que jugar contra otras personas sea fácil y compense.
+- **Alcance propuesto**:
+  - Revisar el planteamiento actual de la asincronía (torneos asíncronos desde 002/FR-030): qué funciona, qué no y
+    qué cambia con el emparejamiento.
+  - Modo «Buscar jugadores / Buscar partidas».
+  - Recompensa de fragmentos según el número de oponentes reales y la dificultad de la IA, y apuestas de fragmentos.
+    Es la spec de economía que pedían INI-11 (nota R13) e INI-14 (riesgo R11), y revisa `recompensaTorneo`.
+- **Specs**: ninguna. **Requiere spec nueva**. La revisión de la asincronía puede hacerse antes como análisis.
+- **Prioridad / estado**: P2 · **Pendiente**.
+- **Riesgo (apuestas)**: hoy los fragmentos no se compran con dinero real (decisión del 2026-11-20). Si eso cambiara,
+  las apuestas pasarían a ser juego con valor económico y harían falta una revisión legal y probablemente su
+  retirada. La spec debe dejar escrita esa dependencia.
+- **Dependencias**: INI-07 (el emparejamiento junta a más humanos a la vez) e INI-17 (abuso: cuentas múltiples para
+  inflar las recompensas o las apuestas).
+- **Criterios de cierre**: los de su spec.
+
+## INI-19 Cosméticos de carta y de campo
+
+- **Objetivo**: ampliar los cosméticos de la 011 con tres tipos nuevos.
+- **Alcance propuesto**:
+  - Dorsos de carta: lo que se ve cuando la carta está boca abajo (sobres, draft, Duelos).
+  - Marcos de carta.
+  - Dibujos de césped para el campo de Formación y la simulación 2D.
+- **A concretar en la spec**: cómo convive un marco cosmético con el marco por rareza de la 007 sin que se deje de
+  leer la rareza; contraste de chapas, nombres y líneas sobre cada césped (accesibilidad de INI-03); si el rival ve
+  los cosméticos del otro.
+- **Specs**: ninguna. **Requiere spec nueva** sobre el modelo de [011](specs/011-rework-tienda/spec.md). Solo
+  cosmético: no cambia el partido (Principio VII).
+- **Prioridad / estado**: P2 · **Pendiente**.
+- **Dependencias**: INI-14 (catálogo de cosméticos y tienda). Le afecta el riesgo de la economía de fragmentos (INI-18).
+- **Criterios de cierre**: los de su spec.
+
 ---
 
 ## Decisiones tomadas en esta propuesta
@@ -493,7 +597,7 @@ cuesta simular los partidos.
    equipo, y la 004 ya prevé comparar con una versión anterior.
 5. **Criterios no medibles se reformulan en su spec**, no se aflojan en el CI. Hoy el CI tolera siete comprobaciones
    con `--pendientes` y un umbral de 120 ms frente a los 25 ms del requisito: este roadmap no las da por cumplidas.
-6. **Lo que no tiene spec no se implementa** (INI-10 a INI-14): primero `/speckit-specify`.
+6. **Lo que no tiene spec no se implementa** (INI-10 a INI-14 e INI-16 a INI-19): primero `/speckit-specify`.
 
 ## Decisiones de la persona responsable (2026-11-20)
 
@@ -511,7 +615,7 @@ cuesta simular los partidos.
 | ~~7 comprobaciones de `balance` en `--pendientes` y 003/SC-001c~~: el CI ya no usa `--pendientes` (2026-11-16, spec 015; 76 de 76) | `.github/workflows/ci.yml` | INI-05 |
 | ~~Recorridos a mano de los quickstart de la 014 y la 015 (paso 5)~~: hechos el 2026-11-21 | `specs/014-…/quickstart.md`, `specs/015-…/quickstart.md` | INI-05 |
 | ~~Recorridos a mano de la 012 (T076, T089, T100, T106, T116) y la 013 (T073), y los quickstart de la 006 (T103, escenarios A–O), la 014 y la 015~~: pre-recorrido automático el 2026-11-20 y recorrido de la persona responsable el 2026-11-21 ([docs/recorrido-manual.md](docs/recorrido-manual.md)); tareas marcadas | `tasks.md` y `quickstart.md` de cada spec | INI-05, INI-08 (los de la 012 y la 013 ya no bloquean INI-15, cerrada) |
-| FR-028a: 25 / 40 ms por partido (CI a 120 ms) | `pnpm --filter @fbd/engine bench` | INI-06 |
+| FR-028a: 25 / 40 ms por partido (CI a 120 ms) | `pnpm --filter @fbd/engine bench` | INI-06 (en INI-16) |
 | 001/SC-017: carga de 100 partidas | `tools/load/beta-100.js` | INI-07 |
 | Pruebas con personas: 001/SC-003; 002/SC-001, SC-009, SC-007a; 003/SC-008, SC-011–SC-014, SC-016, SC-019; 004/SC-003, SC-004, SC-010 | checklists `validacion.md` | INI-01 a INI-03 |
 | 60 fps en un portátil medio con el navegador visible | 002/FR-025b | INI-01, INI-02 |
