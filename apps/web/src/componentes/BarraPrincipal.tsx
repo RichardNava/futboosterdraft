@@ -1,6 +1,6 @@
 import { reproducir } from '../sonido/sonido';
 import { Icono } from './Icono';
-import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'react-router';
 
 export interface AccionBarra {
@@ -97,6 +97,19 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
     };
   }, []);
 
+  // Su alto, para que el CSS la ancle al pie de la ventana aunque la pantalla sea corta (decisión del 2026-11-20).
+  const raiz = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = raiz.current;
+    if (!el) return;
+    const medir = () => el.style.setProperty('--barra-alto', `${el.offsetHeight}px`);
+    medir();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observador = new ResizeObserver(medir);
+    observador.observe(el);
+    return () => observador.disconnect();
+  }, []);
+
   const ejecutar = async (a: AccionBarra, esPrincipal: boolean) => {
     if (a.motivoDesactivado || ocupado || !a.onClick) return;
     // Clic suave del botón principal (spec 012, FR-006); los secundarios no suenan.
@@ -140,7 +153,7 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
   const motivo = principal?.motivoDesactivado;
   const claseMotivo = principal?.motivoGrave ? 'motivo grave' : 'motivo';
   return (
-    <div className="barra-principal" role="region" aria-label="Acciones">
+    <div ref={raiz} className="barra-principal" role="region" aria-label="Acciones">
       <div className="barra-principal-estado">
         {/* La ayuda tapa el estado (y el motivo, que sigue en el DOM para `aria-describedby`) mientras dura. */}
         {ayuda && (

@@ -55,3 +55,15 @@ describe('penaltis con resultado (spec 005, T081; FR-071)', () => {
     expect(fuente).toMatch(/penalti: \{ nombre: 'penalti'/);
   });
 });
+
+describe('pitidos de la 2D (spec 012, FR-001)', () => {
+  it('el principio y el final de cada parte no salen en la lista; el final por inferioridad, sí', async () => {
+    const { createElement } = await import('react');
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const { ResumenEventos } = await import('../../src/componentes/ResumenEventos');
+    const pintar = (eventos: ReturnType<typeof evento>[]) =>
+      renderToStaticMarkup(createElement(ResumenEventos, { eventos, nombre: () => 'Pérez', nombresEquipo: { local: 'A', visitante: 'B' } }));
+    expect(pintar([evento('inicio_tramo', { parte: 1 }, []), evento('fin_tramo', { parte: 1 }, [])])).toContain('Sin incidencias destacadas');
+    expect(pintar([evento('fin_tramo', { motivo: 'inferioridad_numerica' }, [])])).toContain('inferioridad numérica');
+  });
+});

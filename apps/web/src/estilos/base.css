@@ -1636,10 +1636,11 @@ html {
   }
 
   :is(.alineacion, .gestion-equipo) .campo-equipo.horizontal {
+    /* Como mucho, lo que deja los 400 px del lateral: a 1024 px el 60 % los recortaba por la derecha. */
     grid-template-columns: clamp(
         520px,
         calc((100dvh - var(--alineacion-reserva-horizontal)) * 100 / 64),
-        60%
+        min(60%, calc(100% - 400px - var(--espacio-6)))
       ) minmax(400px, 1fr);
     /* El portero y los extremos asoman por los lados del campo: margen para que no se corten. */
     overflow-clip-margin: var(--espacio-12);
@@ -3858,6 +3859,19 @@ html {
   backdrop-filter: var(--desenfoque);
 }
 
+/*
+ * Anclada al pie de la ventana también cuando la pantalla es corta (decisión del 2026-11-20): la pantalla llega al
+ * menos hasta el pie y el `top` pegajoso empuja la barra hasta él (`--barra-alto` lo mide BarraPrincipal). Solo
+ * como hija directa de la pantalla, que se desplaza con la ventana; en un diálogo, al pie del diálogo.
+ */
+.pantalla:has(> .barra-principal) {
+  min-height: calc(100dvh - var(--barra-navegacion-alto));
+}
+
+.pantalla > .barra-principal {
+  top: calc(100dvh - var(--barra-alto, var(--barra-principal-alto)));
+}
+
 @media (min-width: 720px) {
   .barra-principal {
     margin-inline: calc(-1 * var(--espacio-6));
@@ -4158,6 +4172,78 @@ html {
 
 .equipos-2d .nombre-recortado {
   max-width: 16ch;
+}
+
+.equipo-2d {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-width: 0;
+}
+
+/*
+ * En estrecho (004/T074, decisión del 2026-11-20): cada equipo en su fila con sus goles a la derecha, como un
+ * marcador de televisión, y el minuto debajo; el nombre ocupa casi todo el ancho en vez de quedarse en una letra.
+ */
+@media (max-width: 719.98px) {
+  .franja-2d {
+    grid-template-rows: auto var(--franja-2d-fila);
+  }
+
+  .marcador-2d {
+    display: grid;
+    gap: var(--espacio-1);
+    padding-block: var(--espacio-2);
+  }
+
+  .equipos-2d {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'local gol-local'
+      'visitante gol-visitante';
+    gap: var(--espacio-1) var(--espacio-3);
+  }
+
+  .equipos-2d .nombre-recortado {
+    max-width: 100%;
+  }
+
+  .equipo-2d.local {
+    grid-area: local;
+  }
+
+  .equipo-2d.visitante {
+    grid-area: visitante;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  .marcador-2d .goles-2d {
+    display: contents;
+  }
+
+  .goles-2d-separador {
+    display: none;
+  }
+
+  .gol-2d {
+    min-width: 1.6em;
+    padding: 0 var(--espacio-2);
+    border-radius: var(--radio);
+    background: var(--color-lienzo);
+    font-size: 24px;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .gol-2d.local {
+    grid-area: gol-local;
+  }
+
+  .gol-2d.visitante {
+    grid-area: gol-visitante;
+  }
 }
 
 /* Nombres en cursiva de cartel: sitio para el remate de la última letra al recortarlos. */

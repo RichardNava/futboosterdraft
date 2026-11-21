@@ -213,7 +213,8 @@ export function Partido2D() {
   // reconectar no suena; tras «Finalizar partido», tampoco (se ve todo de golpe).
   useEffect(() => {
     if (!inicio) return;
-    const previos = vistosOidos.current;
+    // Al entrar en el minuto 0 aún no se ha visto nada: el pitido inicial suena.
+    const previos = vistosOidos.current ?? (reloj.tick === 0 ? 0 : null);
     vistosOidos.current = eventosVistos.length;
     if (previos === null || finalizando || eventosVistos.length <= previos) return;
     const lado = miId === inicio.local.id ? 'local' : miId === inicio.visitante.id ? 'visitante' : null;

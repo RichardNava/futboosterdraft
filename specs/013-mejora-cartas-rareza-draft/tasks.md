@@ -225,7 +225,7 @@ description: "Tareas de la spec 013: mejora de cartas y nivel de rareza del draf
 
 - [X] T071 [P] Actualizar `CLAUDE.md`: comando `pnpm --filter @fbd/fixtures fondos-core -- --origen <dir>`, ajuste `acceso_niveles_rareza <libre|restringido>` y CLI `pnpm --filter @fbd/server premium <email> <si|no>`
 - [X] T072 [P] Actualizar el estado de la spec 013 en `ROADMAP.md`
-- [ ] T073 Recorrer [quickstart.md](quickstart.md) completo, incluido volver el ajuste a `libre` al final
+- [X] T073 Recorrer [quickstart.md](quickstart.md) completo, incluido volver el ajuste a `libre` al final Hecha el 2026-11-21: pre-recorrido automático del 2026-11-20 y recorrido de la persona responsable ([docs/recorrido-manual.md](../../docs/recorrido-manual.md)); su único hallazgo, la ayuda de «Automático / Control total» que no se veía, quedó corregido.
 - [X] T074 Cierre: `pnpm typecheck && pnpm test && pnpm test:integration && pnpm --filter @fbd/web e2e && pnpm balance` en verde, y `graphify update .`
 - [X] T075 Proponer a la persona el commit (sin ejecutarlo) con el comando exacto listo para copiar
 

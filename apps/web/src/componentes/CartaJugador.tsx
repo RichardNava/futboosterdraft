@@ -286,7 +286,6 @@ function ZonaRasgos({ total, children }: { total: number; children: ReactNode })
 /** Coloca la descripción junto a su rasgo y la marca como colocada (spec 013, FR-029; research R11). */
 function colocarDescripcion(pop: HTMLElement): void {
   colocarJunto(pop, pop.previousElementSibling ?? pop);
-  pop.dataset.colocada = '';
 }
 
 function Rasgos({ tipo, ids, onClick, onDobleClick }: { tipo: 'virtud' | 'defecto'; ids: string[]; onClick?: () => void; onDobleClick?: () => void }) {

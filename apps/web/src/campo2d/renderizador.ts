@@ -333,7 +333,9 @@ export function dibujar(ctx: CanvasRenderingContext2D, ancho: number, escena: Es
       // El dorsal, en una chapa grande a la derecha del retrato, a su altura: ni lo tapa ni empuja el nombre (ronda 5).
       if (j.dorsal !== null) {
         const r = Math.max(7, radioRetrato * 0.62);
-        const [dx, dy] = [x * e + mitad + r * 0.85, y * e];
+        // Si se saldría por la derecha (el portero en su línea de gol), a la izquierda del retrato (004/T074).
+        const derecha = x * e + mitad + r * 0.85;
+        const [dx, dy] = [derecha + r * 1.2 > ancho ? x * e - mitad - r * 0.85 : derecha, y * e];
         ctx.beginPath();
         ctx.arc(dx, dy, r, 0, Math.PI * 2);
         ctx.fillStyle = colores.principal;

@@ -438,7 +438,8 @@ export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando
     partidoId: p.fila.id,
     desdeTick: r.desdeTick,
     hastaTick: r.hastaTick,
-    eventos: r.eventos.filter((e) => e.relevante),
+    // Con el principio y el final de cada parte, aunque no sean relevantes: la 2D pita con ellos (spec 012, FR-001).
+    eventos: r.eventos.filter((e) => e.relevante || e.tipo === 'inicio_tramo' || e.tipo === 'fin_tramo'),
     marcador: r.marcador,
     estadisticas: r.estadisticas,
     fase: r.fase,

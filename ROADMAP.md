@@ -34,10 +34,10 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-02](#ini-02-experiencia-de-juego-y-ritmo) | Experiencia de juego y ritmo | 002, 003 | P1 | Implementada, sin validar | INI-01 |
 | [INI-03](#ini-03-identidad-visual-y-accesibilidad) | Identidad visual y accesibilidad | 004 | P1 | Implementada, sin validar | INI-02 |
 | [INI-04](#ini-04-virtudes-defectos-y-modo-duelo) | Virtudes, defectos y modo Duelo | 005 | P1 | Implementada, sin validar | INI-01 |
-| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005, 014, 015 | P0 | Implementada, sin validar | INI-04 |
+| [INI-05](#ini-05-calibración-del-motor-y-de-los-npc) | Calibración del motor y de los NPC | 003, 005, 014, 015 | P0 | Hecho | INI-04 |
 | [INI-06](#ini-06-rendimiento-del-motor) | Rendimiento del motor | 001, 002 | P1 | Parcial | INI-05 |
 | [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta) | Carga y escalabilidad de la beta | 001, 002, 003, 009, 010 | P0 | Parcial | INI-06 |
-| [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Implementada, sin validar | INI-01 |
+| [INI-08](#ini-08-colecciones-fragmentos-y-tienda) | Colecciones, fragmentos y tienda | 006 | P1 | Hecho | INI-01 |
 | [INI-09](#ini-09-gobernanza-y-documentación-al-día) | Gobernanza y documentación al día | — | P0 | Hecho | — |
 | [INI-10](#ini-10-preparación-para-producción) | Preparación para producción | sin spec | P0 | Pendiente | INI-07, INI-09 |
 | [INI-11](#ini-11-catálogo-de-cartas-definitivo) | Catálogo de cartas definitivo | 008 (fase 0.1), 011, 016 | P1 | Parcial | INI-08, INI-05 |
@@ -164,27 +164,32 @@ cuesta simular los partidos.
   comprobaciones que no se pueden medir con el tamaño de muestra actual.
 - **Specs**: [003](specs/003-mejoras-ux-simulacion/spec.md) (T033, T034; [calibracion-motor.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-motor.md),
   [calibracion-npc.md](specs/003-mejoras-ux-simulacion/checklists/calibracion-npc.md)), [005](specs/005-virtudes-defectos/spec.md) (FR-051, research R2).
-- **Prioridad / estado**: P0 · **Implementada, sin validar**: hecho el 2026-11-01 (parámetros 5.0.0); reabierta por
+- **Prioridad / estado**: P0 · **Hecho** (2026-11-21): hecho el 2026-11-01 (parámetros 5.0.0); reabierta por
   el motor 7.0.0 y cerrada de nuevo en las estadísticas con la 8.0.0 (spec 015: `pnpm balance --n 1000` 76 de 76 y el
-  CI sin `--pendientes` desde el 2026-11-16). Faltan los recorridos a mano de los quickstart de la 014 y la 015.
-- **Spec 014 (implementada el 2026-11-13, sin validar)**: [spec](specs/014-mejoras-motor-navegacion-refactor/spec.md).
+  CI sin `--pendientes` desde el 2026-11-16). ~~Faltan los recorridos a mano de los quickstart de la 014 y la 015~~:
+  hechos el 2026-11-21 ([docs/recorrido-manual.md](docs/recorrido-manual.md)).
+- **Spec 014 (implementada el 2026-11-13, validada el 2026-11-21)**: [spec](specs/014-mejoras-motor-navegacion-refactor/spec.md).
   Motor 7.0.0: el balón solo se mueve cuando alguien lo juega, fuera de juego y mano a mano por posición (sin
   sorteos), sin ida y vuelta, energía visible en la gestión y más peso de las estadísticas. Navegación sin pestañeo
   (caché de navegación con loaders). Refactorización: knip y jscpd a 0, JSDoc en todo lo exportado
   ([refactorizacion.md](specs/014-mejoras-motor-navegacion-refactor/refactorizacion.md)). `pnpm balance --n 1000`
   pasa 58 de 67 ([informe-7.0.0.md](specs/014-mejoras-motor-navegacion-refactor/informe-7.0.0.md)): fallan 014/SC-008
   (pase, remate y físico), 002/SC-008, 003/SC-005, 003/SC-007 (Matador), 005/SC-004 Mal defensor y 005/SC-011
-  (lesiones), así que el CI del balance falla. Pendiente: decidir sobre esos criterios y el recorrido a mano del
-  [quickstart](specs/014-mejoras-motor-navegacion-refactor/quickstart.md).
-- **Spec 015 (implementada el 2026-11-17, sin validar)**: [spec](specs/015-peso-individual-estadisticas/spec.md).
+  (lesiones), así que el CI del balance fallaba. ~~Pendiente: decidir sobre esos criterios~~: resuelto en la spec 015
+  con las decisiones del 2026-11-14 al 2026-11-17 (su sección «Clarifications»). Pase, remate y físico se miden con las
+  curvas de cada duelo (FR-002, FR-024); velocidad, con +8 %; 002/SC-008, en formaciones con 3 o más medios; Matador,
+  en sus goles en el mano a mano; Mal defensor, también en el quite. Con la 8.0.0 pasan las nueve (76 de 76,
+  [informe-8.0.0.md](specs/015-peso-individual-estadisticas/informe-8.0.0.md)). ~~El recorrido a mano del
+  [quickstart](specs/014-mejoras-motor-navegacion-refactor/quickstart.md)~~, hecho el 2026-11-21.
+- **Spec 015 (implementada el 2026-11-17, validada el 2026-11-21)**: [spec](specs/015-peso-individual-estadisticas/spec.md).
   Motor 8.0.0 (la 7.0.0 se sigue simulando igual): una curva por duelo, quite por demarcación, el regateador lo intenta
   más, Cabeceador en cualquier jugador de campo, desmarque contra marcaje, técnica contra presión y liderazgo del
   defensa y del portero, más los añadidos (buscar a la estrella, Juego por las bandas, subida al área, segunda línea y
   balones fuera). Tras las decisiones del 2026-11-17 (portero relativo a 70, la línea medida en 20 escenarios con una
   escala por liderazgo, contraataques 1,5 con la táctica Contraataque obligada a +30 %, velocidad +8 %),
   `pnpm balance --n 1000` pasa 76 de 76 ([informe-8.0.0.md](specs/015-peso-individual-estadisticas/informe-8.0.0.md))
-  y la 8.0.0 tarda un 5–6 % más que la 7.0.0. Pendiente: el recorrido a mano del
-  [quickstart](specs/015-peso-individual-estadisticas/quickstart.md) (paso 5, en la aplicación).
+  y la 8.0.0 tarda un 5–6 % más que la 7.0.0. ~~Pendiente: el recorrido a mano del
+  [quickstart](specs/015-peso-individual-estadisticas/quickstart.md) (paso 5, en la aplicación)~~ (hecho el 2026-11-21).
 - **Para la próxima versión del motor (pedido el 2026-11-19, en la revisión de la spec 016)**: nueva curva de fatiga.
   Primera parte: desde el minuto 30, −1 % de energía por minuto hasta un suelo de 85 %; en el descanso, +10 %; segunda
   parte: desde el minuto 55 (hoy 65), −1 % por minuto. Las virtudes y defectos (Incansable, Motivador, Fatigado) y las
@@ -276,18 +281,19 @@ cuesta simular los partidos.
 - **Alcance**: 006 US1–US7: colección propia y activa con su mínimo, fragmentos (torneos ganados y desfragmentar),
   tienda de sobres, colecciones y fragmentos con **pago simulado**, cartas con bandera e imagen de fondo.
 - **Specs**: [006](specs/006-preparacion-bd-cartas/spec.md).
-- **Prioridad / estado**: P1 · **Implementada, sin validar**. [validacion.md](specs/006-preparacion-bd-cartas/checklists/validacion.md)
-  creado el 2026-11-20 con las pruebas automáticas (SC-007 incluido); faltan los escenarios A–O a mano.
+- **Prioridad / estado**: P1 · **Hecho** (2026-11-21). [validacion.md](specs/006-preparacion-bd-cartas/checklists/validacion.md)
+  con las pruebas automáticas (SC-007 incluido) y los escenarios A–O. Lo que piden una persona (SC-009, SC-010 y el corte
+  de red real) sigue en la sesión común con personas.
 - **Evidencia**: 110 de 112 tareas marcadas; tests de integración estabilizados (commits `c56b889`, `f1ab80b`). Sin cerrar:
-  - T103: escenarios manuales A–O de [quickstart.md](specs/006-preparacion-bd-cartas/quickstart.md), incluido 360 px en «Colección» y «Tienda».
+  - ~~T103: escenarios manuales A–O de [quickstart.md](specs/006-preparacion-bd-cartas/quickstart.md), incluido 360 px en «Colección» y «Tienda»~~ (hecha el 2026-11-21).
   - ~~T087: escudos oficiales; desactivados (`ESCUDOS_ACTIVOS = false`) por licencia sin revisar. Bloquea producción~~:
     decidido el 2026-11-20 que no hay ni habrá escudos oficiales de ningún club, selección o marca. FR-044 queda solo
     con la bandera, T087 se cierra y deja de bloquear producción.
   - ~~006/SC-007 (idempotencia de compras con dobles pulsaciones y cortes) debe quedar registrado en la validación~~
     (registrado el 2026-11-20).
 - **Criterios de cierre**:
-  1. `specs/006-preparacion-bd-cartas/checklists/validacion.md` creado con pruebas automáticas (hecho) y escenarios A–O.
-  2. T103 marcada.
+  1. ~~`specs/006-preparacion-bd-cartas/checklists/validacion.md` creado con pruebas automáticas y escenarios A–O~~ (hecho).
+  2. ~~T103 marcada~~ (2026-11-21).
   3. ~~Escudos con licencia revisada y activados, o retirados de FR-044 por decisión registrada (T087)~~ (retirados
      el 2026-11-20).
 
@@ -411,31 +417,35 @@ cuesta simular los partidos.
   oficial en SVG, seis fondos de página nuevos, sin tablas de goleadores en el modo Duelos y nuevo sobre con su
   animación. Los recursos de origen están en `temp/`, que debe desaparecer al cerrar la spec (FR-021).
 - **Specs**: [007](specs/007-retoques-visuales/spec.md), [012](specs/012-mejoras-simulacion-2d/spec.md), [013](specs/013-mejora-cartas-rareza-draft/spec.md).
-- **Spec 012 (implementada el 2026-11-08, sin validar)**: sonidos del partido, del draft, del botón principal y de la
+- **Spec 012 (implementada el 2026-11-08, validada el 2026-11-21)**: sonidos del partido, del draft, del botón principal y de la
   tienda (síntesis propia; público y caja registradora provisionales, a sustituir por CC0), celebraciones de gol como
   cosmético (4 gratuitas + 1 de prueba de clase secuencia), franja de la 2D de altura fija y tarjetas con su color,
   «Gestionar equipo» con la mesa de Formación, «Control total» de lesiones y expulsiones contra un NPC (el motor resuelve
   los lances al terminar el paso: partido 14 de `equivalencia-005.json` regenerado), alineación confirmada respetada
-  con bloqueo `409 BAJA_PENDIENTE` y avisos del equipo, escudos en Plantillas y botones de sesión. Pendiente: los
-  recorridos a mano del [quickstart](specs/012-mejoras-simulacion-2d/quickstart.md), SC-009 con 5 personas y la
-  comparación del informe de `pnpm balance` con `balance-antes/`.
+  con bloqueo `409 BAJA_PENDIENTE` y avisos del equipo, escudos en Plantillas y botones de sesión. ~~Pendiente: los
+  recorridos a mano del [quickstart](specs/012-mejoras-simulacion-2d/quickstart.md), SC-009 con 5 personas~~ (hechos el
+  2026-11-21) ~~y la comparación del informe de `pnpm balance` con `balance-antes/`~~: ya estaba hecha (T039, T082;
+  [LEEME.md](specs/012-mejoras-simulacion-2d/balance-antes/LEEME.md)). Antes y después de mover los lances al final del
+  paso, 47 de 47 comprobaciones. Con la 6.2.0 de la ronda 2, 46 de 47: Frágil dio ×4,96 lesiones frente al ×3 ± 20 %,
+  que era ruido de muestra (con otras semillas, ×2,50 y ×4,55) y no efecto del cambio. Con el motor 8.0.0, Frágil da
+  ×3,15 y el informe pasa 76 de 76.
 - **Spec 012, ronda 2 (2026-11-08)**: grabaciones CC0 reales para pitidos, público y caja; celebraciones elaboradas y
   sin rótulo «¡Gol!», de igual duración a cualquier velocidad; en la 2D con control total, parada en cada gol; sin
   control total en la simulación rápida; arreglo del bloqueo de «Confirmar alineación» con bajas en el banquillo;
   avisos arriba a la derecha; ficha del equipo en Plantillas; motor 6.2.0 (el que gana de mucho baja la intensidad y
-  salen más porteros en los sobres) tras un 41-5 en 5 partidos. Pendiente: T089 (recorrido a mano).
+  salen más porteros en los sobres) tras un 41-5 en 5 partidos. ~~Pendiente: T089 (recorrido a mano)~~ (hecha el 2026-11-21).
 - **Spec 012, ronda 3 (2026-11-09)**: Formación con los 7 suplentes a la vista a 17" y sin huecos en el banquillo;
   letras de Estadio y Pizarra; modo de «eventos trascendentales» con ayuda tras el icono, anclado y con «Lo que ha
   pasado» siguiendo al último evento; ambiente de público sintetizado en la 2D; tarjetas con color en «Gestionar
   equipo»; ayuda resumida en la barra principal y cronómetro en la de la 2D; Estadio y Neón a la venta en la tienda;
-  retratos en las chapas de la 2D. Las 300 imágenes de fondo de las cartas, a una spec nueva. Pendiente: T100
-  (recorrido a mano).
+  retratos en las chapas de la 2D. Las 300 imágenes de fondo de las cartas, a una spec nueva. ~~Pendiente: T100
+  (recorrido a mano)~~ (hecha el 2026-11-21).
 - **Spec 012, ronda 4 (2026-11-09)**: ambiente de público con grabaciones CC0 (rumor del Millerntor, bombo, cánticos
   y vuvuzelas) en lugar del sintetizado; celebraciones nuevas Discoteca y Fuegos artificiales, de pago en la tienda
   (Estadio y Neón vuelven a ser gratis); selector de modo de la 2D con aspecto de panel; ayuda de la barra con letra
   más grande y en los enlaces; «Nueva partida» en cuatro recuadros sin desplazar, con las explicaciones en la barra.
-  Pendiente: T106 (recorrido a mano).
-- **Spec 013 (implementada el 2026-11-10, sin validar)**: las 300 cartas de Core con su ilustración propia de fondo
+  ~~Pendiente: T106 (recorrido a mano)~~ (hecha el 2026-11-21).
+- **Spec 013 (implementada el 2026-11-10, validada el 2026-11-21)**: las 300 cartas de Core con su ilustración propia de fondo
   (WebP, 57,5 KB de media; genérico con la identidad alternativa); rasgos y stats con contraste ≥ 4,5:1 en el peor
   caso; nivel de rareza del draft (Pobre, Escaso, Moderado, Alto y Rico; parámetros 6.3.0, Moderado al 30 % de
   GOAT en la alta) con acceso por el ajuste `acceso_niveles_rareza`, cobro idempotente de 100 fragmentos y pase
@@ -499,14 +509,14 @@ cuesta simular los partidos.
 | Comprobación | Dónde | Iniciativa |
 |---|---|---|
 | ~~7 comprobaciones de `balance` en `--pendientes` y 003/SC-001c~~: el CI ya no usa `--pendientes` (2026-11-16, spec 015; 76 de 76) | `.github/workflows/ci.yml` | INI-05 |
-| Recorridos a mano de los quickstart de la 014 y la 015 (paso 5) | `specs/014-…/quickstart.md`, `specs/015-…/quickstart.md` | INI-05 |
-| Recorridos a mano de la 012 (T076, T089, T100, T106, T116) y la 013 (T073), y los quickstart de la 006 (T103, escenarios A–O), la 014 y la 015 | `tasks.md` y `quickstart.md` de cada spec | INI-05, INI-08 (los de la 012 y la 013 ya no bloquean INI-15, cerrada) |
+| ~~Recorridos a mano de los quickstart de la 014 y la 015 (paso 5)~~: hechos el 2026-11-21 | `specs/014-…/quickstart.md`, `specs/015-…/quickstart.md` | INI-05 |
+| ~~Recorridos a mano de la 012 (T076, T089, T100, T106, T116) y la 013 (T073), y los quickstart de la 006 (T103, escenarios A–O), la 014 y la 015~~: pre-recorrido automático el 2026-11-20 y recorrido de la persona responsable el 2026-11-21 ([docs/recorrido-manual.md](docs/recorrido-manual.md)); tareas marcadas | `tasks.md` y `quickstart.md` de cada spec | INI-05, INI-08 (los de la 012 y la 013 ya no bloquean INI-15, cerrada) |
 | FR-028a: 25 / 40 ms por partido (CI a 120 ms) | `pnpm --filter @fbd/engine bench` | INI-06 |
 | 001/SC-017: carga de 100 partidas | `tools/load/beta-100.js` | INI-07 |
 | Pruebas con personas: 001/SC-003; 002/SC-001, SC-009, SC-007a; 003/SC-008, SC-011–SC-014, SC-016, SC-019; 004/SC-003, SC-004, SC-010 | checklists `validacion.md` | INI-01 a INI-03 |
 | 60 fps en un portátil medio con el navegador visible | 002/FR-025b | INI-01, INI-02 |
 | Correo con SMTP real | 001 escenario E | INI-01, INI-10 |
-| Escenarios manuales A–O de la 006 | `specs/006-preparacion-bd-cartas/quickstart.md` | INI-08 |
+| ~~Escenarios manuales A–O de la 006~~: hechos el 2026-11-21 | `specs/006-preparacion-bd-cartas/quickstart.md` | INI-08 |
 | ~~Licencia de los escudos~~: no habrá escudos oficiales (2026-11-20) | 006/FR-044, T087 | INI-08, INI-10 |
 | ~~Tests intermitentes~~: `torneo.spec.ts` y la regla de 10 minutos, arreglado el 2026-11-03 (lo juega un usuario registrado, INI-11); `torneo-asincrono` no se reproduce (2026-11-20: 27 de 27 en tres pasadas con 14 hilos de carga ocupando los 12 núcleos) | 002, 003 y 004 `validacion.md` | INI-07 |
 | ~~T144 (001)~~: marcada el 2026-11-20 | `tasks.md` | INI-01 |

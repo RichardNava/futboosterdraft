@@ -47,8 +47,27 @@ envío (spec 013, FR-033): una doble pulsación o un reintento tras un corte lle
 
 ## Escenarios manuales A–O (T103)
 
-Sin recorrer. Hay que hacerlos a mano en `pnpm dev` siguiendo [quickstart.md](../quickstart.md), incluido el ancho de
-360 px en «Colección» y «Tienda». Al terminar, anotar aquí el resultado de cada uno y marcar T103.
+Recorridos el 2026-11-20 con un guion de Playwright (capturas y medidas) y revisados por la persona responsable el
+2026-11-21; T103 marcada. Detalle y lo que quedó para la persona: [docs/recorrido-manual.md](../../../docs/recorrido-manual.md).
+
+| # | Resultado |
+|---|---|
+| A | ✅ Sin sesión, `/coleccion` pide entrar; el invitado ve la invitación y no tiene «Colección» ni «Tienda»; el registrado, sí |
+| B | ✅ 300 cartas, 300 activas, «Cumple el mínimo», saldo 0; «estevao» encuentra la carta en 0,1 s («valotal» ya no existe en Core real) |
+| C | ✅ Orden por nacionalidad descendente, última página y tamaño se conservan al recargar |
+| D | ✅ Ficha con la carta, la historia, «Core» y el aviso de que no se desfragmenta; Escape la cierra |
+| E | ✅ «Mínimo de DEF Superclase: 44; tienes 44 activas»; la carta sigue activa |
+| F | ✅ Por la persona responsable; el guion no ganó ningún torneo (lo cubre también `recompensa.test.ts`) |
+| G | Obsoleto: no hay fragmentos a la venta (spec 011, FR-002) |
+| H | ✅ Sobre comprado en 8 s: −1.000, animación, 8 cartas nuevas, activas y distintas |
+| I | ✅ Doble pulsación con 1,5 s de retraso en la red: un solo cargo y un solo sobre |
+| J | ✅ Expansión comprada teniendo 5 de sus cartas: 19 nuevas y +325 fragmentos por las repetidas; tarjeta «Adquirida» |
+| K | Obsoleto: las cuatro expansiones no comparten cartas entre sí ni con Core |
+| L | ✅ Desfragmentar una GOAT: cancelar no cambia nada; confirmar da +175 y la carta desaparece |
+| M | ✅ Con 34 cartas de expansión desactivadas, ninguna sale en el primer sobre del draft |
+| N | ✅ Bandera en la cuadrícula pequeña y presentación en `/_pruebas/cartas`; el escudo, obsoleto (no hay escudos) |
+| O | ✅ 12 movimientos que suman el saldo (500) |
+| 360 px | ✅ «Colección» y «Tienda» sin desplazamiento horizontal (la tienda se salía 21 px; corregido el 2026-11-20) |
 
 | Escenario | Resultado | Notas |
 |---|---|---|

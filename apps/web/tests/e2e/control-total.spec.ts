@@ -15,12 +15,20 @@ test('control total en la 2D: parada por un lance propio, aviso y gestión del e
   await page.getByRole('tab', { name: 'Táctica' }).click();
   await page.getByRole('button', { name: 'Control total' }).click();
   await expect(page.getByRole('button', { name: 'Control total' })).toHaveAttribute('aria-pressed', 'true');
+  // La ayuda «i» abre un recuadro con la diferencia entre los modos (antes quedaba invisible, sin colocar).
+  const ayudaModos = async () => {
+    await page.getByRole('button', { name: 'Qué son los eventos trascendentales' }).click();
+    await expect(page.getByRole('tooltip').filter({ hasText: 'En control total' })).toBeVisible();
+    await page.keyboard.press('Escape');
+  };
+  await ayudaModos();
 
   await page.goto(`/partidas/${partidaId}/torneo`);
   await page.getByLabel('Simulación 2D').check();
   await page.getByRole('button', { name: 'Comenzar partido' }).click();
   await expect(page.locator('.campo-2d canvas')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Control total' })).toHaveAttribute('aria-pressed', 'true');
+  await ayudaModos();
   const partidoId = page.url().split('/').at(-1)!;
   // Spec 014 (SC-007): mientras se reproduce la 2D no hay indicador de energía.
   await expect(page.locator('.indicador-energia')).toHaveCount(0);
@@ -30,8 +38,14 @@ test('control total en la 2D: parada por un lance propio, aviso y gestión del e
   const gestion = page.getByTestId('gestion-equipo');
   // Spec 012, ronda 2: cada gol también para el partido (tras la celebración); se vuelve sin cambios hasta el lance.
   const lance = /(Lesión|Expulsión) de .+\(\d+(\+\d+)?'\)\. (Te queda|No te quedan)/;
+  // Si la lesión llega en la segunda parte, el descanso espera a «Seguir».
+  const seguir = page.getByRole('button', { name: 'Seguir', exact: true });
   for (let i = 0; i < 20; i++) {
-    await expect(gestion).toBeVisible({ timeout: 300_000 });
+    await expect(gestion.or(seguir)).toBeVisible({ timeout: 300_000 });
+    if (!(await gestion.isVisible())) {
+      await seguir.click();
+      continue;
+    }
     const aviso = (await gestion.locator('.aviso-parada').textContent()) ?? '';
     if (lance.test(aviso)) break;
     expect(aviso).toContain('Partido detenido tras el gol');

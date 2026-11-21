@@ -74,7 +74,10 @@ const TOLERANCIA_PX = 10;
 const VISIBLE_TRAS_TOQUE_MS = 2500;
 const CONTROL = 'a, button, [role="button"], [role="tab"], summary, [tabindex]:not([tabindex="-1"]):not(.tabla-desplazable)';
 
-/** Coloca una etiqueta emergente (`position: fixed`) bajo `ancla` o, si no cabe, encima, sin salirse de la ventana. */
+/**
+ * Coloca una etiqueta emergente (`position: fixed`) bajo `ancla` o, si no cabe, encima, sin salirse de la ventana, y la
+ * marca como colocada: las `.carta-descripcion` son invisibles hasta entonces (spec 013, FR-029).
+ */
 export function colocarJunto(pop: HTMLElement, ancla: Element): void {
   const r = ancla.getBoundingClientRect();
   const margen = 8;
@@ -84,6 +87,7 @@ export function colocarJunto(pop: HTMLElement, ancla: Element): void {
   const arriba = r.bottom + 4 + alto > window.innerHeight - margen ? r.top - alto - 4 : r.bottom + 4;
   pop.style.left = `${izquierda}px`;
   pop.style.top = `${Math.max(margen, arriba)}px`;
+  pop.dataset.colocada = '';
 }
 
 interface Props {

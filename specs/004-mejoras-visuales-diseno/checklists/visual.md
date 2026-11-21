@@ -98,10 +98,13 @@ efectos de la captura, comprobados aparte en la ventana real. Las filas marcan e
 | 2 | Partido: simulación 2D (franja) | 360 | El nombre del visitante tapaba el segundo dígito del resultado | `.goles-2d` con `flex-shrink: 0`: se recortan los nombres, nunca el resultado |
 | 3 | Partido: simulación 2D (campo) | 1366 | El nombre de un jugador pegado a la banda o al fondo se cortaba en el borde del lienzo («rnardashvili») | El texto centrado se desplaza para quedar dentro del lienzo (`campo2d/renderizador.ts`, `texto`) |
 
-**Observaciones sin corregir** (no incumplen la guía, o piden una decisión de diseño):
+**Decisiones de diseño del 2026-11-20** (las observaciones del recorrido, resueltas por la persona responsable):
 
-- Titulares de sección en Barlow normal en «Mi perfil» (Escudo, Sobre), «Sala» (Nombre del equipo), «Mis partidas» (En curso, Terminadas) y la ficha de «Plantillas», mientras que los mismos bloques en «Formación → Personalización» van en Barlow Condensed.
-- En la pantalla de campeón, el nombre de un invitado se parte por el guion («¡Equipo de Invitado-» / «6161, campeón…»).
-- En la franja de la 2D a 360 px los nombres de los equipos quedan en dos o tres letras («D…», «E…»); se leen enteros con una pulsación larga.
-- En las cartas compactas del banquillo, el nombre se apoya sobre la banda superior del marco.
-- La chapa del portero en la línea de gol puede quedar cortada a medias por el borde del campo (solo el dorsal).
+| # | Observación | Decisión | Cambio |
+|---|---|---|---|
+| 4 | Titulares de sección en Barlow normal en «Mi perfil», «Sala», «Mis partidas» y «Plantillas»; en Barlow Condensed en el resto | La misma tipografía en todos: Barlow Condensed, la más usada | La regla base de `h2` usa `--letra-cartel` (`componentes.css`) |
+| 5 | En la pantalla de campeón, el nombre de un invitado se partía por el guion | Si no cabe, se reduce la letra antes que partirlo | `NombreEntero`: el nombre no se parte y, si no cabe en una línea del titular, baja su letra (campeón y derrota) |
+| 6 | En la franja de la 2D a 360 px los nombres quedaban en una letra | Recolocar para que se lean enteros | Por debajo de 720 px, cada equipo en su fila con sus goles a la derecha y el minuto debajo |
+| 7 | Nombre del banquillo pegado a la banda superior y recortado sin necesidad | Algo más de aire y más sitio para el nombre | Carta compacta: el dorsal baja a la segunda fila, a la derecha de las posiciones; el nombre ocupa todo el ancho y gana 3 px arriba; el hueco del botón «i» solo se reserva si lo hay |
+| 8 | Chapa del dorsal del portero cortada en la línea de gol | Que no suceda | Si la chapa se saldría del lienzo por la derecha, va a la izquierda del retrato |
+| 9 | La barra principal quedaba a media pantalla cuando el contenido era corto (39 casos en 14 pantallas; en la 2D, 21 px por encima del pie por la barra de navegación compacta) | La barra principal siempre anclada abajo | La pantalla llega al pie de la ventana y la barra lleva un `top` pegajoso con su alto medido (`BarraPrincipal`); la navegación compacta tiene alto fijo y el token lo sigue. `comprobarDiseno` lo comprueba en cada pantalla y ancho |

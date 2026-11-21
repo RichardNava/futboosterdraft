@@ -3,6 +3,7 @@ import { marcarPantallaVista } from '../api/cliente';
 import { reproducir } from '../sonido/sonido';
 import { BarraPrincipal, type AccionBarra } from '../componentes/BarraPrincipal';
 import { Estadio } from '../componentes/arte/Estadio';
+import { NombreEntero } from '../componentes/NombreEntero';
 
 interface Props {
   partidaId: string;
@@ -52,7 +53,7 @@ export function PantallaDerrota({ partidaId, equipo, fase, puedeSimularResto, to
       </div>
       <h1 className="cartel">{torneoTerminado ? 'Subcampeones' : 'Eliminados'}</h1>
       <h2>
-        {equipo} ha sido derrotado en {fase}
+        <NombreEntero texto={equipo} /> ha sido derrotado en {fase}
       </h2>
       <BarraPrincipal principal={principal} secundarios={torneoTerminado ? [] : [volver]} />
     </main>

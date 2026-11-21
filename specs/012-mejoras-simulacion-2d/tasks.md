@@ -226,7 +226,7 @@ FR-008).
 - [X] T073 [P] `docs/juego/sonidos.md`: las siete filas de «Pendientes» pasan a «Sonidos actuales» con fichero, volumen y procedencia, y se añaden las de `pitidoDescanso`, `pitidoFinal`, `tarjetaRoja` y `clicPrincipal` si no estaban (SC-001)
 - [X] T074 [P] `ROADMAP.md`: estado de la spec 012
 - [X] T075 Suite completa: `pnpm typecheck && pnpm lint`, `pnpm test`, `pnpm test:integration` y `test:integration:hilos` en `@fbd/server`, `pnpm test:equivalence`, `pnpm e2e`, `pnpm balance` (comparado con `balance-antes/`)
-- [ ] T076 Recorridos 1 a 20 de [quickstart.md](quickstart.md) a mano; anotar los pendientes (p. ej., SC-009 con 5 personas)
+- [X] T076 Recorridos 1 a 20 de [quickstart.md](quickstart.md) a mano; anotar los pendientes (p. ej., SC-009 con 5 personas) Hecha el 2026-11-21: pre-recorrido automático del 2026-11-20 y recorrido de la persona responsable ([docs/recorrido-manual.md](../../docs/recorrido-manual.md)); su único hallazgo, la ayuda de «Automático / Control total» que no se veía, quedó corregido.
 - [X] T077 `graphify update .`
 - [X] T078 Sugerir a la persona el commit con el comando exacto (los agentes no hacen `git commit` ni `git push`)
 
@@ -246,7 +246,7 @@ FR-008).
 - [X] T086 Sin control total en la simulación rápida (FR-037): `PartidoRapido.tsx` y `fijarControlTotal`/`procesarModoIncidencias` en el servidor
 - [X] T087 [P] Avisos arriba a la derecha (FR-039): `apps/web/src/estilos/componentes.css` y `Aviso.tsx`
 - [X] T088 [P] Plantillas (FR-040): ficha del equipo con `mediaMejorOnce` (`componentes/MediaEquipo.tsx`) en `pantallas/Plantillas.tsx`; prueba `apps/web/tests/unit/mediaMejorOnce.test.ts`
-- [ ] T089 Recorrido manual de la ronda 2: 2D a x8 con goles, control total con goles, bajas entre jornadas, Plantillas y avisos
+- [X] T089 Recorrido manual de la ronda 2: 2D a x8 con goles, control total con goles, bajas entre jornadas, Plantillas y avisos Hecha el 2026-11-21: pre-recorrido automático del 2026-11-20 y recorrido de la persona responsable ([docs/recorrido-manual.md](../../docs/recorrido-manual.md)); su único hallazgo, la ayuda de «Automático / Control total» que no se veía, quedó corregido.
 
 ---
 
@@ -266,7 +266,7 @@ FR-008).
 - [X] T097 Celebraciones en la tienda (FR-050): `data/cosmeticos.json`, bloque de celebraciones en `TiendaCosmeticos.tsx` y `Tienda.tsx`, enlace en `SelectorCelebracion.tsx`; `apps/server/tests/integration/celebraciones.test.ts`
 - [X] T098 [P] Retratos en la 2D (FR-051): `chapaConRetrato` en `campo2d/renderizador.ts` e `imagen` en `jugadoresDe` (`Lienzo2D.tsx`)
 - [X] T099 Pruebas: `pnpm typecheck`, `pnpm lint`, `pnpm test`, integración de celebraciones y tienda, e2e
-- [ ] T100 Recorrido manual de la ronda 3: Formación a 17", sustituir una baja, celebraciones en la 2D y en la tienda, ambiente, ayuda de la barra y retratos
+- [X] T100 Recorrido manual de la ronda 3: Formación a 17", sustituir una baja, celebraciones en la 2D y en la tienda, ambiente, ayuda de la barra y retratos Hecha el 2026-11-21: pre-recorrido automático del 2026-11-20 y recorrido de la persona responsable ([docs/recorrido-manual.md](../../docs/recorrido-manual.md)); su único hallazgo, la ayuda de «Automático / Control total» que no se veía, quedó corregido.
 
 ---
 
@@ -279,7 +279,7 @@ FR-008).
 - [X] T103 [P] Selector de modo como panel (FR-054) en `estilos/base.css`
 - [X] T104 Ayuda en la barra (FR-055): letra de cuerpo en `.ayuda-barra`; «Nueva partida» con `BarraPrincipal`, `data-ayuda` y rejilla de cuatro recuadros (`CrearPartida.tsx`, `base.css`); ayuda de los enlaces en `app/Marco.tsx`
 - [X] T105 Pruebas: `pnpm typecheck`, `pnpm lint`, `pnpm test`, integración de celebraciones y tienda, e2e de dificultad y apertura; capturas a 1897 × 911, 1366 × 768 y 390 × 844
-- [ ] T106 Recorrido manual de la ronda 4 (tras `pnpm seed` y reiniciar el servidor): ambiente en la 2D, Discoteca y Fuegos en la tienda y en un gol, selector de modo, «Nueva partida»
+- [X] T106 Recorrido manual de la ronda 4 (tras `pnpm seed` y reiniciar el servidor): ambiente en la 2D, Discoteca y Fuegos en la tienda y en un gol, selector de modo, «Nueva partida» Hecha el 2026-11-21: pre-recorrido automático del 2026-11-20 y recorrido de la persona responsable ([docs/recorrido-manual.md](../../docs/recorrido-manual.md)); su único hallazgo, la ayuda de «Automático / Control total» que no se veía, quedó corregido.
 
 ---
 
@@ -296,7 +296,7 @@ FR-008).
 - [X] T113 Cambios del descanso (FR-062): `conEnEspera` y `sinLaAplicada` en `estadoEquipoEnPartido.ts`, usados en `Partido2D.tsx` y `PartidoRapido.tsx`; prueba en `tests/unit/estadoEquipoEnPartido.test.ts`
 - [X] T114 [P] Dorsal y retrato en la 2D (FR-063): `renderizador.ts`
 - [X] T115 Pruebas: `pnpm typecheck`, `pnpm lint`, `pnpm test`, integración de incidencias
-- [ ] T116 Recorrido manual de la ronda 5: media en Formación y Plantillas, selector, avisos, botiquín, parada por lesión en control total (esperar más de 2 min), «No disponibles», recolocar en el descanso y reabrir, dorsales en la 2D
+- [X] T116 Recorrido manual de la ronda 5: media en Formación y Plantillas, selector, avisos, botiquín, parada por lesión en control total (esperar más de 2 min), «No disponibles», recolocar en el descanso y reabrir, dorsales en la 2D Hecha el 2026-11-21: pre-recorrido automático del 2026-11-20 y recorrido de la persona responsable ([docs/recorrido-manual.md](../../docs/recorrido-manual.md)); su único hallazgo, la ayuda de «Automático / Control total» que no se veía, quedó corregido.
 - [X] T117 Retoques tras revisar la ronda 5: estrella de oro de vuelta tras la cifra (centrada en la misma celda), letra generosa y adaptable en la ayuda y el motivo de la barra principal (el toast vuelve a su tamaño) y resultado + minuto en «Gestionar equipo» de la 2D
 
 ## Dependencies & Execution Order

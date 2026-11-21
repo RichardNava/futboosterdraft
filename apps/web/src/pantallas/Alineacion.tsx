@@ -360,7 +360,12 @@ export function Alineacion() {
         bajas,
       )
     : [];
-  const motivo = errores[0]?.motivos?.[0] ?? errores[0]?.mensaje ?? null;
+  // El dominio no conoce los nombres («Jugador 75 no disponible»): aquí se nombra al que hay que sustituir.
+  const deBaja = actual ? [...actual.titulares.map((t) => t.jugadorId), ...actual.suplentes].find((id) => bajas.has(id)) : undefined;
+  const motivo =
+    errores[0]?.codigo === 'JUGADOR_NO_DISPONIBLE' && deBaja !== undefined
+      ? `${nombre(deBaja)} no está disponible; sustitúyelo`
+      : (errores[0]?.motivos?.[0] ?? errores[0]?.mensaje ?? null);
   const sinCambios = firma(datos.alineacion) === firma(actual);
   const confirmada = sinCambios && datos.confirmada;
   // «Confirmar alineación» guarda y vuelve al torneo, donde se prepara el partido (FR-003b).

@@ -90,7 +90,8 @@ describe('partido rápido (US3)', () => {
     const tramo = await ws.esperar('partido.tramo', { desde });
     expect(Date.now() - t0).toBeLessThanOrEqual(3000); // SC-009
     expect(tramo.fase).toBe('descanso');
-    expect(tramo.eventos.every((e: any) => e.relevante)).toBe(true);
+    // Solo los relevantes, más el principio y el final de cada parte (los pitidos de la 2D, spec 012).
+    expect(tramo.eventos.every((e: any) => e.relevante || e.tipo === 'inicio_tramo' || e.tipo === 'fin_tramo')).toBe(true);
     const pausa = await ws.esperar('partido.pausa_decision', { desde });
     expect(pausa.motivo).toBe('descanso');
 

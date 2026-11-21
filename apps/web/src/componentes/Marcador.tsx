@@ -92,14 +92,21 @@ function ListaGoleadores({ goleadores, etiqueta }: { goleadores: Goleador[]; eti
 /** Equipos y goles de la franja del 2D: chapa, nombre y marcador de cada lado. */
 export function EquiposFranja({ local, visitante, goles }: { local: EquipoChapa; visitante: EquipoChapa; goles: Record<Lado, number> }) {
   return (
+    // En estrecho, el CSS pone cada equipo en su fila con sus goles (004/T074): el nombre usa casi todo el ancho.
     <span className="equipos-2d">
-      <Chapa {...local} lado="local" />
-      <NombreRecortado texto={local.nombre} />
-      <span className="goles-2d">
-        {goles.local} – {goles.visitante}
+      <span className="equipo-2d local">
+        <Chapa {...local} lado="local" />
+        <NombreRecortado texto={local.nombre} />
       </span>
-      <NombreRecortado texto={visitante.nombre} />
-      <Chapa {...visitante} lado="visitante" />
+      <span className="goles-2d">
+        <span className="gol-2d local">{goles.local}</span>
+        <span className="goles-2d-separador"> – </span>
+        <span className="gol-2d visitante">{goles.visitante}</span>
+      </span>
+      <span className="equipo-2d visitante">
+        <NombreRecortado texto={visitante.nombre} />
+        <Chapa {...visitante} lado="visitante" />
+      </span>
     </span>
   );
 }

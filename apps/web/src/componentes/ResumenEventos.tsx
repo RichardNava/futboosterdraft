@@ -105,7 +105,9 @@ interface Props {
  * columna fija y un icono por tipo con su texto alternativo, para escanearla sin leer cada línea. Los goles van
  * resaltados con la luz del oro (ronda 4, FR-054).
  */
-export function ResumenEventos({ eventos, nombre, nombresEquipo, chapas }: Props) {
+export function ResumenEventos({ eventos: todos, nombre, nombresEquipo, chapas }: Props) {
+  // El principio y el final de cada parte solo están para los pitidos de la 2D; no son incidencias.
+  const eventos = todos.filter((e) => e.tipo !== 'inicio_tramo' && !(e.tipo === 'fin_tramo' && e.datos.motivo === undefined));
   if (eventos.length === 0) return <p className="nota">Sin incidencias destacadas.</p>;
   return (
     <ol className="resumen-eventos">

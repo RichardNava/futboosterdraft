@@ -77,6 +77,9 @@ describe('finalizar partido (US5)', () => {
     expect(nuevos[0]!.desdeTick).toBe(simulado);
     for (let i = 1; i < nuevos.length; i++) expect(nuevos[i]!.desdeTick).toBe(nuevos[i - 1]!.hastaTick);
     expect(nuevos.at(-1)!.fase).toBe('finalizado');
+    // La 2D pita con el principio y el final de cada parte (spec 012, FR-001): llegan en los tramos aunque no sean relevantes.
+    const tipos = tramosDe(ws, desde).flatMap((t) => t.eventos as { tipo: string }[]).map((e) => e.tipo);
+    expect(tipos).toEqual(expect.arrayContaining(['inicio_tramo', 'fin_tramo']));
     expect(fin.estadisticas.local).toHaveProperty('precisionPase');
     expect(fin.estadisticas.local).toHaveProperty('centros');
 

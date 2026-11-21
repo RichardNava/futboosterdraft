@@ -551,6 +551,18 @@
   gap: var(--espacio-3);
 }
 
+/* En móvil, el sobre encima del texto: al lado, el botón de compra se salía 21 px de la pantalla a 360 px. */
+@media (max-width: 479.98px) {
+  .tienda-sobre {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tienda-sobre-arte {
+    width: 110px;
+    justify-self: center;
+  }
+}
+
 .tienda-sobre-arte {
   width: 100%;
   height: auto;

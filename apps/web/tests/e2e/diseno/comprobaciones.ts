@@ -96,6 +96,18 @@ export async function comprobarDiseno(page: Page, nombre: string, opciones: Opci
       const alternativas = await page.locator('button.secundario.alternativa:visible, a.secundario.alternativa:visible').count();
       expect(alternativas, `${donde}: secundarios lima`).toBeLessThanOrEqual(1);
 
+      // 7. La barra principal, anclada abajo aunque la pantalla sea corta (decisión del 2026-11-20).
+      const barra = await page.evaluate(() => {
+        const el = document.querySelector<HTMLElement>('.pantalla > .barra-principal');
+        if (!el || !el.checkVisibility()) return null;
+        const y = window.scrollY;
+        window.scrollTo(0, 0);
+        const abajo = el.getBoundingClientRect().bottom;
+        window.scrollTo(0, y);
+        return { abajo, alto: window.innerHeight };
+      });
+      if (barra) expect(Math.abs(barra.abajo - barra.alto), `${donde}: barra principal no anclada abajo (${Math.round(barra.abajo)} de ${barra.alto})`).toBeLessThanOrEqual(1);
+
       // 6. Sin mayúsculas sostenidas (FR-035).
       const mayusculas = await page.evaluate(() =>
         Array.from(document.querySelectorAll<HTMLElement>('body *'))

@@ -6,6 +6,7 @@ import { useSesion } from '../estado/sesion';
 import { BarraPrincipal } from '../componentes/BarraPrincipal';
 import { Trofeo } from '../componentes/arte/Trofeo';
 import { Fragmentos } from '../componentes/Fragmentos';
+import { NombreEntero } from '../componentes/NombreEntero';
 
 interface Props {
   partidaId: string;
@@ -43,7 +44,9 @@ export function PantallaCampeon({ partidaId, campeon, recompensaFragmentos, onVo
       </div>
       <h1 className="cartel">Campeones</h1>
       {/* Tras el titular para el lector de pantalla; el CSS lo sube a la parte superior (FR-055). */}
-      <h2 className="final-campeon">¡{campeon}, campeón del torneo!</h2>
+      <h2 className="final-campeon">
+        ¡<NombreEntero texto={campeon} />, campeón del torneo!
+      </h2>
       {/* Spec 006 (FR-019, SC-008): la recompensa del campeón registrado o la invitación a registrarse. */}
       {recompensaFragmentos ? (
         <p className="final-recompensa">

@@ -639,14 +639,16 @@ img.carta-fondo-accion {
 
 .carta.compacta .carta-cuerpo {
   display: grid;
-  /* Spec 006 (US6, escenario 5): en la compacta, solo la bandera, junto al nombre; el dorsal, en su columna detrás. */
-  grid-template-columns: auto auto 1fr auto;
-  grid-template-areas: 'media bandera nombre dorsal' 'media posiciones posiciones posiciones';
+  /* Spec 006 (US6, escenario 5): en la compacta, solo la bandera, junto al nombre. El dorsal, abajo a la derecha,
+     junto a las posiciones: el nombre usa todo el ancho y no se recorta sin necesidad (004/T074, 2026-11-20). */
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: 'media bandera nombre nombre' 'media posiciones posiciones dorsal';
   align-items: center;
   column-gap: 8px;
   row-gap: 2px;
   width: 100%;
-  padding: 6px 36px 6px 10px;
+  /* Arriba, aire para que el nombre no se apoye en la banda superior del marco. */
+  padding: 9px 10px 6px;
   border-radius: var(--radio);
   /* El mismo marco del nivel como textura, con un velo que mantiene la legibilidad (spec 007, research R3). */
   background:
@@ -659,6 +661,11 @@ img.carta-fondo-accion {
   border-left: 4px solid var(--carta-marco);
   text-align: left;
   transition: border-color var(--duracion-corta) var(--curva-salida);
+}
+
+/* Sitio para el botón «i» de la ficha, que va encima a la derecha. */
+.carta.compacta:has(.carta-ficha) .carta-cuerpo {
+  padding-right: 36px;
 }
 
 .carta.compacta .carta-cuerpo[role='button']:hover {

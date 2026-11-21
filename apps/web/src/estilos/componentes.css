@@ -111,6 +111,8 @@ h1 {
 }
 
 h2 {
+  /* Barlow Condensed en todos los titulares de sección, como en la mayoría de pantallas (004/T074, decisión del 2026-11-20). */
+  font-family: var(--letra-cartel);
   font-size: var(--titulo-pequeno);
   font-weight: 600;
   line-height: var(--interlineado-titulo-pequeno);
@@ -1060,6 +1062,11 @@ span.error {
   }
 }
 
+/* Nombre que no se parte en un titular; NombreEntero le reduce la letra si no cabe. */
+.nombre-entero {
+  white-space: nowrap;
+}
+
 /* ---------- Nombres recortados (research R9) ---------- */
 
 .nombre-recortado {
@@ -1356,9 +1363,14 @@ span.error {
 }
 
 /* Franja compacta del partido 2D: solo iconos, 40 px como máximo (003). */
+/* Alto fijo, y el token lo sigue: las pantallas que miden su alto con él llegan así al pie (barra principal anclada). */
+:root:has(.barra-navegacion.compacta) {
+  --barra-navegacion-alto: var(--espacio-10);
+}
+
 .barra-navegacion.compacta {
   min-height: 0;
-  max-height: var(--espacio-10);
+  height: var(--espacio-10);
   padding: 0 var(--espacio-3);
   gap: var(--espacio-2);
 }
@@ -1404,8 +1416,12 @@ span.error {
     min-width: var(--objetivo-tactil);
   }
 
+  :root:has(.barra-navegacion.compacta) {
+    --barra-navegacion-alto: calc(var(--objetivo-tactil) + 1px);
+  }
+
   .barra-navegacion.compacta {
-    max-height: none;
+    height: calc(var(--objetivo-tactil) + 1px);
   }
 
   .pestanas > button,

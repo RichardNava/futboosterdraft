@@ -283,7 +283,7 @@ en el historial (quickstart G).
 - [X] T100 [P] Actualizar la documentación afectada: formato de datos y comando `pnpm seed` en `docs/` (donde se describa el catálogo), y `CLAUDE.md` si cambia la spec en curso o alguna convención
 - [X] T101 Ejecutar `pnpm typecheck && pnpm lint && pnpm --filter @fbd/web lint:tokens && pnpm test && pnpm test:integration && pnpm e2e -- coleccion tienda cartas` y corregir lo que falle
 - [X] T102 Ejecutar `pnpm balance -- --solo colecciones` y comprobar SC-003 y SC-005 con «Cumple»
-- [ ] T103 Recorrer los escenarios manuales A–O de `specs/006-preparacion-bd-cartas/quickstart.md`, incluido el ancho de 360 px en «Colección» y «Tienda» (FR-042), y anotar los resultados
+- [X] T103 Recorrer los escenarios manuales A–O de `specs/006-preparacion-bd-cartas/quickstart.md`, incluido el ancho de 360 px en «Colección» y «Tienda» (FR-042), y anotar los resultados Hecha el 2026-11-21: pre-recorrido automático del 2026-11-20 y recorrido de la persona responsable ([docs/recorrido-manual.md](../../docs/recorrido-manual.md)); su único hallazgo, la ayuda de «Automático / Control total» que no se veía, quedó corregido.
 - [X] T104 Ejecutar `graphify update .` en la raíz del repositorio
 
 ---
