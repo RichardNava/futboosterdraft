@@ -162,9 +162,10 @@ export const movimientosFragmentos = pgTable(
     check('movimientos_fragmentos_importe_ck', sql`${t.importe} <> 0`),
     check(
       'movimientos_fragmentos_motivo_ck',
-      sql`${t.motivo} in ('recompensa_torneo','desfragmentacion','duplicado','compra_fragmentos','compra_sobre','compra_cosmetico','compra_coleccion','nivel_rareza','devolucion_nivel_rareza','compra_pase_premium')`,
+      sql`${t.motivo} in ('recompensa_torneo','desfragmentacion','duplicado','compra_fragmentos','compra_sobre','compra_cosmetico','compra_coleccion','nivel_rareza','devolucion_nivel_rareza','compra_pase_premium','entrega_betatester')`,
     ),
     uniqueIndex('movimientos_devolucion_rareza_uq').on(t.referencia).where(sql`${t.motivo} = 'devolucion_nivel_rareza'`),
+    uniqueIndex('movimientos_entrega_betatester_uq').on(t.referencia).where(sql`${t.motivo} = 'entrega_betatester'`),
   ],
 );
 
@@ -172,7 +173,7 @@ export const movimientosFragmentos = pgTable(
 export const pasesPremium = pgTable('pases_premium', {
   usuarioId: text('usuario_id')
     .primaryKey()
-    .references(() => usuarios.id),
+    .references(() => usuarios.id, { onDelete: 'cascade' }),
   /** null = nunca comprado. */
   fin: timestamp('fin', { withTimezone: true }),
   cortesia: boolean('cortesia').notNull().default(false),

@@ -80,36 +80,6 @@
   },
   {
     "tipo": "http",
-    "metodo": "GET",
-    "ruta": "/api/auth/ba/*",
-    "acceso": [
-      "publico"
-    ],
-    "comprobacion": "API interna de Better Auth, sin las validaciones ni limites de las rutas publicas",
-    "hallazgos": [
-      "SEG-004",
-      "SEG-013"
-    ]
-  },
-  {
-    "tipo": "http",
-    "metodo": "POST",
-    "ruta": "/api/auth/ba/*",
-    "acceso": [
-      "publico"
-    ],
-    "comprobacion": "API interna de Better Auth, sin las validaciones ni limites de las rutas publicas",
-    "hallazgos": [
-      "SEG-001",
-      "SEG-004",
-      "SEG-005",
-      "SEG-013",
-      "SEG-019",
-      "SEG-020"
-    ]
-  },
-  {
-    "tipo": "http",
     "metodo": "POST",
     "ruta": "/api/auth/invitado",
     "acceso": [

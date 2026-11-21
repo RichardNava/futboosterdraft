@@ -2,13 +2,15 @@
  * Autenticación (T026; research R12; FR-000).
  *
  * Better Auth con correo y contraseña y con sesiones anónimas para los invitados. Las rutas
- * públicas del contrato (/api/auth/invitado, /registro, /login, /logout, /api/me) envuelven la API
- * de Better Auth, que queda montada internamente en /api/auth/ba/*.
+ * públicas del contrato (/api/auth/invitado, /registro, /login, /logout, /api/me) llaman a `auth.api.*`.
+ * Su `basePath` es solo interno: el manejador de Better Auth no se expone (spec 017, R6).
  */
 import { randomUUID } from 'node:crypto';
+import { tieneCaracteresNoPermitidos } from '@fbd/domain';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { anonymous } from 'better-auth/plugins/anonymous';
+import type { Logger } from '../observabilidad/logger';
 import type { BaseDatos } from '../persistencia/db';
 import { cuentas, sesiones, usuarios, verificaciones } from '../persistencia/esquema/index';
 
@@ -19,6 +21,9 @@ interface OpcionesAuth {
   alVincularInvitado?: (invitadoId: string, nuevoUsuarioId: string) => Promise<void>;
   /** Envía el enlace para restablecer la contraseña (spec 013, FR-027). */
   enviarRecuperacion?: (email: string, enlace: string) => Promise<void>;
+  /** Tras restablecer la contraseña: borra los fallos de login de la cuenta (spec 017, R5). */
+  alRestablecerContrasena?: (email: string) => void;
+  logger?: Logger;
 }
 
 /** Better Auth con correo y contraseña, invitados anónimos y sesiones en la base de datos. */
@@ -28,6 +33,8 @@ export function crearAuth(db: BaseDatos, opciones: OpcionesAuth) {
     baseURL: opciones.urlPublica,
     basePath: '/api/auth/ba',
     trustedOrigins: [opciones.urlPublica],
+    // Solo errores y sin sus datos: los avisos de Better Auth incluyen correos (spec 017, FR-035).
+    logger: { level: 'error', log: (_nivel, mensaje) => opciones.logger?.error(mensaje) },
     database: drizzleAdapter(db, {
       provider: 'pg',
       schema: { user: usuarios, session: sesiones, account: cuentas, verification: verificaciones },
@@ -40,6 +47,7 @@ export function crearAuth(db: BaseDatos, opciones: OpcionesAuth) {
       sendResetPassword: async ({ user, token }) => {
         void opciones.enviarRecuperacion?.(user.email, `${opciones.urlPublica}/?restablecer=${encodeURIComponent(token)}`);
       },
+      onPasswordReset: async ({ user }) => opciones.alRestablecerContrasena?.(user.email),
     },
     plugins: [
       anonymous({
@@ -52,6 +60,8 @@ export function crearAuth(db: BaseDatos, opciones: OpcionesAuth) {
     advanced: {
       // Los ids los genera el servidor: las columnas id son texto sin valor por defecto.
       database: { generateId: () => randomUUID() },
+      // El juego no usa la IP de la sesión y es un dato personal (spec 017, R4).
+      ipAddress: { disableIpTracking: true },
       defaultCookieAttributes: {
         httpOnly: true,
         sameSite: 'lax',
@@ -77,7 +87,9 @@ export function aUsuarioSesion(user: { id: string; name: string; email: string; 
   return { id: user.id, tipo: invitado ? 'invitado' : 'registrado', apodo: user.name, email: invitado ? null : user.email };
 }
 
-/** Apodo válido: 3–20 caracteres (data-model §2.1). */
+/** Apodo válido: 3–20 caracteres (data-model §2.1), sin HTML ni caracteres de control (spec 017, FR-031). */
 export function apodoValido(apodo: unknown): apodo is string {
-  return typeof apodo === 'string' && apodo.trim().length >= 3 && apodo.trim().length <= 20;
+  if (typeof apodo !== 'string') return false;
+  const limpio = apodo.trim();
+  return limpio.length >= 3 && limpio.length <= 20 && !tieneCaracteresNoPermitidos(limpio);
 }

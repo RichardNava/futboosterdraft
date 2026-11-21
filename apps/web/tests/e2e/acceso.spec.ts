@@ -54,6 +54,8 @@ test('enlace del correo ⇒ contraseña nueva; enlace caducado ⇒ pedir otro', 
   await page.route('**/api/auth/restablecer', (r) => r.fulfill({ status: respuesta.status, contentType: 'application/json', body: JSON.stringify(respuesta.body) }));
   await page.goto('/?restablecer=abc');
   await expect(page.getByRole('heading', { name: 'Elige una contraseña nueva' })).toBeVisible();
+  // SEG-030: el token sale de la dirección en cuanto se lee, y el formulario sigue funcionando con él en memoria.
+  await expect(page).not.toHaveURL(/restablecer/);
   await page.getByLabel('Contraseña nueva', { exact: true }).fill('otra-contraseña');
   await page.getByRole('button', { name: 'Guardar contraseña' }).click();
   await expect(page.getByRole('status')).toContainText('Contraseña cambiada');

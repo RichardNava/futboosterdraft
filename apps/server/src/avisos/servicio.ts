@@ -20,6 +20,12 @@ interface NuevoAviso {
   texto: string;
 }
 
+/** Solo el código del error SMTP: su mensaje y sus campos pueden incluir al destinatario (spec 017, FR-035). */
+const codigoSmtp = (err: unknown): string | number => {
+  const e = err as { responseCode?: number; code?: string } | null;
+  return e?.responseCode ?? e?.code ?? 'desconocido';
+};
+
 /** Avisos a los usuarios: en la base de datos y, si hay transporte, por correo. */
 export class ServicioAvisos {
   private readonly transporte: Transporter | null;
@@ -47,7 +53,7 @@ export class ServicioAvisos {
       const id = filas[i]!.id;
       this.enVivo({ ...a, id });
       // Sin esperar: se llama dentro de la cola de la partida, y esperar al SMTP la frenaba ~1 s por humano (INI-07).
-      void this.enviarCorreo(id, a).catch((err: unknown) => this.logger.warn({ err, usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
+      void this.enviarCorreo(id, a).catch((err: unknown) => this.logger.warn({ codigo: codigoSmtp(err), usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
     });
   }
 
@@ -80,7 +86,7 @@ ${enlace}
 Si no lo has pedido tú, ignora este correo.`,
       });
     } catch (err) {
-      this.logger.warn({ err }, 'No se pudo enviar el correo para restablecer la contraseña');
+      this.logger.warn({ codigo: codigoSmtp(err) }, 'No se pudo enviar el correo para restablecer la contraseña');
     }
   }
 

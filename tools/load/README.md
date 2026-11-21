@@ -17,11 +17,13 @@ completa, con descansos de 5 s. Al final, k6 comprueba los umbrales:
 
 ## Ejecutar
 
-Con el sistema levantado **con reloj real** (sin `--fake-clock`, para que venzan los plazos cortos):
+Con el sistema levantado **con reloj real** (sin `--fake-clock`, para que venzan los plazos cortos) y **sin límites de
+uso**, porque toda la carga sale de una sola dirección (`LIMITES_DESACTIVADOS=1`; el servidor no arranca con ella en
+producción):
 
 ```bash
 docker compose up -d db && pnpm db:migrate && pnpm seed
-pnpm --filter @fbd/server exec tsx src/main.ts
+LIMITES_DESACTIVADOS=1 pnpm --filter @fbd/server exec tsx src/main.ts
 
 # con k6 instalado
 k6 run tools/load/beta-100.js

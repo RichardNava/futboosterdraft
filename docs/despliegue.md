@@ -23,9 +23,12 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 
 | Variable | Obligatoria | Valor por defecto | Para qué sirve |
 |---|---|---|---|
-| `DATABASE_URL` | Sí | `postgres://fbd:fbd@localhost:5432/futboosterdraft` | Conexión a PostgreSQL 16. |
-| `AUTH_SECRET` | Sí | — | Secreto para firmar las sesiones. Debe ser largo y aleatorio, p. ej. `openssl rand -base64 48`. Si cambia, se cierran todas las sesiones. |
-| `PUBLIC_URL` | Sí | `http://localhost:5173` | URL pública de la web, p. ej. `https://futboosterdraft.example`. Es el único origen desde el que un navegador puede abrir el WebSocket, y también se usa en los enlaces de los correos. |
+| `DATABASE_URL` | Sí | `postgres://fbd:fbd@localhost:5432/futboosterdraft` (solo desarrollo) | Conexión a PostgreSQL 16. En producción no puede usar la credencial de ejemplo `fbd:fbd`. |
+| `AUTH_SECRET` | Sí | — | Secreto para firmar las sesiones. En producción, 32 caracteres o más y distinto del de ejemplo, p. ej. `openssl rand -base64 48`. Si cambia, se cierran todas las sesiones. |
+| `PUBLIC_URL` | Sí | `http://localhost:5173` (solo desarrollo) | URL pública de la web. En producción debe ser `https://`, p. ej. `https://futboosterdraft.example`. Es el único origen desde el que un navegador puede cambiar datos o abrir el WebSocket, y también se usa en los enlaces de los correos. |
+| `PROXIES_CONFIANZA` | Sí en producción | `0` | Número de proxies delante del servidor (normalmente `1`; `0` si no hay ninguno). Con un valor incorrecto, los límites por cliente dejan de funcionar: con menos proxies de los reales, toda la beta compartiría un cupo; con más, cualquiera podría falsificar su dirección. |
+| `METRICAS_TOKEN` | No | — | Token de `/metrics` en producción, de 32 caracteres o más, p. ej. `openssl rand -hex 32`. Sin él, `/metrics` responde 404. |
+| `LIMITES_DESACTIVADOS` | Prohibida en producción | — | `1` desactiva los límites de uso, solo para la prueba de carga. El servidor no arranca en producción si está definida. |
 | `PORT` | No | `3000` | Puerto HTTP del contenedor. |
 | `SMTP_URL` | No | — | Servidor de correo para los avisos del modo asíncrono (FR-056b), p. ej. `smtps://usuario:clave@smtp.example:465`. Sin él, los avisos solo aparecen en la aplicación. |
 | `SMTP_FROM` | Con un proveedor real | `Fútboosterdraft <avisos@futboosterdraft.local>` | Remitente de los correos, p. ej. `Fútboosterdraft <avisos@tudominio.es>`. Los proveedores reales rechazan o mandan a spam los remitentes de dominios no verificados; el de por defecto solo sirve con Mailpit. |
@@ -39,6 +42,8 @@ La compilación usa pnpm (`corepack enable` y `pnpm install --frozen-lockfile`) 
 
 La web y la API comparten origen, así que las cookies de sesión son `HttpOnly`, `Secure` y `SameSite=Lax`. **Sirve la aplicación por HTTPS** (por ejemplo, detrás de un proxy inverso con TLS). Sin HTTPS, el navegador no guarda una cookie `Secure`.
 
+En producción, el servidor **no arranca** si alguna de estas reglas falla, y el error nombra la variable sin mostrar su valor.
+
 ## 3. Arrancar
 
 ```bash
@@ -46,6 +51,8 @@ docker run -d --name futboosterdraft -p 3000:3000 \
   -e DATABASE_URL=postgres://usuario:clave@db:5432/futboosterdraft \
   -e AUTH_SECRET=... \
   -e PUBLIC_URL=https://futboosterdraft.example \
+  -e PROXIES_CONFIANZA=1 \
+  -e METRICAS_TOKEN=... \
   futboosterdraft
 ```
 
@@ -138,12 +145,12 @@ Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas
 
 > **Banderas y escudos.** Las cartas muestran la bandera de su selección (FR-044), de `flag-icons` (MIT; `apps/web/public/banderas/LICENSE`). No hay ni habrá escudos oficiales de ningún club, selección o marca (decisión del 2026-11-20).
 >
-> **Pagos simulados.** Todas las compras en euros de la tienda son de prueba (`compras.simulada = true`, FR-031): no hay pasarela de pago.
+> **Pagos en euros cerrados.** No hay pasarela de pago. En producción, las compras en euros responden `409 PAGO_NO_DISPONIBLE` y la tienda las muestra desactivadas (spec 017, FR-028). Fuera de producción siguen siendo de prueba (`compras.simulada = true`).
 
 ## 5. Comprobaciones y métricas
 
-- **`GET /healthz`**: `200 {"estado":"ok","baseDatos":"ok"}` si el proceso responde y llega a la base de datos. La imagen ya incluye un `HEALTHCHECK` que lo usa.
-- **`GET /metrics`**: métricas en formato Prometheus. Además de las de Node.js, publica:
+- **`GET /healthz`**: `200 {"estado":"ok"}` si el proceso responde y llega a la base de datos; si no, `503 {"estado":"degradado"}`. La imagen ya incluye un `HEALTHCHECK` que lo usa.
+- **`GET /metrics`**: métricas en formato Prometheus. En producción exige `Authorization: Bearer <METRICAS_TOKEN>`; en cualquier otro caso responde 404. Además de las de Node.js, publica:
   - `partidas_activas`: partidas en memoria.
   - `turno_draft_resolucion_ms`: tiempo de resolución de cada turno de draft. Con carga de beta debe quedar por debajo de 1 s en el p95 (SC-017).
   - `partidos_simulados_total`.
@@ -158,13 +165,15 @@ Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas
     `total`; y `operacion_consultas{operacion}` (consultas a PostgreSQL por operación). Son `Summary` con la mediana y
     el p95 acumulados desde el arranque.
 
-  No expongas `/metrics` a Internet: limítalo en el proxy a la red interna.
-
 ## 6. Límites y seguridad
 
-- **Peticiones por sesión**: 60 en ráfaga y 20 por segundo sostenidas en HTTP (si se supera, `429 DEMASIADAS_PETICIONES`). En el WebSocket, 40 mensajes en ráfaga y 10 por segundo por participante (si se supera, `error DEMASIADOS_MENSAJES`).
+- **Peticiones**: 60 en ráfaga y 20 por segundo por usuario, y 300 en ráfaga y 100 por segundo por cliente en toda la API, también sin sesión (si se supera, `429 DEMASIADAS_PETICIONES`). En el WebSocket, 40 mensajes en ráfaga y 10 por segundo por participante (si se supera, `error DEMASIADOS_MENSAJES`).
+- **Cuentas**: login, 10 por minuto y cliente y 20 fallos por hora y correo; registro, 5 por hora y cliente; invitado, 20 por hora y cliente; recuperación, 5 seguidas y 1 por minuto por cliente y 3 por hora y correo. Las direcciones IPv6 cuentan por su /64.
+- **Partidas en curso**: 10 por cuenta registrada y 3 por invitado (`409 LIMITE_PARTIDAS`).
 - **Tamaño máximo**: 64 KB por cuerpo HTTP (`413`) y por mensaje WebSocket.
-- **WebSocket**: se rechaza (`4403`) la conexión de un navegador cuyo `Origin` no sea `PUBLIC_URL`.
+- **Otros sitios**: se rechaza (`403 ORIGEN_NO_PERMITIDO`) cualquier POST, PUT o DELETE cuyo `Origin` no sea `PUBLIC_URL`.
+- **WebSocket**: se rechaza (`4403`) la conexión de un navegador cuyo `Origin` no sea `PUBLIC_URL`, y se cierra (`4401`) en 5 s como máximo si su sesión deja de valer.
+- **Registros**: no incluyen contraseñas, tokens, cookies, correos, direcciones IP ni query strings.
 - **Visibilidad**: el servidor nunca envía elecciones ajenas durante el draft ni la alineación del rival antes del partido (FR-054a). Lo comprueba `apps/server/tests/integration/visibilidad.test.ts`.
 - El reloj simulado (`--fake-clock`) y la ruta `/api/dev/reloj/avanzar` no están disponibles con `NODE_ENV=production`.
 

@@ -18,9 +18,9 @@ describe('autenticación (FR-000)', () => {
     await bd?.detener();
   });
 
-  it('/healthz informa de que la base de datos responde', async () => {
+  it('/healthz responde solo con el estado (spec 017, SEG-024)', async () => {
     const r = await peticion(srv.url, '/healthz');
-    expect(r.cuerpo).toEqual({ estado: 'ok', baseDatos: 'ok' });
+    expect(r.cuerpo).toEqual({ estado: 'ok' });
   });
 
   it('crea una sesión de invitado', async () => {

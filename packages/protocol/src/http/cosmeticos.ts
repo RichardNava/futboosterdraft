@@ -36,6 +36,8 @@ export interface RespuestaCosmeticos {
   cosmeticos: Cosmetico[];
   packs: PackCosmeticos[];
   saldo?: number;
+  /** Spec 017 (FR-028): false mientras no haya pasarela de pago real. */
+  pagoEuros: boolean;
 }
 
 export interface RespuestaCompraCosmetico {

@@ -41,7 +41,7 @@ export const ResultadoCruce = z.object({
 export type ResultadoCruce = z.infer<typeof ResultadoCruce>;
 
 /** `POST /api/partidos/:id/abrir` en un cruce de duelos: el resultado completo para la animación y las cartas. */
-export const RespuestaAbrirDuelos = z.object({ modo: z.literal('duelos'), duelos: ResultadoCruce, cartas: z.record(z.unknown()) });
+export const RespuestaAbrirDuelos = z.object({ modo: z.literal('duelos'), duelos: ResultadoCruce, cartas: z.record(z.string(), z.unknown()) });
 export type RespuestaAbrirDuelos = z.infer<typeof RespuestaAbrirDuelos>;
 
 const Marcador = z.object({

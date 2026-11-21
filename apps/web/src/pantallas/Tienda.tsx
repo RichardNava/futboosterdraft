@@ -19,7 +19,7 @@ import { AperturaSobre } from '../componentes/AperturaSobre';
 import { CartaJugador } from '../componentes/CartaJugador';
 import { ConfirmacionCompra } from '../componentes/ConfirmacionCompra';
 import { DetalleExpansion } from '../componentes/DetalleExpansion';
-import { DialogoPagoPrueba, formatoEuros } from '../componentes/DialogoPagoPrueba';
+import { BotonEuros, DialogoPagoPrueba, formatoEuros } from '../componentes/DialogoPagoPrueba';
 import { Fragmentos } from '../componentes/Fragmentos';
 import { TarjetaExpansion } from '../componentes/TarjetaExpansion';
 import { PantallaCargando } from '../componentes/Esqueleto';
@@ -361,7 +361,7 @@ function TiendaRegistrado({ navegacion }: { navegacion: Navegacion }) {
   const verSub = (s: string) => seccion === 'todo' || sub === null || sub === s;
   const detalleAbierto = tienda.colecciones.find((c) => c.id === detalle);
   const tarjetaPase = (
-    <TarjetaPase pase={tienda.pasePremium} saldo={tienda.saldo} onComprar={(moneda) => setPago({ tipo: 'pase', moneda })} />
+    <TarjetaPase pase={tienda.pasePremium} saldo={tienda.saldo} pagoEuros={tienda.pagoEuros} onComprar={(moneda) => setPago({ tipo: 'pase', moneda })} />
   );
 
   return (
@@ -602,10 +602,12 @@ const fechaCorta = (iso: string | null) => (iso ? new Date(iso).toLocaleDateStri
 function TarjetaPase({
   pase,
   saldo,
+  pagoEuros,
   onComprar,
 }: {
   pase: RespuestaTienda['pasePremium'];
   saldo: number;
+  pagoEuros: boolean;
   onComprar: (moneda: 'fragmentos' | 'eur') => void;
 }) {
   const faltan = pase.precioFragmentos - saldo;
@@ -632,9 +634,9 @@ function TarjetaPase({
           >
             {activo ? 'Ampliar' : 'Comprar'} por <Fragmentos cantidad={pase.precioFragmentos} />
           </button>
-          <button type="button" className="secundario" onClick={() => onComprar('eur')}>
+          <BotonEuros pagoEuros={pagoEuros} onClick={() => onComprar('eur')}>
             {formatoEuros.format(pase.precioCentimos / 100)}
-          </button>
+          </BotonEuros>
           {faltan > 0 && (
             <span id="faltan-pase" className="motivo">
               Te faltan <Fragmentos cantidad={faltan} />

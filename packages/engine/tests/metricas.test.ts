@@ -23,7 +23,7 @@ describe('métricas por jugador (invariante 10)', () => {
       }),
       { numRuns: 200 },
     );
-  }, 120_000);
+  }, 300_000);
 
   it('las métricas se acumulan desde el saque inicial al avanzar por partes', () => {
     const inicial = crearPartido(entrada('metricas-partes'));

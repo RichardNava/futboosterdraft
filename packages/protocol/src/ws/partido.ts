@@ -26,7 +26,7 @@ export const EventoPartidoSchema = z.object({
   tipo: z.string(),
   equipo: z.enum(['local', 'visitante']),
   jugadores: z.array(z.object({ rol: z.string(), jugadorId: z.number() })),
-  datos: z.record(z.unknown()),
+  datos: z.record(z.string(), z.unknown()),
   relevante: z.boolean(),
 });
 
@@ -54,7 +54,7 @@ export const MsgPartidoInicio = z.object({
   local: z.object({ id: z.string(), nombre: z.string() }),
   visitante: z.object({ id: z.string(), nombre: z.string() }),
   alineaciones: z.object({ local: z.unknown(), visitante: z.unknown() }),
-  dorsales: z.record(z.number()),
+  dorsales: z.record(z.string(), z.number()),
   equipaciones: z.object({ local: Equipacion, visitante: Equipacion }),
   /** Escudos de los equipos (spec 011), null en los dos si coinciden (FR-008); sin ellos, círculos de color. */
   escudos: z.object({ local: z.string().nullable(), visitante: z.string().nullable() }).optional(),
@@ -173,7 +173,7 @@ export const MsgPartidoDecision = z.object({
   requestId: RequestId,
   partidoId: z.string(),
   tipo: z.enum(['sustitucion', 'formacion', 'tactica', 'lanzadores', 'recolocacion']),
-  datos: z.record(z.unknown()),
+  datos: z.record(z.string(), z.unknown()),
 });
 export type MsgPartidoDecision = z.infer<typeof MsgPartidoDecision>;
 
@@ -186,7 +186,7 @@ export const MsgPartidoDecisiones = z.object({
   requestId: RequestId,
   partidoId: z.string(),
   decisiones: z
-    .array(z.object({ tipo: z.enum(['sustitucion', 'formacion', 'tactica', 'lanzadores', 'recolocacion']), datos: z.record(z.unknown()) }))
+    .array(z.object({ tipo: z.enum(['sustitucion', 'formacion', 'tactica', 'lanzadores', 'recolocacion']), datos: z.record(z.string(), z.unknown()) }))
     .min(1)
     .max(20),
 });

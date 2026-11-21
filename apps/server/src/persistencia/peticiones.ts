@@ -2,7 +2,7 @@
  * Almacén de peticiones ya procesadas (FR-062): si llega otra vez el mismo `requestId` (WebSocket)
  * o la misma `Idempotency-Key` (HTTP), se devuelve la respuesta guardada sin repetir el efecto.
  */
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import type { BaseDatos } from './db';
 import { peticionesProcesadas } from './esquema/index';
 
@@ -11,6 +11,8 @@ export interface AlmacenPeticiones {
   obtener(ambito: string, requestId: string): Promise<unknown>;
   /** Guarda la respuesta de una petición. */
   guardar(ambito: string, requestId: string, respuesta: unknown): Promise<void>;
+  /** Borra las respuestas de más de 7 días (spec 017, FR-025); devuelve cuántas. */
+  purgarCaducadas?(): Promise<number>;
 }
 
 /** Respuestas de peticiones idempotentes guardadas en la base de datos. */
@@ -33,6 +35,15 @@ export class AlmacenPeticionesBD implements AlmacenPeticiones {
       .insert(peticionesProcesadas)
       .values({ partidaId: ambito, requestId, respuesta })
       .onConflictDoNothing();
+  }
+
+  /** Borra las respuestas de más de 7 días; devuelve cuántas. */
+  async purgarCaducadas(): Promise<number> {
+    const borradas = await this.db
+      .delete(peticionesProcesadas)
+      .where(sql`${peticionesProcesadas.creadaEn} < now() - interval '7 days'`)
+      .returning({ id: peticionesProcesadas.requestId });
+    return borradas.length;
   }
 }
 

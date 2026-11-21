@@ -9,6 +9,7 @@ const MENSAJE_NOMBRE: Record<CodigoErrorNombre, string> = {
   NOMBRE_VACIO: 'Escribe un nombre para tu equipo.',
   NOMBRE_CORTO: `El nombre del equipo debe tener entre ${NOMBRE_MIN} y ${NOMBRE_MAX} caracteres.`,
   NOMBRE_LARGO: `El nombre del equipo debe tener entre ${NOMBRE_MIN} y ${NOMBRE_MAX} caracteres.`,
+  NOMBRE_INVALIDO: 'Quita los símbolos < y > o los caracteres especiales del nombre.',
   NOMBRE_REPETIDO: 'Ese nombre ya lo usa otro equipo. Elige otro.',
 };
 

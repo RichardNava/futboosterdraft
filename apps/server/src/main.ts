@@ -2,7 +2,7 @@
  * Punto de entrada del servidor.
  * Variables de entorno: ver `.env.example`. `--fake-clock` activa el reloj simulado (solo desarrollo).
  */
-import './entorno';
+import { validarEntornoProduccion } from './entorno';
 import { conectar, urlBaseDatos } from './persistencia/db';
 import { aplicarMigraciones } from './persistencia/migrar';
 import { RelojFalso, RelojReal } from './programador/reloj';
@@ -13,6 +13,10 @@ async function principal(): Promise<void> {
   const relojFalso = process.argv.includes('--fake-clock');
   if (relojFalso && process.env.NODE_ENV === 'production') {
     throw new Error('--fake-clock no está permitido en producción');
+  }
+  if (process.env.NODE_ENV === 'production') {
+    const problemas = validarEntornoProduccion(process.env);
+    if (problemas.length) throw new Error(`Configuración de producción insegura (ver docs/despliegue.md):\n- ${problemas.join('\n- ')}`);
   }
   const secreto = process.env.AUTH_SECRET;
   if (!secreto) throw new Error('Falta la variable de entorno AUTH_SECRET (ver .env.example)');
@@ -32,9 +36,11 @@ async function principal(): Promise<void> {
     hilosSimulacion: hilos,
     // Desglose por fases (spec 010, FR-003): activado en todos los entornos; MEDIR_FASES=0 lo apaga.
     medirFases: process.env.MEDIR_FASES !== '0',
-    // Con el reloj simulado (desarrollo y pruebas e2e), los recorridos automáticos consultan en bucle:
-    // no se limitan las peticiones por sesión.
-    ...(relojFalso ? { limites: { http: { capacidad: 10_000, porSegundo: 10_000 }, ws: { capacidad: 10_000, porSegundo: 10_000 } } } : {}),
+    // Con el reloj simulado (desarrollo y pruebas e2e), los recorridos automáticos consultan en bucle; la prueba de
+    // carga sale de una sola IP. El arranque rechaza `LIMITES_DESACTIVADOS` en producción.
+    limitesDesactivados: relojFalso || process.env.LIMITES_DESACTIVADOS === '1',
+    proxiesConfianza: Number(process.env.PROXIES_CONFIANZA ?? 0),
+    metricasToken: process.env.METRICAS_TOKEN,
   });
 
   if (aviso) servidor.logger.warn({ hilos }, aviso);

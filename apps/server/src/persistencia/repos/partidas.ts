@@ -12,6 +12,9 @@ export type FilaParticipante = typeof participantes.$inferSelect;
 type Tx = Parameters<Parameters<BaseDatos['transaction']>[0]>[0];
 type Ejecutor = BaseDatos | Tx;
 
+/** Partidas en curso por cuenta (spec 017, FR-032a). */
+const TOPE_PARTIDAS = { registrado: 10, invitado: 3 } as const;
+
 /** Partidas y sus participantes. */
 export class RepoPartidas {
   constructor(private readonly db: BaseDatos) {}
@@ -108,6 +111,22 @@ export class RepoPartidas {
       .where(eq(participantes.partidaId, partidaId))
       // Con la misma hora (misma transacción), los humanos primero: el anfitrión encabeza la lista.
       .orderBy(asc(participantes.unidoEn), asc(participantes.tipo), asc(participantes.id));
+  }
+
+  /** Serializa dentro de la transacción las altas de un usuario en partidas, para que el tope resista la concurrencia. */
+  async bloquearCupo(tx: Tx, usuarioId: string): Promise<void> {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${`cupo-partidas:${usuarioId}`}, 0))`);
+  }
+
+  /** FR-032a: rechaza si el usuario ya sigue participando en el máximo de partidas en curso. Exige `bloquearCupo`. */
+  async comprobarCupo(tx: Tx, usuarioId: string, tipo: keyof typeof TOPE_PARTIDAS): Promise<void> {
+    const [fila] = await tx
+      .select({ n: sql<number>`count(*)::int` })
+      .from(participantes)
+      .innerJoin(partidas, eq(partidas.id, participantes.partidaId))
+      .where(and(eq(participantes.usuarioId, usuarioId), eq(participantes.controladoPorNPC, false), inArray(partidas.estado, ['buscando', 'en_draft', 'en_torneo'])));
+    const tope = TOPE_PARTIDAS[tipo];
+    if (fila!.n >= tope) throw errores.conflicto('LIMITE_PARTIDAS', `Ya tienes ${tope} partidas en curso: termina o abandona una antes de empezar otra`, { tope });
   }
 
   /** Añade un participante humano. */

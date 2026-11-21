@@ -37,8 +37,17 @@ export const usuarios = pgTable(
     isAnonymous: boolean('es_invitado').notNull().default(false),
     createdAt: timestamp('creado_en', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('actualizado_en', { withTimezone: true }).notNull().defaultNow(),
+    /** Spec 017 (R16): el rol «invitado» se deriva de `es_invitado`. */
+    rol: text('rol').$type<'jugador' | 'betatester' | 'administrador'>().notNull().default('jugador'),
+    suspendidaEn: timestamp('suspendida_en', { withTimezone: true }),
   },
-  (t) => [uniqueIndex('usuarios_email_uq').on(t.email)],
+  (t) => [
+    uniqueIndex('usuarios_email_uq').on(t.email),
+    check('usuarios_rol_ck', sql`${t.rol} in ('jugador','betatester','administrador')`),
+    check('usuarios_invitado_rol_ck', sql`not ${t.isAnonymous} or ${t.rol} = 'jugador'`),
+    check('usuarios_admin_suspension_ck', sql`${t.rol} <> 'administrador' or ${t.suspendidaEn} is null`),
+    check('usuarios_invitado_suspension_ck', sql`not ${t.isAnonymous} or ${t.suspendidaEn} is null`),
+  ],
 );
 
 /** Tabla de sesiones de Better Auth. */
@@ -275,5 +284,5 @@ export const peticionesProcesadas = pgTable(
     respuesta: jsonb('respuesta').notNull(),
     creadaEn: timestamp('creada_en', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.partidaId, t.requestId] })],
+  (t) => [primaryKey({ columns: [t.partidaId, t.requestId] }), index('peticiones_procesadas_creada_idx').on(t.creadaEn)],
 );

@@ -330,6 +330,8 @@ describe('grupo de aperturas (spec 010, US2)', () => {
     const anotar = (consulta: unknown) => {
       if (!traza.activo) return;
       const texto = typeof consulta === 'string' ? consulta : String((consulta as { text?: string }).text ?? '?');
+      // La revisión periódica de sesiones (spec 017, R8) corre cada 3 s y no forma parte del grupo de aperturas.
+      if (texto.startsWith('select "sesiones"."id"')) return;
       const k = als.getStore() ?? `sql: ${texto.replace(/\s+/g, ' ').slice(0, 60)}`;
       cuenta[k] = (cuenta[k] ?? 0) + 1;
     };

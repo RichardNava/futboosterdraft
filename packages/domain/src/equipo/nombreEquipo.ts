@@ -5,12 +5,18 @@
 export const NOMBRE_MIN = 3;
 export const NOMBRE_MAX = 24;
 
-export type CodigoErrorNombre = 'NOMBRE_VACIO' | 'NOMBRE_CORTO' | 'NOMBRE_LARGO' | 'NOMBRE_REPETIDO';
+export type CodigoErrorNombre = 'NOMBRE_VACIO' | 'NOMBRE_CORTO' | 'NOMBRE_LARGO' | 'NOMBRE_INVALIDO' | 'NOMBRE_REPETIDO';
 
 export interface ErrorNombre {
   codigo: CodigoErrorNombre;
   mensaje: string;
 }
+
+/** Spec 017 (FR-031): `<`, `>`, caracteres de control y marcas de dirección; el ZWJ de los emojis se admite. */
+const CARACTERES_NO_PERMITIDOS = /[\p{Cc}‪-‮⁦-⁩<>]/u;
+
+/** El texto escrito por una persona (nombre o apodo) contiene algún carácter no permitido. */
+export const tieneCaracteresNoPermitidos = (s: string): boolean => CARACTERES_NO_PERMITIDOS.test(s);
 
 /** Recorta los espacios del principio y del final y colapsa los internos repetidos. */
 export function normalizarNombre(s: string): string {
@@ -30,6 +36,7 @@ export function validarNombre(s: string, usados: Iterable<string>): ErrorNombre[
   const errores: ErrorNombre[] = [];
   if (n.length < NOMBRE_MIN) errores.push({ codigo: 'NOMBRE_CORTO', mensaje: `Mínimo ${NOMBRE_MIN} caracteres` });
   if (n.length > NOMBRE_MAX) errores.push({ codigo: 'NOMBRE_LARGO', mensaje: `Máximo ${NOMBRE_MAX} caracteres` });
+  if (tieneCaracteresNoPermitidos(n)) errores.push({ codigo: 'NOMBRE_INVALIDO', mensaje: 'El nombre tiene caracteres no permitidos' });
   const clave = n.toLowerCase();
   for (const u of usados) {
     if (claveNombre(u) === clave) {

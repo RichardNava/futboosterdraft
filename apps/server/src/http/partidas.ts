@@ -20,7 +20,7 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
     const entrada = CrearPartida.parse(req.body);
     // Spec 013 (FR-033): la clave del envío del formulario hace idempotente la creación (y su cobro).
     const clave = req.headers['idempotency-key'];
-    const c = await gestor.crearPartida(req.usuario!, entrada, typeof clave === 'string' && clave.length <= 200 ? clave : undefined);
+    const c = await gestor.crearPartida(req.usuario!, entrada, typeof clave === 'string' ? clave : undefined);
     return reply.code(201).send(gestor.resumen(c, req.usuario!.id));
   });
 
@@ -67,6 +67,9 @@ export function registrarRutasPartidas(app: FastifyInstance, auth: Auth, gestor:
 
   app.get<{ Params: { id: string } }>('/api/partidas/:id', { preHandler: requiereSesion }, async (req) => {
     const c = await gestor.obtenerOError(req.params.id);
+    // Spec 017 (SEG-007): quien no participa solo ve las salas abiertas a las que puede unirse.
+    const salaAbierta = c.partida.estado === 'buscando' && !c.anfitrionEsInvitado;
+    if (!salaAbierta && !c.participanteDeUsuario(req.usuario!.id)) throw errores.prohibido('NO_PARTICIPA', 'No participas en esta partida');
     return gestor.resumen(c, req.usuario!.id);
   });
 
