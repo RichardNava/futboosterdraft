@@ -1,14 +1,17 @@
 <!--
 Sync Impact Report
-- Version change: 1.4.0 → 1.5.0 (MINOR: el dinero real puede comprar opciones de partida comunes; decisión de la 013)
-- Principios modificados: VII (además de cosméticos, el dinero real puede comprar acceso a opciones de partida que se
-  aplican por igual a todos sus participantes, como el pase premium y los niveles de rareza del draft)
+- Version change: 1.6.0 → 1.7.0 (MINOR: nueva excepción material en el Principio VII; decisión de la persona
+  responsable del 2026-11-21 en la spec 017)
+- Principios modificados: VII (una cuenta betatester PUEDE recibir fragmentos de un administrador, con condiciones)
 - Principios añadidos: ninguno
-- Secciones modificadas: Decisiones resueltas (entrada de specs/013-mejora-cartas-rareza-draft/)
+- Secciones modificadas: Criterios de aceptación de alto nivel (criterio 7); Decisiones resueltas (entrada «Fragmentos
+  de betatester»)
 - Secciones añadidas: ninguna
 - Secciones eliminadas: ninguna
 - Plantillas dependientes: no se modifican (leen la constitución en tiempo de ejecución)
-- TODOs pendientes: ninguno
+- TODOs pendientes: ninguno.
+- Enmienda anterior, también sin confirmar en git: 1.5.0 → 1.6.0 (Principio II y Modo Ruleta, cuya spec, ROADMAP
+  INI-13, está por escribir).
 -->
 # Fútboosterdraft Constitution
 
@@ -63,6 +66,17 @@ El draft es la mecánica principal para construir las plantillas. Reglas inicial
 La implementación DEBE definir de forma inequívoca: la resolución de cada turno simultáneo, el
 intercambio de sobres, la validación de selecciones y el tratamiento de desconexiones, retrasos o
 selecciones no realizadas.
+
+El draft de sobres es el estándar. Un modo de juego PUEDE usar otro método de draft (p. ej. el Modo
+Ruleta) si su spec lo define y cumple todas estas reglas:
+
+- El método DEBE ser el mismo para todos los participantes de la partida, humanos y NPC.
+- El servidor DEBE validar cada selección; el cliente no decide qué cartas se ofrecen ni cuáles se eligen.
+- En cada turno, todos los participantes DEBEN seleccionar de forma **simultánea**.
+- Al terminar, cada participante DEBE tener una plantilla jugable de un tamaño fijo que define la spec
+  del modo.
+- Las desconexiones, los retrasos y las selecciones no realizadas DEBEN tratarse con las mismas
+  garantías que en el draft de sobres (límite de tiempo, elección automática y reconexión).
 
 ### III. Las reglas del dominio deben estar definidas explícitamente
 
@@ -147,6 +161,11 @@ dos modalidades DEBEN reflejar el mismo desarrollo subyacente del partido.
   - acceso a **opciones de partida** (p. ej. el nivel de rareza del draft, mediante el pase premium) que quedan
     fijadas al crear la partida, se aplican por igual a todos sus participantes, humanos y NPC, se muestran a todos y
     no entregan cartas, sobres, colecciones ni fragmentos a ninguna cuenta.
+- Una cuenta con rol betatester PUEDE recibir fragmentos de un administrador para probar la tienda durante la beta. Es
+  la única forma de obtener fragmentos sin jugar, y DEBE cumplir todas estas reglas:
+  - cada entrega es manual, con motivo y dentro del tope que fija su spec, y queda registrada;
+  - el rol y sus entregas NO DEBEN venderse ni depender de ningún pago;
+  - los fragmentos entregados se gastan con los mismos precios y reglas que los demás, sin alterar las reglas de draft.
 
 ### VIII. La arquitectura debe favorecer la modularidad
 
@@ -214,8 +233,8 @@ relacionados. Las decisiones técnicas concretas se documentan en la fase de pla
    tácticas.
 5. El partido puede presentarse mediante simulación rápida y mediante visualización 2D.
 6. Las dos modalidades utilizan el mismo motor y no mantienen lógicas independientes de cálculo.
-7. Las colecciones obtenidas jugando o mediante pago amplían el conjunto de jugadores disponibles
-   sin modificar las reglas comunes de draft.
+7. Las colecciones obtenidas jugando, mediante pago o con los fragmentos de un betatester amplían
+   el conjunto de jugadores disponibles sin modificar las reglas comunes de draft.
 8. Las operaciones competitivas relevantes se validan preservando la integridad multijugador.
 9. Las reglas principales cuentan con pruebas que verifican su funcionamiento y detectan
    regresiones.
@@ -296,12 +315,23 @@ Resuelta en `specs/013-mejora-cartas-rareza-draft/`:
   entrega cartas, sobres, colecciones ni fragmentos → `spec.md` (FR-011 a FR-021, FR-033 a FR-036) y `plan.md`
   (Complexity Tracking).
 
+Resuelta por la persona responsable el 2026-11-21:
+
+- **Modos de juego adicionales**: un modo nuevo (además de liga, playoff, mixto y Duelo de jugadores) se
+  añade con su propia spec, sin enmendar esta constitución, si cumple los principios, en particular I, II
+  (incluidas las reglas de un draft alternativo), IV, V, VI y VII. Si no los cumple, DEBE acompañarse de
+  una enmienda (ver "Governance"). El primer modo aprobado con esta regla es el **Modo Ruleta** (ROADMAP
+  INI-13): hasta 4 jugadores; el draft se hace con tiradas a una ruleta de condiciones sobre los
+  futbolistas, y en cada tirada cada participante elige una entre 4 cartas que cumplen la suya → spec
+  pendiente.
+- **Fragmentos de betatester**: un administrador puede entregar fragmentos a las cuentas con rol betatester
+  para probar la tienda durante la beta; al perder el rol o acabar la beta, la cuenta conserva lo comprado y
+  el saldo que le quede → `specs/017-auditoria-seguridad-roles/spec.md` (FR-050, FR-050a, D-1).
+
 ### Decisiones aún pendientes
 
-Lo siguiente NO está aprobado como requisito y DEBE concretarse en una especificación propia antes de
-implementarse:
-
-- Modos de juego adicionales a liga, playoff, mixto y Duelo de jugadores.
+Ninguna por ahora. Lo que se añada aquí NO está aprobado como requisito y DEBE concretarse en una
+especificación propia antes de implementarse.
 
 ## Flujo de trabajo de desarrollo
 
@@ -343,4 +373,4 @@ persona, que revisa los cambios antes de confirmarlos.
   añadir principios o secciones, o ampliar materialmente su contenido; PATCH para aclaraciones y
   correcciones de redacción.
 
-**Version**: 1.5.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-10
+**Version**: 1.7.0 | **Ratified**: 2026-10-15 | **Last Amended**: 2026-11-21
