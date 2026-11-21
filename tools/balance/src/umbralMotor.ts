@@ -14,6 +14,8 @@ import { clonar, equipoSintetico } from './equipos';
 const MAX_PARTIDO_MS = Number(process.env.MAX_PARTIDO_MS ?? 120);
 const MAX_RESOLVER_RESTO_MS = Number(process.env.MAX_RESOLVER_RESTO_MS ?? 120);
 const MAX_METRICAS_MS = Number(process.env.MAX_METRICAS_MS ?? 120);
+// Solo informativo hasta T068 (spec 018): no afecta al código de salida.
+const MAX_FOTOGRAMAS_MS = Number(process.env.MAX_FOTOGRAMAS_MS ?? 80);
 const i = process.argv.indexOf('--n');
 const n = i >= 0 ? Number(process.argv[i + 1]) : 20;
 
@@ -37,8 +39,13 @@ t0 = performance.now();
 for (let k = 0; k < n; k++) avanzar(crearPartido(entrada(2000 + k)), 'final', { metricas: true });
 const metricas = (performance.now() - t0) / n;
 
+t0 = performance.now();
+for (let k = 0; k < n; k++) avanzar(crearPartido(entrada(3000 + k)), 'final', { fotogramas: true });
+const fotogramas = (performance.now() - t0) / n;
+
 const ok = partido <= MAX_PARTIDO_MS && resto <= MAX_RESOLVER_RESTO_MS && metricas <= MAX_METRICAS_MS;
 console.log(`${partido <= MAX_PARTIDO_MS ? '✔' : '✘'} partido completo sin fotogramas: ${partido.toFixed(1)} ms (máximo ${MAX_PARTIDO_MS} ms)`);
 console.log(`${resto <= MAX_RESOLVER_RESTO_MS ? '✔' : '✘'} resolverResto desde el minuto 0: ${resto.toFixed(1)} ms (máximo ${MAX_RESOLVER_RESTO_MS} ms)`);
 console.log(`${metricas <= MAX_METRICAS_MS ? '✔' : '✘'} partido completo con métricas: ${metricas.toFixed(1)} ms (máximo ${MAX_METRICAS_MS} ms)`);
+console.log(`${fotogramas <= MAX_FOTOGRAMAS_MS ? '✔' : 'ℹ'} partido completo con fotogramas: ${fotogramas.toFixed(1)} ms (máximo ${MAX_FOTOGRAMAS_MS} ms, informativo hasta T068)`);
 process.exit(ok ? 0 : 1);

@@ -35,9 +35,9 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 
 **Propósito**: poder medir en CI aunque fallen otras pruebas, y poder medir la línea base.
 
-- [ ] T001 [P] Crear el job independiente `rendimiento-motor` (Node 22, sin `needs`) con `pnpm --filter @fbd/engine bench` y `pnpm --filter @fbd/balance umbral-motor`, y retirar esos dos pasos del job `ci` en `.github/workflows/ci.yml` (R9)
-- [ ] T002 [P] Añadir a `tools/balance/src/umbralMotor.ts` el caso de partido con fotogramas y `MAX_FOTOGRAMAS_MS`, solo informativo hasta T068; mantener por ahora los máximos actuales de los otros tres casos
-- [ ] T003 [P] Crear `tools/balance/src/lineaBase.ts`, su script `linea-base` en `tools/balance/package.json` y una prueba de reproducibilidad con pocos partidos en `tools/balance/tests/lineaBase.test.ts`. Debe funcionar con la 8.0.0 y la 9.0.0 y medir, por táctica frente a un rival neutro, goles a favor y en contra, victorias, energía por rol al 45', 75' y 90' y coste por partido, registrando commit, Node, semillas y número de partidos
+- [X] T001 [P] Crear el job independiente `rendimiento-motor` (Node 22, sin `needs`) con `pnpm --filter @fbd/engine bench` y `pnpm --filter @fbd/balance umbral-motor`, y retirar esos dos pasos del job `ci` en `.github/workflows/ci.yml` (R9)
+- [X] T002 [P] Añadir a `tools/balance/src/umbralMotor.ts` el caso de partido con fotogramas y `MAX_FOTOGRAMAS_MS`, solo informativo hasta T068; mantener por ahora los máximos actuales de los otros tres casos
+- [X] T003 [P] Crear `tools/balance/src/lineaBase.ts`, su script `linea-base` en `tools/balance/package.json` y una prueba de reproducibilidad con pocos partidos en `tools/balance/tests/lineaBase.test.ts`. Debe funcionar con la 8.0.0 y la 9.0.0 y medir, por táctica frente a un rival neutro, goles a favor y en contra, victorias, energía por rol al 45', 75' y 90' y coste por partido, registrando commit, Node, semillas y número de partidos
 - [ ] T004 **Persona:** publicar la rama y abrir un PR en borrador para que `.github/workflows/ci.yml` ejecute `rendimiento-motor`, y comprobar que corre aunque falle el job `ci`
 
 **Checkpoint (puerta de la etapa 0)**: el job de rendimiento se ejecuta de forma independiente.
@@ -52,7 +52,7 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 
 ### Línea base
 
-- [ ] T005 Ejecutar con Node 22 `pnpm --filter @fbd/balance linea-base -- --n 1000 --salida specs/018-rework-motor/linea-base-8.0.0.md` sobre el motor sin tocar y revisar que el informe cubre todas las tácticas (FR-002, SC-001)
+- [X] T005 Ejecutar con Node 22 `pnpm --filter @fbd/balance linea-base -- --n 1000 --salida specs/018-rework-motor/linea-base-8.0.0.md` sobre el motor sin tocar y revisar que el informe cubre todas las tácticas (FR-002, SC-001)
 
 ### Migración de pruebas a la versión vigente
 
@@ -213,7 +213,7 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 
 **⚠️ Bloqueo**: no se puede completar sin T072. Se puede desarrollar en paralelo desde la fase 3.
 
-- [ ] T072 [US5] **Persona:** confirmar la spec 017 e integrarla en esta rama, como mínimo `apps/server/drizzle/0018_spec017.sql` y el tipo `partida_cerrada`, resolviendo los solapes en `apps/server/src/main.ts`, `apps/server/src/economia/servicio.ts`, `apps/server/src/avisos/servicio.ts`, `apps/server/src/actores/sala.ts` y `apps/server/src/actores/gestor.ts`
+- [X] T072 [US5] **Persona:** confirmar la spec 017 e integrarla en esta rama, como mínimo `apps/server/drizzle/0018_spec017.sql` y el tipo `partida_cerrada`, resolviendo los solapes en `apps/server/src/main.ts`, `apps/server/src/economia/servicio.ts`, `apps/server/src/avisos/servicio.ts`, `apps/server/src/actores/sala.ts` y `apps/server/src/actores/gestor.ts`
 
 ### Tests for User Story 5 ⚠️
 

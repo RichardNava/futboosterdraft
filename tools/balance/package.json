@@ -6,7 +6,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
     "balance": "tsx src/cli.ts",
-    "umbral-motor": "tsx src/umbralMotor.ts"
+    "umbral-motor": "tsx src/umbralMotor.ts",
+    "linea-base": "tsx src/lineaBase.ts"
   },
   "dependencies": {
     "@fbd/domain": "workspace:*",
