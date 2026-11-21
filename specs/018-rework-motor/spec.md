@@ -14,6 +14,11 @@
 
 - Q: Las huellas guardan resultados exactos y calibrar los cambia: ¿se regenera antes o después de calibrar? → A: Después. El orden es medir, implementar, calibrar, regenerar una sola vez, optimizar y validar (FR-001).
 - Q: ¿Qué se hace al desplegar con las partidas activas, cuyos partidos 8.x a medias no se pueden reconstruir? → A: Se cierran al desplegar con un paso único e idempotente, con aviso y devolución de lo cobrado (FR-046 a FR-049).
+- Q: ¿Con qué referencia se decide si un jugador ha hecho más o menos acciones intensas que la media? → A: Una referencia fija por rol, medida al calibrar con equipos neutros (Bloque medio) y guardada en los parámetros 9.0.0 (FR-008).
+- Q: Con marcaje Individual, ¿quién debe ser el marcador de la estrella rival y qué pasa si alguno de los dos sale del campo? → A: El defensa con más marcaje; si no hay, el medio y, en último caso, el delantero. Si uno sale, el marcaje de la estrella termina sin nueva elección y el equipo conserva los demás efectos y costes de Individual (FR-026).
+- Q: Si mover a los jugadores cada 4 ticks no basta para llegar a 60 ms por partido, ¿se permite también recalcular cada 8 ticks el punto al que quiere ir cada jugador? → A: Solo si la medida lo exige: antes de calibrar se mide en CI con movimiento cada 4 ticks y la mejora de los saques, y si sigue por encima de 60 ms se pasa a 8 ticks (FR-003).
+- Q: Cuando un equipo que juega por las bandas pierde el balón en una banda, ¿qué acción del rival debe recibir la ventaja de +0,15? → A: Su primera acción tras recuperar, solo si sigue por esa banda (pase a ese carril, o regate, conducción o centro por él); si va a otro carril, la ventaja se pierde (FR-029).
+- Q: ¿Se confirman como reglas definitivas las nueve asunciones pendientes? → A: Sí, salvo Indisciplinado: cada acción intensa le cuesta ×1,5 en lugar del doble, sin tiradas nuevas, y llega al 90' con 44 de energía con acciones medias (FR-010a, FR-015, FR-016, FR-027).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -48,8 +53,8 @@ Quien elige la táctica nota su efecto y paga su coste: Catenaccio cierra el ár
 **Acceptance Scenarios**:
 
 1. **Given** un equipo con Catenaccio, **When** el rival juega en las zonas 4 o 5, **Then** sus acciones sufren −0,50 en x, salvo centros y tiros lejanos; en la zona 3 no sufren nada.
-2. **Given** un equipo con marcaje Individual, **When** empieza el partido, **Then** su mejor defensor sigue a la estrella rival y esta juega con −5 en los duelos directos contra él.
-3. **Given** un equipo por las bandas que pierde el balón en una banda, **When** el rival juega su primera acción por esa banda, **Then** gana +0,15 en x.
+2. **Given** un equipo con marcaje Individual, **When** empieza el partido, **Then** su defensa con más marcaje sigue a la estrella rival y esta juega con −5 en los duelos directos contra él; si uno de los dos sale del campo, ese marcaje termina sin nueva elección.
+3. **Given** un equipo por las bandas que pierde el balón en una banda, **When** la primera acción del rival tras recuperar sigue por esa banda, **Then** gana +0,15 en x; si va a otro carril, no gana nada.
 4. **Given** un equipo con juego vertical, **When** intenta un pase largo o al espacio, **Then** ese pase resta 0,15 en x.
 5. **Given** un equipo con Bandas y Vertical, **When** se calcula su juego, **Then** sus centros pesan ×1,8, el balón va +25 puntos por banda y paga los costes de ambas.
 6. **Given** un equipo con Línea adelantada, **When** tiene o no tiene el balón, **Then** su línea está 4,7 m más arriba.
@@ -111,14 +116,14 @@ Quien tenía una partida activa al desplegar recibe un aviso claro y recupera lo
 
 - **Descuento largo**: sigue gastando energía al ritmo del tramo en curso; los valores de referencia del 45', 90' y 120' no incluyen el descuento.
 - **Energía en los límites**: nunca baja de 0 ni sube de 100, también al recuperar. Un portero llega al descanso con 97 y sale con 100, no con 107.
-- **Medio con Fatigado e Indisciplinado**: la pareja no es incompatible (ninguna carta la tiene hoy) y agotaría su energía hacia el 89'. Se queda en 0, con la penalización máxima.
+- **Medio con Fatigado e Indisciplinado**: la pareja no es incompatible (ninguna carta la tiene hoy) y llegaría al 90' con unos 7 de energía. Si el descuento o la prórroga la agotan, se queda en 0, con la penalización máxima.
 - **Suplente**: entra con 100 aunque entre en un tramo de fatiga, y desde ese momento gasta según el reloj del partido. Si entra en el descanso, no recibe recuperación.
 - **Jugador que cambia de posición**: su ritmo pasa a ser el del rol de la nueva posición desde ese momento; la energía gastada no se recalcula.
 - **Motivador que sale o entra**: el ritmo ×0,95 solo se aplica mientras está en el campo. Varios Motivadores no acumulan el efecto; con dos en el campo, cada uno se beneficia del otro, como hoy.
-- **Estrella o marcador que salen del campo** (lesión, expulsión o cambio): ver Assumptions.
+- **Estrella o marcador que salen del campo** (lesión, expulsión o cambio): el marcaje de la estrella termina para el resto del partido, también en la prórroga, y quien entre no lo hereda (FR-026).
 - **La mayor media del rival es su portero**: el portero no puede ser la estrella, porque nadie puede seguirlo.
 - **Empates** de media o de marcaje: se resuelven con una regla determinista, igual en rápida y en 2D.
-- **Equipo con menos de 11**: Individual sigue funcionando mientras haya un defensor de campo y un rival de campo; si no, no hay marcaje de la estrella.
+- **Equipo con menos de 11**: si al empezar el partido no hay al menos un jugador de campo en cada equipo, no hay marcaje de la estrella; los demás efectos de Individual se mantienen.
 - **Liderazgo**: hoy se lee de la carta sin cansancio; con esta spec también pierde su 25 % de penalización, incluido su uso para ordenar la línea defensiva.
 - **Partida en búsqueda de rivales al desplegar**: no tiene partidos, no se cierra y jugará con la 9.0.0.
 - **Partido terminado de una partida cerrada**: conserva su resumen; la partida no reparte premios ni fragmentos de un torneo que no terminó.
@@ -129,9 +134,9 @@ Quien tenía una partida activa al desplegar recibe un aviso claro y recupera lo
 
 **Orden de trabajo**
 
-- **FR-001**: El trabajo DEBE seguir este orden: (1) medir la línea base del motor 8.0.0; (2) implementar fatiga, tácticas, parámetros 9.0.0 y cadencia de movimiento; (3) calibrar con umbrales aprobados por la persona responsable; (4) regenerar una sola vez equivalencia y semillas; (5) optimizar sin cambiar resultados; (6) validar con CI y con la prueba de carga.
+- **FR-001**: El trabajo DEBE seguir este orden: (1) medir la línea base del motor 8.0.0; (2) implementar fatiga, tácticas, parámetros 9.0.0 y cadencia de movimiento, y medir en CI si hace falta espaciar los objetivos (FR-003); (3) calibrar con umbrales aprobados por la persona responsable; (4) regenerar una sola vez equivalencia y semillas; (5) optimizar sin cambiar resultados; (6) validar con CI y con la prueba de carga.
 - **FR-002**: La línea base DEBE medirse antes de cambiar el motor y registrar, para cada táctica y con series reproducibles, su efecto en goles y victorias, la fatiga por rol y el coste por partido.
-- **FR-003**: Todo cambio que altere resultados, incluida cualquier cadencia de cálculo de objetivos que hiciera falta para alcanzar FR-039, DEBE entrar antes de cerrar la calibración. La fase de optimización NO DEBE cambiar ningún resultado.
+- **FR-003**: Todo cambio que altere resultados DEBE entrar antes de cerrar la calibración. Antes de calibrar DEBE medirse en CI, con Node 22, el motor con movimiento cada 4 ticks y sin repetir durante los saques el cálculo de objetivos que no haya cambiado. Si supera 60 ms sin fotogramas, los objetivos DEBEN pasar de calcularse cada 4 ticks a cada 8 antes de calibrar; si no, se mantienen cada 4. Si ni con 8 ticks se alcanza FR-039, la persona responsable DEBE decidir cómo seguir antes de calibrar. La fase de optimización NO DEBE cambiar ningún resultado.
 - **FR-004**: Durante la calibración DEBE seguir en verde la igualdad entre simulación rápida y 2D, aunque las huellas exactas aún no estén regeneradas.
 
 **Fatiga: energía y gasto**
@@ -152,7 +157,7 @@ Quien tenía una partida activa al desplegar recibe un aviso claro y recupera lo
   | Segunda parte de la prórroga | baja 1 por minuto, hasta 40 al 120' |
 
 - **FR-007**: El descuento DEBE cansar al ritmo del tramo en curso.
-- **FR-008**: El gasto DEBE repartirse en un 80 % por rol y un 20 % por acciones intensas (sprints, presión, regates y duelos). Un jugador con acciones medias DEBE seguir la curva de su rol; con más o menos acciones, DEBE gastar más o menos.
+- **FR-008**: El gasto DEBE repartirse en un 80 % por rol y un 20 % por acciones intensas (sprints, presión, regates y duelos). Las «acciones medias» son una referencia fija por rol, medida al calibrar con equipos neutros (Bloque medio) y guardada en los parámetros 9.0.0; no se recalcula en cada partido. Un jugador que iguala la referencia de su rol DEBE seguir la curva de ese rol; si la supera o no la alcanza, DEBE gastar más o menos.
 - **FR-009**: Las acciones intensas DEBEN gastar solo dentro de los tramos de fatiga. Cada una DEBE contarse con una regla determinista, igual en rápida y en 2D, sin consumir azar. Su coste exacto se fija al calibrar, de modo que sumen el 20 % del gasto.
 - **FR-010**: El ritmo por rol DEBE ser el de esta tabla. La energía al 90' indicada es **con acciones medias**, que es la que sigue la curva; sin ninguna acción intensa, el jugador solo gasta su 80 %:
 
@@ -162,6 +167,8 @@ Quien tenía una partida activa al desplegar recibe un aviso claro y recupera lo
   | Defensa | ×0,85 | 67,5 | 76 |
   | Medio | ×1,2 | 50 | 62 |
   | Delantero | ×0,95 | 62,5 | 72 |
+
+- **FR-010a**: El ritmo de un jugador DEBE ser el producto de los multiplicadores de su rol, sus rasgos y la táctica. El rol es el de la posición que ocupa en cada momento, no la demarcación de su carta.
 
 **Fatiga: penalización de stats**
 
@@ -175,10 +182,10 @@ Quien tenía una partida activa al desplegar recibe un aviso claro y recupera lo
 
 - **FR-013**: **Incansable** DEBE multiplicar su ritmo por 0,70 (75 de energía al 90' para el jugador de referencia).
 - **FR-014**: **Fatigado** DEBE multiplicar su ritmo por 1,30 (45 al 90'), simétrico con Incansable, y DEBE perder su regla actual de empezar a cansarse en la segunda parte.
-- **FR-015**: **Indisciplinado** DEBE empezar a cansarse en el 25' y en el 50', en lugar del 30' y el 55', y cada acción intensa DEBE costarle el doble (38 al 90' con acciones medias). DEBE perder su multiplicador de ritmo actual.
-- **FR-016**: **Motivador** DEBE dar a sus compañeros en el campo ritmo ×0,95 y una recuperación de +15 en lugar de +10 en el descanso si está en el campo. No se aplica a sí mismo y cuenta una sola vez por equipo. Para el jugador de referencia, 66,75 al 90'.
+- **FR-015**: **Indisciplinado** DEBE empezar a cansarse en el 25' y en el 50', en lugar del 30' y el 55', y cada acción intensa DEBE costarle ×1,5, sin tiradas de azar nuevas (44 al 90' con acciones medias). DEBE perder su multiplicador de ritmo actual.
+- **FR-016**: **Motivador** DEBE dar a sus compañeros en el campo ritmo ×0,95 y una recuperación de +15 en lugar de +10 en el descanso del partido, no en las pausas de la prórroga, si está en el campo al pitarse el descanso, antes de los cambios de esa pausa. No se aplica a sí mismo y cuenta una sola vez por equipo. Para el jugador de referencia, 66,75 al 90'.
 - **FR-017**: **Presión alta** DEBE perder su inicio adelantado del cansancio y su multiplicador. Solo DEBE cansar mediante las presiones realizadas, que cuentan como acciones intensas, y DEBE comprobarse que sigue teniendo un coste real (SC-005).
-- **FR-018**: **Individual** DEBE multiplicar el ritmo del equipo por 1,05 y el del marcador de la estrella por 1,15 (57,5 y 49,6 al 90' para el jugador de referencia, si los multiplicadores se combinan).
+- **FR-018**: **Individual** DEBE multiplicar el ritmo del equipo por 1,05 y el del marcador de la estrella por 1,15 mientras dure ese marcaje (57,5 y 49,6 al 90' para el jugador de referencia).
 
 **Fatiga: consecuencias**
 
@@ -192,10 +199,10 @@ Quien tenía una partida activa al desplegar recibe un aviso claro y recupera lo
 
 - **FR-024**: **Catenaccio** DEBE aplicar al rival −0,50 en x solo en las zonas 4 y 5 y sin afectar a centros ni a tiros lejanos, en lugar de −0,90 en las zonas 3 a 5 en todas las acciones. Mantiene sus costes ofensivos. Estimación de partida: pase al espacio −18 pp y tiro en el área −9 pp, porque los desplazamientos de táctica cuentan la mitad en el tiro, como hoy.
 - **FR-025**: **Individual** DEBE dar +6 de marcaje en el duelo de desmarque.
-- **FR-026**: Con **Individual**, el mejor defensor DEBE seguir a la estrella rival, y la estrella DEBE tener −5 en los duelos directos contra su marcador.
-- **FR-027**: Con **Individual**, los compañeros de la estrella DEBEN ganar +0,05 en x en sus duelos, y el regate rival, +0,12 en x (unos +4 pp).
+- **FR-026**: Con **Individual**, al empezar el partido se fijan la estrella (el rival de campo con mayor media efectiva) y su marcador (el defensa con más marcaje; si no hay, el medio con más marcaje y, en último caso, el delantero, según la posición que ocupan). El portero queda excluido de ambos papeles. El marcador DEBE seguir a la estrella, y la estrella DEBE tener −5 en los duelos directos contra él. Si cualquiera de los dos sale del campo, el marcaje de la estrella termina para el resto del partido, sin nueva elección: desaparecen ese −5 y el ritmo ×1,15 del marcador, y el equipo conserva los demás efectos y costes de Individual.
+- **FR-027**: Con **Individual**, los compañeros de la estrella DEBEN ganar +0,05 en x en sus duelos, y el regate rival, +0,12 en x (unos +4 pp). Los desplazamientos se suman: un compañero de la estrella que regatea gana +0,17 en x. Ambos efectos siguen si termina el marcaje de la estrella; si es ella quien ha salido, el +0,05 se aplica a todos los rivales de campo.
 - **FR-028**: El nuevo sistema de **Individual** sustituye sus ajustes actuales de duelo (−0,04 general y +0,08 en pase al espacio).
-- **FR-029**: **Por las bandas**: al perder el balón, la primera acción del rival por esa banda DEBE ganar +0,15 en x, y el peso del pase al espacio propio DEBE bajar un 10 %.
+- **FR-029**: **Por las bandas**: al perder el balón en una banda, la primera acción del rival tras recuperarlo DEBE ganar +0,15 en x si sigue por esa banda (pase a ese carril, o regate, conducción o centro por él). Si va a otro carril, la ventaja se pierde, y una pérdida en el carril central no da ventaja. El peso del pase al espacio propio DEBE bajar un 10 %.
 - **FR-030**: **Juego vertical**: sus pases largos y al espacio DEBEN restar 0,15 en x.
 - **FR-031**: **Bandas + Vertical** DEBE dar centros ×1,8 (no ×2,08) y +25 puntos de balón por banda (no +35), pagando los costes de ambas.
 - **FR-032**: **Línea adelantada** DEBE subir 4,7 m con y sin balón y mantener el riesgo actual del pase al espacio.
@@ -236,11 +243,11 @@ Quien tenía una partida activa al desplegar recibe un aviso claro y recupera lo
 ### Key Entities
 
 - **Energía**: valor de 0 a 100 de cada jugador en el campo, que baja en los tramos de fatiga y se recupera en las pausas.
-- **Ritmo**: velocidad a la que un jugador gasta energía; combina rol, rasgos y táctica.
+- **Ritmo**: velocidad a la que un jugador gasta energía; es el producto de los multiplicadores de rol, rasgos y táctica.
 - **Tramo de fatiga**: periodo del partido en que se gasta energía; depende del reloj y, para Indisciplinado, empieza antes.
-- **Acción intensa**: sprint, presión, regate o duelo; suma gasto dentro de un tramo de fatiga.
+- **Acción intensa**: sprint, presión, regate o duelo; suma gasto dentro de un tramo de fatiga, comparado con la referencia fija de acciones de su rol.
 - **Penalización**: porcentaje que pierde una stat según la energía y su tipo (física, técnica o mental).
-- **Estrella y marcador**: el rival al que sigue un equipo con Individual y el defensor que lo sigue.
+- **Estrella y marcador**: el rival al que sigue un equipo con Individual y el jugador que lo sigue; se fijan al empezar el partido y no se sustituyen.
 - **Parámetros 9.0.0**: versión única que el motor simula; contiene todos los valores de fatiga y táctica.
 - **Línea base**: medidas del motor 8.0.0 con las que se comparan fatiga, tácticas y coste.
 - **Umbral aprobado**: valor de una comprobación de equilibrado con su valor anterior, el medido, el motivo y la aprobación.
@@ -254,7 +261,7 @@ Los márgenes marcados como «de partida» son propuestas; los valores finales l
 - **SC-001**: Antes del primer cambio del motor existe un informe de línea base con goles, victorias, fatiga y coste de cada táctica en la 8.0.0.
 - **SC-002**: El 100 % de los valores de referencia de la curva, de los roles, de los rasgos y de la penalización (FR-006, FR-010 a FR-016) se cumple en las pruebas exactas.
 - **SC-003**: En series de 1.000 partidos, la energía media al 90' de cada rol queda a ±3 puntos de su valor de referencia (margen de partida).
-- **SC-004**: Cada rasgo modificado tiene su prueba de unidad y su comprobación estadística en verde, y mueve la energía en la dirección esperada, con Incansable, Fatigado e Indisciplinado a ±3 puntos de 75, 45 y 38 (margen de partida).
+- **SC-004**: Cada rasgo modificado tiene su prueba de unidad y su comprobación estadística en verde, y mueve la energía en la dirección esperada, con Incansable, Fatigado e Indisciplinado a ±3 puntos de 75, 45 y 44 (margen de partida).
 - **SC-005**: En series de 1.000 partidos, un equipo con Presión alta termina con menos energía que el mismo equipo con Bloque medio, con diferencia estadísticamente significativa y de un tamaño aprobado por la persona responsable.
 - **SC-006**: Cada táctica modificada produce, en series de 1.000 partidos, un efecto medible en la dirección esperada frente a la línea base, y 001/SC-006 sigue cumpliéndose.
 - **SC-007**: `pnpm balance` pasa todas las comprobaciones con los umbrales aprobados, y cada umbral cambiado consta con su valor anterior, el medido, el motivo y la aprobación.
@@ -267,28 +274,10 @@ Los márgenes marcados como «de partida» son propuestas; los valores finales l
 
 ## Assumptions
 
-**A confirmar en `/speckit-clarify` (indicadas por la persona responsable)**
-
-- Los multiplicadores de rol, rasgos y tácticas se combinan multiplicando.
-- El doble de Indisciplinado es doble coste por acción, sin tiradas nuevas.
-- El +15 de Motivador solo se aplica en el descanso del partido, no en las pausas de la prórroga.
-- La estrella es el rival de mayor media efectiva y el mejor defensor es quien tiene más marcaje. Propuesta si uno sale del campo: se elige de nuevo entre los que quedan en el momento de su salida.
-- El nuevo sistema de Individual sustituye sus ajustes actuales de duelo (FR-028).
-- `resolverResto` y el partido con métricas comparten el objetivo de ≤ 60 ms.
-- El coste exacto de cada acción intensa se fija al calibrar, de modo que sumen el 20 % del gasto.
-
-**A confirmar en `/speckit-clarify` (detectadas al redactar)**
-
-- El rol que fija el ritmo es el de la posición que el jugador ocupa en cada momento, no la demarcación de su carta.
-- La estrella y el marcador son siempre jugadores de campo: el portero queda excluido de ambos.
-- Los desplazamientos de Individual se suman: un compañero de la estrella que regatea gana +0,17 en x.
-- «Por esa banda» es el carril donde se perdió el balón: si la primera acción del rival va por otro carril, la ventaja se pierde.
-- Para el +15, cuenta si el Motivador está en el campo al pitarse el descanso, antes de los cambios de la pausa.
-
 **Riesgos**
 
 - **Coste de Presión alta**: el 20 % de acciones equivale a 10 puntos de energía al 90' para el jugador de referencia, y las presiones son solo una parte. El coste puede quedar muy por debajo del actual (+25 % de ritmo desde el 55'); SC-005 lo mide.
-- **Objetivo de 60 ms**: el único experimento que llegó a 60 ms (equipo local, Node 24) también espaciaba los objetivos a 8 ticks. Si mover cada 4 ticks no basta, ese cambio altera resultados y debe decidirse antes de cerrar la calibración (FR-003).
+- **Objetivo de 60 ms**: el único experimento que llegó a 60 ms (equipo local, Node 24) también espaciaba los objetivos a 8 ticks. Ese cambio altera resultados, así que solo se aplica si la medida previa a la calibración lo exige (FR-003).
 
 **Dependencias**
 
