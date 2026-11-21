@@ -53,6 +53,7 @@ export function registrarRutasCosmeticos(app: FastifyInstance, auth: Auth, econo
           ...(registrado ? { disponible: !p.cosmeticos.some((id) => poseidos.has(id)) } : {}),
         })),
       ...(registrado ? { saldo: (await economia.leerSaldo(registrado.id)).saldo } : {}),
+      pagoEuros: economia.pagoSimulado,
     };
   });
 

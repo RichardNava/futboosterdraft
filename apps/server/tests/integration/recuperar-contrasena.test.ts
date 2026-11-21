@@ -70,8 +70,10 @@ describe('recuperar la contraseña (spec 013, FR-027)', () => {
   });
 
   it('limita las peticiones por IP', async () => {
+    const conLimites = await iniciarServidorPruebas(bd, undefined, { limitesReales: true });
     const estados: number[] = [];
-    for (let i = 0; i < 6; i++) estados.push((await peticion(srv.url, '/api/auth/recuperar', { cuerpo: { email: 'nadie@pruebas.test' } })).estado);
+    for (let i = 0; i < 6; i++) estados.push((await peticion(conLimites.url, '/api/auth/recuperar', { cuerpo: { email: 'nadie@pruebas.test' } })).estado);
+    await conLimites.cerrar();
     expect(estados).toContain(429);
   });
 });

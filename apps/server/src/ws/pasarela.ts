@@ -12,7 +12,7 @@ import type { WebSocket } from 'ws';
 import { z, type ZodType } from 'zod';
 import type { Difusor, MensajeSaliente } from '../actores/actor';
 import type { Auth, UsuarioSesion } from '../auth/auth';
-import { usuarioDeLaPeticion } from '../auth/rutas';
+import { sesionDeLaPeticion } from '../auth/rutas';
 import type { Logger } from '../observabilidad/logger';
 import { fase, medir, type Operacion } from '../observabilidad/desglose';
 import type { Metricas } from '../observabilidad/metricas';
@@ -24,7 +24,12 @@ export interface ContextoConexion {
   partidaId: string;
   participanteId: string;
   usuario: UsuarioSesion;
+  /** Sesión con la que se abrió: si se revoca, la conexión se cierra (spec 017, R8). */
+  sesionId: string;
 }
+
+/** Cada cuánto se comprueba que las sesiones de las conexiones siguen vigentes (SC-007: cierre en 5 s como máximo). */
+const REVISION_SESIONES_MS = 3_000;
 
 type ResultadoComando = { ok: true } | { ok: false; error: { codigo: string; mensaje: string } };
 
@@ -56,16 +61,23 @@ export interface OpcionesPasarela {
   origenesPermitidos?: readonly string[];
   /** Límite de mensajes por participante (por defecto, `LIMITE_WS`). */
   limite?: OpcionesLimitador;
+  /** De estas sesiones, las vigentes de cuentas no suspendidas, con una sola consulta (spec 017, R8). */
+  sesionesVigentes?(ids: string[]): Promise<Set<string>>;
 }
 
 const MensajeEntrante = z.object({ t: z.string().min(1) }).passthrough();
 const ConRequestId = z.object({ requestId: z.string().uuid() }).passthrough();
+
+/** Las respuestas guardadas son de cada participante: otro no puede recibirlas ni gastar su `requestId` (FR-025). */
+const ambitoWs = (ctx: ContextoConexion) => `ws:${ctx.partidaId}:${ctx.participanteId}`;
 
 /** Conexiones WebSocket por partida y participante: recibe comandos y difunde mensajes. */
 export class Pasarela implements Difusor {
   /** partidaId → participanteId → sockets abiertos (una persona puede tener varias pestañas). */
   private readonly conexiones = new Map<string, Map<string, Set<WebSocket>>>();
   private readonly manejadores = new Map<string, Manejador<unknown>>();
+  /** Sesión de cada socket abierto. */
+  private readonly sesiones = new Map<WebSocket, string>();
 
   private readonly limitador: Limitador;
 
@@ -113,19 +125,27 @@ export class Pasarela implements Difusor {
 
   /** Ruta `/ws` de Fastify que abre las conexiones. */
   registrarRuta(app: FastifyInstance): void {
+    if (this.opciones.sesionesVigentes) {
+      const revision = setInterval(() => {
+        void this.revisarSesiones().catch((err: unknown) => this.opciones.logger.error({ err }, 'Error revisando las sesiones WebSocket'));
+      }, REVISION_SESIONES_MS);
+      revision.unref();
+      app.addHook('onClose', async () => clearInterval(revision));
+    }
     app.get<{ Querystring: { partidaId?: string } }>('/ws', { websocket: true }, async (socket, req) => {
       const partidaId = req.query.partidaId;
       const origen = req.headers.origin;
       if (origen && this.opciones.origenesPermitidos && !this.opciones.origenesPermitidos.includes(origen)) {
         return socket.close(4403, 'ORIGEN_NO_PERMITIDO');
       }
-      const usuario = await usuarioDeLaPeticion(this.opciones.auth, req).catch(() => undefined);
-      if (!usuario) return socket.close(4401, 'SIN_SESION');
+      const sesion = await sesionDeLaPeticion(this.opciones.auth, req).catch(() => undefined);
+      if (!sesion) return socket.close(4401, 'SIN_SESION');
+      const { usuario, sesionId } = sesion;
       if (!partidaId) return socket.close(4400, 'FALTA_PARTIDA');
       const participanteId = await this.opciones.resolverParticipante(partidaId, usuario.id);
       if (!participanteId) return socket.close(4403, 'NO_PARTICIPA');
 
-      const ctx: ContextoConexion = { partidaId, participanteId, usuario };
+      const ctx: ContextoConexion = { partidaId, participanteId, usuario, sesionId };
       this.anadir(ctx, socket);
       this.opciones.alConectar?.(ctx);
 
@@ -145,6 +165,14 @@ export class Pasarela implements Difusor {
 
       await this.enviarEstado(partidaId, participanteId);
     });
+  }
+
+  /** Cierra con 4401 las conexiones cuya sesión ya no vale; si la consulta falla, no cierra ninguna. */
+  private async revisarSesiones(): Promise<void> {
+    const abiertas = [...this.sesiones];
+    if (abiertas.length === 0) return;
+    const vigentes = await this.opciones.sesionesVigentes!([...new Set(abiertas.map(([, id]) => id))]);
+    for (const [socket, id] of abiertas) if (!vigentes.has(id)) socket.close(4401, 'SESION_REVOCADA');
   }
 
   private async procesar(ctx: ContextoConexion, socket: WebSocket, texto: string): Promise<void> {
@@ -173,14 +201,15 @@ export class Pasarela implements Difusor {
       const r = ConRequestId.safeParse(crudo);
       if (!r.success) return this.error(socket, 'FALTA_REQUEST_ID', 'El mensaje necesita un requestId (UUID)');
       requestId = r.data.requestId;
-      const previo = await this.opciones.peticiones.obtener(ctx.partidaId, requestId);
+      const previo = await this.opciones.peticiones.obtener(ambitoWs(ctx), requestId);
       if (previo) return this.enviarTexto(socket, JSON.stringify(previo));
     }
 
     const mensaje = manejador.esquema.safeParse(crudo);
     if (!mensaje.success) {
       const error = { codigo: 'MENSAJE_INVALIDO', mensaje: mensaje.error.issues.map((i) => i.message).join('; ') };
-      if (requestId) return this.responderAck(ctx, socket, requestId, { ok: false, error });
+      // Un mensaje mal formado no gasta su requestId (SEG-020): no se guarda.
+      if (requestId) return this.enviarTexto(socket, JSON.stringify({ t: 'ack', requestId, ok: false, error }));
       return this.error(socket, error.codigo, error.mensaje);
     }
 
@@ -190,7 +219,7 @@ export class Pasarela implements Difusor {
 
   private async responderAck(ctx: ContextoConexion, socket: WebSocket, requestId: string, r: ResultadoComando) {
     const ack = r.ok ? { t: 'ack', requestId, ok: true } : { t: 'ack', requestId, ok: false, error: r.error };
-    await this.opciones.peticiones.guardar(ctx.partidaId, requestId, ack);
+    await this.opciones.peticiones.guardar(ambitoWs(ctx), requestId, ack);
     this.enviarTexto(socket, JSON.stringify(ack));
   }
 
@@ -208,9 +237,11 @@ export class Pasarela implements Difusor {
     let sockets = porParticipante.get(ctx.participanteId);
     if (!sockets) porParticipante.set(ctx.participanteId, (sockets = new Set()));
     sockets.add(socket);
+    this.sesiones.set(socket, ctx.sesionId);
   }
 
   private quitar(ctx: ContextoConexion, socket: WebSocket): void {
+    this.sesiones.delete(socket);
     const porParticipante = this.conexiones.get(ctx.partidaId);
     const sockets = porParticipante?.get(ctx.participanteId);
     sockets?.delete(socket);

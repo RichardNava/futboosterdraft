@@ -20,6 +20,12 @@ interface NuevoAviso {
   texto: string;
 }
 
+/** Solo el código del error SMTP: su mensaje y sus campos pueden incluir al destinatario (spec 017, FR-035). */
+const codigoSmtp = (err: unknown): string | number => {
+  const e = err as { responseCode?: number; code?: string } | null;
+  return e?.responseCode ?? e?.code ?? 'desconocido';
+};
+
 /** Avisos a los usuarios: en la base de datos y, si hay transporte, por correo. */
 export class ServicioAvisos {
   private readonly transporte: Transporter | null;
@@ -47,7 +53,7 @@ export class ServicioAvisos {
       const id = filas[i]!.id;
       this.enVivo({ ...a, id });
       // Sin esperar: se llama dentro de la cola de la partida, y esperar al SMTP la frenaba ~1 s por humano (INI-07).
-      void this.enviarCorreo(id, a).catch((err: unknown) => this.logger.warn({ err, usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
+      void this.enviarCorreo(id, a).catch((err: unknown) => this.logger.warn({ codigo: codigoSmtp(err), usuarioId: a.usuarioId }, 'No se pudo enviar el correo del aviso'));
     });
   }
 
@@ -80,7 +86,36 @@ ${enlace}
 Si no lo has pedido tú, ignora este correo.`,
       });
     } catch (err) {
-      this.logger.warn({ err }, 'No se pudo enviar el correo para restablecer la contraseña');
+      this.logger.warn({ codigo: codigoSmtp(err) }, 'No se pudo enviar el correo para restablecer la contraseña');
+    }
+  }
+
+  /**
+   * Avisa a una cuenta registrada de varios intentos fallidos de acceso (SEG-032). Sin cuenta no hace nada, y se llama
+   * sin esperar para que el tiempo de respuesta no lo revele. Nunca lanza.
+   */
+  async avisarIntentosFallidos(correo: string): Promise<void> {
+    if (!this.transporte) return;
+    try {
+      const [cuenta] = await this.db
+        .select({ email: usuarios.email })
+        .from(usuarios)
+        .where(and(eq(usuarios.email, correo), eq(usuarios.isAnonymous, false)))
+        .limit(1);
+      if (!cuenta) return;
+      await this.transporte.sendMail({
+        to: cuenta.email,
+        subject: 'Fútboosterdraft: intentos de acceso a tu cuenta',
+        text: `Hemos detectado varios intentos seguidos de entrar en tu cuenta con una contraseña incorrecta.
+
+Si has sido tú, no tienes que hacer nada.
+
+Si no has sido tú, tu cuenta sigue protegida, pero te recomendamos cambiar la contraseña desde la opción de recuperarla al iniciar sesión:
+
+${this.urlPublica}/?acceso=entrar`,
+      });
+    } catch (err) {
+      this.logger.warn({ codigo: codigoSmtp(err) }, 'No se pudo enviar el aviso de intentos de acceso');
     }
   }
 

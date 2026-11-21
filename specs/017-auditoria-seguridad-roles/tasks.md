@@ -109,80 +109,80 @@ por T071 y T072.
 
 Van primero y aisladas, porque zod 4 toca todo el protocolo.
 
-- [ ] T025 [US2] Crear `.pnpmfile.cjs` que retire `vitest` de las dependencias par de `better-auth`, añadirlo al primer `COPY` del `Dockerfile` y regenerar `pnpm-lock.yaml` con `pnpm install`
-- [ ] T026 [US2] Subir `zod` a 4.x en `apps/server/package.json` y `packages/protocol/package.json`, dar dos argumentos a los 7 `z.record(...)` de `packages/protocol/src/http/base.ts`, `http/partidos.ts`, `ws/draft.ts` y `ws/partido.ts`, y revisar los identificadores de pruebas que dejen de pasar con el `uuid()` estricto
-- [ ] T027 [US2] Subir `nodemailer` a 10.x y `@types/nodemailer` en `apps/server/package.json`, y adaptar `apps/server/src/avisos/servicio.ts` si cambia su API
-- [ ] T028 [US2] Subir `@fastify/static` a 10.x en `apps/server/package.json` y comprobar en `apps/server/src/http/app.ts` que siguen sirviéndose la web y sus recursos en modo producción
-- [ ] T029 [US2] Subir `vitest` a 3.2.x o superior en `package.json`, y `testcontainers` y `@testcontainers/postgresql` a 11.14 o una 11.x posterior en `apps/server/package.json` (SEG-031), y corregir lo que cambie en la configuración de pruebas
-- [ ] T030 [US2] Verificar la subida: `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm e2e`, `pnpm audit --audit-level=high` sin altos ni críticos y la imagen sin herramientas de pruebas, y anotar el resultado en `auditoria.md` (FR-038, SC-011)
+- [X] T025 [US2] Crear `.pnpmfile.cjs` que retire `vitest` de las dependencias par de `better-auth`, añadirlo al primer `COPY` del `Dockerfile` y regenerar `pnpm-lock.yaml` con `pnpm install`
+- [X] T026 [US2] Subir `zod` a 4.x en `apps/server/package.json` y `packages/protocol/package.json`, dar dos argumentos a los 7 `z.record(...)` de `packages/protocol/src/http/base.ts`, `http/partidos.ts`, `ws/draft.ts` y `ws/partido.ts`, y revisar los identificadores de pruebas que dejen de pasar con el `uuid()` estricto
+- [X] T027 [US2] Subir `nodemailer` a 10.x y `@types/nodemailer` en `apps/server/package.json`, y adaptar `apps/server/src/avisos/servicio.ts` si cambia su API
+- [X] T028 [US2] Subir `@fastify/static` a 10.x en `apps/server/package.json` y comprobar en `apps/server/src/http/app.ts` que siguen sirviéndose la web y sus recursos en modo producción
+- [X] T029 [US2] Subir `vitest` a 3.2.x o superior en `package.json`, y `testcontainers` y `@testcontainers/postgresql` a 11.14 o una 11.x posterior en `apps/server/package.json` (SEG-031), y corregir lo que cambie en la configuración de pruebas
+- [X] T030 [US2] Verificar la subida: `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm e2e`, `pnpm audit --audit-level=high` sin altos ni críticos y la imagen sin herramientas de pruebas, y anotar el resultado en `auditoria.md` (FR-038, SC-011)
 
 ### Migración 0018
 
-- [ ] T031 [US2] Actualizar el esquema Drizzle: `rol` y `suspendidaEn` en `usuarios` (`apps/server/src/persistencia/esquema/base.ts`), cascada en `pasesPremium` y motivo `entrega_betatester` (`esquema/coleccion.ts`), tipo `partida_cerrada` en `avisos` (`esquema/torneo.ts`) y las tablas `registroAdmin` y `ordenesConsola` en un nuevo `esquema/admin.ts`, exportado desde `esquema/index.ts`
-- [ ] T032 [US2] Escribir `apps/server/drizzle/0018_spec017.sql` y su entrada `idx: 18` en `apps/server/drizzle/meta/_journal.json`, con: `rol text not null default 'jugador'`; `suspendida_en timestamptz null`; los checks `usuarios_rol_ck`, `usuarios_invitado_rol_ck` (`not es_invitado or rol = 'jugador'`), `usuarios_admin_suspension_ck` (`rol <> 'administrador' or suspendida_en is null`) y `usuarios_invitado_suspension_ck` (`not es_invitado or suspendida_en is null`); `ON DELETE CASCADE` en `pases_premium`; `movimientos_fragmentos_motivo_ck` y `avisos_tipo_ck` recreados **conservando todos sus valores actuales** y añadiendo el nuevo; el índice único parcial `movimientos_entrega_betatester_uq`; `peticiones_procesadas_creada_idx`; `registro_admin` con `motivo` de hasta 500 caracteres, `intentos integer not null default 1` mayor que 0, sus tres índices y el *trigger* `BEFORE UPDATE OR DELETE` que solo admite poner `motivo` a `null` sin tocar otra columna; y `ordenes_consola` con su índice parcial sobre `creada_en` con `estado = 'pendiente'`
-- [ ] T033 [US2] Probar la migración en `apps/server/tests/integration/migracion-0018.test.ts` con `bdHasta('0017_spec016')`: cuentas previas como `jugador`, cada check, cascada, índice único, *trigger* (rechaza `UPDATE` y `DELETE`, admite vaciar `motivo`) y valores anteriores de los checks recreados
+- [X] T031 [US2] Actualizar el esquema Drizzle: `rol` y `suspendidaEn` en `usuarios` (`apps/server/src/persistencia/esquema/base.ts`), cascada en `pasesPremium` y motivo `entrega_betatester` (`esquema/coleccion.ts`), tipo `partida_cerrada` en `avisos` (`esquema/torneo.ts`) y las tablas `registroAdmin` y `ordenesConsola` en un nuevo `esquema/admin.ts`, exportado desde `esquema/index.ts`
+- [X] T032 [US2] Escribir `apps/server/drizzle/0018_spec017.sql` y su entrada `idx: 18` en `apps/server/drizzle/meta/_journal.json`, con: `rol text not null default 'jugador'`; `suspendida_en timestamptz null`; los checks `usuarios_rol_ck`, `usuarios_invitado_rol_ck` (`not es_invitado or rol = 'jugador'`), `usuarios_admin_suspension_ck` (`rol <> 'administrador' or suspendida_en is null`) y `usuarios_invitado_suspension_ck` (`not es_invitado or suspendida_en is null`); `ON DELETE CASCADE` en `pases_premium`; `movimientos_fragmentos_motivo_ck` y `avisos_tipo_ck` recreados **conservando todos sus valores actuales** y añadiendo el nuevo; el índice único parcial `movimientos_entrega_betatester_uq`; `peticiones_procesadas_creada_idx`; `registro_admin` con `motivo` de hasta 500 caracteres, `intentos integer not null default 1` mayor que 0, sus tres índices y el *trigger* `BEFORE UPDATE OR DELETE` que solo admite poner `motivo` a `null` sin tocar otra columna; y `ordenes_consola` con su índice parcial sobre `creada_en` con `estado = 'pendiente'`
+- [X] T033 [US2] Probar la migración en `apps/server/tests/integration/migracion-0018.test.ts` con `bdHasta('0017_spec016')`: cuentas previas como `jugador`, cada check, cascada, índice único, *trigger* (rechaza `UPDATE` y `DELETE`, admite vaciar `motivo`) y valores anteriores de los checks recreados
 
 ### Límites de uso e identificación del cliente (FR-013, FR-014, R4, R5)
 
-- [ ] T034 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/limites.test.ts`: 100 contraseñas cambiando la cookie y `X-Forwarded-For` (SC-005), registro, invitado y recuperación en bucle, rotación IPv6 en un /64, un cliente que no agota el cupo de otro y bloqueo de una cuenta ajena que no impide recuperarla
-- [ ] T035 [US2] Ampliar `Limitador` en `apps/server/src/http/limitador.ts` con consulta sin gasto, gasto solo al fallar, borrado de una clave y un tope real de claves que expulse las más antiguas si ningún cubo está lleno, con sus casos en `apps/server/tests/unit/limitador.test.ts`
-- [ ] T036 [US2] Añadir la opción para desactivar todos los límites en `apps/server/src/servidor.ts` y `apps/server/src/main.ts` (con `--fake-clock` o `LIMITES_DESACTIVADOS=1`), usarla en `apps/server/tests/helpers/app.ts` para que las pruebas actuales no choquen con los límites de registro, y documentarla en `tools/load/README.md`
-- [ ] T037 [US2] Leer `PROXIES_CONFIANZA` y pasarlo a `trustProxy` en `apps/server/src/http/app.ts`, con una función de clave de cliente que agrupe las direcciones IPv6 por su /64
-- [ ] T038 [US2] Aplicar en `apps/server/src/auth/rutas.ts` los límites de `contracts/seguridad.md`: login 10 por minuto e IP, 20 fallos por hora y correo normalizado con la misma respuesta exista o no la cuenta, registro 5 por hora e IP, invitado 20 por hora e IP, recuperación 5 seguidas y 1 por minuto por IP y 3 por hora y correo sin enviar correo ni cambiar la respuesta; un restablecimiento correcto borra los fallos de la cuenta
-- [ ] T039 [US2] Sustituir en `apps/server/src/http/app.ts` el límite por cookie sin validar: un gancho `onRoute` añade el límite por usuario (60 de ráfaga, 20/s) **después** de los `preHandler` de sesión, y un `onRequest` aplica el límite por IP a `/api/` (300 de ráfaga, 100/s)
+- [X] T034 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/limites.test.ts`: 100 contraseñas cambiando la cookie y `X-Forwarded-For` (SC-005), registro, invitado y recuperación en bucle, rotación IPv6 en un /64, un cliente que no agota el cupo de otro y bloqueo de una cuenta ajena que no impide recuperarla
+- [X] T035 [US2] Ampliar `Limitador` en `apps/server/src/http/limitador.ts` con consulta sin gasto, gasto solo al fallar, borrado de una clave y un tope real de claves que expulse las más antiguas si ningún cubo está lleno, con sus casos en `apps/server/tests/unit/limitador.test.ts`
+- [X] T036 [US2] Añadir la opción para desactivar todos los límites en `apps/server/src/servidor.ts` y `apps/server/src/main.ts` (con `--fake-clock` o `LIMITES_DESACTIVADOS=1`), usarla en `apps/server/tests/helpers/app.ts` para que las pruebas actuales no choquen con los límites de registro, y documentarla en `tools/load/README.md`
+- [X] T037 [US2] Leer `PROXIES_CONFIANZA` y pasarlo a `trustProxy` en `apps/server/src/http/app.ts`, con una función de clave de cliente que agrupe las direcciones IPv6 por su /64
+- [X] T038 [US2] Aplicar en `apps/server/src/auth/rutas.ts` los límites de `contracts/seguridad.md`: login 10 por minuto e IP, 20 fallos por hora y correo normalizado con la misma respuesta exista o no la cuenta, registro 5 por hora e IP, invitado 20 por hora e IP, recuperación 5 seguidas y 1 por minuto por IP y 3 por hora y correo sin enviar correo ni cambiar la respuesta; un restablecimiento correcto borra los fallos de la cuenta
+- [X] T039 [US2] Sustituir en `apps/server/src/http/app.ts` el límite por cookie sin validar: un gancho `onRoute` añade el límite por usuario (60 de ráfaga, 20/s) **después** de los `preHandler` de sesión, y un `onRequest` aplica el límite por IP a `/api/` (300 de ráfaga, 100/s)
 
 ### Cuentas y sesiones (FR-015 a FR-020, R6, R7, R8, R24)
 
-- [ ] T040 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/cuentas.test.ts`: uso de `/api/auth/ba/*`, `token` en la respuesta de login y registro, enumeración de correos por respuesta y tiempo, invitado que reclama un correo existente, enlace de recuperación reutilizado o caducado
-- [ ] T041 [US2] Retirar la ruta `/api/auth/ba/*` de `apps/server/src/auth/rutas.ts` y actualizar el comentario de cabecera de `apps/server/src/auth/auth.ts`, manteniendo su `basePath` interno (R6)
-- [ ] T042 [US2] Hacer que login y registro respondan solo `{ usuario }`, sin `token`, en `apps/server/src/auth/rutas.ts`, y adaptar `apps/server/tests/helpers/usuarios.ts` y las pruebas que lean el cuerpo anterior (FR-017)
-- [ ] T043 [US2] Activar `advanced.ipAddress.disableIpTracking` en `apps/server/src/auth/auth.ts` (R4)
-- [ ] T044 [US2] Igualar la respuesta y el tiempo de login y recuperación con y sin cuenta en `apps/server/src/auth/rutas.ts`, y dejar constancia en `auditoria.md` de lo que revele el registro (FR-016)
-- [ ] T045 [US2] Corregir en `apps/server/src/auth/rutas.ts` y `apps/server/src/actores/gestor.ts` lo que T012 detecte en el paso de invitado a registrado, para transferir solo los datos de ese invitado (FR-019)
-- [ ] T046 [US2] Quitar el token de la dirección en cuanto se lee y mantenerlo solo en memoria en `apps/web/src/pantallas/Inicio.tsx` (FR-020, `contracts/ui.md`)
-- [ ] T047 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/sesiones.test.ts`: socket abierto tras logout, restablecimiento, caducidad, borrado y sesión retirada desde otro proceso; todos cerrados con `4401` en 5 s como máximo (SC-007)
-- [ ] T048 [US2] Guardar el id de sesión en `ContextoConexion` y añadir en `apps/server/src/ws/pasarela.ts` la revisión cada 3 s con **una sola consulta** para todas las conexiones, parada al cerrar la app (R8); `usuarioDeLaPeticion` de `apps/server/src/auth/rutas.ts` debe devolver también ese id
-- [ ] T049 [US2] Cambiar `DELETE /api/cuenta` en `apps/server/src/auth/rutas.ts` para borrar la cuenta antes de devolver las cookies de cierre, y probar la baja de una cuenta con pase premium en `apps/server/tests/seguridad/cuentas.test.ts` (R24)
+- [X] T040 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/cuentas.test.ts`: uso de `/api/auth/ba/*`, `token` en la respuesta de login y registro, enumeración de correos por respuesta y tiempo, invitado que reclama un correo existente, enlace de recuperación reutilizado o caducado
+- [X] T041 [US2] Retirar la ruta `/api/auth/ba/*` de `apps/server/src/auth/rutas.ts` y actualizar el comentario de cabecera de `apps/server/src/auth/auth.ts`, manteniendo su `basePath` interno (R6)
+- [X] T042 [US2] Hacer que login y registro respondan solo `{ usuario }`, sin `token`, en `apps/server/src/auth/rutas.ts`, y adaptar `apps/server/tests/helpers/usuarios.ts` y las pruebas que lean el cuerpo anterior (FR-017)
+- [X] T043 [US2] Activar `advanced.ipAddress.disableIpTracking` en `apps/server/src/auth/auth.ts` (R4)
+- [X] T044 [US2] Igualar la respuesta y el tiempo de login y recuperación con y sin cuenta en `apps/server/src/auth/rutas.ts`, y dejar constancia en `auditoria.md` de lo que revele el registro (FR-016)
+- [X] T045 [US2] Corregir en `apps/server/src/auth/rutas.ts` y `apps/server/src/actores/gestor.ts` lo que T012 detecte en el paso de invitado a registrado, para transferir solo los datos de ese invitado (FR-019)
+- [X] T046 [US2] Quitar el token de la dirección en cuanto se lee y mantenerlo solo en memoria en `apps/web/src/pantallas/Inicio.tsx` (FR-020, `contracts/ui.md`)
+- [X] T047 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/sesiones.test.ts`: socket abierto tras logout, restablecimiento, caducidad, borrado y sesión retirada desde otro proceso; todos cerrados con `4401` en 5 s como máximo (SC-007)
+- [X] T048 [US2] Guardar el id de sesión en `ContextoConexion` y añadir en `apps/server/src/ws/pasarela.ts` la revisión cada 3 s con **una sola consulta** para todas las conexiones, parada al cerrar la app (R8); `usuarioDeLaPeticion` de `apps/server/src/auth/rutas.ts` debe devolver también ese id
+- [X] T049 [US2] Cambiar `DELETE /api/cuenta` en `apps/server/src/auth/rutas.ts` para borrar la cuenta antes de devolver las cookies de cierre, y probar la baja de una cuenta con pase premium en `apps/server/tests/seguridad/cuentas.test.ts` (R24)
 
 ### Idempotencia (FR-025, R3)
 
-- [ ] T050 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/idempotencia.test.ts`: la misma clave desde otra cuenta o sin sesión, login con `Idempotency-Key` que guarda el token, 4xx que consume la clave, clave de más de 128 caracteres, `requestId` de otro participante y filas de más de 7 días
-- [ ] T051 [US2] Mover en `apps/server/src/http/app.ts` la lectura de idempotencia **detrás** de los `preHandler` de cada ruta con `onRoute`; ámbito `http:<usuario>:<método>:<ruta sin query>`; guardar solo 2xx de personas autenticadas; clave de más de 128 caracteres: `400 CLAVE_INVALIDA`
-- [ ] T052 [US2] Cambiar en `apps/server/src/ws/pasarela.ts` el ámbito a `ws:<partida>:<participante>` y dejar de guardar los mensajes rechazados por su esquema, actualizando `apps/server/tests/unit/pasarela.test.ts`
-- [ ] T053 [US2] Añadir la purga de filas de más de 7 días a `AlmacenPeticionesBD` en `apps/server/src/persistencia/peticiones.ts` y programarla cada hora en `apps/server/src/servidor.ts`, con el temporizador parado al cerrar la app
+- [X] T050 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/idempotencia.test.ts`: la misma clave desde otra cuenta o sin sesión, login con `Idempotency-Key` que guarda el token, 4xx que consume la clave, clave de más de 128 caracteres, `requestId` de otro participante y filas de más de 7 días
+- [X] T051 [US2] Mover en `apps/server/src/http/app.ts` la lectura de idempotencia **detrás** de los `preHandler` de cada ruta con `onRoute`; ámbito `http:<usuario>:<método>:<ruta sin query>`; guardar solo 2xx de personas autenticadas; clave de más de 128 caracteres: `400 CLAVE_INVALIDA`
+- [X] T052 [US2] Cambiar en `apps/server/src/ws/pasarela.ts` el ámbito a `ws:<partida>:<participante>` y dejar de guardar los mensajes rechazados por su esquema, actualizando `apps/server/tests/unit/pasarela.test.ts`
+- [X] T053 [US2] Añadir la purga de filas de más de 7 días a `AlmacenPeticionesBD` en `apps/server/src/persistencia/peticiones.ts` y programarla cada hora en `apps/server/src/servidor.ts`, con el temporizador parado al cerrar la app
 
 ### Superficie expuesta (FR-029, FR-030, FR-033 a FR-036, R7, R9 a R12)
 
-- [ ] T054 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/superficie.test.ts`: cabeceras en todas las respuestas, sin `Access-Control-Allow-Origin`, POST, PUT y DELETE desde otro origen, `/metrics` sin token o con token incorrecto, `/healthz` mínimo, `/api/dev/*` en producción, GET a `/api/` inexistente, y contraseñas, tokens, cookies, correos y query strings ausentes de los registros
-- [ ] T055 [US2] Crear `apps/server/src/http/cabeceras.ts` con el gancho `onSend` y las cabeceras exactas de `contracts/seguridad.md` (HSTS solo en producción, `connect-src` derivado de `PUBLIC_URL`) y registrarlo en `apps/server/src/http/app.ts`
-- [ ] T056 [US2] Añadir en `apps/server/src/http/app.ts` el rechazo `403 ORIGEN_NO_PERMITIDO` de POST, PUT y DELETE cuyo `Origin` exista y no sea `PUBLIC_URL`
-- [ ] T057 [US2] Proteger `/metrics` con `Authorization: Bearer <METRICAS_TOKEN>` y comparación de tiempo constante (404 en cualquier otro caso en producción) y reducir `/healthz` a `{ estado }` en `apps/server/src/observabilidad/rutas.ts`
-- [ ] T058 [US2] Hacer que en producción un GET a `/api/` inexistente devuelva `404 RUTA_NO_ENCONTRADA` y no la web, y quitar la URL del mensaje de error, en `apps/server/src/http/app.ts`
-- [ ] T059 [US2] Configurar en `apps/server/src/observabilidad/logger.ts` el serializador de petición sin query string y `redact` de cookies, autorización, contraseñas y tokens, y reducir los errores SMTP a su código en `apps/server/src/avisos/servicio.ts`
-- [ ] T060 [P] [US2] Escribir el ataque de arranque inseguro (cada variable ausente, corta o de ejemplo, sin mostrar nunca su valor) en `apps/server/tests/seguridad/entorno.test.ts`
-- [ ] T061 [US2] Crear la función pura `validarEntornoProduccion(env)` en `apps/server/src/entorno.ts` con las reglas de `contracts/seguridad.md` y llamarla desde `apps/server/src/main.ts` en producción
-- [ ] T062 [US2] Crear `apps/web/tests/e2e/seguridad-csp.spec.ts`, que recorre las pantallas principales y falla con cualquier violación de CSP. Se ejecuta con `E2E_BASE_URL` contra la imagen de producción, porque en desarrollo el HTML lo sirve Vite y no recibe la CSP; ajustar la política en `apps/server/src/http/cabeceras.ts` solo con lo imprescindible
+- [X] T054 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/superficie.test.ts`: cabeceras en todas las respuestas, sin `Access-Control-Allow-Origin`, POST, PUT y DELETE desde otro origen, `/metrics` sin token o con token incorrecto, `/healthz` mínimo, `/api/dev/*` en producción, GET a `/api/` inexistente, y contraseñas, tokens, cookies, correos y query strings ausentes de los registros
+- [X] T055 [US2] Crear `apps/server/src/http/cabeceras.ts` con el gancho `onSend` y las cabeceras exactas de `contracts/seguridad.md` (HSTS solo en producción, `connect-src` derivado de `PUBLIC_URL`) y registrarlo en `apps/server/src/http/app.ts`
+- [X] T056 [US2] Añadir en `apps/server/src/http/app.ts` el rechazo `403 ORIGEN_NO_PERMITIDO` de POST, PUT y DELETE cuyo `Origin` exista y no sea `PUBLIC_URL`
+- [X] T057 [US2] Proteger `/metrics` con `Authorization: Bearer <METRICAS_TOKEN>` y comparación de tiempo constante (404 en cualquier otro caso en producción) y reducir `/healthz` a `{ estado }` en `apps/server/src/observabilidad/rutas.ts`
+- [X] T058 [US2] Hacer que en producción un GET a `/api/` inexistente devuelva `404 RUTA_NO_ENCONTRADA` y no la web, y quitar la URL del mensaje de error, en `apps/server/src/http/app.ts`
+- [X] T059 [US2] Configurar en `apps/server/src/observabilidad/logger.ts` el serializador de petición sin query string y `redact` de cookies, autorización, contraseñas y tokens, y reducir los errores SMTP a su código en `apps/server/src/avisos/servicio.ts`
+- [X] T060 [P] [US2] Escribir el ataque de arranque inseguro (cada variable ausente, corta o de ejemplo, sin mostrar nunca su valor) en `apps/server/tests/seguridad/entorno.test.ts`
+- [X] T061 [US2] Crear la función pura `validarEntornoProduccion(env)` en `apps/server/src/entorno.ts` con las reglas de `contracts/seguridad.md` y llamarla desde `apps/server/src/main.ts` en producción
+- [X] T062 [US2] Crear `apps/web/tests/e2e/seguridad-csp.spec.ts`, que recorre las pantallas principales y falla con cualquier violación de CSP. Se ejecuta con `E2E_BASE_URL` contra la imagen de producción, porque en desarrollo el HTML lo sirve Vite y no recibe la CSP; ajustar la política en `apps/server/src/http/cabeceras.ts` solo con lo imprescindible
 
 ### Tienda y economía (FR-026 a FR-028, R13)
 
-- [ ] T063 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/economia.test.ts`: compra en euros de cosmético, pack y pase con el pago cerrado, 50 compras simultáneas (SC-006), `idCompra` de otra cuenta, precio o moneda manipulados, y saldo igual a la suma de movimientos
-- [ ] T064 [US2] Añadir `pagoSimulado` a `ServicioEconomia` en `apps/server/src/economia/servicio.ts` y rechazar en `comprar()`, después de buscar la compra previa, con `409 PAGO_NO_DISPONIBLE`; pasarlo desde `apps/server/src/servidor.ts` como falso en producción
-- [ ] T065 [US2] Añadir `pagoEuros: boolean` a `packages/protocol/src/http/tienda.ts` y `http/cosmeticos.ts`, y a las respuestas de `apps/server/src/http/tienda.ts` y `apps/server/src/http/cosmeticos.ts`
-- [ ] T066 [US2] Con `pagoEuros: false`, mostrar las opciones en euros desactivadas con el texto «Pago con tarjeta próximamente» en `apps/web/src/pantallas/Tienda.tsx` y `apps/web/src/componentes/TiendaCosmeticos.tsx`
+- [X] T063 [P] [US2] Escribir los ataques en `apps/server/tests/seguridad/economia.test.ts`: compra en euros de cosmético, pack y pase con el pago cerrado, 50 compras simultáneas (SC-006), `idCompra` de otra cuenta, precio o moneda manipulados, y saldo igual a la suma de movimientos
+- [X] T064 [US2] Añadir `pagoSimulado` a `ServicioEconomia` en `apps/server/src/economia/servicio.ts` y rechazar en `comprar()`, después de buscar la compra previa, con `409 PAGO_NO_DISPONIBLE`; pasarlo desde `apps/server/src/servidor.ts` como falso en producción
+- [X] T065 [US2] Añadir `pagoEuros: boolean` a `packages/protocol/src/http/tienda.ts` y `http/cosmeticos.ts`, y a las respuestas de `apps/server/src/http/tienda.ts` y `apps/server/src/http/cosmeticos.ts`
+- [X] T066 [US2] Con `pagoEuros: false`, mostrar las opciones en euros desactivadas con el texto «Pago con tarjeta próximamente» en `apps/web/src/pantallas/Tienda.tsx` y `apps/web/src/componentes/TiendaCosmeticos.tsx`
 
 ### Autorización, integridad y entradas (FR-021 a FR-024, FR-031, FR-032, FR-039)
 
-- [ ] T067 [P] [US2] Escribir los ataques de acceso a recursos ajenos, por HTTP y WebSocket, para cada ruta con recurso de `inventario.json`, en `apps/server/tests/seguridad/autorizacion.test.ts`
-- [ ] T068 [P] [US2] Escribir los ataques de integridad en `apps/server/tests/seguridad/integridad.test.ts`: elección manipulada, fuera de turno o duplicada, alineación inválida, y ninguna respuesta con elecciones ajenas ni alineación rival antes del partido
-- [ ] T069 [P] [US2] Escribir los ataques de entrada en `apps/server/tests/seguridad/entradas.test.ts`: código malicioso en nombres de equipo y partida, inyección SQL en parámetros y búsquedas, saltos de línea en cabeceras de correo y enlaces con otro `Host`
-- [ ] T070 [US2] Corregir en `apps/server/src/http/`, `apps/server/src/actores/` y `apps/server/src/avisos/servicio.ts` lo que hagan fallar T067, T068 y T069
+- [X] T067 [P] [US2] Escribir los ataques de acceso a recursos ajenos, por HTTP y WebSocket, para cada ruta con recurso de `inventario.json`, en `apps/server/tests/seguridad/autorizacion.test.ts`
+- [X] T068 [P] [US2] Escribir los ataques de integridad en `apps/server/tests/seguridad/integridad.test.ts`: elección manipulada, fuera de turno o duplicada, alineación inválida, y ninguna respuesta con elecciones ajenas ni alineación rival antes del partido
+- [X] T069 [P] [US2] Escribir los ataques de entrada en `apps/server/tests/seguridad/entradas.test.ts`: código malicioso en nombres de equipo y partida, inyección SQL en parámetros y búsquedas, saltos de línea en cabeceras de correo y enlaces con otro `Host`
+- [X] T070 [US2] Corregir en `apps/server/src/http/`, `apps/server/src/actores/` y `apps/server/src/avisos/servicio.ts` lo que hagan fallar T067, T068 y T069
 
 ### Cierre de la corrección
 
-- [ ] T071 [US2] Corregir cada hallazgo crítico o alto de `auditoria.md` que no cubra otra tarea, con su ataque en `apps/server/tests/seguridad/` (FR-008, FR-010)
-- [ ] T072 [US2] Corregir los hallazgos medios y bajos restantes, incluido el tope de partidas de FR-032a (SEG-016) con su ataque en `apps/server/tests/seguridad/`, o redactar en `auditoria.md` la propuesta de aceptación con riesgo residual y condición de revisión (FR-009)
-- [ ] T073 [US2] (persona responsable) Aceptar o rechazar cada propuesta de T072 y registrar quién, cuándo y por qué en `specs/017-auditoria-seguridad-roles/auditoria.md`
-- [ ] T074 [US2] Ejecutar `pnpm seguridad` y `pnpm test:equivalence`, y actualizar el estado y el cierre de cada hallazgo en `auditoria.md` (SC-002, SC-003, SC-012)
+- [X] T071 [US2] Corregir cada hallazgo crítico o alto de `auditoria.md` que no cubra otra tarea, con su ataque en `apps/server/tests/seguridad/` (FR-008, FR-010)
+- [X] T072 [US2] Corregir los hallazgos medios y bajos restantes, incluido el tope de partidas de FR-032a (SEG-016) con su ataque en `apps/server/tests/seguridad/`, o redactar en `auditoria.md` la propuesta de aceptación con riesgo residual y condición de revisión (FR-009)
+- [X] T073 [US2] (persona responsable) Aceptar o rechazar cada propuesta de T072 y registrar quién, cuándo y por qué en `specs/017-auditoria-seguridad-roles/auditoria.md`
+- [X] T074 [US2] Ejecutar `pnpm seguridad` y `pnpm test:equivalence`, y actualizar el estado y el cierre de cada hallazgo en `auditoria.md` (SC-002, SC-003, SC-012)
 
 **Checkpoint**: ningún crítico o alto abierto y todos los ataques bloqueados.
 
@@ -241,8 +241,8 @@ directamente.
 
 **Independent Test**: abrir `/robots.txt` y comprobarlo con un validador de robots.
 
-- [ ] T100 [P] [US4] Escribir en `apps/server/tests/seguridad/robots.test.ts` la comprobación por coincidencia más larga: `/` permitida; `/api/`, `/ws`, `/metrics`, `/admin`, `/partidas/x/draft`, `/?restablecer=x` y una ruta inventada bloqueadas (SC-010)
-- [ ] T101 [US4] Crear `apps/web/public/robots.txt` con el contenido de R22, comprobar que la portada no pide recursos fuera de las carpetas permitidas y que en producción se sirve como texto y no como la web
+- [X] T100 [P] [US4] Escribir en `apps/server/tests/seguridad/robots.test.ts` la comprobación por coincidencia más larga: `/` permitida; `/api/`, `/ws`, `/metrics`, `/admin`, `/partidas/x/draft`, `/?restablecer=x` y una ruta inventada bloqueadas (SC-010)
+- [X] T101 [US4] Crear `apps/web/public/robots.txt` con el contenido de R22, comprobar que la portada no pide recursos fuera de las carpetas permitidas y que en producción se sirve como texto y no como la web
 
 **Checkpoint**: las cuatro historias funcionan.
 

@@ -13,6 +13,16 @@ export const formatoEuros = new Intl.NumberFormat('es-ES', { style: 'currency', 
 /** «1.000 fragmentos»: en español, sin `always` no se agrupan los números de cuatro cifras. */
 export const formatoFragmentos = new Intl.NumberFormat('es-ES', { useGrouping: 'always' });
 
+/** Opción de pago en euros: sin pasarela real se ve desactivada y dice por qué (spec 017, FR-028). */
+export function BotonEuros({ pagoEuros, onClick, children }: { pagoEuros: boolean; onClick: () => void; children: ReactNode }) {
+  return (
+    <button type="button" className="secundario" disabled={!pagoEuros} onClick={onClick}>
+      {children}
+      {!pagoEuros && <span className="ahorro"> · Pago con tarjeta próximamente</span>}
+    </button>
+  );
+}
+
 type Precio = { precioCentimos: number; precioFragmentos?: undefined } | { precioFragmentos: number; precioCentimos?: undefined };
 
 type Props<T> = Precio & {

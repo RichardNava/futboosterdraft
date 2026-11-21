@@ -48,8 +48,15 @@ export function Inicio() {
   const navegar = useNavigate();
   const [parametros, setParametros] = useSearchParams();
   const acceso = parametros.get('acceso');
-  // Enlace del correo para restablecer la contraseña (spec 013, FR-027).
-  const tokenRestablecer = parametros.get('restablecer');
+  // Enlace del correo para restablecer la contraseña (spec 013, FR-027). El token sale de la dirección en cuanto se
+  // lee y queda solo en memoria (spec 017, FR-020).
+  const [tokenRestablecer, setTokenRestablecer] = useState(() => parametros.get('restablecer'));
+  useEffect(() => {
+    if (!parametros.has('restablecer')) return;
+    const resto = new URLSearchParams(parametros);
+    resto.delete('restablecer');
+    setParametros(resto, { replace: true });
+  }, [parametros, setParametros]);
   const pideAcceso = acceso === 'entrar' || acceso === 'registro';
   const [modo, setModo] = useState<Modo>(tokenRestablecer ? 'recuperar' : acceso === 'entrar' ? 'login' : acceso === 'registro' ? 'registro' : 'menu');
   const [error, setError] = useState<unknown>(null);
@@ -170,6 +177,7 @@ export function Inicio() {
               token={tokenRestablecer}
               onVolver={() => {
                 setError(null);
+                setTokenRestablecer(null);
                 setParametros({}, { replace: true });
                 setModo('login');
               }}

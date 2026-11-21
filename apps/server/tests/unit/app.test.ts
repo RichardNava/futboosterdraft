@@ -70,16 +70,13 @@ describe('app HTTP (sin base de datos)', () => {
     }
   });
 
-  it('una sesión que supera el límite recibe 429 con el formato común', async () => {
-    const cookie = 'better-auth.session_token=sesion-de-prueba-limite';
-    const respuestas = [];
-    for (let i = 0; i < 70; i++) respuestas.push(await servidor.app.inject({ method: 'GET', url: '/api/no-existe', headers: { cookie } }));
-    expect(respuestas.slice(0, 60).every((r) => r.statusCode === 404)).toBe(true);
-    const limitada = respuestas.at(-1)!;
-    expect(limitada.statusCode).toBe(429);
-    expect(limitada.json()).toMatchObject({ error: { codigo: 'DEMASIADAS_PETICIONES' } });
-    // Sin sesión no se limita aquí.
-    expect((await servidor.app.inject({ method: 'GET', url: '/api/no-existe' })).statusCode).toBe(404);
+  it('un cliente que supera el límite recibe 429 con el formato común, sin afectar a otro', async () => {
+    const respuestas = await Promise.all(
+      Array.from({ length: 500 }, () => servidor.app.inject({ method: 'GET', url: '/api/no-existe', remoteAddress: '203.0.113.9' })),
+    );
+    const limitada = respuestas.find((r) => r.statusCode === 429);
+    expect(limitada?.json()).toMatchObject({ error: { codigo: 'DEMASIADAS_PETICIONES' } });
+    expect((await servidor.app.inject({ method: 'GET', url: '/api/no-existe', remoteAddress: '203.0.113.10' })).statusCode).toBe(404);
   });
 
   it('un cuerpo mayor de 64 KB se rechaza con 413', async () => {
@@ -93,7 +90,7 @@ describe('app HTTP (sin base de datos)', () => {
     expect(r.json()).toMatchObject({ error: { codigo: 'MENSAJE_DEMASIADO_GRANDE' } });
   });
 
-  it('Idempotency-Key: repetir la petición no repite el efecto', async () => {
+  it('Idempotency-Key: sin sesión no se guarda ni se repite ninguna respuesta (spec 017, FR-025)', async () => {
     const antes = reloj.ahora();
     const peticion = {
       method: 'POST' as const,
@@ -104,8 +101,7 @@ describe('app HTTP (sin base de datos)', () => {
     const a = await servidor.app.inject(peticion);
     const b = await servidor.app.inject(peticion);
     expect(a.statusCode).toBe(200);
-    expect(b.json()).toEqual(a.json());
-    expect(b.headers['idempotent-replay']).toBe('true');
-    expect(reloj.ahora() - antes).toBe(60_000); // solo avanzó una vez
+    expect(b.headers['idempotent-replay']).toBeUndefined();
+    expect(reloj.ahora() - antes).toBe(120_000);
   });
 });

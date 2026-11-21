@@ -20,7 +20,7 @@ export const JugadorResumen = z.object({
   virtudes: z.array(z.string()),
   /** Spec 005: defectos de la carta (0 a 2). */
   defectos: z.array(z.string()),
-  stats: z.record(z.number()),
+  stats: z.record(z.string(), z.number()),
 });
 export type JugadorResumen = z.infer<typeof JugadorResumen>;
 

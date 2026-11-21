@@ -45,7 +45,9 @@ import { RelojFalso, type Reloj } from './programador/reloj';
 import { Temporizadores } from './programador/temporizadores';
 import { Pasarela } from './ws/pasarela';
 import { crearCalculo } from './simulacion/grupo';
-import type { OpcionesLimitador } from './http/limitador';
+import { FallosLogin, normalizarCorreo, SIN_LIMITE } from './http/limitador';
+import { sesiones, usuarios } from './persistencia/esquema/index';
+import { and, eq, gt, inArray, isNull } from 'drizzle-orm';
 
 interface ConfigServidor {
   db: BaseDatos;
@@ -63,8 +65,12 @@ interface ConfigServidor {
   smtpUrl?: string;
   /** Remitente de los correos; un proveedor real exige uno de un dominio verificado. */
   smtpRemitente?: string;
-  /** Límites de peticiones HTTP y mensajes WebSocket por sesión (por defecto, los de `http/limitador.ts`). */
-  limites?: { http?: OpcionesLimitador; ws?: OpcionesLimitador };
+  /** Sin límites de uso: pruebas y prueba de carga (el arranque lo rechaza en producción). */
+  limitesDesactivados?: boolean;
+  /** Proxies delante del servidor (`PROXIES_CONFIANZA`). */
+  proxiesConfianza?: number;
+  /** Token de `/metrics` en producción. */
+  metricasToken?: string | undefined;
   /** Hilos de simulación (spec 009); 0, el valor por defecto, simula en el hilo principal. */
   hilosSimulacion?: number;
   /** Desglose por fases de aperturas y elecciones de draft (spec 010, FR-003); por defecto, activado. */
@@ -96,7 +102,9 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   // Con el reloj del servidor, para que las pruebas puedan hacer caducar la caché (≤ 30 s, FR-018).
   const ajustes = config.ajustes ?? new ServicioAjustes(config.db, () => config.reloj.ahora());
   const temporizadores = new Temporizadores(config.reloj);
-  const economia = new ServicioEconomia(config.db, catalogo, cosmeticos, ajustes, undefined, () => config.reloj.ahora());
+  // Spec 017 (FR-028): en producción no se entrega nada pagado en euros hasta que haya una pasarela real.
+  const economia = new ServicioEconomia(config.db, catalogo, cosmeticos, ajustes, undefined, () => config.reloj.ahora(), process.env.NODE_ENV !== 'production');
+  const fallosLogin = new FallosLogin(config.limitesDesactivados);
   const calculo = crearCalculo(config.hilosSimulacion ?? 0, { metricas, logger });
 
   // El gestor se crea después de la autenticación y la pasarela, que lo usan a través de esta referencia.
@@ -108,6 +116,8 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     alVincularInvitado: (invitadoId, nuevoId) => g().alVincularInvitado(invitadoId, nuevoId),
     // `avisos` se crea más abajo; solo se usa al pedir una recuperación, con el servidor ya montado.
     enviarRecuperacion: (email, enlace) => avisos.enviarRecuperacion(email, enlace),
+    alRestablecerContrasena: (email) => fallosLogin.olvidar(normalizarCorreo(email)),
+    logger,
   });
 
   const pasarela = new Pasarela({
@@ -117,7 +127,15 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     metricas,
     peticiones,
     origenesPermitidos: [new URL(config.urlPublica).origin],
-    ...(config.limites?.ws ? { limite: config.limites.ws } : {}),
+    ...(config.limitesDesactivados ? { limite: SIN_LIMITE } : {}),
+    sesionesVigentes: async (ids) => {
+      const filas = await config.db
+        .select({ id: sesiones.id })
+        .from(sesiones)
+        .innerJoin(usuarios, eq(usuarios.id, sesiones.userId))
+        .where(and(inArray(sesiones.id, ids), gt(sesiones.expiresAt, new Date()), isNull(usuarios.suspendidaEn)));
+      return new Set(filas.map((f) => f.id));
+    },
     resolverParticipante: (partidaId, usuarioId) => g().resolverParticipante(partidaId, usuarioId),
     estadoVisible: (partidaId, participanteId) => g().estadoVisible(partidaId, participanteId),
     alConectar: (ctx) => g().alCambiarConexion(ctx.partidaId, ctx.participanteId, true),
@@ -233,8 +251,17 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     logger,
     metricas,
     peticiones,
-    opcionesAuth: { alCerrarSesion: (u) => gestor.alCerrarSesion(u), alEliminarCuenta: (u) => gestor.eliminarCuenta(u.id) },
-    ...(config.limites?.http ? { limiteHttp: config.limites.http } : {}),
+    urlPublica: config.urlPublica,
+    opcionesAuth: {
+      alCerrarSesion: (u) => gestor.alCerrarSesion(u),
+      alEliminarCuenta: (u) => gestor.eliminarCuenta(u.id),
+      fallosLogin,
+      alIntentosFallidos: (correo) => void avisos.avisarIntentosFallidos(correo),
+      ...(config.limitesDesactivados ? { limitesDesactivados: true } : {}),
+    },
+    ...(config.limitesDesactivados ? { limitesDesactivados: true } : {}),
+    ...(config.proxiesConfianza === undefined ? {} : { proxiesConfianza: config.proxiesConfianza }),
+    ...(config.metricasToken ? { metricasToken: config.metricasToken } : {}),
     ...(config.alRegistrarRuta ? { alRegistrarRuta: config.alRegistrarRuta } : {}),
   });
   pasarela.registrarRuta(app);
@@ -314,7 +341,14 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     );
   }
 
+  // Spec 017 (FR-025): las respuestas guardadas para reintentos caducan a los 7 días.
+  const purgaPeticiones = setInterval(() => {
+    void peticiones.purgarCaducadas?.().catch((err: unknown) => logger.warn({ err }, 'No se pudieron purgar las peticiones caducadas'));
+  }, 3_600_000);
+  purgaPeticiones.unref();
+
   app.addHook('onClose', async () => {
+    clearInterval(purgaPeticiones);
     temporizadores.cancelarTodos();
     gestor.cerrarTodo();
     await calculo.cerrar();

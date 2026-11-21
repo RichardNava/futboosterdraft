@@ -74,6 +74,8 @@ export interface RespuestaTienda {
   colecciones: ProductoColeccion[];
   sobre: ProductoSobre;
   paquetes: ProductoFragmentos[];
+  /** Spec 017 (FR-028): false mientras no haya pasarela de pago real. */
+  pagoEuros: boolean;
   /** Spec 013 (FR-034): pase premium de `dias` días; `estado` null si nunca se compró ni hay cortesía. */
   pasePremium: {
     precioFragmentos: number;

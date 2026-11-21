@@ -5,3 +5,4 @@ export * from './partido';
 export * from './torneo';
 export * from './coleccion';
 export * from './cosmeticos';
+export * from './admin';

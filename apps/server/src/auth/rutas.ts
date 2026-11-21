@@ -2,8 +2,9 @@
  * Rutas de sesión del contrato HTTP y hooks de autorización (T026).
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { z } from 'zod';
 import { cuerpoError, errores } from '../http/errores';
-import { Limitador } from '../http/limitador';
+import { claveCliente, FallosLogin, Limitador, LIMITES_CUENTA, normalizarCorreo, SIN_LIMITE, type OpcionesLimitador } from '../http/limitador';
 import { apodoValido, aUsuarioSesion, type Auth, type UsuarioSesion } from './auth';
 
 declare module 'fastify' {
@@ -11,6 +12,9 @@ declare module 'fastify' {
     usuario?: UsuarioSesion;
   }
 }
+
+const LARGO_MAXIMO_CORREO = 254;
+const CorreoValido = z.email().max(LARGO_MAXIMO_CORREO);
 
 /** Cabeceras de la petición de Fastify como `Headers` web (para Better Auth). */
 function cabecerasWeb(req: FastifyRequest): Headers {
@@ -34,10 +38,26 @@ async function reenviar(reply: FastifyReply, respuesta: Response): Promise<Fasti
   return reply.send(texto === '' ? undefined : texto);
 }
 
+/** Responde `{ usuario }` con las cookies de la sesión: el token nunca va en el cuerpo (spec 017, FR-017). */
+async function responderSesion(reply: FastifyReply, respuesta: Response, invitado = false): Promise<FastifyReply> {
+  if (!respuesta.ok) return reenviar(reply, respuesta);
+  const datos = (await respuesta.clone().json()) as { user: Parameters<typeof aUsuarioSesion>[0] };
+  const cookies = respuesta.headers.getSetCookie();
+  if (cookies.length) reply.header('set-cookie', cookies);
+  return reply.code(200).send({ usuario: aUsuarioSesion(invitado ? { ...datos.user, isAnonymous: true } : datos.user) });
+}
+
+const demasiados = (reply: FastifyReply) => reply.code(429).send(cuerpoError('DEMASIADAS_PETICIONES', 'Demasiados intentos; espera un momento'));
+
+/** Sesión de la petición, con su id para poder revocar el WebSocket (spec 017, R8). */
+export async function sesionDeLaPeticion(auth: Auth, req: FastifyRequest): Promise<{ usuario: UsuarioSesion; sesionId: string } | undefined> {
+  const sesion = await auth.api.getSession({ headers: cabecerasWeb(req) });
+  return sesion ? { usuario: aUsuarioSesion(sesion.user), sesionId: sesion.session.id } : undefined;
+}
+
 /** Usuario de la sesión de la petición, si la hay. */
 export async function usuarioDeLaPeticion(auth: Auth, req: FastifyRequest): Promise<UsuarioSesion | undefined> {
-  const sesion = await auth.api.getSession({ headers: cabecerasWeb(req) });
-  return sesion ? aUsuarioSesion(sesion.user) : undefined;
+  return (await sesionDeLaPeticion(auth, req))?.usuario;
 }
 
 /** Ganchos de Fastify que exigen sesión, usuario registrado o solo registrados. */
@@ -65,38 +85,36 @@ export interface OpcionesRutasAuth {
   alCerrarSesion?: (usuario: UsuarioSesion) => Promise<void>;
   /** Borra la cuenta y sus datos; sin él, `DELETE /api/cuenta` no se registra. */
   alEliminarCuenta?: (usuario: UsuarioSesion) => Promise<void>;
+  /** Fallos de login por correo: se comparte con Better Auth, que los borra al restablecer la contraseña. */
+  fallosLogin?: FallosLogin;
+  /** Avisa a la cuenta de varios fallos seguidos; no debe bloquear la respuesta ni revelar si existe (SEG-032). */
+  alIntentosFallidos?: (correo: string) => void;
+  /** Sin límites de uso: pruebas y prueba de carga. */
+  limitesDesactivados?: boolean;
 }
 
 /** Rutas de autenticación (`/api/auth/*`) y de la sesión. */
 export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: OpcionesRutasAuth = {}): void {
   const { requiereSesion, requiereRegistrado } = crearHooksSesion(auth);
-
-  // API interna de Better Auth.
-  app.route({
-    method: ['GET', 'POST'],
-    url: '/api/auth/ba/*',
-    handler: async (req, reply) => {
-      const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`);
-      const cuerpo = req.body === undefined ? undefined : JSON.stringify(req.body);
-      const respuesta = await auth.handler(
-        new Request(url, { method: req.method, headers: cabecerasWeb(req), body: cuerpo }),
-      );
-      return reenviar(reply, respuesta);
-    },
-  });
+  const limite = (o: OpcionesLimitador) => new Limitador(opciones.limitesDesactivados ? SIN_LIMITE : o);
+  const limiteLogin = limite(LIMITES_CUENTA.loginIp);
+  const fallosLogin = opciones.fallosLogin ?? new FallosLogin(opciones.limitesDesactivados);
+  const limiteRegistro = limite(LIMITES_CUENTA.registro);
+  const limiteInvitado = limite(LIMITES_CUENTA.invitado);
+  const limiteRecuperacion = limite(LIMITES_CUENTA.recuperacionIp);
+  const limiteRecuperacionCliente = limite(LIMITES_CUENTA.recuperacionCliente);
+  const limiteRecuperacionCorreo = limite(LIMITES_CUENTA.recuperacionCorreo);
 
   app.post('/api/auth/invitado', async (req, reply) => {
+    if (!limiteInvitado.permitir(claveCliente(req.ip))) return demasiados(reply);
     const respuesta = await auth.api.signInAnonymous({ headers: cabecerasWeb(req), asResponse: true });
-    if (!respuesta.ok) return reenviar(reply, respuesta);
-    const datos = (await respuesta.clone().json()) as { user: Parameters<typeof aUsuarioSesion>[0] };
-    const cookies = respuesta.headers.getSetCookie();
-    if (cookies.length) reply.header('set-cookie', cookies);
-    return reply.code(200).send({ usuario: aUsuarioSesion({ ...datos.user, isAnonymous: true }) });
+    return responderSesion(reply, respuesta, true);
   });
 
   app.post<{ Body: { email?: string; password?: string; apodo?: string } }>('/api/auth/registro', async (req, reply) => {
+    if (!limiteRegistro.permitir(claveCliente(req.ip))) return demasiados(reply);
     const { email, password, apodo } = req.body ?? {};
-    if (!apodoValido(apodo)) throw errores.validacion('APODO_INVALIDO', 'El apodo debe tener entre 3 y 20 caracteres');
+    if (!apodoValido(apodo)) throw errores.validacion('APODO_INVALIDO', 'El apodo debe tener entre 3 y 20 caracteres, sin símbolos < y >');
     if (typeof email !== 'string' || typeof password !== 'string') {
       throw errores.validacion('DATOS_INVALIDOS', 'Faltan el correo o la contraseña');
     }
@@ -106,29 +124,40 @@ export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: O
       headers: cabecerasWeb(req),
       asResponse: true,
     });
-    return reenviar(reply, respuesta);
+    return responderSesion(reply, respuesta);
   });
 
   app.post<{ Body: { email?: string; password?: string } }>('/api/auth/login', async (req, reply) => {
+    const cliente = claveCliente(req.ip);
+    if (!limiteLogin.permitir(cliente)) return demasiados(reply);
     const { email, password } = req.body ?? {};
-    if (typeof email !== 'string' || typeof password !== 'string') {
+    if (typeof email !== 'string' || typeof password !== 'string' || email.length > LARGO_MAXIMO_CORREO) {
       throw errores.validacion('DATOS_INVALIDOS', 'Faltan el correo o la contraseña');
     }
+    // Se comprueba igual exista o no la cuenta, y solo gastan ficha los fallos.
+    const correo = normalizarCorreo(email);
+    if (!fallosLogin.puedeIntentar(correo, cliente)) return demasiados(reply);
     const respuesta = await auth.api.signInEmail({ body: { email, password }, headers: cabecerasWeb(req), asResponse: true });
-    return reenviar(reply, respuesta);
+    if (respuesta.ok) fallosLogin.anotarAcierto(correo, cliente);
+    else if (respuesta.status === 401 && fallosLogin.anotarFallo(correo, cliente)) opciones.alIntentosFallidos?.(correo);
+    return responderSesion(reply, respuesta);
   });
 
-  // Recuperar la contraseña (spec 013, FR-027). Sin sesión, así que se limita por IP: 5 seguidas y luego 1 por minuto.
-  const limiteRecuperacion = new Limitador({ capacidad: 5, porSegundo: 1 / 60 });
+  // Recuperar la contraseña (spec 013, FR-027). Se responde sin esperar a la operación: ni la respuesta ni el tiempo
+  // dicen si el correo tiene cuenta (spec 017, FR-016). Pasado el cupo solo se deja de enviar: por correo y cliente, para
+  // que nadie gaste los enlaces de otra persona, y con un tope global contra el envío masivo (SEG-032).
   app.post<{ Body: { email?: string } }>('/api/auth/recuperar', async (req, reply) => {
-    if (!limiteRecuperacion.permitir(req.ip)) {
-      return reply.code(429).send(cuerpoError('DEMASIADAS_PETICIONES', 'Demasiados intentos; espera un minuto'));
+    const cliente = claveCliente(req.ip);
+    if (!limiteRecuperacion.permitir(cliente)) return demasiados(reply);
+    const email = CorreoValido.safeParse(req.body?.email);
+    if (!email.success) throw errores.validacion('DATOS_INVALIDOS', 'Falta el correo');
+    const correo = normalizarCorreo(email.data);
+    if (limiteRecuperacionCliente.permitir(`${correo}|${cliente}`) && limiteRecuperacionCorreo.permitir(correo)) {
+      void auth.api
+        .requestPasswordReset({ body: { email: email.data }, headers: cabecerasWeb(req) })
+        .catch(() => req.log.error('No se pudo generar el enlace de recuperación'));
     }
-    const { email } = req.body ?? {};
-    if (typeof email !== 'string') throw errores.validacion('DATOS_INVALIDOS', 'Falta el correo');
-    // Responde igual exista o no la cuenta (FR-027: no revelar si el email existe).
-    const respuesta = await auth.api.requestPasswordReset({ body: { email }, headers: cabecerasWeb(req), asResponse: true });
-    return reenviar(reply, respuesta);
+    return { status: true, message: 'Si el correo tiene cuenta, recibirás un enlace' };
   });
 
   app.post<{ Body: { token?: string; password?: string } }>('/api/auth/restablecer', async (req, reply) => {
@@ -146,12 +175,13 @@ export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: O
     return reenviar(reply, respuesta);
   });
 
-  // Primero se cierra la sesión para devolver las cookies que la borran; el borrado arrastra sesiones y cuentas.
+  // Primero se borra la cuenta (arrastra sesiones y cuentas): si falla, la sesión sigue abierta (spec 017, R24). Después
+  // se piden las cookies que cierran la sesión.
   const alEliminarCuenta = opciones.alEliminarCuenta;
   if (alEliminarCuenta) {
     app.delete('/api/cuenta', { preHandler: requiereRegistrado }, async (req, reply) => {
-      const respuesta = await auth.api.signOut({ headers: cabecerasWeb(req), asResponse: true });
       await alEliminarCuenta(req.usuario!);
+      const respuesta = await auth.api.signOut({ headers: cabecerasWeb(req), asResponse: true });
       return reenviar(reply, respuesta);
     });
   }

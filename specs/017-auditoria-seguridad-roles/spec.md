@@ -240,9 +240,10 @@ se permiten.
 #### Cuentas y sesiones
 
 - **FR-013**: El inicio de sesión, el registro, la entrada como invitado y la recuperación DEBEN limitarse también sin
-  sesión. Valores iniciales: inicio de sesión, 10 intentos por minuto y origen y 20 fallos por hora y cuenta; registro, 5
-  por hora y origen; invitado, 20 por hora y origen; recuperación, los 5 seguidos y 1 por minuto actuales, además de 3 por
-  hora y correo.
+  sesión. Valores iniciales: inicio de sesión, 10 intentos por minuto y origen, 20 fallos por hora por cuenta y origen, y 100
+  por hora y cuenta; registro, 5 por hora y origen; invitado, 20 por hora y origen; recuperación, los 5 seguidos y 1 por
+  minuto actuales, además de 3 por hora por correo y origen, y 10 por hora y correo. Tras el quinto fallo seguido, la cuenta
+  DEBE recibir un aviso por correo, como máximo uno al día (decisión del 2026-11-21, SEG-032).
 - **FR-014**: Los límites NO DEBEN poder eludirse alterando datos que controla el cliente, y DEBEN identificar a cada
   cliente real también detrás del proxy, sin que un cliente agote el límite de los demás.
 - **FR-015**: Todas las vías hacia una misma operación de cuenta DEBEN aplicar las mismas validaciones y límites; no puede

@@ -170,15 +170,20 @@ export class GestorPartidas {
       throw errores.regla('POOL_INSUFICIENTE', 'Tu colección activa no tiene cartas suficientes para los sobres de este nivel de rareza');
     }
 
+    // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a). Fuera de la transacción: quien tiene
+    // el bloqueo del cupo no debe pedir otra conexión mientras las demás esperan ese bloqueo, o el servidor se cuelga.
+    const identidad = await identidadInicial(this.servicios, usuario, []);
+
     let creada: { id: string; nueva: boolean };
     try {
       creada = await db.transaction(async (tx) => {
-        if (acceso.coste > 0) {
-          // Bloquea el saldo: un envío repetido a la vez espera aquí y encuentra la partida ya creada.
-          await economia.bloquearSaldo(tx, usuario.id);
-          const previa = claveCreacion ? await repoPartidas.porClaveCreacion(usuario.id, claveCreacion, tx) : undefined;
-          if (previa) return { id: previa.id, nueva: false };
-        }
+        // Las altas del usuario van de una en una: un envío repetido encuentra aquí la partida ya creada y el tope de
+        // FR-032a se cumple también con peticiones simultáneas.
+        await repoPartidas.bloquearCupo(tx, usuario.id);
+        if (acceso.coste > 0) await economia.bloquearSaldo(tx, usuario.id);
+        const previa = claveCreacion ? await repoPartidas.porClaveCreacion(usuario.id, claveCreacion, tx) : undefined;
+        if (previa) return { id: previa.id, nueva: false };
+        await repoPartidas.comprobarCupo(tx, usuario.id, usuario.tipo);
         const partida = await repoPartidas.crear(
           {
             anfitrionId: usuario.id,
@@ -193,8 +198,6 @@ export class GestorPartidas {
           tx,
         );
         if (acceso.coste > 0) await economia.cobrarRareza(tx, usuario.id, partida.id, acceso.coste);
-        // Nombre y equipaciones del perfil, o «Equipo de {apodo}» (spec 003, FR-042a).
-        const identidad = await identidadInicial(this.servicios, usuario, []);
         await repoPartidas.anadirHumano(partida.id, usuario.id, identidad.nombre, tx, identidad.equipaciones, identidad);
         const niveles: NivelNPC[] = config.npc.map((n) => n.nivel);
         // En una partida de invitado, el resto de plazas se rellenan con NPC desde el principio.

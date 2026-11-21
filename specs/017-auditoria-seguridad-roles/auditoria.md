@@ -1,10 +1,14 @@
 # Informe de auditoría de seguridad
 
-**Spec**: [017-auditoria-seguridad-roles](spec.md) | **Fecha**: 2026-11-21 | **Estado**: primera pasada terminada, nada corregido todavía
+**Spec**: [017-auditoria-seguridad-roles](spec.md) | **Fecha**: 2026-11-21 | **Estado**: segunda ronda terminada: 32 hallazgos corregidos
 
 ## Resumen
 
-**La beta no puede abrirse todavía.** Hay 31 hallazgos abiertos:
+**La beta no puede abrirse todavía.** Los 31 hallazgos de la primera pasada y el SEG-032 están corregidos, y `pnpm seguridad`
+bloquea 128 ataques. Falta hacer los roles y el panel (US3), repetir la auditoría y ZAP (T103, T105) y tener pagos reales
+(INI-12).
+
+Hallazgos de la primera pasada:
 
 | Severidad | Hallazgos | Qué significa aquí |
 |---|---|---|
@@ -60,6 +64,8 @@ Lo que **ha resistido** los ataques:
 
 ## Resultado por área (FR-003)
 
+Esta tabla describe la primera pasada. El estado actual está en la ficha de cada hallazgo.
+
 | # | Área | Qué se revisó | Resultado | Hallazgos |
 |---|---|---|---|---|
 | 1 | Autenticación y sesiones | API interna, cookie, token en respuestas, fuerza bruta, enumeración por respuesta y tiempo | Cookie correcta (`HttpOnly`, `Secure`, `SameSite=Lax`); faltan límites y sobra la API interna | SEG-003, 004, 025, 028, 029 |
@@ -90,8 +96,8 @@ Lo que **ha resistido** los ataques:
   fila caduca, no hay límite por IP y la clave se guarda entera.
 - **Riesgo**: al ritmo medido, 1 GB son unas 850.000 peticiones. Al llenarse el disco, la base de datos deja de aceptar
   escrituras y el juego se detiene para todas las personas.
-- **Estado**: abierto
-- **Cierre**: pendiente (T039, T050 a T053)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-001` de `tests/seguridad/` (idempotencia).
 
 ### SEG-002. Los productos de pago se obtienen gratis en producción
 
@@ -101,8 +107,8 @@ Lo que **ha resistido** los ataques:
   `/api/tienda/packs/<id>/comprar` y `/api/tienda/pase-premium` con `moneda: "eur"` responden 200. El pase queda activo,
   el saldo sigue en 0 y las tres compras se guardan como simuladas.
 - **Riesgo**: cualquiera obtiene todos los cosméticos y el pase premium sin pagar.
-- **Estado**: abierto
-- **Cierre**: pendiente (T063 a T066)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-002` de `tests/seguridad/` (economia).
 
 ### SEG-003. Se pueden probar contraseñas sin ningún freno
 
@@ -111,8 +117,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: 100 `POST /api/auth/login` seguidos contra una cuenta con contraseñas erróneas, cambiando la cookie y
   `X-Forwarded-For`: los 100 se evalúan (401) y ninguno se limita. Después, la contraseña correcta entra sin problema.
 - **Riesgo**: un atacante puede probar listas de contraseñas filtradas contra cualquier cuenta.
-- **Estado**: abierto
-- **Cierre**: pendiente (T034 a T038)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-003` de `tests/seguridad/` (limites). El bloqueo dirigido se trata en SEG-032.
 
 ### SEG-004. La API interna de autenticación permite saltarse las validaciones
 
@@ -124,8 +130,8 @@ Lo que **ha resistido** los ataques:
   cada sesión de la cuenta.
 - **Riesgo**: cualquier límite que se añada a las rutas públicas se podría esquivar por aquí, y quien haya robado una
   sesión la conserva aunque la víctima cambie la contraseña.
-- **Estado**: abierto
-- **Cierre**: pendiente (T040, T041)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-004` de `tests/seguridad/` (cuentas).
 
 ### SEG-005. Las respuestas guardadas se entregan a otra persona, incluso sin sesión
 
@@ -135,8 +141,8 @@ Lo que **ha resistido** los ataques:
   contraseña errónea, recibe 200 con el correo de la víctima y su token. Ese token sin firmar no abre sesión (401). Con
   una compra ocurre igual: quien repite la clave sin sesión recibe la respuesta de la compra ajena.
 - **Riesgo**: quien obtenga una clave (registros, proxy, extensión del navegador) lee la respuesta de otra cuenta.
-- **Estado**: abierto
-- **Cierre**: pendiente (T050, T051)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-005` de `tests/seguridad/` (idempotencia).
 
 ### SEG-006. Una sesión cerrada sigue activa en el canal en tiempo real
 
@@ -145,8 +151,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: abrir un WebSocket y hacer `POST /api/auth/logout` con la misma cookie. La API ya responde 401, pero 6 s
   después el socket sigue abierto y responde a los mensajes.
 - **Riesgo**: quien haya robado una sesión sigue jugando y recibiendo datos de la partida aunque la víctima cierre sesión.
-- **Estado**: abierto
-- **Cierre**: pendiente (T047, T048)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-006` de `tests/seguridad/` (sesiones).
 
 ### SEG-007. Cualquier cuenta puede leer el resumen de una partida ajena
 
@@ -156,8 +162,8 @@ Lo que **ha resistido** los ataques:
   id de la cuenta anfitriona, los nombres de los participantes, su estado de conexión y la configuración.
 - **Riesgo**: quien conozca el id de una partida ve quién juega y cuándo está conectado. La corrección debe mantener
   visible la sala de las partidas abiertas, porque unirse depende de ella.
-- **Estado**: abierto
-- **Cierre**: pendiente (T067, T070)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-007` de `tests/seguridad/` (autorizacion).
 
 ### SEG-008. Dependencias de producción con vulnerabilidades altas
 
@@ -166,8 +172,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: `pnpm audit --prod`. Ver la [tabla de dependencias](#dependencias). Destacan el salto de protección de
   rutas de `@fastify/static` y los bloqueos por direcciones de correo de `nodemailer`.
 - **Riesgo**: bloqueo del servidor o acceso a rutas protegidas, según el aviso.
-- **Estado**: abierto
-- **Cierre**: pendiente (T026 a T028, T030)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-008` de `tests/seguridad/` (dependencias).
 
 ### SEG-009. La imagen de producción incluye herramientas de pruebas
 
@@ -176,8 +182,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: en la imagen construida, `node_modules/.pnpm` contiene `tinypool` 1.1.1 (2 críticos), `vite` 5.4.21
   (alto), varias partes de `@vitest`, `tsx`, `esbuild` y `rollup`. Llegan como dependencia par opcional de `better-auth`.
 - **Riesgo**: más superficie si alguien consigue ejecutar algo en el contenedor, y `pnpm audit --prod` nunca queda limpio.
-- **Estado**: abierto
-- **Cierre**: pendiente (T025, T030)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-009` de `tests/seguridad/` (dependencias). La imagen final no contiene `vitest`, `vite`, `tinypool`, `tsx`, `esbuild` ni `rollup`. También se retiró `drizzle-kit` como dependencia par, porque arrastraba `tsx`.
 
 ### SEG-010. Las métricas internas son públicas
 
@@ -185,8 +191,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: media. Filtra información limitada.
 - **Evidencia**: en producción, `GET /metrics` sin credenciales responde 200 con 38 series, incluidas las del proceso.
 - **Riesgo**: revela la carga y la actividad del servidor, útil para preparar un ataque.
-- **Estado**: abierto
-- **Cierre**: pendiente (T054, T057)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-010` de `tests/seguridad/` (superficie).
 
 ### SEG-011. No se envía ninguna protección del navegador
 
@@ -196,8 +202,8 @@ Lo que **ha resistido** los ataques:
   `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` ni `X-Frame-Options`. ZAP lo confirma.
 - **Riesgo**: la web se puede incrustar en otro sitio para engañar a quien juega, y un fallo de XSS futuro no tendría
   ninguna barrera.
-- **Estado**: abierto
-- **Cierre**: pendiente (T054, T055, T062)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-011` de `tests/seguridad/` (superficie).
 
 ### SEG-012. El token de recuperación queda en los registros
 
@@ -206,8 +212,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: con el registro de producción, `GET /?restablecer=<valor>` y `GET /api/...?secreto=<valor>` dejan ambos
   valores en el registro de peticiones.
 - **Riesgo**: quien lea los registros o el servicio donde se guarden puede restablecer la contraseña de otra cuenta.
-- **Estado**: abierto
-- **Cierre**: pendiente (T054, T059)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-012` de `tests/seguridad/` (superficie).
 
 ### SEG-013. El límite de peticiones se esquiva con cookies inventadas
 
@@ -216,8 +222,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: 200 peticiones simultáneas con una sesión real: 63 aceptadas y 137 con 429. Las mismas 200 con una
   cookie inventada distinta cada vez, o sin cookie: las 200 aceptadas.
 - **Riesgo**: se puede saturar el servidor sin ningún freno.
-- **Estado**: abierto
-- **Cierre**: pendiente (T034, T039)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-013` de `tests/seguridad/` (limites).
 
 ### SEG-014. Detrás del proxy, toda la beta compartiría un solo cupo
 
@@ -226,8 +232,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: 5 `POST /api/auth/recuperar` con `X-Forwarded-For: <cliente A>`. La siguiente, con `<cliente B>`, recibe
   429: el servidor no distingue a los clientes.
 - **Riesgo**: en producción, una sola persona agotaría la recuperación de contraseña de todas las demás.
-- **Estado**: abierto
-- **Cierre**: pendiente (T034, T037)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-014` de `tests/seguridad/` (limites).
 
 ### SEG-015. Registro e invitados sin límite
 
@@ -235,8 +241,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: media. Permite crear cuentas en masa.
 - **Evidencia**: 12 registros y 30 invitados seguidos desde el mismo cliente: todos aceptados.
 - **Riesgo**: llenar la base de datos de cuentas falsas y alimentar otros abusos.
-- **Estado**: abierto
-- **Cierre**: pendiente (T034, T038)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-015` de `tests/seguridad/` (limites).
 
 ### SEG-016. Una cuenta puede crear partidas sin tope
 
@@ -244,8 +250,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: media. Consume memoria y temporizadores del servidor; no se ha medido el punto de saturación.
 - **Evidencia**: un solo invitado crea 60 partidas de 8 plazas seguidas: todas 201 y las 60 quedan activas en memoria.
 - **Riesgo**: combinado con SEG-015, se podría agotar la memoria del servidor sin cuenta.
-- **Estado**: abierto
-- **Cierre**: pendiente (T072, con el tope de FR-032a)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-016` de `tests/seguridad/` (limites). Al corregirlo se detectó y arregló un cuelgue propio: 40 creaciones simultáneas agotaban las conexiones. Tiene su ataque.
 
 ### SEG-017. Una cuenta con pase premium no se puede eliminar
 
@@ -253,8 +259,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: media. No da nada a un atacante, pero impide ejercer el derecho a borrar los datos.
 - **Evidencia**: `DELETE /api/cuenta` de una cuenta con pase responde 500. La cuenta sigue existiendo y su sesión ya se ha cerrado.
 - **Riesgo**: quien haya comprado el pase no puede borrar sus datos personales.
-- **Estado**: abierto
-- **Cierre**: pendiente (T031 a T033, T049)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-017` de `tests/seguridad/` (cuentas).
 
 ### SEG-018. Los errores de correo guardan la dirección del destinatario
 
@@ -262,8 +268,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: media. Filtra un dato personal a quien lea los registros.
 - **Evidencia**: con un servidor SMTP que rechaza al destinatario, el registro del error contiene su dirección de correo.
 - **Riesgo**: datos personales en los registros, en contra de FR-035.
-- **Estado**: abierto
-- **Cierre**: pendiente (T054, T059)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-018` de `tests/seguridad/` (superficie).
 
 ### SEG-019. El servidor acepta cambios enviados desde otros sitios
 
@@ -272,8 +278,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: `PUT /api/perfil` con sesión y `Origin: https://ajeno.test` responde 200 y aplica el cambio.
 - **Riesgo**: si la cookie llegara a enviarse (subdominio comprometido, navegador antiguo), otra web actuaría en nombre
   de quien juega.
-- **Estado**: abierto
-- **Cierre**: pendiente (T054, T056)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-019` de `tests/seguridad/` (superficie).
 
 ### SEG-020. Un error o un mensaje ajeno consume la clave de reintento
 
@@ -283,8 +289,8 @@ Lo que **ha resistido** los ataques:
   401. Por WebSocket, un mensaje mal formado gasta su `requestId`, y otro participante que use ese id recibe la
   respuesta ajena sin que su acción se ejecute.
 - **Riesgo**: una acción legítima se pierde y la persona ve un error que no es suyo.
-- **Estado**: abierto
-- **Cierre**: pendiente (T050 a T052)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-020` de `tests/seguridad/` (idempotencia).
 
 ### SEG-021. El servidor arranca en producción con configuración insegura
 
@@ -293,8 +299,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: `apps/server/src/main.ts` solo comprueba que `AUTH_SECRET` exista. La imagen arrancó en producción con
   `PUBLIC_URL` en `http://`, y el valor de ejemplo de `.env.example` sería aceptado.
 - **Riesgo**: con el secreto de ejemplo, cualquiera podría falsificar la firma de las sesiones.
-- **Estado**: abierto
-- **Cierre**: pendiente (T060, T061)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-021` de `tests/seguridad/` (entorno).
 
 ### SEG-022. El limitador puede crecer y ralentizarse con muchas claves
 
@@ -303,8 +309,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: con 12.000 claves sin ningún cubo lleno, el mapa no se reduce y cada petición tarda unos 132 µs en
   recorrerlo.
 - **Riesgo**: consumo creciente de memoria y CPU si un atacante rota direcciones.
-- **Estado**: abierto
-- **Cierre**: pendiente (T035)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-022` de `tests/seguridad/` (limites).
 
 ### SEG-023. Las rutas inexistentes responden de forma incorrecta
 
@@ -313,8 +319,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: en producción, `GET /api/no-existe` devuelve la web con 200, y `POST /api/no-existe?token=x` repite la
   dirección completa en el error JSON. `/robots.txt` y `/sitemap.xml` también devuelven la web.
 - **Riesgo**: confunde a clientes y escáneres, y refleja datos de la petición.
-- **Estado**: abierto
-- **Cierre**: pendiente (T054, T058, T101)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-023` de `tests/seguridad/` (robots, superficie).
 
 ### SEG-024. La comprobación de salud revela el estado de la base de datos
 
@@ -322,8 +328,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: baja. Información mínima.
 - **Evidencia**: `GET /healthz` incluye el campo `baseDatos`.
 - **Riesgo**: indica a un atacante si su ataque a la base de datos está funcionando.
-- **Estado**: abierto
-- **Cierre**: pendiente (T057)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-024` de `tests/seguridad/` (superficie).
 
 ### SEG-025. Login y registro devuelven el token en el cuerpo
 
@@ -331,8 +337,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: baja. Sin la firma, el token no abre sesión (401).
 - **Evidencia**: las respuestas de `POST /api/auth/login` y `/registro` incluyen el campo `token`.
 - **Riesgo**: el código de la página puede leer un dato de la sesión, en contra de FR-017.
-- **Estado**: abierto
-- **Cierre**: pendiente (T040, T042)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-025` de `tests/seguridad/` (cuentas).
 
 ### SEG-026. Nombres y apodos admiten HTML y caracteres de control
 
@@ -342,8 +348,8 @@ Lo que **ha resistido** los ataques:
   `dangerouslySetInnerHTML`. Un salto de línea se normaliza a espacio en el nombre del equipo, pero el apodo del
   registro solo comprueba su longitud.
 - **Riesgo**: una pantalla o un correo futuros que no escapen el texto abrirían un XSS.
-- **Estado**: abierto
-- **Cierre**: pendiente (T069, T070)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-026` de `tests/seguridad/` (entradas).
 
 ### SEG-027. Se guardan direcciones IP que el juego no usa
 
@@ -352,8 +358,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: la tabla de sesiones guarda `ipAddress` (visible en `list-sessions`) y el registro de peticiones incluye
   `remoteAddress`.
 - **Riesgo**: más datos personales que proteger y declarar.
-- **Estado**: abierto
-- **Cierre**: pendiente (T043, T059)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-027` de `tests/seguridad/` (cuentas, superficie).
 
 ### SEG-028. El registro revela si un correo ya tiene cuenta
 
@@ -361,8 +367,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: baja. FR-016 lo admite si queda limitado, y hoy no lo está (SEG-015).
 - **Evidencia**: registrar un correo existente responde 422 `USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL`; uno nuevo, 200.
 - **Riesgo**: se puede comprobar qué correos juegan.
-- **Estado**: abierto
-- **Cierre**: pendiente (T038, T044; constancia de lo que siga revelando)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-028` de `tests/seguridad/` (cuentas). Queda a propósito (FR-016): el registro sigue indicando que un correo ya existe, limitado a 5 intentos por hora y cliente.
 
 ### SEG-029. La recuperación tarda algo más si la cuenta existe
 
@@ -371,8 +377,8 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: mediana de 150 llamadas a la operación interna: 3,6 ms con cuenta y 3,1 ms sin ella. El login no muestra
   una diferencia relevante (76,4 frente a 74,4 ms) y sus respuestas son idénticas.
 - **Riesgo**: en teoría, deducir si un correo tiene cuenta.
-- **Estado**: abierto
-- **Cierre**: pendiente (T044)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-029` de `tests/seguridad/` (cuentas). La recuperación responde sin esperar a la operación. El login no cambia: sus respuestas son idénticas y la primera pasada no midió una diferencia relevante.
 
 ### SEG-030. El token de recuperación permanece en la dirección
 
@@ -380,8 +386,8 @@ Lo que **ha resistido** los ataques:
 - **Severidad**: baja. La web no carga recursos de terceros.
 - **Evidencia**: `apps/web/src/pantallas/Inicio.tsx` solo quita `?restablecer=` de la dirección al terminar el proceso.
 - **Riesgo**: queda en el historial y a la vista mientras el formulario está abierto.
-- **Estado**: abierto
-- **Cierre**: pendiente (T046)
+- **Estado**: corregido
+- **Cierre**: recorrido e2e `apps/web/tests/e2e/acceso.spec.ts`.
 
 ### SEG-031. Dependencias de desarrollo con vulnerabilidades altas
 
@@ -390,8 +396,22 @@ Lo que **ha resistido** los ataques:
 - **Evidencia**: `pnpm audit` señala `undici` 5.29.0 (5 altos) y `@fastify/busboy` 2.1.1 (1 alto), que llegan por
   `testcontainers` 10.28.0. El plan no los contemplaba.
 - **Riesgo**: bajo, pero impide cumplir SC-011, que exige `pnpm audit` sin altos ni críticos.
-- **Estado**: abierto
-- **Cierre**: pendiente (T029, T030)
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-031` de `tests/seguridad/` (dependencias).
+
+### SEG-032. Se puede impedir a otra persona entrar y recuperar su cuenta
+
+- **Área**: autenticación y sesiones
+- **Severidad**: media. No da acceso a nada, pero exige solo conocer el correo de la víctima.
+- **Evidencia**: aparece al aplicar los límites de FR-013. Los ataques de `limites.test.ts` comprueban por separado que 20
+  fallos por hora desde varias direcciones bloquean el login de un correo y que, pasadas 3 peticiones por hora, ese correo
+  deja de recibir enlaces. La combinación se deduce de ambos y no se ha ejecutado como un único ataque.
+- **Riesgo**: repitiendo las dos cosas, alguien puede mantener a una persona sin poder entrar ni recuperar su cuenta. Las
+  sesiones ya abiertas no se ven afectadas.
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-032` de `tests/seguridad/` (limites) y [decisión del 2026-11-21](#decisiones-de-riesgo). Los fallos
+  y las recuperaciones cuentan por correo y cliente, con un tope global por correo, y la cuenta recibe un aviso al quinto
+  fallo seguido.
 
 ## Dependencias
 
@@ -410,6 +430,10 @@ moderados y 10 bajos.
 | `@fastify/busboy` | 2.1.1 | 1 alto | 3.2.1 | Solo pruebas | SEG-031 |
 
 Las tareas T026 a T029 deben usar como mínimo las versiones en negrita.
+
+**Tras la corrección (T030)**: `pnpm audit` completo, 0 críticos, 0 altos, 10 moderados y 5 bajos; `pnpm audit --prod`, 0
+críticos, 0 altos, 4 moderados y 4 bajos. `vitest` sube a la 4.x y no a la 3.2, porque la 3.2 sigue exigiendo `tinypool` 1.x,
+la versión con los avisos críticos.
 
 ## Escaneo externo (OWASP ZAP)
 
@@ -430,5 +454,16 @@ respondiendo al terminar.
 
 ## Decisiones de riesgo
 
-Ninguna todavía. Solo la persona responsable puede aceptar un riesgo medio o bajo (FR-009), indicando quién, cuándo,
+### SEG-032 (T073)
+
+- **Quién y cuándo**: la persona responsable, el 2026-11-21.
+- **Decisión**: contar los intentos por correo y cliente, con un tope global más alto, y avisar por correo a la cuenta
+  después del quinto intento fallido seguido.
+- **Valores aplicados**: login, 20 fallos por hora y correo y cliente, y 100 por hora y correo; recuperación, 3 por hora y
+  correo y cliente, y 10 por hora y correo; un aviso por cuenta y día como máximo.
+- **Riesgo residual**: quien reparta el ataque entre 5 o más direcciones aún puede agotar el tope global de login, y con 4 o
+  más el de recuperación. La persona afectada recibe el aviso y conserva sus sesiones abiertas.
+- **Condición de revisión**: si en la beta aparecen bloqueos repartidos o quejas por avisos, se revisan estos valores.
+
+Ningún riesgo aceptado sin corregir. Solo la persona responsable puede aceptar un riesgo medio o bajo (FR-009), indicando quién, cuándo,
 motivo, riesgo residual y condición para revisarlo.

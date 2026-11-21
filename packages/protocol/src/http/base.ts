@@ -8,7 +8,7 @@ export const RespuestaError = z.object({
   error: z.object({
     codigo: z.string().min(1),
     mensaje: z.string(),
-    detalles: z.record(z.unknown()).default({}),
+    detalles: z.record(z.string(), z.unknown()).default({}),
   }),
 });
 export type RespuestaError = z.infer<typeof RespuestaError>;

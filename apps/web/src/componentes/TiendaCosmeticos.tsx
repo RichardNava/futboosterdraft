@@ -17,7 +17,7 @@ import { SobreArte } from './arte/SobreArte';
 import { urlEscudo } from './chapa';
 import { Dialogo } from './Dialogo';
 import { Icono } from './Icono';
-import { DialogoPagoPrueba, formatoEuros, formatoFragmentos } from './DialogoPagoPrueba';
+import { BotonEuros, DialogoPagoPrueba, formatoEuros, formatoFragmentos } from './DialogoPagoPrueba';
 import { Fragmentos } from './Fragmentos';
 import { CapaCelebracion } from './celebraciones/CapaCelebracion';
 import type { CelebracionElegida } from './celebraciones/tipos';
@@ -242,13 +242,9 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre',
         >
           <Fragmentos cantidad={c.precioFragmentos!} />
         </button>
-        <button
-          type="button"
-          className="secundario"
-          onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'eur' })}
-        >
+        <BotonEuros pagoEuros={catalogo.pagoEuros} onClick={() => abrir({ tipo: 'cosmetico', cosmetico: c, moneda: 'eur' })}>
           {formatoEuros.format(c.precioCentimos! / 100)}
-        </button>
+        </BotonEuros>
       </span>
     );
   };
@@ -257,12 +253,12 @@ export function TiendaCosmeticos({ invitado = false, tipos = ['escudo', 'sobre',
     if (p.disponible === false) return <p className="nota">Ya tienes alguno: cómpralos sueltos</p>;
     const suelto = p.cosmeticos.reduce((t, id) => t + (porId.get(id)?.precioCentimos ?? 0), 0);
     return (
-      <button type="button" className="secundario" onClick={() => abrir({ tipo: 'pack', pack: p })}>
+      <BotonEuros pagoEuros={catalogo.pagoEuros} onClick={() => abrir({ tipo: 'pack', pack: p })}>
         5 por {formatoEuros.format(p.precioCentimos / 100)}
         {suelto > p.precioCentimos && (
           <span className="ahorro"> (ahorras {formatoEuros.format((suelto - p.precioCentimos) / 100)})</span>
         )}
-      </button>
+      </BotonEuros>
     );
   };
 

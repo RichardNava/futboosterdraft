@@ -18,14 +18,19 @@ Si una regla falla, el proceso termina con un mensaje que nombra la variable y n
 | Operación | Clave | Límite | Al superarlo |
 |---|---|---|---|
 | Login | IP | 10 por minuto | `429 DEMASIADAS_PETICIONES` |
-| Login fallido | Correo normalizado | 20 por hora | `429`, misma respuesta exista o no la cuenta |
+| Login fallido | Correo normalizado y cliente | 20 por hora | `429`, misma respuesta exista o no la cuenta |
+| Login fallido | Correo normalizado | 100 por hora | `429`, misma respuesta exista o no la cuenta |
 | Registro | IP | 5 por hora | `429` |
 | Invitado | IP | 20 por hora | `429` |
 | Recuperación | IP | 5 seguidas y 1 por minuto | `429` |
-| Recuperación | Correo normalizado | 3 por hora | Misma respuesta que un envío correcto, sin correo |
+| Recuperación | Correo normalizado y cliente | 3 por hora | Misma respuesta que un envío correcto, sin correo |
+| Recuperación | Correo normalizado | 10 por hora | Misma respuesta que un envío correcto, sin correo |
 | API con sesión | Usuario | 60 de ráfaga, 20/s | `429` |
 | Toda `/api/` | IP | 300 de ráfaga, 100/s | `429` |
 | WebSocket | Partida y participante | 40 de ráfaga, 10/s | `error DEMASIADOS_MENSAJES` |
+
+Al quinto fallo de login seguido, la cuenta registrada recibe un aviso por correo, como máximo uno al día. Un acierto
+reinicia la serie. La respuesta y su tiempo no cambian, exista o no la cuenta, y el aviso no incluye la dirección IP.
 
 ## Cabeceras
 

@@ -88,6 +88,8 @@ function descripcion(motivo: MotivoMovimiento, nombreCarta: string | undefined):
       return 'Devolución del nivel de rareza';
     case 'compra_pase_premium':
       return 'Pase premium';
+    case 'entrega_betatester':
+      return 'Entrega para betatesters';
   }
 }
 
@@ -105,6 +107,8 @@ export class ServicioEconomia {
     private readonly ajustes: ServicioAjustes,
     private readonly parametros: ParametrosEquilibrado = parametrosActuales(),
     private readonly ahora: () => number = Date.now,
+    /** Spec 017 (FR-028): falso en producción hasta que haya una pasarela de pago real. */
+    readonly pagoSimulado: boolean = true,
   ) {}
 
   /** Cartas con la identidad del ajuste vigente (spec 011, R12): colección, tienda e historial. */
@@ -280,6 +284,7 @@ export class ServicioEconomia {
         ...(saldo < p.precioSobreFragmentos ? { faltan: p.precioSobreFragmentos - saldo } : {}),
       },
       paquetes: p.paquetesFragmentos.map((x) => ({ id: x.id, fragmentos: x.fragmentos, precioCentimos: x.centimos })),
+      pagoEuros: this.pagoSimulado,
       pasePremium: await this.productoPase(usuarioId),
     };
   }
@@ -480,6 +485,7 @@ export class ServicioEconomia {
         }
         return this.resumen(tx, usuarioId, idCompra, previa.resultado);
       }
+      if (producto.moneda === 'eur' && !this.pagoSimulado) throw errores.conflicto('PAGO_NO_DISPONIBLE', 'El pago con tarjeta aún no está disponible');
       await tx.insert(compras).values({
         id: idCompra,
         usuarioId,

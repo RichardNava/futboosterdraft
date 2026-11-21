@@ -10,7 +10,7 @@ RUN corepack enable
 WORKDIR /app
 
 # Primero solo los manifiestos, para aprovechar la caché de dependencias entre compilaciones.
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs ./
 COPY apps/server/package.json apps/server/
 COPY apps/web/package.json apps/web/
 COPY packages/domain/package.json packages/domain/
