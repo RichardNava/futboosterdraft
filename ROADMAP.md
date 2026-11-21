@@ -80,7 +80,8 @@ graph LR
   INI14 --> INI19[INI-19 Cosméticos de carta y campo]
 ```
 
-**Camino crítico a la beta**: INI-16 → INI-07 → INI-10, con INI-17 en paralelo (también bloquea INI-10). INI-05 e INI-09 están hechas; la carga de INI-07 ya no la limita el
+**Camino crítico a la beta**: INI-16 → INI-07 → INI-10 → INI-12, con INI-17 en paralelo (también bloquea INI-10). La beta
+no se abre al público hasta cerrar INI-12 ([spec 017](specs/017-auditoria-seguridad-roles/spec.md), D-1). INI-05 e INI-09 están hechas; la carga de INI-07 ya no la limita el
 motor (spec 009), sino la apertura de partidos y la entrega de sobres ([spec 010](specs/010-latencia-apertura-sobres/spec.md),
 implementada, sin validar en tres máquinas). Con 100 partidas en un equipo de 8 núcleos, el límite medido es la CPU que
 cuesta simular los partidos.
