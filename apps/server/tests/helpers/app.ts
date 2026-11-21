@@ -2,6 +2,7 @@
  * Servidor de pruebas escuchando en un puerto libre, con `RelojFalso`.
  */
 import type { AddressInfo } from 'node:net';
+import type { RouteOptions } from 'fastify';
 import pino from 'pino';
 import { RelojFalso } from '../../src/programador/reloj';
 import { crearServidor, type Servidor } from '../../src/servidor';
@@ -17,7 +18,7 @@ export interface ServidorPruebas extends Servidor {
 export async function iniciarServidorPruebas(
   bd: BdPruebas,
   inicio = Date.UTC(2026, 9, 15, 10),
-  opciones: { smtpUrl?: string; hilosSimulacion?: number; medirFases?: boolean } = {},
+  opciones: { smtpUrl?: string; hilosSimulacion?: number; medirFases?: boolean; limitesReales?: boolean; alRegistrarRuta?: (ruta: RouteOptions) => void } = {},
 ): Promise<ServidorPruebas> {
   const reloj = new RelojFalso(inicio);
   const servidor = await crearServidor({
@@ -28,10 +29,11 @@ export async function iniciarServidorPruebas(
     logger: pino({ level: process.env.LOG_PRUEBAS ?? 'silent' }),
     ...(opciones.smtpUrl ? { smtpUrl: opciones.smtpUrl } : {}),
     ...(opciones.medirFases === undefined ? {} : { medirFases: opciones.medirFases }),
+    ...(opciones.alRegistrarRuta ? { alRegistrarRuta: opciones.alRegistrarRuta } : {}),
     // `test:integration:hilos` repite la suite con el cálculo en hilos de trabajo (spec 009).
     hilosSimulacion: opciones.hilosSimulacion ?? Number(process.env.HILOS_SIMULACION_PRUEBAS ?? 0),
     // Las pruebas consultan el estado en bucle: los límites por sesión se prueban aparte (tests/unit).
-    limites: { http: { capacidad: 10_000, porSegundo: 10_000 }, ws: { capacidad: 10_000, porSegundo: 10_000 } },
+    limites: opciones.limitesReales ? {} : { http: { capacidad: 10_000, porSegundo: 10_000 }, ws: { capacidad: 10_000, porSegundo: 10_000 } },
   });
   await servidor.app.listen({ port: 0, host: '127.0.0.1' });
   const { port } = servidor.app.server.address() as AddressInfo;

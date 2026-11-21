@@ -78,6 +78,11 @@ export class Pasarela implements Difusor {
     this.manejadores.set(tipo, manejador as Manejador<unknown>);
   }
 
+  /** Tipos de mensaje que acepta la pasarela (`ping` se responde sin manejador), para el inventario de la spec 017. */
+  tiposMensaje(): string[] {
+    return ['ping', ...this.manejadores.keys()];
+  }
+
   /** Envía un mensaje a todos los participantes de la partida o a uno. */
   enviar(partidaId: string, salida: MensajeSaliente): void {
     const porParticipante = this.conexiones.get(partidaId);

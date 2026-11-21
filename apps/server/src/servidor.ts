@@ -4,7 +4,7 @@
  */
 import { MsgDraftElegir, MsgPartidaPausar, MsgPartidoDecision, MsgPartidoDecisiones, MsgPartidoFinalizar, MsgPartidoModoIncidencias, MsgPartidoReproduccion, MsgPartidoSeguir } from '@fbd/protocol';
 import { procesarPausar } from './actores/pausa';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, RouteOptions } from 'fastify';
 import { procesarEleccion } from './actores/draft';
 import { procesarReproduccion } from './actores/partido2d';
 import { procesarDecisionesLote, procesarDecisionPartido, procesarFinalizar, procesarModoIncidencias, procesarSeguir } from './actores/partidoRapido';
@@ -69,6 +69,8 @@ interface ConfigServidor {
   hilosSimulacion?: number;
   /** Desglose por fases de aperturas y elecciones de draft (spec 010, FR-003); por defecto, activado. */
   medirFases?: boolean;
+  /** Recibe cada ruta registrada (prueba del inventario de la spec 017). */
+  alRegistrarRuta?: (ruta: RouteOptions) => void;
 }
 
 export interface Servidor {
@@ -233,6 +235,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     peticiones,
     opcionesAuth: { alCerrarSesion: (u) => gestor.alCerrarSesion(u), alEliminarCuenta: (u) => gestor.eliminarCuenta(u.id) },
     ...(config.limites?.http ? { limiteHttp: config.limites.http } : {}),
+    ...(config.alRegistrarRuta ? { alRegistrarRuta: config.alRegistrarRuta } : {}),
   });
   pasarela.registrarRuta(app);
   // La identidad de las cartas se lee (con caché) antes de cada petición, para que las vistas síncronas la usen.

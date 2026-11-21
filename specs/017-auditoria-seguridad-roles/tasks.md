@@ -38,8 +38,8 @@ robots.txt y repetir la auditoría.
 
 **Purpose**: fijar el estado de partida y preparar dónde vivirán los ataques.
 
-- [ ] T001 Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:equivalence` y `pnpm e2e`, y anotar el resultado como línea base (SC-011, SC-012) en `specs/017-auditoria-seguridad-roles/checklists/validacion.md`
-- [ ] T002 [P] Crear `apps/server/vitest.seguridad.config.ts` con `include: ['tests/seguridad/**/*.test.ts']`, los mismos tiempos que `apps/server/vitest.config.ts`, `fileParallelism: false` y salida JSON en `apps/server/test-results/seguridad.json`, y añadir `apps/server/test-results/` a `.gitignore` (la configuración actual solo incluye `tests/integration` y `tests/contract`)
+- [X] T001 Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:equivalence` y `pnpm e2e`, y anotar el resultado como línea base (SC-011, SC-012) en `specs/017-auditoria-seguridad-roles/checklists/validacion.md`
+- [X] T002 [P] Crear `apps/server/vitest.seguridad.config.ts` con `include: ['tests/seguridad/**/*.test.ts']`, los mismos tiempos que `apps/server/vitest.config.ts`, `fileParallelism: false` y salida JSON en `apps/server/test-results/seguridad.json`, y añadir `apps/server/test-results/` a `.gitignore` (la configuración actual solo incluye `tests/integration` y `tests/contract`)
 
 ---
 
@@ -50,10 +50,10 @@ robots.txt y repetir la auditoría.
 **⚠️ CRITICAL**: sin esta fase no se puede registrar ningún ataque. La migración 0018 no va aquí a propósito: la auditoría
 debe reproducir antes el estado actual, incluido el fallo de borrado de cuentas con pase (R24).
 
-- [ ] T003 Crear `apps/server/tests/seguridad/ayudas.ts` reutilizando `apps/server/tests/helpers/app.ts`, `usuarios.ts` y `clienteWs.ts`, con una opción para arrancar la app con los límites reales y otra con `NODE_ENV=production` simulado
-- [ ] T004 Crear `apps/server/tests/seguridad/resumen.ts`: lee `apps/server/test-results/seguridad.json`, escribe `specs/017-auditoria-seguridad-roles/verificacion.md` con la tabla `Ataque | Hallazgo | Resultado` de `contracts/seguridad.md` y termina con error si un ataque falla, si un test no sigue el formato `SEG-NNN: …` o si no hay ninguno
-- [ ] T005 [P] Añadir la prueba del generador (todo bloqueado, un fallo, nombre mal formado y resultado vacío) en `apps/server/tests/unit/resumenSeguridad.test.ts`
-- [ ] T006 Añadir el script `seguridad` en `apps/server/package.json` (Vitest con `vitest.seguridad.config.ts` y después `tests/seguridad/resumen.ts`, conservando el código de error) y el atajo `pnpm seguridad` en `package.json`
+- [X] T003 Crear `apps/server/tests/seguridad/ayudas.ts` reutilizando `apps/server/tests/helpers/app.ts`, `usuarios.ts` y `clienteWs.ts`, con una opción para arrancar la app con los límites reales y otra con `NODE_ENV=production` simulado
+- [X] T004 Crear `apps/server/tests/seguridad/resumen.ts`: lee `apps/server/test-results/seguridad.json`, escribe `specs/017-auditoria-seguridad-roles/verificacion.md` con la tabla `Ataque | Hallazgo | Resultado` de `contracts/seguridad.md` y termina con error si un ataque falla, si un test no sigue el formato `SEG-NNN: …` o si no hay ninguno
+- [X] T005 [P] Añadir la prueba del generador (todo bloqueado, un fallo, nombre mal formado y resultado vacío) en `apps/server/tests/unit/resumenSeguridad.test.ts`
+- [X] T006 Añadir el script `seguridad` en `apps/server/package.json` (Vitest con `vitest.seguridad.config.ts` y después `tests/seguridad/resumen.ts`, conservando el código de error) y el atajo `pnpm seguridad` en `package.json`
 
 **Checkpoint**: `pnpm seguridad` funciona y falla con claridad mientras no haya ataques.
 
@@ -69,30 +69,30 @@ evidencia reproducible y riesgo.
 
 ### Inventario
 
-- [ ] T007 [US1] Añadir a `Pasarela` un método de lectura `tiposMensaje()` con los tipos registrados, para poder compararlos con el inventario, en `apps/server/src/ws/pasarela.ts`
-- [ ] T008 [US1] Crear `specs/017-auditoria-seguridad-roles/inventario.json` con cada ruta HTTP (incluidas `/healthz`, `/metrics`, `/ws`, `/api/auth/ba/*` y `/api/dev/*`) y cada mensaje WebSocket, con `tipo`, `metodo` y `ruta` o `mensaje`, `acceso`, `comprobacion` y `hallazgos` según `contracts/seguridad.md`
-- [ ] T009 [US1] Crear `apps/server/tests/integration/inventario.test.ts`: captura las rutas con `onRoute`, lee `tiposMensaje()` y falla si falta o sobra alguna entrada en `inventario.json` (FR-004, SC-001)
+- [X] T007 [US1] Añadir a `Pasarela` un método de lectura `tiposMensaje()` con los tipos registrados, para poder compararlos con el inventario, en `apps/server/src/ws/pasarela.ts`
+- [X] T008 [US1] Crear `specs/017-auditoria-seguridad-roles/inventario.json` con cada ruta HTTP (incluidas `/healthz`, `/metrics`, `/ws`, `/api/auth/ba/*` y `/api/dev/*`) y cada mensaje WebSocket, con `tipo`, `metodo` y `ruta` o `mensaje`, `acceso`, `comprobacion` y `hallazgos` según `contracts/seguridad.md`
+- [X] T009 [US1] Crear `apps/server/tests/integration/inventario.test.ts`: captura las rutas con `onRoute`, lee `tiposMensaje()` y falla si falta o sobra alguna entrada en `inventario.json` (FR-004, SC-001)
 
 ### Auditoría por áreas
 
 Cada tarea reproduce los indicios en un entorno propio y anota en `auditoria.md` los hallazgos `SEG-NNN`, o qué se revisó si
 no hay ninguno. La severidad sigue la tabla de FR-002.
 
-- [ ] T010 [US1] Crear `specs/017-auditoria-seguridad-roles/auditoria.md` con los criterios de FR-002, una sección por cada una de las 16 áreas de FR-003, el formato de hallazgo de `contracts/seguridad.md` y una sección de decisiones de riesgo
-- [ ] T011 [US1] Auditar **autenticación y sesiones** en `apps/server/src/auth/`: API interna `/api/auth/ba/*`, `token` en el cuerpo de login y registro (FR-017), atributos de la cookie, enumeración de correos por respuesta y por tiempo (FR-016), y anotarlo en `auditoria.md`
-- [ ] T012 [US1] Auditar **invitados** y **recuperación de contraseña**: paso a registrado con un correo existente (FR-019), un solo uso, caducidad de una hora, token en registros y cabeceras (FR-020), y anotarlo en `auditoria.md`
-- [ ] T013 [US1] Auditar la **autorización** de cada ruta de `inventario.json` con dos cuentas (lectura y escritura sobre partida, equipo, colección y compra ajenas, FR-021), y anotarlo en `auditoria.md`
-- [ ] T014 [US1] Auditar el **canal en tiempo real** en `apps/server/src/ws/pasarela.ts`: origen, sesión revocada con el socket abierto, permiso por mensaje y `requestId` compartido dentro de la partida (R3, FR-022), y anotarlo en `auditoria.md`
-- [ ] T015 [US1] Auditar la **integridad del juego** en `apps/server/src/actores/`: mensajes manipulados, fuera de turno o duplicados (FR-023) y elecciones o alineaciones ajenas en cualquier respuesta (FR-024), y anotarlo en `auditoria.md`
-- [ ] T016 [US1] Auditar **tienda y economía** en `apps/server/src/economia/servicio.ts`: pago simulado en producción (R13), 50 compras simultáneas, reutilización de `idCompra`, saldo frente a movimientos y precio decidido en el servidor (FR-026, FR-027), y anotarlo en `auditoria.md`
-- [ ] T017 [US1] Auditar **validación de entradas y límites**: cookie inventada, peticiones sin sesión, IP detrás del proxy, rotación de direcciones IPv6 dentro de un mismo /64, crecimiento de `peticiones_procesadas` y del mapa de `Limitador` (FR-013, FR-014, FR-025), y anotarlo en `auditoria.md`
-- [ ] T018 [US1] Auditar **protecciones del navegador** e **inyección**: cabeceras, CORS, XSS en nombres de equipo y partida en pantallas y correos, y todo `sql` con valores interpolados en `apps/server/src/` (FR-029 a FR-032), y anotarlo en `auditoria.md`
-- [ ] T019 [US1] Auditar **rutas técnicas**, **errores** y **registros**: `/metrics`, `/healthz`, `/api/dev/*`, GET a `/api/` inexistente, la URL reflejada en el 404, query strings, correos y errores SMTP en los registros (FR-033 a FR-035), y anotarlo en `auditoria.md`
-- [ ] T020 [US1] Auditar **secretos, configuración e imagen**: construir la imagen del `Dockerfile` y comprobar usuario, contenido, secretos y si incluye `vitest`, `vite` o `tinypool` (punto «Sin confirmar» de R14), y anotarlo en `auditoria.md`
-- [ ] T021 [US1] Auditar **dependencias** con `pnpm audit --prod --json` y `pnpm audit --json`, indicando para cada aviso alto o crítico si afecta al sistema (FR-006, FR-038), y anotarlo en `auditoria.md`
-- [ ] T022 [US1] Auditar **correo** en `apps/server/src/avisos/servicio.ts`: inyección de cabeceras y destinatarios, y enlaces siempre hacia `PUBLIC_URL` (FR-039), y anotarlo en `auditoria.md`
-- [ ] T023 [US1] Ejecutar `zap-baseline` y `zap-api-scan` con `ghcr.io/zaproxy/zaproxy:stable` contra la imagen local (R23) y recoger cada alerta en `auditoria.md`
-- [ ] T024 [US1] Cerrar el informe: enlazar los hallazgos en `inventario.json`, comprobar que cada uno tiene todos sus campos, buscar secretos y datos personales en `auditoria.md`, y presentar el resumen a la persona responsable
+- [X] T010 [US1] Crear `specs/017-auditoria-seguridad-roles/auditoria.md` con los criterios de FR-002, una sección por cada una de las 16 áreas de FR-003, el formato de hallazgo de `contracts/seguridad.md` y una sección de decisiones de riesgo
+- [X] T011 [US1] Auditar **autenticación y sesiones** en `apps/server/src/auth/`: API interna `/api/auth/ba/*`, `token` en el cuerpo de login y registro (FR-017), atributos de la cookie, enumeración de correos por respuesta y por tiempo (FR-016), y anotarlo en `auditoria.md`
+- [X] T012 [US1] Auditar **invitados** y **recuperación de contraseña**: paso a registrado con un correo existente (FR-019), un solo uso, caducidad de una hora, token en registros y cabeceras (FR-020), y anotarlo en `auditoria.md`
+- [X] T013 [US1] Auditar la **autorización** de cada ruta de `inventario.json` con dos cuentas (lectura y escritura sobre partida, equipo, colección y compra ajenas, FR-021), y anotarlo en `auditoria.md`
+- [X] T014 [US1] Auditar el **canal en tiempo real** en `apps/server/src/ws/pasarela.ts`: origen, sesión revocada con el socket abierto, permiso por mensaje y `requestId` compartido dentro de la partida (R3, FR-022), y anotarlo en `auditoria.md`
+- [X] T015 [US1] Auditar la **integridad del juego** en `apps/server/src/actores/`: mensajes manipulados, fuera de turno o duplicados (FR-023) y elecciones o alineaciones ajenas en cualquier respuesta (FR-024), y anotarlo en `auditoria.md`
+- [X] T016 [US1] Auditar **tienda y economía** en `apps/server/src/economia/servicio.ts`: pago simulado en producción (R13), 50 compras simultáneas, reutilización de `idCompra`, saldo frente a movimientos y precio decidido en el servidor (FR-026, FR-027), y anotarlo en `auditoria.md`
+- [X] T017 [US1] Auditar **validación de entradas y límites**: cookie inventada, peticiones sin sesión, IP detrás del proxy, rotación de direcciones IPv6 dentro de un mismo /64, crecimiento de `peticiones_procesadas` y del mapa de `Limitador` (FR-013, FR-014, FR-025), y anotarlo en `auditoria.md`
+- [X] T018 [US1] Auditar **protecciones del navegador** e **inyección**: cabeceras, CORS, XSS en nombres de equipo y partida en pantallas y correos, y todo `sql` con valores interpolados en `apps/server/src/` (FR-029 a FR-032), y anotarlo en `auditoria.md`
+- [X] T019 [US1] Auditar **rutas técnicas**, **errores** y **registros**: `/metrics`, `/healthz`, `/api/dev/*`, GET a `/api/` inexistente, la URL reflejada en el 404, query strings, correos y errores SMTP en los registros (FR-033 a FR-035), y anotarlo en `auditoria.md`
+- [X] T020 [US1] Auditar **secretos, configuración e imagen**: construir la imagen del `Dockerfile` y comprobar usuario, contenido, secretos y si incluye `vitest`, `vite` o `tinypool` (punto «Sin confirmar» de R14), y anotarlo en `auditoria.md`
+- [X] T021 [US1] Auditar **dependencias** con `pnpm audit --prod --json` y `pnpm audit --json`, indicando para cada aviso alto o crítico si afecta al sistema (FR-006, FR-038), y anotarlo en `auditoria.md`
+- [X] T022 [US1] Auditar **correo** en `apps/server/src/avisos/servicio.ts`: inyección de cabeceras y destinatarios, y enlaces siempre hacia `PUBLIC_URL` (FR-039), y anotarlo en `auditoria.md`
+- [X] T023 [US1] Ejecutar `zap-baseline` y `zap-api-scan` con `ghcr.io/zaproxy/zaproxy:stable` contra la imagen local (R23) y recoger cada alerta en `auditoria.md`
+- [X] T024 [US1] Cerrar el informe: enlazar los hallazgos en `inventario.json`, comprobar que cada uno tiene todos sus campos, buscar secretos y datos personales en `auditoria.md`, y presentar el resumen a la persona responsable
 
 **Checkpoint**: el informe fija el alcance real de la corrección. Los hallazgos que no cubran las tareas siguientes entran
 por T071 y T072.

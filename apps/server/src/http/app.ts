@@ -10,7 +10,7 @@ import fastifyCompress from '@fastify/compress';
 import fastifyCookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
 import fastifyWebsocket from '@fastify/websocket';
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, { type FastifyInstance, type RouteOptions } from 'fastify';
 import { ZodError } from 'zod';
 import type { Auth } from '../auth/auth';
 import { registrarRutasAuth, type OpcionesRutasAuth } from '../auth/rutas';
@@ -35,6 +35,8 @@ interface DependenciasApp {
   carpetaWeb?: string;
   /** Límite de peticiones por sesión (por defecto, `LIMITE_HTTP`). */
   limiteHttp?: { capacidad: number; porSegundo: number };
+  /** Recibe cada ruta registrada: la prueba del inventario de la spec 017 la compara con `inventario.json`. */
+  alRegistrarRuta?: (ruta: RouteOptions) => void;
 }
 
 /** Token de la cookie de sesión de Better Auth (con o sin el prefijo `__Secure-` de producción). */
@@ -56,6 +58,7 @@ export async function construirApp(deps: DependenciasApp): Promise<FastifyInstan
     disableRequestLogging: process.env.NODE_ENV === 'test',
     bodyLimit: TAMANO_MAXIMO_MENSAJE,
   }) as unknown as FastifyInstance;
+  if (deps.alRegistrarRuta) app.addHook('onRoute', deps.alRegistrarRuta);
 
   await app.register(fastifyCookie);
   // Respuestas grandes (reproducción de partidos, research R5) comprimidas; el WebSocket, con permessage-deflate.

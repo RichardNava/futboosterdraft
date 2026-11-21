@@ -1,0 +1,1379 @@
+[
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/healthz",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "ninguna (publica)",
+    "hallazgos": [
+      "SEG-024"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/metrics",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "ninguna (publica)",
+    "hallazgos": [
+      "SEG-010"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/ws",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "origen permitido; sesion; participante de la partida",
+    "hallazgos": [
+      "SEG-006"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "web estatica (solo produccion)",
+    "hallazgos": [
+      "SEG-011",
+      "SEG-012",
+      "SEG-030"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/index.html",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "web estatica (solo produccion)",
+    "hallazgos": [
+      "SEG-011"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/*",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "web estatica (solo produccion)",
+    "hallazgos": [
+      "SEG-011",
+      "SEG-012",
+      "SEG-023"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/auth/ba/*",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "API interna de Better Auth, sin las validaciones ni limites de las rutas publicas",
+    "hallazgos": [
+      "SEG-004",
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/auth/ba/*",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "API interna de Better Auth, sin las validaciones ni limites de las rutas publicas",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-004",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/auth/invitado",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "sin limite propio",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-015",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/auth/registro",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "apodo, correo y contrasena validados; sin limite propio",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-015",
+      "SEG-019",
+      "SEG-020",
+      "SEG-025",
+      "SEG-026",
+      "SEG-028"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/auth/login",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "contrasena; sin limite propio",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-003",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020",
+      "SEG-025"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/auth/recuperar",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "limite por IP (5 seguidas y 1 por minuto); misma respuesta exista o no",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-014",
+      "SEG-018",
+      "SEG-019",
+      "SEG-020",
+      "SEG-029"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/auth/restablecer",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "token de un solo uso con caducidad",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/auth/logout",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "DELETE",
+    "ruta": "/api/cuenta",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereRegistrado",
+    "hallazgos": [
+      "SEG-013",
+      "SEG-017",
+      "SEG-019"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/me",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/catalogo/jugadores",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "publica; identidad del ajuste vigente",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/catalogo/jugadores/:id",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "publica; id entero",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/catalogo/formaciones",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "publica",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/catalogo/rasgos",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "publica",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; esquema CrearPartida; cobro de rareza en el servidor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-016",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereRegistrado; solo partidas abiertas",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas/niveles-rareza",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/mis-partidas",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; solo las propias",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas/:id",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; sin comprobar participacion",
+    "hallazgos": [
+      "SEG-007",
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/unirse",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereRegistrado; reglas de la sala en el actor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/npc",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; solo el anfitrion (esAnfitrion), comprobado en el actor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/partidas/:id/duelos",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; solo el anfitrion (esAnfitrion), comprobado en el actor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/iniciar",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; solo el anfitrion (esAnfitrion), comprobado en el actor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/partidas/:id/nombre-equipo",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020",
+      "SEG-026"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/partidas/:id/escudo",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas/:id/plantillas",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario); solo tras el draft",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas/:id/alineacion",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario); solo la propia",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/alineacion/previsualizar",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario); solo la propia",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/partidas/:id/alineacion",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario); solo la propia",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/partidas/:id/modo-incidencias",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/partidas/:id/dorsales",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/partidas/:id/equipaciones",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas/:id/torneo",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario); vista filtrada",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas/:id/torneo/goleadores",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidas/:id/torneo/asistentes",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/siguiente-jornada",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/simular-resto",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario); Idempotency-Key obligatoria",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/pantalla-vista",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidas/:id/abandonar",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida (participanteDeUsuario)",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/avisos",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; solo los propios",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/avisos/:id/leido",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; filtra por usuario",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidos/:id",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; participante de la partida; oculta lo no visto",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidos/:id/abrir",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; juega ese partido",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/partidos/:id/reproduccion",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; juega ese partido",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidos/:id/visto",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; juega ese partido",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/partidos/:id/revelar",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; juega ese partido",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/perfil",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion y comprobacion de registrado",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/perfil",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion y comprobacion de registrado; esquema CuerpoPerfil",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020",
+      "SEG-026"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/perfil/aspecto",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; respuesta fija para invitados",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/perfil/aspecto",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion y comprobacion de registrado; cosmeticos disponibles",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/perfil/aspecto/sobre-siguiente",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "requiereSesion; fila bloqueada",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/coleccion",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; solo la propia",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/coleccion/cartas/:id",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; solo la propia",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/coleccion/cartas/:id/desfragmentar",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; solo la propia; saldo bloqueado",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/fragmentos/saldo",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/fragmentos/movimientos",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/tienda",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/premium",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/cosmeticos",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "publica; con sesion anade lo poseido",
+    "hallazgos": [
+      "SEG-013"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/tienda/pase-premium",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; idCompra por cuenta; precio y producto decididos en el servidor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-002",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/tienda/sobre/comprar",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; idCompra por cuenta; precio y producto decididos en el servidor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/tienda/colecciones/:id/comprar",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; idCompra por cuenta; precio y producto decididos en el servidor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/tienda/fragmentos/:paquete/comprar",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; idCompra por cuenta; precio y producto decididos en el servidor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/tienda/cosmeticos/:id/comprar",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; idCompra por cuenta; precio y producto decididos en el servidor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-002",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/tienda/packs/:id/comprar",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "soloRegistrados; idCompra por cuenta; precio y producto decididos en el servidor",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-002",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/dev/reloj/avanzar",
+    "acceso": [
+      "publico"
+    ],
+    "comprobacion": "solo existe con el reloj simulado; main.ts rechaza --fake-clock en produccion",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/dev/fragmentos",
+    "acceso": [
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "solo existe con el reloj simulado; main.ts rechaza --fake-clock en produccion; soloRegistrados",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/dev/partidas/:id/partidos/:partidoId/lesiones",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "solo existe con el reloj simulado; main.ts rechaza --fake-clock en produccion; participante",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/dev/partidas/:id/baja",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "solo existe con el reloj simulado; main.ts rechaza --fake-clock en produccion; participante",
+    "hallazgos": [
+      "SEG-001",
+      "SEG-005",
+      "SEG-013",
+      "SEG-019",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "ping",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; sin efecto",
+    "hallazgos": [
+      "SEG-006"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "draft.elegir",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; turno y carta validados en el actor; requestId",
+    "hallazgos": [
+      "SEG-006",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "partido.seguir",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; participante del partido; requestId",
+    "hallazgos": [
+      "SEG-006",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "partida.pausar",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; participante; requestId",
+    "hallazgos": [
+      "SEG-006",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "partido.finalizar",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; participante del partido; requestId",
+    "hallazgos": [
+      "SEG-006",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "partido.decision",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; participante del partido; requestId",
+    "hallazgos": [
+      "SEG-006",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "partido.decisiones",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; participante del partido; requestId",
+    "hallazgos": [
+      "SEG-006",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "partido.modo_incidencias",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; participante del partido; requestId",
+    "hallazgos": [
+      "SEG-006",
+      "SEG-020"
+    ]
+  },
+  {
+    "tipo": "ws",
+    "mensaje": "partido.reproduccion",
+    "acceso": [
+      "invitado",
+      "jugador",
+      "betatester",
+      "administrador"
+    ],
+    "comprobacion": "sesion y participante al conectar; esquema Zod; participante del partido; sin requestId porque no cambia el partido",
+    "hallazgos": [
+      "SEG-006"
+    ]
+  }
+]

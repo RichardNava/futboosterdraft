@@ -20,6 +20,9 @@ bun.lockb
 apps/web/test-results/
 apps/web/playwright-report/
 
+# Resultado de `pnpm seguridad`
+apps/server/test-results/
+
 # Sistema y editores
 .DS_Store
 Thumbs.db

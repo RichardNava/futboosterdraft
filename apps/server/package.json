@@ -10,6 +10,7 @@
     "start": "node dist/main.js",
     "test:integration": "vitest run --config vitest.config.ts",
     "test:integration:hilos": "vitest run --config vitest.config.ts --mode hilos",
+    "seguridad": "(vitest run --config vitest.seguridad.config.ts --passWithNoTests || echo Revisando el resultado) && tsx tests/seguridad/resumen.ts",
     "seed": "tsx src/persistencia/seed.ts",
     "db:migrate": "tsx src/persistencia/migrar.ts",
     "db:generate": "drizzle-kit generate",
