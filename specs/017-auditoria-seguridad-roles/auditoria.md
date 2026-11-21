@@ -1,12 +1,12 @@
 # Informe de auditoría de seguridad
 
-**Spec**: [017-auditoria-seguridad-roles](spec.md) | **Fecha**: 2026-11-21 | **Estado**: segunda ronda terminada: 31 hallazgos corregidos y 1 nuevo pendiente de decisión (SEG-032)
+**Spec**: [017-auditoria-seguridad-roles](spec.md) | **Fecha**: 2026-11-21 | **Estado**: segunda ronda terminada: 32 hallazgos corregidos
 
 ## Resumen
 
-**La beta no puede abrirse todavía.** Los 31 hallazgos de la primera pasada están corregidos y `pnpm seguridad` bloquea
-121 ataques. Falta decidir SEG-032, hacer los roles y el panel (US3), repetir la auditoría y ZAP (T103, T105) y tener
-pagos reales (INI-12).
+**La beta no puede abrirse todavía.** Los 31 hallazgos de la primera pasada y el SEG-032 están corregidos, y `pnpm seguridad`
+bloquea 128 ataques. Falta hacer los roles y el panel (US3), repetir la auditoría y ZAP (T103, T105) y tener pagos reales
+(INI-12).
 
 Hallazgos de la primera pasada:
 
@@ -118,7 +118,7 @@ Esta tabla describe la primera pasada. El estado actual está en la ficha de cad
   `X-Forwarded-For`: los 100 se evalúan (401) y ninguno se limita. Después, la contraseña correcta entra sin problema.
 - **Riesgo**: un atacante puede probar listas de contraseñas filtradas contra cualquier cuenta.
 - **Estado**: corregido
-- **Cierre**: ataques `SEG-003` de `tests/seguridad/` (limites). Queda el riesgo de bloqueo dirigido descrito en SEG-032.
+- **Cierre**: ataques `SEG-003` de `tests/seguridad/` (limites). El bloqueo dirigido se trata en SEG-032.
 
 ### SEG-004. La API interna de autenticación permite saltarse las validaciones
 
@@ -408,8 +408,10 @@ Esta tabla describe la primera pasada. El estado actual está en la ficha de cad
   deja de recibir enlaces. La combinación se deduce de ambos y no se ha ejecutado como un único ataque.
 - **Riesgo**: repitiendo las dos cosas, alguien puede mantener a una persona sin poder entrar ni recuperar su cuenta. Las
   sesiones ya abiertas no se ven afectadas.
-- **Estado**: abierto
-- **Cierre**: decisión de la persona responsable (T073). Ver [Decisiones de riesgo](#decisiones-de-riesgo).
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-032` de `tests/seguridad/` (limites) y [decisión del 2026-11-21](#decisiones-de-riesgo). Los fallos
+  y las recuperaciones cuentan por correo y cliente, con un tope global por correo, y la cuenta recibe un aviso al quinto
+  fallo seguido.
 
 ## Dependencias
 
@@ -452,11 +454,16 @@ respondiendo al terminar.
 
 ## Decisiones de riesgo
 
-**Pendiente: SEG-032 (T073).** Opciones:
+### SEG-032 (T073)
 
-1. **Recomendada**: contar los fallos de login y las recuperaciones por correo y cliente, con un tope global por correo más
-   alto. Un atacante con pocas direcciones deja de poder bloquear a la víctima. Cambia los valores de FR-013.
-2. Aceptar el riesgo durante la beta cerrada, con la condición de revisarlo antes de abrirla al público.
+- **Quién y cuándo**: la persona responsable, el 2026-11-21.
+- **Decisión**: contar los intentos por correo y cliente, con un tope global más alto, y avisar por correo a la cuenta
+  después del quinto intento fallido seguido.
+- **Valores aplicados**: login, 20 fallos por hora y correo y cliente, y 100 por hora y correo; recuperación, 3 por hora y
+  correo y cliente, y 10 por hora y correo; un aviso por cuenta y día como máximo.
+- **Riesgo residual**: quien reparta el ataque entre 5 o más direcciones aún puede agotar el tope global de login, y con 4 o
+  más el de recuperación. La persona afectada recibe el aviso y conserva sus sesiones abiertas.
+- **Condición de revisión**: si en la beta aparecen bloqueos repartidos o quejas por avisos, se revisan estos valores.
 
-Ninguna aceptada todavía. Solo la persona responsable puede aceptar un riesgo medio o bajo (FR-009), indicando quién, cuándo,
+Ningún riesgo aceptado sin corregir. Solo la persona responsable puede aceptar un riesgo medio o bajo (FR-009), indicando quién, cuándo,
 motivo, riesgo residual y condición para revisarlo.

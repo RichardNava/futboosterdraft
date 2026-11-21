@@ -3,7 +3,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import type { AddressInfo } from 'node:net';
+import { createServer, type AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { sql } from 'drizzle-orm';
@@ -39,6 +39,8 @@ interface OpcionesAtaque {
   proxiesConfianza?: number;
   /** Token de `/metrics` en producción. */
   metricasToken?: string;
+  /** Servidor SMTP para comprobar los correos que se envían (fuera de producción). */
+  smtpUrl?: string;
 }
 
 type OpcionesPeticion = NonNullable<Parameters<typeof peticion>[2]>;
@@ -57,6 +59,40 @@ export async function registrarProduccion(url: string): Promise<UsuarioPrueba> {
   const cookie = r.respuesta.headers.getSetCookie().map((c) => c.split(';')[0]).join('; ');
   const me = await peticionProduccion(url, '/api/me', { cookie });
   return { ...me.cuerpo.usuario, cookie };
+}
+
+/** Servidor SMTP mínimo que acepta todo y guarda cada correo tal como llega. */
+export async function smtpDePruebas() {
+  const correos: string[] = [];
+  const srv = createServer((c) => {
+    let datos: string | null = null;
+    c.on('error', () => undefined);
+    c.write('220 prueba\r\n');
+    c.on('data', (d) => {
+      if (datos !== null) {
+        datos += d.toString();
+        if (datos.endsWith('\r\n.\r\n')) {
+          correos.push(datos);
+          datos = null;
+          c.write('250 ok\r\n');
+        }
+        return;
+      }
+      for (const linea of d.toString().split('\r\n').filter(Boolean)) {
+        if (/^DATA/i.test(linea)) {
+          datos = '';
+          c.write('354 adelante\r\n');
+        } else if (/^QUIT/i.test(linea)) c.end('221 fin\r\n');
+        else c.write('250 ok\r\n');
+      }
+    });
+  });
+  await new Promise<void>((r) => srv.listen(0, '127.0.0.1', r));
+  return {
+    url: `smtp://127.0.0.1:${(srv.address() as AddressInfo).port}`,
+    correos,
+    cerrar: () => new Promise((r) => srv.close(r)),
+  };
 }
 
 /** Token del último enlace de recuperación (espera hasta 3 s: el envío no bloquea la respuesta). */
@@ -79,6 +115,7 @@ export async function iniciarServidorAtaque(bd: BdPruebas, opciones: OpcionesAta
       ...(opciones.limitesReales ? { limitesReales: true } : {}),
       ...(opciones.alRegistrarRuta ? { alRegistrarRuta: opciones.alRegistrarRuta } : {}),
       ...(opciones.proxiesConfianza === undefined ? {} : { proxiesConfianza: opciones.proxiesConfianza }),
+      ...(opciones.smtpUrl ? { smtpUrl: opciones.smtpUrl } : {}),
     });
   }
 

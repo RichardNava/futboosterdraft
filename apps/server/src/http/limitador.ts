@@ -52,6 +52,11 @@ export class Limitador {
     this.cubos.delete(clave);
   }
 
+  /** Olvida todas las claves que empiezan por `prefijo`. Recorre el mapa: solo para operaciones poco frecuentes. */
+  borrarPrefijo(prefijo: string): void {
+    for (const clave of this.cubos.keys()) if (clave.startsWith(prefijo)) this.cubos.delete(clave);
+  }
+
   private fichas(clave: string, ahora: number): number {
     const { capacidad, porSegundo } = this.opciones;
     const cubo = this.cubos.get(clave);
@@ -97,13 +102,64 @@ export const LIMITE_WS: OpcionesLimitador = { capacidad: 40, porSegundo: 10 };
 /** Operaciones de cuenta sin sesión (spec 017, contracts/seguridad.md). */
 export const LIMITES_CUENTA = {
   loginIp: { capacidad: 10, porSegundo: 10 / 60 },
-  loginFallos: { capacidad: 20, porSegundo: 20 / 3600 },
+  loginFallosCliente: { capacidad: 20, porSegundo: 20 / 3600 },
+  loginFallosCorreo: { capacidad: 100, porSegundo: 100 / 3600 },
   registro: { capacidad: 5, porSegundo: 5 / 3600 },
   invitado: { capacidad: 20, porSegundo: 20 / 3600 },
   recuperacionIp: { capacidad: 5, porSegundo: 1 / 60 },
-  recuperacionCorreo: { capacidad: 3, porSegundo: 3 / 3600 },
+  recuperacionCliente: { capacidad: 3, porSegundo: 3 / 3600 },
+  recuperacionCorreo: { capacidad: 10, porSegundo: 10 / 3600 },
 } satisfies Record<string, OpcionesLimitador>;
 /** Sin límites: pruebas y prueba de carga (`LIMITES_DESACTIVADOS=1`, rechazada en producción). */
 export const SIN_LIMITE: OpcionesLimitador = { capacidad: 1e9, porSegundo: 1e9 };
+/** Fallos seguidos de login que disparan el aviso por correo a la cuenta (SEG-032). */
+const FALLOS_PARA_AVISAR = 5;
+const SEGUNDOS_DIA = 86_400;
+
+/**
+ * Fallos de login (SEG-032): por correo y cliente, para que un atacante no bloquee a la víctima desde otra dirección, y
+ * con un tope global más alto por correo contra los ataques repartidos. Decide también cuándo avisar a la cuenta.
+ */
+export class FallosLogin {
+  private readonly porCliente: Limitador;
+  private readonly porCorreo: Limitador;
+  /** Admite los fallos previos al aviso; se vacía en un día. No es un límite: funciona aunque estén desactivados. */
+  private readonly seguidos: Limitador;
+  /** Un aviso por cuenta y día, para que el aviso no sirva para inundar el correo de nadie. */
+  private readonly avisados: Limitador;
+
+  constructor(limitesDesactivados = false, ahora: () => number = Date.now) {
+    const limite = (o: OpcionesLimitador) => new Limitador({ ...(limitesDesactivados ? SIN_LIMITE : o), ahora });
+    this.porCliente = limite(LIMITES_CUENTA.loginFallosCliente);
+    this.porCorreo = limite(LIMITES_CUENTA.loginFallosCorreo);
+    this.seguidos = new Limitador({ capacidad: FALLOS_PARA_AVISAR - 1, porSegundo: (FALLOS_PARA_AVISAR - 1) / SEGUNDOS_DIA, ahora });
+    this.avisados = new Limitador({ capacidad: 1, porSegundo: 1 / SEGUNDOS_DIA, ahora });
+  }
+
+  /** Consulta sin gastar, igual exista o no la cuenta. */
+  puedeIntentar(correo: string, cliente: string): boolean {
+    return this.porCliente.disponible(`${correo}|${cliente}`) && this.porCorreo.disponible(correo);
+  }
+
+  /** Anota un fallo; devuelve `true` si toca avisar a la cuenta. */
+  anotarFallo(correo: string, cliente: string): boolean {
+    this.porCliente.permitir(`${correo}|${cliente}`);
+    this.porCorreo.permitir(correo);
+    return !this.seguidos.permitir(correo) && this.avisados.permitir(correo);
+  }
+
+  /** Un acierto corta la serie de fallos y libera a ese cliente; el tope global sigue contando. */
+  anotarAcierto(correo: string, cliente: string): void {
+    this.seguidos.borrar(correo);
+    this.porCliente.borrar(`${correo}|${cliente}`);
+  }
+
+  /** Al restablecer la contraseña, la cuenta vuelve a empezar. */
+  olvidar(correo: string): void {
+    this.seguidos.borrar(correo);
+    this.porCorreo.borrar(correo);
+    this.porCliente.borrarPrefijo(`${correo}|`);
+  }
+}
 /** Tamaño máximo de un mensaje (cuerpo HTTP o mensaje WebSocket). */
 export const TAMANO_MAXIMO_MENSAJE = 64 * 1024;

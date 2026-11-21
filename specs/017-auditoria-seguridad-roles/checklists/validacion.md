@@ -25,9 +25,9 @@ procede de ellos. Hay que resolverlo antes de T108, porque SC-011 exige los reco
 |---|---|
 | `pnpm lint` y `pnpm typecheck` | Correcto |
 | `pnpm test` | Correcto: 1.439 pruebas |
-| `pnpm test:integration` | 276 de 277 en la última ejecución completa. El fallo era la prueba que cuenta consultas, que incluía la revisión periódica de sesiones; corregida y repetida en verde por separado |
+| `pnpm test:integration` | Correcto: 277 pruebas, con SEG-032 |
 | `pnpm test:equivalence` | Correcto: 275 pruebas |
-| `pnpm seguridad` | Correcto: 121 de 121 ataques bloqueados |
+| `pnpm seguridad` | Correcto: 128 de 128 ataques bloqueados, con SEG-032 |
 | `pnpm audit --audit-level=high` | Sin altos ni críticos |
 | Imagen de producción | Se construye y no contiene herramientas de pruebas |
 | CSP contra la imagen, con HTTPS local | Correcto: sin violaciones, con un control que confirma que se detectan |

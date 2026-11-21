@@ -2,7 +2,7 @@
 
 Generado por `pnpm seguridad`. Cada fila es un ataque que se repite contra el sistema.
 
-**121 de 121 ataques bloqueados.**
+**128 de 128 ataques bloqueados.**
 
 | Ataque | Hallazgo | Resultado |
 |---|---|---|
@@ -83,9 +83,16 @@ Generado por `pnpm seguridad`. Cada fila es un ataque que se repite contra el si
 | elegir dos veces en el mismo turno | SEG-000 | Bloqueado |
 | ver en los mensajes qué ha elegido otro participante | SEG-000 | Bloqueado |
 | probar 100 contraseñas cambiando la cookie y X-Forwarded-For | SEG-003 | Bloqueado |
-| repartir 25 fallos contra una cuenta entre muchas direcciones | SEG-003 | Bloqueado |
+| repartir 105 fallos contra una cuenta entre muchas direcciones | SEG-003 | Bloqueado |
 | el bloqueo por fallos responde igual exista o no la cuenta | SEG-003 | Bloqueado |
 | bloquear una cuenta ajena no impide recuperarla | SEG-003 | Bloqueado |
+| agotar los fallos de login de una cuenta desde un solo cliente | SEG-032 | Bloqueado |
+| impedir entrar a otra persona con 25 fallos desde otras direcciones | SEG-032 | Bloqueado |
+| gastar desde un cliente los enlaces de recuperación de otra persona | SEG-032 | Bloqueado |
+| probar 5 contraseñas seguidas sin que la persona se entere | SEG-032 | Bloqueado |
+| inundar de avisos el correo de otra persona | SEG-032 | Bloqueado |
+| descubrir por el aviso si un correo tiene cuenta | SEG-032 | Bloqueado |
+| un acierto reinicia los fallos seguidos y no se avisa | SEG-032 | Bloqueado |
 | hacer crecer el limitador rotando direcciones | SEG-022 | Bloqueado |
 | saturar la API con cookies inventadas o sin cookie | SEG-013 | Bloqueado |
 | superar el cupo de una sesión real | SEG-013 | Bloqueado |

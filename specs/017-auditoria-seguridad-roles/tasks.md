@@ -181,7 +181,7 @@ Van primero y aisladas, porque zod 4 toca todo el protocolo.
 
 - [X] T071 [US2] Corregir cada hallazgo crítico o alto de `auditoria.md` que no cubra otra tarea, con su ataque en `apps/server/tests/seguridad/` (FR-008, FR-010)
 - [X] T072 [US2] Corregir los hallazgos medios y bajos restantes, incluido el tope de partidas de FR-032a (SEG-016) con su ataque en `apps/server/tests/seguridad/`, o redactar en `auditoria.md` la propuesta de aceptación con riesgo residual y condición de revisión (FR-009)
-- [ ] T073 [US2] (persona responsable) Aceptar o rechazar cada propuesta de T072 y registrar quién, cuándo y por qué en `specs/017-auditoria-seguridad-roles/auditoria.md`
+- [X] T073 [US2] (persona responsable) Aceptar o rechazar cada propuesta de T072 y registrar quién, cuándo y por qué en `specs/017-auditoria-seguridad-roles/auditoria.md`
 - [X] T074 [US2] Ejecutar `pnpm seguridad` y `pnpm test:equivalence`, y actualizar el estado y el cierre de cada hallazgo en `auditoria.md` (SC-002, SC-003, SC-012)
 
 **Checkpoint**: ningún crítico o alto abierto y todos los ataques bloqueados.

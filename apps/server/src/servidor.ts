@@ -45,7 +45,7 @@ import { RelojFalso, type Reloj } from './programador/reloj';
 import { Temporizadores } from './programador/temporizadores';
 import { Pasarela } from './ws/pasarela';
 import { crearCalculo } from './simulacion/grupo';
-import { Limitador, LIMITES_CUENTA, normalizarCorreo, SIN_LIMITE } from './http/limitador';
+import { FallosLogin, normalizarCorreo, SIN_LIMITE } from './http/limitador';
 import { sesiones, usuarios } from './persistencia/esquema/index';
 import { and, eq, gt, inArray, isNull } from 'drizzle-orm';
 
@@ -104,7 +104,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   const temporizadores = new Temporizadores(config.reloj);
   // Spec 017 (FR-028): en producción no se entrega nada pagado en euros hasta que haya una pasarela real.
   const economia = new ServicioEconomia(config.db, catalogo, cosmeticos, ajustes, undefined, () => config.reloj.ahora(), process.env.NODE_ENV !== 'production');
-  const fallosLogin = new Limitador(config.limitesDesactivados ? SIN_LIMITE : LIMITES_CUENTA.loginFallos);
+  const fallosLogin = new FallosLogin(config.limitesDesactivados);
   const calculo = crearCalculo(config.hilosSimulacion ?? 0, { metricas, logger });
 
   // El gestor se crea después de la autenticación y la pasarela, que lo usan a través de esta referencia.
@@ -116,7 +116,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
     alVincularInvitado: (invitadoId, nuevoId) => g().alVincularInvitado(invitadoId, nuevoId),
     // `avisos` se crea más abajo; solo se usa al pedir una recuperación, con el servidor ya montado.
     enviarRecuperacion: (email, enlace) => avisos.enviarRecuperacion(email, enlace),
-    alRestablecerContrasena: (email) => fallosLogin.borrar(normalizarCorreo(email)),
+    alRestablecerContrasena: (email) => fallosLogin.olvidar(normalizarCorreo(email)),
     logger,
   });
 
@@ -256,6 +256,7 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
       alCerrarSesion: (u) => gestor.alCerrarSesion(u),
       alEliminarCuenta: (u) => gestor.eliminarCuenta(u.id),
       fallosLogin,
+      alIntentosFallidos: (correo) => void avisos.avisarIntentosFallidos(correo),
       ...(config.limitesDesactivados ? { limitesDesactivados: true } : {}),
     },
     ...(config.limitesDesactivados ? { limitesDesactivados: true } : {}),

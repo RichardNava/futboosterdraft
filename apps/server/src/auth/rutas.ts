@@ -4,7 +4,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { cuerpoError, errores } from '../http/errores';
-import { claveCliente, Limitador, LIMITES_CUENTA, normalizarCorreo, SIN_LIMITE, type OpcionesLimitador } from '../http/limitador';
+import { claveCliente, FallosLogin, Limitador, LIMITES_CUENTA, normalizarCorreo, SIN_LIMITE, type OpcionesLimitador } from '../http/limitador';
 import { apodoValido, aUsuarioSesion, type Auth, type UsuarioSesion } from './auth';
 
 declare module 'fastify' {
@@ -86,7 +86,9 @@ export interface OpcionesRutasAuth {
   /** Borra la cuenta y sus datos; sin él, `DELETE /api/cuenta` no se registra. */
   alEliminarCuenta?: (usuario: UsuarioSesion) => Promise<void>;
   /** Fallos de login por correo: se comparte con Better Auth, que los borra al restablecer la contraseña. */
-  fallosLogin?: Limitador;
+  fallosLogin?: FallosLogin;
+  /** Avisa a la cuenta de varios fallos seguidos; no debe bloquear la respuesta ni revelar si existe (SEG-032). */
+  alIntentosFallidos?: (correo: string) => void;
   /** Sin límites de uso: pruebas y prueba de carga. */
   limitesDesactivados?: boolean;
 }
@@ -96,10 +98,11 @@ export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: O
   const { requiereSesion, requiereRegistrado } = crearHooksSesion(auth);
   const limite = (o: OpcionesLimitador) => new Limitador(opciones.limitesDesactivados ? SIN_LIMITE : o);
   const limiteLogin = limite(LIMITES_CUENTA.loginIp);
-  const fallosLogin = opciones.fallosLogin ?? limite(LIMITES_CUENTA.loginFallos);
+  const fallosLogin = opciones.fallosLogin ?? new FallosLogin(opciones.limitesDesactivados);
   const limiteRegistro = limite(LIMITES_CUENTA.registro);
   const limiteInvitado = limite(LIMITES_CUENTA.invitado);
   const limiteRecuperacion = limite(LIMITES_CUENTA.recuperacionIp);
+  const limiteRecuperacionCliente = limite(LIMITES_CUENTA.recuperacionCliente);
   const limiteRecuperacionCorreo = limite(LIMITES_CUENTA.recuperacionCorreo);
 
   app.post('/api/auth/invitado', async (req, reply) => {
@@ -125,26 +128,31 @@ export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: O
   });
 
   app.post<{ Body: { email?: string; password?: string } }>('/api/auth/login', async (req, reply) => {
-    if (!limiteLogin.permitir(claveCliente(req.ip))) return demasiados(reply);
+    const cliente = claveCliente(req.ip);
+    if (!limiteLogin.permitir(cliente)) return demasiados(reply);
     const { email, password } = req.body ?? {};
     if (typeof email !== 'string' || typeof password !== 'string' || email.length > LARGO_MAXIMO_CORREO) {
       throw errores.validacion('DATOS_INVALIDOS', 'Faltan el correo o la contraseña');
     }
     // Se comprueba igual exista o no la cuenta, y solo gastan ficha los fallos.
     const correo = normalizarCorreo(email);
-    if (!fallosLogin.disponible(correo)) return demasiados(reply);
+    if (!fallosLogin.puedeIntentar(correo, cliente)) return demasiados(reply);
     const respuesta = await auth.api.signInEmail({ body: { email, password }, headers: cabecerasWeb(req), asResponse: true });
-    if (respuesta.status === 401) fallosLogin.permitir(correo);
+    if (respuesta.ok) fallosLogin.anotarAcierto(correo, cliente);
+    else if (respuesta.status === 401 && fallosLogin.anotarFallo(correo, cliente)) opciones.alIntentosFallidos?.(correo);
     return responderSesion(reply, respuesta);
   });
 
   // Recuperar la contraseña (spec 013, FR-027). Se responde sin esperar a la operación: ni la respuesta ni el tiempo
-  // dicen si el correo tiene cuenta (spec 017, FR-016), y pasado el cupo del correo solo se deja de enviar.
+  // dicen si el correo tiene cuenta (spec 017, FR-016). Pasado el cupo solo se deja de enviar: por correo y cliente, para
+  // que nadie gaste los enlaces de otra persona, y con un tope global contra el envío masivo (SEG-032).
   app.post<{ Body: { email?: string } }>('/api/auth/recuperar', async (req, reply) => {
-    if (!limiteRecuperacion.permitir(claveCliente(req.ip))) return demasiados(reply);
+    const cliente = claveCliente(req.ip);
+    if (!limiteRecuperacion.permitir(cliente)) return demasiados(reply);
     const email = CorreoValido.safeParse(req.body?.email);
     if (!email.success) throw errores.validacion('DATOS_INVALIDOS', 'Falta el correo');
-    if (limiteRecuperacionCorreo.permitir(normalizarCorreo(email.data))) {
+    const correo = normalizarCorreo(email.data);
+    if (limiteRecuperacionCliente.permitir(`${correo}|${cliente}`) && limiteRecuperacionCorreo.permitir(correo)) {
       void auth.api
         .requestPasswordReset({ body: { email: email.data }, headers: cabecerasWeb(req) })
         .catch(() => req.log.error('No se pudo generar el enlace de recuperación'));

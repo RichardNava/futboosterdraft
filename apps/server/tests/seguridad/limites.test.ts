@@ -3,10 +3,10 @@
  * arranca su propio servidor; las cuentas se preparan en otro sin límites sobre la misma base de datos.
  */
 import { sql } from 'drizzle-orm';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { Limitador } from '../../src/http/limitador';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { FallosLogin, Limitador } from '../../src/http/limitador';
 import { iniciarBdPruebas, type BdPruebas } from '../helpers/bd';
-import { crearInvitado, crearRegistrado, iniciarServidorAtaque, peticion, tokenRecuperacion, type ServidorAtaque } from './ayudas';
+import { crearInvitado, crearRegistrado, iniciarServidorAtaque, peticion, smtpDePruebas, tokenRecuperacion, type ServidorAtaque } from './ayudas';
 
 const PARTIDA = { modo: 'liga', numParticipantes: 4 };
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -25,6 +25,8 @@ describe('límites de uso', () => {
     peticion(s.url, '/api/auth/login', { cuerpo: { email, password }, cabeceras: { 'x-forwarded-for': ip } });
   const recuperar = (s: ServidorAtaque, email: string, ip: string) =>
     peticion(s.url, '/api/auth/recuperar', { cuerpo: { email }, cabeceras: { 'x-forwarded-for': ip } });
+  const enlacesGenerados = async () =>
+    (await bd.db.execute<{ n: number }>(sql`select count(*)::int as n from verificaciones where identificador like 'reset-password:%'`)).rows[0]!.n;
 
   beforeAll(async () => {
     bd = await iniciarBdPruebas();
@@ -55,22 +57,22 @@ describe('límites de uso', () => {
     expect(estados.filter((e) => e === 429).length).toBeGreaterThanOrEqual(89);
   });
 
-  it('SEG-003: repartir 25 fallos contra una cuenta entre muchas direcciones', async () => {
+  it('SEG-003: repartir 105 fallos contra una cuenta entre muchas direcciones', async () => {
     const s = await conLimites();
     const u = await crearRegistrado(aux.url);
     const estados: number[] = [];
-    for (let i = 0; i < 25; i++) estados.push((await login(s, u.email!, `mala-${i}-contraseña`, `198.51.100.${i + 1}`)).estado);
-    expect(estados.slice(0, 20).every((e) => e === 401)).toBe(true);
-    expect(estados.slice(20).every((e) => e === 429)).toBe(true);
+    for (let i = 0; i < 105; i++) estados.push((await login(s, u.email!, `mala-${i}-contraseña`, `198.51.100.${i + 1}`)).estado);
+    expect(estados.slice(0, 100).every((e) => e === 401)).toBe(true);
+    expect(estados.slice(100).every((e) => e === 429)).toBe(true);
   });
 
   it('SEG-003: el bloqueo por fallos responde igual exista o no la cuenta', async () => {
     const s = await conLimites();
     const u = await crearRegistrado(aux.url);
     const respuestas = [];
-    for (const email of [u.email!, 'nadie@pruebas.test']) {
-      for (let i = 0; i < 20; i++) await login(s, email, `mala-${i}-contraseña`, `192.0.2.${i + 1}`);
-      respuestas.push(await login(s, email, 'otra-mala-contraseña', '192.0.2.200'));
+    for (const [n, email] of [u.email!, 'nadie@pruebas.test'].entries()) {
+      for (let i = 0; i < 100; i++) await login(s, email, `mala-${i}-contraseña`, `10.${n}.0.${i + 1}`);
+      respuestas.push(await login(s, email, 'otra-mala-contraseña', `10.${n}.1.1`));
     }
     expect(respuestas[0]!.estado).toBe(429);
     expect(respuestas[1]!.estado).toBe(429);
@@ -80,14 +82,93 @@ describe('límites de uso', () => {
   it('SEG-003: bloquear una cuenta ajena no impide recuperarla', async () => {
     const s = await conLimites();
     const u = await crearRegistrado(aux.url);
-    for (let i = 0; i < 20; i++) await login(s, u.email!, `mala-${i}-contraseña`, `192.0.2.${i + 1}`);
-    expect((await login(s, u.email!, 'contraseña-segura', '192.0.2.100')).estado).toBe(429);
+    for (let i = 0; i < 100; i++) await login(s, u.email!, `mala-${i}-contraseña`, `192.0.2.${i + 1}`);
+    expect((await login(s, u.email!, 'contraseña-segura', '192.0.2.200')).estado).toBe(429);
 
-    expect((await recuperar(s, u.email!, '192.0.2.101')).estado).toBe(200);
+    expect((await recuperar(s, u.email!, '192.0.2.201')).estado).toBe(200);
     const token = await tokenRecuperacion(bd);
-    const r = await peticion(s.url, '/api/auth/restablecer', { cuerpo: { token, password: 'contraseña-nueva' }, cabeceras: { 'x-forwarded-for': '192.0.2.101' } });
+    const r = await peticion(s.url, '/api/auth/restablecer', { cuerpo: { token, password: 'contraseña-nueva' }, cabeceras: { 'x-forwarded-for': '192.0.2.201' } });
     expect(r.estado).toBe(200);
-    expect((await login(s, u.email!, 'contraseña-nueva', '192.0.2.102')).estado).toBe(200);
+    expect((await login(s, u.email!, 'contraseña-nueva', '192.0.2.202')).estado).toBe(200);
+  });
+
+  it('SEG-032: agotar los fallos de login de una cuenta desde un solo cliente', () => {
+    let t = 0;
+    const f = new FallosLogin(false, () => t);
+    for (let i = 0; i < 20; i++) {
+      expect(f.puedeIntentar('v@pruebas.test', 'atacante')).toBe(true);
+      f.anotarFallo('v@pruebas.test', 'atacante');
+    }
+    expect(f.puedeIntentar('v@pruebas.test', 'atacante')).toBe(false);
+    expect(f.puedeIntentar('v@pruebas.test', 'victima')).toBe(true);
+    t += 3_600_000;
+    expect(f.puedeIntentar('v@pruebas.test', 'atacante')).toBe(true);
+  });
+
+  it('SEG-032: impedir entrar a otra persona con 25 fallos desde otras direcciones', async () => {
+    const s = await conLimites();
+    const u = await crearRegistrado(aux.url);
+    for (let i = 0; i < 25; i++) await login(s, u.email!, `mala-${i}-contraseña`, `198.51.100.${i + 1}`);
+    expect((await login(s, u.email!, 'contraseña-segura', '203.0.113.200')).estado).toBe(200);
+  });
+
+  it('SEG-032: gastar desde un cliente los enlaces de recuperación de otra persona', async () => {
+    const s = await conLimites();
+    const u = await crearRegistrado(aux.url);
+    for (let i = 0; i < 5; i++) await recuperar(s, u.email!, '198.51.100.9');
+    await espera(300);
+    expect(await enlacesGenerados()).toBe(3);
+    await recuperar(s, u.email!, '203.0.113.200');
+    await espera(300);
+    expect(await enlacesGenerados()).toBe(4);
+  });
+
+  describe('aviso por correo de intentos fallidos', () => {
+    let smtp: Awaited<ReturnType<typeof smtpDePruebas>>;
+    let s: ServidorAtaque;
+    const fallar = async (email: string, n: number) => {
+      for (let i = 0; i < n; i++) expect((await login(s, email, `mala-${i}-contraseña`, '198.51.100.20')).estado).toBe(401);
+    };
+
+    beforeEach(async () => {
+      smtp = await smtpDePruebas();
+      s = await iniciarServidorAtaque(bd, { smtpUrl: smtp.url });
+      abiertos.push(s);
+    });
+    afterEach(() => smtp.cerrar());
+
+    it('SEG-032: probar 5 contraseñas seguidas sin que la persona se entere', async () => {
+      const u = await crearRegistrado(s.url);
+      await fallar(u.email!, 4);
+      await espera(200);
+      expect(smtp.correos).toHaveLength(0);
+      await fallar(u.email!, 1);
+      await vi.waitFor(() => expect(smtp.correos).toHaveLength(1));
+      expect(smtp.correos[0]).toContain(`To: ${u.email}`);
+      expect(smtp.correos[0]).not.toContain('198.51.100.20');
+    });
+
+    it('SEG-032: inundar de avisos el correo de otra persona', async () => {
+      const u = await crearRegistrado(s.url);
+      await fallar(u.email!, 12);
+      await espera(300);
+      expect(smtp.correos).toHaveLength(1);
+    });
+
+    it('SEG-032: descubrir por el aviso si un correo tiene cuenta', async () => {
+      await fallar('nadie@pruebas.test', 6);
+      await espera(300);
+      expect(smtp.correos).toHaveLength(0);
+    });
+
+    it('SEG-032: un acierto reinicia los fallos seguidos y no se avisa', async () => {
+      const u = await crearRegistrado(s.url);
+      await fallar(u.email!, 4);
+      expect((await login(s, u.email!, 'contraseña-segura', '198.51.100.20')).estado).toBe(200);
+      await fallar(u.email!, 4);
+      await espera(300);
+      expect(smtp.correos).toHaveLength(0);
+    });
   });
 
   it('SEG-022: hacer crecer el limitador rotando direcciones', () => {
@@ -141,10 +222,9 @@ describe('límites de uso', () => {
   it('SEG-014: pedir muchos enlaces para un mismo correo desde varias direcciones', async () => {
     const s = await conLimites();
     const u = await crearRegistrado(aux.url);
-    for (let i = 0; i < 6; i++) expect((await recuperar(s, u.email!, `198.51.100.${i + 1}`)).estado).toBe(200);
+    for (let i = 0; i < 15; i++) expect((await recuperar(s, u.email!, `198.51.100.${i + 1}`)).estado).toBe(200);
     await espera(300);
-    const filas = await bd.db.execute<{ n: number }>(sql`select count(*)::int as n from verificaciones where identificador like 'reset-password:%'`);
-    expect(filas.rows[0]!.n).toBe(3);
+    expect(await enlacesGenerados()).toBe(10);
   });
 
   it('SEG-015: crear cuentas en bucle desde el mismo cliente', async () => {

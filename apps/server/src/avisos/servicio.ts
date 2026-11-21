@@ -90,6 +90,35 @@ Si no lo has pedido tú, ignora este correo.`,
     }
   }
 
+  /**
+   * Avisa a una cuenta registrada de varios intentos fallidos de acceso (SEG-032). Sin cuenta no hace nada, y se llama
+   * sin esperar para que el tiempo de respuesta no lo revele. Nunca lanza.
+   */
+  async avisarIntentosFallidos(correo: string): Promise<void> {
+    if (!this.transporte) return;
+    try {
+      const [cuenta] = await this.db
+        .select({ email: usuarios.email })
+        .from(usuarios)
+        .where(and(eq(usuarios.email, correo), eq(usuarios.isAnonymous, false)))
+        .limit(1);
+      if (!cuenta) return;
+      await this.transporte.sendMail({
+        to: cuenta.email,
+        subject: 'Fútboosterdraft: intentos de acceso a tu cuenta',
+        text: `Hemos detectado varios intentos seguidos de entrar en tu cuenta con una contraseña incorrecta.
+
+Si has sido tú, no tienes que hacer nada.
+
+Si no has sido tú, tu cuenta sigue protegida, pero te recomendamos cambiar la contraseña desde la opción de recuperarla al iniciar sesión:
+
+${this.urlPublica}/?acceso=entrar`,
+      });
+    } catch (err) {
+      this.logger.warn({ codigo: codigoSmtp(err) }, 'No se pudo enviar el aviso de intentos de acceso');
+    }
+  }
+
   /** Avisos de un usuario (solo los no leídos si se pide). */
   async listar(usuarioId: string, soloNoLeidos: boolean) {
     const condicion = soloNoLeidos ? and(eq(avisos.usuarioId, usuarioId), eq(avisos.leido, false)) : eq(avisos.usuarioId, usuarioId);

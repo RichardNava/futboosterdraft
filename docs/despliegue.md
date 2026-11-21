@@ -168,7 +168,8 @@ Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas
 ## 6. Límites y seguridad
 
 - **Peticiones**: 60 en ráfaga y 20 por segundo por usuario, y 300 en ráfaga y 100 por segundo por cliente en toda la API, también sin sesión (si se supera, `429 DEMASIADAS_PETICIONES`). En el WebSocket, 40 mensajes en ráfaga y 10 por segundo por participante (si se supera, `error DEMASIADOS_MENSAJES`).
-- **Cuentas**: login, 10 por minuto y cliente y 20 fallos por hora y correo; registro, 5 por hora y cliente; invitado, 20 por hora y cliente; recuperación, 5 seguidas y 1 por minuto por cliente y 3 por hora y correo. Las direcciones IPv6 cuentan por su /64.
+- **Cuentas**: login, 10 por minuto y cliente, 20 fallos por hora por correo y cliente, y 100 por hora y correo; registro, 5 por hora y cliente; invitado, 20 por hora y cliente; recuperación, 5 seguidas y 1 por minuto por cliente, 3 por hora por correo y cliente, y 10 por hora y correo. Las direcciones IPv6 cuentan por su /64.
+- **Aviso de intentos de acceso**: al quinto fallo de login seguido, la cuenta recibe un correo, como máximo uno al día. Necesita `SMTP_URL`.
 - **Partidas en curso**: 10 por cuenta registrada y 3 por invitado (`409 LIMITE_PARTIDAS`).
 - **Tamaño máximo**: 64 KB por cuerpo HTTP (`413`) y por mensaje WebSocket.
 - **Otros sitios**: se rechaza (`403 ORIGEN_NO_PERMITIDO`) cualquier POST, PUT o DELETE cuyo `Origin` no sea `PUBLIC_URL`.
