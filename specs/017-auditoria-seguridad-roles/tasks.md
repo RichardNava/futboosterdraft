@@ -113,7 +113,7 @@ Van primero y aisladas, porque zod 4 toca todo el protocolo.
 - [ ] T026 [US2] Subir `zod` a 4.x en `apps/server/package.json` y `packages/protocol/package.json`, dar dos argumentos a los 7 `z.record(...)` de `packages/protocol/src/http/base.ts`, `http/partidos.ts`, `ws/draft.ts` y `ws/partido.ts`, y revisar los identificadores de pruebas que dejen de pasar con el `uuid()` estricto
 - [ ] T027 [US2] Subir `nodemailer` a 10.x y `@types/nodemailer` en `apps/server/package.json`, y adaptar `apps/server/src/avisos/servicio.ts` si cambia su API
 - [ ] T028 [US2] Subir `@fastify/static` a 10.x en `apps/server/package.json` y comprobar en `apps/server/src/http/app.ts` que siguen sirviéndose la web y sus recursos en modo producción
-- [ ] T029 [US2] Subir `vitest` a 3.2.x o superior en `package.json` y corregir lo que cambie en la configuración de pruebas
+- [ ] T029 [US2] Subir `vitest` a 3.2.x o superior en `package.json`, y `testcontainers` y `@testcontainers/postgresql` a 11.14 o una 11.x posterior en `apps/server/package.json` (SEG-031), y corregir lo que cambie en la configuración de pruebas
 - [ ] T030 [US2] Verificar la subida: `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm e2e`, `pnpm audit --audit-level=high` sin altos ni críticos y la imagen sin herramientas de pruebas, y anotar el resultado en `auditoria.md` (FR-038, SC-011)
 
 ### Migración 0018
@@ -180,7 +180,7 @@ Van primero y aisladas, porque zod 4 toca todo el protocolo.
 ### Cierre de la corrección
 
 - [ ] T071 [US2] Corregir cada hallazgo crítico o alto de `auditoria.md` que no cubra otra tarea, con su ataque en `apps/server/tests/seguridad/` (FR-008, FR-010)
-- [ ] T072 [US2] Corregir los hallazgos medios y bajos restantes, o redactar en `auditoria.md` la propuesta de aceptación con riesgo residual y condición de revisión (FR-009)
+- [ ] T072 [US2] Corregir los hallazgos medios y bajos restantes, incluido el tope de partidas de FR-032a (SEG-016) con su ataque en `apps/server/tests/seguridad/`, o redactar en `auditoria.md` la propuesta de aceptación con riesgo residual y condición de revisión (FR-009)
 - [ ] T073 [US2] (persona responsable) Aceptar o rechazar cada propuesta de T072 y registrar quién, cuándo y por qué en `specs/017-auditoria-seguridad-roles/auditoria.md`
 - [ ] T074 [US2] Ejecutar `pnpm seguridad` y `pnpm test:equivalence`, y actualizar el estado y el cierre de cada hallazgo en `auditoria.md` (SC-002, SC-003, SC-012)
 

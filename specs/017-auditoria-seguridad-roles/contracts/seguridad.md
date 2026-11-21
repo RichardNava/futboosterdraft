@@ -36,9 +36,14 @@ Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'
 X-Content-Type-Options: nosniff
 Referrer-Policy: no-referrer
 Permissions-Policy: camera=(), microphone=(), geolocation=()
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Resource-Policy: same-origin
 ```
 
 Solo en producción: `Strict-Transport-Security: max-age=31536000; includeSubDomains`.
+
+No se envía `Cross-Origin-Embedder-Policy`: el juego no la necesita y podría estorbar a la pasarela de pagos. INI-12 debe
+revisar `Cross-Origin-Opener-Policy` si su pasarela usa una ventana emergente.
 
 Ninguna respuesta incluye `Access-Control-Allow-Origin`.
 

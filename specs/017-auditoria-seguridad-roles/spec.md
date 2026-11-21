@@ -43,6 +43,11 @@ altas ni críticas)."
   conserva todo: lo comprado y los fragmentos que le queden.
 - Q: ¿Confirmas las cinco decisiones provisionales que quedan en la spec (D-3 a D-7), o quieres cambiar alguna? → A: Se
   confirman las cinco tal como están.
+- Q: ¿Cuántas partidas en curso puede tener a la vez cada cuenta? (SEG-016) → A: 10 una cuenta registrada y 3 un invitado.
+- Q: ¿Subimos `testcontainers` para eliminar sus avisos de seguridad? (SEG-031) → A: Sí, a la 11.14, sin cambiar la
+  versión mínima de Node.
+- Q: ¿Añadimos las cabeceras `Cross-Origin-*` de las que avisó el escaneo con ZAP? → A: Sí, `Cross-Origin-Opener-Policy`
+  y `Cross-Origin-Resource-Policy`, sin `Cross-Origin-Embedder-Policy`.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -186,6 +191,8 @@ se permiten.
   falta, sin mostrar el valor.
 - Una **vulnerabilidad de dependencia sin versión corregida**: si es alta o crítica y afecta al sistema, se sustituye o
   se elimina su uso; si no le afecta, el informe lo justifica con evidencia.
+- Una cuenta **en el tope de partidas** repite el envío de una creación ya hecha: recibe la misma partida, sin rechazo ni
+  segundo cobro.
 
 ## Requirements *(mandatory)*
 
@@ -279,12 +286,17 @@ se permiten.
 #### Superficie expuesta
 
 - **FR-029**: Las páginas DEBEN enviar protecciones del navegador que impidan ejecutar código no autorizado, incrustar la
-  aplicación en otros sitios, rebajar la conexión cifrada y filtrar direcciones a terceros.
+  aplicación en otros sitios, rebajar la conexión cifrada, filtrar direcciones a terceros, acceder a su ventana desde otros
+  sitios y cargar sus recursos desde otros sitios.
 - **FR-030**: La API NO DEBE admitir peticiones con credenciales desde otros orígenes.
 - **FR-031**: Los textos escritos por personas DEBEN validarse en longitud y caracteres, y mostrarse siempre como texto en
   pantallas y correos.
 - **FR-032**: Todas las entradas DEBEN validarse en el servidor, y ninguna DEBE poder alterar una consulta a la base de
   datos.
+- **FR-032a**: Una cuenta registrada NO DEBE tener más de 10 partidas en curso a la vez, ni un invitado más de 3, tampoco
+  con peticiones simultáneas. Cuentan las partidas en sala, en draft o en torneo, creadas o unidas, en las que la cuenta
+  sigue participando. Al llegar al tope, el servidor DEBE rechazar sin efecto ni cobro crear otra partida o unirse a ella;
+  la plaza se libera al terminar o abandonar una.
 - **FR-033**: Las métricas NO DEBEN ser accesibles desde Internet aunque el proxy esté mal configurado. La comprobación de
   salud pública DEBE limitarse a indicar si el servicio funciona.
 - **FR-034**: Las rutas y opciones de desarrollo NO DEBEN existir en producción.
@@ -294,6 +306,8 @@ se permiten.
   dirección pública sin cifrar.
 - **FR-037**: La imagen de despliegue DEBE ejecutarse sin privilegios y contener solo lo necesario.
 - **FR-038**: Las dependencias de producción NO DEBEN tener vulnerabilidades altas ni críticas que afecten al sistema.
+  Las de desarrollo tampoco DEBEN dar avisos altos ni críticos: `testcontainers` y `@testcontainers/postgresql` se suben
+  a la 11.14 o a una 11.x posterior, sin elevar la versión mínima de Node (SEG-031).
 - **FR-039**: Los correos NO DEBEN permitir inyectar cabeceras ni destinatarios, y sus enlaces DEBEN apuntar siempre a la
   dirección pública configurada.
 
@@ -387,7 +401,7 @@ se permiten.
 - **SC-010**: `/robots.txt` está publicado; un validador confirma la portada como permitida y el 100 % de las direcciones
   privadas de la lista de comprobación como bloqueadas.
 - **SC-011**: Las comprobaciones de calidad del proyecto (tipos, estilo, pruebas y recorridos completos) terminan en verde,
-  y el análisis de dependencias no da vulnerabilidades altas ni críticas.
+  y el análisis completo de dependencias, incluidas las de desarrollo, no da vulnerabilidades altas ni críticas.
 - **SC-012**: Las mismas partidas de referencia producen exactamente los mismos resultados antes y después de la spec.
 
 ## Assumptions
@@ -436,8 +450,8 @@ buscar el resto.
 - INI-17 no depende de otra iniciativa y puede avanzar en paralelo a INI-16. Lo que INI-16 cambie en el servidor entra en la
   repetición de FR-007 si se integra antes de cerrar esta spec. INI-12 e INI-18 deben repetir la auditoría sobre lo que
   añadan. INI-12 se implementa en su propia spec, pero debe estar cerrada antes de abrir la beta (D-1).
-- Los valores de FR-013 son iniciales y razonables para una beta; pueden ajustarse si la prueba con personas reales
-  muestra bloqueos legítimos.
+- Los valores de FR-013 y FR-032a son iniciales y razonables para una beta; pueden ajustarse si la prueba con personas
+  reales muestra bloqueos legítimos.
 - La beta se sirve por HTTPS detrás de un proxy inverso, como indica la guía de despliegue. Aun así, las protecciones
   obligatorias no deben depender solo de que el proxy esté bien configurado.
 - No hay datos de producción que migrar: las cuentas existentes pasan a jugador o invitado según su tipo actual.

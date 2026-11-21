@@ -22,11 +22,12 @@ Lo que **ha resistido** los ataques:
 - El enlace de recuperación es de un solo uso y caduca en una hora.
 - No se ha encontrado inyección SQL, XSS ni inyección en correos.
 
-### Decisiones que necesita la persona responsable
+### Decisiones de la persona responsable (2026-11-21)
 
-1. **SEG-016**: ¿cuántas partidas activas puede tener una cuenta? Hoy no hay tope y ninguna tarea lo cubría.
-2. **SEG-031**: ¿se sube `testcontainers` a una versión mayor? Sin eso, `pnpm audit` completo no puede quedar limpio (SC-011).
-3. **ZAP**: ¿se añaden las cabeceras `Cross-Origin-*`, que el contrato de seguridad no incluye? Ver [Escaneo externo](#escaneo-externo-owasp-zap).
+1. **SEG-016**: 10 partidas en curso por cuenta registrada y 3 por invitado (FR-032a).
+2. **SEG-031**: `testcontainers` sube a la 11.14, sin cambiar la versión mínima de Node (FR-038, SC-011).
+3. **ZAP**: se añaden `Cross-Origin-Opener-Policy` y `Cross-Origin-Resource-Policy`, sin `Cross-Origin-Embedder-Policy`
+   (FR-029). Ver [Escaneo externo](#escaneo-externo-owasp-zap).
 
 ## Criterios de severidad (FR-002)
 
@@ -242,9 +243,9 @@ Lo que **ha resistido** los ataques:
 - **Área**: validación de entradas y límites de uso
 - **Severidad**: media. Consume memoria y temporizadores del servidor; no se ha medido el punto de saturación.
 - **Evidencia**: un solo invitado crea 60 partidas de 8 plazas seguidas: todas 201 y las 60 quedan activas en memoria.
-- **Riesgo**: combinado con SEG-015, se podría agotar la memoria del servidor sin cuenta. **Ninguna tarea lo cubría**.
+- **Riesgo**: combinado con SEG-015, se podría agotar la memoria del servidor sin cuenta.
 - **Estado**: abierto
-- **Cierre**: pendiente (T071, con el tope que decida la persona responsable)
+- **Cierre**: pendiente (T072, con el tope de FR-032a)
 
 ### SEG-017. Una cuenta con pase premium no se puede eliminar
 
@@ -390,7 +391,7 @@ Lo que **ha resistido** los ataques:
   `testcontainers` 10.28.0. El plan no los contemplaba.
 - **Riesgo**: bajo, pero impide cumplir SC-011, que exige `pnpm audit` sin altos ni críticos.
 - **Estado**: abierto
-- **Cierre**: pendiente (T071, según la decisión de la persona responsable)
+- **Cierre**: pendiente (T029, T030)
 
 ## Dependencias
 
@@ -422,7 +423,7 @@ respondiendo al terminar.
 | Falta protección contra incrustación | Medio | SEG-011 |
 | Falta `X-Content-Type-Options` | Bajo | SEG-011 |
 | Falta `Permissions-Policy` | Bajo | SEG-011 |
-| Faltan `Cross-Origin-Embedder/Opener/Resource-Policy` | Bajo | Fuera del contrato: **decisión pendiente** |
+| Faltan `Cross-Origin-Embedder/Opener/Resource-Policy` | Bajo | Se añaden `Opener` y `Resource` (T055). `Embedder` no se añade por decisión de la persona responsable |
 | Tipo de contenido inesperado en rutas inexistentes | Bajo | SEG-023 |
 | Marca de tiempo en el JS y en `/metrics` | Bajo | Falso positivo en el JS (números del bundle); `/metrics` queda cubierto por SEG-010 |
 | Avisos informativos (caché, aplicación moderna, errores 4xx, autenticación identificada) | Informativo | Sin acción: describen el funcionamiento normal |
