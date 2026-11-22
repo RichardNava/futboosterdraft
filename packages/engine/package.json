@@ -8,7 +8,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p .",
-    "bench": "vitest bench --run"
+    "bench": "pnpm -w exec vitest bench --run --project engine"
   },
   "dependencies": {
     "@fbd/domain": "workspace:*"
