@@ -6,10 +6,12 @@
  * Su `basePath` es solo interno: el manejador de Better Auth no se expone (spec 017, R6).
  */
 import { randomUUID } from 'node:crypto';
-import { tieneCaracteresNoPermitidos } from '@fbd/domain';
+import { rolEfectivo, tieneCaracteresNoPermitidos, type Rol, type RolAsignable } from '@fbd/domain';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { APIError } from 'better-auth/api';
 import { anonymous } from 'better-auth/plugins/anonymous';
+import { eq } from 'drizzle-orm';
 import type { Logger } from '../observabilidad/logger';
 import type { BaseDatos } from '../persistencia/db';
 import { cuentas, sesiones, usuarios, verificaciones } from '../persistencia/esquema/index';
@@ -26,6 +28,9 @@ interface OpcionesAuth {
   logger?: Logger;
 }
 
+export const CUENTA_SUSPENDIDA = 'CUENTA_SUSPENDIDA';
+export const MENSAJE_CUENTA_SUSPENDIDA = 'Tu cuenta está suspendida. Si crees que es un error, contacta con el equipo.';
+
 /** Better Auth con correo y contraseña, invitados anónimos y sesiones en la base de datos. */
 export function crearAuth(db: BaseDatos, opciones: OpcionesAuth) {
   return betterAuth({
@@ -39,6 +44,24 @@ export function crearAuth(db: BaseDatos, opciones: OpcionesAuth) {
       provider: 'pg',
       schema: { user: usuarios, session: sesiones, account: cuentas, verification: verificaciones },
     }),
+    // `input: false`: nadie puede asignarse un rol al registrarse (spec 017, R16).
+    user: {
+      additionalFields: {
+        rol: { type: 'string', input: false, required: false, defaultValue: 'jugador' },
+        suspendidaEn: { type: 'date', input: false, required: false },
+      },
+    },
+    // Solo se llega aquí con la contraseña correcta: el mensaje no revela la cuenta a terceros (spec 017, R19).
+    databaseHooks: {
+      session: {
+        create: {
+          before: async (sesion) => {
+            const [u] = await db.select({ suspendidaEn: usuarios.suspendidaEn }).from(usuarios).where(eq(usuarios.id, sesion.userId));
+            if (u?.suspendidaEn) throw new APIError('FORBIDDEN', { code: CUENTA_SUSPENDIDA, message: MENSAJE_CUENTA_SUSPENDIDA });
+          },
+        },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 8,
@@ -79,12 +102,20 @@ export interface UsuarioSesion {
   tipo: 'registrado' | 'invitado';
   apodo: string;
   email: string | null;
+  /** Rol efectivo (spec 017, FR-040). */
+  rol: Rol;
 }
 
-/** Usuario de la sesión a partir del de Better Auth (registrado o invitado). */
-export function aUsuarioSesion(user: { id: string; name: string; email: string; isAnonymous?: boolean | null }): UsuarioSesion {
+/** Usuario de la sesión a partir del de Better Auth (registrado o invitado). Nunca incluye `suspendidaEn`. */
+export function aUsuarioSesion(user: { id: string; name: string; email: string; isAnonymous?: boolean | null; rol?: string | null }): UsuarioSesion {
   const invitado = user.isAnonymous === true;
-  return { id: user.id, tipo: invitado ? 'invitado' : 'registrado', apodo: user.name, email: invitado ? null : user.email };
+  return {
+    id: user.id,
+    tipo: invitado ? 'invitado' : 'registrado',
+    apodo: user.name,
+    email: invitado ? null : user.email,
+    rol: rolEfectivo(invitado, (user.rol ?? 'jugador') as RolAsignable),
+  };
 }
 
 /** Apodo válido: 3–20 caracteres (data-model §2.1), sin HTML ni caracteres de control (spec 017, FR-031). */

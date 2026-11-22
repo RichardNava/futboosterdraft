@@ -18,6 +18,7 @@ export * from './sobres/tienda';
 export * from './sobres/rareza';
 export * from './draft/mesa';
 export * from './partida/partida';
+export * from './roles/index';
 export * from './equipo/statsEfectivos';
 export * from './equipo/tactica';
 export * from './equipo/lanzadores';

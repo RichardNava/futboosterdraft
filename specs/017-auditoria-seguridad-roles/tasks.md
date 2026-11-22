@@ -199,37 +199,37 @@ directamente.
 
 ### Dominio, contrato y pruebas
 
-- [ ] T075 [P] [US3] Crear `packages/domain/src/roles/index.ts` con los roles, la matriz de FR-041 y `rolEfectivo` (`es_invitado ? 'invitado' : rol`), exportarlo en `packages/domain/src/index.ts` y probar cada celda en `packages/domain/tests/roles/roles.test.ts`
-- [ ] T076 [P] [US3] Añadir el evento `cerrar_admin` desde `buscando`, `en_draft` y `en_torneo` hacia `abandonada` en `packages/domain/src/partida/partida.ts`, con sus casos en `packages/domain/tests/partida/partida.test.ts`
-- [ ] T077 [P] [US3] Crear `packages/protocol/src/http/admin.ts` con los esquemas de `contracts/http-admin.md` (`motivo` de 3 a 500 caracteres sin caracteres de control; `cantidad` entera de 1 a 10.000; `idEntrega` UUID; `limite` máximo 50) y exportarlo en `packages/protocol/src/index.ts`
-- [ ] T078 [P] [US3] Escribir en `apps/server/tests/seguridad/permisos.test.ts` una prueba de acceso denegado por **cada celda «no»** de FR-041, llamando directamente a la API (SC-004), con el intento registrado
-- [ ] T079 [P] [US3] Escribir en `apps/server/tests/seguridad/admin.test.ts`: cambio de rol aplicado en la siguiente petición, rol propio, dos administradores que se quitan el rol a la vez, invitado con rol, suspensión con sesión abierta, entrega repetida y simultánea, cantidad 10.001, cuenta sin rol betatester, cierre con participación propia, cierre sin premios y registro inalterable
+- [X] T075 [P] [US3] Crear `packages/domain/src/roles/index.ts` con los roles, la matriz de FR-041 y `rolEfectivo` (`es_invitado ? 'invitado' : rol`), exportarlo en `packages/domain/src/index.ts` y probar cada celda en `packages/domain/tests/roles/roles.test.ts`
+- [X] T076 [P] [US3] Añadir el evento `cerrar_admin` desde `buscando`, `en_draft` y `en_torneo` hacia `abandonada` en `packages/domain/src/partida/partida.ts`, con sus casos en `packages/domain/tests/partida/partida.test.ts`
+- [X] T077 [P] [US3] Crear `packages/protocol/src/http/admin.ts` con los esquemas de `contracts/http-admin.md` (`motivo` de 3 a 500 caracteres sin caracteres de control; `cantidad` entera de 1 a 10.000; `idEntrega` UUID; `limite` máximo 50) y exportarlo en `packages/protocol/src/index.ts`
+- [X] T078 [P] [US3] Escribir en `apps/server/tests/seguridad/permisos.test.ts` una prueba de acceso denegado por **cada celda «no»** de FR-041, llamando directamente a la API (SC-004), con el intento registrado
+- [X] T079 [P] [US3] Escribir en `apps/server/tests/seguridad/admin.test.ts`: cambio de rol aplicado en la siguiente petición, rol propio, dos administradores que se quitan el rol a la vez, invitado con rol, suspensión con sesión abierta, entrega repetida y simultánea, cantidad 10.001, cuenta sin rol betatester, cierre con participación propia, cierre sin premios y registro inalterable
 
 ### Servidor
 
-- [ ] T080 [US3] Exponer `rol` y `suspendidaEn` como campos adicionales con `input: false` en `apps/server/src/auth/auth.ts`, añadir `rol` a `UsuarioSesion`, impedir crear sesión a una cuenta suspendida con `databaseHooks.session.create.before` (`403 CUENTA_SUSPENDIDA`) y rechazar su sesión al leerla; `suspendidaEn` no debe salir en ninguna respuesta
-- [ ] T081 [US3] Añadir el gancho `soloAdministrador` (`401 SIN_SESION`, `403 SOLO_ADMINISTRADORES` y registro del intento) en `apps/server/src/auth/rutas.ts`
-- [ ] T082 [US3] Crear `apps/server/src/admin/registro.ts` solo con inserción y lectura paginada. Los denegados se acumulan **en memoria** por actor y acción durante 10 s y se insertan en **una sola fila** con su `intentos`, porque el *trigger* impide incrementar una fila existente; volcar lo pendiente al cerrar la app
-- [ ] T083 [US3] Crear `apps/server/src/admin/servicio.ts` con el cambio de rol en una transacción con `pg_advisory_xact_lock`, que relee actor y objetivo y cuenta los administradores activos (`ROL_PROPIO`, `ULTIMO_ADMINISTRADOR`, `INVITADO_SIN_ROL`, `CUENTA_SUSPENDIDA`; R17)
-- [ ] T084 [US3] Añadir suspender y reactivar en `apps/server/src/admin/servicio.ts`: marca, borrado de sesiones y registro en una transacción (`SUSPENSION_PROPIA`, `NO_SUSPENDIBLE`; R19)
-- [ ] T085 [US3] Añadir premium de cortesía (`INVITADO_SIN_PREMIUM`) y cambio de ajustes, solo con claves y valores de `AJUSTES_CONOCIDOS`, en `apps/server/src/admin/servicio.ts`, cada uno con su registro en la misma transacción
-- [ ] T086 [US3] Añadir `entregarBetatester` a `apps/server/src/economia/servicio.ts`: bloquea el saldo, relee el rol, usa `sumar` con motivo `entrega_betatester` y referencia `idEntrega`, y escribe el registro en la misma transacción (`CANTIDAD_INVALIDA`, `NO_BETATESTER`, `ID_ENTREGA_REUTILIZADO`; R20)
-- [ ] T087 [US3] Añadir el cierre de partida en `apps/server/src/actores/gestor.ts`, el tipo `partida_cerrada` en `apps/server/src/avisos/servicio.ts` y la comprobación de estado en `terminarTorneo` y las simulaciones en curso de `apps/server/src/actores/torneo.ts`: sin premios, aviso genérico y devolución de rareza solo desde `buscando` (R21)
-- [ ] T088 [US3] Crear `apps/server/src/admin/rutas.ts` con todas las rutas de `contracts/http-admin.md` bajo `soloAdministrador` y registrarlas en `apps/server/src/servidor.ts`. `GET /api/admin/partidas` no incluye cartas, elecciones, alineaciones ni tácticas (FR-024)
-- [ ] T089 [US3] Crear `apps/server/src/admin/ordenes.ts`: recoge `ordenes_consola` cada 2 s, descarta las de más de 60 s como `caducada` y se para al cerrar la app; arrancarlo en `apps/server/src/servidor.ts`
-- [ ] T090 [US3] Crear `apps/server/src/admin/cli.ts` con `designar <email>` (solo sin administradores activos) y `cerrar-partida <id> "<motivo>"` (espera hasta 15 s), y el script `admin` en `apps/server/package.json`
-- [ ] T091 [US3] Registrar con actor `consola` las acciones de `apps/server/src/ajustes/cli.ts` y `apps/server/src/premium/cli.ts`, en la misma transacción que el cambio (FR-046)
-- [ ] T092 [US3] Vaciar `motivo` en `registro_admin` de las entradas sobre la cuenta al eliminarla, en `eliminarCuenta` de `apps/server/src/actores/gestor.ts`, y mostrarla como «Cuenta eliminada» en la lectura del registro (FR-047)
+- [X] T080 [US3] Exponer `rol` y `suspendidaEn` como campos adicionales con `input: false` en `apps/server/src/auth/auth.ts`, añadir `rol` a `UsuarioSesion`, impedir crear sesión a una cuenta suspendida con `databaseHooks.session.create.before` (`403 CUENTA_SUSPENDIDA`) y rechazar su sesión al leerla; `suspendidaEn` no debe salir en ninguna respuesta
+- [X] T081 [US3] Añadir el gancho `soloAdministrador` (`401 SIN_SESION`, `403 SOLO_ADMINISTRADORES` y registro del intento) en `apps/server/src/auth/rutas.ts`
+- [X] T082 [US3] Crear `apps/server/src/admin/registro.ts` solo con inserción y lectura paginada. Los denegados se acumulan **en memoria** por actor y acción durante 10 s y se insertan en **una sola fila** con su `intentos`, porque el *trigger* impide incrementar una fila existente; volcar lo pendiente al cerrar la app
+- [X] T083 [US3] Crear `apps/server/src/admin/servicio.ts` con el cambio de rol en una transacción con `pg_advisory_xact_lock`, que relee actor y objetivo y cuenta los administradores activos (`ROL_PROPIO`, `ULTIMO_ADMINISTRADOR`, `INVITADO_SIN_ROL`, `CUENTA_SUSPENDIDA`; R17)
+- [X] T084 [US3] Añadir suspender y reactivar en `apps/server/src/admin/servicio.ts`: marca, borrado de sesiones y registro en una transacción (`SUSPENSION_PROPIA`, `NO_SUSPENDIBLE`; R19)
+- [X] T085 [US3] Añadir premium de cortesía (`INVITADO_SIN_PREMIUM`) y cambio de ajustes, solo con claves y valores de `AJUSTES_CONOCIDOS`, en `apps/server/src/admin/servicio.ts`, cada uno con su registro en la misma transacción
+- [X] T086 [US3] Añadir `entregarBetatester` a `apps/server/src/economia/servicio.ts`: bloquea el saldo, relee el rol, usa `sumar` con motivo `entrega_betatester` y referencia `idEntrega`, y escribe el registro en la misma transacción (`CANTIDAD_INVALIDA`, `NO_BETATESTER`, `ID_ENTREGA_REUTILIZADO`; R20)
+- [X] T087 [US3] Añadir el cierre de partida en `apps/server/src/actores/gestor.ts`, el tipo `partida_cerrada` en `apps/server/src/avisos/servicio.ts` y la comprobación de estado en `terminarTorneo` y las simulaciones en curso de `apps/server/src/actores/torneo.ts`: sin premios, aviso genérico y devolución de rareza solo desde `buscando` (R21)
+- [X] T088 [US3] Crear `apps/server/src/admin/rutas.ts` con todas las rutas de `contracts/http-admin.md` bajo `soloAdministrador` y registrarlas en `apps/server/src/servidor.ts`. `GET /api/admin/partidas` no incluye cartas, elecciones, alineaciones ni tácticas (FR-024)
+- [X] T089 [US3] Crear `apps/server/src/admin/ordenes.ts`: recoge `ordenes_consola` cada 2 s, descarta las de más de 60 s como `caducada` y se para al cerrar la app; arrancarlo en `apps/server/src/servidor.ts`
+- [X] T090 [US3] Crear `apps/server/src/admin/cli.ts` con `designar <email>` (solo sin administradores activos) y `cerrar-partida <id> "<motivo>"` (espera hasta 15 s), y el script `admin` en `apps/server/package.json`
+- [X] T091 [US3] Registrar con actor `consola` las acciones de `apps/server/src/ajustes/cli.ts` y `apps/server/src/premium/cli.ts`, en la misma transacción que el cambio (FR-046)
+- [X] T092 [US3] Vaciar `motivo` en `registro_admin` de las entradas sobre la cuenta al eliminarla, en `eliminarCuenta` de `apps/server/src/actores/gestor.ts`, y mostrarla como «Cuenta eliminada» en la lectura del registro (FR-047)
 
 ### Web
 
-- [ ] T093 [US3] Añadir `rol` al usuario de `apps/web/src/estado/sesion.ts`
-- [ ] T094 [US3] Crear `apps/web/src/pantallas/Admin.tsx` con carga diferida y cuatro pestañas, la ruta `/admin` (redirige al inicio sin el rol) en `apps/web/src/app/Rutas.tsx` y el enlace «Administración» solo para administradores en `apps/web/src/app/Marco.tsx`
-- [ ] T095 [US3] Implementar la pestaña Partidas con el `Dialogo` de cierre y su motivo en `apps/web/src/pantallas/Admin.tsx`
-- [ ] T096 [US3] Implementar la pestaña Cuentas (buscador, lista paginada, rol, suspender, reactivar, premium y fragmentos con `idEntrega` generado al abrir el diálogo y reutilizado al reintentar) en `apps/web/src/pantallas/Admin.tsx`
-- [ ] T097 [US3] Implementar las pestañas Ajustes y Registro y los mensajes de error de `contracts/ui.md` en `apps/web/src/pantallas/Admin.tsx`, con lista y detalle en columnas desde portátil y apilados a 360 px (Principio XI)
-- [ ] T098 [US3] Mostrar los mensajes de cuenta suspendida y «Tu sesión ha terminado» en `apps/web/src/pantallas/Inicio.tsx` y `apps/web/src/conexion/useConexion.ts`, y el aviso `partida_cerrada` sin el motivo
-- [ ] T099 [US3] Crear `apps/web/tests/e2e/admin.spec.ts` con el recorrido de quickstart D y E, y añadir `/admin` a `apps/web/tests/e2e/diseno/inventario.spec.ts` para cubrir accesibilidad y 360 px
+- [X] T093 [US3] Añadir `rol` al usuario de `apps/web/src/estado/sesion.ts`
+- [X] T094 [US3] Crear `apps/web/src/pantallas/Admin.tsx` con carga diferida y cuatro pestañas, la ruta `/admin` (redirige al inicio sin el rol) en `apps/web/src/app/Rutas.tsx` y el enlace «Administración» solo para administradores en `apps/web/src/app/Marco.tsx`
+- [X] T095 [US3] Implementar la pestaña Partidas con el `Dialogo` de cierre y su motivo en `apps/web/src/pantallas/Admin.tsx`
+- [X] T096 [US3] Implementar la pestaña Cuentas (buscador, lista paginada, rol, suspender, reactivar, premium y fragmentos con `idEntrega` generado al abrir el diálogo y reutilizado al reintentar) en `apps/web/src/pantallas/Admin.tsx`
+- [X] T097 [US3] Implementar las pestañas Ajustes y Registro y los mensajes de error de `contracts/ui.md` en `apps/web/src/pantallas/Admin.tsx`, con lista y detalle en columnas desde portátil y apilados a 360 px (Principio XI)
+- [X] T098 [US3] Mostrar los mensajes de cuenta suspendida y «Tu sesión ha terminado» en `apps/web/src/pantallas/Inicio.tsx` y `apps/web/src/conexion/useConexion.ts`, y el aviso `partida_cerrada` sin el motivo
+- [X] T099 [US3] Crear `apps/web/tests/e2e/admin.spec.ts` con el recorrido de quickstart D y E, y añadir `/admin` a `apps/web/tests/e2e/diseno/inventario.spec.ts` para cubrir accesibilidad y 360 px
 
 **Checkpoint**: la matriz completa funciona y queda registrada; la consola sigue disponible.
 
@@ -252,11 +252,11 @@ directamente.
 
 **Purpose**: repetir la auditoría y dejar la spec lista para cerrar.
 
-- [ ] T102 Actualizar `specs/017-auditoria-seguridad-roles/inventario.json` con las rutas `/api/admin/*` y las retiradas, hasta que pase `apps/server/tests/integration/inventario.test.ts`
+- [X] T102 Actualizar `specs/017-auditoria-seguridad-roles/inventario.json` con las rutas `/api/admin/*` y las retiradas, hasta que pase `apps/server/tests/integration/inventario.test.ts`
 - [ ] T103 Repetir la auditoría sobre lo cambiado, incluidos panel, roles y lo que haya integrado INI-16, y añadir lo nuevo a `specs/017-auditoria-seguridad-roles/auditoria.md` (FR-007)
-- [ ] T104 Corregir `specs/017-auditoria-seguridad-roles/quickstart.md`: con `PUBLIC_URL=https://localhost` y la web abierta en `http://localhost:3000`, el navegador recibiría `403 ORIGEN_NO_PERMITIDO`. Los escenarios C, D, F y G deben pasar por un proxy HTTPS local con `PROXIES_CONFIANZA=1` y `PUBLIC_URL` igual a esa dirección
+- [X] T104 Corregir `specs/017-auditoria-seguridad-roles/quickstart.md`: con `PUBLIC_URL=https://localhost` y la web abierta en `http://localhost:3000`, el navegador recibiría `403 ORIGEN_NO_PERMITIDO`. Los escenarios C, D, F y G deben pasar por un proxy HTTPS local con `PROXIES_CONFIANZA=1` y `PUBLIC_URL` igual a esa dirección
 - [ ] T105 Repetir ZAP contra la imagen final y recoger cada alerta y su resolución en `specs/017-auditoria-seguridad-roles/auditoria.md` (FR-006)
-- [ ] T106 [P] Documentar en `.env.example` y `docs/despliegue.md` las variables obligatorias, la designación del primer administrador, el panel y la consola de emergencia (FR-053)
+- [X] T106 [P] Documentar en `.env.example` y `docs/despliegue.md` las variables obligatorias, la designación del primer administrador, el panel y la consola de emergencia (FR-053)
 - [ ] T107 [P] Añadir `pnpm seguridad` y `pnpm audit --prod --audit-level=high` a `.github/workflows/ci.yml`
 - [ ] T108 Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:equivalence`, `pnpm e2e`, `pnpm seguridad` y `pnpm audit --audit-level=high`, y anotar el resultado en `specs/017-auditoria-seguridad-roles/checklists/validacion.md` (SC-011, SC-012)
 - [ ] T109 Recorrer los escenarios A a H de `specs/017-auditoria-seguridad-roles/quickstart.md` y registrar cada SC en `checklists/validacion.md`

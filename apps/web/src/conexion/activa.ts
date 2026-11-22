@@ -15,7 +15,7 @@ export function mantenerConexionInvitado(partidaId: string): void {
   const conexion = new ConexionPartida(partidaId);
   // Si la partida termina, la abandona o la sesión se cierra, el servidor cierra la conexión: se suelta.
   conexion.alRecibir((m) => {
-    if (m.t === 'error' && m.codigo === 'PARTIDA_ABANDONADA') soltarConexionInvitado();
+    if (m.t === 'error' && (m.codigo === 'PARTIDA_ABANDONADA' || m.codigo === 'PARTIDA_CERRADA')) soltarConexionInvitado();
   });
   conexion.conectar();
   activa = { partidaId, conexion };

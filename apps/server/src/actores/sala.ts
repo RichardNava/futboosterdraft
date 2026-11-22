@@ -11,6 +11,7 @@ import {
   type ConfigDuelos,
   type NivelNPC,
 } from '@fbd/domain';
+import type { ServicioAvisos } from '../avisos/servicio';
 import { errores } from '../http/errores';
 import type { ContextoComando } from './actor';
 import { iniciarDraft } from './draft';
@@ -171,6 +172,22 @@ export async function abandonarPartidaInvitado(c: ControladorPartida, ctx: Conte
   c.partida = { ...c.partida, estado: transicion(c.partida.estado as 'en_draft', 'abandonar_invitado') };
   c.cancelarTemporizadores();
   ctx.emitirATodos({ t: 'error', codigo: 'PARTIDA_ABANDONADA', mensaje: 'La partida se ha abandonado' });
+}
+
+/**
+ * Cierre por un administrador (spec 017, FR-049, R21): sin premios, con un aviso genérico; el motivo queda solo en el
+ * registro. Como en cualquier salida de `buscando`, devuelve el cobro del nivel de rareza.
+ */
+export async function cerrarPartidaAdmin(c: ControladorPartida, ctx: ContextoComando, avisos: ServicioAvisos | undefined): Promise<void> {
+  if (c.partida.estado === 'buscando' && c.partida.cobroRareza !== null) await c.servicios.economia.devolverCobroRareza(c.id);
+  const estado = transicion(c.partida.estado as 'en_draft', 'cerrar_admin');
+  await c.servicios.repoPartidas.actualizarEstado(c.id, estado);
+  c.partida = { ...c.partida, estado };
+  c.cancelarTemporizadores();
+  const texto = 'Un administrador ha cerrado esta partida. No se reparten premios.';
+  const usuarioIds = c.participantes.flatMap((p) => (p.tipo === 'humano' && p.usuarioId ? [p.usuarioId] : []));
+  await avisos?.avisar(usuarioIds.map((usuarioId) => ({ usuarioId, tipo: 'partida_cerrada' as const, partidaId: c.id, texto })));
+  ctx.emitirATodos({ t: 'error', codigo: 'PARTIDA_CERRADA', mensaje: texto });
 }
 
 /**

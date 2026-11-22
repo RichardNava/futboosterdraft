@@ -1,0 +1,133 @@
+/* Panel de administración (spec 017, contracts/ui.md): lista y detalle en columnas desde portátil, apilados en móvil. */
+
+.admin-columnas {
+  display: grid;
+  gap: var(--espacio-4);
+  margin-top: var(--espacio-4);
+}
+
+.admin-lista,
+.admin-ajustes {
+  display: grid;
+  gap: var(--espacio-2);
+  margin: var(--espacio-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-fila {
+  display: grid;
+  width: 100%;
+  gap: var(--espacio-1);
+  padding: var(--espacio-3);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio);
+  background: var(--vidrio);
+  color: var(--color-texto);
+  font-weight: 400;
+  text-align: left;
+}
+
+.admin-fila[aria-pressed='true'] {
+  border-color: var(--color-accion);
+}
+
+.admin-fila span,
+.admin-registro span,
+.admin-registro time {
+  color: var(--color-texto-suave);
+  font-size: 0.875rem;
+}
+
+.admin-correo,
+.admin-id {
+  overflow-wrap: anywhere;
+}
+
+.admin-detalle {
+  min-width: 0;
+  padding: var(--espacio-4);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio);
+  background: var(--vidrio);
+}
+
+.admin-detalle dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--espacio-1) var(--espacio-3);
+  margin: var(--espacio-3) 0;
+}
+
+.admin-detalle dt {
+  color: var(--color-texto-suave);
+}
+
+.admin-detalle dd {
+  margin: 0;
+}
+
+.admin-error {
+  color: var(--color-error);
+}
+
+.admin-filtros {
+  display: grid;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-4);
+}
+
+.admin-filtros :is(input, select) {
+  width: 100%;
+}
+
+.admin-ajustes {
+  margin-top: var(--espacio-4);
+}
+
+.admin-ajustes li {
+  display: grid;
+  gap: var(--espacio-2);
+  padding: var(--espacio-3);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio);
+  background: var(--vidrio);
+}
+
+.admin-registro li {
+  display: grid;
+  gap: var(--espacio-1);
+  padding: var(--espacio-3);
+  border: 1px solid var(--borde-vidrio);
+  border-radius: var(--radio);
+  background: var(--vidrio);
+  overflow-wrap: anywhere;
+}
+
+.pantalla.admin .modal textarea,
+.pantalla.admin .modal select,
+.pantalla.admin .modal input {
+  width: 100%;
+}
+
+@media (min-width: 960px) {
+  .admin-columnas {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+  }
+
+  .admin-detalle {
+    position: sticky;
+    top: var(--espacio-4);
+  }
+
+  .admin-filtros-registro {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    align-items: end;
+  }
+
+  .admin-ajustes li {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 220px) auto;
+    align-items: center;
+  }
+}

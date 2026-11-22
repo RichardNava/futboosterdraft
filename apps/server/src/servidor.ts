@@ -48,6 +48,9 @@ import { crearCalculo } from './simulacion/grupo';
 import { FallosLogin, normalizarCorreo, SIN_LIMITE } from './http/limitador';
 import { sesiones, usuarios } from './persistencia/esquema/index';
 import { and, eq, gt, inArray, isNull } from 'drizzle-orm';
+import { iniciarOrdenes } from './admin/ordenes';
+import { RegistroAdmin } from './admin/registro';
+import { registrarRutasAdmin } from './admin/rutas';
 
 interface ConfigServidor {
   db: BaseDatos;
@@ -89,6 +92,7 @@ export interface Servidor {
   pasarela: Pasarela;
   gestor: GestorPartidas;
   temporizadores: Temporizadores;
+  registroAdmin: RegistroAdmin;
 }
 
 /** Servidor completo: base de datos, servicios, gestor de partidas, HTTP y WebSocket. */
@@ -279,6 +283,9 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
   registrarRutasColeccion(app, auth, economia);
   registrarRutasTienda(app, auth, economia);
   registrarRutasCosmeticos(app, auth, economia, cosmeticos);
+  const registroAdmin = new RegistroAdmin(config.db, logger);
+  registrarRutasAdmin(app, auth, { db: config.db, gestor, economia, registro: registroAdmin });
+  const ordenes = iniciarOrdenes(config.db, gestor, logger);
 
   // Reloj simulado en desarrollo (quickstart, escenario E): permite adelantar plazos.
   if (config.reloj instanceof RelojFalso) {
@@ -349,10 +356,12 @@ export async function crearServidor(config: ConfigServidor): Promise<Servidor> {
 
   app.addHook('onClose', async () => {
     clearInterval(purgaPeticiones);
+    await ordenes.parar();
+    await registroAdmin.volcar();
     temporizadores.cancelarTodos();
     gestor.cerrarTodo();
     await calculo.cerrar();
   });
 
-  return { app, db: config.db, auth, reloj: config.reloj, logger, metricas, pasarela, gestor, temporizadores };
+  return { app, db: config.db, auth, reloj: config.reloj, logger, metricas, pasarela, gestor, temporizadores, registroAdmin };
 }

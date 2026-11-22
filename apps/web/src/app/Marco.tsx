@@ -84,6 +84,7 @@ const AYUDA_ENLACE: Record<string, string> = {
   Colección: 'Todas las cartas que has conseguido en los drafts y en los sobres.',
   Tienda: 'Sobres de cartas, escudos, diseños de sobre y celebraciones de gol.',
   'Mi perfil': 'Tu nombre, tu escudo, tu celebración de gol y tus preferencias.',
+  Administración: 'Partidas activas, cuentas, ajustes y registro de acciones.',
   'Iniciar sesión': 'Entra con tu cuenta para guardar tu colección y jugar con otras personas.',
 };
 
@@ -185,7 +186,8 @@ export function Marco() {
           { a: '/tienda', texto: 'Tienda', icono: 'tienda' },
         ]
       : [];
-  const enlaces = [...ENLACES, ...registrado, cuenta];
+  const administracion: Enlace[] = usuario?.rol === 'administrador' ? [{ a: '/admin', texto: 'Administración', icono: 'candado' }] : [];
+  const enlaces = [...ENLACES, ...registrado, ...administracion, cuenta];
   const textoSonido = sonido ? 'Silenciar los sonidos' : 'Activar los sonidos';
   const interruptorSonido = (conTexto: boolean) => (
     <button

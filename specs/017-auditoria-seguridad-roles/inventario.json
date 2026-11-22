@@ -1345,5 +1345,115 @@
     "hallazgos": [
       "SEG-006"
     ]
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/admin/cuentas",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; consulta validada y paginada",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/admin/cuentas/:id/rol",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; bloqueo y relectura; motivo; registro",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/admin/cuentas/:id/suspender",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; borra sesiones; motivo; registro",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/admin/cuentas/:id/reactivar",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; motivo; registro",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/admin/cuentas/:id/premium",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; motivo; registro",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/admin/cuentas/:id/fragmentos",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; idEntrega unico; tope 10.000; solo betatester; registro",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/admin/partidas",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; sin datos de juego",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "POST",
+    "ruta": "/api/admin/partidas/:id/cerrar",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; no si participa; motivo; registro",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/admin/ajustes",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "PUT",
+    "ruta": "/api/admin/ajustes/:clave",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; solo AJUSTES_CONOCIDOS; motivo; registro",
+    "hallazgos": []
+  },
+  {
+    "tipo": "http",
+    "metodo": "GET",
+    "ruta": "/api/admin/registro",
+    "acceso": [
+      "administrador"
+    ],
+    "comprobacion": "soloAdministrador en cada peticion; solo lectura",
+    "hallazgos": []
   }
 ]

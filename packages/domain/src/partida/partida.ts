@@ -158,12 +158,12 @@ export function validarConfigPartida(c: ConfigPartida, anfitrion: TipoUsuario): 
   return errores;
 }
 
-export type EventoPartida = 'iniciar_draft' | 'terminar_draft' | 'terminar_torneo' | 'cancelar' | 'abandonar_invitado';
+export type EventoPartida = 'iniciar_draft' | 'terminar_draft' | 'terminar_torneo' | 'cancelar' | 'abandonar_invitado' | 'cerrar_admin';
 
 const TRANSICIONES: Readonly<Record<EstadoPartida, Partial<Record<EventoPartida, EstadoPartida>>>> = {
-  buscando: { iniciar_draft: 'en_draft', cancelar: 'cancelada', abandonar_invitado: 'abandonada' },
-  en_draft: { terminar_draft: 'en_torneo', abandonar_invitado: 'abandonada' },
-  en_torneo: { terminar_torneo: 'terminada', abandonar_invitado: 'abandonada' },
+  buscando: { iniciar_draft: 'en_draft', cancelar: 'cancelada', abandonar_invitado: 'abandonada', cerrar_admin: 'abandonada' },
+  en_draft: { terminar_draft: 'en_torneo', abandonar_invitado: 'abandonada', cerrar_admin: 'abandonada' },
+  en_torneo: { terminar_torneo: 'terminada', abandonar_invitado: 'abandonada', cerrar_admin: 'abandonada' },
   terminada: {},
   cancelada: {},
   abandonada: {},

@@ -1,18 +1,23 @@
+import type { Rol } from '@fbd/domain';
 import { create } from 'zustand';
 import { api, ErrorApi } from '../api/cliente';
 import { soltarConexionInvitado } from '../conexion/activa';
+import { mostrarAviso } from './avisos';
 
 interface Usuario {
   id: string;
   tipo: 'registrado' | 'invitado';
   apodo: string;
   email: string | null;
+  rol: Rol;
 }
 
 interface EstadoSesion {
   usuario: Usuario | null;
   cargando: boolean;
   cargar(): Promise<void>;
+  /** El servidor cerró el canal por falta de sesión (spec 017): si es cierto, vuelve a la portada con el aviso. */
+  comprobarSesionTerminada(): Promise<void>;
   entrarComoInvitado(): Promise<void>;
   registrarse(datos: { email: string; password: string; apodo: string }): Promise<void>;
   iniciarSesion(datos: { email: string; password: string }): Promise<void>;
@@ -32,6 +37,17 @@ export const useSesion = create<EstadoSesion>((set, get) => ({
       // sin sesión (un 401, la sesión caducada, lleva a iniciar sesión) en lugar de dejar la pantalla cargando.
       set({ usuario: null, cargando: false });
       if (!(e instanceof ErrorApi && e.estado === 401)) throw e;
+    }
+  },
+  async comprobarSesionTerminada() {
+    if (!get().usuario) return;
+    try {
+      await api('/api/me', { sinCache: true });
+    } catch (e) {
+      if (!(e instanceof ErrorApi && e.estado === 401)) return;
+      soltarConexionInvitado();
+      set({ usuario: null });
+      mostrarAviso('advertencia', 'Tu sesión ha terminado', { id: 'sesion-terminada' });
     }
   },
   async entrarComoInvitado() {

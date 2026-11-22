@@ -178,6 +178,33 @@ Formato de los ficheros: `specs/006-preparacion-bd-cartas/contracts/datos-cartas
 - **Visibilidad**: el servidor nunca envía elecciones ajenas durante el draft ni la alineación del rival antes del partido (FR-054a). Lo comprueba `apps/server/tests/integration/visibilidad.test.ts`.
 - El reloj simulado (`--fake-clock`) y la ruta `/api/dev/reloj/avanzar` no están disponibles con `NODE_ENV=production`.
 
+### Administración (spec 017)
+
+**Primer administrador.** Ninguna cuenta, contraseña ni variable de entorno concede el rol. Registra la cuenta en la web y desígnala desde un equipo con acceso a la base de datos. La orden solo funciona si no hay ningún administrador activo:
+
+```bash
+DATABASE_URL=<la-de-produccion> pnpm --filter @fbd/server admin designar <email>
+```
+
+**Panel.** Los administradores tienen el enlace «Administración» (`/admin`), con cuatro pestañas:
+
+- **Partidas**: las activas, y cerrar una en la que no participes. Termina sin premios y sus participantes reciben un aviso sin el motivo.
+- **Cuentas**: buscar, cambiar el rol, suspender y reactivar, premium de cortesía y entregar fragmentos a betatesters (hasta 10.000 por entrega).
+- **Ajustes**: identidad de las cartas y acceso a los niveles de rareza. Se aplican en 30 s como máximo y solo a las partidas nuevas.
+- **Registro**: quién hizo qué, sobre qué, con qué resultado y cuándo, incluidos los accesos denegados. No se puede editar ni borrar. No escribas datos personales en los motivos.
+
+Siempre debe quedar al menos un administrador, nadie puede cambiar su propio rol ni suspenderse, y un administrador no se puede suspender: primero hay que quitarle el rol.
+
+**Consola de emergencia.** Sirve si no se puede entrar al panel, y cada acción queda en el registro con el actor `consola`:
+
+```bash
+pnpm --filter @fbd/server ajuste <clave> <valor>
+pnpm --filter @fbd/server premium <email> <si|no>
+pnpm --filter @fbd/server admin cerrar-partida <id> "<motivo>"
+```
+
+`cerrar-partida` necesita el servidor en marcha, porque cada partida vive en su memoria: espera hasta 15 s y, si no hay respuesta, avisa y retira la orden. A diferencia del panel, puede cerrar una partida en la que juegue un administrador.
+
 ## 7. Copias de seguridad
 
 Todo el estado persistente está en PostgreSQL: usuarios, partidas, drafts, alineaciones, partidos y avisos. Basta con copiar la base de datos (`pg_dump`). La memoria del proceso se reconstruye a partir de ella al arrancar.

@@ -6,8 +6,10 @@
  */
 import '../entorno';
 import { eq, sql } from 'drizzle-orm';
+import { ACTOR_CONSOLA } from '../admin/registro';
+import { cambiarPremium } from '../admin/servicio';
 import { conectar, urlBaseDatos } from '../persistencia/db';
-import { pasesPremium, usuarios } from '../persistencia/esquema/index';
+import { usuarios } from '../persistencia/esquema/index';
 
 async function principal(): Promise<void> {
   const [email, valor] = process.argv.slice(2).filter((a) => a !== '--');
@@ -20,11 +22,7 @@ async function principal(): Promise<void> {
       .where(eq(sql`lower(${usuarios.email})`, email.toLowerCase()));
     if (!usuario || usuario.invitado) throw new Error(`No hay ninguna cuenta registrada con el email ${email}`);
     const cortesia = valor === 'si';
-    const ahora = new Date();
-    await conexion.db
-      .insert(pasesPremium)
-      .values({ usuarioId: usuario.id, cortesia, actualizadoEn: ahora })
-      .onConflictDoUpdate({ target: pasesPremium.usuarioId, set: { cortesia, actualizadoEn: ahora } });
+    await cambiarPremium(conexion.db, ACTOR_CONSOLA, usuario.id, cortesia, null);
     console.log(`${email}: premium de cortesía ${cortesia ? 'activado' : 'desactivado'}.`);
   } finally {
     await conexion.cerrar();

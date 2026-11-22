@@ -1,5 +1,6 @@
+import { randomUUID } from 'node:crypto';
 import { expect, test, type Page } from '@playwright/test';
-import { jugarHastaCaer, partidaTrasDraft } from '../ayudas';
+import { fijarRol, jugarHastaCaer, partidaTrasDraft } from '../ayudas';
 import { comprobarDiseno } from './comprobaciones';
 
 /**
@@ -9,6 +10,25 @@ import { comprobarDiseno } from './comprobaciones';
  */
 
 const avanzar = (page: Page, ms: number) => page.request.post('/api/dev/reloj/avanzar', { data: { ms } });
+
+test('inventario: panel de administración (spec 017)', async ({ page }) => {
+  test.setTimeout(300_000);
+  const email = `e2e-${randomUUID()}@pruebas.test`;
+  await page.goto('/');
+  expect((await page.request.post('/api/auth/registro', { data: { email, password: 'contraseña-segura', apodo: 'Admin diseño' } })).status()).toBe(200);
+  fijarRol(email, 'administrador');
+  try {
+    await page.goto('/admin');
+    await expect(page.getByRole('heading', { name: 'Administración' })).toBeVisible();
+    for (const pestana of ['Partidas', 'Cuentas', 'Ajustes', 'Registro']) {
+      await page.getByRole('tab', { name: pestana }).click();
+      await expect(page.getByRole('tabpanel')).toBeVisible();
+      await comprobarDiseno(page, `Administración: ${pestana}`);
+    }
+  } finally {
+    fijarRol(email, 'jugador');
+  }
+});
 
 test('inventario: inicio, partida, draft, formación, partido, torneo', async ({ page }) => {
   test.setTimeout(1_800_000);

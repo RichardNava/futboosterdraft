@@ -1,11 +1,12 @@
 /**
  * Rutas de sesión del contrato HTTP y hooks de autorización (T026).
  */
+import { puede } from '@fbd/domain';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { cuerpoError, errores } from '../http/errores';
 import { claveCliente, FallosLogin, Limitador, LIMITES_CUENTA, normalizarCorreo, SIN_LIMITE, type OpcionesLimitador } from '../http/limitador';
-import { apodoValido, aUsuarioSesion, type Auth, type UsuarioSesion } from './auth';
+import { apodoValido, aUsuarioSesion, CUENTA_SUSPENDIDA, MENSAJE_CUENTA_SUSPENDIDA, type Auth, type UsuarioSesion } from './auth';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -52,7 +53,9 @@ const demasiados = (reply: FastifyReply) => reply.code(429).send(cuerpoError('DE
 /** Sesión de la petición, con su id para poder revocar el WebSocket (spec 017, R8). */
 export async function sesionDeLaPeticion(auth: Auth, req: FastifyRequest): Promise<{ usuario: UsuarioSesion; sesionId: string } | undefined> {
   const sesion = await auth.api.getSession({ headers: cabecerasWeb(req) });
-  return sesion ? { usuario: aUsuarioSesion(sesion.user), sesionId: sesion.session.id } : undefined;
+  // Cubre la sesión creada justo mientras se suspendía la cuenta (spec 017, R19).
+  if (!sesion || sesion.user.suspendidaEn) return undefined;
+  return { usuario: aUsuarioSesion(sesion.user), sesionId: sesion.session.id };
 }
 
 /** Usuario de la sesión de la petición, si la hay. */
@@ -60,8 +63,8 @@ export async function usuarioDeLaPeticion(auth: Auth, req: FastifyRequest): Prom
   return (await sesionDeLaPeticion(auth, req))?.usuario;
 }
 
-/** Ganchos de Fastify que exigen sesión, usuario registrado o solo registrados. */
-export function crearHooksSesion(auth: Auth) {
+/** Ganchos de Fastify que exigen sesión, usuario registrado, solo registrados o administrador. */
+export function crearHooksSesion(auth: Auth, alDenegarAdmin?: (usuario: UsuarioSesion) => void) {
   const requiereSesion = async (req: FastifyRequest) => {
     req.usuario = await usuarioDeLaPeticion(auth, req);
     if (!req.usuario) throw errores.sinSesion();
@@ -77,7 +80,14 @@ export function crearHooksSesion(auth: Auth) {
     await requiereSesion(req);
     if (req.usuario?.tipo !== 'registrado') throw errores.prohibido('SOLO_REGISTRADOS', 'La colección y la tienda son solo para usuarios registrados');
   };
-  return { requiereSesion, requiereRegistrado, soloRegistrados };
+  // Panel de administración (spec 017, FR-021, FR-047): el rol se relee en cada petición con la sesión.
+  const soloAdministrador = async (req: FastifyRequest) => {
+    await requiereSesion(req);
+    if (puede(req.usuario!.rol, 'entrar_panel')) return;
+    alDenegarAdmin?.(req.usuario!);
+    throw errores.prohibido('SOLO_ADMINISTRADORES', 'Esta acción es solo para administradores');
+  };
+  return { requiereSesion, requiereRegistrado, soloRegistrados, soloAdministrador };
 }
 
 export interface OpcionesRutasAuth {
@@ -140,6 +150,9 @@ export function registrarRutasAuth(app: FastifyInstance, auth: Auth, opciones: O
     const respuesta = await auth.api.signInEmail({ body: { email, password }, headers: cabecerasWeb(req), asResponse: true });
     if (respuesta.ok) fallosLogin.anotarAcierto(correo, cliente);
     else if (respuesta.status === 401 && fallosLogin.anotarFallo(correo, cliente)) opciones.alIntentosFallidos?.(correo);
+    if (respuesta.status === 403 && ((await respuesta.clone().json()) as { code?: string }).code === CUENTA_SUSPENDIDA) {
+      throw errores.prohibido(CUENTA_SUSPENDIDA, MENSAJE_CUENTA_SUSPENDIDA);
+    }
     return responderSesion(reply, respuesta);
   });
 

@@ -34,6 +34,11 @@ describe('Partida', () => {
     expect(c.colecciones).toEqual(['core']);
   });
 
+  it('cerrar_admin: de una partida activa a abandonada; una ya acabada no se cierra (spec 017, FR-049)', () => {
+    for (const estado of ['buscando', 'en_draft', 'en_torneo'] as const) expect(transicion(estado, 'cerrar_admin')).toBe('abandonada');
+    for (const estado of ['terminada', 'cancelada', 'abandonada'] as const) expect(() => transicion(estado, 'cerrar_admin')).toThrow();
+  });
+
   it('invitado: sin plazas humanas libres (FR-000)', () => {
     expect(codigos(conf({ plazasHumanas: 2 }), 'invitado')).toContain('INVITADO_NO_PERMITIDO');
     expect(codigos(conf({ plazasHumanas: 1 }), 'invitado')).toEqual([]);

@@ -37,8 +37,10 @@ import type {
   RespuestaTienda,
   EstadoPremium,
   RespuestaCompraPase,
+  RespuestaEntregaFragmentos,
 } from '@fbd/protocol';
 import { and, asc, desc, eq, lt, sql } from 'drizzle-orm';
+import { anotarRegistro, conRegistro, type Actor } from '../admin/registro';
 import { errores } from '../http/errores';
 import type { BaseDatos } from '../persistencia/db';
 import {
@@ -210,6 +212,43 @@ export class ServicioEconomia {
         .set({ saldo: sql`${saldosFragmentos.saldo} + ${cantidad}`, actualizadoEn: new Date() })
         .where(eq(saldosFragmentos.usuarioId, usuarioId));
       return true;
+    });
+  }
+
+  /**
+   * Entrega a un betatester (spec 017, FR-050a, R20): una sola vez por `idEntrega`. El bloqueo del saldo serializa las
+   * repeticiones a la misma cuenta, y el índice único cubre el mismo id usado a la vez para dos cuentas.
+   */
+  async entregarBetatester(actor: Actor, usuarioId: string, idEntrega: string, cantidad: number, motivo: string): Promise<RespuestaEntregaFragmentos> {
+    const base = { actor, accion: 'fragmentos.entregar', objetoTipo: 'cuenta', objetoId: usuarioId, motivo } as const;
+    return conRegistro(this.db, base, async (tx) => {
+      const [cuenta] = await tx.select({ invitado: usuarios.isAnonymous }).from(usuarios).where(eq(usuarios.id, usuarioId));
+      if (!cuenta) throw errores.noEncontrado('CUENTA_NO_ENCONTRADA', 'No existe esa cuenta');
+      if (cuenta.invitado) throw errores.regla('NO_BETATESTER', 'Esta cuenta no tiene el rol betatester');
+      await this.asegurarColeccion(usuarioId, tx);
+      await this.bloquear(tx, usuarioId);
+      const [previa] = await tx
+        .select({ usuarioId: movimientosFragmentos.usuarioId, importe: movimientosFragmentos.importe })
+        .from(movimientosFragmentos)
+        .where(and(eq(movimientosFragmentos.motivo, 'entrega_betatester'), eq(movimientosFragmentos.referencia, idEntrega)));
+      if (previa) {
+        if (previa.usuarioId !== usuarioId || previa.importe !== cantidad) throw errores.conflicto('ID_ENTREGA_REUTILIZADO', 'Ese idEntrega ya se usó para otra entrega');
+        return { idEntrega, cantidad, saldo: await this.saldo(tx, usuarioId) };
+      }
+      // Relee el rol con la fila bloqueada: un cambio de rol simultáneo espera a esta entrega.
+      const [actual] = await tx.select({ rol: usuarios.rol }).from(usuarios).where(eq(usuarios.id, usuarioId)).for('share');
+      if (actual?.rol !== 'betatester') throw errores.regla('NO_BETATESTER', 'Esta cuenta no tiene el rol betatester');
+      const anterior = await this.saldo(tx, usuarioId);
+      let saldo: number;
+      try {
+        saldo = await this.sumar(tx, usuarioId, cantidad, 'entrega_betatester', idEntrega);
+      } catch (e) {
+        const causa = ((e as { cause?: unknown })?.cause ?? e) as { code?: string; constraint?: string };
+        if (causa.code === '23505' && causa.constraint === 'movimientos_entrega_betatester_uq') throw errores.conflicto('ID_ENTREGA_REUTILIZADO', 'Ese idEntrega ya se usó para otra entrega');
+        throw e;
+      }
+      await anotarRegistro(tx, { ...base, valorAnterior: { saldo: anterior }, valorNuevo: { saldo, cantidad, idEntrega }, resultado: 'ok' });
+      return { idEntrega, cantidad, saldo };
     });
   }
 

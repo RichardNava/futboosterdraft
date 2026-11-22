@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { cerrarAviso, mostrarAviso } from '../estado/avisos';
 import { usePartidaActiva } from '../estado/partidaActiva';
 import { useSesion } from '../estado/sesion';
@@ -22,6 +23,9 @@ export function useConexion(partidaId: string | undefined, alMensaje?: (m: Mensa
   const [conectada, setConectada] = useState(false);
   const oyente = useRef(alMensaje);
   oyente.current = alMensaje;
+  const navegar = useNavigate();
+  const irAlInicio = useRef(navegar);
+  irAlInicio.current = navegar;
 
   useEffect(() => {
     if (!partidaId) return;
@@ -43,6 +47,12 @@ export function useConexion(partidaId: string | undefined, alMensaje?: (m: Mensa
       if (m.t === 'sala.actualizada' && Array.isArray(m.participantes)) activa.actualizar({ participantes: m.participantes as [] });
       if (m.t === 'draft.turno' && m.animacion === true) activa.actualizar({ aperturaPendiente: { partidaId, ronda: m.ronda as number } });
       oyente.current?.(m);
+      // Spec 017 (FR-049): el motivo no llega a los participantes. Se olvida la partida para salir sin pausarla ni preguntar.
+      if (m.t === 'error' && m.codigo === 'PARTIDA_CERRADA') {
+        mostrarAviso('advertencia', String(m.mensaje), { id: 'partida-cerrada' });
+        activa.actualizar({ partidaId: null });
+        void irAlInicio.current('/');
+      }
     });
     const quitarConexion = c.alCambiarConexion(setConectada);
     // Aviso de conexión perdida (spec 004, FR-026; contracts/ui.md §8): advertencia mientras se reintenta y error si
@@ -56,6 +66,8 @@ export function useConexion(partidaId: string | undefined, alMensaje?: (m: Mensa
       }
       if (!haConectado) return;
       if (c.sinReintento) {
+        // Sesión retirada (suspensión, cambio de contraseña): sin sesión, la pantalla vuelve sola a la portada.
+        if (c.codigoCierre === 4401) void useSesion.getState().comprobarSesionTerminada();
         mostrarAviso('error', 'Sin conexión con el servidor. Recarga la página; si sigue igual, vuelve a iniciar sesión.', {
           id: AVISO_CONEXION,
           persistente: true,

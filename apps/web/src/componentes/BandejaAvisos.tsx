@@ -7,7 +7,7 @@ import { textoAvisoEquipo } from './textoBloqueoBajas';
 
 interface Aviso {
   id: string;
-  tipo: 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado' | 'baja_sustituida';
+  tipo: 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado' | 'baja_sustituida' | 'partida_cerrada';
   partidaId: string;
   partidoId: string | null;
   texto: string;
@@ -31,6 +31,7 @@ const ICONO_AVISO: Record<Aviso['tipo'], NombreIcono> = {
   torneo_terminado: 'exito',
   dorsal_asignado: 'informacion',
   baja_sustituida: 'informacion',
+  partida_cerrada: 'advertencia',
 };
 
 /** Avisos del equipo de la partida que se está viendo (spec 012, FR-027): no se guardan, salen de la vista de equipo. */

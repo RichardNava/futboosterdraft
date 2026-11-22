@@ -12,3 +12,4 @@ export * from './http/perfil';
 export * from './http/coleccion';
 export * from './http/tienda';
 export * from './http/cosmeticos';
+export * from './http/admin';
