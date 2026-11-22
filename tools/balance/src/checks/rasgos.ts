@@ -255,7 +255,7 @@ function medias(n: number, semilla: number, base: EquipoPartido, rival: EquipoPa
     const eq = e.equipos[ladoA];
     const j1 = eq.jugadores.find((j) => j.id === mc1)!;
     if (e.tick === 1) visto = false;
-    if (!visto && j1.enCampo && j1.cansancio > 0) {
+    if (!visto && j1.enCampo && j1.energia < 100) {
       inicio.push(minutoDeJuego(e.reloj) + 1);
       visto = true;
     }
@@ -263,9 +263,9 @@ function medias(n: number, semilla: number, base: EquipoPartido, rival: EquipoPa
     if (e.fase === 'segunda_parte' && e.reloj.segundosEnParte >= 44 * 60 && e.reloj.segundosEnParte < 45 * 60) {
       const j2 = eq.jugadores.find((j) => j.id === mc2)!;
       const otro = eq.jugadores.find((j) => j.casillaId === 'LD' && j.enCampo);
-      if (j2.enCampo && otro && otro.cansancio > 0) {
-        cansancioFinal.mc2.push(j2.cansancio);
-        cansancioFinal.mc1.push(otro.cansancio);
+      if (j2.enCampo && otro && otro.energia < 100) {
+        cansancioFinal.mc2.push(100 - j2.energia);
+        cansancioFinal.mc1.push(100 - otro.energia);
       }
     }
     const rival = e.equipos[ladoA === 'local' ? 'visitante' : 'local'];
@@ -285,7 +285,7 @@ function medias(n: number, semilla: number, base: EquipoPartido, rival: EquipoPa
   });
   const pct = (xs: number[]) => 1 - mediaDe(xs);
   return [
-    comprobacion('Fatigado', 'Fatigado (minuto en que empieza a cansarse)', mediaDe(inicio), 46, `${inicio.length} partidos; inicio general ${P.cansancio.inicioMin}`),
+    comprobacion('Fatigado', 'Fatigado (minuto en que empieza a cansarse)', mediaDe(inicio), 46, `${inicio.length} partidos; inicio general ${P.fatiga.inicioMin.parte1}`),
     comprobacion('Indisciplinado', 'Indisciplinado (cansancio acumulado frente a un compañero)', razon(mediaDe(cansancioFinal.mc2), mediaDe(cansancioFinal.mc1)), P.defectos!.indisciplinado, `${cansancioFinal.mc2.length} muestras al minuto 89`),
     comprobacion('Polemico', 'Polémico (bajada de la media del equipo yendo por detrás)', pct(polemico), P.defectos!.polemico, `${polemico.length} muestras`),
     comprobacion('Rebelde', 'Rebelde (bajada de la media del equipo desde el banquillo)', pct(rebeldeFactor), P.defectos!.rebelde, `${rebeldeFactor.length} muestras`),

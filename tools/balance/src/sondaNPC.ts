@@ -5,7 +5,7 @@
  *
  *   pnpm --filter @fbd/balance exec tsx src/sondaNPC.ts 20 amateur:700:12 intermedio:450:9
  */
-import { PARAMETROS_V3, type FamiliaErrorNPC, type NivelNPC } from '@fbd/domain';
+import { parametrosActuales, type FamiliaErrorNPC, type NivelNPC } from '@fbd/domain';
 import { victoriasReferencia } from './checks/npc';
 
 const torneos = Number(process.argv[2] ?? 20);
@@ -13,7 +13,7 @@ const familias: FamiliaErrorNPC[] = ['draft', 'alineacion', 'colocacion', 'forma
 
 for (const variante of process.argv.slice(3)) {
   const [nivel, prob, coste] = variante.split(':') as [NivelNPC, string, string];
-  const e = PARAMETROS_V3.npc.errores[nivel];
+  const e = parametrosActuales().npc.errores[nivel];
   e.probabilidad = Object.fromEntries(familias.map((f) => [f, Number(prob)])) as typeof e.probabilidad;
   e.costeMaximo = Number(coste);
   const [r] = victoriasReferencia(torneos, 1, [nivel]);

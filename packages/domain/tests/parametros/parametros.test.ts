@@ -12,6 +12,7 @@ import {
   PARAMETROS_V6_3,
   PARAMETROS_V7,
   PARAMETROS_V8,
+  PARAMETROS_V9,
   parametrosActuales,
   parametrosEfectivos,
   parametrosPorVersion,
@@ -235,14 +236,13 @@ describe('parámetros de equilibrado 6.3.0 (spec 013)', () => {
 });
 
 describe('parámetros de equilibrado 7.0.0 (spec 014, research R14)', () => {
-  it('la 7.0.0 se sigue simulando y la versión mayor mínima es la 7', () => {
+  it('la 7.0.0 sigue registrada para sus resúmenes', () => {
     expect(parametrosPorVersion('7.0.0')).toBe(PARAMETROS_V7);
-    expect(VERSION_MAYOR_SOPORTADA).toBe(7);
   });
 
   it('añade cansancio.maximo, rozamiento del balón suelto, mano a mano, ida y vuelta y fuera de juego; retira los sorteos', () => {
     const p = PARAMETROS_V7;
-    expect(p.cansancio.maximo).toBe(0.6);
+    expect(p.cansancio?.maximo).toBe(0.6);
     expect(p.espacio.rozamientoSuelto).toBeGreaterThan(0);
     expect(p.manoAMano).toMatchObject({ pasilloM: 4, margenAtrasM: 1, distanciaBaseM: 14, paraleloM: 2 });
     expect(p.idaVuelta).toEqual({ avanceMinimoM: 3 });
@@ -256,12 +256,9 @@ describe('parámetros de equilibrado 7.0.0 (spec 014, research R14)', () => {
 describe('parámetros de equilibrado 8.0.0 (spec 015, research R1)', () => {
   const BLOQUES = ['curvas', 'quite', 'aereo', 'desmarque', 'controlPresion', 'liderazgo', 'estrella', 'bandas', 'subidaArea', 'segundaLinea', 'fueraDeCampo'] as const;
 
-  it('los partidos nuevos usan la 8.0.0 y la 7.0.0 sigue disponible', () => {
-    expect(parametrosActuales().version).toBe('8.0.0');
-    expect(parametrosActuales()).toBe(PARAMETROS_V8);
+  it('la 8.0.0 y la 7.0.0 siguen disponibles', () => {
     expect(parametrosPorVersion('8.0.0')).toBe(PARAMETROS_V8);
     expect(parametrosPorVersion('7.0.0')).toBe(PARAMETROS_V7);
-    expect(VERSION_MAYOR_SOPORTADA).toBe(7);
   });
 
   it('la 7.0.0 no tiene ninguno de los bloques nuevos', () => {
@@ -288,5 +285,69 @@ describe('parámetros de equilibrado 8.0.0 (spec 015, research R1)', () => {
     expect(version).toBe('8.0.0');
     expect({ ...decision.factores, regate: decision7.factores.regate }).toEqual(decision7.factores);
     expect(decision.factores.regate).toEqual({ k: 1.1, min: 0.6, max: 4.0 });
+  });
+});
+
+describe('parámetros de equilibrado 9.0.0 (spec 018, data-model §3)', () => {
+  it('los partidos nuevos usan la 9.0.0 y la 8.0.0 sigue disponible para los duelos y los resúmenes', () => {
+    expect(parametrosActuales()).toBe(PARAMETROS_V9);
+    expect(PARAMETROS_V9.version).toBe('9.0.0');
+    expect(parametrosPorVersion('9.0.0')).toBe(PARAMETROS_V9);
+    expect(parametrosPorVersion('8.0.0')).toBe(PARAMETROS_V8);
+    expect(VERSION_MAYOR_SOPORTADA).toBe(9);
+  });
+
+  it('fatiga: tramos, reparto, recuperación, ritmo por rol, penalización y rasgos', () => {
+    const f = PARAMETROS_V9.fatiga;
+    expect(f.inicioMin).toEqual({ parte1: 30, parte2: 55 });
+    expect(f.gastoPorMinuto).toBe(1);
+    expect(f.reparto).toEqual({ rol: 0.8, acciones: 0.2 });
+    expect(f.recuperacion).toEqual({ descanso: 10, preProrroga: 5, descansoProrroga: 5 });
+    expect(f.ritmoRol).toEqual({ porteria: 0.2, defensa: 0.85, medio: 1.2, ataque: 0.95 });
+    expect(f.penalizacion).toEqual({
+      tramos: [{ hasta: 70, pendiente: 0.35 }, { hasta: 45, pendiente: 0.5 }, { hasta: 0, pendiente: 0.7 }],
+      tipo: { fisica: 1, tecnica: 0.5, mental: 0.25 },
+    });
+    expect(f.rasgos).toEqual({
+      incansable: 0.7,
+      fatigado: 1.3,
+      indisciplinado: { adelantoMin: 5, costeAccion: 1.5 },
+      motivador: { ritmo: 0.95, recuperacionDescanso: 15 },
+    });
+  });
+
+  it('fatiga: los valores que se calibran existen y son positivos', () => {
+    const f = PARAMETROS_V9.fatiga;
+    for (const v of [...Object.values(f.referenciaAcciones), ...Object.values(f.pesosAccion), f.umbralSprint]) expect(v).toBeGreaterThan(0);
+    expect(f.umbralSprint).toBeLessThanOrEqual(1);
+  });
+
+  it('tácticas: valores nuevos de Individual, bandas, vertical y su combinación', () => {
+    const t = PARAMETROS_V9.tacticas;
+    expect(t.individual).toMatchObject({ ritmoEquipo: 1.05, ritmoMarcador: 1.15, bonusMarcaje: 6, malusEstrella: 5, companeros: 0.05, regate: 0.12 });
+    expect(t.bandas).toEqual({ ventajaPerdida: 0.15, factorPaseEspacio: 0.9 });
+    expect(t.vertical.costePase).toBe(0.15);
+    expect(t.bandasVertical).toEqual({ centro: 1.8, probabilidadBanda: 0.25 });
+    expect(t.catenaccio).toMatchObject({ defensiva: 0.5, zonaMinima: 4 });
+    // Desaparecen los campos sin uso o sustituidos (FR-028, FR-035).
+    expect(t.vertical).toEqual({ costePase: 0.15 });
+    expect(t.combinativo).not.toHaveProperty('posesion');
+    expect(t.individual).not.toHaveProperty('recuperacion');
+    expect(t.individual).not.toHaveProperty('vulnerableDesmarque');
+    expect(t.individual).not.toHaveProperty('cansancio');
+    expect(t.presionAlta).not.toHaveProperty('cansancio');
+    expect(PARAMETROS_V9).not.toHaveProperty('cansancio');
+  });
+
+  it('trae completos los bloques que el motor lee sin comprobar', () => {
+    const p = PARAMETROS_V9;
+    for (const b of ['manoAMano', 'idaVuelta', 'fueraDeJuego', 'curvas', 'quite', 'aereo', 'estrella', 'desmarque', 'controlPresion', 'liderazgo', 'bandas', 'subidaArea', 'segundaLinea', 'fueraDeCampo', 'relajacion', 'defectos', 'duelos'] as const) {
+      expect(p[b], b).toBeDefined();
+    }
+    expect(p.espacio.rozamientoSuelto).toBeGreaterThan(0);
+    expect(p.disciplina.factorFaltaArea).toBeTypeOf('number');
+    expect(p.disciplina.factorSegundaAmarilla).toBeTypeOf('number');
+    expect(p.virtudes.revulsivo).toBeTypeOf('number');
+    expect(p.virtudes.versatil).toBeTypeOf('number');
   });
 });

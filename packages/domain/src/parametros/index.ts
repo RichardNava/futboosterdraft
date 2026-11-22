@@ -128,7 +128,8 @@ export interface ParametrosEquilibrado {
   /** Errores creíbles de los NPC por nivel (spec 003, FR-037 a FR-037b; research R12, data-model §6). */
   npc: { errores: Record<NivelDecisiones, ParametrosErroresNPC> };
   draft: { margenAnimacionS: number };
-  cansancio: {
+  /** Hasta la 8.x: cansancio como fracción de stats perdida. La 9.0.0 usa `fatiga`. */
+  cansancio?: {
     inicioMin: number;
     inicioMinPresionAlta: number;
     /** Fracción de stats perdida por minuto a partir del inicio. */
@@ -140,6 +141,8 @@ export interface ParametrosEquilibrado {
     /** Desde la 7.0.0 (spec 014, research R5): tope de la fracción de stats perdida (antes, 0,6 en el código). */
     maximo?: number;
   };
+  /** Desde la 9.0.0 (spec 018): energía de 0 a 100, con gasto por rol, rasgos y acciones intensas. */
+  fatiga?: ParametrosFatiga;
   /**
    * Desde la 7.0.0 (spec 014, research R2): mano a mano por posición. Distancias en metros; `errorDecision` es la
    * probabilidad máxima (visión 70 o menos) de saltarse la directriz y decidir con los pesos normales.
@@ -333,14 +336,29 @@ export interface ParametrosEquilibrado {
     efectoAmplitud: number;
   };
   tacticas: {
-    individual: { recuperacion: number; cansancio: number; vulnerableDesmarque: number };
-    catenaccio: { ofensiva: number; defensiva: number; posesionRival: number };
-    presionAlta: { recuperacionCampoRival: number; cansancio: number; vulnerableEspalda: number };
+    individual: {
+      recuperacion?: number;
+      cansancio?: number;
+      vulnerableDesmarque?: number;
+      ritmoEquipo?: number;
+      ritmoMarcador?: number;
+      bonusMarcaje?: number;
+      malusEstrella?: number;
+      companeros?: number;
+      regate?: number;
+    };
+    catenaccio: { ofensiva: number; defensiva: number; posesionRival: number; zonaMinima?: number };
+    presionAlta: { recuperacionCampoRival: number; cansancio?: number; vulnerableEspalda: number };
     /** `fuerasDeJuegoProvocados`: sorteo retirado en la 7.0.0 (spec 014, FR-011). */
     lineaAdelantada: { fuerasDeJuegoProvocados?: number; vulnerableEspalda: number };
     contraataque: { posesion: number; peligroTransicion: number };
-    combinativo: { posesion: number; perdidasPase: number };
-    vertical: { accionesBanda: number; pasesLargos: number };
+    combinativo: { posesion?: number; perdidasPase: number };
+    vertical?: { accionesBanda?: number; pasesLargos?: number; costePase?: number };
+    /** Desde la 9.0.0 (spec 018). */
+    bandas?: { ventajaPerdida: number; factorPaseEspacio: number };
+    bandasVertical?: { centro: number; probabilidadBanda: number };
+    pesos?: PesosTacticas;
+    avance?: AvanceTacticas;
   };
   /** Dificultad base de cada acción en la escala de la sigmoide (más alto = más fácil). */
   acciones: {
@@ -437,6 +455,38 @@ export interface ParametrosEquilibrado {
   };
 }
 
+/** Rol de una posición para el gasto de energía (spec 018): la línea que ocupa. */
+export type RolFatiga = 'porteria' | 'defensa' | 'medio' | 'ataque';
+
+/** Energía de la 9.0.0 (spec 018, data-model §2 y §3). */
+export interface ParametrosFatiga {
+  /** Minuto de cada parte reglamentaria desde el que se gasta energía. */
+  inicioMin: { parte1: number; parte2: number };
+  /** Puntos por minuto de tramo del jugador de referencia (ritmo ×1). */
+  gastoPorMinuto: number;
+  /** Parte del gasto que va por el rol y parte que va por las acciones intensas. */
+  reparto: { rol: number; acciones: number };
+  recuperacion: { descanso: number; preProrroga: number; descansoProrroga: number };
+  ritmoRol: Record<RolFatiga, number>;
+  /** Puntos de intensidad por minuto de tramo de un jugador medio de cada rol (se calibra). */
+  referenciaAcciones: Record<RolFatiga, number>;
+  /** Puntos de intensidad de cada acción (se calibran). */
+  pesosAccion: { sprint: number; presion: number; regate: number; duelo: number };
+  /** Fracción de su velocidad máxima a partir de la que un jugador esprinta (se calibra). */
+  umbralSprint: number;
+  penalizacion: {
+    /** Tramos acumulados: de la energía anterior hasta `hasta`, `pendiente` puntos por punto perdido. */
+    tramos: { hasta: number; pendiente: number }[];
+    tipo: { fisica: number; tecnica: number; mental: number };
+  };
+  rasgos: {
+    incansable: number;
+    fatigado: number;
+    indisciplinado: { adelantoMin: number; costeAccion: number };
+    motivador: { ritmo: number; recuperacionDescanso: number };
+  };
+}
+
 export interface ParametrosDefectos {
   /** Multiplicadores de probabilidad o de peso. */
   canchero: number;
@@ -471,6 +521,80 @@ export type ParametrosCompletos = ParametrosEquilibrado & {
   defectos: ParametrosDefectos;
   duelos: ParametrosDuelos;
 };
+
+/** Bloques que las versiones antiguas no tenían y que el motor actual necesita siempre (spec 018, R13). */
+type BloquesMotor =
+  | 'manoAMano'
+  | 'idaVuelta'
+  | 'fueraDeJuego'
+  | 'curvas'
+  | 'quite'
+  | 'aereo'
+  | 'estrella'
+  | 'desmarque'
+  | 'controlPresion'
+  | 'liderazgo'
+  | 'bandas'
+  | 'subidaArea'
+  | 'segundaLinea'
+  | 'fueraDeCampo'
+  | 'relajacion';
+
+/** Multiplicadores del peso de cada acción por táctica (spec 018, FR-034). */
+export interface PesosTacticas {
+  combinativo: Partial<Record<string, number>>;
+  contraataque: Partial<Record<string, number>>;
+  vertical: Partial<Record<string, number>>;
+  catenaccio: Partial<Record<string, number>>;
+  /** Peso extra del pase al espacio y del regate por punto de ofensividad. */
+  ofensividadUltimoPase: number;
+}
+
+/** Probabilidad de avanzar de zona y de ir por banda según la táctica (spec 018, FR-034). */
+export interface AvanceTacticas {
+  combinativo: number;
+  contraataque: number;
+  catenaccio: number;
+  ofensividad: number;
+  rivalCatenaccio: number;
+  minimo: number;
+  maximo: number;
+  bandaBase: number;
+  bandaAmplitud: number;
+  bandaVertical: number;
+  bandaMinima: number;
+  bandaMaxima: number;
+}
+
+/** Tácticas de la 9.0.0: todos sus valores viven aquí (FR-034). */
+export interface TacticasMotor {
+  individual: {
+    ritmoEquipo: number;
+    ritmoMarcador: number;
+    bonusMarcaje: number;
+    malusEstrella: number;
+    companeros: number;
+    regate: number;
+  };
+  catenaccio: { ofensiva: number; defensiva: number; posesionRival: number; zonaMinima: number };
+  presionAlta: { recuperacionCampoRival: number; vulnerableEspalda: number };
+  lineaAdelantada: { vulnerableEspalda: number };
+  contraataque: { posesion: number; peligroTransicion: number };
+  combinativo: { perdidasPase: number };
+  vertical: { costePase: number };
+  bandas: { ventajaPerdida: number; factorPaseEspacio: number };
+  bandasVertical: { centro: number; probabilidadBanda: number };
+  pesos: PesosTacticas;
+  avance: AvanceTacticas;
+}
+
+/** Parámetros que el motor simula: con todos sus bloques obligatorios, sin ramas por versión. */
+export type ParametrosMotor = Omit<ParametrosCompletos, 'espacio' | 'cansancio' | 'tacticas' | BloquesMotor> &
+  Required<Pick<ParametrosEquilibrado, BloquesMotor>> & {
+    espacio: ParametrosEquilibrado['espacio'] & { rozamientoSuelto: number };
+    tacticas: TacticasMotor;
+    fatiga: ParametrosFatiga;
+  };
 
 /** Valores neutros de los defectos: con ellos, un defecto no cambia nada (versiones 1.x a 3.x). */
 export const DEFECTOS_NEUTROS: Readonly<ParametrosDefectos> = {
@@ -628,7 +752,7 @@ export const PARAMETROS_V7: ParametrosEquilibrado = {
   version: '7.0.0',
   // Más rango de velocidad (US5, research R7): el rápido llega antes a los balones sueltos.
   espacio: { ...PARAMETROS_V6_3.espacio, rozamientoSuelto: 0.3, velocidadJugadorMin: 18 },
-  cansancio: { ...PARAMETROS_V6_3.cansancio, maximo: 0.6, degradacionPorMinuto: 0.011 },
+  cansancio: { ...PARAMETROS_V6_3.cansancio!, maximo: 0.6, degradacionPorMinuto: 0.011 },
   manoAMano: { pasilloM: 4, margenAtrasM: 1, distanciaBaseM: 14, distanciaPorRemateM: 3, paraleloM: 2, errorDecision: 0.05 },
   idaVuelta: { avanceMinimoM: 3 },
   fueraDeJuego: { toleranciaM: 0.3, holguraMaxM: 0.5, pesoReceptor: 0.05, holguraLineaAdelantada: 3 },
@@ -720,6 +844,77 @@ export const PARAMETROS_V8: ParametrosEquilibrado = {
   },
 };
 
+const TACTICAS_V8 = PARAMETROS_V8.tacticas;
+const { cansancio: _presionCansancio, ...PRESION_ALTA_V9 } = TACTICAS_V8.presionAlta;
+const { posesion: _posesionCombinativo, ...COMBINATIVO_V9 } = TACTICAS_V8.combinativo;
+const { cansancio: _cansancioV8, ...BASE_V9 } = PARAMETROS_V8;
+
+/**
+ * Parámetros 9.0.0 (spec 018): energía de 0 a 100 y tácticas con ventaja y coste. Los valores de `referenciaAcciones`,
+ * `pesosAccion` y `umbralSprint` son provisionales hasta la calibración (T060).
+ */
+export const PARAMETROS_V9 = {
+  ...BASE_V9,
+  version: '9.0.0',
+  fatiga: {
+    inicioMin: { parte1: 30, parte2: 55 },
+    gastoPorMinuto: 1,
+    reparto: { rol: 0.8, acciones: 0.2 },
+    recuperacion: { descanso: 10, preProrroga: 5, descansoProrroga: 5 },
+    ritmoRol: { porteria: 0.2, defensa: 0.85, medio: 1.2, ataque: 0.95 },
+    referenciaAcciones: { porteria: 0.5, defensa: 2, medio: 3, ataque: 2.5 },
+    pesosAccion: { sprint: 1, presion: 1, regate: 1, duelo: 1 },
+    umbralSprint: 0.85,
+    penalizacion: {
+      tramos: [
+        { hasta: 70, pendiente: 0.35 },
+        { hasta: 45, pendiente: 0.5 },
+        { hasta: 0, pendiente: 0.7 },
+      ],
+      tipo: { fisica: 1, tecnica: 0.5, mental: 0.25 },
+    },
+    rasgos: {
+      incansable: 0.7,
+      fatigado: 1.3,
+      indisciplinado: { adelantoMin: 5, costeAccion: 1.5 },
+      motivador: { ritmo: 0.95, recuperacionDescanso: 15 },
+    },
+  },
+  tacticas: {
+    lineaAdelantada: TACTICAS_V8.lineaAdelantada,
+    contraataque: TACTICAS_V8.contraataque,
+    combinativo: COMBINATIVO_V9,
+    presionAlta: PRESION_ALTA_V9,
+    individual: { ritmoEquipo: 1.05, ritmoMarcador: 1.15, bonusMarcaje: 6, malusEstrella: 5, companeros: 0.05, regate: 0.12 },
+    catenaccio: { ...TACTICAS_V8.catenaccio, defensiva: 0.5, zonaMinima: 4 },
+    vertical: { costePase: 0.15 },
+    bandas: { ventajaPerdida: 0.15, factorPaseEspacio: 0.9 },
+    bandasVertical: { centro: 1.8, probabilidadBanda: 0.25 },
+    // Los valores que hasta la 8.0.0 estaban fijos en el motor, sin cambios (FR-034).
+    pesos: {
+      combinativo: { pase_corto: 1.4, pase_largo: 0.5, regate: 0.9 },
+      contraataque: { pase_largo: 1.6, pase_espacio: 1.5, pase_corto: 0.8 },
+      vertical: { centro: 1.6, pase_largo: 1.3, pase_espacio: 1.3 },
+      catenaccio: { pase_largo: 1.3, pase_espacio: 1.2, regate: 0.8 },
+      ofensividadUltimoPase: 0.08,
+    },
+    avance: {
+      combinativo: -0.1,
+      contraataque: 0.08,
+      catenaccio: -0.15,
+      ofensividad: 0.04,
+      rivalCatenaccio: -0.08,
+      minimo: 0.15,
+      maximo: 0.85,
+      bandaBase: 0.45,
+      bandaAmplitud: 0.08,
+      bandaVertical: 0.15,
+      bandaMinima: 0.2,
+      bandaMaxima: 0.85,
+    },
+  },
+} as ParametrosMotor;
+
 
 
 /** Reparto de un nivel; las versiones anteriores a la 6.3.0 tienen el de siempre (4, 2, 1 y 1 alta) en todos. */
@@ -737,6 +932,7 @@ const REGISTRO: Readonly<Record<string, ParametrosEquilibrado>> = {
   [PARAMETROS_V6_3.version]: PARAMETROS_V6_3,
   [PARAMETROS_V7.version]: PARAMETROS_V7,
   [PARAMETROS_V8.version]: PARAMETROS_V8,
+  [PARAMETROS_V9.version]: PARAMETROS_V9,
 };
 
 /** Error al pedir parámetros de una versión que el motor actual ya no puede simular. */
@@ -753,17 +949,17 @@ export function versionMayor(version: string): number {
 }
 
 /** Parámetros vigentes para partidos nuevos. */
-export function parametrosActuales(): ParametrosEquilibrado {
-  return PARAMETROS_V8;
+export function parametrosActuales(): ParametrosMotor {
+  return PARAMETROS_V9;
 }
 
-/** Versión mayor mínima que el motor actual puede simular (spec 014, research R14: la 7.x; la 015 añade la 8.x sin retirarla). */
-export const VERSION_MAYOR_SOPORTADA = 7;
+/** Versión mayor mínima que el motor actual puede simular (spec 018, FR-036: solo la 9.x). */
+export const VERSION_MAYOR_SOPORTADA = 9;
 
-/** Parámetros de una versión concreta, para reproducir un partido (FR-040). Las anteriores a la 7.x lanzan `VersionNoSoportada` (research R14). */
+/** Parámetros de una versión registrada: los duelos y los resúmenes leen versiones antiguas, pero `crearPartido` solo simula la 9.x. Las 1.x y 2.x lanzan `VersionNoSoportada`. */
 export function parametrosPorVersion(version: string): ParametrosEquilibrado {
   const p = REGISTRO[version];
   if (p) return p;
-  if (versionMayor(version) < VERSION_MAYOR_SOPORTADA) throw new VersionNoSoportada(version);
+  if (versionMayor(version) < 3) throw new VersionNoSoportada(version);
   throw new Error(`Versión de parámetros desconocida: ${version}`);
 }

@@ -34,7 +34,7 @@ export function enFueraDeJuego(estado: EstadoMotor, atacante: EquipoEstado, rece
   const x = aEquipo(atacante.lado, q).x;
   if (x <= LARGO / 2 || x <= xBalon) return false;
   const defensor = estado.equipos[atacante.lado === 'local' ? 'visitante' : 'local'];
-  return x > penultimoDefensor(estado, defensor, atacante.lado) + decimasDeMetros(estado.parametros.fueraDeJuego!.toleranciaM);
+  return x > penultimoDefensor(estado, defensor, atacante.lado) + decimasDeMetros(estado.parametros.fueraDeJuego.toleranciaM);
 }
 
 /** Ventana de la línea rota: el penúltimo defensor si es de la línea defensiva, y su x y la del siguiente (atacante). */
@@ -59,7 +59,7 @@ function ventanaRezagado(estado: EstadoMotor, defensor: EquipoEstado, ladoAtacan
 
 /** El atacante en `x` (sus coordenadas) estaría en fuera de juego con la línea de los demás, pero el rezagado lo habilita. */
 function habilitadoEn(estado: EstadoMotor, v: { x2: number; x3: number }, x: number, xBalon: number): boolean {
-  const tolerancia = decimasDeMetros(estado.parametros.fueraDeJuego!.toleranciaM);
+  const tolerancia = decimasDeMetros(estado.parametros.fueraDeJuego.toleranciaM);
   return x > LARGO / 2 && x > xBalon && x > v.x3 + tolerancia && x <= v.x2 + tolerancia;
 }
 

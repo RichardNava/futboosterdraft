@@ -314,7 +314,7 @@ export function GestionEquipo({ estado, jugadores, dorsales, colores, enviar, on
       {ayudaEnergia && (
         <Dialogo etiquetadoPor="titulo-ayuda-energia" alEscape={() => setAyudaEnergia(false)}>
           <h2 id="titulo-ayuda-energia">Energía de los jugadores</h2>
-          <p>Desde el minuto 65 (55 con Presión alta) los jugadores se cansan y rinden menos.</p>
+          <p>Los jugadores se cansan desde el minuto 30 y desde el 55, cada uno a su ritmo según su puesto, sus rasgos y lo que corre. En el descanso recuperan energía.</p>
           <table className="tabla-energia">
             <thead>
               <tr>

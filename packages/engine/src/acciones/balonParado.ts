@@ -1,7 +1,7 @@
 /**
  * Faltas, tarjetas, penaltis, faltas directas y fueras de juego (T086).
  */
-import { lanzadorEfectivo, parametrosEfectivos, type ParametrosEquilibrado } from '@fbd/domain';
+import { lanzadorEfectivo, type ParametrosEquilibrado } from '@fbd/domain';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
 import { decimasDeMetros, distanciaPorteria, enAreaRival } from '../espacio/campo';
 import { aAbsoluta, aEquipo, CENTRO_Y, zonaCarrilDe, type Punto } from '../espacio/geometria';
@@ -38,7 +38,7 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
         d.probabilidadAmarillaPorFalta *
           1000 *
           (zona >= 4 ? 1.4 : 1) *
-          (culpable.amarillas > 0 ? parametrosEfectivos(e.parametros).disciplina.factorSegundaAmarilla : 1) *
+          (culpable.amarillas > 0 ? e.parametros.disciplina.factorSegundaAmarilla : 1) *
           factorAmarilla(e, culpable),
       ),
     )

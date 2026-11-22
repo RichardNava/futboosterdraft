@@ -1,19 +1,18 @@
 /**
- * Liderazgo del defensa y del portero (spec 015, US6; research R9; FR-015, FR-016). Solo con el bloque `liderazgo` de
- * los parámetros; sin él, la 7.0.0.
+ * Liderazgo del defensa y del portero (spec 015, US6; research R9; FR-015, FR-016).
  *
  * - Defensa líder: los defensas de su línea a `radioDefensaM` o menos se acercan a la línea del fuera de juego (el
  *   penúltimo defensor) en la fracción `correccionLinea` del mayor liderazgo cercano (`objetivos.ts`).
  * - Portero líder: suma `porcentajePortero` × su liderazgo al atributo de los defensas de su equipo en sus zonas 0 a
  *   `zonaMaxPortero` cuando defienden un duelo (`ajusteDuelo` y el duelo aéreo del balón parado).
  */
-import type { ParametrosEquilibrado } from '@fbd/domain';
+import type { ParametrosMotor } from '@fbd/domain';
 import type { EstadoMotor, JugadorEnPartido } from '../estado/estado';
 import { dist2 } from '../espacio/aritmetica';
 import { decimasDeMetros } from '../espacio/campo';
 import { zonaCarrilDe } from '../espacio/geometria';
 
-type Liderazgo = NonNullable<ParametrosEquilibrado['liderazgo']>;
+type Liderazgo = ParametrosMotor['liderazgo'];
 
 /** Defensa de la línea: punto (décimas, coordenadas de su equipo) y liderazgo (0 si no es DEF). */
 export interface DefensaLinea {
@@ -44,14 +43,20 @@ export function bonusPortero(liderazgoPortero: number, zonaDefensa: number, p: L
   return zonaDefensa <= p.zonaMaxPortero ? p.porcentajePortero * Math.max(0, liderazgoPortero - p.basePortero) : 0;
 }
 
-/** Bonus del portero propio al DEF que defiende un duelo (0 sin el bloque, si no es DEF o si está lejos de su área). */
+/** Liderazgo de la carta con su penalización mental por energía (spec 018, FR-012); `undefined` si no lo tiene. */
+export function liderazgoConEnergia(estado: EstadoMotor, j: JugadorEnPartido): number | undefined {
+  const valor = (j.jugador.stats as unknown as Record<string, number>).liderazgo;
+  return valor === undefined ? undefined : valor * (1 - (j.penalizacionFisica * estado.parametros.fatiga.penalizacion.tipo.mental) / 100);
+}
+
+/** Bonus del portero propio al DEF que defiende un duelo (0 si no es DEF o si está lejos de su área). */
 export function bonusLiderPortero(estado: EstadoMotor, defensor: JugadorEnPartido | undefined): number {
   const p = estado.parametros.liderazgo;
-  if (!p || !defensor || defensor.jugador.demarcacion !== 'DEF') return 0;
+  if (!defensor || defensor.jugador.demarcacion !== 'DEF') return 0;
   const q = estado.espacio.jugadores[defensor.id];
   if (!q) return 0;
   const equipo = estado.equipos.local.jugadores.includes(defensor) ? estado.equipos.local : estado.equipos.visitante;
   const arquero = equipo.jugadores.find((j) => j.enCampo && j.casillaId === 'POR');
-  const liderazgo = arquero ? (arquero.jugador.stats as unknown as Record<string, number>).liderazgo : undefined;
+  const liderazgo = arquero ? liderazgoConEnergia(estado, arquero) : undefined;
   return liderazgo === undefined ? 0 : bonusPortero(liderazgo, zonaCarrilDe(equipo.lado, q).zona, p);
 }

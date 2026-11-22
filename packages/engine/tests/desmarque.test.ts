@@ -1,8 +1,8 @@
 /**
  * Desmarque contra marcaje antes del pase y control con presión (spec 015, US4 y US5; invariantes M2.7 y M2.9; research
- * R7 y R8; FR-011, FR-012, FR-014, FR-019). Con la 7.0.0 no hay ninguno de los dos duelos.
+ * R7 y R8; FR-011, FR-012, FR-014, FR-019).
  */
-import { PARAMETROS_V7, PARAMETROS_V8, type Rng } from '@fbd/domain';
+import { parametrosActuales, type Rng } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { marcadorDe, probabilidadControl, probabilidadDesmarque } from '../src/acciones/desmarque';
 import { probabilidad } from '../src/acciones/duelo';
@@ -12,8 +12,8 @@ import type { EstadoMotor, JugadorEnPartido } from '../src/index';
 import type { Metricas } from '../src/metricas';
 import { contextoDe, darBalon, partido, rngDePrueba, situar, titularEn } from './ayudas';
 
-const V8 = { version: PARAMETROS_V8.version, parametros: PARAMETROS_V8 };
-const D = PARAMETROS_V8.desmarque!;
+const ACTUAL = { version: parametrosActuales().version, parametros: parametrosActuales() };
+const D = parametrosActuales().desmarque!;
 const M = 95.24;
 
 /** Tiradas de duelo fijas (las de 0 a 999): con 0 gana siempre quien ataca; con 999, siempre quien defiende. */
@@ -30,7 +30,7 @@ function tiradas(valor: number | null): Rng {
 const sinTiradas = tiradas(null);
 
 /** Receptor local en la casilla `casilla` en (8.000, 3.200) y un rival de la casilla `rival` a `metros` de él. */
-function escena(casilla: string, rivalCasilla: string, metros: number, parametros: typeof V8 | Record<string, never> = V8) {
+function escena(casilla: string, rivalCasilla: string, metros: number, parametros: typeof ACTUAL = ACTUAL) {
   const e = partido(`desmarque-${casilla}-${rivalCasilla}-${metros}`, parametros);
   const receptor = titularEn(e, 'local', casilla);
   const marcador = titularEn(e, 'visitante', rivalCasilla);
@@ -61,8 +61,8 @@ describe('marcador del receptor (M2.7, M2.12)', () => {
 });
 
 describe('atributos del desmarque y del marcaje (FR-012, FR-019)', () => {
-  it('desmarque: DEL desmarque, MED visión, DEF velocidad (sin el × 0,8 de la 7.0.0)', () => {
-    const e = partido('atributos-desmarque', V8);
+  it('desmarque: DEL desmarque, MED visión, DEF velocidad (entera)', () => {
+    const e = partido('atributos-desmarque', ACTUAL);
     const del = titularEn(e, 'local', 'DC');
     const med = titularEn(e, 'local', 'MC-1');
     const def = titularEn(e, 'local', 'DCI');
@@ -72,14 +72,10 @@ describe('atributos del desmarque y del marcaje (FR-012, FR-019)', () => {
     expect(atributo(e, e.equipos.local, del, 'desmarque')).toBe(91);
     expect(atributo(e, e.equipos.local, med, 'desmarque')).toBe(87);
     expect(atributo(e, e.equipos.local, def, 'desmarque')).toBe(73);
-    const v7 = partido('atributos-desmarque-v7');
-    const def7 = titularEn(v7, 'local', 'DCI');
-    conStats(def7, { velocidad: 73 });
-    expect(atributo(v7, v7.equipos.local, def7, 'desmarque')).toBeCloseTo(73 * 0.8);
   });
 
   it('marcaje: DEF marcaje, MED posicionamiento, DEL agresividad y POR 50', () => {
-    const e = partido('atributos-marcaje', V8);
+    const e = partido('atributos-marcaje', ACTUAL);
     const v = e.equipos.visitante;
     conStats(titularEn(e, 'visitante', 'DCI'), { marcaje: 88 });
     conStats(titularEn(e, 'visitante', 'MC-1'), { posicionamiento: 76 });
@@ -94,10 +90,10 @@ describe('atributos del desmarque y del marcaje (FR-012, FR-019)', () => {
     const { e, receptor, marcador } = escena('MC-1', 'DC', 2);
     conStats(receptor, { vision: 90 });
     conStats(marcador, { agresividad: 60 });
-    const esperado = probabilidad({ base: D.base, atacante: 90, defensor: 60, pendiente: D.m }, PARAMETROS_V8);
+    const esperado = probabilidad({ base: D.base, atacante: 90, defensor: 60, pendiente: D.m }, parametrosActuales());
     const desmarque = atributo(e, e.equipos.local, receptor, 'desmarque');
     const marcaje = atributo(e, e.equipos.visitante, marcador, 'marcaje');
-    expect(probabilidadDesmarque(desmarque, marcaje, PARAMETROS_V8)).toBe(esperado);
+    expect(probabilidadDesmarque(desmarque, marcaje, parametrosActuales())).toBe(esperado);
     expect(esperado).toBeGreaterThan(500);
   });
 });
@@ -127,34 +123,28 @@ describe('duelo de desmarque antes del pase (FR-011, M2.7)', () => {
     expect(ctxPierde.metricas[pierde.receptor.id]).toMatchObject({ duelosDesmarque: 1, recibidoLibre: 0 });
     expect(ctxPierde.metricas[pierde.marcador.id]).toMatchObject({ marcajesGanados: 1 });
   });
-
-  it('con la 7.0.0 no hay duelo', () => {
-    const { e, receptor } = escena('DC', 'DCI', 2, {});
-    expect(desmarqueDelPase({ ...contextoDe(e), rng: sinTiradas }, e.equipos.local, e.equipos.visitante, receptor)).toBeNull();
-    expect(PARAMETROS_V7).not.toHaveProperty('desmarque');
-  });
 });
 
 describe('control con presión (FR-014, M2.9)', () => {
   /** Receptor marcado con el balón ya en los pies. */
-  function marcado(casilla = 'DC', parametros: typeof V8 | Record<string, never> = V8) {
+  function marcado(casilla = 'DC', parametros: typeof ACTUAL = ACTUAL) {
     const s = escena(casilla, 'DCI', 2, parametros);
     darBalon(s.e, 'local', s.receptor, 5);
     return s;
   }
-  const control = (e: EstadoMotor, receptor: JugadorEnPartido, marca: ReturnType<typeof desmarqueDelPase>, rng: Rng) => {
+  const control = (e: EstadoMotor, receptor: JugadorEnPartido, marca: ReturnType<typeof desmarqueDelPase> | null, rng: Rng) => {
     const ctx = { ...contextoDe(e), rng, metricas: {} as Metricas };
     return { perdido: controlConPresion(ctx, e.equipos.local, e.equipos.visitante, receptor, marca), metricas: ctx.metricas };
   };
 
   it('enfrenta la técnica del receptor contra el quite del marcador', () => {
-    const c = PARAMETROS_V8.controlPresion!;
-    expect(probabilidadControl(80, 70, PARAMETROS_V8)).toBe(probabilidad({ base: c.base, atacante: 80, defensor: 70, pendiente: c.m }, PARAMETROS_V8));
-    expect(probabilidadControl(90, 70, PARAMETROS_V8)).toBeGreaterThan(probabilidadControl(75, 70, PARAMETROS_V8));
+    const c = parametrosActuales().controlPresion!;
+    expect(probabilidadControl(80, 70, parametrosActuales())).toBe(probabilidad({ base: c.base, atacante: 80, defensor: 70, pendiente: c.m }, parametrosActuales()));
+    expect(probabilidadControl(90, 70, parametrosActuales())).toBeGreaterThan(probabilidadControl(75, 70, parametrosActuales()));
   });
 
   it('técnica: DEF y MED su técnica, DEL (regate + creatividad) / 2, POR distribución', () => {
-    const e = partido('tecnica', V8);
+    const e = partido('tecnica', ACTUAL);
     const l = e.equipos.local;
     conStats(titularEn(e, 'local', 'DCI'), { tecnica: 71 });
     conStats(titularEn(e, 'local', 'MC-1'), { tecnica: 83 });
@@ -185,12 +175,10 @@ describe('control con presión (FR-014, M2.9)', () => {
     expect(metricas[receptor.id]).toMatchObject({ controlesPresion: 1, controlesPerdidos: 0 });
   });
 
-  it('sin duelo si recibió libre, si nadie le marca o con la 7.0.0', () => {
+  it('sin duelo si recibió libre o si nadie le marca', () => {
     const { e, receptor, marcador } = marcado();
     expect(control(e, receptor, { marcador, libre: true, desplazamiento: D.bonusLibre }, sinTiradas)).toEqual({ perdido: false, metricas: {} as Metricas });
     expect(control(e, receptor, { marcador: null, libre: true, desplazamiento: D.bonusLibre }, sinTiradas)).toEqual({ perdido: false, metricas: {} as Metricas });
     expect(control(e, receptor, null, sinTiradas)).toEqual({ perdido: false, metricas: {} as Metricas });
-    const v7 = marcado('DC', {});
-    expect(control(v7.e, v7.receptor, { marcador: v7.marcador, libre: false, desplazamiento: 0 }, sinTiradas)).toEqual({ perdido: false, metricas: {} as Metricas });
   });
 });

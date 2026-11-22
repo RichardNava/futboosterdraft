@@ -13,6 +13,7 @@ import {
   type Jugador,
   type Lanzadores,
   type ParametrosEquilibrado,
+  type ParametrosMotor,
   type Posicion,
   type Tactica,
   versionMayor,
@@ -32,6 +33,7 @@ import type {
   Marcador,
 } from '../tipos';
 import { colocarSaqueInicial } from '../espacio/colocacion';
+import { fijarMarcajes, type MarcajeEstrella } from '../modificadores/marcajeEstrella';
 
 export interface JugadorEnPartido {
   id: number;
@@ -44,8 +46,10 @@ export interface JugadorEnPartido {
   expulsado: boolean;
   lesionado: boolean;
   amarillas: number;
-  /** Fracción de stats perdida por cansancio (0 = fresco). */
-  cansancio: number;
+  /** Energía de 0 a 100 (spec 018, R1); los suplentes también empiezan con 100. */
+  energia: number;
+  /** Porcentaje que pierden las stats físicas (0–54,5): derivado de `energia`, se actualiza siempre con ella. */
+  penalizacionFisica: number;
   /** Punto de la colocación en unidades y coordenadas del equipo (research R13); si falta, el de su casilla. */
   ancla?: { x: number; y: number };
   /** Posición efectiva (la de la zona de su ancla) si se colocó libremente (US7). */
@@ -69,6 +73,8 @@ export interface EquipoEstado {
    * participante. Lo pone el servidor; no está en `EntradaPartido` ni cambia el partido si no se decide nada.
    */
   controlTotal?: boolean;
+  /** Pareja de Individual (spec 018, R11): sin definir hasta que juega en Individual; `null` si no hay pareja posible. */
+  marcajeEstrella?: MarcajeEstrella | null;
 }
 
 /**
@@ -124,6 +130,8 @@ export interface PosicionMovil {
    * de su línea.
    */
   papel: number;
+  /** Estaba en sprint en el paso anterior: el sprint solo se cuenta al entrar (spec 018, R4). */
+  sprint?: boolean;
 }
 
 export type TipoAccionVisible = AccionVisible['tipo'];
@@ -147,8 +155,6 @@ export interface AccionEnCurso {
   enPunto?: boolean;
   /** Reanudación a balón parado: córner, falta, saque de centro… (colocación de los jugadores, FR-022a). */
   motivo?: string;
-  /** Orden de los jugadores del equipo que saca, del más adelantado al más retrasado, al empezar el saque. */
-  orden?: number[];
 }
 
 export interface EstadoEspacio {
@@ -175,6 +181,8 @@ export interface EstadoEspacio {
   paradaPendiente: number;
   /** El siguiente pase sale de un saque de banda o de puerta: no hay fuera de juego (spec 014, FR-009). */
   sinFueraDeJuego?: boolean;
+  /** Última clave de saque con objetivos calculados (spec 018, R8). */
+  claveSaque?: string;
 }
 
 /** Posesión en curso, para las estadísticas de secuencias, paredes y contraataques (research R4). */
@@ -193,7 +201,7 @@ export interface EstadoPosesion {
 
 export interface EstadoMotor {
   version: string;
-  parametros: ParametrosEquilibrado;
+  parametros: ParametrosMotor;
   eliminatoria: boolean;
   rng: EstadoRng;
   tick: number;
@@ -229,6 +237,8 @@ export interface EstadoMotor {
   cornerPendiente?: Lado | null;
   /** Lesiones y expulsiones del partido (spec 012); las `pendiente` se resuelven al terminar su paso. */
   incidencias: Incidencia[];
+  /** Pérdida en banda de un equipo por las bandas (spec 018, R12): la consume la primera acción de quien recuperó. */
+  ventajaBanda?: { lado: Lado; carril: number } | null;
 }
 
 export const DURACION_PARTE = 45 * 60;
@@ -340,7 +350,8 @@ function nuevoJugador(carta: Jugador, casillaId: string | null, enCampo: boolean
     expulsado: false,
     lesionado: false,
     amarillas: 0,
-    cansancio: 0,
+    energia: 100,
+    penalizacionFisica: 0,
     entroDesdeBanquillo: false,
   };
 }
@@ -353,7 +364,7 @@ export function anclaDeCasilla(formacion: FormacionId, casillaId: string | null)
 
 /** Estado inicial de un partido (saque de centro); lanza `VersionNoSoportada` con parámetros que el motor ya no simula. */
 export function crearPartido(entrada: EntradaPartido): EstadoMotor {
-  // El motor de la spec 003 no puede volver a simular partidos de los parámetros 1.x ni 2.x (research R2).
+  // Solo se simula la 9.x (spec 018, FR-036): los partidos anteriores conservan su resumen.
   if (versionMayor(entrada.parametros.version) < VERSION_MAYOR_SOPORTADA || versionMayor(entrada.version) < VERSION_MAYOR_SOPORTADA) {
     throw new VersionNoSoportada(entrada.parametros.version);
   }
@@ -361,7 +372,7 @@ export function crearPartido(entrada: EntradaPartido): EstadoMotor {
   const visitante = crearEquipo('visitante', entrada.visitante, entrada.parametros);
   const estado: EstadoMotor = {
     version: entrada.version,
-    parametros: entrada.parametros,
+    parametros: entrada.parametros as ParametrosMotor,
     eliminatoria: entrada.eliminatoria,
     rng: estadoDesdeSemilla(entrada.semilla),
     tick: 0,
@@ -394,6 +405,7 @@ export function crearPartido(entrada: EntradaPartido): EstadoMotor {
     puntoDecision: true,
   };
   colocarSaqueInicial(estado, 'local');
+  fijarMarcajes(estado);
   return estado;
 }
 
@@ -413,7 +425,7 @@ export function minutoMostrable(reloj: RelojPartido): string {
   return `${base + tope}+${minutoReglamentario - tope}'`;
 }
 
-/** Minuto de juego (entero, sin descuento separado) para reglas como el cansancio o Santo. */
+/** Minuto de juego (entero, sin descuento separado) para reglas como Santo. */
 export function minutoDeJuego(reloj: RelojPartido): number {
   const base = [0, 0, 45, 90, 105][reloj.parte] ?? 0;
   const duracion = reloj.parte <= 2 ? DURACION_PARTE : DURACION_PARTE_PRORROGA;

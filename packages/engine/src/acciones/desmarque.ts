@@ -3,7 +3,7 @@
  * FR-018, FR-019). Funciones puras: localizar al marcador es un solo recorrido por los rivales, sin ordenar ni reservar
  * memoria (M2.12), y los dos duelos son la fórmula de siempre (`probabilidad`) con la curva de su bloque.
  */
-import type { ParametrosEquilibrado } from '@fbd/domain';
+import type { ParametrosMotor } from '@fbd/domain';
 import type { EquipoEstado, EstadoMotor, JugadorEnPartido } from '../estado/estado';
 import { dist2 } from '../espacio/aritmetica';
 import { decimasDeMetros } from '../espacio/campo';
@@ -29,13 +29,13 @@ export function marcadorDe(e: EstadoMotor, receptor: JugadorEnPartido, rivales: 
 }
 
 /** Probabilidad (milésimas) de que el receptor gane el desmarque: su `desmarque` contra el `marcaje` del marcador. */
-export function probabilidadDesmarque(desmarque: number, marcaje: number, p: ParametrosEquilibrado): number {
-  const d = p.desmarque!;
+export function probabilidadDesmarque(desmarque: number, marcaje: number, p: ParametrosMotor): number {
+  const d = p.desmarque;
   return probabilidad({ base: d.base, atacante: desmarque, defensor: marcaje, pendiente: d.m }, p);
 }
 
 /** Probabilidad (milésimas) de que el receptor marcado controle: su `tecnica` contra el `quite` del marcador. */
-export function probabilidadControl(tecnica: number, quite: number, p: ParametrosEquilibrado): number {
-  const c = p.controlPresion!;
+export function probabilidadControl(tecnica: number, quite: number, p: ParametrosMotor): number {
+  const c = p.controlPresion;
   return probabilidad({ base: c.base, atacante: tecnica, defensor: quite, pendiente: c.m }, p);
 }

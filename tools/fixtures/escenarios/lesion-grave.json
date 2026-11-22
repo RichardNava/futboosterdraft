@@ -1,7 +1,7 @@
 {
   "nombre": "lesion-grave",
   "descripcion": "Un jugador sufre una lesión grave (baja de varios partidos).",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "local": {
     "participanteId": "local",
     "jugadores": [

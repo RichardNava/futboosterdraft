@@ -1,7 +1,7 @@
 /**
  * Lote atómico de decisiones (spec 003, research R17; FR-030; T062).
  */
-import { calcularMedia, CLAVES_STATS, FORMACIONES, PARAMETROS_V7, proponerLanzadores, semillaDesdeTexto, tacticaPorDefecto, type Demarcacion, type Jugador, type Posicion } from '@fbd/domain';
+import { parametrosActuales, calcularMedia, CLAVES_STATS, FORMACIONES, proponerLanzadores, semillaDesdeTexto, tacticaPorDefecto, type Demarcacion, type Jugador, type Posicion } from '@fbd/domain';
 import { aplicarDecision, avanzar, crearPartido, maxSustituciones, type DecisionPartido, type EquipoPartido, type EstadoMotor } from '@fbd/engine';
 import { describe, expect, it } from 'vitest';
 import { aplicarLote, type DecisionLote } from '../../src/actores/loteDecisiones';
@@ -20,11 +20,15 @@ function equipo(participanteId: string): EquipoPartido {
   return { participanteId, formacion: '4-4-2', titulares, suplentes, tactica: tacticaPorDefecto(), lanzadores: proponerLanzadores(titulares.map((t) => t.jugador)) };
 }
 
-/** Partido en el descanso. */
+/** Partido en el descanso con los once de cada equipo intactos: el lote cuenta con ellos, sea cual sea la calibración. */
 function enDescanso(semilla: string): EstadoMotor {
-  const p = PARAMETROS_V7;
-  const e = crearPartido({ version: p.version, parametros: p, semilla: semillaDesdeTexto(semilla), eliminatoria: false, local: equipo('yo'), visitante: equipo('npc') });
-  return avanzar(e, 'parte').estado;
+  const p = parametrosActuales();
+  for (let i = 0; i < 50; i++) {
+    const e = crearPartido({ version: p.version, parametros: p, semilla: semillaDesdeTexto(`${semilla}-${i}`), eliminatoria: false, local: equipo('yo'), visitante: equipo('npc') });
+    const estado = avanzar(e, 'parte').estado;
+    if ([estado.equipos.local, estado.equipos.visitante].every((q) => q.sustitucionesUsadas === 0 && q.jugadores.filter((j) => j.enCampo).length === 11)) return estado;
+  }
+  throw new Error('Ninguna semilla llega al descanso con los once intactos');
 }
 
 function lote(e: EstadoMotor): DecisionLote[] {
@@ -114,7 +118,9 @@ describe('energía en la pausa (spec 014, FR-016 a FR-018)', () => {
     expect(ids).toEqual(new Set(enCampo.map((j) => j.id)));
     expect(ids.has(expulsado.id)).toBe(false);
     for (const j of e.equipos.local.jugadores.filter((x) => !x.enCampo)) expect(ids.has(j.id)).toBe(false);
-    // En el descanso nadie se ha cansado todavía.
-    expect(lista.every((x) => x.energia === 100 && x.penalizacion === 0)).toBe(true);
+    // Spec 018: la energía del mensaje es la del motor, y a los 45' los de campo ya han gastado parte.
+    const porId = new Map(enCampo.map((j) => [j.id, j]));
+    for (const x of lista) expect(x).toMatchObject({ energia: Math.round(porId.get(x.jugadorId)!.energia), penalizacion: Math.round(porId.get(x.jugadorId)!.penalizacionFisica) });
+    expect(lista.some((x) => x.energia < 100)).toBe(true);
   });
 });

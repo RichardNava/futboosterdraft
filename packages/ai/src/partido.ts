@@ -1,7 +1,7 @@
 /**
  * Decisiones de los NPC durante el partido (T127), en cada punto de decisión (descanso, antes de la
  * prórroga y, en 2D, en las interrupciones):
- * - sustituciones por cansancio y, en los niveles altos, para proteger a defensas con amarilla;
+ * - sustituciones por energía y, en los niveles altos, para proteger a defensas con amarilla;
  * - cambio de táctica según el marcador y el minuto, más decidido cuanto mayor es el nivel.
  *
  * Nunca pide más cambios de los que quedan (FR-042) y deja de reserva los que marca su perfil para
@@ -26,11 +26,14 @@ import {
 import { TACTICA_DEFENSIVA, TACTICA_OFENSIVA } from './alineacion';
 import { errorPartido } from './errores';
 import { erroresDe, PERFILES, type NivelIA } from './perfiles';
-import { revulsivoParaEntrar, umbralCansancioDe } from './rasgos';
+import { revulsivoParaEntrar, umbralEnergiaDe } from './rasgos';
+
+/** Escala de la prioridad por energía: mantiene el peso de proteger a un amonestado (0,5; spec 018, R16). */
+const PRIORIDAD_ENERGIA = 0.6;
 
 const iguales = (a: Tactica, b: Tactica) => JSON.stringify(a) === JSON.stringify(b);
 
-/** Decisiones de un NPC en una pausa del partido: cambios por cansancio, Revulsivo y táctica según el marcador. */
+/** Decisiones de un NPC en una pausa del partido: cambios por energía, Revulsivo y táctica según el marcador. */
 export function decidirEnPartido(
   nivel: NivelIA,
   estado: EstadoMotor,
@@ -55,7 +58,7 @@ export function decidirEnPartido(
       .sort((a, b) => b.jugador.media - a.jugador.media || a.id - b.id)[0];
   const salen = equipo.jugadores
     .filter((j) => j.enCampo && j.jugador.demarcacion !== 'POR')
-    .map((j) => ({ j, motivo: j.cansancio >= umbralCansancioDe(j.jugador, perfil.umbralCansancio) ? j.cansancio : perfil.protegeAmonestados && estado.fase === 'descanso' && j.amarillas > 0 && j.jugador.demarcacion === 'DEF' ? 0.5 : 0 }))
+    .map((j) => ({ j, motivo: j.energia < umbralEnergiaDe(j.jugador, perfil.umbralEnergia) ? PRIORIDAD_ENERGIA * (1 - j.energia / 100) : perfil.protegeAmonestados && estado.fase === 'descanso' && j.amarillas > 0 && j.jugador.demarcacion === 'DEF' ? 0.5 : 0 }))
     .filter((x) => x.motivo > 0)
     .sort((a, b) => b.motivo - a.motivo || a.j.id - b.j.id);
   for (const { j } of salen) {

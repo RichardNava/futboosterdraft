@@ -180,12 +180,10 @@ export function pesosConEspacio(
   const f = p.decision.factores;
   const attr = (n: Parameters<typeof atributo>[3]) => atributo(estado, atacante, portador, n);
   const quince = p.decision.conduccion.espacioMax;
-  // El factor de regate solo cuenta con un rival encima o poco espacio; el físico, con espacio abierto (R9). Con las
-  // curvas de la spec 015 (R4), el regate cuenta siempre: el buen regateador también encara y conduce con espacio.
-  const curvas015 = p.curvas !== undefined;
+  // El físico cuenta con espacio abierto (R9) y el regate siempre (spec 015, R4): el buen regateador también encara y
+  // conduce con espacio.
   const abierto = en.espacio >= quince;
-  const conRegate = curvas015 || en.rivalEncima || !abierto;
-  const fRegate = conRegate ? factorStat(attr('regate'), f.regate) / 1000 : 1;
+  const fRegate = factorStat(attr('regate'), f.regate) / 1000;
   const fFisico = abierto ? factorStat((attr('velocidad') + attr('fisico')) / 2, f.fisico) / 1000 : 1;
   const fPase = factorStat(attr('pase'), f.pase) / 1000;
   const chupon = factorPase(estado, portador);
@@ -196,7 +194,7 @@ export function pesosConEspacio(
     switch (accion) {
       case 'conduccion':
         // Spec 015 (R4): con espacio, media geométrica del regate y el físico (el rápido no pierde lo que tenía).
-        x = (factorConduccion(en.espacio, p) / 10) * (curvas015 && abierto ? Math.sqrt(fRegate * fFisico) : fRegate * fFisico);
+        x = (factorConduccion(en.espacio, p) / 10) * (abierto ? Math.sqrt(fRegate * fFisico) : fRegate * fFisico);
         break;
       case 'regate':
         x = (en.rivalEncima ? 1.1 : 0.5) * fRegate * (tiene(portador, 'Desbordante') && carril !== 1 ? 1.6 : 1);

@@ -8,6 +8,7 @@ import { colocar, maxSustituciones, type EquipoEstado, type EstadoMotor } from '
 import type { DecisionPartido, DecisionRegistrada } from '../tipos';
 import { emitir, type Contexto } from '../acciones/contexto';
 import { lesionPendiente, sustituir, sustituirLesionado } from '../acciones/plantel';
+import { fijarMarcajes } from '../modificadores/marcajeEstrella';
 
 export type ResultadoDecision = { ok: true } | { ok: false; codigo: string; mensaje: string };
 
@@ -171,6 +172,7 @@ function aplicarUna(ctx: Contexto, equipo: EquipoEstado, d: DecisionRegistrada):
     }
     case 'tactica':
       equipo.tactica = { ...d.datos.tactica };
+      fijarMarcajes(ctx.estado);
       emitir(ctx, 'interrupcion', equipo.lado, [], { motivo: 'cambio_tactico' });
       return;
     case 'lanzadores':

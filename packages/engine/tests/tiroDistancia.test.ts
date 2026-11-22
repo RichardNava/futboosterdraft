@@ -1,13 +1,13 @@
 /**
  * Tiro decidido y resuelto con la distancia y el ángulo reales (spec 003, research R6; FR-018; T013).
  */
-import { PARAMETROS_V3 } from '@fbd/domain';
+import { parametrosActuales } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { probabilidad } from '../src/acciones/duelo';
 import { desplazamientoTiro, pesoTiro, tipoSegunPosicion } from '../src/acciones/tiro';
 import { anguloTiro, decimasDeMetros, enAreaRival, zonaRemate } from '../src/espacio/campo';
 
-const p = PARAMETROS_V3;
+const p = parametrosActuales();
 
 describe('peso de tirar por distancia y ángulo', () => {
   it('baja de forma monótona con la distancia', () => {

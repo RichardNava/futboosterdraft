@@ -40,7 +40,7 @@ export function destinoBalon(estado: EstadoMotor): { x: number; y: number } | nu
 function rodar(estado: EstadoMotor): void {
   const esp = estado.espacio;
   const v = esp.velocidadBalon;
-  const conservado = 1 - estado.parametros.espacio.rozamientoSuelto!;
+  const conservado = 1 - estado.parametros.espacio.rozamientoSuelto;
   const vx = Math.trunc(v.x * conservado);
   const vy = Math.trunc(v.y * conservado);
   // Un balón que ya está más cerca de la línea no vuelve hacia dentro.

@@ -8,7 +8,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { autoAlineacion, PARAMETROS_V3, PARAMETROS_V7, semillaDesdeTexto, type Demarcacion, type Jugador } from '@fbd/domain';
+import { parametrosActuales, autoAlineacion, PARAMETROS_V3, semillaDesdeTexto, type Demarcacion, type Jugador } from '@fbd/domain';
 import { avanzar, crearPartido, type EquipoPartido, type EventoPartido, type Marcador } from '@fbd/engine';
 import { sql } from 'drizzle-orm';
 import { bdHasta, type BdParcial } from './migraciones';
@@ -99,7 +99,7 @@ export async function baseDatos004(): Promise<BaseDatos004> {
   };
   // Las 3.x ya no se simulan (spec 014, research R14): los eventos guardados salen del motor actual; la fila conserva la
   // versión 3.0.0, que es lo que tenía la base de datos de la 004.
-  const fin = avanzar(crearPartido({ ...guardada, version: PARAMETROS_V7.version, parametros: PARAMETROS_V7 }), 'final');
+  const fin = avanzar(crearPartido({ ...guardada, version: parametrosActuales().version, parametros: parametrosActuales() }), 'final');
   const partido = await bd.db.execute<{ id: string }>(
     sql`insert into partidos (partida_id, jornada_numero, local_id, visitante_id, semilla, version_parametros, entrada, eventos, estadisticas, marcador, estado, resolucion, finalizado_en)
         values (${partidaId}, 1, ${ids[0]}, ${ids[1]}, ${guardada.semilla}, ${PARAMETROS_V3.version}, ${JSON.stringify(aFormato004(guardada))}::jsonb,

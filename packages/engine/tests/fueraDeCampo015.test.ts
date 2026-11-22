@@ -2,7 +2,7 @@
  * Balones fuera de la spec 015: despejes, desvíos y rechaces que se van del campo (córner y saque de banda), saque de
  * banda del más cercano y despeje del córner lejos del área. Todo cuelga del bloque `fueraDeCampo` de la 8.0.0.
  */
-import { PARAMETROS_V7, PARAMETROS_V8, type ParametrosEquilibrado } from '@fbd/domain';
+import { parametrosActuales, type ParametrosEquilibrado } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { fueraTrasDuelo, saqueDeBanda } from '../src/acciones/juego';
 import { rematarBalonParado } from '../src/acciones/tiro';
@@ -11,10 +11,9 @@ import type { Metricas } from '../src/metricas';
 import { contextoDe, partido, situar, titularEn } from './ayudas';
 
 const con = (fueraDeCampo: Partial<NonNullable<ParametrosEquilibrado['fueraDeCampo']>>) => {
-  const parametros = { ...PARAMETROS_V8, fueraDeCampo: { ...PARAMETROS_V8.fueraDeCampo!, ...fueraDeCampo } };
+  const parametros = { ...parametrosActuales(), fueraDeCampo: { ...parametrosActuales().fueraDeCampo!, ...fueraDeCampo } };
   return { version: parametros.version, parametros };
 };
-const V7 = { version: PARAMETROS_V7.version, parametros: PARAMETROS_V7 };
 /** El borde del área grande (16,5 m), en décimas. */
 const AREA = 1571;
 
@@ -31,11 +30,10 @@ describe('balones fuera (spec 015)', () => {
     expect(e.eventos.some((ev) => ev.tipo === 'interrupcion' && ev.datos.motivo === 'fuera_de_banda')).toBe(true);
   });
 
-  it('el centro despejado sale a córner con `centroDespejado`; sin el bloque (7.0.0), nunca', () => {
+  it('el centro despejado sale a córner con `centroDespejado`', () => {
     for (const [parametros, esperado] of [
       [con({ centroDespejado: 1 }), true],
       [con({ centroDespejado: 0 }), false],
-      [V7, false],
     ] as const) {
       const e = partido('centro015', parametros);
       const central = titularEn(e, 'visitante', 'DCI');
@@ -63,7 +61,7 @@ describe('balones fuera (spec 015)', () => {
     const e = partido('despeje015', con({ peligroCorner: 0 }));
     const ctx = contextoDe(e);
     e.espacio.balon = { x: 10000, y: 0, z: 0 };
-    rematarBalonParado(ctx, e.equipos.local, e.equipos.visitante, 'corners', PARAMETROS_V8.acciones.duelaAereo);
+    rematarBalonParado(ctx, e.equipos.local, e.equipos.visitante, 'corners', parametrosActuales().acciones.duelaAereo);
     expect(e.eventos.some((ev) => ev.tipo === 'tiro' || ev.tipo === 'gol' || ev.tipo === 'parada' || ev.tipo === 'falta')).toBe(false);
     // Fuera del área del que defiende (x desde su propia portería).
     expect(aEquipo('visitante', e.espacio.balon).x).toBeGreaterThan(AREA);
@@ -73,7 +71,7 @@ describe('balones fuera (spec 015)', () => {
     const e = partido('despeje015', con({ peligroCorner: 0 }));
     const ctx = { ...contextoDe(e), metricas: {} as Metricas };
     e.espacio.balon = { x: 10000, y: 0, z: 0 };
-    rematarBalonParado(ctx, e.equipos.local, e.equipos.visitante, 'corners', PARAMETROS_V8.acciones.duelaAereo);
+    rematarBalonParado(ctx, e.equipos.local, e.equipos.visitante, 'corners', parametrosActuales().acciones.duelaAereo);
     const despejador = e.acciones.find((a) => a.tipo === 'centro')?.a;
     expect(despejador).toBeDefined();
     expect(ctx.metricas[despejador!]?.sueltosDisputados ?? 0).toBe(0);

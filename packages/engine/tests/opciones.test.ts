@@ -2,14 +2,14 @@
  * Elección de acciones con datos espaciales (spec 003, research R4, R5 y R9; FR-016, FR-021; T012): pase largo
  * solo con motivo táctico, conducción proporcional al espacio y factor de stat acotado por la situación.
  */
-import { PARAMETROS_V3, PARAMETROS_V7, PARAMETROS_V8 } from '@fbd/domain';
+import { parametrosActuales, type ParametrosEquilibrado } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { factorConduccion, factorPaseLargo, factorStat, motivosPaseLargo, pesosConEspacio, type MotivoPaseLargo } from '../src/acciones/opciones';
 import type { EstadoMotor, JugadorEnPartido } from '../src/index';
 import { darBalon, partido, situar, soloEnCampo, titularEn } from './ayudas';
 
 const M = 95.24;
-const p = PARAMETROS_V3;
+const p = parametrosActuales();
 
 interface Escena {
   e: EstadoMotor;
@@ -143,15 +143,6 @@ describe('factor de stat (research R9)', () => {
     expect(factorStat(85, r)).toBe(Math.round(1000 * Math.min(r.max, 1 + 1.5 * r.k)));
   });
 
-  it('sin rival a ≤ 6 m y con espacio de más de 15 m, el regate no recibe el factor de stat', () => {
-    const conRegate = (valor: number) => {
-      const s = escena(`regate-${valor}`, { x: 4200, y: 3200 }, 2, [], [defensaReplegada]);
-      s.portador.jugador = { ...s.portador.jugador, stats: { ...s.portador.jugador.stats, tecnica: valor } as typeof s.portador.jugador.stats };
-      return s;
-    };
-    expect(pesoDe(conRegate(85), 'regate')).toBe(pesoDe(conRegate(70), 'regate'));
-  });
-
   it('con un rival encima, más regate sí sube el peso del regate', () => {
     const conRegate = (valor: number) => {
       const s = escena(`regate-encima-${valor}`, { x: 4200, y: 3200 }, 2, [], [{ casilla: 'DC', en: { x: 4500, y: 3200 } }, defensaReplegada]);
@@ -164,7 +155,7 @@ describe('factor de stat (research R9)', () => {
 
 describe('frecuencia del regate con la 8.0.0 (spec 015, FR-007, M2.6)', () => {
   /** Peso de una acción del MC-1 (regate = técnica) con un rival encima o con espacio abierto por delante. */
-  function pesoCon(q: typeof PARAMETROS_V7, tecnica: number, accion: 'regate' | 'conduccion', conRival: boolean): number {
+  function pesoCon(q: ParametrosEquilibrado, tecnica: number, accion: 'regate' | 'conduccion', conRival: boolean): number {
     const e = partido(`regate015:${tecnica}:${conRival}`, { version: q.version, parametros: q });
     const portador = titularEn(e, 'local', 'MC-1');
     portador.jugador = { ...portador.jugador, stats: { ...portador.jugador.stats, tecnica } as typeof portador.jugador.stats };
@@ -179,11 +170,7 @@ describe('frecuencia del regate con la 8.0.0 (spec 015, FR-007, M2.6)', () => {
 
   for (const conRival of [true, false]) {
     it(`regate y conducción pesan más con 95 que con 75 (${conRival ? 'rival encima' : 'espacio abierto'})`, () => {
-      for (const accion of ['regate', 'conduccion'] as const) expect(pesoCon(PARAMETROS_V8, 95, accion, conRival)).toBeGreaterThan(pesoCon(PARAMETROS_V8, 75, accion, conRival));
+      for (const accion of ['regate', 'conduccion'] as const) expect(pesoCon(parametrosActuales(), 95, accion, conRival)).toBeGreaterThan(pesoCon(parametrosActuales(), 75, accion, conRival));
     });
   }
-
-  it('con la 7.0.0 y espacio abierto, el regate no cambia el peso', () => {
-    for (const accion of ['regate', 'conduccion'] as const) expect(pesoCon(PARAMETROS_V7, 95, accion, false)).toBe(pesoCon(PARAMETROS_V7, 75, accion, false));
-  });
 });

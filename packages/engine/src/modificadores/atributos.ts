@@ -2,12 +2,12 @@
  * Atributos de juego de un jugador en el partido (T083: posición, cansancio y bonificaciones).
  *
  * Los stats de cada demarcación se traducen a atributos comunes (pase, regate, remate…), ya con la
- * penalización por posición (`statsEfectivos`), las bonificaciones de equipo de las virtudes y el
- * cansancio aplicados.
+ * penalización por posición (`statsEfectivos`), las bonificaciones de equipo de las virtudes y la
+ * penalización por energía aplicadas.
  */
-import { FORMACIONES, statsEfectivos, type Demarcacion, type Jugador, type ParametrosEquilibrado } from '@fbd/domain';
+import { FORMACIONES, statsEfectivos, type Demarcacion, type Jugador, type ParametrosMotor } from '@fbd/domain';
 import type { EquipoEstado, EstadoMotor, JugadorEnPartido } from '../estado/estado';
-import { bonusProvocador, conRasgos005, equipoConMultiplicadores, multiplicadorEquipo, multiplicadorIndividual } from './defectos';
+import { bonusProvocador, equipoConMultiplicadores, multiplicadorEquipo, multiplicadorIndividual } from './defectos';
 import { bonusEquipo } from './virtudes';
 
 export type Atributo =
@@ -23,26 +23,45 @@ export type Atributo =
   | 'desmarque'
   | 'centro'
   | 'parada'
-  // Spec 015 (data-model §4): solo los usan los duelos de los bloques `desmarque`, `controlPresion` y `liderazgo`.
+  // Spec 015 (data-model §4): solo los usan los duelos de desmarque, control con presión y liderazgo.
   | 'marcaje'
   | 'tecnica'
   | 'liderazgo';
+
+/** Tipo de cada atributo para la penalización por energía (spec 018, FR-012). */
+const TIPO_ATRIBUTO: Readonly<Record<Atributo, 'fisica' | 'tecnica' | 'mental'>> = {
+  velocidad: 'fisica',
+  fisico: 'fisica',
+  quite: 'fisica',
+  aereo: 'fisica',
+  pase: 'tecnica',
+  regate: 'tecnica',
+  remate: 'tecnica',
+  centro: 'tecnica',
+  tecnica: 'tecnica',
+  parada: 'tecnica',
+  desmarque: 'tecnica',
+  marcaje: 'tecnica',
+  vision: 'mental',
+  anticipacion: 'mental',
+  liderazgo: 'mental',
+};
 
 type S = Record<string, number>;
 const media = (s: S) => Object.values(s).reduce((a, b) => a + b, 0) / Object.values(s).length;
 
 /**
- * Multiplicador del quite de la 8.0.0 (spec 015, FR-004/005, research R3): base por demarcación (MED con MD en su carta,
- * no en su casilla) + Presionador − Mal defensor. Sin el bloque `quite`, `null`: el quite de la 7.0.0.
+ * Multiplicador del quite (spec 015, FR-004/005, research R3): base por demarcación (MED con MD en su carta, no en su
+ * casilla) + Presionador − Mal defensor. El portero no lo usa.
  */
-function multQuite(j: Jugador, p: ParametrosEquilibrado): number | null {
+function multQuite(j: Jugador, p: ParametrosMotor): number {
   const q = p.quite;
-  if (!q || j.demarcacion === 'POR') return null;
+  if (j.demarcacion === 'POR') return 1;
   const base = j.demarcacion === 'MED' ? (j.posicion.includes('MD') ? q.MED_MD : q.MED) : q[j.demarcacion];
   return base + (j.virtudes.includes('Presionador') ? q.presionador : 0) - (j.defectos.includes('MalDefensor') ? q.malDefensor : 0);
 }
 
-const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null, p: ParametrosEquilibrado) => Record<Atributo, number>>> = {
+const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number) => Record<Atributo, number>>> = {
   POR: (s) => ({
     pase: s.distribucion!,
     vision: s.distribucion!,
@@ -60,18 +79,18 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null, p: Param
     tecnica: s.distribucion!,
     liderazgo: s.liderazgo!,
   }),
-  DEF: (s, m, p) => ({
+  DEF: (s, m) => ({
     pase: s.tecnica!,
     vision: s.tecnica!,
     regate: (s.tecnica! + s.velocidad!) / 2,
     remate: (s.anticipacion! + s.tecnica!) / 2 - 8,
     velocidad: s.velocidad!,
-    quite: m === null ? s.tackling! : s.tackling! * m,
+    quite: s.tackling! * m,
     anticipacion: s.anticipacion!,
     fisico: s.marcaje!,
     aereo: s.anticipacion!,
-    // Con el bloque `desmarque` (spec 015, FR-012), su velocidad entera: es la stat con la que se desmarca.
-    desmarque: p.desmarque ? s.velocidad! : s.velocidad! * 0.8,
+    // Spec 015 (FR-012): su velocidad entera, la stat con la que se desmarca.
+    desmarque: s.velocidad!,
     centro: s.tecnica!,
     parada: media(s) * 0.5,
     marcaje: s.marcaje!,
@@ -84,7 +103,7 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null, p: Param
     regate: s.tecnica!,
     remate: s.disparo!,
     velocidad: s.velocidad!,
-    quite: m === null ? s.posicionamiento! : ((s.posicionamiento! + s.velocidad!) / 2) * m,
+    quite: ((s.posicionamiento! + s.velocidad!) / 2) * m,
     anticipacion: s.posicionamiento!,
     fisico: (s.posicionamiento! + s.velocidad!) / 2,
     aereo: s.posicionamiento! * 0.85,
@@ -101,7 +120,7 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null, p: Param
     regate: s.regate!,
     remate: s.finalizacion!,
     velocidad: s.velocidad!,
-    quite: m === null ? s.agresividad! * 0.8 : ((s.agresividad! + s.velocidad!) / 2) * m,
+    quite: ((s.agresividad! + s.velocidad!) / 2) * m,
     anticipacion: s.agresividad! * 0.8,
     fisico: s.agresividad!,
     aereo: (s.finalizacion! + s.desmarque!) / 2,
@@ -115,7 +134,7 @@ const TRADUCCION: Readonly<Record<Demarcacion, (s: S, m: number | null, p: Param
 };
 
 /**
- * Atributos sin cansancio de cada jugador, que solo dependen de la formación, su casilla y la
+ * Atributos sin penalización por energía de cada jugador, que solo dependen de la formación, su casilla y la
  * bonificación de equipo. Se recalculan cuando cambia alguna; el resultado es exactamente el mismo que
  * calcularlos cada vez, pero el motor los pide miles de veces por partido (T140). La clave es el objeto
  * del jugador en el estado, que `avanzar` copia en cada llamada, así que la caché nunca cruza partidos.
@@ -134,17 +153,18 @@ export function atributo(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEn
  * Igual que `atributo`, con la bonificación de equipo ya calculada (la capa espacial la calcula una vez por tick).
  *
  * Orden (spec 005, research R6): stats base → penalización por posición → bonificaciones en puntos (virtudes de equipo
- * y Provocador del rival) → cansancio → multiplicadores de los defectos (Polémico × Rebelde × Estrellita).
+ * y Provocador del rival) → energía → multiplicadores de los defectos (Polémico × Rebelde × Estrellita).
  */
 export function atributoConBonus(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido, nombre: Atributo, bonus: number): number {
-  const valor = entradaAtributos(estado, equipo, j, bonus + bonusProvocador(estado, equipo, j)).valores[nombre] * (1 - j.cansancio);
-  if (!conRasgos005(estado) || !equipoConMultiplicadores(equipo)) return valor;
+  const base = entradaAtributos(estado, equipo, j, bonus + bonusProvocador(estado, equipo, j)).valores[nombre];
+  const valor = j.penalizacionFisica === 0 ? base : base * (1 - (j.penalizacionFisica * estado.parametros.fatiga.penalizacion.tipo[TIPO_ATRIBUTO[nombre]]) / 100);
+  if (!equipoConMultiplicadores(equipo)) return valor;
   return valor * multiplicadorEquipo(estado, equipo) * multiplicadorIndividual(estado, equipo, j);
 }
 
 /**
  * Media efectiva de un jugador en el campo: la de sus stats con la penalización por posición y las bonificaciones en
- * puntos, sin cansancio ni multiplicadores. Es la que compara Estrellita (spec 005).
+ * puntos, sin energía ni multiplicadores. Es la que compara Estrellita (spec 005).
  */
 export function mediaEfectiva(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido): number {
   return entradaAtributos(estado, equipo, j, bonusEquipo(estado, equipo, j) + bonusProvocador(estado, equipo, j)).media;
@@ -164,7 +184,7 @@ function entradaAtributos(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorE
       casilla: j.casillaId,
       posicion: j.posicion,
       bonus,
-      valores: TRADUCCION[j.jugador.demarcacion](efectivos, multQuite(j.jugador, estado.parametros), estado.parametros),
+      valores: TRADUCCION[j.jugador.demarcacion](efectivos, multQuite(j.jugador, estado.parametros)),
       media: media(efectivos),
     };
     cacheAtributos.set(j, entrada);

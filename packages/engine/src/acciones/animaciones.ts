@@ -187,7 +187,7 @@ export function reponer(ctx: Contexto, motivo: string, punto: Punto, sacadorId: 
   const p = e.parametros.espacio;
   const f = e.parametros.fueraDeCampo;
   // En un penalti también se espera a que el lanzador llegue al punto (spec 003: el tiro sale desde allí).
-  const espera = motivo === 'corner' && f ? f.esperaCorner : alArea || motivo === 'penalti' ? p.esperaColocacionMaxima : p.esperaSaqueMaxima;
+  const espera = motivo === 'corner' ? f.esperaCorner : alArea || motivo === 'penalti' ? p.esperaColocacionMaxima : p.esperaSaqueMaxima;
   hasta(ctx, listo, minimo, true, minimo + espera);
   // Sin esperar a los demás, el que saca sí tiene que llegar al balón: nadie lo juega a distancia (spec 014, FR-001).
   const sacadorJunto = () => {

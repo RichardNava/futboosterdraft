@@ -38,14 +38,14 @@ const PUNTOS_SUBIDA: readonly Punto[] = [...PUNTOS_AREA, { x: 8650, y: 3200 }, {
 const PUNTOS_DEFENSA_SUBIDA: readonly Punto[] = [...PUNTOS_AREA_PROPIA, { x: 1500, y: 2700 }, { x: 1500, y: 3700 }];
 
 /**
- * El portero sube a rematar (spec 015, añadidos, R14): con `subidaArea`, su equipo pierde de uno y es, presumiblemente,
+ * El portero sube a rematar (spec 015, añadidos, R14): su equipo pierde de uno y es, presumiblemente,
  * la última jugada: los últimos `ultimaJugadaS` segundos del descuento de la segunda parte o de la prórroga (90+4 con 4
  * de descuento).
  */
 export function porteroSube(estado: EstadoMotor, equipo: EquipoEstado): boolean {
   const sub = estado.parametros.subidaArea;
   const r = estado.reloj;
-  if (!sub || (r.parte !== 2 && r.parte !== 4) || r.descuento === null) return false;
+  if ((r.parte !== 2 && r.parte !== 4) || r.descuento === null) return false;
   const m = estado.marcador;
   const diferencia = equipo.lado === 'local' ? m.visitante - m.local : m.local - m.visitante;
   const fin = (r.parte === 2 ? DURACION_PARTE : DURACION_PARTE_PRORROGA) + r.descuento;
@@ -58,7 +58,7 @@ export function porteroSube(estado: EstadoMotor, equipo: EquipoEstado): boolean 
  * a los mejores sitios. El rival defiende el área con `defensoresArea`.
  */
 function colocarSubida(estado: EstadoMotor, ataque: EquipoEstado, defensa: EquipoEstado, sacadorId: number, poner: (e: EquipoEstado, j: JugadorEnPartido, p: Punto) => void): void {
-  const sub = estado.parametros.subidaArea!;
+  const sub = estado.parametros.subidaArea;
   const campo = titulares(ataque).filter((j) => j.id !== sacadorId && lineaDe(ataque, j) !== 'porteria');
   const atras: JugadorEnPartido[] = [];
   for (const [linea, n] of [['defensa', sub.retaguardiaDEF], ['medio', sub.retaguardiaMED]] as const) {
@@ -69,7 +69,7 @@ function colocarSubida(estado: EstadoMotor, ataque: EquipoEstado, defensa: Equip
         .slice(0, n),
     );
   }
-  const seleccion = estado.parametros.aereo?.seleccionCabeceador ?? 10;
+  const seleccion = estado.parametros.aereo.seleccionCabeceador;
   const porArriba = (j: JugadorEnPartido) =>
     atributo(estado, ataque, j, 'aereo') + (tiene(j, 'Cabeceador') ? seleccion : 0) + (lineaDe(ataque, j) === 'porteria' ? -15 : 0);
   const portero = porteroSube(estado, ataque) ? titulares(ataque).filter((j) => lineaDe(ataque, j) === 'porteria' && j.id !== sacadorId) : [];
@@ -151,44 +151,10 @@ export function objetivosBalonParado(estado: EstadoMotor, motivo: string, lado: 
     return objetivos;
   }
 
-  const enArea = motivo === 'corner' || motivo === 'falta_area';
-  if (enArea && estado.parametros.subidaArea) {
+  if (motivo === 'corner' || motivo === 'falta_area') {
     colocarSubida(estado, ataque, defensa, sacadorId, poner);
     return objetivos;
   }
-  if (enArea) {
-    // Los que están más adelantados al empezar el saque atacan el área; el resto se queda atrás. El orden se
-    // fija al principio para que nadie cambie de sitio a mitad de camino.
-    const accion = estado.espacio.accion;
-    if (accion && !accion.orden) {
-      const x = (j: JugadorEnPartido) => {
-        const q = estado.espacio.jugadores[j.id];
-        return q ? (lado === 'local' ? q.x : LARGO - q.x) : anclaDe(ataque, j).x;
-      };
-      accion.orden = [...titulares(ataque)].sort((a, b) => x(b) - x(a) || a.id - b.id).map((j) => j.id);
-    }
-    const orden = accion?.orden ?? [];
-    const candidatos = titulares(ataque)
-      .filter((j) => j.id !== sacadorId && lineaDe(ataque, j) !== 'porteria')
-      .sort((a, b) => orden.indexOf(a.id) - orden.indexOf(b.id) || a.id - b.id);
-    const rematadores = candidatos.slice(0, motivo === 'corner' ? 5 : 4);
-    rematadores.forEach((j, i) => poner(ataque, j, PUNTOS_AREA[i]!));
-    candidatos.slice(rematadores.length).forEach((j, i) => {
-      const a = anclaDe(ataque, j);
-      poner(ataque, j, { x: i < 2 ? 4800 : acotar(a.x + 2500, 6200, 7800), y: a.y });
-    });
-    const defensores = titulares(defensa)
-      .filter((j) => lineaDe(defensa, j) !== 'porteria')
-      .sort((a, b) => anclaDe(defensa, a).x - anclaDe(defensa, b).x || a.id - b.id);
-    defensores.slice(0, 6).forEach((j, i) => poner(defensa, j, PUNTOS_AREA_PROPIA[i]!));
-    defensores.slice(6).forEach((j) => {
-      const a = anclaDe(defensa, j);
-      poner(defensa, j, { x: acotar(dividir(a.x, 2), 1500, 3000), y: a.y });
-    });
-    for (const j of titulares(defensa)) if (lineaDe(defensa, j) === 'porteria') poner(defensa, j, { x: 250, y: CENTRO_Y });
-    return objetivos;
-  }
-
   if (motivo === 'penalti') {
     for (const equipo of [ataque, defensa]) {
       for (const j of titulares(equipo)) {

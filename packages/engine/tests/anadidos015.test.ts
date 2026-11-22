@@ -1,9 +1,9 @@
 /**
  * Añadidos de la spec 015 (FR-025 a FR-029; research R11 a R14): buscar a la estrella, Juego por las bandas, subida al
- * área a balón parado y segunda línea. Todo cuelga de bloques de la 8.0.0: con la 7.0.0, nada. El desmarque en el pase
+ * área a balón parado y segunda línea. El desmarque en el pase
  * (FR-026) lo sustituyó el duelo de desmarque de la tanda 2 (`desmarque.test.ts`).
  */
-import { PARAMETROS_V7, PARAMETROS_V8 } from '@fbd/domain';
+import { parametrosActuales, type ParametrosEquilibrado } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { esManoAMano } from '../src/acciones/manoAMano';
 import type { Entorno } from '../src/acciones/opciones';
@@ -15,8 +15,8 @@ import { pesosAcciones, probabilidadBanda } from '../src/modificadores/formacion
 import type { EstadoMotor } from '../src/index';
 import { darBalon, equipo, partido, ponerRasgos, situar, titularEn } from './ayudas';
 
-const V8 = { version: PARAMETROS_V8.version, parametros: PARAMETROS_V8 };
-const ESTRELLA = PARAMETROS_V8.estrella!;
+const ACTUAL = { version: parametrosActuales().version, parametros: parametrosActuales() };
+const ESTRELLA = parametrosActuales().estrella!;
 const M = 95.24;
 
 /** EI (83) y ED (87 o 90) con el mismo peso de partida; el ED marcado pesa 0,6 de lo que pesaría libre. */
@@ -53,16 +53,15 @@ describe('buscar a la estrella (FR-025, R11)', () => {
 });
 
 describe('Juego por las bandas (FR-027, R12)', () => {
-  const conEstilo = (estilo: 'bandas' | 'equilibrado', parametros = V8) =>
+  const conEstilo = (estilo: 'bandas' | 'equilibrado', parametros = ACTUAL) =>
     partido('bandas015', { ...parametros, local: equipo('local', { tactica: { estiloConBalon: estilo } }) });
 
-  it('el balón va más por fuera y se centra más; con la 7.0.0, como el equilibrado', () => {
+  it('el balón va más por fuera y se centra más', () => {
     const bandas = conEstilo('bandas');
     const equilibrado = conEstilo('equilibrado');
-    expect(probabilidadBanda(bandas.equipos.local, PARAMETROS_V8)).toBeCloseTo(probabilidadBanda(equilibrado.equipos.local, PARAMETROS_V8) + 0.2);
+    expect(probabilidadBanda(bandas.equipos.local, parametrosActuales())).toBeCloseTo(probabilidadBanda(equilibrado.equipos.local, parametrosActuales()) + 0.2);
     const centro = (e: EstadoMotor) => pesosAcciones(e.equipos.local, 4, 0, e.parametros).find(([a]) => a === 'centro')![1];
-    expect(centro(bandas)).toBe(Math.round(centro(equilibrado) * PARAMETROS_V8.bandas!.centro));
-    expect(probabilidadBanda(bandas.equipos.local, PARAMETROS_V7)).toBe(probabilidadBanda(equilibrado.equipos.local, PARAMETROS_V7));
+    expect(centro(bandas)).toBe(Math.round(centro(equilibrado) * parametrosActuales().bandas!.centro));
   });
 
   it('laterales y extremos reciben más; el resto, igual', () => {
@@ -87,14 +86,14 @@ describe('Juego por las bandas (FR-027, R12)', () => {
     expect(q.size).toBeGreaterThan(2);
     for (const [casilla, peso] of q) {
       const banda = ['LI', 'LD', 'EI', 'ED'].includes(casilla!);
-      expect(b.get(casilla)! / peso).toBeCloseTo(banda ? PARAMETROS_V8.bandas!.receptorBanda : 1, 1);
+      expect(b.get(casilla)! / peso).toBeCloseTo(banda ? parametrosActuales().bandas!.receptorBanda : 1, 1);
     }
   });
 });
 
 describe('subida al área a balón parado (FR-028, R13)', () => {
   /** Córner del local: cuántos de sus jugadores van al área rival (x ≥ 7.900) y cuántos se quedan en la retaguardia. */
-  function corner(parametros: typeof V8 | Record<string, never>, ajustar: (e: EstadoMotor) => void = () => {}) {
+  function corner(parametros: typeof ACTUAL, ajustar: (e: EstadoMotor) => void = () => {}) {
     const e = partido('subida015', parametros);
     ajustar(e);
     const sacador = titularEn(e, 'local', 'ED');
@@ -108,7 +107,7 @@ describe('subida al área a balón parado (FR-028, R13)', () => {
   }
 
   it('suben todos menos un defensa y un medio; los Cabeceador siempre suben', () => {
-    const { arriba, atras } = corner(V8, (e) => {
+    const { arriba, atras } = corner(ACTUAL, (e) => {
       ponerRasgos(titularEn(e, 'local', 'DCI'), { virtudes: ['Cabeceador'] });
       ponerRasgos(titularEn(e, 'local', 'DCD'), { virtudes: ['Cabeceador'] });
     });
@@ -121,7 +120,7 @@ describe('subida al área a balón parado (FR-028, R13)', () => {
   it('el portero sube solo en la última jugada (último minuto del descuento) si pierden de uno', () => {
     // 4 minutos de descuento: el último minuto empieza en el 90+3.
     const final = (local: number, visitante: number, segundos: number, parte = 2) =>
-      corner(V8, (e) => {
+      corner(ACTUAL, (e) => {
         e.marcador = { local, visitante };
         e.reloj = { ...e.reloj, parte, segundosEnParte: segundos, descuento: 240 };
       }).arriba.some((j) => j.casillaId === 'POR');
@@ -135,26 +134,23 @@ describe('subida al área a balón parado (FR-028, R13)', () => {
   });
 
   it('con el portero lejos de su portería, se tira a puerta vacía', () => {
-    const e = partido('vacia015', V8);
+    const e = partido('vacia015', ACTUAL);
     const arquero = titularEn(e, 'visitante', 'POR');
     situar(e, arquero.id, { x: 500, y: 3200 });
     expect(porteroBajoPalos(e, e.equipos.visitante)?.id).toBe(arquero.id);
     situar(e, arquero.id, { x: 9000, y: 3200 });
     expect(porteroBajoPalos(e, e.equipos.visitante)).toBeUndefined();
-    const v7 = partido('vacia015');
-    const a7 = titularEn(v7, 'visitante', 'POR');
-    situar(v7, a7.id, { x: 9000, y: 3200 });
-    expect(porteroBajoPalos(v7, v7.equipos.visitante)?.id).toBe(a7.id);
-  });
-
-  it('con la 7.0.0 suben cinco, como siempre', () => {
-    expect(corner({}).arriba).toHaveLength(5);
   });
 });
 
 describe('segunda línea (FR-029, R14)', () => {
+  const conSegundaLinea = (cambios: Partial<NonNullable<ParametrosEquilibrado['segundaLinea']>>) => {
+    const parametros = { ...parametrosActuales(), segundaLinea: { ...parametrosActuales().segundaLinea!, ...cambios } };
+    return { version: parametros.version, parametros };
+  };
+
   it('el mano a mano empieza ya unos metros dentro del campo propio', () => {
-    const escena = (parametros: typeof V8 | Record<string, never>) => {
+    const escena = (parametros: typeof ACTUAL) => {
       const e = partido('segunda015', parametros);
       const portador = titularEn(e, 'local', 'DCI');
       const portero = titularEn(e, 'visitante', 'POR');
@@ -169,18 +165,18 @@ describe('segunda línea (FR-029, R14)', () => {
       } satisfies Entorno;
       return esManoAMano(e, e.equipos.local, portador, en);
     };
-    expect(escena(V8)).toBe(true);
-    expect(escena({})).toBe(false);
+    expect(escena(ACTUAL)).toBe(true);
+    expect(escena(conSegundaLinea({ desdeCampoPropioM: 0 }))).toBe(false);
   });
 
   it('con el balón en el último tercio, el medio centro llega a la frontal', () => {
-    const xMedio = (parametros: typeof V8 | Record<string, never>) => {
+    const xMedio = (parametros: typeof ACTUAL) => {
       const e = partido('llegada015', parametros);
       const medio = titularEn(e, 'local', 'MC-1');
       e.balon = { ...e.balon, posesion: 'local' };
       e.espacio.referencia = { x: 8500, y: 3200, tick: e.tick };
       return calcularObjetivos(e)[medio.id]!.x;
     };
-    expect(xMedio(V8)).toBeGreaterThan(xMedio({}) + 500);
+    expect(xMedio(ACTUAL)).toBeGreaterThan(xMedio(conSegundaLinea({ xInterior: 0 })) + 500);
   });
 });

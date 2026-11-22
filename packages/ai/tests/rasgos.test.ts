@@ -2,15 +2,15 @@
  * Rasgos en las decisiones de los NPC (spec 005, T056; research R12): no convocar a un Rebelde suplente, evitar a un
  * Estrellita que no es el mejor y cambiar antes a Fatigados e Indisciplinados.
  */
-import { PARAMETROS_V3, PARAMETROS_V7, PARAMETROS_V4, semillaDesdeTexto, type Jugador } from '@fbd/domain';
+import { parametrosActuales, PARAMETROS_V3, semillaDesdeTexto, type Jugador } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { decidirAlineacion } from '../src/alineacion';
 import { avanzar, crearPartido } from '@fbd/engine';
-import { ajustarAlineacionPorRasgos, FACTOR_UMBRAL_CANSANCIO, revulsivoParaEntrar, umbralCansancioDe } from '../src/rasgos';
+import { ajustarAlineacionPorRasgos, revulsivoParaEntrar, umbralEnergiaDe } from '../src/rasgos';
 import { entrada, equipo } from '../../engine/tests/ayudas';
 import { jugador, plantilla } from './ayudas';
 
-const p = PARAMETROS_V4;
+const p = parametrosActuales();
 const conDefectos = (j: Jugador, defectos: Jugador['defectos']): Jugador => ({ ...j, defectos });
 
 describe('Rebelde', () => {
@@ -56,10 +56,16 @@ describe('Estrellita', () => {
 });
 
 describe('Fatigado e Indisciplinado', () => {
-  it('se cambian con menos cansancio que el resto', () => {
-    expect(umbralCansancioDe({ defectos: [] }, 0.28)).toBe(0.28);
-    expect(umbralCansancioDe({ defectos: ['Fatigado'] }, 0.28)).toBeCloseTo(0.28 * FACTOR_UMBRAL_CANSANCIO);
-    expect(umbralCansancioDe({ defectos: ['Indisciplinado'] }, 0.28)).toBeCloseTo(0.28 * FACTOR_UMBRAL_CANSANCIO);
+  it('se cambian antes: umbral 100 − (100 − umbral) × 0,75', () => {
+    expect(umbralEnergiaDe({ defectos: [] }, 53)).toBe(53);
+    expect(umbralEnergiaDe({ defectos: ['Fatigado'] }, 53)).toBeCloseTo(64.75, 6);
+    expect(umbralEnergiaDe({ defectos: ['Indisciplinado'] }, 42)).toBeCloseTo(56.5, 6);
+    expect(umbralEnergiaDe({ defectos: ['Fatigado', 'Indisciplinado'] }, 63)).toBeCloseTo(72.25, 6);
+  });
+
+  it('el umbral 0 significa «nunca», también para ellos', () => {
+    expect(umbralEnergiaDe({ defectos: ['Fatigado'] }, 0)).toBe(0);
+    expect(umbralEnergiaDe({ defectos: ['Indisciplinado'] }, 0)).toBe(0);
   });
 });
 
@@ -81,7 +87,7 @@ describe('Revulsivo', () => {
   it('entra en el descanso por el jugador de su demarcación con menos media', () => {
     const local = equipo('local');
     local.suplentes[5] = { ...local.suplentes[5]!, virtudes: ['Revulsivo'] };
-    const e = avanzar(crearPartido(entrada('revulsivo-ia', { version: PARAMETROS_V7.version, parametros: PARAMETROS_V7, local })), 'parte').estado;
+    const e = avanzar(crearPartido(entrada('revulsivo-ia', { version: parametrosActuales().version, parametros: parametrosActuales(), local })), 'parte').estado;
     expect(e.fase).toBe('descanso');
     const r = revulsivoParaEntrar(e, 'local', new Set());
     expect(r?.entra.id).toBe(local.suplentes[5]!.id);

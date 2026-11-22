@@ -181,15 +181,15 @@ export function pesosReceptor(
   // Sin presión, no se devuelve el balón a quien lo acaba de dar si su pase no ganó terreno (spec 014, FR-006).
   const ultimo = estado.posesion.ultimoPase;
   const excluido =
-    ultimo && ultimo.a === portador.id && (ultimo.avance ?? 0) < decimasDeMetros(estado.parametros.idaVuelta!.avanceMinimoM) && !rivalEncima(estado, equipo.lado, yo)
+    ultimo && ultimo.a === portador.id && (ultimo.avance ?? 0) < decimasDeMetros(estado.parametros.idaVuelta.avanceMinimoM) && !rivalEncima(estado, equipo.lado, yo)
       ? ultimo.de
       : null;
   // Un compañero en fuera de juego apenas se busca; menos cuanta más visión tiene el pasador (spec 014, research R4).
-  const fdj = estado.parametros.fueraDeJuego!;
+  const fdj = estado.parametros.fueraDeJuego;
   const factorFuera = Math.round(1000 * fdj.pesoReceptor * (1 - factorPericia(atributo(estado, equipo, portador, 'vision'))));
   const estrella = estado.parametros.estrella;
   const bandas = equipo.tactica.estiloConBalon === 'bandas' ? estado.parametros.bandas : undefined;
-  const radioClara = estrella ? decimasDeMetros(estrella.lineaClaraM) : 0;
+  const radioClara = decimasDeMetros(estrella.lineaClaraM);
   const desmarque = estado.parametros.desmarque;
   const porRango: Record<Rango, Candidato[]> = { corto: [], medio: [], largo: [] };
   for (const j of opciones.candidatos ?? equipo.jugadores) {
@@ -223,25 +223,21 @@ export function pesosReceptor(
     const conFuera = enFueraDeJuego(estado, equipo, j, yo.x) ? dividir(peso * factorFuera, 1000) : peso;
     const conBanda = bandas && BANDA.has(posicionDe(equipo, j) ?? '') ? Math.round(conFuera * bandas.receptorBanda) : conFuera;
     // Desmarque (spec 015, FR-013): × (1 + pesoEleccion × (p − 0,5)), con p su probabilidad de ganar el duelo (1 sin marcador).
-    let conDesmarque = conBanda;
-    if (desmarque) {
-      const marcador = marcadorDe(estado, j, estado.equipos[rivalLado], desmarque.radioMarcaM);
-      const pm = marcador
-        ? probabilidadDesmarque(atributo(estado, equipo, j, 'desmarque'), atributo(estado, estado.equipos[rivalLado], marcador, 'marcaje'), estado.parametros)
-        : 1000;
-      conDesmarque = Math.round((conBanda * (1000 + desmarque.pesoEleccion * (pm - 500))) / 1000);
-    }
+    const marcador = marcadorDe(estado, j, estado.equipos[rivalLado], desmarque.radioMarcaM);
+    const pm = marcador
+      ? probabilidadDesmarque(atributo(estado, equipo, j, 'desmarque'), atributo(estado, estado.equipos[rivalLado], marcador, 'marcaje'), estado.parametros)
+      : 1000;
+    const conDesmarque = Math.round((conBanda * (1000 + desmarque.pesoEleccion * (pm - 500))) / 1000);
     porRango[rangoDe(estado, d2)].push({
       j,
       peso: Math.max(1, conDesmarque),
-      clara: estrella !== undefined && libre >= LIBRE * LIBRE && lineaClara(estado, equipo.lado, yo, q, radioClara),
-      media: estrella ? mediaEfectiva(estado, equipo, j) : 0,
+      clara: libre >= LIBRE * LIBRE && lineaClara(estado, equipo.lado, yo, q, radioClara),
+      media: mediaEfectiva(estado, equipo, j),
     });
   }
   for (const rango of RANGOS[tipo]) {
     const lista = porRango[rango];
     if (lista.length === 0) continue;
-    if (!estrella) return lista.map((c) => [c.j, c.peso]);
     const visionPase = (atributo(estado, equipo, portador, 'vision') + atributo(estado, equipo, portador, 'pase')) / 2;
     const pesos = pesosEstrella(lista, visionPase, estrella);
     return lista.map((c, i) => [c.j, pesos[i]!]);

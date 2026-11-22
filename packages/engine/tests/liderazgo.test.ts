@@ -1,8 +1,7 @@
 /**
- * Liderazgo del defensa y del portero (spec 015, US6; invariante M2.10; research R9; FR-015, FR-016). Con la 7.0.0 no
- * hay ninguno de los dos efectos.
+ * Liderazgo del defensa y del portero (spec 015, US6; invariante M2.10; research R9; FR-015, FR-016).
  */
-import { PARAMETROS_V8 } from '@fbd/domain';
+import { parametrosActuales } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { exposicionLinea, habilitador } from '../src/acciones/fueraDeJuego';
 import { calcularObjetivos } from '../src/espacio/objetivos';
@@ -11,13 +10,12 @@ import { ajusteDuelo } from '../src/modificadores/virtudes';
 import type { JugadorEnPartido } from '../src/index';
 import { darBalon, partido, situar, titularEn } from './ayudas';
 
-const V8 = { version: PARAMETROS_V8.version, parametros: PARAMETROS_V8 };
-const { liderazgo: _liderazgo, ...SIN_BLOQUE } = PARAMETROS_V8;
-/** La 8.0.0 sin el bloque `liderazgo`: lo que hace el motor sin él. */
-const V8_SIN = { version: PARAMETROS_V8.version, parametros: SIN_BLOQUE };
+const ACTUAL = { version: parametrosActuales().version, parametros: parametrosActuales() };
+/** Parámetros con la corrección de línea anulada. */
+const SIN_CORRECCION = { version: parametrosActuales().version, parametros: { ...parametrosActuales(), liderazgo: { ...parametrosActuales().liderazgo!, kDefensa: 0 } } };
 /** Liderazgo por debajo de `baseDefensa`: sin efecto en la línea. */
 const SIN_LIDER = 30;
-const L = PARAMETROS_V8.liderazgo!;
+const L = parametrosActuales().liderazgo!;
 /** Décimas por metro (el campo mide 105 m y 10.000 décimas). */
 const M = 10000 / 105;
 
@@ -57,7 +55,7 @@ describe('liderazgo: funciones puras (M2.10)', () => {
 
 describe('portero líder en los duelos (FR-016)', () => {
   /** Defensa local DCI en x (metros desde su portería), con su portero a `liderazgo`, y el DC rival como atacante. */
-  function escena(metros: number, liderazgo: number, parametros: typeof V8 | Record<string, never> = V8) {
+  function escena(metros: number, liderazgo: number, parametros: typeof ACTUAL = ACTUAL) {
     const e = partido(`liderazgo-portero-${metros}-${liderazgo}`, parametros);
     const defensa = titularEn(e, 'local', 'DCI');
     const atacante = titularEn(e, 'visitante', 'DC');
@@ -86,12 +84,6 @@ describe('portero líder en los duelos (FR-016)', () => {
     situar(e, medio.id, { x: 1000, y: 3200 });
     expect(bonusLiderPortero(e, medio)).toBe(0);
   });
-
-  it('con la 7.0.0, sin bonus', () => {
-    const { e, defensa, atacante } = escena(10, 90, {});
-    expect(bonusLiderPortero(e, defensa)).toBe(0);
-    expect(ajusteDuelo(e, atacante, defensa).defensor).toBe(0);
-  });
 });
 
 describe('defensa líder en la línea (FR-015)', () => {
@@ -99,7 +91,7 @@ describe('defensa líder en la línea (FR-015)', () => {
    * Línea local de cuatro con el DCI 8 m por detrás de los otros tres (rezagado: es el penúltimo, con el portero), y el
    * balón del visitante en el centro del campo. Devuelve el x objetivo (coordenadas del local) de los defensas.
    */
-  function objetivosLinea(liderazgo: number, parametros: typeof V8 | typeof V8_SIN = V8) {
+  function objetivosLinea(liderazgo: number, parametros: typeof ACTUAL | typeof SIN_CORRECCION = ACTUAL) {
     const e = partido(`liderazgo-linea-${liderazgo}`, parametros);
     for (const c of ['LI', 'DCI', 'DCD', 'LD']) conStats(titularEn(e, 'local', c), { liderazgo: SIN_LIDER });
     conStats(titularEn(e, 'local', 'DCD'), { liderazgo });
@@ -114,11 +106,11 @@ describe('defensa líder en la línea (FR-015)', () => {
   }
 
   it('con un líder los defensas cercanos se acercan a la línea (el penúltimo defensor), más cuanto más liderazgo', () => {
-    const sin = objetivosLinea(95, V8_SIN);
+    const sin = objetivosLinea(95, SIN_CORRECCION);
     const base = objetivosLinea(SIN_LIDER);
     const con60 = objetivosLinea(60);
     const con95 = objetivosLinea(95);
-    // Sin liderazgo por encima de baseDefensa no corrige: los mismos objetivos que sin el bloque.
+    // Sin liderazgo por encima de baseDefensa no corrige: los mismos objetivos que con la corrección anulada.
     expect(base).toEqual(sin);
     // El DCD (líder) se acerca a x = 2.000 (el DCI rezagado), más con 95 que con 60; el LI, lejos de él, no.
     expect(Math.abs(con60.DCD! - 2000)).toBeLessThan(Math.abs(base.DCD! - 2000));
@@ -130,7 +122,7 @@ describe('defensa líder en la línea (FR-015)', () => {
 describe('habilitaciones: el defensa rezagado que deja en juego al receptor (R9)', () => {
   /** Visitante defendiendo: portero a 3 m, el DCI rezagado a 15 m, el resto a 30 m o más; el DC local a `x` (absoluta). */
   function escena(x: number, rezagado = 'DCI') {
-    const e = partido('habilitaciones', V8);
+    const e = partido('habilitaciones', ACTUAL);
     for (const j of e.equipos.visitante.jugadores) if (j.enCampo) situar(e, j.id, { x: j.casillaId === 'POR' ? 300 : 3200, y: 3200 });
     situar(e, titularEn(e, 'visitante', rezagado).id, { x: 1500, y: 2400 });
     const receptor = titularEn(e, 'local', 'DC');

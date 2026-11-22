@@ -1,7 +1,7 @@
 /**
  * Receptor por tipo de pase, distancia y dirección reales (spec 003, research R3; FR-016, FR-017; T011).
  */
-import { PARAMETROS_V7, PARAMETROS_V8 } from '@fbd/domain';
+import { parametrosActuales } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { callejonSinSalida, factorPasador, pesosReceptor, receptorDePase } from '../src/acciones/receptor';
 import type { EstadoMotor, JugadorEnPartido } from '../src/index';
@@ -70,15 +70,15 @@ describe('receptor del pase (T011)', () => {
   });
 
   it('el factor del pasador queda acotado a `pases.atraccionPasadorAcotada`', () => {
-    // Con una atracción alta, para que los extremos lleguen a las cotas (con la 7.0.0 el techo no se alcanza con stats de carta).
-    const parametros = { ...PARAMETROS_V7, acciones: { ...PARAMETROS_V7.acciones, atraccionPasador: 5 } };
+    // Con una atracción alta, para que los extremos lleguen a las cotas (con el valor real el techo no se alcanza con stats de carta).
+    const parametros = { ...parametrosActuales(), acciones: { ...parametrosActuales().acciones, atraccionPasador: 5 } };
     const conPase = (pase: number) => {
       const e = partido(`pasador-${pase}`, { parametros });
       const j = titularEn(e, 'local', 'MC-1');
       j.jugador = { ...j.jugador, stats: { ...j.jugador.stats, pase } as typeof j.jugador.stats };
       return factorPasador(e, e.equipos.local, j);
     };
-    const [min, max] = PARAMETROS_V7.pases.atraccionPasadorAcotada;
+    const [min, max] = parametrosActuales().pases.atraccionPasadorAcotada;
     expect(conPase(99)).toBeCloseTo(max, 6);
     expect(conPase(30)).toBeCloseTo(min, 6);
     expect(conPase(70)).toBeCloseTo(1, 6);
@@ -123,12 +123,12 @@ describe('ida y vuelta sin sentido (spec 014, M3)', () => {
 });
 
 describe('elección del receptor según su duelo de desmarque (spec 015, FR-013, M2.8)', () => {
-  const V8 = { version: PARAMETROS_V8.version, parametros: PARAMETROS_V8 };
-  const { desmarque: _sinBloque, ...sinDesmarque } = PARAMETROS_V8;
-  const SIN_DESMARQUE = { version: PARAMETROS_V8.version, parametros: sinDesmarque };
+  const ACTUAL = { version: parametrosActuales().version, parametros: parametrosActuales() };
+  const sinPeso = { ...parametrosActuales(), desmarque: { ...parametrosActuales().desmarque!, pesoEleccion: 0 } };
+  const SIN_DESMARQUE = { version: parametrosActuales().version, parametros: sinPeso };
 
   /** Dos delanteros simétricos respecto al portador, iguales salvo el desmarque; cada uno con un central a 2 m o lejos. */
-  function pesos(parametros: typeof V8 | typeof SIN_DESMARQUE | Record<string, never>, marcados: boolean) {
+  function pesos(parametros: typeof ACTUAL | typeof SIN_DESMARQUE, marcados: boolean) {
     const e = partido('eleccion-desmarque', parametros);
     const portador = titularEn(e, 'local', 'MC-1');
     const bueno = titularEn(e, 'local', 'DC');
@@ -148,20 +148,20 @@ describe('elección del receptor según su duelo de desmarque (spec 015, FR-013,
   }
 
   it('de dos candidatos marcados iguales salvo el desmarque, el de más desmarque pesa más', () => {
-    const p = pesos(V8, true);
+    const p = pesos(ACTUAL, true);
     expect(p.bueno).toBeGreaterThan(p.malo);
   });
 
   it('sin marcador, p = 1: el peso se multiplica por 1 + pesoEleccion × 0,5', () => {
-    const con = pesos(V8, false);
+    const con = pesos(ACTUAL, false);
     const sin = pesos(SIN_DESMARQUE, false);
-    const factor = 1 + PARAMETROS_V8.desmarque!.pesoEleccion * 0.5;
+    const factor = 1 + parametrosActuales().desmarque!.pesoEleccion * 0.5;
     expect(con.bueno / sin.bueno).toBeCloseTo(factor, 2);
     expect(con.malo / sin.malo).toBeCloseTo(factor, 2);
   });
 
-  it('con la 7.0.0, el desmarque no cambia los pesos', () => {
-    const p = pesos({}, true);
+  it('con pesoEleccion 0, el desmarque no cambia los pesos', () => {
+    const p = pesos(SIN_DESMARQUE, true);
     expect(p.bueno).toBe(p.malo);
   });
 });

@@ -102,7 +102,7 @@ export interface EstadisticasEquipo {
   /** Posesiones que empiezan en campo propio y acaban en tiro con 4 pases o menos y en menos de 150 ticks. */
   contraataques: number;
   lesiones: number;
-  /** Cansancio medio de los jugadores en el campo al final (0 = frescos). */
+  /** Media de 1 − energía / 100 de los jugadores en el campo al final (0 = frescos). */
   cansancioMedio: number;
   /** Pases intentados de menos de 20 m y de más de 35 m (spec 003, data-model §7.2). */
   pasesCortos: number;

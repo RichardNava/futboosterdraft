@@ -2,7 +2,7 @@
  * Balón parado y autogoles (spec 003, research R7 y R11; FR-020; T015): penalti espacial, faltas en duelos
  * aéreos del área, falta directa según distancia y ángulo, y goles en propia puerta.
  */
-import { PARAMETROS_V7, type ParametrosEquilibrado } from '@fbd/domain';
+import { parametrosActuales, type ParametrosEquilibrado } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { falta, probabilidadTiroDirecto } from '../src/acciones/balonParado';
 import { corner, probabilidadAutogolDespeje, tirar } from '../src/acciones/tiro';
@@ -10,7 +10,7 @@ import { avanzar, crearPartido, type EstadoMotor } from '../src/index';
 import { paso } from '../src/acciones/juego';
 import { contextoDe, darBalon, entrada, partido, situar, soloEnCampo, titularEn } from './ayudas';
 
-const p = PARAMETROS_V7;
+const p = parametrosActuales();
 
 function conParametros(cambios: (q: ParametrosEquilibrado) => void): ParametrosEquilibrado {
   const q = structuredClone(p);
@@ -103,8 +103,9 @@ describe('goles en propia puerta (FR-020, SC-003)', () => {
       expect(x).toBeLessThanOrEqual(Math.round(2 * p.tiro.autogol.despejeCentro * 1000));
       anterior = x;
     }
-    // En milésimas, con la probabilidad calibrada (0,008) la diferencia se ve entre extremos.
-    expect(probabilidadAutogolDespeje(p, 99)).toBeLessThan(probabilidadAutogolDespeje(p, 40));
+    // En milésimas, la diferencia entre extremos se ve con 0,008; la 8.0.0 la calibró a la mitad y redondea igual.
+    const q = { ...p, tiro: { ...p.tiro, autogol: { ...p.tiro.autogol, despejeCentro: 0.008 } } };
+    expect(probabilidadAutogolDespeje(q, 99)).toBeLessThan(probabilidadAutogolDespeje(q, 40));
   });
 
   const golesEnPropia = (e: EstadoMotor) => e.eventos.filter((x) => x.tipo === 'gol' && x.datos.tipo === 'propia');

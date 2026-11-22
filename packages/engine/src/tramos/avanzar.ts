@@ -27,6 +27,7 @@ import { colocarSaqueInicial } from '../espacio/colocacion';
 import { ordenJugadores } from '../espacio/paso';
 import { jugarTanda } from '../penaltis/tanda';
 import { guardarMetricas, metricasDesde } from '../metricas';
+import { recuperarEnPausa } from '../modificadores/cansancio';
 import type { AccionVisible, DecisionRegistrada, Estadisticas, EventoPartido, Fase, Fotograma, Lado, Marcador, MetricasJugador, ModoAvance } from '../tipos';
 import { aplicarPendientes, equiposQueDecidieron } from './decisiones';
 
@@ -99,6 +100,7 @@ function iniciarParte(ctx: Contexto, parte: number): void {
   e.reloj = { parte, segundosEnParte: 0, paradas: 0, descuento: null };
   // Un córner pendiente de la parte anterior ya no se saca.
   e.cornerPendiente = null;
+  e.ventajaBanda = null;
   // Saca el local en la primera parte y el visitante en la segunda; en la prórroga, al revés.
   const saca = parte === 1 || parte === 4 ? e.sacoPrimeraParte : rival(e.sacoPrimeraParte);
   emitir(ctx, 'inicio_tramo', saca, [], { parte });
@@ -127,13 +129,17 @@ function comprobarFinParte(ctx: Contexto): void {
   const parte = e.reloj.parte;
   const empate = e.marcador.local === e.marcador.visitante;
   emitir(ctx, 'fin_tramo', 'local', [], { parte, marcador: { ...e.marcador } });
+  // La recuperación va al pitarse, antes de las decisiones de la pausa (spec 018, R3).
   if (parte === 1) {
+    recuperarEnPausa(e, 'descanso');
     e.fase = 'descanso';
     interrumpir(ctx, 'descanso', 0, 'local');
   } else if (parte === 2) {
     e.fase = e.eliminatoria && empate ? 'pre_prorroga' : 'finalizado';
+    if (e.fase === 'pre_prorroga') recuperarEnPausa(e, 'preProrroga');
     interrumpir(ctx, e.fase === 'pre_prorroga' ? 'fin_tiempo_reglamentario' : 'final', 0, 'local');
   } else if (parte === 3) {
+    recuperarEnPausa(e, 'descansoProrroga');
     interrumpir(ctx, 'descanso_prorroga', 0, 'local');
     iniciarParte(ctx, 4);
   } else {
@@ -171,7 +177,7 @@ function estadisticasSalida(e: EstadoMotor): Estadisticas {
   const total = e.estadisticas.local.posesion + e.estadisticas.visitante.posesion || 1;
   const cansancio = (lado: 'local' | 'visitante') => {
     const enCampo = e.equipos[lado].jugadores.filter((j) => j.enCampo);
-    return enCampo.length ? Math.round((enCampo.reduce((a, j) => a + j.cansancio, 0) / enCampo.length) * 1000) / 1000 : 0;
+    return enCampo.length ? Math.round((enCampo.reduce((a, j) => a + (1 - j.energia / 100), 0) / enCampo.length) * 1000) / 1000 : 0;
   };
   const salida = (lado: 'local' | 'visitante', posesion: number) => {
     const s = e.estadisticas[lado];

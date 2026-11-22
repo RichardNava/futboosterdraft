@@ -1,19 +1,22 @@
 /**
  * Movimiento de los jugadores (research R3; FR-023 "movimiento natural"): cada chapa va hacia su objetivo
- * con una velocidad máxima que depende de su stat de velocidad y del cansancio, acelera y frena de forma
+ * con una velocidad máxima que depende de su stat de velocidad y de la energía, acelera y frena de forma
  * progresiva, y se separa de las demás para no atravesarlas ni amontonarse. Enteros en décimas.
  *
- * Los jugadores se mueven cada `PASO_MOVIMIENTO` ticks (los mismos en que se toman los fotogramas), con
- * el desplazamiento y el cambio de velocidad de esos ticks; el balón se mueve en cada tick.
+ * La dirección, la velocidad y la separación se deciden cada `PASO_MOVIMIENTO` ticks, y la posición avanza a medio paso
+ * (cada 2 ticks, los de los fotogramas): así la 2D no ve paradas alternas (spec 018, R7). El balón se mueve en cada tick.
  */
 import type { EquipoEstado, EstadoMotor, JugadorEnPartido, PosicionMovil } from '../estado/estado';
 import { atributoConBonus } from '../modificadores/atributos';
+import { gastarAccion } from '../modificadores/cansancio';
 import { bonusEquipo, bonusPorDemarcacion } from '../modificadores/virtudes';
 import { acotar, dividir, escalar, isqrt } from './aritmetica';
 import { ANCHO, LARGO, type Punto } from './geometria';
 
-/** Ticks entre dos pasos de movimiento de los jugadores. */
-export const PASO_MOVIMIENTO = 2;
+/** Ticks entre dos decisiones de movimiento de los jugadores. */
+export const PASO_MOVIMIENTO = 4;
+/** Ticks que avanza la posición en cada mitad del paso. */
+const MEDIO_PASO = 2;
 
 function velocidadDeStat(estado: EstadoMotor, stat: number): number {
   const p = estado.parametros.espacio;
@@ -23,7 +26,7 @@ function velocidadDeStat(estado: EstadoMotor, stat: number): number {
 
 /**
  * Velocidad máxima de un jugador, en décimas por tick: lineal con su atributo de velocidad (ya con la
- * posición y el cansancio), de `velocidadJugadorMin` a `velocidadJugadorMax` (FR-025: +20 → al menos +15 %).
+ * posición y la energía), de `velocidadJugadorMin` a `velocidadJugadorMax` (FR-025: +20 → al menos +15 %).
  */
 export function velocidadMaxima(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido): number {
   return velocidadDeStat(estado, atributoConBonus(estado, equipo, j, 'velocidad', bonusEquipo(estado, equipo, j)));
@@ -31,6 +34,8 @@ export function velocidadMaxima(estado: EstadoMotor, equipo: EquipoEstado, j: Ju
 
 interface Movil {
   id: number;
+  j: JugadorEnPartido;
+  equipo: EquipoEstado;
   pos: PosicionMovil;
   vmax: number;
   /** Multiplicador de la velocidad, la aceleración y la frenada (colocación en un balón parado, spec 015). */
@@ -43,8 +48,8 @@ interface Movil {
   fy: number;
 }
 
-/** Ticks hacia delante con los que se anticipan los choques: da tiempo a apartarse con la aceleración. */
-const ANTICIPACION = 6;
+/** Ticks hacia delante con los que se anticipan los choques: hasta la siguiente decisión de movimiento (spec 018, R7). */
+const ANTICIPACION = PASO_MOVIMIENTO;
 
 /**
  * Fuerzas de separación (barrido por x: solo se comparan los que están cerca en x). Se miden sobre las
@@ -79,6 +84,7 @@ export function moverJugadores(estado: EstadoMotor): void {
   const p = estado.parametros.espacio;
   const esp = estado.espacio;
   const dt = PASO_MOVIMIENTO;
+  const umbralSprint = estado.parametros.fatiga.umbralSprint;
   const moviles: Movil[] = [];
   const tick = estado.tick;
   const presionadores = esp.presion.presionadores;
@@ -87,7 +93,7 @@ export function moverJugadores(estado: EstadoMotor): void {
   const balonParado = motivo === 'corner' || motivo === 'falta_area' || motivo === 'penalti';
   // Spec 015 (balones fuera): en el córner todos se colocan más deprisa, a la escala del reloj (acelerar y frenar también),
   // y en el saque de banda, el que saca.
-  const colocacion = estado.parametros.fueraDeCampo?.velocidadColocacion ?? 1;
+  const colocacion = estado.parametros.fueraDeCampo.velocidadColocacion;
   const escalaDe = (id: number) => (motivo === 'corner' || (motivo === 'banda' && esp.accion?.deId === id) ? colocacion : 1);
   for (const lado of ['local', 'visitante'] as const) {
     const equipo = estado.equipos[lado];
@@ -102,14 +108,19 @@ export function moverJugadores(estado: EstadoMotor): void {
       if (!pos) continue;
       // Quién tiene un papel en la jugada (para saber quién vuelve después a la forma).
       if (balonParado || destino || j.id === estado.balon.portadorId || presionadores.includes(j.id)) pos.papel = tick;
-      if (!objetivo) continue;
+      if (!objetivo) {
+        // Sin objetivo se queda quieto: el medio paso no debe arrastrar una velocidad antigua.
+        pos.vx = 0;
+        pos.vy = 0;
+        continue;
+      }
       let vmax = velocidadDeStat(estado, atributoConBonus(estado, equipo, j, 'velocidad', bonus[j.jugador.demarcacion]));
       if (estado.balon.portadorId === j.id && estado.balon.posesion === lado) vmax = Math.round(vmax * p.factorVelocidadConBalon);
       // El que va a sacar una reanudación acude a la carrera (spec 014, FR-001): el saque espera a que llegue.
       if (esp.accion?.tipo === 'saque' && esp.accion.deId === j.id) vmax = p.velocidadJugadorMax;
       const escala = escalaDe(j.id);
       if (escala !== 1) vmax = Math.round(vmax * escala);
-      moviles.push({ id: j.id, pos, vmax, escala, objetivo, px: pos.x + pos.vx * ANTICIPACION, py: pos.y + pos.vy * ANTICIPACION, fx: 0, fy: 0 });
+      moviles.push({ id: j.id, j, equipo, pos, vmax, escala, objetivo, px: pos.x + pos.vx * ANTICIPACION, py: pos.y + pos.vy * ANTICIPACION, fx: 0, fy: 0 });
     }
   }
   separar(moviles, p.radioSeparacion);
@@ -155,7 +166,7 @@ export function moverJugadores(estado: EstadoMotor): void {
     let vx = pos.vx + cx;
     let vy = pos.vy + cy;
     const v2 = vx * vx + vy * vy;
-    // Si baja su velocidad máxima (al recibir el balón, con el cansancio), el freno del paso ya lo acerca a
+    // Si baja su velocidad máxima (al recibir el balón, con la energía), el freno del paso ya lo acerca a
     // ella; solo se evita que acelere por encima de la que llevaba.
     const vAntes2 = pos.vx * pos.vx + pos.vy * pos.vy;
     if (v2 > vmax2 && v2 > vAntes2) {
@@ -164,12 +175,28 @@ export function moverJugadores(estado: EstadoMotor): void {
       vx = dividir(vx * objetivo, v);
       vy = dividir(vy * objetivo, v);
     }
-    const x = acotar(pos.x + vx * dt, 0, LARGO);
-    const y = acotar(pos.y + vy * dt, 0, ANCHO);
-    // Si la línea del campo lo frena, su velocidad real es la que ha podido recorrer.
-    pos.vx = dividir(x - pos.x, dt);
-    pos.vy = dividir(y - pos.y, dt);
-    pos.x = x;
-    pos.y = y;
+    // Sprint: cuenta al entrar en él, para que el coste no dependa de la cadencia (spec 018, R4).
+    const umbral = umbralSprint * m.vmax;
+    const sprint = umbral > 0 && vx * vx + vy * vy >= umbral * umbral;
+    if (sprint && !pos.sprint) gastarAccion(estado, m.equipo, m.j, 'sprint');
+    if (sprint !== (pos.sprint ?? false)) pos.sprint = sprint;
+    pos.vx = vx;
+    pos.vy = vy;
+    avanzarPosicion(pos);
   }
+}
+
+/** Avanza `MEDIO_PASO` ticks; si la línea del campo lo frena, su velocidad real es la que ha podido recorrer. */
+function avanzarPosicion(pos: PosicionMovil): void {
+  const x = acotar(pos.x + pos.vx * MEDIO_PASO, 0, LARGO);
+  const y = acotar(pos.y + pos.vy * MEDIO_PASO, 0, ANCHO);
+  pos.vx = dividir(x - pos.x, MEDIO_PASO);
+  pos.vy = dividir(y - pos.y, MEDIO_PASO);
+  pos.x = x;
+  pos.y = y;
+}
+
+/** Segunda mitad del paso: avanza con la velocidad ya decidida, sin recalcular nada. */
+export function avanzarMedioPaso(estado: EstadoMotor): void {
+  for (const pos of Object.values(estado.espacio.jugadores)) if (pos.vx !== 0 || pos.vy !== 0) avanzarPosicion(pos);
 }

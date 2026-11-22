@@ -1,7 +1,7 @@
 /**
  * Reductor del campo único de «Formación» (spec 003, research R14; T038).
  */
-import { autoAlineacion, calcularMedia, CLAVES_STATS, FORMACIONES, PARAMETROS_V3, type Demarcacion, type Jugador, type Posicion } from '@fbd/domain';
+import { parametrosActuales, autoAlineacion, calcularMedia, CLAVES_STATS, FORMACIONES, type Demarcacion, type Jugador, type Posicion } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { cambiarFormacion, colocacionDe, RADIO_FICHA, rellenarBanquillo, soltar, type EstadoCampo, type OpcionesSoltar } from '../../src/componentes/campoEquipoEstado';
 
@@ -31,7 +31,7 @@ function jugador(posicion: Posicion): Jugador {
   };
 }
 const plantilla = (['POR', 'LD', 'DCD', 'DCI', 'LI', 'ED', 'MC', 'MC', 'EI', 'DC', 'SD', 'POR', 'DCI', 'MC', 'DC', 'EI', 'MCO', 'LD'] as Posicion[]).map(jugador);
-const p = PARAMETROS_V3;
+const p = parametrosActuales();
 const o: OpcionesSoltar = { parametros: p, radioFicha: RADIO_FICHA, posicionesDe: (id) => plantilla.find((j) => j.id === id)!.posicion };
 
 function inicial(): EstadoCampo {

@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import {
-  PARAMETROS_V7,
+  parametrosActuales,
   semillaDesdeTexto,
   type Jugador,
   type ParametrosEquilibrado,
@@ -47,8 +47,8 @@ export interface Huella {
   drafts: { semilla: number; picks: Record<string, number[]> }[];
 }
 
-/** Partido `i` (1–100) de la huella; con `p`, la de otra versión (spec 015: `huella-015.json` con la 8.0.0). */
-export function partidoHuella(i: number, p: ParametrosEquilibrado = PARAMETROS_V7): PartidoHuella {
+/** Partido `i` (1–100) de la huella; con `p`, la de otra versión. */
+export function partidoHuella(i: number, p: ParametrosEquilibrado = parametrosActuales()): PartidoHuella {
   const local = equipoSintetico({
     semilla: `huella-${i}`,
     formacion: FORMACIONES[i % FORMACIONES.length],
@@ -111,7 +111,7 @@ function coreAnterior(): Jugador[] {
 /** Draft `i` (1–20) de la huella: las cartas de cada NPC. */
 export function draftHuella(
   i: number,
-  p: ParametrosEquilibrado = PARAMETROS_V7,
+  p: ParametrosEquilibrado = parametrosActuales(),
 ): { semilla: number; picks: Record<string, number[]> } {
   const semilla = `huella-014-draft-${i}`;
   const { elegirDe } = electorNPC(semilla, PARTICIPANTES.length, p);
