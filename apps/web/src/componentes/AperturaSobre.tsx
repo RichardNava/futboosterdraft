@@ -176,7 +176,8 @@ export function AperturaSobre({ cartas, onTerminar, onFundido, diseno }: Props) 
         </div>
       )}
       <div ref={mesa} className="apertura-mesa" hidden={fase === 'sobre'}>
-        <div ref={rejilla} className="apertura-cartas" aria-hidden="true">
+        {/* Decorativas: `inert` evita que el Tab entre en sus botones de rasgos, ocultos al lector de pantalla. */}
+        <div ref={rejilla} className="apertura-cartas" aria-hidden="true" inert>
           {cartas.map((c, i) => (
             <div
               key={c.id}

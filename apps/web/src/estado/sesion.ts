@@ -1,8 +1,9 @@
 import type { Rol } from '@fbd/domain';
 import { create } from 'zustand';
-import { api, ErrorApi } from '../api/cliente';
+import { api, ErrorApi, escucharSesionPerdida } from '../api/cliente';
 import { soltarConexionInvitado } from '../conexion/activa';
 import { mostrarAviso } from './avisos';
+import { usePartidaActiva } from './partidaActiva';
 
 interface Usuario {
   id: string;
@@ -40,15 +41,8 @@ export const useSesion = create<EstadoSesion>((set, get) => ({
     }
   },
   async comprobarSesionTerminada() {
-    if (!get().usuario) return;
-    try {
-      await api('/api/me', { sinCache: true });
-    } catch (e) {
-      if (!(e instanceof ErrorApi && e.estado === 401)) return;
-      soltarConexionInvitado();
-      set({ usuario: null });
-      mostrarAviso('advertencia', 'Tu sesión ha terminado', { id: 'sesion-terminada' });
-    }
+    // Un 401 lo recoge `escucharSesionPerdida`, más abajo.
+    if (get().usuario) await api('/api/me', { sinCache: true }).catch(() => undefined);
   },
   async entrarComoInvitado() {
     const { usuario } = await api<{ usuario: Usuario }>('/api/auth/invitado', { metodo: 'POST' });
@@ -68,3 +62,12 @@ export const useSesion = create<EstadoSesion>((set, get) => ({
     set({ usuario: null });
   },
 }));
+
+// Suspensión o cambio de contraseña: a la portada con el aviso. Se olvida la partida para que salir no pregunte ni la pause.
+escucharSesionPerdida(() => {
+  if (!useSesion.getState().usuario) return;
+  soltarConexionInvitado();
+  usePartidaActiva.getState().actualizar({ partidaId: null });
+  useSesion.setState({ usuario: null });
+  mostrarAviso('advertencia', 'Tu sesión ha terminado', { id: 'sesion-terminada' });
+});

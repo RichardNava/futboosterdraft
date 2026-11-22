@@ -23,7 +23,9 @@ import {
   type NivelRareza,
 } from '@fbd/domain';
 import type { CrearPartida } from '@fbd/protocol';
-import { and, eq, inArray, isNotNull } from 'drizzle-orm';
+import { and, eq, inArray, isNotNull, or } from 'drizzle-orm';
+import type { Tx } from '../admin/registro';
+import { exigirOtroAdministrador } from '../admin/servicio';
 import type { UsuarioSesion } from '../auth/auth';
 import { errores } from '../http/errores';
 import { participantes, partidas, registroAdmin, usuarios } from '../persistencia/esquema/index';
@@ -304,16 +306,17 @@ export class GestorPartidas {
    */
   async eliminarCuenta(usuarioId: string): Promise<void> {
     await this.servicios.db.transaction(async (tx) => {
+      await exigirOtroAdministrador(tx, usuarioId);
       await tx.delete(partidas).where(eq(partidas.anfitrionId, usuarioId));
       await tx
         .update(participantes)
         .set({ tipo: 'npc', usuarioId: null, nivelNPC: 'intermedio', controladoPorNPC: true })
         .where(eq(participantes.usuarioId, usuarioId));
-      // El registro sobrevive a la cuenta, sin su texto libre (spec 017, FR-047).
+      // El registro sobrevive a la cuenta, sin el texto libre de las entradas en las que aparece (spec 017, FR-047).
       await tx
         .update(registroAdmin)
         .set({ motivo: null })
-        .where(and(eq(registroAdmin.objetoTipo, 'cuenta'), eq(registroAdmin.objetoId, usuarioId), isNotNull(registroAdmin.motivo)));
+        .where(and(or(and(eq(registroAdmin.objetoTipo, 'cuenta'), eq(registroAdmin.objetoId, usuarioId)), eq(registroAdmin.actorId, usuarioId)), isNotNull(registroAdmin.motivo)));
       await tx.delete(usuarios).where(eq(usuarios.id, usuarioId));
     });
     for (const c of [...this.controladores.values()]) {
@@ -323,21 +326,21 @@ export class GestorPartidas {
 
   /**
    * Cierra una partida activa desde el panel o la consola (spec 017, FR-049). `adminId` es null si actúa la consola, que
-   * sí puede cerrar una partida en la que juegue un administrador. Devuelve el estado anterior.
+   * sí puede cerrar una partida en la que juegue un administrador. `anotar` escribe el registro en la transacción del
+   * cierre.
    */
-  async cerrarPorAdmin(id: string, adminId: string | null): Promise<string> {
+  async cerrarPorAdmin(id: string, adminId: string | null, anotar: (tx: Tx, anterior: string) => Promise<void>): Promise<void> {
     const c = await this.obtenerOError(id);
-    const anterior = await c.ejecutar(async (ctx) => {
-      const estado = c.partida.estado;
-      if (!(ESTADOS_ACTIVOS as readonly string[]).includes(estado)) throw errores.conflicto('PARTIDA_NO_ACTIVA', 'Esa partida ya no está activa');
+    // Otro cierre acaba de retirar este controlador.
+    if (c.actor.estaCerrado) throw errores.conflicto('PARTIDA_NO_ACTIVA', 'Esa partida ya no está activa');
+    await c.ejecutar(async (ctx) => {
+      if (!(ESTADOS_ACTIVOS as readonly string[]).includes(c.partida.estado)) throw errores.conflicto('PARTIDA_NO_ACTIVA', 'Esa partida ya no está activa');
       if (adminId && (c.partida.anfitrionId === adminId || c.participanteDeUsuario(adminId))) {
         throw errores.conflicto('PARTICIPA_ADMIN', 'Juegas en esta partida: debe cerrarla otro administrador o la consola');
       }
-      await cerrarPartidaAdmin(c, ctx, this.depsTorneo?.avisos);
-      return estado;
+      await cerrarPartidaAdmin(c, ctx, this.depsTorneo?.avisos, anotar);
     });
     this.quitar(c.id);
-    return anterior;
   }
 
   /** Plantillas de la partida que se pueden ver. */

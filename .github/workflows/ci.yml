@@ -21,6 +21,9 @@ jobs:
       - run: pnpm test
       - run: pnpm test:integration
       - run: pnpm test:equivalence
+      # Spec 017 (FR-011, SC-011): repite todos los ataques y falla con una dependencia de producción alta o crítica.
+      - run: pnpm seguridad
+      - run: pnpm audit --prod --audit-level=high
       - run: pnpm --filter @fbd/engine bench
       # Umbral de FR-028a, revisado en la spec 005: ≤ 120 ms por partido sin fotogramas, con métricas por jugador
       # (spec 003) y en resolverResto desde el minuto 0. El motor mide unos 80 ms en CI; el paso bloquea.

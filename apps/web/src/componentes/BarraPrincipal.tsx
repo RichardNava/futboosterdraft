@@ -72,17 +72,28 @@ export function BarraPrincipal({ principal, principalIzquierda = null, secundari
   // Con `data-ayuda-titulo`, el título va en negrita delante (spec 013, ronda 2: deslizadores de Nueva partida).
   const [ayudaCompleta, setAyuda] = useState<{ titulo: string | null; texto: string } | null>(null);
   const ayuda = ayudaCompleta && (ayudaCompleta.titulo ? `${ayudaCompleta.titulo}: ${ayudaCompleta.texto}` : ayudaCompleta.texto);
+  const origenAyuda = useRef<Element | null>(null);
+  // Si desaparece el control de la ayuda (como «Confirmar elección» al confirmar), su texto no debe seguir tapando el estado.
+  useEffect(() => {
+    if (origenAyuda.current?.isConnected !== false) return;
+    origenAyuda.current = null;
+    setAyuda(null);
+  });
   useEffect(() => {
     // Solo con sitio (desde 720 px): en estrecho la ayuda haría crecer la barra, que tapa lo que hay debajo.
     const ancha = window.matchMedia?.('(min-width: 720px)');
     const leer = (e: Event) => {
-      const el = ancha?.matches !== false && e.target instanceof Element ? e.target.closest('[data-ayuda]') : null;
+      const el = ancha?.matches !== false && e.target instanceof Element && e.target.isConnected ? e.target.closest('[data-ayuda]') : null;
       const texto = el?.getAttribute('data-ayuda');
+      origenAyuda.current = texto ? el! : null;
       setAyuda(texto ? { titulo: el!.getAttribute('data-ayuda-titulo'), texto } : null);
     };
     // Al mover un deslizador (o pulsar una de sus marcas), los atributos cambian después del evento: se leen en el siguiente fotograma.
     const leerTrasCambio = (e: Event) => requestAnimationFrame(() => leer(e));
-    const quitar = () => setAyuda(null);
+    const quitar = () => {
+      origenAyuda.current = null;
+      setAyuda(null);
+    };
     document.addEventListener('pointerover', leer);
     document.addEventListener('focusin', leer);
     document.addEventListener('input', leerTrasCambio);

@@ -51,8 +51,12 @@ const idCuenta = (req: FastifyRequest<ConId>): string => {
 
 /** Rutas `/api/admin/*`. */
 export function registrarRutasAdmin(app: FastifyInstance, auth: Auth, { db, gestor, economia, registro }: DependenciasAdmin): void {
-  const { soloAdministrador } = crearHooksSesion(auth, (u) => registro.denegado(u));
-  const opciones = { preHandler: soloAdministrador };
+  const { soloAdministrador } = crearHooksSesion(auth, (u, ruta) => registro.denegado(u, ruta));
+  // Correos y saldos no deben quedar en la caché de un equipo compartido (SEG-039).
+  const sinCache = async (_req: unknown, reply: { header(clave: string, valor: string): unknown }) => {
+    reply.header('cache-control', 'no-store');
+  };
+  const opciones = { onRequest: sinCache, preHandler: soloAdministrador };
   const actor = (req: FastifyRequest) => actorDe(req.usuario!);
 
   app.get('/api/admin/cuentas', opciones, async (req) => listarCuentas(db, consulta(ConsultaCuentas, req.query)));

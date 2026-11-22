@@ -79,6 +79,13 @@ export async function api<T>(ruta: string, opciones: OpcionesPeticion = {}): Pro
   }
 }
 
+let alPerderSesion: (() => void) | null = null;
+
+/** Avisa a quien guarda la sesión cuando el servidor deja de reconocerla, en cualquier pantalla (spec 017, contracts/ui.md). */
+export function escucharSesionPerdida(oyente: () => void): void {
+  alPerderSesion = oyente;
+}
+
 async function enviar<T>(ruta: string, metodo: string, opciones: OpcionesPeticion): Promise<T> {
   const cabeceras: Record<string, string> = {};
   if (opciones.cuerpo !== undefined) cabeceras['content-type'] = 'application/json';
@@ -115,6 +122,7 @@ async function enviar<T>(ruta: string, metodo: string, opciones: OpcionesPeticio
       error?.detalles ?? {},
     );
     if (!error && !alternativo?.code && [500, 502, 503, 504].includes(respuesta.status)) throw new SinRespuesta(fallo);
+    if (fallo.codigo === 'SIN_SESION') alPerderSesion?.();
     throw fallo;
   }
   return datos as T;

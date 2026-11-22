@@ -57,11 +57,11 @@ describe('matriz de permisos en la API', () => {
     await bd.detener();
   });
 
-  it('SEG-033: la matriz tiene las 25 celdas «no» de FR-041', () => {
+  it('SEG-000: la matriz tiene las 25 celdas «no» de FR-041', () => {
     expect(celdasNo).toHaveLength(25);
   });
 
-  it.each(celdasNo)('SEG-033: $rol intenta $permiso', async ({ permiso, rol }) => {
+  it.each(celdasNo)('SEG-000: $rol intenta $permiso', async ({ permiso, rol }) => {
     const u = await cuentaCon(rol);
     if (permiso === 'coleccion_tienda_perfil') {
       for (const ruta of ['/api/coleccion', '/api/tienda', '/api/perfil']) {
@@ -81,10 +81,12 @@ describe('matriz de permisos en la API', () => {
     const filas = await bd.db.execute<{ actor_rol: string; resultado: string; intentos: number }>(
       sql`select actor_rol, resultado, intentos from registro_admin where actor_id = ${u.id} and accion = 'panel.acceso_denegado'`,
     );
-    expect(filas.rows).toEqual([{ actor_rol: rol, resultado: 'denegado', intentos: llamadas.length }]);
+    // Una fila por acción intentada (SEG-036).
+    expect(filas.rows.reduce((n, f) => n + f.intentos, 0)).toBe(llamadas.length);
+    for (const f of filas.rows) expect(f).toMatchObject({ actor_rol: rol, resultado: 'denegado' });
   });
 
-  it('SEG-033: llamar a la API de administración sin sesión', async () => {
+  it('SEG-000: llamar a la API de administración sin sesión', async () => {
     for (const { metodo, ruta, cuerpo } of Object.values(RUTAS).flat()) {
       const r = await peticion(s.url, ruta, { metodo, ...(cuerpo === undefined ? {} : { cuerpo }) });
       expect(r.estado, ruta).toBe(401);
@@ -95,7 +97,7 @@ describe('matriz de permisos en la API', () => {
     expect(rows[0]!.n).toBe(0);
   });
 
-  it('SEG-033: asignarse un rol al registrarse', async () => {
+  it('SEG-000: asignarse un rol al registrarse', async () => {
     const email = `${randomUUID()}@pruebas.test`;
     const r = await peticion(s.url, '/api/auth/registro', {
       cuerpo: { email, password: 'contraseña-segura', apodo: 'Atacante', rol: 'administrador', suspendidaEn: null },

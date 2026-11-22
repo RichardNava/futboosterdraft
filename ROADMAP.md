@@ -46,7 +46,7 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
 | [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012, 013 | P1 | Hecho | INI-03, INI-04, INI-08 |
 | [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento) | Rework del motor: fatiga, tácticas y rendimiento | sin spec | P0 | Pendiente | INI-05 |
-| [INI-17](#ini-17-auditoría-de-seguridad-y-roles) | Auditoría de seguridad y roles (RBAC) | sin spec | P0 | Pendiente | — |
+| [INI-17](#ini-17-auditoría-de-seguridad-y-roles) | Auditoría de seguridad y roles (RBAC) | 017 | P0 | Implementada, sin validar | — |
 | [INI-18](#ini-18-multijugador-emparejamiento-y-recompensas) | Multijugador: emparejamiento y recompensas | sin spec | P2 | Pendiente | INI-07, INI-17 |
 | [INI-19](#ini-19-cosméticos-de-carta-y-de-campo) | Cosméticos de carta y de campo: dorsos, marcos y césped | sin spec | P2 | Pendiente | INI-14 |
 
@@ -542,9 +542,10 @@ cuesta simular los partidos.
     todo lo que salga.
   - Gestión de roles (RBAC). Hoy no hay roles: la administración se hace por CLI (`ajuste`, `premium`).
   - Crear `robots.txt` (no existe en `apps/web/public/`).
-- **Specs**: ninguna. **Requiere spec nueva**; la auditoría es su primera fase y su informe fija el alcance de la
-  implementación.
-- **Prioridad / estado**: P0 · **Pendiente**. Recoge la revisión de seguridad que antes estaba en INI-10.
+- **Specs**: [017](specs/017-auditoria-seguridad-roles/spec.md), con su [informe](specs/017-auditoria-seguridad-roles/auditoria.md).
+- **Prioridad / estado**: P0 · **Implementada, sin validar** (2026-11-22): 40 hallazgos corregidos, 190 ataques bloqueados, roles,
+  panel y `robots.txt`. Para cerrarla falta la aprobación de la persona responsable (T110).
+  Hay que repetir la revisión sobre lo que integre INI-16. Recoge la revisión de seguridad que antes estaba en INI-10.
 - **Dependencias**: ninguna. Puede ir en paralelo a INI-16. Bloquea INI-10 y debe repetirse en lo que añada INI-18.
 - **Criterios de cierre**: los de su spec, como mínimo: informe de la auditoría con cada hallazgo cerrado o aceptado
   por decisión registrada; ningún hallazgo crítico o alto abierto; roles con pruebas de acceso denegado; `robots.txt`

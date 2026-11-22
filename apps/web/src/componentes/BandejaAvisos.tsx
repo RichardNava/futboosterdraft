@@ -98,7 +98,8 @@ export function BandejaAvisos({ actualizar = 0, equipo }: { actualizar?: number;
           {avisos.map((a) => (
             <li key={a.id} className={a.leido ? 'leido' : ''} style={largo(a.texto)}>
               <Icono nombre={ICONO_AVISO[a.tipo]} etiqueta={a.leido ? 'Leído' : 'Sin leer'} />
-              <Link to={`/partidas/${a.partidaId}/torneo`} onClick={() => void marcarLeido(a)}>
+              {/* Una partida cerrada puede no tener torneo que abrir. */}
+              <Link to={a.tipo === 'partida_cerrada' ? '/mis-partidas' : `/partidas/${a.partidaId}/torneo`} onClick={() => void marcarLeido(a)}>
                 {a.texto}
               </Link>
               <time dateTime={a.creadoEn}>{new Date(a.creadoEn).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}</time>

@@ -52,6 +52,7 @@ import {
   movimientosFragmentos,
   partidas,
   pasesPremium,
+  registroAdmin,
   saldosFragmentos,
   usuarios,
   type ResultadoCompraGuardado,
@@ -233,7 +234,13 @@ export class ServicioEconomia {
         .where(and(eq(movimientosFragmentos.motivo, 'entrega_betatester'), eq(movimientosFragmentos.referencia, idEntrega)));
       if (previa) {
         if (previa.usuarioId !== usuarioId || previa.importe !== cantidad) throw errores.conflicto('ID_ENTREGA_REUTILIZADO', 'Ese idEntrega ya se usó para otra entrega');
-        return { idEntrega, cantidad, saldo: await this.saldo(tx, usuarioId) };
+        // El resultado original está en el registro, escrito en la transacción de la entrega (contracts/http-admin.md).
+        const [original] = await tx
+          .select({ valor: registroAdmin.valorNuevo })
+          .from(registroAdmin)
+          .where(and(eq(registroAdmin.accion, 'fragmentos.entregar'), eq(registroAdmin.objetoTipo, 'cuenta'), eq(registroAdmin.objetoId, usuarioId), eq(registroAdmin.resultado, 'ok'), sql`${registroAdmin.valorNuevo}->>'idEntrega' = ${idEntrega}`))
+          .limit(1);
+        return { idEntrega, cantidad, saldo: (original!.valor as { saldo: number }).saldo };
       }
       // Relee el rol con la fila bloqueada: un cambio de rol simultáneo espera a esta entrega.
       const [actual] = await tx.select({ rol: usuarios.rol }).from(usuarios).where(eq(usuarios.id, usuarioId)).for('share');
@@ -484,8 +491,8 @@ export class ServicioEconomia {
   }
 
   /** Devuelve el cobro del nivel de una partida cancelada antes del draft, una sola vez (índice único). */
-  async devolverCobroRareza(partidaId: string): Promise<boolean> {
-    return this.db.transaction(async (tx) => {
+  async devolverCobroRareza(partidaId: string, ejecutor: Ejecutor = this.db): Promise<boolean> {
+    return ejecutor.transaction(async (tx) => {
       const [p] = await tx.select({ anfitrionId: partidas.anfitrionId, cobro: partidas.cobroRareza }).from(partidas).where(eq(partidas.id, partidaId));
       if (!p?.cobro) return false;
       const nuevo = await tx

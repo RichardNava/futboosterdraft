@@ -107,10 +107,15 @@ Con la imagen y el proxy en marcha, abre `https://localhost:8443/robots.txt` y c
 
 ## G. Escaneo externo (FR-006)
 
-Con la imagen y el proxy en marcha. ZAP comparte la red del contenedor del proxy para llegar a él como `localhost`:
+ZAP no envía el nombre del servidor en TLS para `localhost` y Caddy corta la conexión, así que este escenario usa un nombre
+con dominio dentro de una red propia. Arranca la imagen con `--network fbd-zap --name fbd-app` y
+`PUBLIC_URL=https://juego.pruebas.test:8443`, con el catálogo ya cargado: se lee en memoria al arrancar.
 
 ```bash
-docker run --rm -t --network container:proxy-fbd ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://localhost:8443
+docker network create fbd-zap
+docker run -d --name proxy-fbd --network fbd-zap --network-alias juego.pruebas.test caddy:2 \
+  caddy reverse-proxy --from https://juego.pruebas.test:8443 --to fbd-app:3000 --internal-certs
+docker run --rm -t --network fbd-zap ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://juego.pruebas.test:8443
 ```
 
 **Resultado esperado**: el informe de la auditoría recoge cada alerta y cómo se resolvió.

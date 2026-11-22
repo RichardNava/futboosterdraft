@@ -29,6 +29,13 @@ async function leerCuenta(tx: Tx, id: string) {
 const administradoresActivos = async (tx: Tx) =>
   (await tx.select({ n: count() }).from(usuarios).where(and(eq(usuarios.rol, 'administrador'), isNull(usuarios.suspendidaEn))))[0]!.n;
 
+/** Al eliminar una cuenta: la última administradora no puede irse (FR-043, SEG-033). */
+export async function exigirOtroAdministrador(tx: Tx, id: string): Promise<void> {
+  await bloquearRoles(tx);
+  const [c] = await tx.select({ rol: usuarios.rol }).from(usuarios).where(eq(usuarios.id, id));
+  if (c?.rol === 'administrador' && (await administradoresActivos(tx)) <= 1) throw errores.conflicto('ULTIMO_ADMINISTRADOR', 'Debe quedar al menos un administrador');
+}
+
 /** Cambia el rol de otra cuenta, releyendo actor y objetivo con el bloqueo tomado. */
 export function cambiarRol(db: BaseDatos, actor: Actor, id: string, rol: RolAsignable, motivo: string): Promise<{ id: string; rol: RolAsignable }> {
   return conRegistro(db, { actor, accion: 'rol.cambiar', objetoTipo: 'cuenta', objetoId: id, valorNuevo: { rol }, motivo }, async (tx) => {
@@ -115,14 +122,12 @@ export async function leerAjustes(db: BaseDatos): Promise<AjusteAdmin[]> {
 /** Cierra una partida: sin premios, con aviso genérico; el motivo queda solo en el registro (FR-049). */
 export async function cerrarPartida(db: BaseDatos, gestor: GestorPartidas, actor: Actor, id: string, motivo: string): Promise<{ id: string; estado: 'abandonada' }> {
   const base = { actor, accion: 'partida.cerrar', objetoTipo: 'partida', objetoId: id, motivo } as const;
-  let anterior: string;
   try {
-    anterior = await gestor.cerrarPorAdmin(id, actor.id);
+    await gestor.cerrarPorAdmin(id, actor.id, (tx, anterior) => anotarRegistro(tx, { ...base, valorAnterior: { estado: anterior }, valorNuevo: { estado: 'abandonada' }, resultado: 'ok' }));
   } catch (e) {
     await anotarRegistro(db, { ...base, valorNuevo: { codigo: (e as { codigo?: string }).codigo ?? 'ERROR_INTERNO' }, resultado: (e as { codigo?: string }).codigo ? 'denegado' : 'error' }).catch(() => undefined);
     throw e;
   }
-  await anotarRegistro(db, { ...base, valorAnterior: { estado: anterior }, valorNuevo: { estado: 'abandonada' }, resultado: 'ok' });
   return { id, estado: 'abandonada' };
 }
 
@@ -162,7 +167,7 @@ export async function listarPartidas(db: BaseDatos, adminId: string, f: { cursor
       creadaEn: partidas.creadaEn,
       participantes: sql<number>`count(${participantes.id})::int`,
       humanos: sql<number>`(count(*) filter (where ${participantes.tipo} = 'humano'))::int`,
-      participaAdmin: sql<boolean>`(${partidas.anfitrionId} = ${adminId} or coalesce(bool_or(${participantes.usuarioId} = ${adminId}), false))`,
+      participaAdmin: sql<boolean>`(${partidas.anfitrionId} = ${adminId} or coalesce(bool_or(${participantes.usuarioId} = ${adminId} and not ${participantes.controladoPorNPC}), false))`,
     })
     .from(partidas)
     .leftJoin(participantes, eq(participantes.partidaId, partidas.id))
