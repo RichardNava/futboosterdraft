@@ -46,11 +46,12 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
     amarilla(ctx, defensor, culpable);
   }
   // La falta puede lesionar a quien la recibe.
-  const lesionado = comprobarLesion(ctx, atacante, victima, 1.5);
+  comprobarLesion(ctx, atacante, victima, 1.5);
   if (e.fase === 'finalizado') return;
 
   interrumpir(ctx, 'falta', 16, atacante.lado);
-  const lanzadorBalon = lesionado ? atacante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR') : victima;
+  // La víctima puede haberse ido: lesionada o sustituida por una decisión aplicada al pitarse la falta.
+  const lanzadorBalon = victima.enCampo ? victima : atacante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR');
   // Penalti si el punto de la falta está dentro del área real (research R7), no por una probabilidad fija.
   if (enAreaRival(aEquipo(atacante.lado, e.espacio.balon))) {
     penalti(ctx, atacante);

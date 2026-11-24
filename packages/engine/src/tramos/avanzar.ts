@@ -64,7 +64,9 @@ interface OpcionesAvance {
 /** Hay una decisión pendiente que ya no puede esperar a la siguiente interrupción natural. */
 function cambioQueNoEspera(e: EstadoMotor): boolean {
   const limite = e.parametros.reproduccion.esperaMaximaCambioS;
-  return e.decisionesPendientes.some((d) => (d.aplicadaEnTick === undefined ? e.tick - d.solicitadaEnTick >= limite : d.aplicadaEnTick <= e.tick));
+  // También al reproducir exige el minuto: si no, una decisión aplicada al pitarse un córner que abre el paso siguiente,
+  // en el mismo tick, forzaría aquí una parada que no hubo en directo.
+  return e.decisionesPendientes.some((d) => e.tick - d.solicitadaEnTick >= limite && (d.aplicadaEnTick === undefined || d.aplicadaEnTick <= e.tick));
 }
 
 /** Límite de pasos por tramo (salvaguarda frente a bucles; un partido tiene unos pocos miles). */
@@ -227,6 +229,11 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
   const primeraAccion = estado.acciones.length;
   anotarFotograma(ctx);
   let puntoDecision = true;
+  // Al pitarse, no al acabar el paso: un balón parado encadena saque, tiro y otro saque (002/FR-025a). Con una incidencia
+  // pendiente esperan a resolverla, porque una formación se valida contra los jugadores que quedan en el campo.
+  const aplicarAlPitar = () => {
+    if (!estado.incidencias.some((i) => i.estado === 'pendiente')) aplicarPendientes(ctx, { cual: 'resto' });
+  };
 
   // Las acciones cambian la fase dentro del bucle: se lee siempre a través de esta función.
   const fase = (): Fase => estado.fase;
@@ -240,7 +247,9 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
       for (let pasos = 0; pasos < MAX_PASOS; pasos++) {
         if (fase() === 'finalizado') break;
         ctx.interrupcion = false;
+        ctx.alInterrumpir = aplicarAlPitar;
         paso(ctx);
+        delete ctx.alInterrumpir;
         if (fase() !== 'finalizado') comprobarFinParte(ctx);
         // Lesiones y expulsiones del paso (spec 012): las decisiones de su parada (al reproducir), el corte de
         // «control total» o la resolución automática. Antes que las de la interrupción: en directo, esas se aplican

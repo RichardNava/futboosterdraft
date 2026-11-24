@@ -138,6 +138,13 @@ export function moverJugadores(estado: EstadoMotor): void {
       deseadaX += dividir(dx * rapidez, d);
       deseadaY += dividir(dy * rapidez, d);
     }
+    // Quien va a sacar rodea, hacia el centro del campo, a quien le tapa en línea recta: ahí la separación no tiene
+    // componente lateral y se quedaría parado hasta agotar la espera.
+    if (d > 0 && esp.accion?.tipo === 'saque' && esp.accion.deId === m.id && dx * m.fy === dy * m.fx && dx * m.fx + dy * m.fy < 0) {
+      const lado = dx * (ANCHO / 2 - pos.y) - dy * (LARGO / 2 - pos.x) >= 0 ? 1 : -1;
+      deseadaX -= lado * dividir(dy * rapidez, d);
+      deseadaY += lado * dividir(dx * rapidez, d);
+    }
     // Frena antes de las líneas del campo, con margen, en vez de chocar con ellas.
     const frenada = Math.round(p.frenada * m.escala);
     if (deseadaX > 0) deseadaX = Math.min(deseadaX, isqrt(dividir(frenada * (LARGO - pos.x), dt)));

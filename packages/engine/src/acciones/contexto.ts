@@ -22,6 +22,8 @@ export interface Contexto {
   rng: Rng;
   /** Hubo una interrupción del juego en el último paso (punto de decisión en 2D). */
   interrupcion: boolean;
+  /** Durante un paso de juego: atiende las decisiones pendientes en cuanto se pita una interrupción (002/FR-025a). */
+  alInterrumpir?: () => void;
   /** Si se piden fotogramas: se añaden aquí, con los jugadores en `orden` (research R5). */
   fotogramas?: Fotograma[];
   orden?: readonly number[];
@@ -86,6 +88,7 @@ export function interrumpir(ctx: Contexto, motivo: string, segundos: number, equ
   emitir(ctx, 'interrupcion', equipo, [], { motivo });
   ctx.estado.espacio.paradaPendiente += segundos;
   ctx.interrupcion = true;
+  ctx.alInterrumpir?.();
 }
 
 /** Elige una opción al azar con probabilidad proporcional a su peso (la primera si todos valen 0). */

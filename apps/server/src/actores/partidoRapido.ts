@@ -430,7 +430,8 @@ export async function registrarTramo(c: ControladorPartida, ctx: ContextoComando
       tipo: d.tipo,
       datos: d.datos,
       aplicadaEnTick: tick,
-      minuto: tick === tickAntes ? minutoAntes : minutoMostrable(r.estado.reloj),
+      // Se aplica al pitarse la interrupción, que puede quedar antes del final del tramo.
+      minuto: tick === tickAntes ? minutoAntes : (r.eventos.find((e) => e.tick === tick)?.minuto ?? minutoMostrable(r.estado.reloj)),
     });
   }
   const tramo = {
