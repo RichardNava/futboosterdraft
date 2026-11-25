@@ -77,6 +77,8 @@ export function acumularCansancio(estado: EstadoMotor, equipo: EquipoEstado, seg
   const motivadores = contarMotivadores(equipo);
   for (const j of equipo.jugadores) {
     if (!j.enCampo || !enTramo(estado, j)) continue;
+    const contador = estado.intensidad?.[lineaDe(equipo, j)];
+    if (contador) contador.segundos += segundos;
     fijarEnergia(f, j, j.energia - (ritmoDe(estado, equipo, j, motivadores) * f.reparto.rol * f.gastoPorMinuto * segundos) / 60);
   }
 }
@@ -87,6 +89,8 @@ export function gastarAccion(estado: EstadoMotor, equipo: EquipoEstado, j: Jugad
   const f = estado.parametros.fatiga;
   const coste = indisciplinado(j) ? f.rasgos.indisciplinado.costeAccion : 1;
   const ritmo = ritmoDe(estado, equipo, j, contarMotivadores(equipo));
+  const contador = estado.intensidad?.[lineaDe(equipo, j)];
+  if (contador) contador[accion] += 1;
   fijarEnergia(f, j, j.energia - (ritmo * f.reparto.acciones * f.gastoPorMinuto * f.pesosAccion[accion] * coste) / f.referenciaAcciones[lineaDe(equipo, j)]);
 }
 

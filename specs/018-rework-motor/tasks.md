@@ -173,11 +173,11 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 
 ### Implementation for User Story 4
 
-- [ ] T056 [P] [US4] Crear `tools/balance/src/calibrarFatiga.ts` y su script `calibrar-fatiga` en `tools/balance/package.json`: mide los puntos de intensidad por minuto de tramo por rol con equipos neutros en Bloque medio y repite hasta que cada referencia varíe menos de un 1 %
-- [ ] T057 [P] [US4] Crear `tools/balance/src/checks/motor018.ts` con SC-003 (por rol contra `curvaEnergia` con el descuento real, ±3), SC-004 (Incansable, Fatigado e Indisciplinado ±3, dirección de Motivador), SC-005 (Presión alta contra Bloque medio) y SC-006 (cada táctica frente a la línea base)
-- [ ] T058 [US4] Registrar las comprobaciones de `motor018.ts` en `tools/balance/src/cli.ts`
-- [ ] T059 [US4] Migrar a energía las comprobaciones de cansancio de `tools/balance/src/checks/motor014.ts`, `tools/balance/src/checks/partido.ts` y `tools/balance/src/checks/rasgos.ts`, sin cambiar aún sus umbrales
-- [ ] T060 [US4] Ejecutar `pnpm --filter @fbd/balance calibrar-fatiga -- --n 1000` y fijar `referenciaAcciones`, `pesosAccion` y `umbralSprint` en `packages/domain/src/parametros/index.ts`, subiendo el peso de la presión si SC-005 se queda corto
+- [X] T056 [P] [US4] Crear `tools/balance/src/calibrarFatiga.ts` y su script `calibrar-fatiga` en `tools/balance/package.json`: mide los puntos de intensidad por minuto de tramo por rol con equipos neutros en Bloque medio y repite hasta que cada referencia varíe menos de un 1 %
+- [X] T057 [P] [US4] Crear `tools/balance/src/checks/motor018.ts` con SC-003 (por rol contra `curvaEnergia` con el descuento real, ±3), SC-004 (Incansable, Fatigado e Indisciplinado ±3, dirección de Motivador), SC-005 (Presión alta contra Bloque medio) y SC-006 (cada táctica frente a la línea base; direcciones de la US2 aprobadas en T060)
+- [X] T058 [US4] Registrar las comprobaciones de `motor018.ts` en `tools/balance/src/cli.ts`
+- [X] T059 [US4] Migrar a energía las comprobaciones de cansancio de `tools/balance/src/checks/motor014.ts`, `tools/balance/src/checks/partido.ts` y `tools/balance/src/checks/rasgos.ts`, sin cambiar aún sus umbrales
+- [X] T060 [US4] Ejecutar `pnpm --filter @fbd/balance calibrar-fatiga -- --n 1000` y fijar `referenciaAcciones`, `pesosAccion` y `umbralSprint` en `packages/domain/src/parametros/index.ts`, subiendo el peso de la presión si SC-005 se queda corto
 - [ ] T061 [US4] Medir con `linea-base` y las mismas semillas y con `pnpm balance --n 1000`, y escribir en `specs/018-rework-motor/informe-9.0.0.md` la comparación con la 8.0.0 y, por cada umbral afectado, comprobación, valor anterior, medido, propuesto y motivo
 - [ ] T062 [US4] **Persona:** revisar `specs/018-rework-motor/informe-9.0.0.md`, aprobar o corregir cada umbral y registrar nombre y fecha (SC-007)
 - [ ] T063 [US4] Aplicar **solo** los umbrales aprobados en `tools/balance/src/checks/` y, si se aprobó, los de NPC en `packages/ai/src/perfiles.ts`, hasta que `pnpm balance --n 1000` pase por completo (SC-003 a SC-007)

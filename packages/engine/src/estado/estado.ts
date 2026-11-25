@@ -15,6 +15,7 @@ import {
   type ParametrosEquilibrado,
   type ParametrosMotor,
   type Posicion,
+  type RolFatiga,
   type Tactica,
   versionMayor,
   VERSION_MAYOR_SOPORTADA,
@@ -239,6 +240,19 @@ export interface EstadoMotor {
   incidencias: Incidencia[];
   /** Pérdida en banda de un equipo por las bandas (spec 018, R12): la consume la primera acción de quien recuperó. */
   ventajaBanda?: { lado: Lado; carril: number } | null;
+  /**
+   * Solo para `calibrar-fatiga` (spec 018, T056): si existe, cuenta por rol los segundos de tramo de los jugadores en el
+   * campo y sus acciones intensas que gastan. No cambia el partido.
+   */
+  intensidad?: Record<RolFatiga, ContadorIntensidad>;
+}
+
+export interface ContadorIntensidad {
+  segundos: number;
+  sprint: number;
+  presion: number;
+  regate: number;
+  duelo: number;
 }
 
 export const DURACION_PARTE = 45 * 60;

@@ -140,13 +140,16 @@ describe('cinemática de la 2D (T065, invariante 6)', () => {
       for (const m of pares(muestras)) {
         for (const id of m.enSaque ? m.jugadores.keys() : m.colocando) colocadoEn.set(id, m.tick);
         const frenando = (id: number) => m.tick - (colocadoEn.get(id) ?? -1000) < TICKS_FRENADA;
+        // Van al balón a propósito: el portador, los presionadores y quienes tienen un destino en la jugada (con la presión
+        // recalculada cada 8 ticks, uno puede presionar mientras su compañero va al mismo balón suelto; spec 018, T060).
+        const alBalon = (id: number) => m.enDisputa.has(id) || m.fueraDeForma.has(id);
         const ids = [...m.jugadores.keys()];
         const cerca = new Set<string>();
         for (let i = 0; i < ids.length; i++) {
           for (let j = i + 1; j < ids.length; j++) {
             const p = m.jugadores.get(ids[i]!)!;
             const q = m.jugadores.get(ids[j]!)!;
-            if (frenando(ids[i]!) || frenando(ids[j]!) || (m.enDisputa.has(ids[i]!) && m.enDisputa.has(ids[j]!))) continue;
+            if (frenando(ids[i]!) || frenando(ids[j]!) || (alBalon(ids[i]!) && alBalon(ids[j]!))) continue;
             if ((p.x - q.x) ** 2 + (p.y - q.y) ** 2 < radio2) cerca.add(`${ids[i]}-${ids[j]}`);
           }
         }

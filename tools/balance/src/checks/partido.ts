@@ -21,6 +21,8 @@ const pct = (x: number, n: number) => `${((100 * x) / n).toFixed(1)} %`;
 /** Campos numéricos de las estadísticas (todos menos el histograma de secuencias y los repartos de goles). */
 type Campo = Exclude<keyof EstadisticasEquipo, 'secuencias' | 'golesPorTipo' | 'golesPorZona'>;
 const col = (r: { estadisticasA: EstadisticasEquipo[] }, campo: Campo) => r.estadisticasA.map((e) => e[campo]);
+/** Energía media (0–100) de los jugadores en el campo al final: `cansancioMedio` vale `1 − energía / 100` (spec 018, R1). */
+const energia = (r: { estadisticasA: EstadisticasEquipo[] }) => col(r, 'cansancioMedio').map((c) => 100 * (1 - c));
 
 /** SC-004: con +5 de media, el mejor gana ≥ 60 % y el peor ≥ 10 %. */
 function comprobarSC004(n: number, semilla: number): Comprobacion {
@@ -69,11 +71,11 @@ function comprobarSC006(n: number, semilla: number): Comprobacion[] {
     },
     {
       id: 'SC-006b',
-      descripcion: 'Presión alta: más recuperaciones en campo rival y más cansancio que Bloque medio',
+      descripcion: 'Presión alta: más recuperaciones en campo rival y menos energía al final que Bloque medio',
       ok:
         mayorSignificativo(col(presion, 'recuperacionesCampoRival'), col(base, 'recuperacionesCampoRival')) &&
-        mayorSignificativo(col(presion, 'cansancioMedio'), col(base, 'cansancioMedio')),
-      detalle: `recuperaciones en campo rival ${media(col(presion, 'recuperacionesCampoRival')).toFixed(1)} vs ${media(col(base, 'recuperacionesCampoRival')).toFixed(1)}; cansancio ${media(col(presion, 'cansancioMedio')).toFixed(3)} vs ${media(col(base, 'cansancioMedio')).toFixed(3)}`,
+        mayorSignificativo(energia(base), energia(presion)),
+      detalle: `recuperaciones en campo rival ${media(col(presion, 'recuperacionesCampoRival')).toFixed(1)} vs ${media(col(base, 'recuperacionesCampoRival')).toFixed(1)}; energía al final ${media(energia(presion)).toFixed(1)} vs ${media(energia(base)).toFixed(1)}`,
     },
     {
       id: 'SC-006c',

@@ -850,8 +850,8 @@ const { posesion: _posesionCombinativo, ...COMBINATIVO_V9 } = TACTICAS_V8.combin
 const { cansancio: _cansancioV8, ...BASE_V9 } = PARAMETROS_V8;
 
 /**
- * Parámetros 9.0.0 (spec 018): energía de 0 a 100 y tácticas con ventaja y coste. Los valores de `referenciaAcciones`,
- * `pesosAccion` y `umbralSprint` son provisionales hasta la calibración (T060).
+ * Parámetros 9.0.0 (spec 018): energía de 0 a 100 y tácticas con ventaja y coste. `referenciaAcciones` sale de
+ * `calibrar-fatiga -- --n 1000` con pesos 1 y `umbralSprint` 0,85, aprobados por la persona responsable (T060, `informe-9.0.0.md`).
  */
 export const PARAMETROS_V9 = {
   ...BASE_V9,
@@ -862,7 +862,7 @@ export const PARAMETROS_V9 = {
     reparto: { rol: 0.8, acciones: 0.2 },
     recuperacion: { descanso: 10, preProrroga: 5, descansoProrroga: 5 },
     ritmoRol: { porteria: 0.2, defensa: 0.85, medio: 1.2, ataque: 0.95 },
-    referenciaAcciones: { porteria: 0.5, defensa: 2, medio: 3, ataque: 2.5 },
+    referenciaAcciones: { porteria: 0.161, defensa: 1.072, medio: 1.639, ataque: 1.337 },
     pesosAccion: { sprint: 1, presion: 1, regate: 1, duelo: 1 },
     umbralSprint: 0.85,
     penalizacion: {

@@ -286,7 +286,7 @@ function medias(n: number, semilla: number, base: EquipoPartido, rival: EquipoPa
   const pct = (xs: number[]) => 1 - mediaDe(xs);
   return [
     comprobacion('Fatigado', 'Fatigado (minuto en que empieza a cansarse)', mediaDe(inicio), 46, `${inicio.length} partidos; inicio general ${P.fatiga.inicioMin.parte1}`),
-    comprobacion('Indisciplinado', 'Indisciplinado (cansancio acumulado frente a un compañero)', razon(mediaDe(cansancioFinal.mc2), mediaDe(cansancioFinal.mc1)), P.defectos!.indisciplinado, `${cansancioFinal.mc2.length} muestras al minuto 89`),
+    comprobacion('Indisciplinado', 'Indisciplinado (energía gastada frente a un compañero)', razon(mediaDe(cansancioFinal.mc2), mediaDe(cansancioFinal.mc1)), P.defectos!.indisciplinado, `${cansancioFinal.mc2.length} muestras al minuto 89`),
     comprobacion('Polemico', 'Polémico (bajada de la media del equipo yendo por detrás)', pct(polemico), P.defectos!.polemico, `${polemico.length} muestras`),
     comprobacion('Rebelde', 'Rebelde (bajada de la media del equipo desde el banquillo)', pct(rebeldeFactor), P.defectos!.rebelde, `${rebeldeFactor.length} muestras`),
     comprobacion('Estrellita', 'Estrellita (bajada de su media sin ser el mejor)', pct(estrellita), P.defectos!.estrellita, `${estrellita.length} muestras`),
