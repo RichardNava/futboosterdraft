@@ -158,8 +158,8 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 - [X] T051 [US3] Fijar `PASO_MOVIMIENTO = 4` en `packages/engine/src/espacio/movimiento.ts`, decidir velocidad con `dt = 4`, contar sprints en ese paso y avanzar `velocidad × 2` a los ticks 0 y 2 del ciclo desde `packages/engine/src/espacio/paso.ts`; los fotogramas siguen cada 2 ticks (R7)
 - [X] T052 [US3] Añadir `espacio.claveSaque` (texto, opcional) en `packages/engine/src/estado/estado.ts` y recalcular objetivos durante un saque solo si cambia la clave (motivo, sacador y posición del balón) o la referencia aún no ha alcanzado el balón, en `packages/engine/src/espacio/paso.ts` (R8)
 - [X] T053 [US3] Ajustar a la nueva cadencia `packages/engine/tests/cinematica.test.ts`, `packages/engine/tests/coherenciaBalon.test.ts`, `packages/engine/tests/colocacion.test.ts`, `packages/engine/tests/fotogramas.test.ts` y `packages/engine/tests/saqueCentro.test.ts`, sin relajar lo que protegen
-- [ ] T054 [US3] **Persona:** publicar la rama y anotar en `specs/018-rework-motor/informe-9.0.0.md` el resultado sin fotogramas del job `rendimiento-motor` (Node 22)
-- [ ] T055 [US3] Aplicar la decisión de FR-003 en `packages/engine/src/espacio/paso.ts`: con ≤ 60 ms, mantener `PASO_OBJETIVOS = 4`; con más, pasar a 8 y repetir T054; si sigue por encima, **parar** hasta que decida la persona responsable
+- [X] T054 [US3] **Persona:** publicar la rama y anotar en `specs/018-rework-motor/informe-9.0.0.md` el resultado sin fotogramas del job `rendimiento-motor` (Node 22)
+- [X] T055 [US3] Aplicar la decisión de FR-003 en `packages/engine/src/espacio/paso.ts`: con ≤ 60 ms, mantener `PASO_OBJETIVOS = 4`; con más, pasar a 8 y repetir T054; si sigue por encima, **parar** hasta que decida la persona responsable
 
 **Checkpoint (puerta de la etapa 2b)**: cadencia fijada. Ningún cambio de resultados entra después de la calibración.
 

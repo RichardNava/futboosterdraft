@@ -183,7 +183,8 @@ describe('cinemática de la 2D (T065, invariante 6)', () => {
     const [sbMin, sbMax] = esp.separacionLineasSinBalon;
     let dentro = 0;
     let total = 0;
-    for (const { muestras } of partidos.slice(0, 10)) {
+    // Los 50 partidos: con objetivos cada 8 ticks (T055), 10 sueltos van del 93,9 % al 97,3 % (`informe-9.0.0.md`).
+    for (const { muestras } of partidos) {
       let ultimoCambio = -1000;
       let posesion = muestras[0]?.posesion;
       const ultimaLlegada = { local: -1000, visitante: -1000 };

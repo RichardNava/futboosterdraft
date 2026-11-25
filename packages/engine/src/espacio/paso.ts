@@ -9,8 +9,11 @@ import { moverBalon } from './balon';
 import { calcularObjetivos } from './objetivos';
 import { avanzarMedioPaso, moverJugadores, PASO_MOVIMIENTO } from './movimiento';
 
-/** Ticks entre dos cálculos de los objetivos de forma (cambian despacio: siguen al bloque y al balón). */
-const PASO_OBJETIVOS = 4;
+/**
+ * Ticks entre dos cálculos de los objetivos de forma (cambian despacio: siguen al bloque y al balón). 8 y no 4 porque con
+ * 4 el partido costaba 90,4 ms en CI (FR-003, T055; `informe-9.0.0.md`).
+ */
+const PASO_OBJETIVOS = 8;
 
 /**
  * Si toca recalcular los objetivos (spec 018, R8). Durante un saque, solo si cambia su clave (motivo, sacador y posición
