@@ -35,7 +35,16 @@ function fijarEnergia(f: ParametrosFatiga, j: JugadorEnPartido, energia: number)
 
 const indisciplinado = (j: JugadorEnPartido) => j.jugador.defectos.length > 0 && tiene(j, 'Indisciplinado');
 
+const motivadoresPorEquipo = new WeakMap<EquipoEstado, boolean>();
+
 function contarMotivadores(equipo: EquipoEstado): number {
+  // Se llama en cada tick: la plantilla (y sus rasgos) no cambia durante el partido.
+  let hay = motivadoresPorEquipo.get(equipo);
+  if (hay === undefined) {
+    hay = equipo.jugadores.some((o) => o.jugador.virtudes.includes('Motivador'));
+    motivadoresPorEquipo.set(equipo, hay);
+  }
+  if (!hay) return 0;
   let n = 0;
   for (const o of equipo.jugadores) if (o.enCampo && o.jugador.virtudes.includes('Motivador')) n++;
   return n;

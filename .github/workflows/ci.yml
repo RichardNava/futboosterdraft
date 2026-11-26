@@ -40,8 +40,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @fbd/engine bench
-      # Umbral de FR-028a, revisado en la spec 005: ≤ 120 ms por partido sin fotogramas, con métricas por jugador
-      # (spec 003) y en resolverResto desde el minuto 0. El motor mide unos 80 ms en CI; el paso bloquea.
+      # Umbral de 018/FR-039 (sustituye a 002/FR-028a): ≤ 60 ms por partido sin fotogramas, con métricas por jugador y
+      # en resolverResto desde el minuto 0, y ≤ 80 ms con fotogramas. El paso bloquea (FR-040).
       - run: pnpm --filter @fbd/balance umbral-motor
 
   # Pruebas de diseño de la spec 004 (FR-040): contraste y reglas WCAG 2.1 AA con axe, desplazamiento horizontal,

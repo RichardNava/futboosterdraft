@@ -57,7 +57,16 @@ const ANTICIPACION = PASO_MOVIMIENTO;
  */
 function separar(moviles: Movil[], radio: number): void {
   const alcance = radio * 2;
-  moviles.sort((a, b) => a.px - b.px || a.id - b.id);
+  // Inserción (ids únicos: el mismo orden que `sort`), más barata que `sort` con 22 elementos.
+  for (let i = 1; i < moviles.length; i++) {
+    const m = moviles[i]!;
+    let k = i - 1;
+    while (k >= 0 && (moviles[k]!.px > m.px || (moviles[k]!.px === m.px && moviles[k]!.id > m.id))) {
+      moviles[k + 1] = moviles[k]!;
+      k--;
+    }
+    moviles[k + 1] = m;
+  }
   for (let i = 0; i < moviles.length; i++) {
     const a = moviles[i]!;
     for (let k = i + 1; k < moviles.length; k++) {
@@ -94,7 +103,7 @@ export function moverJugadores(estado: EstadoMotor): void {
   // Spec 015 (balones fuera): en el córner todos se colocan más deprisa, a la escala del reloj (acelerar y frenar también),
   // y en el saque de banda, el que saca.
   const colocacion = estado.parametros.fueraDeCampo.velocidadColocacion;
-  const escalaDe = (id: number) => (motivo === 'corner' || (motivo === 'banda' && esp.accion?.deId === id) ? colocacion : 1);
+  const sacadorBanda = motivo === 'banda' ? esp.accion?.deId : undefined;
   for (const lado of ['local', 'visitante'] as const) {
     const equipo = estado.equipos[lado];
     // La bonificación de equipo depende solo de la demarcación: una vez por equipo y paso.
@@ -118,7 +127,7 @@ export function moverJugadores(estado: EstadoMotor): void {
       if (estado.balon.portadorId === j.id && estado.balon.posesion === lado) vmax = Math.round(vmax * p.factorVelocidadConBalon);
       // El que va a sacar una reanudación acude a la carrera (spec 014, FR-001): el saque espera a que llegue.
       if (esp.accion?.tipo === 'saque' && esp.accion.deId === j.id) vmax = p.velocidadJugadorMax;
-      const escala = escalaDe(j.id);
+      const escala = motivo === 'corner' || sacadorBanda === j.id ? colocacion : 1;
       if (escala !== 1) vmax = Math.round(vmax * escala);
       moviles.push({ id: j.id, j, equipo, pos, vmax, escala, objetivo, px: pos.x + pos.vx * ANTICIPACION, py: pos.y + pos.vy * ANTICIPACION, fx: 0, fy: 0 });
     }
@@ -205,5 +214,11 @@ function avanzarPosicion(pos: PosicionMovil): void {
 
 /** Segunda mitad del paso: avanza con la velocidad ya decidida, sin recalcular nada. */
 export function avanzarMedioPaso(estado: EstadoMotor): void {
-  for (const pos of Object.values(estado.espacio.jugadores)) if (pos.vx !== 0 || pos.vy !== 0) avanzarPosicion(pos);
+  const posiciones = estado.espacio.jugadores;
+  for (const equipo of [estado.equipos.local, estado.equipos.visitante]) {
+    for (const j of equipo.jugadores) {
+      const pos = posiciones[j.id];
+      if (pos && (pos.vx !== 0 || pos.vy !== 0)) avanzarPosicion(pos);
+    }
+  }
 }

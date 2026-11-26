@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "apps/server/tests/integration/partido-rapido.test.ts": {
-    "mtime": 1794524229.8745077,
-    "seen": 1794524882.0772388,
-    "ast_hash": "272d2772863535273df5e846ce1544fc",
+    "mtime": 1795217290.2389443,
+    "seen": 1795220698.8457115,
+    "ast_hash": "1d9abeb9afa31d89a9d60c64e154df6b",
     "semantic_hash": ""
   },
   "apps/server/tests/integration/reproduccion.test.ts": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/CartaJugador.tsx": {
-    "mtime": 1795199219.0639808,
-    "seen": 1795201841.1460598,
-    "ast_hash": "856edd3dab72889baebb7f467b591d79",
+    "mtime": 1795220459.66448,
+    "seen": 1795220698.853237,
+    "ast_hash": "5f0c8aa7c44f963d33b8fe7054861c91",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/DistintivoBaja.tsx": {
@@ -2832,9 +2832,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/componentes/NombreRecortado.tsx": {
-    "mtime": 1794953235.173627,
-    "seen": 1794955306.5281322,
-    "ast_hash": "49f2e4fa6490b2aeefe3881d351f0660",
+    "mtime": 1795220459.6639202,
+    "seen": 1795220698.8567708,
+    "ast_hash": "d2b4ee8b2dd56827d2235042990587be",
     "semantic_hash": ""
   },
   "apps/web/src/componentes/pestanas.ts": {
@@ -4164,9 +4164,9 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/tasks.md": {
-    "mtime": 1795215311.0733151,
-    "seen": 1795215352.1571093,
-    "ast_hash": "91621d4862c757b401da0af366824d1a",
+    "mtime": 1795220644.1663785,
+    "seen": 1795220698.9430573,
+    "ast_hash": "09c1cf52cd35ce588ff178c637b5b151",
     "semantic_hash": ""
   },
   "apps/web/public/banderas/ARG.svg": {
@@ -4950,9 +4950,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1795215305.4878168,
-    "seen": 1795215352.1432025,
-    "ast_hash": "db0d60bc6e4995944309a483150f0939",
+    "mtime": 1795220670.7096193,
+    "seen": 1795220698.9331007,
+    "ast_hash": "9bd0c868a60a5dab31bf3dd564835513",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -8502,9 +8502,9 @@
     "semantic_hash": ""
   },
   "apps/web/tests/e2e/control-total.spec.ts": {
-    "mtime": 1795154545.1895764,
-    "seen": 1795196316.1246579,
-    "ast_hash": "c53abbfc3ed1855b8117cf260d024694",
+    "mtime": 1795220469.6804564,
+    "seen": 1795220698.8693113,
+    "ast_hash": "1bd7f7a1583e994af6a355d272444aeb",
     "semantic_hash": ""
   },
   "apps/web/tests/unit/celebracion.test.ts": {
@@ -8634,9 +8634,9 @@
     "semantic_hash": ""
   },
   "specs/012-mejoras-simulacion-2d/tasks.md": {
-    "mtime": 1795215311.0772524,
-    "seen": 1795215352.16773,
-    "ast_hash": "7c9769464843a759217c7efaff98f7af",
+    "mtime": 1795220644.216318,
+    "seen": 1795220698.9522507,
+    "ast_hash": "b7370c9b901489cb54fc3f3908298b6e",
     "semantic_hash": ""
   },
   "apps/web/public/cosmeticos/escudos/escudo-aguila-estrella-512.webp": {
@@ -9228,9 +9228,9 @@
     "semantic_hash": ""
   },
   "specs/013-mejora-cartas-rareza-draft/tasks.md": {
-    "mtime": 1795215311.0782614,
-    "seen": 1795215352.16887,
-    "ast_hash": "2d557c2dc8bb6a63c19bab18805cbdeb",
+    "mtime": 1795220644.218524,
+    "seen": 1795220698.9533527,
+    "ast_hash": "ee6831c0f306a77806596725784e600f",
     "semantic_hash": ""
   },
   "apps/web/public/cartas/fondos/jugadores/1.webp": {
@@ -12984,9 +12984,9 @@
     "semantic_hash": ""
   },
   "specs/006-preparacion-bd-cartas/checklists/validacion.md": {
-    "mtime": 1795197752.14623,
-    "seen": 1795198473.6684983,
-    "ast_hash": "ba88c720d09a48ee408acae1eb4b5a97",
+    "mtime": 1795220644.2193182,
+    "seen": 1795220698.942095,
+    "ast_hash": "d265e7cfd9012050188957debcc14fb8",
     "semantic_hash": ""
   },
   "specs/007-retoques-visuales/checklists/validacion.md": {
@@ -13002,9 +13002,9 @@
     "semantic_hash": ""
   },
   "docs/recorrido-manual.md": {
-    "mtime": 1795215299.0921988,
-    "seen": 1795215352.144467,
-    "ast_hash": "e5bb032e770001c60cca4eb8b4fd2a72",
+    "mtime": 1795220644.2193182,
+    "seen": 1795220698.9339557,
+    "ast_hash": "b9d898d6f135b765b91ac2f4d98141aa",
     "semantic_hash": ""
   }
 }

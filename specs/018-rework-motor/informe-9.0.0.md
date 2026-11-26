@@ -198,3 +198,46 @@ Parámetros cambiados en T062: `tacticas.catenaccio.defensiva` 0,5 → 2,5 y `ta
 ### Resultado (T063)
 
 `pnpm balance --n 1000`: **79 de 79** en 7755 s (dos menos que en la primera medida, por las retiradas de 014/SC-006 y SC-006b).
+
+## Optimización (T066 a T068; FR-039, FR-040, FR-045)
+
+Medido en local (el mismo equipo que en T055, Node 24) con `umbral-motor`. Tras cada cambio del motor se pasó la huella 018 (`equivalencia018`), y al final `pnpm test:equivalence` completo: 134 de 134, idéntico.
+
+### Cambios en el motor (sin cambiar resultados)
+
+| Fichero | Cambio |
+|---|---|
+| `espacio/movimiento.ts` | La separación ordena por inserción (mismo orden: los ids son únicos) en lugar de `sort` con una función nueva en cada paso; el medio paso recorre las plantillas en lugar de `Object.values`; sin cierre `escalaDe` en cada paso |
+| `espacio/objetivos.ts` | Línea, papel de llegada e intensidad de cada jugador guardados mientras no cambien su casilla, su posición o la formación; sin cierres en cada cálculo |
+| `modificadores/defectos.ts` | `actualizarMalestar` (en cada tick) salta los equipos sin Polémico ni Rebelde en la plantilla |
+| `modificadores/cansancio.ts` | `contarMotivadores` (en cada tick) devuelve 0 sin recorrer el once si la plantilla no tiene ningún Motivador |
+
+### Ids de los equipos de la medida
+
+`umbral-motor` usaba cartas sintéticas con ids desde 1 000 000. Con ids tan altos, V8 guarda en modo diccionario los registros del motor indexados por id (`espacio.jugadores`, los objetivos y los destinos), y cada acceso cuesta más. En el servidor los ids son los del catálogo (de 1 a 396) y no pasa. Con los mismos equipos y el motor ya optimizado: 69,1 ms con ids desde 1 000 000 y 57,4 ms con ids desde 500.
+
+Desde T066, `umbral-motor` renumera los dos equipos desde 1 y desde 101 (`clonar(…, desde)` en `tools/balance/src/equipos.ts`). Si el catálogo pasa de unos 1000 ids, hay que volver a medir con los suyos. El bench de vitest reutiliza los mismos equipos en cada partido por la misma razón.
+
+### Resultado
+
+| Caso | Antes de T066 | Motor optimizado, ids desde 1 000 000 | Motor optimizado, ids del catálogo (2 tandas de 50) | Máximo (T068) |
+|---|---:|---:|---:|---:|
+| **Partido sin fotogramas** | 85,4 ms | 69,1 ms | **53,1 / 53,9 ms** | 60 ms |
+| `resolverResto` desde el minuto 0 | 89,2 ms | 70,2 ms | 55,4 / 54,7 ms | 60 ms |
+| Partido con métricas | 80,4 ms | 65,3 ms | 51,4 / 51,8 ms | 60 ms |
+| Partido con fotogramas | 90,6 ms | 73,1 ms | 57,5 / 57,3 ms | 80 ms |
+
+T068 activa los cuatro máximos por defecto, y el caso con fotogramas también bloquea. El margen en local es de unos 5 ms sobre 60. En T055 el CI y este equipo midieron casi lo mismo (80,7 frente a unos 80 ms), pero el resultado oficial es el del job `rendimiento-motor` (T069).
+
+`pnpm --filter @fbd/engine bench` solo informa: dentro de vitest cada partido cuesta unos 20 ms más que fuera (los mismos equipos: 76 frente a 54 ms). `resolverResto` no está en el bench porque `@fbd/ai` depende de `@fbd/engine`, y traerlo crearía un ciclo entre paquetes (T067).
+
+## Comprobación final (T085)
+
+A 2026-11-26, en local con los cambios de T066 a T068:
+
+- `pnpm lint` y `pnpm typecheck`: sin errores.
+- `pnpm test`: 1425 de 1425.
+- `pnpm test:integration`: 283 de 283.
+- `pnpm test:equivalence`: 134 de 134.
+- `umbral-motor`: dentro de los cuatro máximos (ver «Optimización»).
+- `pnpm balance --n 1000`: **79 de 79** en 6260 s (7755 s en T063, antes de optimizar).

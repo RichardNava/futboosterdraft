@@ -53,6 +53,18 @@ export function equipoConMultiplicadores(equipo: EquipoEstado): boolean {
   return v;
 }
 
+const malestarPorEquipo = new WeakMap<EquipoEstado, boolean>();
+
+/** Si la plantilla tiene algún Polémico o Rebelde (los rasgos no cambian durante el partido). */
+function equipoConMalestar(equipo: EquipoEstado): boolean {
+  let v = malestarPorEquipo.get(equipo);
+  if (v === undefined) {
+    v = equipo.jugadores.some((j) => conDefectos(j) && (tiene(j, 'Polemico') || tiene(j, 'Rebelde')));
+    malestarPorEquipo.set(equipo, v);
+  }
+  return v;
+}
+
 /** Polémico en el campo con su equipo perdiendo (el primero, si hay varios). */
 function polemicoActivo(estado: EstadoMotor, equipo: EquipoEstado): JugadorEnPartido | undefined {
   if (parametrosDefectos(estado).polemico <= 0) return undefined;
@@ -157,6 +169,8 @@ export function actualizarMalestar(ctx: Contexto): void {
   const e = ctx.estado;
   for (const lado of ['local', 'visitante'] as const) {
     const equipo = e.equipos[lado];
+    // Se llama en cada tick: sin Polémico ni Rebelde en la plantilla no hay nada que avisar.
+    if (!equipoConMalestar(equipo)) continue;
     const activos = e.malestar[lado];
     for (const [defecto, activo] of [
       ['Polemico', polemicoActivo(e, equipo)],

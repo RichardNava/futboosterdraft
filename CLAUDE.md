@@ -4,7 +4,7 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 
 - Principios del proyecto: [.specify/memory/constitution.md](.specify/memory/constitution.md)
 - Iniciativas, prioridades y estado de cada spec: [ROADMAP.md](ROADMAP.md)
-- Especificación en curso: ninguna. La última, [specs/016-expansiones-reales/](specs/016-expansiones-reales/) (cuatro expansiones de 24 jugadores reales), se cerró el 2026-11-20
+- Especificación en curso: [specs/018-rework-motor/](specs/018-rework-motor/) (motor 9.0.0: fatiga, tácticas y rendimiento). La última cerrada, [specs/016-expansiones-reales/](specs/016-expansiones-reales/) (cuatro expansiones de 24 jugadores reales), el 2026-11-20
 - Datos del catálogo: `data/core-real.json` (Core) y `data/expansiones-reales.json` (cartas de las expansiones), `data/colecciones.json` (pertenencia, número y sobre de regalo de cada expansión) y `data/cosmeticos.json` (escudos, sobres y packs); `pnpm seed` los carga todos y retira las colecciones de prueba si quedan
 - Las 300 cartas de Core son jugadores reales y su única fuente es `data/core-real.json`; `pnpm --filter @fbd/fixtures core-real` lo valida (solo retratos propios, en `/cartas/retratos-propios/`) y regenera `specs/008-datos-reales-core/sumario.md`
 - Expansiones (spec 016): `pnpm --filter @fbd/fixtures expansiones -- [--origen <dir>] [--solo A|B|C|D]` genera retratos, fondos, iconos, carteles y el icono del fragmento desde el material de origen (ya retirado del repo: las listas y rarezas están en `specs/016-expansiones-reales/fuentes/`), valida las expansiones y escribe `specs/016-expansiones-reales/sumario.md`; en el código, una expansión es una colección de pago (`coleccion`)
@@ -16,6 +16,7 @@ Juego de fútbol manager online basado en un draft de sobres de cartas de jugado
 - Sonidos (acción → efecto, editable): [docs/juego/sonidos.md](docs/juego/sonidos.md)
 - Virtudes y defectos: [docs/juego/virtudes-y-defectos.md](docs/juego/virtudes-y-defectos.md) (generado; `pnpm --filter @fbd/domain rasgos:doc`)
 - Enfrentamientos del motor (qué stat contra cuál en cada acción y con qué probabilidad): [docs/juego/enfrentamientos.md](docs/juego/enfrentamientos.md) (a mano; revisar si cambia el motor)
+- Medidas del motor (spec 018): `pnpm --filter @fbd/balance linea-base -- --n 1000 --salida <fichero.md>` compara cada táctica con un rival neutro (goles, victorias, energía por rol al 45', 75' y 90' y coste por partido); `pnpm --filter @fbd/balance calibrar-fatiga -- --n 1000` mide las referencias de acciones intensas por rol. La huella `packages/engine/tests/fixtures/huella-018.json` no se regenera: si una optimización la cambia, se descarta
 
 ## Convenciones
 

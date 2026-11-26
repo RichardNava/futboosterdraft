@@ -192,11 +192,11 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 
 **Independent Test**: `umbral-motor` pasa con los cuatro casos y una reproducción 2D se ve continua a 60 fps.
 
-- [ ] T064 [US3] Crear `packages/engine/tests/fixtures/generarHuella018.ts` con los equipos de `fixtures/huella014.ts` y generar **una sola vez** `packages/engine/tests/fixtures/huella-018.json` (100 partidos y 20 drafts)
-- [ ] T065 [US3] Crear `packages/engine/tests/equivalencia018.test.ts` contra `huella-018.json`, incluido en `pnpm test:equivalence` (SC-009)
-- [ ] T066 [US3] Optimizar los puntos calientes medidos en `packages/engine/src/espacio/movimiento.ts`, `packages/engine/src/espacio/objetivos.ts` y `packages/engine/src/espacio/paso.ts`, comprobando `pnpm test:equivalence` idéntico tras **cada** cambio; si una mejora altera la huella, se descarta (FR-045)
-- [ ] T067 [P] [US3] Añadir a `packages/engine/bench/partido.bench.ts` el caso de `resolverResto` si `@fbd/ai` se importa sin ciclo; si no, queda solo en `umbral-motor`
-- [ ] T068 [US3] Activar como máximos por defecto 60, 80, 60 y 60 ms en `tools/balance/src/umbralMotor.ts`, con bloqueo también del caso con fotogramas (FR-039, FR-040)
+- [X] T064 [US3] Crear `packages/engine/tests/fixtures/generarHuella018.ts` con los equipos de `fixtures/huella014.ts` y generar **una sola vez** `packages/engine/tests/fixtures/huella-018.json` (100 partidos y 20 drafts)
+- [X] T065 [US3] Crear `packages/engine/tests/equivalencia018.test.ts` contra `huella-018.json`, incluido en `pnpm test:equivalence` (SC-009)
+- [X] T066 [US3] Optimizar los puntos calientes medidos en `packages/engine/src/espacio/movimiento.ts`, `packages/engine/src/espacio/objetivos.ts` y `packages/engine/src/espacio/paso.ts`, comprobando `pnpm test:equivalence` idéntico tras **cada** cambio; si una mejora altera la huella, se descarta (FR-045)
+- [X] T067 (no: `@fbd/ai` depende de `@fbd/engine`; `resolverResto` queda en `umbral-motor`) [P] [US3] Añadir a `packages/engine/bench/partido.bench.ts` el caso de `resolverResto` si `@fbd/ai` se importa sin ciclo; si no, queda solo en `umbral-motor`
+- [X] T068 [US3] Activar como máximos por defecto 60, 80, 60 y 60 ms en `tools/balance/src/umbralMotor.ts`, con bloqueo también del caso con fotogramas (FR-039, FR-040)
 - [ ] T069 [US3] **Persona:** publicar la rama y confirmar en verde el job `rendimiento-motor` de `.github/workflows/ci.yml` con Node 22 (SC-008)
 - [ ] T070 [US3] Actualizar al nuevo objetivo y marcar la T086 de la spec 002 en `specs/002-mejoras-mvp/tasks.md` cuando T069 pase (FR-053)
 - [ ] T071 [US3] **Persona:** reproducir un partido completo en `apps/web/src/pantallas/Partido2D.tsx` en el equipo de referencia y confirmar 60 fps, sin tirones ni desajustes entre balón y receptor (FR-044, SC-010)
@@ -234,13 +234,13 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 
 ## Fase 9: Pulido y cierre (Etapa 6)
 
-- [ ] T080 [P] Actualizar `docs/juego/enfrentamientos.md` a la 9.0.0 con el efecto medido de la fatiga y de cada táctica (FR-051, SC-013)
-- [ ] T081 [P] Anotar como sustituidos 001/FR-036 y 014/SC-006, revisar en la 014 FR-014, FR-015, FR-018, FR-019, los escenarios 1 y 2 de la US4, los casos límite y la asunción de energía, y anotar la ampliación de 013/FR-033, en `specs/001-draft-manager-mvp/spec.md`, `specs/014-mejoras-motor-navegacion-refactor/spec.md` y `specs/013-mejora-cartas-rareza-draft/spec.md` (FR-023, FR-048)
-- [ ] T082 [P] Sustituir los objetivos de rendimiento y actualizar el estado de INI-06, INI-07 e INI-16 en `ROADMAP.md`, y actualizar FR-028a en `specs/002-mejoras-mvp/spec.md` (FR-039)
-- [ ] T083 [P] Actualizar en `CLAUDE.md` la especificación en curso y añadir los comandos `linea-base` y `calibrar-fatiga`
+- [X] T080 [P] Actualizar `docs/juego/enfrentamientos.md` a la 9.0.0 con el efecto medido de la fatiga y de cada táctica (FR-051, SC-013)
+- [X] T081 [P] Anotar como sustituidos 001/FR-036 y 014/SC-006, revisar en la 014 FR-014, FR-015, FR-018, FR-019, los escenarios 1 y 2 de la US4, los casos límite y la asunción de energía, y anotar la ampliación de 013/FR-033, en `specs/001-draft-manager-mvp/spec.md`, `specs/014-mejoras-motor-navegacion-refactor/spec.md` y `specs/013-mejora-cartas-rareza-draft/spec.md` (FR-023, FR-048)
+- [X] T082 [P] Sustituir los objetivos de rendimiento y actualizar el estado de INI-06, INI-07 e INI-16 en `ROADMAP.md`, y actualizar FR-028a en `specs/002-mejoras-mvp/spec.md` (FR-039)
+- [X] T083 [P] Actualizar en `CLAUDE.md` la especificación en curso y añadir los comandos `linea-base` y `calibrar-fatiga`
 - [ ] T084 **Persona:** ejecutar `k6 run tools/load/beta-100.js` en el equipo B de 8 núcleos y registrar en `specs/018-rework-motor/informe-9.0.0.md` la CPU y la apertura p95 frente a la referencia de 94 % y unos 15 s (FR-052, SC-012)
-- [ ] T085 Ejecutar la comprobación final de `specs/018-rework-motor/quickstart.md`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:equivalence`, `umbral-motor` y `pnpm balance --n 1000`
-- [ ] T086 Ejecutar `graphify update .` para actualizar `graphify-out/` con el código final
+- [X] T085 Ejecutar la comprobación final de `specs/018-rework-motor/quickstart.md`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:equivalence`, `umbral-motor` y `pnpm balance --n 1000`
+- [X] T086 Ejecutar `graphify update .` para actualizar `graphify-out/` con el código final
 
 ---
 

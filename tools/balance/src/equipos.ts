@@ -143,9 +143,13 @@ export function conTresSustituidos(equipo: EquipoPartido, de: Demarcacion, demar
   return { ...equipo, titulares, lanzadores: proponerLanzadores(titulares.map((t) => t.jugador)) };
 }
 
-/** Clona un equipo con ids nuevos (para enfrentar un equipo contra sí mismo). */
-export function clonar(equipo: EquipoPartido, participanteId: string): EquipoPartido {
-  const nuevo = (j: Jugador): Jugador => ({ ...j, id: siguienteId++ });
+/**
+ * Clona un equipo con ids nuevos (para enfrentar un equipo contra sí mismo). Con `desde`, los ids empiezan ahí en lugar
+ * de en el contador de las cartas sintéticas.
+ */
+export function clonar(equipo: EquipoPartido, participanteId: string, desde?: number): EquipoPartido {
+  let propio = desde;
+  const nuevo = (j: Jugador): Jugador => ({ ...j, id: propio === undefined ? siguienteId++ : propio++ });
   const titulares = equipo.titulares.map((t) => ({ ...t, jugador: nuevo(t.jugador) }));
   return { ...equipo, participanteId, titulares, suplentes: equipo.suplentes.map(nuevo), lanzadores: proponerLanzadores(titulares.map((t) => t.jugador)) };
 }

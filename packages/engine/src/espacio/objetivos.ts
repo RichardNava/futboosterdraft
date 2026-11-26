@@ -75,6 +75,36 @@ function intensidadLlegada(estado: EstadoMotor, j: EquipoEstado['jugadores'][num
   return Math.min(1200, Math.max(300, 1000 + dividir((stat - 70) * 1000, estado.parametros.espacio.llegadaAlArea.pendienteStat)));
 }
 
+interface FijosForma {
+  formacion: string;
+  casilla: string | null;
+  posicion: string | undefined;
+  linea: number;
+  papel: PapelLlegada | null;
+  intensidad: number;
+}
+
+/** Línea, papel e intensidad de llegada de cada jugador: solo cambian con su casilla, su posición o la formación. */
+const fijosForma = new WeakMap<EquipoEstado['jugadores'][number], FijosForma>();
+
+function fijosDe(estado: EstadoMotor, equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): FijosForma {
+  let f = fijosForma.get(j);
+  if (!f || f.formacion !== equipo.formacion || f.casilla !== j.casillaId || f.posicion !== j.posicion) {
+    f = {
+      formacion: equipo.formacion,
+      casilla: j.casillaId,
+      posicion: j.posicion,
+      linea: CODIGO_LINEA[lineaDe(equipo, j)],
+      papel: papelSegundaLinea(equipo, j),
+      intensidad: intensidadLlegada(estado, j),
+    };
+    fijosForma.set(j, f);
+  }
+  return f;
+}
+
+const mediaDe = (suma: number[], cuenta: number[], l: number) => (cuenta[l]! > 0 ? dividir(suma[l]!, cuenta[l]!) : null);
+
 /**
  * Objetivos de un equipo por su forma, escritos en `salida` en coordenadas absolutas. `xLinea` (coordenadas del equipo):
  * la línea del fuera de juego que defiende, para el liderazgo del defensa (spec 015, FR-015).
@@ -111,7 +141,8 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   const sumaAncla = [0, 0, 0];
   for (const j of equipo.jugadores) {
     if (!j.enCampo) continue;
-    const linea = CODIGO_LINEA[lineaDe(equipo, j)];
+    const fijos = fijosDe(estado, equipo, j);
+    const linea = fijos.linea;
     const ax = j.ancla ? j.ancla.x * 10 : 4500;
     const ay = j.ancla ? j.ancla.y * 10 : CENTRO_Y;
     let x = ax + por(bx - LARGO / 2, largo[linea]!);
@@ -130,8 +161,8 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
     ids.push(j.id);
     anclasX.push(ax);
     anclasY.push(ay);
-    papeles.push(papelSegundaLinea(equipo, j));
-    intensidades.push(intensidadLlegada(estado, j));
+    papeles.push(fijos.papel);
+    intensidades.push(fijos.intensidad);
     xs.push(x);
     ys.push(y);
     lineas.push(linea);
@@ -145,10 +176,9 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   const [minimo, maximo] = conBalon ? p.separacionLineasConBalon : p.separacionLineasSinBalon;
   const min = minimo + MARGEN_LINEAS;
   const max = maximo - MARGEN_LINEAS;
-  const media = (l: number) => (cuenta[l]! > 0 ? dividir(suma[l]!, cuenta[l]!) : null);
-  const md = media(LINEA_DEFENSA);
-  const mm = media(LINEA_MEDIO);
-  const ma = media(LINEA_ATAQUE);
+  const md = mediaDe(suma, cuenta, LINEA_DEFENSA);
+  const mm = mediaDe(suma, cuenta, LINEA_MEDIO);
+  const ma = mediaDe(suma, cuenta, LINEA_ATAQUE);
   // Las otras líneas se acotan respecto a donde está el medio de verdad (los que están en la forma, cada
   // uno descontando su escalón dentro de la línea), no a donde va: el bloque se mueve junto aunque el medio
   // aún esté llegando a su sitio.
@@ -197,8 +227,10 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   // Llegada al área (H11): con el balón en el último tercio o, ya en campo rival, mientras un compañero progresa
   // conduciendo o regateando. Cada uno llega con la intensidad de su desmarque o su posicionamiento.
   const accion = estado.espacio.accion;
-  const progresando =
-    accion !== null && (accion.tipo === 'conduccion' || accion.tipo === 'regate') && equipo.jugadores.some((j) => j.id === accion.deId);
+  let progresando = false;
+  if (accion !== null && (accion.tipo === 'conduccion' || accion.tipo === 'regate')) {
+    for (const j of equipo.jugadores) if (j.id === accion.deId) progresando = true;
+  }
   const llegada = conBalon && (bx >= ULTIMO_TERCIO || (progresando && bx >= p.llegadaAlArea.xProgresion)) ? p.llegadaAlArea : null;
   const ladoBalon = by - CENTRO_Y;
   const xInterior = estado.parametros.segundaLinea.xInterior;
