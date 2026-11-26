@@ -340,7 +340,8 @@ export function gruposMotor015(): GrupoComprobaciones[] {
     { ids: ['015/SC-002a'], serie: 'sintetica', ejecutar: (o) => [comprobarSC002a(o.n, o.seed)] },
     { ids: ['015/SC-002b'], serie: 'sintetica', ejecutar: (o) => [comprobarSC002b(o.n, o.seed)] },
     { ids: ['015/SC-003'], serie: 'sintetica', ejecutar: (o) => [comprobarSC003(o.n, o.seed)] },
-    { ids: ['015/SC-004'], serie: 'sintetica', ejecutar: (o) => [comprobarSC004(o.n, o.seed)] },
+    // El doble de partidos (spec 018, T062): con la 9.0.0 los pases recibidos suben +0,25 (8.0.0: +0,32) y con `--n` no llega a 2 errores estándar.
+    { ids: ['015/SC-004'], serie: 'sintetica', ejecutar: (o) => [comprobarSC004(2 * o.n, o.seed)] },
     { ids: ['015/SC-005'], serie: 'sintetica', ejecutar: (o) => [comprobarSC005(o.n, o.seed)] },
     { ids: ['015/SC-006a', '015/SC-006b'], serie: 'sintetica', ejecutar: (o) => comprobarSC006(o.n, o.seed) },
     { ids: ['015/SC-014'], serie: 'sintetica', ejecutar: (o) => [comprobarSC014(o.n, o.seed)] },

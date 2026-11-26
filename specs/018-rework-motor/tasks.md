@@ -178,9 +178,9 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 - [X] T058 [US4] Registrar las comprobaciones de `motor018.ts` en `tools/balance/src/cli.ts`
 - [X] T059 [US4] Migrar a energía las comprobaciones de cansancio de `tools/balance/src/checks/motor014.ts`, `tools/balance/src/checks/partido.ts` y `tools/balance/src/checks/rasgos.ts`, sin cambiar aún sus umbrales
 - [X] T060 [US4] Ejecutar `pnpm --filter @fbd/balance calibrar-fatiga -- --n 1000` y fijar `referenciaAcciones`, `pesosAccion` y `umbralSprint` en `packages/domain/src/parametros/index.ts`, subiendo el peso de la presión si SC-005 se queda corto
-- [ ] T061 [US4] Medir con `linea-base` y las mismas semillas y con `pnpm balance --n 1000`, y escribir en `specs/018-rework-motor/informe-9.0.0.md` la comparación con la 8.0.0 y, por cada umbral afectado, comprobación, valor anterior, medido, propuesto y motivo
-- [ ] T062 [US4] **Persona:** revisar `specs/018-rework-motor/informe-9.0.0.md`, aprobar o corregir cada umbral y registrar nombre y fecha (SC-007)
-- [ ] T063 [US4] Aplicar **solo** los umbrales aprobados en `tools/balance/src/checks/` y, si se aprobó, los de NPC en `packages/ai/src/perfiles.ts`, hasta que `pnpm balance --n 1000` pase por completo (SC-003 a SC-007)
+- [X] T061 [US4] Medir con `linea-base` y las mismas semillas y con `pnpm balance --n 1000`, y escribir en `specs/018-rework-motor/informe-9.0.0.md` la comparación con la 8.0.0 y, por cada umbral afectado, comprobación, valor anterior, medido, propuesto y motivo
+- [X] T062 [US4] **Persona:** revisar `specs/018-rework-motor/informe-9.0.0.md`, aprobar o corregir cada umbral y registrar nombre y fecha (SC-007)
+- [X] T063 [US4] Aplicar **solo** los umbrales aprobados en `tools/balance/src/checks/` y, si se aprobó, los de NPC en `packages/ai/src/perfiles.ts`, hasta que `pnpm balance --n 1000` pase por completo (SC-003 a SC-007)
 
 **Checkpoint (puerta de la etapa 3)**: `pnpm balance` en verde con umbrales aprobados. A partir de aquí no cambia ningún resultado.
 

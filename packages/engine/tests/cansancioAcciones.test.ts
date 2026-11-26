@@ -55,6 +55,22 @@ describe('gasto por acción', () => {
     expect(100 - j.energia).toBeCloseTo(RITMO_MEDIO * 1.5, 9);
   });
 
+  it('con Presión alta cada presión cuesta × costePresion; las demás acciones, no', () => {
+    const q = conParametros((x) => {
+      accionesUnitarias(x);
+      x.fatiga.reparto = { rol: 0, acciones: 1 };
+      x.tacticas.presionAlta.costePresion = 4;
+    });
+    const e = partido4('coste-presion', q);
+    enTramo(e);
+    e.equipos.local.tactica = { ...e.equipos.local.tactica, alturaBloque: 'presion_alta' };
+    const [a, b] = [titularEn(e, 'local', 'MC-1'), titularEn(e, 'local', 'MC-2')];
+    gastarAccion(e, e.equipos.local, a, 'presion');
+    gastarAccion(e, e.equipos.local, b, 'duelo');
+    expect(100 - a.energia).toBeCloseTo(RITMO_MEDIO * 4, 9);
+    expect(100 - b.energia).toBeCloseTo(RITMO_MEDIO, 9);
+  });
+
   it('más acciones que la referencia dan menos energía y menos acciones, más', () => {
     const energia = (porMinuto: number) => {
       const e = partido4(`ref-${porMinuto}`, conParametros(accionesUnitarias));

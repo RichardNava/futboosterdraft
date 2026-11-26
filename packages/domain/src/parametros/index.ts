@@ -577,7 +577,8 @@ export interface TacticasMotor {
     regate: number;
   };
   catenaccio: { ofensiva: number; defensiva: number; posesionRival: number; zonaMinima: number };
-  presionAlta: { recuperacionCampoRival: number; vulnerableEspalda: number };
+  /** `costePresion`: multiplica el gasto de cada presión de un equipo con Presión alta (FR-017, SC-005). */
+  presionAlta: { recuperacionCampoRival: number; vulnerableEspalda: number; costePresion: number };
   lineaAdelantada: { vulnerableEspalda: number };
   contraataque: { posesion: number; peligroTransicion: number };
   combinativo: { perdidasPase: number };
@@ -852,6 +853,7 @@ const { cansancio: _cansancioV8, ...BASE_V9 } = PARAMETROS_V8;
 /**
  * Parámetros 9.0.0 (spec 018): energía de 0 a 100 y tácticas con ventaja y coste. `referenciaAcciones` sale de
  * `calibrar-fatiga -- --n 1000` con pesos 1 y `umbralSprint` 0,85, aprobados por la persona responsable (T060, `informe-9.0.0.md`).
+ * Catenaccio y Presión alta, recalibrados en T062 (mismo informe).
  */
 export const PARAMETROS_V9 = {
   ...BASE_V9,
@@ -884,9 +886,12 @@ export const PARAMETROS_V9 = {
     lineaAdelantada: TACTICAS_V8.lineaAdelantada,
     contraataque: TACTICAS_V8.contraataque,
     combinativo: COMBINATIVO_V9,
-    presionAlta: PRESION_ALTA_V9,
+    // costePresion 15 (T062): le cuesta unos 26 puntos al 90' (8.0.0: 34), solo con presiones (FR-017). Con 20 el efecto
+    // apenas baja y los medios, que son los que más presionan, acaban en 1,5.
+    presionAlta: { ...PRESION_ALTA_V9, costePresion: 15 },
     individual: { ritmoEquipo: 1.05, ritmoMarcador: 1.15, bonusMarcaje: 6, malusEstrella: 5, companeros: 0.05, regate: 0.12 },
-    catenaccio: { ...TACTICAS_V8.catenaccio, defensiva: 0.5, zonaMinima: 4 },
+    // defensiva 0,5 → 2,5 (T062): con 0,5 encajaba más que la neutra; cierra el área y deja centros y tiros lejanos (FR-024).
+    catenaccio: { ...TACTICAS_V8.catenaccio, defensiva: 2.5, zonaMinima: 4 },
     vertical: { costePase: 0.15 },
     bandas: { ventajaPerdida: 0.15, factorPaseEspacio: 0.9 },
     bandasVertical: { centro: 1.8, probabilidadBanda: 0.25 },

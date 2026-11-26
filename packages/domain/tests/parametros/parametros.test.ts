@@ -328,7 +328,8 @@ describe('parámetros de equilibrado 9.0.0 (spec 018, data-model §3)', () => {
     expect(t.bandas).toEqual({ ventajaPerdida: 0.15, factorPaseEspacio: 0.9 });
     expect(t.vertical.costePase).toBe(0.15);
     expect(t.bandasVertical).toEqual({ centro: 1.8, probabilidadBanda: 0.25 });
-    expect(t.catenaccio).toMatchObject({ defensiva: 0.5, zonaMinima: 4 });
+    expect(t.catenaccio).toMatchObject({ defensiva: 2.5, zonaMinima: 4 });
+    expect(t.presionAlta.costePresion).toBe(15);
     // Desaparecen los campos sin uso o sustituidos (FR-028, FR-035).
     expect(t.vertical).toEqual({ costePase: 0.15 });
     expect(t.combinativo).not.toHaveProperty('posesion');

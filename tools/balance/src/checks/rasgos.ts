@@ -12,12 +12,13 @@
 import { casilla, parametrosActuales, penalizacionPorPosicion, type Defecto, type ParametrosEquilibrado, type Rasgo, type Virtud } from '@fbd/domain';
 import {
   bonusProvocador,
-  minutoDeJuego,
+  curvaEnergia,
   multiplicadorEquipo,
   multiplicadorIndividual,
   type EquipoPartido,
   type EstadoMotor,
   type EventoPartido,
+  type PerfilEnergia,
 } from '@fbd/engine';
 import { equipoSintetico } from '../equipos';
 import { serie } from '../series';
@@ -32,6 +33,19 @@ const TOLERANCIA = 0.2;
  * (spec 013, ronda 2); con el motor 7.0.0 la medida vuelve al multiplicador de diseño (spec 014, informe-7.0.0).
  */
 const OBJETIVO_FRAGIL_MEDIDO = P.defectos!.fragil;
+/**
+ * Fatigado e Indisciplinado (spec 018, FR-014 y FR-015): energía gastada al 90' por un medio con el defecto frente a uno
+ * sin él, según `curvaEnergia`. Sustituyen al minuto de inicio (46) y a `defectos.indisciplinado`, reglas de la 8.0.0.
+ */
+const gastoCurva = (perfil: PerfilEnergia) => 100 - curvaEnergia(perfil).minuto90;
+const RITMO_MEDIO = P.fatiga.ritmoRol.medio;
+const frenteAMedio = (perfil: PerfilEnergia) => Math.round((1000 * gastoCurva(perfil)) / gastoCurva({ ritmo: RITMO_MEDIO })) / 1000;
+const OBJETIVO_FATIGADO = frenteAMedio({ ritmo: RITMO_MEDIO * P.fatiga.rasgos.fatigado });
+const OBJETIVO_INDISCIPLINADO = frenteAMedio({
+  ritmo: RITMO_MEDIO,
+  adelantoMin: P.fatiga.rasgos.indisciplinado.adelantoMin,
+  costeAccion: P.fatiga.rasgos.indisciplinado.costeAccion,
+});
 
 /** Copia de unos parámetros con cambios. */
 function con(cambios: (q: ParametrosEquilibrado) => void, base: ParametrosEquilibrado = P): ParametrosEquilibrado {
@@ -244,31 +258,27 @@ function medias(n: number, semilla: number, base: EquipoPartido, rival: EquipoPa
   const li = base.titulares.find((t) => t.casillaId === 'LI')!.jugador.id;
   const rebelde = base.suplentes[3]!.id;
   const goatRival = rival.titulares.find((t) => t.jugador.nivel === 'GOAT')!.jugador.id;
-  const inicio: number[] = [];
-  const cansancioFinal: { mc1: number[]; mc2: number[] } = { mc1: [], mc2: [] };
+  // Referencia del mismo rol (spec 018): los medios centro del rival, sin rasgos; el ritmo depende del rol.
+  const mediosRival = new Set(rival.titulares.filter((t) => t.casillaId?.startsWith('MC-')).map((t) => t.jugador.id));
+  const gastoFinal: { fatigado: number[]; indisciplinado: number[]; referencia: number[] } = { fatigado: [], indisciplinado: [], referencia: [] };
   const polemico: number[] = [];
   const rebeldeFactor: number[] = [];
   const estrellita: number[] = [];
   const provocador: number[] = [];
-  let visto = false;
   serieMuestreada(conDefectos, rival, n, semilla, 'rasgos-medias', (e, ladoA) => {
     const eq = e.equipos[ladoA];
-    const j1 = eq.jugadores.find((j) => j.id === mc1)!;
-    if (e.tick === 1) visto = false;
-    if (!visto && j1.enCampo && j1.energia < 100) {
-      inicio.push(minutoDeJuego(e.reloj) + 1);
-      visto = true;
-    }
+    const rival = e.equipos[ladoA === 'local' ? 'visitante' : 'local'];
     if (e.tick % 60 !== 0) return;
     if (e.fase === 'segunda_parte' && e.reloj.segundosEnParte >= 44 * 60 && e.reloj.segundosEnParte < 45 * 60) {
+      const j1 = eq.jugadores.find((j) => j.id === mc1)!;
       const j2 = eq.jugadores.find((j) => j.id === mc2)!;
-      const otro = eq.jugadores.find((j) => j.casillaId === 'LD' && j.enCampo);
-      if (j2.enCampo && otro && otro.energia < 100) {
-        cansancioFinal.mc2.push(100 - j2.energia);
-        cansancioFinal.mc1.push(100 - otro.energia);
+      const ref = rival.jugadores.filter((j) => mediosRival.has(j.id) && j.enCampo);
+      if (j1.enCampo && j2.enCampo && ref.length > 0) {
+        gastoFinal.fatigado.push(100 - j1.energia);
+        gastoFinal.indisciplinado.push(100 - j2.energia);
+        gastoFinal.referencia.push(100 - mediaDe(ref.map((j) => j.energia)));
       }
     }
-    const rival = e.equipos[ladoA === 'local' ? 'visitante' : 'local'];
     const perdiendo = e.marcador[ladoA] < e.marcador[rival.lado];
     const dc = eq.jugadores.find((j) => j.casillaId === 'DC' && j.enCampo && j.jugador.defectos.includes('Polemico'));
     const enBanquillo = eq.jugadores.find((j) => j.id === rebelde && !j.enCampo && !j.retirado && !j.expulsado && !j.lesionado);
@@ -285,8 +295,8 @@ function medias(n: number, semilla: number, base: EquipoPartido, rival: EquipoPa
   });
   const pct = (xs: number[]) => 1 - mediaDe(xs);
   return [
-    comprobacion('Fatigado', 'Fatigado (minuto en que empieza a cansarse)', mediaDe(inicio), 46, `${inicio.length} partidos; inicio general ${P.fatiga.inicioMin.parte1}`),
-    comprobacion('Indisciplinado', 'Indisciplinado (energía gastada frente a un compañero)', razon(mediaDe(cansancioFinal.mc2), mediaDe(cansancioFinal.mc1)), P.defectos!.indisciplinado, `${cansancioFinal.mc2.length} muestras al minuto 89`),
+    comprobacion('Fatigado', 'Fatigado (energía gastada frente a un medio sin rasgos)', razon(mediaDe(gastoFinal.fatigado), mediaDe(gastoFinal.referencia)), OBJETIVO_FATIGADO, `${gastoFinal.fatigado.length} muestras al minuto 89`),
+    comprobacion('Indisciplinado', 'Indisciplinado (energía gastada frente a un medio sin rasgos)', razon(mediaDe(gastoFinal.indisciplinado), mediaDe(gastoFinal.referencia)), OBJETIVO_INDISCIPLINADO, `${gastoFinal.indisciplinado.length} muestras al minuto 89`),
     comprobacion('Polemico', 'Polémico (bajada de la media del equipo yendo por detrás)', pct(polemico), P.defectos!.polemico, `${polemico.length} muestras`),
     comprobacion('Rebelde', 'Rebelde (bajada de la media del equipo desde el banquillo)', pct(rebeldeFactor), P.defectos!.rebelde, `${rebeldeFactor.length} muestras`),
     comprobacion('Estrellita', 'Estrellita (bajada de su media sin ser el mejor)', pct(estrellita), P.defectos!.estrellita, `${estrellita.length} muestras`),

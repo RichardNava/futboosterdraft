@@ -107,12 +107,12 @@ fatiga: {
 
 | Bloque de `tacticas` | Valores 9.0.0 |
 |---|---|
-| `catenaccio` | `defensiva: 0.5`, zonas 4 y 5, sin centro ni tiro lejano; costes ofensivos sin cambios |
+| `catenaccio` | `defensiva: 2.5` (0,5 de partida; calibrado en T062), zonas 4 y 5, sin centro ni tiro lejano; costes ofensivos sin cambios |
 | `individual` | `ritmoEquipo: 1.05`, `ritmoMarcador: 1.15`, `bonusMarcaje: 6`, `malusEstrella: 5`, `companeros: 0.05`, `regate: 0.12` |
 | `bandas` | `ventajaPerdida: 0.15`, `factorPaseEspacio: 0.9` |
 | `vertical` | `costePase: 0.15` (pases largos y al espacio) |
 | `bandasVertical` | `centro: 1.8`, `probabilidadBanda: 0.25` |
-| `presionAlta` | Sin `cansancio`; los efectos de duelo no cambian |
+| `presionAlta` | Sin `cansancio`; `costePresion: 15` multiplica el gasto de cada presión del equipo (T062); los efectos de duelo no cambian |
 | `lineaAdelantada` | `espacio.lineaAdelantada` (450 = 4,7 m) con y sin balón; riesgo actual |
 | `pesos` y `avance` | Los multiplicadores hoy fijos en `formacionTactica.ts`, **con el mismo valor** |
 

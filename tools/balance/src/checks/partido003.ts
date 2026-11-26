@@ -74,14 +74,17 @@ function dispersion(r: ResultadoSerie) {
   };
 }
 
+/** Mínimo de goles por partido: 2,6 → 2,4 en la spec 018 (T062; la 9.0.0 da 2,50 y la 8.0.0 daba 2,66). */
+const GOLES_MINIMO = 2.4;
+
 /** 003/SC-001: goles por partido, 0-0 y goleadas en la serie sintética (y en la Core con `conCore`). */
 export function comprobarSC001(n: number, semilla: number, conCore: boolean): Comprobacion[] {
   const fila = (id: string, nombre: string, r: ResultadoSerie): Comprobacion => {
     const d = dispersion(r);
-    const ok = d.media >= 2.6 && d.media <= 3.4 && d.ceros > 0 && d.seis > 0 && d.cuota <= 0.2;
+    const ok = d.media >= GOLES_MINIMO && d.media <= 3.4 && d.ceros > 0 && d.seis > 0 && d.cuota <= 0.2;
     return {
       id,
-      descripcion: `${nombre}: media de 2,6–3,4 goles, hay 0-0 y partidos de ≥ 6 goles, ningún resultado > 20 %`,
+      descripcion: `${nombre}: media de 2,4–3,4 goles, hay 0-0 y partidos de ≥ 6 goles, ningún resultado > 20 %`,
       ok,
       detalle: `${d.media.toFixed(2)} goles por partido; ${d.ceros} 0-0 y ${d.seis} partidos de ≥ 6 goles en ${r.n}; más frecuente ${d.masFrecuente} (${pct(d.cuota)})`,
     };
@@ -95,7 +98,7 @@ export function comprobarSC001(n: number, semilla: number, conCore: boolean): Co
 const GOLES_POR_RASGO_NETO = 0.35;
 
 /**
- * 003/SC-001c, independiente del pool: sin rasgos, la serie Core da 2,6–3,4 goles (los stats se anulan entre equipos
+ * 003/SC-001c, independiente del pool: sin rasgos, la serie Core da 2,4–3,4 goles (los stats se anulan entre equipos
  * igual de buenos); con rasgos, el techo sube `GOLES_POR_RASGO_NETO` por cada rasgo neto por jugador; y ≥ 90 % de los
  * torneos queda a ±1,0 de la media de la serie (la variedad de los drafts da ±0,5 entre torneos).
  */
@@ -108,9 +111,9 @@ function comprobarSC001c(n: number, semilla: number): Comprobacion {
   const sinRasgos = dispersion(serieCore(n, semilla, parametrosActuales(), pool.map((j) => ({ ...j, virtudes: [], defectos: [] }))).serie).media;
   const cerca = c.porTorneo.filter((m) => Math.abs(m - conRasgos.media) <= 1).length / Math.max(1, c.porTorneo.length);
   const ok =
-    sinRasgos >= 2.6 &&
+    sinRasgos >= GOLES_MINIMO &&
     sinRasgos <= 3.4 &&
-    conRasgos.media >= 2.6 &&
+    conRasgos.media >= GOLES_MINIMO &&
     conRasgos.media <= techo &&
     conRasgos.ceros > 0 &&
     conRasgos.seis > 0 &&
@@ -118,7 +121,7 @@ function comprobarSC001c(n: number, semilla: number): Comprobacion {
     cerca >= 0.9;
   return {
     id: '003/SC-001c',
-    descripcion: `Serie Core: sin rasgos 2,6–3,4 goles; con rasgos 2,6 a 3,4 + ${GOLES_POR_RASGO_NETO} por rasgo neto por jugador; hay 0-0 y partidos de ≥ 6 goles, ningún resultado > 20 %; ≥ 90 % de torneos a ±1,0 de la media`,
+    descripcion: `Serie Core: sin rasgos 2,4–3,4 goles; con rasgos 2,4 a 3,4 + ${GOLES_POR_RASGO_NETO} por rasgo neto por jugador; hay 0-0 y partidos de ≥ 6 goles, ningún resultado > 20 %; ≥ 90 % de torneos a ±1,0 de la media`,
     ok,
     detalle:
       `sin rasgos ${sinRasgos.toFixed(2)} · con rasgos ${conRasgos.media.toFixed(2)} (techo ${techo.toFixed(2)} con ${netos.toFixed(2)} rasgos netos por jugador); ` +
@@ -146,8 +149,9 @@ export function comprobarSC002(n: number, semilla: number): Comprobacion {
   const d = reparto(serieBase(n, semilla));
   return {
     id: '003/SC-002',
-    descripcion: 'Goles desde fuera del área: entre el 22 % y el 28 %, la mayoría a ≤ 25 m y ≤ 0,5 % desde el propio campo',
-    ok: d.fuera >= 0.22 && d.fuera <= 0.28 && d.frontalDeFuera > 0.5 && d.propioCampo <= 0.005,
+    // Máximo 28 % → 30 % en la spec 018 (T062; la 9.0.0 da 28,3 % y la 8.0.0 daba 25,3 %).
+    descripcion: 'Goles desde fuera del área: entre el 22 % y el 30 %, la mayoría a ≤ 25 m y ≤ 0,5 % desde el propio campo',
+    ok: d.fuera >= 0.22 && d.fuera <= 0.3 && d.frontalDeFuera > 0.5 && d.propioCampo <= 0.005,
     detalle: `${pct(d.fuera)} fuera del área (de ellos ${pct(d.frontalDeFuera)} a ≤ 25 m); ${pct(d.propioCampo)} desde el propio campo; ${d.total} goles`,
   };
 }

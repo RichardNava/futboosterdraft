@@ -156,7 +156,8 @@ const EFECTO_800 = { catenaccio: { valor: -0.65, error: 0.064 }, bandasVertical:
 
 /**
  * SC-006: las tácticas modificadas frente a la neutra, con el equipo y las semillas de `linea-base`, en la dirección de
- * la US2. «Medible» = más de 2 errores estándar (contra la 8.0.0, sumando el error de las dos medidas).
+ * la US2. «Medible» = más de 2 errores estándar (contra la 8.0.0, sumando el error de las dos medidas); Bandas + Vertical,
+ * solo en la dirección (T062).
  */
 export function comprobarSC006(n: number, semilla: number): Comprobacion {
   const base = equipoSintetico({ semilla: 'linea-base' });
@@ -166,6 +167,7 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
   const catenaccio = jugar({ alturaBloque: 'catenaccio' });
   const individual = jugar({ sistemaDefensivo: 'individual' });
   const bandasVertical = jugar({ estiloConBalon: 'bandas', juegoVertical: true });
+  const vertical = jugar({ juegoVertical: true });
   const adelantada = jugar({ lineaAdelantada: true });
 
   const dif = (r: ResultadoSerie) => r.golesA.map((g, i) => g - r.golesB[i]!);
@@ -176,11 +178,17 @@ export function comprobarSC006(n: number, semilla: number): Comprobacion {
 
   const efCatenaccio = efecto(catenaccio);
   const efBandasVertical = efecto(bandasVertical);
+  const efVertical = efecto(vertical);
   const partes = [
     { nombre: 'Catenaccio: menos GC que la neutra', ok: mayorSignificativo(neutra.golesB, catenaccio.golesB), detalle: `GC ${num2(media(catenaccio.golesB))} vs ${num2(media(neutra.golesB))}` },
     { nombre: 'Catenaccio: efecto en dif. mayor que en la 8.0.0', ok: frente800(efCatenaccio, EFECTO_800.catenaccio, 1), detalle: `${conSigno2(efCatenaccio.valor)} vs ${conSigno2(EFECTO_800.catenaccio.valor)}` },
     { nombre: 'Individual: menos GC que la neutra', ok: mayorSignificativo(neutra.golesB, individual.golesB), detalle: `GC ${num2(media(individual.golesB))} vs ${num2(media(neutra.golesB))}` },
-    { nombre: 'Bandas + Vertical: efecto en dif. menor que en la 8.0.0', ok: frente800(efBandasVertical, EFECTO_800.bandasVertical, -1), detalle: `${conSigno2(efBandasVertical.valor)} vs ${conSigno2(EFECTO_800.bandasVertical.valor)}` },
+    // Solo la dirección (T062): bajar de forma medible pediría dejarla por debajo de la neutra (2 e. e. ≈ 0,17 con 1.000).
+    {
+      nombre: 'Bandas + Vertical: efecto en dif. no mayor que en la 8.0.0 ni que Vertical sola',
+      ok: efBandasVertical.valor <= EFECTO_800.bandasVertical.valor && efBandasVertical.valor <= efVertical.valor,
+      detalle: `${conSigno2(efBandasVertical.valor)} vs ${conSigno2(EFECTO_800.bandasVertical.valor)} y Vertical ${conSigno2(efVertical.valor)}`,
+    },
     { nombre: 'Línea adelantada: más fueras de juego provocados', ok: mayorSignificativo(fdj(adelantada), fdj(neutra)), detalle: `${num2(media(fdj(adelantada)))} vs ${num2(media(fdj(neutra)))}` },
   ];
   return {

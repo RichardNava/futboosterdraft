@@ -31,17 +31,19 @@ function efecto(local: Partial<Tactica>, visitante: Partial<Tactica>, accion: Ti
 
 describe('Catenaccio (FR-024)', () => {
   const CAT: Partial<Tactica> = { alturaBloque: 'catenaccio' };
+  // 0,50 de partida en FR-024; 2,5 tras la calibración (T062).
+  const DEF = P.tacticas.catenaccio.defensiva;
 
-  it.each(['pase_corto', 'pase_largo', 'pase_espacio', 'conduccion', 'regate'] as const)('%s: −0,50 solo en las zonas 4 y 5', (accion) => {
-    expect(efecto({}, CAT, accion, 4)).toBeCloseTo(-0.5, 9);
-    expect(efecto({}, CAT, accion, 5)).toBeCloseTo(-0.5, 9);
+  it.each(['pase_corto', 'pase_largo', 'pase_espacio', 'conduccion', 'regate'] as const)('%s: −defensiva solo en las zonas 4 y 5', (accion) => {
+    expect(efecto({}, CAT, accion, 4)).toBeCloseTo(-DEF, 9);
+    expect(efecto({}, CAT, accion, 5)).toBeCloseTo(-DEF, 9);
     expect(efecto({}, CAT, accion, 3)).toBeCloseTo(0, 9);
   });
 
   it('no afecta a los centros ni a los tiros lejanos; sí al tiro cercano', () => {
     expect(efecto({}, CAT, 'centro', 4)).toBeCloseTo(0, 9);
     expect(efecto({}, CAT, 'tiro', 4, true)).toBeCloseTo(0, 9);
-    expect(efecto({}, CAT, 'tiro', 5, false)).toBeCloseTo(-0.5, 9);
+    expect(efecto({}, CAT, 'tiro', 5, false)).toBeCloseTo(-DEF, 9);
   });
 
   it('mantiene sus costes ofensivos', () => {
