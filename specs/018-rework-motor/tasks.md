@@ -217,16 +217,16 @@ Salen de contrastar el plan con el código. Prevalecen sobre el texto de `resear
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T073 [P] [US5] Añadir a `packages/domain/tests/partida/partida.test.ts` `cerrar_version` desde `en_draft` y `en_torneo` a `abandonada`, y su rechazo desde los demás estados
-- [ ] T074 [P] [US5] Crear `apps/server/tests/integration/cierre-motor9.test.ts`: partidas en cada estado, con y sin cobro, cierre ejecutado **dos veces**; un aviso por usuario humano, cada cobro devuelto una vez, `buscando` intacta, una partida creada tras el cierre sigue activa, partidos terminados intactos, sin premios, un fallo revierte todo y un partido de una partida cerrada no se puede abrir (FR-046 a FR-049, SC-011)
+- [X] T073 [P] [US5] Añadir a `packages/domain/tests/partida/partida.test.ts` `cerrar_version` desde `en_draft` y `en_torneo` a `abandonada`, y su rechazo desde los demás estados
+- [X] T074 [P] [US5] Crear `apps/server/tests/integration/cierre-motor9.test.ts`: partidas en cada estado, con y sin cobro, cierre ejecutado **dos veces**; un aviso por usuario humano, cada cobro devuelto una vez, `buscando` intacta, una partida creada tras el cierre sigue activa, partidos terminados intactos, sin premios, un fallo revierte todo y un partido de una partida cerrada no se puede abrir (FR-046 a FR-049, SC-011)
 
 ### Implementation for User Story 5
 
-- [ ] T075 [US5] Añadir el evento `cerrar_version` junto a `cerrar_admin` en `packages/domain/src/partida/partida.ts`
-- [ ] T076 [US5] Extraer `devolverCobroRarezaEn(tx, partidaId)` en `apps/server/src/economia/servicio.ts` y hacer que `devolverCobroRareza` la use, conservando la protección del índice único (FR-048)
-- [ ] T077 [US5] Crear `apps/server/src/actores/cierreMotor9.ts` con `cerrarPartidasMotor9(db, reloj)` según [contracts/cierre-partidas.md](contracts/cierre-partidas.md): una transacción con `pg_advisory_xact_lock`, marca `cierre_motor_9` en `ajustes`, `FOR UPDATE`, devolución, partidos en juego a `programado` (`decisiones` y `eventos` a `[]`; `entrada`, `estadisticas`, `marcador` e `iniciadoEn` a `null`) y avisos insertados en la transacción, sin correo (FR-046 a FR-049)
-- [ ] T078 [US5] Llamar a `cerrarPartidasMotor9` en `apps/server/src/main.ts` después de las migraciones y antes de `crearServidor`, `rehidratar` y `listen`; si falla, el proceso termina sin aceptar tráfico (FR-046)
-- [ ] T079 [US5] Hacer que `errorAlAbrir` rechace con `JORNADA_NO_ABIERTA` un partido no finalizado si la partida no está `en_torneo`, en `apps/server/src/actores/torneo.ts` (cubre también `apps/server/src/actores/aperturas.ts`)
+- [X] T075 [US5] Añadir el evento `cerrar_version` junto a `cerrar_admin` en `packages/domain/src/partida/partida.ts`
+- [X] T076 [US5] Extraer `devolverCobroRarezaEn(tx, partidaId)` en `apps/server/src/economia/servicio.ts` y hacer que `devolverCobroRareza` la use, conservando la protección del índice único (FR-048)
+- [X] T077 [US5] Crear `apps/server/src/actores/cierreMotor9.ts` con `cerrarPartidasMotor9(db, reloj)` según [contracts/cierre-partidas.md](contracts/cierre-partidas.md): una transacción con `pg_advisory_xact_lock`, marca `cierre_motor_9` en `ajustes`, `FOR UPDATE`, devolución, partidos en juego a `programado` (`decisiones` y `eventos` a `[]`; `entrada`, `estadisticas`, `marcador` e `iniciadoEn` a `null`) y avisos insertados en la transacción, sin correo (FR-046 a FR-049)
+- [X] T078 [US5] Llamar a `cerrarPartidasMotor9` en `apps/server/src/main.ts` después de las migraciones y antes de `crearServidor`, `rehidratar` y `listen`; si falla, el proceso termina sin aceptar tráfico (FR-046)
+- [X] T079 [US5] Hacer que `errorAlAbrir` rechace con `JORNADA_NO_ABIERTA` un partido no finalizado si la partida no está `en_torneo`, en `apps/server/src/actores/torneo.ts` (cubre también `apps/server/src/actores/aperturas.ts`)
 
 **Checkpoint**: SC-011 cumplido.
 

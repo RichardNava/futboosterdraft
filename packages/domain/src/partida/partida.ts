@@ -158,12 +158,13 @@ export function validarConfigPartida(c: ConfigPartida, anfitrion: TipoUsuario): 
   return errores;
 }
 
-export type EventoPartida = 'iniciar_draft' | 'terminar_draft' | 'terminar_torneo' | 'cancelar' | 'abandonar_invitado';
+export type EventoPartida = 'iniciar_draft' | 'terminar_draft' | 'terminar_torneo' | 'cancelar' | 'abandonar_invitado' | 'cerrar_version';
 
 const TRANSICIONES: Readonly<Record<EstadoPartida, Partial<Record<EventoPartida, EstadoPartida>>>> = {
   buscando: { iniciar_draft: 'en_draft', cancelar: 'cancelada', abandonar_invitado: 'abandonada' },
-  en_draft: { terminar_draft: 'en_torneo', abandonar_invitado: 'abandonada' },
-  en_torneo: { terminar_torneo: 'terminada', abandonar_invitado: 'abandonada' },
+  // `cerrar_version`: cierre único al desplegar el motor 9.0.0 (spec 018, FR-046).
+  en_draft: { terminar_draft: 'en_torneo', abandonar_invitado: 'abandonada', cerrar_version: 'abandonada' },
+  en_torneo: { terminar_torneo: 'terminada', abandonar_invitado: 'abandonada', cerrar_version: 'abandonada' },
   terminada: {},
   cancelada: {},
   abandonada: {},

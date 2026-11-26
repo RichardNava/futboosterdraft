@@ -66,6 +66,14 @@ describe('Partida', () => {
     expect(() => transicion('en_torneo', 'cancelar')).toThrow();
   });
 
+  it('cerrar_version cierra draft y torneo como abandonada y no admite otros estados (spec 018, FR-046)', () => {
+    expect(transicion('en_draft', 'cerrar_version')).toBe('abandonada');
+    expect(transicion('en_torneo', 'cerrar_version')).toBe('abandonada');
+    for (const estado of ['buscando', 'terminada', 'cancelada', 'abandonada'] as const) {
+      expect(() => transicion(estado, 'cerrar_version')).toThrow();
+    }
+  });
+
   it('el relleno automático asigna amateur, intermedio o avanzado al azar, nunca PRO (FR-059)', () => {
     const niveles = rellenarConNPC(10_000, semillaDesdeTexto('relleno'));
     expect(niveles).not.toContain('PRO');

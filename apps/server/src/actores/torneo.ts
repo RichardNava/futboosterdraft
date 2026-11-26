@@ -285,6 +285,8 @@ export async function abrirPartido(
 /** Comprobaciones de `abrirPartido` sobre la fila leída; también las usa el grupo de aperturas (spec 010). */
 export function errorAlAbrir(c: ControladorPartida, fila: FilaPartido | undefined, participanteId: string): 'PARTIDO_NO_ENCONTRADO' | 'JORNADA_NO_ABIERTA' | null {
   if (!fila || fila.partidaId !== c.id || (fila.localId !== participanteId && fila.visitanteId !== participanteId)) return 'PARTIDO_NO_ENCONTRADO';
+  // Una partida cerrada (spec 018, FR-046) solo deja ver los partidos ya terminados.
+  if (fila.estado !== 'finalizado' && c.partida.estado !== 'en_torneo') return 'JORNADA_NO_ABIERTA';
   if (fila.estado === 'programado' && !c.jornada?.cruces.some((x) => x.partidoId === fila.id)) return 'JORNADA_NO_ABIERTA';
   return null;
 }
