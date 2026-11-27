@@ -20,9 +20,9 @@ const PORTERIA: Punto = { x: LARGO, y: CENTRO_Y };
 
 /** Portador en campo rival (o algo antes, R15) con solo el portero por delante (un rival a su altura cuenta si está en el pasillo). */
 export function esManoAMano(estado: EstadoMotor, _atacante: EquipoEstado, _portador: JugadorEnPartido, en: Entorno | null): en is Entorno {
-  // Spec 015, añadidos (R15): con `segundaLinea`, también desde unos metros dentro del campo propio (terreno por delante).
-  if (!en || en.yo.x <= LARGO / 2 - decimasDeMetros(estado.parametros.segundaLinea?.desdeCampoPropioM ?? 0)) return false;
-  const m = estado.parametros.manoAMano!;
+  // Spec 015, añadidos (R15): también desde unos metros dentro del campo propio (terreno por delante).
+  if (!en || en.yo.x <= LARGO / 2 - decimasDeMetros(estado.parametros.segundaLinea.desdeCampoPropioM)) return false;
+  const m = estado.parametros.manoAMano;
   const pasillo = decimasDeMetros(m.pasilloM);
   const desde = en.yo.x - decimasDeMetros(m.margenAtrasM);
   // Solo el portero puede estar delante: un rival de campo por delante descarta el mano a mano; uno a su altura (hasta
@@ -32,7 +32,7 @@ export function esManoAMano(estado: EstadoMotor, _atacante: EquipoEstado, _porta
 
 /** Distancia de disparo (décimas): crece con el remate y, con el portero adelantado, con lo que se ha salido. */
 export function distanciaDisparo(estado: EstadoMotor, atacante: EquipoEstado, portador: JugadorEnPartido, en: Entorno): number {
-  const m = estado.parametros.manoAMano!;
+  const m = estado.parametros.manoAMano;
   let d = decimasDeMetros(m.distanciaBaseM + (m.distanciaPorRemateM * (atributo(estado, atacante, portador, 'remate') - 70)) / 10);
   if (porteroAdelantado(estado, atacante, en)) {
     const portero = en.rivales.find((r) => esPortero(r.j));
@@ -47,7 +47,7 @@ export function decisionManoAMano(estado: EstadoMotor, atacante: EquipoEstado, p
   if (miDistancia <= distanciaDisparo(estado, atacante, portador, en)) return 'tiro';
   // Matador nunca la pasa en un mano a mano: conduce hasta tirar (texto del rasgo).
   if (en.rivalEncima && !tiene(portador, 'Matador')) {
-    const m = estado.parametros.manoAMano!;
+    const m = estado.parametros.manoAMano;
     const rivalLado = atacante.lado === 'local' ? 'visitante' : 'local';
     const miAngulo = anguloTiro(en.yo);
     let mejor: { j: JugadorEnPartido; d: number } | null = null;

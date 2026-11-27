@@ -4,7 +4,9 @@
  */
 import { describe, expect, it } from 'vitest';
 import { avanzar, crearPartido, type EstadoMotor } from '../src/index';
+import { ULTIMO_TERCIO } from '../src/espacio/campo';
 import { anclaDe } from '../src/espacio/geometria';
+import { PASO_MOVIMIENTO } from '../src/espacio/movimiento';
 import { lineaDe } from '../src/espacio/objetivos';
 import { entrada } from './ayudas';
 
@@ -19,8 +21,15 @@ interface Muestra {
   presionadores: number;
   coordinada: boolean;
   reposicion: boolean;
+  enSaque: boolean;
+  /** Quienes pelean por el balón: el portador y los que le presionan, que van a su mismo punto a propósito. */
+  enDisputa: Set<number>;
   /** Jugadores fuera de la forma en este tick: los que presionan y los que van a un punto de la jugada. */
   fueraDeForma: Set<number>;
+  /** Quienes se colocan a `velocidadColocacion` (spec 015): todos en un córner y el que saca de banda. */
+  colocando: Set<number>;
+  /** Equipo con balón en plena llegada al área: sus medios salen de la línea a propósito (spec 015, R15). */
+  llegada: 'local' | 'visitante' | null;
   lineas: Record<'local' | 'visitante', { defensa: number; medio: number; ataque: number }>;
 }
 
@@ -58,6 +67,10 @@ function jugar(semilla: string): { muestras: Muestra[]; estado: EstadoMotor } {
       lineas[lado] = { defensa: media(xs.defensa!), medio: media(xs.medio!), ataque: media(xs.ataque!) };
     }
     const portador = esp.jugadores[e.balon.portadorId];
+    const colocando = new Set(motivo === 'corner' ? Object.keys(esp.jugadores).map(Number) : motivo === 'banda' ? [esp.accion!.deId] : []);
+    const refX = e.balon.posesion === 'local' ? esp.referencia.x : 10000 - esp.referencia.x;
+    const progresa = (esp.accion?.tipo === 'conduccion' || esp.accion?.tipo === 'regate') && e.equipos[e.balon.posesion].jugadores.some((j) => j.id === esp.accion!.deId);
+    const llegada = refX >= ULTIMO_TERCIO || (progresa && refX >= e.parametros.espacio.llegadaAlArea.xProgresion) ? e.balon.posesion : null;
     muestras.push({
       tick: e.tick,
       parte: e.reloj.parte,
@@ -69,7 +82,11 @@ function jugar(semilla: string): { muestras: Muestra[]; estado: EstadoMotor } {
       presionadores: esp.presion.presionadores.length,
       coordinada: esp.presion.coordinada,
       reposicion: esp.accion?.tipo === 'saque' || esp.accion?.tipo === 'control',
+      enSaque: esp.accion?.tipo === 'saque',
+      enDisputa: new Set([e.balon.portadorId, ...esp.presion.presionadores]),
       fueraDeForma: new Set([...esp.presion.presionadores, ...Object.keys(esp.destinos).map(Number)]),
+      colocando,
+      llegada,
       lineas,
     });
   };
@@ -77,12 +94,16 @@ function jugar(semilla: string): { muestras: Muestra[]; estado: EstadoMotor } {
   return { muestras, estado };
 }
 
+/** Ticks para frenar tras un saque, desde la velocidad de colocación de un córner (×4) con la frenada normal. */
+const TICKS_FRENADA = 30;
+
 describe('cinemática de la 2D (T065, invariante 6)', () => {
   const partidos = Array.from({ length: 50 }, (_, i) => jugar(`cinematica-${i}`));
   const e0 = partidos[0]!.estado;
   const esp = e0.parametros.espacio;
 
-  // Los jugadores se mueven cada 2 ticks (los de los fotogramas): se mide entre ticks pares consecutivos.
+  // Las posiciones avanzan cada 2 ticks (los de los fotogramas): se mide entre ticks pares consecutivos. La velocidad se
+  // decide cada `PASO_MOVIMIENTO` ticks, así que su cambio máximo es el de esos ticks (spec 018, R7).
   const pares = (muestras: Muestra[]) => muestras.filter((m) => m.tick % 2 === 0);
 
   it('ningún jugador supera su velocidad ni su aceleración máximas', () => {
@@ -97,25 +118,38 @@ describe('cinemática de la 2D (T065, invariante 6)', () => {
         for (const [id, p] of b.jugadores) {
           const q = a.jugadores.get(id);
           if (!q) continue;
-          expect(Math.hypot(p.x - q.x, p.y - q.y) / 2, `jugador ${id} en el tick ${b.tick}`).toBeLessThanOrEqual(vmax + 1);
-          expect(Math.hypot(p.vx - q.vx, p.vy - q.vy) / 2, `aceleración de ${id} en el tick ${b.tick}`).toBeLessThanOrEqual(dvmax + 1);
+          const escala = a.colocando.has(id) || b.colocando.has(id) ? e0.parametros.fueraDeCampo!.velocidadColocacion : 1;
+          // Al acabar la colocación aún frena desde su velocidad: no puede acelerar por encima de la que llevaba.
+          const tope = Math.max(vmax * escala, Math.hypot(q.vx, q.vy));
+          expect(Math.hypot(p.x - q.x, p.y - q.y) / 2, `jugador ${id} en el tick ${b.tick}`).toBeLessThanOrEqual(tope + 1);
+          // La línea del campo lo para en seco: su velocidad pasa a ser la que ha podido recorrer (`moverJugadores`).
+          const enLinea = p.x <= 0 || p.x >= 10000 || p.y <= 0 || p.y >= 6400;
+          if (!enLinea) expect(Math.hypot(p.vx - q.vx, p.vy - q.vy) / PASO_MOVIMIENTO, `aceleración de ${id} en el tick ${b.tick}`).toBeLessThanOrEqual(dvmax * escala + 1);
         }
       }
     }
   });
 
-  it('ninguna pareja de jugadores queda más cerca que el radio de separación más de 2 ticks seguidos', () => {
+  it('ninguna pareja de jugadores queda más cerca que el radio de separación más de un paso de movimiento', () => {
     const radio2 = esp.radioSeparacion * esp.radioSeparacion;
     for (const { muestras } of partidos.slice(0, 10)) {
       const seguidos = new Map<string, number>();
-      // Cada muestra par cuenta por los 2 ticks del paso de movimiento: más de 1 seguida = más de 2 ticks.
+      // A balón parado cada uno va a un punto fijo, y a velocidad de córner: necesita unos ticks para frenar y separarse.
+      const colocadoEn = new Map<number, number>();
+      // La separación se decide una vez por paso (4 ticks, 2 muestras pares): más de 2 seguidas = más de un paso.
       for (const m of pares(muestras)) {
+        for (const id of m.enSaque ? m.jugadores.keys() : m.colocando) colocadoEn.set(id, m.tick);
+        const frenando = (id: number) => m.tick - (colocadoEn.get(id) ?? -1000) < TICKS_FRENADA;
+        // Van al balón a propósito: el portador, los presionadores y quienes tienen un destino en la jugada (con la presión
+        // recalculada cada 8 ticks, uno puede presionar mientras su compañero va al mismo balón suelto; spec 018, T060).
+        const alBalon = (id: number) => m.enDisputa.has(id) || m.fueraDeForma.has(id);
         const ids = [...m.jugadores.keys()];
         const cerca = new Set<string>();
         for (let i = 0; i < ids.length; i++) {
           for (let j = i + 1; j < ids.length; j++) {
             const p = m.jugadores.get(ids[i]!)!;
             const q = m.jugadores.get(ids[j]!)!;
+            if (frenando(ids[i]!) || frenando(ids[j]!) || (alBalon(ids[i]!) && alBalon(ids[j]!))) continue;
             if ((p.x - q.x) ** 2 + (p.y - q.y) ** 2 < radio2) cerca.add(`${ids[i]}-${ids[j]}`);
           }
         }
@@ -123,7 +157,7 @@ describe('cinemática de la 2D (T065, invariante 6)', () => {
         for (const clave of cerca) {
           const n = (seguidos.get(clave) ?? 0) + 1;
           seguidos.set(clave, n);
-          expect(n, `pareja ${clave} en el tick ${m.tick}`).toBeLessThanOrEqual(1);
+          expect(n, `pareja ${clave} en el tick ${m.tick}`).toBeLessThanOrEqual(PASO_MOVIMIENTO / 2);
         }
       }
     }
@@ -152,17 +186,22 @@ describe('cinemática de la 2D (T065, invariante 6)', () => {
     const [sbMin, sbMax] = esp.separacionLineasSinBalon;
     let dentro = 0;
     let total = 0;
-    for (const { muestras } of partidos.slice(0, 10)) {
+    // Los 50 partidos: con objetivos cada 8 ticks (T055), 10 sueltos van del 93,9 % al 97,3 % (`informe-9.0.0.md`).
+    for (const { muestras } of partidos) {
       let ultimoCambio = -1000;
       let posesion = muestras[0]?.posesion;
+      const ultimaLlegada = { local: -1000, visitante: -1000 };
       for (const m of muestras) {
         if (m.posesion !== posesion) {
           posesion = m.posesion;
           ultimoCambio = m.tick;
         }
+        if (m.llegada) ultimaLlegada[m.llegada] = m.tick;
         // Fuera de las transiciones (5 s reales) y de las reanudaciones a balón parado.
         if (m.tick - ultimoCambio < 118 || m.reposicion) continue;
         for (const lado of ['local', 'visitante'] as const) {
+          // Tras la llegada al área, sus medios vuelven a la línea en el mismo margen que en una transición.
+          if (m.tick - ultimaLlegada[lado] < 118) continue;
           const l = m.lineas[lado];
           const [min, max] = m.posesion === lado ? [cbMin, cbMax] : [sbMin, sbMax];
           for (const d of [l.medio - l.defensa, l.ataque - l.medio]) {

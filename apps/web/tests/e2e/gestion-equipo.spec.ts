@@ -150,7 +150,7 @@ test('gestionar equipo con la distribución de Formación', async ({ page }) => 
   await expect(gestion).toBeHidden();
 });
 
-test('energía en la gestión (spec 014, SC-007): en el descanso todos los del campo al 100 % sin penalización; ayuda con los tramos', async ({ page }) => {
+test('energía en la gestión (spec 018, FR-020): en el descanso la penalización solo se ve por debajo de 80; ayuda con los tramos', async ({ page }) => {
   await hastaElDescansoRapida(page);
   await page.getByRole('button', { name: 'Gestionar equipo' }).click();
   const gestion = page.getByTestId('gestion-equipo');
@@ -159,8 +159,9 @@ test('energía en la gestión (spec 014, SC-007): en el descanso todos los del c
   expect(n).toBeGreaterThanOrEqual(10);
   await expect(gestion.locator('.ficha-equipo .indicador-energia')).toHaveCount(n);
   for (const indicador of await gestion.locator('.ficha-equipo .indicador-energia').all()) {
-    await expect(indicador).toHaveAttribute('aria-label', 'Energía 100 %');
-    await expect(indicador.locator('.indicador-energia-penalizacion')).toHaveCount(0);
+    const energia = Number(/Energía (\d+) %/.exec((await indicador.getAttribute('aria-label')) ?? '')?.[1]);
+    expect(energia).toBeGreaterThan(0);
+    if (energia >= 80) await expect(indicador.locator('.indicador-energia-penalizacion')).toHaveCount(0);
   }
   // El banquillo no lleva indicador (FR-018).
   await expect(gestion.getByTestId('banquillo').locator('.indicador-energia')).toHaveCount(0);

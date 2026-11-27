@@ -162,9 +162,9 @@ los jugadores baja tras el inicio del cansancio.
 **Acceptance Scenarios**:
 
 1. **Given** un jugador sin rasgos que afecten al cansancio, **When** el reloj no ha llegado al minuto 65 (55 con
-   Presión alta), **Then** su energía es 100 % y no tiene penalización.
+   Presión alta), **Then** su energía es 100 % y no tiene penalización. *[Revisado por la spec 018: la energía solo baja en el tramo final de cada parte, desde el 30' y el 55' (25' y 50' con Indisciplinado); Presión alta ya no lo adelanta (018/FR-006, FR-015, FR-017).]*
 2. **Given** un jugador sin rasgos de cansancio, **When** pasa el minuto de inicio, **Then** su energía baja de forma
-   progresiva y su penalización sube, y su rendimiento en el partido baja en consecuencia.
+   progresiva y su penalización sube, y su rendimiento en el partido baja en consecuencia. *[Revisado por la spec 018: baja según su rol, sus rasgos y sus acciones intensas, y recupera +10 en el descanso y +5 en cada pausa de la prórroga (018/FR-006 a FR-010a).]*
 3. **Given** las pausas de «Gestionar equipo», **When** se ven las chapas, **Then** cada jugador en el campo muestra la
    cara según estos tramos:
    - energía de 80 % a 100 %: cara sonriente, verde;
@@ -287,9 +287,9 @@ fijas.
 - **Energía exactamente en un límite (80, 60, 40, 20 %)**: pertenece al tramo superior (p. ej. 80 % es verde
   sonriente).
 - **Prórroga en un partido eliminatorio**: el cansancio sigue acumulándose al mismo ritmo, sin descanso que lo recupere;
-  es donde los jugadores normales llegan a los tramos naranja y rojo.
+  es donde los jugadores normales llegan a los tramos naranja y rojo. *[Revisado por la spec 018: la prórroga cansa toda ella y recupera +5 antes y +5 en su descanso (018/FR-006).]*
 - **Pausa de gestión antes del minuto de inicio del cansancio**: todos los indicadores muestran 100 % y ninguna
-  penalización.
+  penalización. *[Revisado por la spec 018: antes del 30' todos tienen 100; en el descanso, la energía ya refleja lo gastado entre el 30' y el 45' y la recuperación (018/FR-006).]*
 - **Navegación con datos en caché que han cambiado** (p. ej. fragmentos tras una compra): se muestra lo conocido y se
   actualiza sin pestañeo; los datos de decisión (saldo, plazos, turnos, estado de la partida) no se toman de la caché,
   se esperan frescos (FR-025).
@@ -346,18 +346,18 @@ fijas.
 - **FR-014**: Sin contar virtudes, defectos ni tácticas que lo modifiquen, los jugadores en el campo DEBEN empezar a
   cansarse en el minuto 65 (55 con Presión alta), y la bajada de rendimiento DEBE ser apreciable en el juego y en las
   estadísticas (ver SC-006): un jugador así que juega los 90 minutos termina con energía ≈ 50 % (penalización ≈ 30 %,
-  tramo amarillo) y, si hay prórroga en un partido eliminatorio, sigue cansándose hacia los tramos naranja y rojo.
+  tramo amarillo) y, si hay prórroga en un partido eliminatorio, sigue cansándose hacia los tramos naranja y rojo. *[Revisado por la spec 018: el cansancio empieza en el 30' y en el 55' con un ritmo por rol; el jugador de referencia llega al 90' con 60 de energía y un medio sin rasgos, con 50 (018/FR-006, FR-010).]*
 - **FR-015**: La energía de cada jugador DEBE ir de 100 % (sin cansancio) a 0 % (cansancio máximo que admite el motor), y
-  la penalización DEBE ser el porcentaje en que el cansancio reduce en ese momento sus estadísticas.
+  la penalización DEBE ser el porcentaje en que el cansancio reduce en ese momento sus estadísticas. *[Revisado por la spec 018: la energía es el estado del motor y la penalización se deriva de ella por tramos, hasta el 54,5 %; pesa entera en las stats físicas, la mitad en las técnicas y una cuarta parte en las mentales (018/FR-005, FR-011, FR-012).]*
 - **FR-016**: En las pausas de «Gestionar equipo» de un partido en curso, cada chapa de un jugador en el campo DEBE mostrar
   junto al retrato el indicador de energía con los cinco tramos del escenario 3 de la US4 (cara y color), el porcentaje
   de energía encima y, con energía inferior al 80 %, la penalización en rojo debajo.
 - **FR-017**: El indicador NO DEBE mostrarse durante la reproducción de la Simulación 2D ni en las pantallas de
   alineación entre jornadas.
 - **FR-018**: Los suplentes que no han jugado DEBEN mostrarse sin indicador o con 100 %; los que entran en el campo DEBEN
-  cansarse desde su entrada.
+  cansarse desde su entrada. *[Revisado por la spec 018: entran con 100 de energía y gastan desde su entrada dentro del tramo en curso (018/FR-005).]*
 - **FR-019**: El indicador DEBE reflejar el cansancio real calculado por el motor, incluidos los efectos de Incansable,
-  Fatigado, Indisciplinado, Motivador, Presión alta y marcaje individual.
+  Fatigado, Indisciplinado, Motivador, Presión alta y marcaje individual. *[Revisado por la spec 018: con las reglas nuevas de esos rasgos y tácticas: Presión alta se cansa por cada presión, e Individual, ×1,05 al equipo y ×1,15 al marcador de la estrella (018/FR-013 a FR-018).]*
 - **FR-020**: El significado del indicador DEBE poder consultarse en la propia pantalla (p. ej. un texto de ayuda con los
   tramos) y ser legible sin depender solo del color.
 
@@ -426,7 +426,7 @@ fijas.
 - **SC-006**: Un jugador sin rasgos de cansancio, sin Presión alta ni marcaje individual, termina el minuto 90 con una
   energía de entre el 45 % y el 55 % (penalización de entre el 27 % y el 33 %), y su rendimiento al final del partido
   baja de forma medible respecto al de antes del minuto de inicio, según el informe de equilibrado; al final de una
-  prórroga está en el tramo naranja o rojo.
+  prórroga está en el tramo naranja o rojo. *[Sustituido por la spec 018: la curva de energía por rol (018/SC-003) y los rasgos (018/SC-004); la comprobación salió de `pnpm balance` con la 9.0.0 (`specs/018-rework-motor/informe-9.0.0.md`).]*
 - **SC-007**: En las pausas de «Gestionar equipo», el 100 % de los jugadores en el campo muestran el indicador de energía
   con la cara, el color, el porcentaje y la penalización que corresponden a su tramo.
 - **SC-008**: Para cada estadística principal, el informe de equilibrado muestra que el equipo con +15 puntos en esa
@@ -453,7 +453,7 @@ fijas.
   muestra desde que la energía baja del 80 %, que es cuando el jugador entra en «uno de los estados cansados».
 - **Relación energía-penalización**: la energía mide lo que queda hasta el cansancio máximo del motor y la penalización es
   la reducción real de estadísticas; ambas salen del mismo valor del motor, sin una regla de cansancio aparte para la
-  interfaz.
+  interfaz. *[Revisado por la spec 018: la energía ya no mide lo que queda hasta un cansancio máximo: es el estado del motor, y la penalización física se deriva de ella; la técnica y la mental se derivan de la física en la ayuda (018/FR-005, FR-011, FR-021).]*
 - **Dónde se ve el indicador**: en todas las pausas de «Gestionar equipo» de la 012 (descanso, goles e incidencias en
   control total) y en la gestión desde la simulación rápida si la hay; no en la reproducción de la 2D.
 - **Fuera de juego**: se aplica la regla real simplificada (sin «interferir en el juego» ni fuera de juego pasivo): cuenta

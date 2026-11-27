@@ -100,4 +100,20 @@ describe('reproducción de un partido entre humanos (US11)', () => {
     expect(resumen.cuerpo.estadisticas).toEqual(antes.cuerpo.estadisticas);
     await bd.db.update(partidos).set({ versionParametros: '3.0.0' }).where(eq(partidos.id, partidoId));
   });
+
+  // Spec 018 (FR-036, US5 escenario 3): el motor solo simula la 9.x; los partidos anteriores conservan su resumen.
+  it.each(['7.0.0', '8.0.0'])('un partido %s responde 409 VERSION_NO_REPRODUCIBLE y conserva su resumen', async (version) => {
+    const antes = await peticion(srv.url, `/api/partidos/${partidoId}`, { cookie: a.cookie });
+    await bd.db.update(partidos).set({ versionParametros: version }).where(eq(partidos.id, partidoId));
+    cacheReproducciones.vaciar();
+    const r = await peticion(srv.url, `/api/partidos/${partidoId}/reproduccion`, { cookie: a.cookie });
+    expect(r.estado).toBe(409);
+    expect(r.cuerpo.error.codigo).toBe('VERSION_NO_REPRODUCIBLE');
+    const resumen = await peticion(srv.url, `/api/partidos/${partidoId}`, { cookie: a.cookie });
+    expect(resumen.estado).toBe(200);
+    expect(resumen.cuerpo.marcador).toEqual(antes.cuerpo.marcador);
+    expect(resumen.cuerpo.eventos).toEqual(antes.cuerpo.eventos);
+    expect(resumen.cuerpo.estadisticas).toEqual(antes.cuerpo.estadisticas);
+    await bd.db.update(partidos).set({ versionParametros: '3.0.0' }).where(eq(partidos.id, partidoId));
+  });
 });

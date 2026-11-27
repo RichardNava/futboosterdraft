@@ -1,10 +1,10 @@
 /** Alineación de los NPC en el modo Duelo de jugadores (spec 005, T069). */
-import { casillasEnOrden, FORMACIONES_IDS, PARAMETROS_V4, puntuacionEfectiva, validarAlineacion } from '@fbd/domain';
+import { parametrosActuales, casillasEnOrden, FORMACIONES_IDS, puntuacionEfectiva, validarAlineacion } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { decidirAlineacionDuelos } from '../src/duelos';
 import { jugador, plantilla } from './ayudas';
 
-const p = PARAMETROS_V4;
+const p = parametrosActuales();
 const suma = (a: ReturnType<typeof decidirAlineacionDuelos>, base: ReturnType<typeof plantilla>) => {
   const casillas = new Map(casillasEnOrden(a.formacion).map((c) => [c.id, c]));
   return a.titulares.reduce((s, t) => s + puntuacionEfectiva(base.find((j) => j.id === t.jugadorId)!, casillas.get(t.casillaId)!, p).base, 0);

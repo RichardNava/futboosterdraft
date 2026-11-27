@@ -36,8 +36,8 @@ export interface PerfilNPC {
   /** Probabilidad (milésimas) de no elegir la mejor formación sino otra al azar de su alcance. */
   despisteFormacion: number;
   partido: {
-    /** Cansancio a partir del cual cambia a un jugador (fracción de stats perdida). */
-    umbralCansancio: number;
+    /** Energía por debajo de la cual cambia a un jugador; 0 = nunca (spec 018, R16). */
+    umbralEnergia: number;
     /** Cambia a defensas con amarilla en el descanso para evitar la expulsión. */
     protegeAmonestados: boolean;
     /** Ajusta la táctica según el marcador; 0 = nunca, 1 = en cuanto va perdiendo o ganando. */
@@ -56,7 +56,7 @@ const AVANZADO: PerfilNPC = {
   anticipacion: false,
   simulaciones: 0,
   despisteFormacion: 0,
-  partido: { umbralCansancio: 0.28, protegeAmonestados: true, reaccionTactica: 0.8, reservaCambios: 1 },
+  partido: { umbralEnergia: 53, protegeAmonestados: true, reaccionTactica: 0.8, reservaCambios: 1 },
 };
 
 export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
@@ -67,7 +67,7 @@ export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
     anticipacion: false,
     simulaciones: 0,
     despisteFormacion: 500,
-    partido: { umbralCansancio: 1, protegeAmonestados: false, reaccionTactica: 0, reservaCambios: 0 },
+    partido: { umbralEnergia: 0, protegeAmonestados: false, reaccionTactica: 0, reservaCambios: 0 },
   },
   intermedio: {
     ruido: 4,
@@ -76,7 +76,7 @@ export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
     anticipacion: false,
     simulaciones: 0,
     despisteFormacion: 200,
-    partido: { umbralCansancio: 0.35, protegeAmonestados: false, reaccionTactica: 0.4, reservaCambios: 0 },
+    partido: { umbralEnergia: 42, protegeAmonestados: false, reaccionTactica: 0.4, reservaCambios: 0 },
   },
   avanzado: AVANZADO,
   PRO: {
@@ -86,7 +86,7 @@ export const PERFILES: Readonly<Record<NivelIA, PerfilNPC>> = {
     anticipacion: true,
     simulaciones: 20,
     despisteFormacion: 0,
-    partido: { umbralCansancio: 0.22, protegeAmonestados: true, reaccionTactica: 1, reservaCambios: 1 },
+    partido: { umbralEnergia: 63, protegeAmonestados: true, reaccionTactica: 1, reservaCambios: 1 },
   },
   automatico: AVANZADO,
 };

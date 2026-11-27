@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { etiquetaEnergia, muestraPenalizacion, tramoEnergia } from '../../src/componentes/IndicadorEnergia';
+import { detallePenalizacion, etiquetaEnergia, muestraPenalizacion, penalizacionesPorTipo, tramoEnergia } from '../../src/componentes/IndicadorEnergia';
 
 describe('tramos del indicador de energía (spec 014, data-model §4)', () => {
   it.each([
@@ -25,5 +25,15 @@ describe('tramos del indicador de energía (spec 014, data-model §4)', () => {
   it('aria-label del contrato U1', () => {
     expect(etiquetaEnergia(67, 20)).toBe('Energía 67 %, rinde un 20 % menos');
     expect(etiquetaEnergia(100, 0)).toBe('Energía 100 %');
+  });
+
+  it('deriva la técnica (×0,5) y la mental (×0,25) de la física, sin campos nuevos (spec 018, FR-021)', () => {
+    expect(penalizacionesPorTipo(16)).toEqual({ fisica: 16, tecnica: 8, mental: 4 });
+    expect(penalizacionesPorTipo(0)).toEqual({ fisica: 0, tecnica: 0, mental: 0 });
+    expect(penalizacionesPorTipo(55)).toEqual({ fisica: 55, tecnica: 28, mental: 14 });
+  });
+
+  it('detalle de la penalización con el texto del contrato', () => {
+    expect(detallePenalizacion(16)).toBe('Físicas −16 %, técnicas −8 % y mentales −4 % (aproximado).');
   });
 });

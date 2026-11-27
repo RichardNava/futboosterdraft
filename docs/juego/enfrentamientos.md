@@ -1,15 +1,18 @@
 # Enfrentamientos del motor
 
-Cómo usa el motor de partido (versión 8.0.0, spec 015) las stats de cada jugador: qué stat se enfrenta a cuál en cada
+Cómo usa el motor de partido (versión 9.0.0, spec 018) las stats de cada jugador: qué stat se enfrenta a cuál en cada
 acción, con qué probabilidad sale, qué la modifica y qué stats de la carta no se usan por separado. Sirve para decidir
-qué cambiar; no es una especificación. Los partidos jugados con la 7.0.0 se siguen reproduciendo con ella: lo que
-cambia la 8.0.0 se marca como tal.
+qué cambiar; no es una especificación. La 9.0.0 conserva los duelos de la 8.0.0 y cambia la fatiga (§6) y las tácticas
+(§7). Lo marcado «8.0.0» sigue vigente; las notas de la 7.0.0 son historia: los partidos 7.x y 8.x ya no se reproducen,
+solo conservan su resumen.
 
-Escrito a mano el 2026-11-13 a partir del código (las referencias llevan a él) y puesto al día con la 8.0.0 el
-2026-11-16. Si cambia el motor, puede quedar desfasado: la fuente de verdad son los ficheros enlazados y los parámetros
-de [`packages/domain/src/parametros/`](../../packages/domain/src/parametros/) (`v6.json` más los cambios de la 7.0.0 y
-de la 8.0.0 en `index.ts`; la 8.0.0 añade bloques: `curvas`, `quite`, `aereo`, `desmarque`, `controlPresion`,
-`liderazgo` y los de los añadidos).
+Escrito a mano el 2026-11-13 a partir del código (las referencias llevan a él), puesto al día con la 8.0.0 el
+2026-11-16 y con la 9.0.0 el 2026-11-26. Si cambia el motor, puede quedar desfasado: la fuente de verdad son los ficheros
+enlazados y los parámetros de [`packages/domain/src/parametros/`](../../packages/domain/src/parametros/) (`v6.json` más
+los cambios de cada versión en `index.ts`; la 8.0.0 añade `curvas`, `quite`, `aereo`, `desmarque`, `controlPresion`,
+`liderazgo` y los de los añadidos, y la 9.0.0, `fatiga` y los valores de `tacticas`). Las cifras medidas salen de
+[`linea-base-9.0.0.md`](../../specs/018-rework-motor/linea-base-9.0.0.md) y del
+[informe de la 9.0.0](../../specs/018-rework-motor/informe-9.0.0.md).
 
 ## 1. Cómo se juega una acción
 
@@ -22,7 +25,7 @@ Cada vez que un jugador tiene el balón pasan dos cosas:
    paso (§3). Ganar o perder decide si el pase llega, si el regate sale o si el tiro va a puerta.
 
 Todo es individual: el pase de un mal pasador se resuelve con su stat de pase, sea cual sea la de sus compañeros. Lo
-único colectivo está en §6.
+único colectivo está en §8.
 
 ## 2. La fórmula del duelo
 
@@ -82,8 +85,9 @@ posicionamiento y 70 de velocidad quita con 65,25 (69 con Presionador).
 1. **Posición**: fuera de su sitio, todas sus stats bajan un porcentaje (p. ej. un delantero de defensa, −40 %; un
    medio en otra posición del centro del campo, 0–10 %). Tabla en `posicion` de `v6.json`.
 2. **Bonificaciones en puntos**: virtudes de equipo y Provocador del rival.
-3. **Cansancio**: el atributo se multiplica por (1 − cansancio). Desde el minuto 65 (55 con Presión alta) un jugador
-   sin rasgos llega al 90' con un 27–33 % menos.
+3. **Fatiga (9.0.0)**: el atributo pierde un porcentaje según la energía del jugador y el tipo de stat: entero en las
+   físicas, la mitad en las técnicas y una cuarta parte en las mentales (§6). Un medio sin rasgos llega al 90' con
+   unos 46 de energía: −22,5 % en velocidad, −11 % en pase y −6 % en visión.
 4. **Defectos de equipo**: Polémico, Rebelde y Estrellita multiplican.
 
 ## 4. Enfrentamientos por acción
@@ -231,7 +235,8 @@ desmarque por equipo y partido y unos 3 controles con presión (casi todos de lo
 - **Zona** (de 0, la propia área, a 5, el área rival): la zona 3 resta 0,13; la 4, 0,26; la 5, 0,39. El pase corto
   solo resta 0,13, y solo en las zonas 4 y 5.
 - **Formación y táctica**: ofensividad de los dos equipos, Catenaccio, marcaje individual, Presión alta, Línea
-  adelantada, Juego combinativo y Contraataque suman o restan a x según la acción y la zona.
+  adelantada, Juego combinativo, Contraataque, Bandas y Juego vertical suman o restan a x según la acción y la zona
+  (§7).
 - **Virtudes que suman probabilidad**: leve +4 puntos (Potente, Aura), media +8 (Primer toque, Elegante, Jugador
   entre líneas, Presionador en contra), alta +15 (Desbordante, Matador, Cabeceador, Lanzador de faltas y de penaltis…).
 - **Virtudes que tocan el atributo**: Intimidante, −1 al rival; Infranqueable, +2 al quite frente a regates ≥ 95;
@@ -284,8 +289,10 @@ geométrica del factor del regate y el del físico, así que el buen regateador 
 ### 5.3 Movimiento y mano a mano
 
 - **Velocidad de carrera**: de 1,8 a 3,6 m por tick (un tick es un segundo del reloj del partido) según la stat de
-  velocidad (de 50 a 95), menos con el balón y con cansancio ([`espacio/movimiento.ts`](../../packages/engine/src/espacio/movimiento.ts)). Llegar antes a un balón
-  suelto depende de esto.
+  velocidad (de 50 a 95), menos con el balón y con la penalización física de la fatiga
+  ([`espacio/movimiento.ts`](../../packages/engine/src/espacio/movimiento.ts)). Llegar antes a un balón suelto depende
+  de esto. Con la 9.0.0 la velocidad se decide cada 4 ticks y se avanza en dos medios pasos; los objetivos de
+  colocación se recalculan cada 8 ticks.
 - **Mano a mano**: la distancia de disparo es 14 m + 3 m por cada 10 puntos de remate sobre 70; con visión alta se
   equivoca menos de decisión ([`acciones/manoAMano.ts`](../../packages/engine/src/acciones/manoAMano.ts)).
 - **Con la 8.0.0 (spec 015, añadidos)**:
@@ -297,15 +304,147 @@ geométrica del factor del regate y el del físico, así que el buen regateador 
     rival contraataca y tira con él a más de 30 m de su portería, es a puerta vacía)
     ([`espacio/colocacion.ts`](../../packages/engine/src/espacio/colocacion.ts)).
 
-## 6. Lo que es colectivo
+## 6. Fatiga (9.0.0, spec 018)
+
+[`modificadores/cansancio.ts`](../../packages/engine/src/modificadores/cansancio.ts), con los parámetros de `fatiga`.
+Sustituye al cansancio de la 8.0.0, que empezaba a la vez para todos en el minuto 65 (55 con Presión alta).
+
+### 6.1 Cómo se gasta la energía
+
+- **Energía de 0 a 100**: todos empiezan con 100, también los suplentes que entran.
+- **Tramos**: solo se gasta en el tramo final de cada parte: en la primera, desde el minuto 30; en la segunda, desde el
+  55 (10 minutos después de reanudar); en la prórroga, toda. El descuento cuenta dentro del tramo en curso.
+  Indisciplinado empieza cada tramo 5 minutos antes.
+- **Gasto**: 1 punto por minuto de tramo multiplicado por el ritmo del jugador. El 80 % se gasta por estar en el campo
+  y el 20 %, por sus acciones intensas (entrar en sprint, entrar a presionar, regatear y disputar un duelo), medidas
+  frente a la media de su rol (`referenciaAcciones`, calibrada en T060): quien hace más acciones que la media se cansa
+  más, y quien hace menos, menos.
+- **Ritmo**: el de su rol en la posición que ocupa (portería 0,2; defensa 0,85; medio 1,2; ataque 0,95), multiplicado
+  por sus rasgos y su táctica:
+
+| Rasgo o táctica | Efecto |
+|---|---|
+| Incansable | Ritmo ×0,7 |
+| Fatigado | Ritmo ×1,3 |
+| Indisciplinado | Tramos 5 minutos antes y cada acción intensa ×1,5 |
+| Motivador | Sus compañeros, ritmo ×0,95 (no a sí mismo; dos Motivadores no se acumulan) y +15 en el descanso en vez de +10 si estaba en el campo al pitarse |
+| Marcaje individual | Todo el equipo, ritmo ×1,05; el marcador de la estrella, ×1,15 mientras dure el marcaje (§7) |
+| Presión alta | Cada presión cuesta ×15 (`costePresion`): se cansa por presionar, no por la táctica en sí |
+
+- **Recuperación**: +10 en el descanso (+15 con Motivador), +5 antes de la prórroga y +5 en su descanso, sin pasar de
+  100.
+
+Con acciones en la media de su rol, la energía al 90' es: portero 93, defensa 67,5, medio 50 y delantero 62,5. Para un
+jugador de ritmo 1: sin rasgos 60, Incansable 75, Fatigado 45, Indisciplinado 44 y con un compañero Motivador 66,75.
+
+### 6.2 Qué cuesta la energía perdida
+
+La penalización física crece por tramos: 0,35 puntos por punto de energía perdido de 100 a 70, 0,5 de 70 a 45 y 0,7 de
+45 a 0 (10,5 % a 70, 23 % a 45 y 54,5 % a 0). Cada atributo la sufre según su tipo
+([`modificadores/atributos.ts`](../../packages/engine/src/modificadores/atributos.ts)):
+
+| Tipo | Peso | Atributos |
+|---|---|---|
+| Física | 100 % | velocidad, físico, quite, aéreo |
+| Técnica | 50 % | pase, regate, remate, centro, técnica, parada, desmarque, marcaje |
+| Mental | 25 % | visión, anticipación, liderazgo |
+
+El liderazgo de la línea defensiva y del portero también pierde su parte mental
+([`modificadores/liderazgo.ts`](../../packages/engine/src/modificadores/liderazgo.ts)).
+
+### 6.3 Efecto medido
+
+Energía media de los titulares en el campo, 1000 partidos de un 4-4-2 de media 80 sin rasgos contra un clon con la
+táctica neutra:
+
+| Táctica | POR 45' / 75' / 90' | DEF | MED | DEL |
+|---|---|---|---|---|
+| Neutra | 97 / 96 / 93 | 87 / 78 / 65 | 82 / 64 / 46 | 86 / 74 / 59 |
+| Marcaje individual | 97 / 96 / 93 | 86 / 74 / 59 | 81 / 62 / 43 | 85 / 71 / 55 |
+| Presión alta | 97 / 96 / 93 | 81 / 62 / 42 | 70 / 34 / 6 | 79 / 57 / 37 |
+
+El resto de tácticas queda a 1,3 puntos o menos de la neutra. Con la 8.0.0 todos llegaban al 90' con 54 (20 con Presión
+alta).
+
+Penalización al 90' con la táctica neutra, por tipo de stat:
+
+| Rol | Energía | Física | Técnica | Mental |
+|---|---:|---:|---:|---:|
+| Portero | 93 | 2,5 % | 1,2 % | 0,6 % |
+| Defensa | 65 | 13,2 % | 6,6 % | 3,3 % |
+| Medio | 46 | 22,5 % | 11,3 % | 5,6 % |
+| Delantero | 59 | 16,0 % | 8,0 % | 4,0 % |
+| Medio con Presión alta | 6 | 50,1 % | 25,0 % | 12,5 % |
+
+El mismo equipo llega al 90' con una media de 60,5 en Bloque medio y 35,5 en Presión alta (018/SC-005): presionar
+cuesta unos 25 puntos (34 con la 8.0.0). Los NPC cambian a un jugador cuando su energía baja de su umbral: Amateur
+nunca, Intermedio 42, Avanzado 53 y PRO 63; con Fatigado o Indisciplinado, antes (`umbralEnergia` en
+[`ai/src/perfiles.ts`](../../packages/ai/src/perfiles.ts)).
+
+## 7. Tácticas (9.0.0, spec 018)
+
+[`modificadores/formacionTactica.ts`](../../packages/engine/src/modificadores/formacionTactica.ts) y
+[`modificadores/marcajeEstrella.ts`](../../packages/engine/src/modificadores/marcajeEstrella.ts). Todos los valores
+están en `tacticas` de la 9.0.0, también los multiplicadores de peso y de avance que hasta la 8.0.0 estaban fijos en el
+motor (con el mismo valor). Los desplazamientos de táctica cuentan la mitad en el tiro.
+
+### 7.1 Reglas
+
+- **Catenaccio**: el rival resta 2,5 a x en las zonas 4 y 5 (no en la 3), salvo en los centros y los tiros lejanos;
+  en el tiro dentro del área resta la mitad. Cierra el área y deja centrar y tirar de lejos. Mantiene sus costes
+  ofensivos. En la 8.0.0 restaba 0,9 en las zonas 3 a 5 en todas las acciones; la spec proponía 0,5, pero con 0,5
+  encajaba más que la neutra y se calibró a 2,5 (T062).
+- **Marcaje individual**: al empezar se fijan la estrella (el rival de campo con mayor media efectiva) y su marcador
+  (el defensa con más marcaje; si no hay, el medio y, en último caso, el delantero; nunca el portero). El marcador la
+  sigue, gana +6 de marcaje en el desmarque y la estrella pierde 5 puntos en los duelos contra él. Sus compañeros ganan
+  +0,05 en x y el regate rival, +0,12 (+0,17 si regatea un compañero de la estrella). Si sale uno de los dos, el
+  marcaje de la estrella termina sin nueva elección (si sale la estrella, el +0,05 pasa a todos los rivales). Sustituye
+  al −0,04 general y al +0,08 en el pase al espacio de la 8.0.0.
+- **Bandas**: al perder el balón en una banda, la primera acción del rival tras recuperarlo gana +0,15 en x si sigue por
+  esa banda (pase a ese carril, o regate, conducción o centro por él); si va a otro carril o tira, se pierde. Una
+  pérdida en el carril central no da ventaja. Su pase al espacio pesa un 10 % menos.
+- **Juego vertical**: sus pases largos y al espacio restan 0,15 en x.
+- **Bandas + Vertical**: centros ×1,8 (no ×2,08) y +25 puntos de balón por banda (no +35), con los costes de las dos.
+- **Línea adelantada**: sube 4,7 m con y sin balón (en la 8.0.0, solo con él) y mantiene el riesgo del pase al
+  espacio a su espalda.
+- **Sin cambios**: Contraataque, Combinativo y los efectos de duelo de Presión alta. Presión alta solo cambia en su
+  coste (§6.1).
+
+### 7.2 Efecto medido
+
+1000 partidos por táctica contra el mismo equipo con la táctica neutra, con las mismas semillas en la 8.0.0 y en la
+9.0.0. El efecto es la diferencia de goles frente a la neutra (error estándar de unos 0,05 por serie):
+
+| Táctica | GF / GC | Efecto (8.0.0) | Victorias (8.0.0) |
+|---|---|---:|---:|
+| Neutra | 1,39 / 1,41 | — | 37,1 % (37,7 %) |
+| Presión alta | 1,57 / 1,14 | +0,46 (−0,16) | 49,7 % (34,6 %) |
+| Contraataque | 1,64 / 1,31 | +0,35 (+0,26) | 47,7 % (42,8 %) |
+| Línea adelantada | 1,45 / 1,33 | +0,14 (+0,24) | 41,0 % (45,0 %) |
+| Marcaje individual | 1,37 / 1,27 | +0,13 (+0,17) | 39,8 % (42,6 %) |
+| Juego vertical | 1,51 / 1,41 | +0,13 (+0,15) | 40,1 % (42,4 %) |
+| Bandas + Vertical | 1,49 / 1,46 | +0,05 (+0,13) | 40,4 % (41,4 %) |
+| Bandas | 1,45 / 1,44 | +0,03 (+0,14) | 39,4 % (42,5 %) |
+| Catenaccio | 0,59 / 1,03 | −0,42 (−0,65) | 21,2 % (19,1 %) |
+| Combinativo | 1,17 / 1,67 | −0,47 (−0,34) | 26,1 % (29,5 %) |
+
+- Con la 9.0.0 se marcan unos 0,2 goles menos por equipo (2,50 por partido frente a 2,66).
+- **Presión alta** es la táctica más fuerte: su coste en energía la frena (sin él, +0,90 y 63 % de victorias), pero
+  sus efectos de duelo, que la spec no cambia, la dejan en +0,46. Bajarla más exige tocar esos efectos.
+- **Catenaccio** encaja 0,38 goles menos que la neutra y renuncia al ataque: pierde menos que en la 8.0.0.
+- **Combinativo** pierde más que en la 8.0.0 (−0,47 frente a −0,34): candidata a revisar en otra spec.
+- **Bandas** y **Bandas + Vertical** quedan casi neutras; Juego vertical, Línea adelantada e Individual dan una ventaja
+  pequeña pero medible.
+
+## 8. Lo que es colectivo
 
 - **Ritmo de pase**: el tiempo de control antes de un pase depende de la media del pase de los medios del equipo, no
   del que pasa (`controlPorRitmo` en [`acciones/juego.ts`](../../packages/engine/src/acciones/juego.ts)).
 - **Bonificaciones de equipo** de algunas virtudes (puntos por demarcación) y los multiplicadores de los defectos de
   equipo (§3).
-- **Formación y táctica** (§4, Ajustes).
+- **Formación y táctica** (§4, Ajustes, y §7).
 
-## 7. Stats de la carta que no se usan por separado
+## 9. Stats de la carta que no se usan por separado
 
 Con la 8.0.0 todas las stats de la carta tienen un uso propio. Las que no lo tenían o lo tenían a medias:
 
@@ -319,7 +458,7 @@ Con la 8.0.0 todas las stats de la carta tienen un uso propio. Las que no lo ten
 | posicionamiento | Medio | Su marcaje, su anticipación y, con la velocidad, su quite; parte del físico y del aéreo. |
 | aéreo | Defensa | No existe: el juego aéreo de un defensa es su anticipación (con Cabeceador, ±0,15 por arriba). |
 
-## 8. Lo que resolvió la 8.0.0
+## 10. Lo que resolvió la 8.0.0
 
 Frente a lo propuesto el 2026-11-13 («que cada stat se enfrente individualmente a la del defensor»), la spec 015:
 

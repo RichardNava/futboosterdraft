@@ -54,11 +54,11 @@ test('control total en la 2D: parada por un lance propio, aviso y gestión del e
   }
   await expect(gestion.locator('.aviso-parada')).toContainText(lance);
 
-  // Spec 014 (SC-007): con el cansancio desde el 65', pasado el 75' algún titular está por debajo del 100 % y, pasado el
-  // 85', alguno baja del 80 % y su indicador lleva la penalización.
+  // Spec 018: con la fatiga desde el 30', pasado el 35' algún titular está por debajo del 100 % y, pasado el 70', algún
+  // medio baja del 80 % y su indicador lleva la penalización.
   const minuto = Number(/\((\d+)/.exec((await gestion.locator('.aviso-parada').textContent()) ?? '')?.[1] ?? 0);
-  if (minuto >= 75) await expect(gestion.locator('.ficha-equipo .indicador-energia:not([aria-label="Energía 100 %"])').first()).toBeVisible();
-  if (minuto >= 85) await expect(gestion.locator('.ficha-equipo .indicador-energia-penalizacion').first()).toBeVisible();
+  if (minuto >= 35) await expect(gestion.locator('.ficha-equipo .indicador-energia:not([aria-label="Energía 100 %"])').first()).toBeVisible();
+  if (minuto >= 70) await expect(gestion.locator('.ficha-equipo .indicador-energia-penalizacion').first()).toBeVisible();
 
   // Spec 012, ronda 5: con un lesionado y cambios por hacer hay que sustituirlo (sin cambios automáticos).
   const volver = page.getByRole('button', { name: 'Volver sin cambios' });

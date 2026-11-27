@@ -38,6 +38,7 @@
 import type { Defecto, Rasgo, Virtud } from '@fbd/domain';
 import { minutoDeJuego, rival, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } from '../estado/estado';
 import { bonusLiderPortero } from './liderazgo';
+import { ajusteEstrella } from './marcajeEstrella';
 
 /**
  * Si el jugador tiene un rasgo (spec 005). Virtudes y defectos no comparten nombres, así que basta con buscar en las dos
@@ -110,6 +111,10 @@ export function ajusteDuelo(
     if (tiene(atacante, 'Intimidante')) d -= s.intimidante;
     // Spec 015 (US6, FR-016): el portero líder ayuda al defensa de su zona.
     d += bonusLiderPortero(estado, defensor);
+    // Spec 018 (FR-026): la estrella contra su marcador.
+    const estrella = ajusteEstrella(estado, atacante, defensor);
+    a += estrella.atacante;
+    d += estrella.defensor;
   }
   if (tiene(atacante, 'Aura')) prob += s.bonusProbabilidadLeve;
   if (defensor && tiene(defensor, 'Aura')) prob -= s.bonusProbabilidadLeve;

@@ -1,8 +1,8 @@
 /**
  * Quite por demarcación de la 8.0.0 (spec 015, FR-004, FR-005; contracts/motor.md M2.3), sin cansancio ni penalización
- * por posición. Con la 7.0.0, el quite de siempre.
+ * por posición.
  */
-import { PARAMETROS_V7, PARAMETROS_V8, type Defecto, type ParametrosEquilibrado, type Posicion, type Virtud } from '@fbd/domain';
+import { parametrosActuales, type Defecto, type ParametrosEquilibrado, type Posicion, type Virtud } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { atributo } from '../src/modificadores/atributos';
 import { partido, titularEn } from './ayudas';
@@ -15,7 +15,7 @@ interface Carta {
 }
 
 /** Quite del titular de una casilla del local con los stats, rasgos y posiciones indicados. */
-function quite(casilla: string, carta: Carta, p: ParametrosEquilibrado = PARAMETROS_V8): number {
+function quite(casilla: string, carta: Carta, p: ParametrosEquilibrado = parametrosActuales()): number {
   const e = partido(`quite:${casilla}`, { version: p.version, parametros: p });
   const j = titularEn(e, 'local', casilla);
   j.jugador = {
@@ -57,13 +57,5 @@ describe('quite de la 8.0.0 (M2.3)', () => {
 
   it('POR: su defensa', () => {
     expect(quite('POR', { stats: { defensa: 77 }, virtudes: ['Presionador'] })).toBeCloseTo(77);
-  });
-});
-
-describe('quite de la 7.0.0 (sin el bloque)', () => {
-  it('MED posicionamiento, DEL agresividad × 0,8, DEF tackling; los rasgos no cuentan', () => {
-    expect(quite('MC-1', { stats: MED, virtudes: ['Presionador'] }, PARAMETROS_V7)).toBeCloseTo(80);
-    expect(quite('DC', { stats: DEL }, PARAMETROS_V7)).toBeCloseTo(64);
-    expect(quite('DCI', { stats: DEF, defectos: ['MalDefensor'] }, PARAMETROS_V7)).toBeCloseTo(80);
   });
 });

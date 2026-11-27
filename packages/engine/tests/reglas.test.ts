@@ -1,4 +1,4 @@
-import { PARAMETROS_V3 } from '@fbd/domain';
+import { parametrosActuales } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { expulsar as expulsarEnElLance, resolverIncidencias } from '../src/acciones/plantel';
 import type { Contexto } from '../src/acciones/contexto';
@@ -104,44 +104,46 @@ describe('reglas del motor', () => {
     expect(eq.jugadores.filter((j) => j.enCampo)).toHaveLength(10);
   });
 
-  it('el cansancio empieza en el minuto 65, o en el 55 con Presión alta', () => {
+  it('la energía empieza a bajar en el minuto 30 y en el 55, también con Presión alta (spec 018, FR-017)', () => {
     const e = partido('cansancio');
     const normal = local(e);
     const presion = e.equipos.visitante;
     presion.tactica = { ...presion.tactica, alturaBloque: 'presion_alta' };
-    e.reloj = { parte: 2, segundosEnParte: 14 * 60, paradas: 0, descuento: null }; // minuto 59
-    acumularCansancio(e, normal, 60);
-    acumularCansancio(e, presion, 60);
-    expect(normal.jugadores.every((j) => j.cansancio === 0)).toBe(true);
-    expect(presion.jugadores.filter((j) => j.enCampo).every((j) => j.cansancio > 0)).toBe(true);
-    e.reloj.segundosEnParte = 21 * 60; // minuto 66
-    acumularCansancio(e, normal, 60);
-    expect(normal.jugadores.filter((j) => j.enCampo).every((j) => j.cansancio > 0)).toBe(true);
+    e.reloj = { parte: 1, segundosEnParte: 30 * 60, paradas: 0, descuento: null };
+    acumularCansancio(e, normal, 1);
+    acumularCansancio(e, presion, 1);
+    expect(normal.jugadores.every((j) => j.energia === 100)).toBe(true);
+    expect(presion.jugadores.every((j) => j.energia === 100)).toBe(true);
+    e.reloj.segundosEnParte = 30 * 60 + 1;
+    acumularCansancio(e, normal, 1);
+    expect(normal.jugadores.filter((j) => j.enCampo).every((j) => j.energia < 100)).toBe(true);
+    e.reloj = { parte: 2, segundosEnParte: 10 * 60, paradas: 0, descuento: null };
+    const antes = normal.jugadores.map((j) => j.energia);
+    acumularCansancio(e, normal, 1);
+    expect(normal.jugadores.map((j) => j.energia)).toEqual(antes);
   });
 
-  it('Incansable y Motivador ralentizan el cansancio', () => {
+  it('Incansable y Motivador gastan menos energía', () => {
     const base = crearPartido(entrada('fatiga', { local: equipo('local'), visitante: equipo('visitante', { virtudes: ['Incansable'] }) }));
     base.reloj = { parte: 2, segundosEnParte: 30 * 60, paradas: 0, descuento: null };
     acumularCansancio(base, base.equipos.local, 600);
     acumularCansancio(base, base.equipos.visitante, 600);
-    const normal = base.equipos.local.jugadores.find((j) => j.enCampo)!.cansancio;
-    const incansable = base.equipos.visitante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR')!.cansancio;
-    expect(incansable).toBeLessThan(normal);
+    const casilla = (e: typeof base, lado: 'local' | 'visitante', c: string) => e.equipos[lado].jugadores.find((j) => j.casillaId === c)!.energia;
+    expect(casilla(base, 'visitante', 'DC')).toBeGreaterThan(casilla(base, 'local', 'DC'));
 
     const conMotivador = crearPartido(entrada('fatiga-2'));
     const eq = conMotivador.equipos.local;
     eq.jugadores.find((j) => j.casillaId === 'MC-1')!.jugador = { ...eq.jugadores.find((j) => j.casillaId === 'MC-1')!.jugador, virtudes: ['Motivador'] };
     conMotivador.reloj = { parte: 2, segundosEnParte: 30 * 60, paradas: 0, descuento: null };
     acumularCansancio(conMotivador, eq, 600);
-    const companero = eq.jugadores.find((j) => j.casillaId === 'DC')!.cansancio;
-    expect(companero).toBeLessThan(normal);
+    expect(casilla(conMotivador, 'local', 'DC')).toBeGreaterThan(casilla(base, 'local', 'DC'));
   });
 
   it('las virtudes de equipo no se acumulan: dos Capitanía siguen dando +1', () => {
     const e = crearPartido(entrada('capitania', { local: equipo('local', { virtudes: ['Capitania'] }) }));
     const eq = local(e);
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.virtudes.capitania);
+    expect(bonusEquipo(e, eq, j)).toBe(parametrosActuales().virtudes.capitania);
   });
 
   it('Fortaleza mental solo actúa yendo por detrás', () => {
@@ -150,7 +152,7 @@ describe('reglas del motor', () => {
     const j = eq.jugadores.find((x) => x.enCampo && x.casillaId === 'DC')!;
     expect(bonusEquipo(e, eq, j)).toBe(0);
     e.marcador = { local: 0, visitante: 1 };
-    expect(bonusEquipo(e, eq, j)).toBe(PARAMETROS_V3.virtudes.fortalezaMental);
+    expect(bonusEquipo(e, eq, j)).toBe(parametrosActuales().virtudes.fortalezaMental);
   });
 
   it('Santo: desde el minuto 80, en la prórroga y en eliminatoria yendo ganando o empatado; en liga antes del 80, no', () => {

@@ -27,6 +27,13 @@ export const errores = {
     new ErrorApi(422, codigo, mensaje, detalles),
 };
 
+/** Id de una carta en la dirección: fuera del rango de la columna `integer`, la consulta acabaría en un 500 (SEG-040). */
+export function idCarta(texto: string): number {
+  const id = Number(texto);
+  if (!Number.isInteger(id) || id < 1 || id > 2_147_483_647) throw errores.validacion('ID_INVALIDO', 'El id de la carta debe ser un entero');
+  return id;
+}
+
 /** Cuerpo del formato de error común `{ error: { codigo, mensaje, detalles } }`. */
 export function cuerpoError(codigo: string, mensaje: string, detalles: Record<string, unknown> = {}) {
   return { error: { codigo, mensaje, detalles } };

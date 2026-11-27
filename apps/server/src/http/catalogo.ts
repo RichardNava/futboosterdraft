@@ -7,7 +7,7 @@ import { asc, eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import type { BaseDatos } from '../persistencia/db';
 import { coleccionesCartas, jugadores } from '../persistencia/esquema/index';
-import { errores } from './errores';
+import { errores, idCarta } from './errores';
 import { TEXTOS_RASGOS } from './textosRasgos';
 
 /** Fila de base de datos → objeto Jugador del catálogo (con su identidad alternativa, si la tiene). */
@@ -75,8 +75,7 @@ export function registrarRutasCatalogo(app: FastifyInstance, db: BaseDatos, ajus
   });
 
   app.get<{ Params: { id: string }; Querystring: { version?: string } }>('/api/catalogo/jugadores/:id', async (req) => {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id)) throw errores.validacion('ID_INVALIDO', 'El id del jugador debe ser un entero');
+    const id = idCarta(req.params.id);
     const version = versionPedida(req.query.version);
     const fila = (await db.select().from(jugadores).where(eq(jugadores.id, id)).limit(1))[0];
     if (!fila) throw errores.noEncontrado('JUGADOR_NO_ENCONTRADO', `No existe el jugador ${id}`);

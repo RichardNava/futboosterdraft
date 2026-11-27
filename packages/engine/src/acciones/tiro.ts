@@ -4,7 +4,7 @@
  * Cabeceador, Llegador, lanzadores) y de portero (Parapenalties, One-to-One, Ordenabarreras y el reroll de
  * Santo), y los goles en propia puerta (despejes de centros y tiros desviados).
  */
-import type { ParametrosEquilibrado } from '@fbd/domain';
+import type { ParametrosEquilibrado, ParametrosMotor } from '@fbd/domain';
 import { porteroSube } from '../espacio/colocacion';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
 import { anguloTiro, decimasDeMetros, distanciaPorteria, enAreaRival, metrosDeDecimas, zonaRemate } from '../espacio/campo';
@@ -13,6 +13,7 @@ import { dist2 } from '../espacio/aritmetica';
 import { sacadorDeCentro } from '../espacio/colocacion';
 import { anotar } from '../metricas';
 import { atributo } from '../modificadores/atributos';
+import { gastarAccion } from '../modificadores/cansancio';
 import { desplazamientoAtaque, relajacion } from '../modificadores/formacionTactica';
 import { factorAutogol } from '../modificadores/defectos';
 import { bonusLiderPortero } from '../modificadores/liderazgo';
@@ -110,11 +111,10 @@ interface OpcionesTiro {
 
 /**
  * Cabeceador en un duelo aéreo de la 8.0.0 (spec 015, research R5): ±`bonusCabeceador` en la probabilidad del atacante,
- * a favor si lo tiene el atacante y en contra si lo tiene el defensor. Sin el bloque `aereo`, 0 (7.0.0).
+ * a favor si lo tiene el atacante y en contra si lo tiene el defensor.
  */
-export function ajusteCabeceador(p: ParametrosEquilibrado, atacante: JugadorEnPartido | undefined, defensor: JugadorEnPartido | undefined): number {
+export function ajusteCabeceador(p: ParametrosMotor, atacante: JugadorEnPartido | undefined, defensor: JugadorEnPartido | undefined): number {
   const ae = p.aereo;
-  if (!ae) return 0;
   return (atacante && tiene(atacante, 'Cabeceador') ? ae.bonusCabeceador : 0) - (defensor && tiene(defensor, 'Cabeceador') ? ae.bonusCabeceador : 0);
 }
 
@@ -123,6 +123,9 @@ export function anotarAereo(ctx: Contexto, a: JugadorEnPartido | undefined, d: J
   anotar(ctx.metricas, a?.id, 'duelosAereos');
   anotar(ctx.metricas, d?.id, 'duelosAereos');
   anotar(ctx.metricas, (ganaAtacante ? a : d)?.id, 'aereosGanados');
+  // Un duelo aéreo es una acción intensa para los dos (spec 018, R4).
+  const { local, visitante } = ctx.estado.equipos;
+  for (const j of [a, d]) if (j) gastarAccion(ctx.estado, local.jugadores.includes(j) ? local : visitante, j, 'duelo');
 }
 
 /** Resuelve un tiro (a puerta, gol, parada, córner o fuera) desde la posición real del tirador (research R6 y R7). */
@@ -132,6 +135,8 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
   const s = p.virtudes;
   const defensor = e.equipos[rival(atacante.lado)];
   const stats = e.estadisticas[atacante.lado];
+  // El tiro consume la ventaja de la pérdida en banda sin aplicarla (spec 018, R12).
+  e.ventajaBanda = null;
   // Distancia y ángulo reales desde la posición del tirador (research R6); a balón parado, desde el punto del saque.
   const balonParado = tipoPedido === 'penalti' || tipoPedido === 'falta';
   const r = remateDesde(atacante, balonParado ? e.espacio.balon : (e.espacio.jugadores[tirador.id] ?? e.espacio.balon));
@@ -174,7 +179,7 @@ export function tirar(ctx: Contexto, atacante: EquipoEstado, tirador: JugadorEnP
       base: p.acciones.puerta[tipo],
       atacante: remate + aj.atacante,
       defensor: defensaBloqueo + aj.defensor,
-      desplazamiento: tipo === 'penalti' ? 0 : desplazamientoAtaque(e, atacante, defensor, 'tiro', e.balon.zona) * 0.5 + porDistancia + relajado,
+      desplazamiento: tipo === 'penalti' ? 0 : desplazamientoAtaque(e, atacante, defensor, 'tiro', e.balon.zona, tirador, tipo === 'lejano') * 0.5 + porDistancia + relajado,
       // Spec 015 (R5): en el primer duelo del remate de cabeza, Cabeceador del que tapa (el del rematador ya va en bonusRemate).
       ajuste: aj.probabilidad + bonusRemate / 2 + (tipo === 'cabeza' ? ajusteCabeceador(p, undefined, bloqueador) : 0),
     },
@@ -305,7 +310,7 @@ export function corner(ctx: Contexto, atacante: EquipoEstado): void {
   const defensor = e.equipos[rival(atacante.lado)];
   e.estadisticas[atacante.lado].corners++;
   emitir(ctx, 'corner', atacante.lado);
-  interrumpir(ctx, 'corner', p.fueraDeCampo?.paradaCorner ?? 90, atacante.lado);
+  interrumpir(ctx, 'corner', p.fueraDeCampo.paradaCorner, atacante.lado);
   rematarBalonParado(ctx, atacante, defensor, 'corners', p.acciones.duelaAereo);
 }
 
@@ -314,14 +319,13 @@ export function corner(ctx: Contexto, atacante: EquipoEstado): void {
  * el mejor rematador de cabeza disputa el balón al mejor defensor aéreo (Volador).
  */
 /**
- * Portero que defiende el tiro. Con `subidaArea` (spec 015, añadidos, R14), si está a más de `porteriaVaciaM` de su
+ * Portero que defiende el tiro (spec 015, añadidos, R14): si está a más de `porteriaVaciaM` de su
  * portería (subió a rematar y no ha vuelto), nadie: portería vacía.
  */
 export function porteroBajoPalos(e: Contexto['estado'], defensor: EquipoEstado): JugadorEnPartido | undefined {
   const arquero = portero(defensor);
-  const vacia = e.parametros.subidaArea?.porteriaVaciaM;
-  const q = arquero && vacia !== undefined ? e.espacio.jugadores[arquero.id] : undefined;
-  return q && aEquipo(defensor.lado, q).x > decimasDeMetros(vacia!) ? undefined : arquero;
+  const q = arquero ? e.espacio.jugadores[arquero.id] : undefined;
+  return q && aEquipo(defensor.lado, q).x > decimasDeMetros(e.parametros.subidaArea.porteriaVaciaM) ? undefined : arquero;
 }
 
 export function rematarBalonParado(
@@ -367,18 +371,18 @@ export function rematarBalonParado(
       atributo(e, atacante, b, 'aereo') + (tiene(b, 'Cabeceador') ? 10 : 0) + (tiene(b, 'Rematador') ? 6 : 0) - (atributo(e, atacante, a, 'aereo') + (tiene(a, 'Cabeceador') ? 10 : 0) + (tiene(a, 'Rematador') ? 6 : 0)) || a.id - b.id,
   )[0];
   const defensores = defensor.jugadores.filter((j) => j.enCampo && j.casillaId !== 'POR');
-  // Spec 015 (R5): con el bloque `aereo`, Cabeceador también cuenta al elegir quién marca.
+  // Spec 015 (R5): Cabeceador también cuenta al elegir quién marca.
   const porArribaDef = (j: JugadorEnPartido) =>
-    atributo(e, defensor, j, 'aereo') + (tiene(j, 'Volador') ? 6 : 0) + (p.aereo && tiene(j, 'Cabeceador') ? p.aereo.seleccionCabeceador : 0);
+    atributo(e, defensor, j, 'aereo') + (tiene(j, 'Volador') ? 6 : 0) + (tiene(j, 'Cabeceador') ? p.aereo.seleccionCabeceador : 0);
   const marcador = [...cercaDelRemate(defensor, defensores, 4)].sort((a, b) => porArribaDef(b) - porArribaDef(a) || a.id - b.id)[0];
   if (!rematador) return;
   let ajuste = ajusteCabeceador(p, rematador, marcador);
   if (marcador && tiene(marcador, 'Volador')) ajuste -= s.bonusProbabilidadAlto;
   // Spec 015 (balones fuera): con más córners, cada uno es menos peligroso (remate y falta en el duelo aéreo).
-  const peligro = tipo === 'corners' ? (p.fueraDeCampo?.peligroCorner ?? 1) : 1;
+  const peligro = tipo === 'corners' ? p.fueraDeCampo.peligroCorner : 1;
   // La carrera tras su centro no cuenta como balón suelto: el duelo aéreo ya decidió quién se queda el balón, y con el
   // triple de córners diluía la medida de la velocidad (014/SC-008).
-  const cuentaSuelto = !(tipo === 'corners' && p.fueraDeCampo);
+  const cuentaSuelto = tipo !== 'corners';
   const centro = probabilidad(
     {
       base,
@@ -421,7 +425,7 @@ export function rematarBalonParado(
     if (despejador) volar(ctx, 'centro', lanzador.id, { jugadorId: despejador.id }, { exito: false, aerea: true, cuentaSuelto });
     if (despejador && despejeEnPropia(ctx, atacante, defensor, despejador)) return;
     e.balon = { posesion: defensor.lado, zona: 1, carril: ctx.rng.entero(0, 2), portadorId: despejador?.id ?? 0, transicion: false };
-    if (tipo === 'corners' && p.fueraDeCampo && despejador) alejarDespeje(ctx, atacante, defensor, despejador);
+    if (tipo === 'corners' && despejador) alejarDespeje(ctx, atacante, defensor, despejador);
   }
 }
 

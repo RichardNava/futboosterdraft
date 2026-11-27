@@ -253,15 +253,15 @@ directamente.
 **Purpose**: repetir la auditoría y dejar la spec lista para cerrar.
 
 - [X] T102 Actualizar `specs/017-auditoria-seguridad-roles/inventario.json` con las rutas `/api/admin/*` y las retiradas, hasta que pase `apps/server/tests/integration/inventario.test.ts`
-- [ ] T103 Repetir la auditoría sobre lo cambiado, incluidos panel, roles y lo que haya integrado INI-16, y añadir lo nuevo a `specs/017-auditoria-seguridad-roles/auditoria.md` (FR-007)
+- [X] T103 Repetir la auditoría sobre lo cambiado, incluidos panel, roles y lo que haya integrado INI-16, y añadir lo nuevo a `specs/017-auditoria-seguridad-roles/auditoria.md` (FR-007)
 - [X] T104 Corregir `specs/017-auditoria-seguridad-roles/quickstart.md`: con `PUBLIC_URL=https://localhost` y la web abierta en `http://localhost:3000`, el navegador recibiría `403 ORIGEN_NO_PERMITIDO`. Los escenarios C, D, F y G deben pasar por un proxy HTTPS local con `PROXIES_CONFIANZA=1` y `PUBLIC_URL` igual a esa dirección
-- [ ] T105 Repetir ZAP contra la imagen final y recoger cada alerta y su resolución en `specs/017-auditoria-seguridad-roles/auditoria.md` (FR-006)
+- [X] T105 Repetir ZAP contra la imagen final y recoger cada alerta y su resolución en `specs/017-auditoria-seguridad-roles/auditoria.md` (FR-006)
 - [X] T106 [P] Documentar en `.env.example` y `docs/despliegue.md` las variables obligatorias, la designación del primer administrador, el panel y la consola de emergencia (FR-053)
-- [ ] T107 [P] Añadir `pnpm seguridad` y `pnpm audit --prod --audit-level=high` a `.github/workflows/ci.yml`
-- [ ] T108 Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:equivalence`, `pnpm e2e`, `pnpm seguridad` y `pnpm audit --audit-level=high`, y anotar el resultado en `specs/017-auditoria-seguridad-roles/checklists/validacion.md` (SC-011, SC-012)
-- [ ] T109 Recorrer los escenarios A a H de `specs/017-auditoria-seguridad-roles/quickstart.md` y registrar cada SC en `checklists/validacion.md`
+- [X] T107 [P] Añadir `pnpm seguridad` y `pnpm audit --prod --audit-level=high` a `.github/workflows/ci.yml`
+- [X] T108 Ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:integration`, `pnpm test:equivalence`, `pnpm e2e`, `pnpm seguridad` y `pnpm audit --audit-level=high`, y anotar el resultado en `specs/017-auditoria-seguridad-roles/checklists/validacion.md` (SC-011, SC-012)
+- [X] T109 Recorrer los escenarios A a H de `specs/017-auditoria-seguridad-roles/quickstart.md` y registrar cada SC en `checklists/validacion.md`
 - [ ] T110 (persona responsable) Cronometrar en el panel cambiar un ajuste y conceder premium de cortesía, menos de 1 minuto cada uno (SC-008), y aprobar el informe final en `specs/017-auditoria-seguridad-roles/checklists/validacion.md`
-- [ ] T111 Actualizar `ROADMAP.md` (INI-17), `CLAUDE.md` (órdenes `admin` y `pnpm seguridad`) y ejecutar `graphify update .`
+- [X] T111 Actualizar `ROADMAP.md` (INI-17), `CLAUDE.md` (órdenes `admin` y `pnpm seguridad`) y ejecutar `graphify update .`
 
 ---
 

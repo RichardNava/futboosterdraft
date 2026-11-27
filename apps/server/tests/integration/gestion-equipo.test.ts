@@ -115,23 +115,30 @@ describe('gestión del equipo durante el partido (US5)', () => {
     await ws.cerrar();
   });
 
-  it('en la 2D, con el balón en juego, el lote se aplica en la siguiente interrupción, que llega en ≤ 60 s', async () => {
-    const { ws, inicio, desde, miId, lado } = await empezar('2d');
+  it('en la 2D, con el balón en juego, el lote se aplica al pitarse la primera interrupción, a más tardar al acabar la jugada en curso tras 60 s', async () => {
+    const { ws, inicio, desde, miId, lado, partidaId } = await empezar('2d');
     const mia = inicio.alineaciones[lado];
     await ws.esperar('partido.tramo', { desde });
     const ack = await ws.enviarYEsperarAck({ t: 'partido.decisiones', partidoId: inicio.partidoId, decisiones: [{ tipo: 'tactica', datos: { tactica: { ...mia.tactica, estiloConBalon: 'combinativo' } } }] });
     expect(ack.ok, JSON.stringify(ack)).toBe(true);
     const tramos = () => ws.recibidos.slice(desde).filter((m) => m.t === 'partido.tramo');
-    const pedido = tramos().at(-1)!.hastaTick;
     for (let i = 0; i < 200 && !ws.recibidos.slice(desde).some((m) => m.t === 'partido.decision_aplicada' && m.participanteId === miId); i++) {
       ws.enviar({ t: 'partido.reproduccion', partidoId: inicio.partidoId, tick: tramos().at(-1)!.hastaTick, velocidad: 8 }, false);
       await espera(30);
     }
     const aplicada = ws.recibidos.slice(desde).find((m) => m.t === 'partido.decision_aplicada' && m.participanteId === miId)!;
     expect(aplicada).toBeDefined();
-    // El juego se detiene como mucho 60 s después de pedirla (002/FR-025a); la decisión cuenta como aplicada al
-    // reanudarse, tras colocarse los jugadores para el saque (como mucho `esperaColocacionMaxima`, 150 ticks).
-    expect(aplicada.aplicadaEnTick - pedido).toBeLessThanOrEqual(60 + 150 + 30);
+    const p = (await srv.gestor.obtenerOError(partidaId)).partidosEnCurso.get(inicio.partidoId)!;
+    const pedido = p.motor.decisiones.find((d) => d.participanteId === miId)!.solicitadaEnTick;
+    // Pedida con el juego ya parado, se aplica en ese mismo tick.
+    if (aplicada.aplicadaEnTick !== pedido) {
+      const pitido = p.eventos.find((e) => e.tipo === 'interrupcion' && e.tick >= pedido && !String(e.datos.motivo).startsWith('cambio_'))!;
+      // 002/FR-025a, medido en el pitido: no depende de lo que dure el saque. Con una lesión o expulsión en esa parada,
+      // la decisión espera a que se resuelva al acabar la jugada.
+      if (!p.motor.incidencias.some((i) => i.tick >= pedido && i.tick <= aplicada.aplicadaEnTick)) expect(aplicada.aplicadaEnTick).toBe(pitido.tick);
+      // El límite de 60 se comprueba al acabar la jugada en curso, que es indivisible; 240 es la cota que ya tenía la prueba.
+      expect(pitido.tick - pedido).toBeLessThanOrEqual(240);
+    }
     await ws.cerrar();
   });
 

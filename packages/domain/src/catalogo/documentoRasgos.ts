@@ -61,7 +61,7 @@ export function generarDocumentoRasgos(): string {
     '',
     '- Las bonificaciones de equipo de una misma virtud se aplican una sola vez, aunque la tengan varios jugadores.',
     '- Un mismo defecto colectivo cuenta una sola vez por equipo; defectos distintos se multiplican entre sí.',
-    '- Orden de cálculo de un stat: base → penalización por posición → bonificaciones en puntos → cansancio → multiplicadores.',
+    '- Orden de cálculo de un stat: base → penalización por posición → bonificaciones en puntos → energía → multiplicadores.',
     '- «5 puntos de la penalización» (Versátil, Inflexible) son 5 puntos porcentuales: de 10 % a 5 % o a 15 %.',
     '',
     '## Todo rasgo tiene un efecto probado',

@@ -64,7 +64,7 @@ export class ServicioAvisos {
     await this.transporte.sendMail({
       to: usuario.email,
       subject: `Fútboosterdraft: ${a.texto}`,
-      text: `${a.texto}\n\n${this.urlPublica}/partidas/${a.partidaId}/torneo`,
+      text: `${a.texto}\n\n${this.urlPublica}${a.tipo === 'partida_cerrada' ? '/mis-partidas' : `/partidas/${a.partidaId}/torneo`}`,
     });
     await this.db.update(avisos).set({ enviadoEmailEn: new Date(this.reloj.ahora()) }).where(eq(avisos.id, avisoId));
   }

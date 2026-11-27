@@ -52,6 +52,7 @@ import {
   movimientosFragmentos,
   partidas,
   pasesPremium,
+  registroAdmin,
   saldosFragmentos,
   usuarios,
   type ResultadoCompraGuardado,
@@ -233,7 +234,13 @@ export class ServicioEconomia {
         .where(and(eq(movimientosFragmentos.motivo, 'entrega_betatester'), eq(movimientosFragmentos.referencia, idEntrega)));
       if (previa) {
         if (previa.usuarioId !== usuarioId || previa.importe !== cantidad) throw errores.conflicto('ID_ENTREGA_REUTILIZADO', 'Ese idEntrega ya se usó para otra entrega');
-        return { idEntrega, cantidad, saldo: await this.saldo(tx, usuarioId) };
+        // El resultado original está en el registro, escrito en la transacción de la entrega (contracts/http-admin.md).
+        const [original] = await tx
+          .select({ valor: registroAdmin.valorNuevo })
+          .from(registroAdmin)
+          .where(and(eq(registroAdmin.accion, 'fragmentos.entregar'), eq(registroAdmin.objetoTipo, 'cuenta'), eq(registroAdmin.objetoId, usuarioId), eq(registroAdmin.resultado, 'ok'), sql`${registroAdmin.valorNuevo}->>'idEntrega' = ${idEntrega}`))
+          .limit(1);
+        return { idEntrega, cantidad, saldo: (original!.valor as { saldo: number }).saldo };
       }
       // Relee el rol con la fila bloqueada: un cambio de rol simultáneo espera a esta entrega.
       const [actual] = await tx.select({ rol: usuarios.rol }).from(usuarios).where(eq(usuarios.id, usuarioId)).for('share');
@@ -484,22 +491,8 @@ export class ServicioEconomia {
   }
 
   /** Devuelve el cobro del nivel de una partida cancelada antes del draft, una sola vez (índice único). */
-  async devolverCobroRareza(partidaId: string): Promise<boolean> {
-    return this.db.transaction(async (tx) => {
-      const [p] = await tx.select({ anfitrionId: partidas.anfitrionId, cobro: partidas.cobroRareza }).from(partidas).where(eq(partidas.id, partidaId));
-      if (!p?.cobro) return false;
-      const nuevo = await tx
-        .insert(movimientosFragmentos)
-        .values({ usuarioId: p.anfitrionId, importe: p.cobro, motivo: 'devolucion_nivel_rareza', referencia: partidaId })
-        .onConflictDoNothing()
-        .returning({ id: movimientosFragmentos.id });
-      if (!nuevo.length) return false;
-      await tx
-        .update(saldosFragmentos)
-        .set({ saldo: sql`${saldosFragmentos.saldo} + ${p.cobro}`, actualizadoEn: new Date() })
-        .where(eq(saldosFragmentos.usuarioId, p.anfitrionId));
-      return true;
-    });
+  async devolverCobroRareza(partidaId: string, ejecutor: Ejecutor = this.db): Promise<boolean> {
+    return ejecutor.transaction(async (tx) => (await devolverCobroRarezaEn(tx, partidaId)) > 0);
   }
 
   // ---------- Ayudantes ----------
@@ -683,4 +676,24 @@ export class ServicioEconomia {
       cartel: `/expansiones/${c.id}/cartel.webp`,
     };
   }
+}
+
+/**
+ * Devolución del cobro del nivel dentro de `tx`, sin depender de `ServicioEconomia` (el cierre de la spec 018 corre antes
+ * de `crearServidor`). Devuelve los fragmentos devueltos, o 0 si no había cobro o ya se devolvió (índice único).
+ */
+export async function devolverCobroRarezaEn(tx: Tx, partidaId: string): Promise<number> {
+  const [p] = await tx.select({ anfitrionId: partidas.anfitrionId, cobro: partidas.cobroRareza }).from(partidas).where(eq(partidas.id, partidaId));
+  if (!p?.cobro) return 0;
+  const nuevo = await tx
+    .insert(movimientosFragmentos)
+    .values({ usuarioId: p.anfitrionId, importe: p.cobro, motivo: 'devolucion_nivel_rareza', referencia: partidaId })
+    .onConflictDoNothing()
+    .returning({ id: movimientosFragmentos.id });
+  if (!nuevo.length) return 0;
+  await tx
+    .update(saldosFragmentos)
+    .set({ saldo: sql`${saldosFragmentos.saldo} + ${p.cobro}`, actualizadoEn: new Date() })
+    .where(eq(saldosFragmentos.usuarioId, p.anfitrionId));
+  return p.cobro;
 }

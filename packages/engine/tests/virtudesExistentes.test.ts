@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { ajusteVirtudesAccion } from '../src/acciones/juego';
 import { ajusteDuelo, bonusInfranqueable, bonusPorDemarcacion } from '../src/modificadores/virtudes';
-import { contextoDe, partido, ponerRasgos, titularEn } from './ayudas';
+import { contextoDe, partido, ponerRasgos, situar, titularEn } from './ayudas';
 
 describe('virtudes de acción (juego.ts)', () => {
   const e = partido('virtudes-accion');
@@ -45,6 +45,8 @@ describe('virtudes de duelo y de equipo (virtudes.ts)', () => {
     const e = partido('duelo');
     const a = ponerRasgos(titularEn(e, 'local', 'DC'), { virtudes: ['Aura'] });
     const d = ponerRasgos(titularEn(e, 'visitante', 'DCI'), { virtudes: ['Intimidante'] });
+    // Lejos de su área: ahí el liderazgo del portero (spec 015) no le suma nada.
+    situar(e, d.id, { x: 5000, y: 3200 });
     expect(ajusteDuelo(e, a, d)).toEqual({ atacante: -e.parametros.virtudes.intimidante, defensor: 0, probabilidad: e.parametros.virtudes.bonusProbabilidadLeve });
   });
 

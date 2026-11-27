@@ -200,7 +200,9 @@
     "hallazgos": [
       "SEG-013",
       "SEG-017",
-      "SEG-019"
+      "SEG-019",
+      "SEG-033",
+      "SEG-038"
     ]
   },
   {
@@ -239,7 +241,8 @@
     ],
     "comprobacion": "publica; id entero",
     "hallazgos": [
-      "SEG-013"
+      "SEG-013",
+      "SEG-040"
     ]
   },
   {
@@ -941,7 +944,8 @@
       "SEG-005",
       "SEG-013",
       "SEG-019",
-      "SEG-020"
+      "SEG-020",
+      "SEG-040"
     ]
   },
   {
@@ -959,7 +963,8 @@
       "SEG-005",
       "SEG-013",
       "SEG-019",
-      "SEG-020"
+      "SEG-020",
+      "SEG-040"
     ]
   },
   {
@@ -1354,7 +1359,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; consulta validada y paginada",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1364,7 +1372,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; bloqueo y relectura; motivo; registro",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1374,7 +1385,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; borra sesiones; motivo; registro",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1384,7 +1398,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; motivo; registro",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1394,7 +1411,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; motivo; registro",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1404,7 +1424,11 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; idEntrega unico; tope 10.000; solo betatester; registro",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-037",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1414,7 +1438,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; sin datos de juego",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1424,7 +1451,12 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; no si participa; motivo; registro",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-034",
+      "SEG-035",
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1434,7 +1466,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1444,7 +1479,10 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; solo AJUSTES_CONOCIDOS; motivo; registro",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   },
   {
     "tipo": "http",
@@ -1454,6 +1492,9 @@
       "administrador"
     ],
     "comprobacion": "soloAdministrador en cada peticion; solo lectura",
-    "hallazgos": []
+    "hallazgos": [
+      "SEG-036",
+      "SEG-039"
+    ]
   }
 ]

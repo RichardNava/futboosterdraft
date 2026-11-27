@@ -4,7 +4,7 @@
  * - **Rebelde**: si no va de titular, no se convoca (el banquillo admite 7 de los restantes).
  * - **Estrellita**: se evita de titular si no es la mejor media del once, salvo que, aun con su −10 %, siga siendo la
  *   mejor opción de su casilla.
- * - **Fatigado e Indisciplinado**: se sustituyen antes (`umbralCansancioDe`).
+ * - **Fatigado e Indisciplinado**: se sustituyen antes (`umbralEnergiaDe`).
  * - **Revulsivo**: si la diferencia con el titular alternativo es pequeña (`MARGEN_REVULSIVO`), se reserva en el
  *   banquillo, y entra en el descanso (`revulsivoParaEntrar`).
  *
@@ -25,14 +25,15 @@ import type { EstadoMotor, JugadorEnPartido, Lado } from '@fbd/engine';
 /** Puntos de media que se aceptan de menos en el titular alternativo para reservar a un Revulsivo. */
 export const MARGEN_REVULSIVO = 2;
 
-/** Fracción del umbral de cansancio a la que se cambia a un Fatigado o un Indisciplinado. */
-export const FACTOR_UMBRAL_CANSANCIO = 0.75;
+/** Fracción de la energía perdida a la que se cambia a un Fatigado o un Indisciplinado. */
+const FACTOR_UMBRAL_ENERGIA = 0.75;
 
 const tieneDefecto = (j: Pick<Jugador, 'defectos'>, d: Jugador['defectos'][number]) => j.defectos.includes(d);
 
-/** Umbral de cansancio para cambiar a un jugador: menor si se cansa antes o más deprisa. */
-export function umbralCansancioDe(j: Pick<Jugador, 'defectos'>, umbral: number): number {
-  return tieneDefecto(j, 'Fatigado') || tieneDefecto(j, 'Indisciplinado') ? umbral * FACTOR_UMBRAL_CANSANCIO : umbral;
+/** Energía por debajo de la que se cambia a un jugador: antes si se cansa más deprisa. El umbral 0 («nunca») sigue siendo 0. */
+export function umbralEnergiaDe(j: Pick<Jugador, 'defectos'>, umbral: number): number {
+  if (umbral === 0) return 0;
+  return tieneDefecto(j, 'Fatigado') || tieneDefecto(j, 'Indisciplinado') ? 100 - (100 - umbral) * FACTOR_UMBRAL_ENERGIA : umbral;
 }
 
 /** Ajusta la alineación de un NPC a los rasgos de sus cartas (p. ej., un Revulsivo empieza en el banquillo; spec 005). */

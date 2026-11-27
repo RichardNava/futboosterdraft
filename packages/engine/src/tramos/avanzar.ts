@@ -27,6 +27,7 @@ import { colocarSaqueInicial } from '../espacio/colocacion';
 import { ordenJugadores } from '../espacio/paso';
 import { jugarTanda } from '../penaltis/tanda';
 import { guardarMetricas, metricasDesde } from '../metricas';
+import { recuperarEnPausa } from '../modificadores/cansancio';
 import type { AccionVisible, DecisionRegistrada, Estadisticas, EventoPartido, Fase, Fotograma, Lado, Marcador, MetricasJugador, ModoAvance } from '../tipos';
 import { aplicarPendientes, equiposQueDecidieron } from './decisiones';
 
@@ -63,7 +64,9 @@ interface OpcionesAvance {
 /** Hay una decisión pendiente que ya no puede esperar a la siguiente interrupción natural. */
 function cambioQueNoEspera(e: EstadoMotor): boolean {
   const limite = e.parametros.reproduccion.esperaMaximaCambioS;
-  return e.decisionesPendientes.some((d) => (d.aplicadaEnTick === undefined ? e.tick - d.solicitadaEnTick >= limite : d.aplicadaEnTick <= e.tick));
+  // También al reproducir exige el minuto: si no, una decisión aplicada al pitarse un córner que abre el paso siguiente,
+  // en el mismo tick, forzaría aquí una parada que no hubo en directo.
+  return e.decisionesPendientes.some((d) => e.tick - d.solicitadaEnTick >= limite && (d.aplicadaEnTick === undefined || d.aplicadaEnTick <= e.tick));
 }
 
 /** Límite de pasos por tramo (salvaguarda frente a bucles; un partido tiene unos pocos miles). */
@@ -99,6 +102,7 @@ function iniciarParte(ctx: Contexto, parte: number): void {
   e.reloj = { parte, segundosEnParte: 0, paradas: 0, descuento: null };
   // Un córner pendiente de la parte anterior ya no se saca.
   e.cornerPendiente = null;
+  e.ventajaBanda = null;
   // Saca el local en la primera parte y el visitante en la segunda; en la prórroga, al revés.
   const saca = parte === 1 || parte === 4 ? e.sacoPrimeraParte : rival(e.sacoPrimeraParte);
   emitir(ctx, 'inicio_tramo', saca, [], { parte });
@@ -127,13 +131,17 @@ function comprobarFinParte(ctx: Contexto): void {
   const parte = e.reloj.parte;
   const empate = e.marcador.local === e.marcador.visitante;
   emitir(ctx, 'fin_tramo', 'local', [], { parte, marcador: { ...e.marcador } });
+  // La recuperación va al pitarse, antes de las decisiones de la pausa (spec 018, R3).
   if (parte === 1) {
+    recuperarEnPausa(e, 'descanso');
     e.fase = 'descanso';
     interrumpir(ctx, 'descanso', 0, 'local');
   } else if (parte === 2) {
     e.fase = e.eliminatoria && empate ? 'pre_prorroga' : 'finalizado';
+    if (e.fase === 'pre_prorroga') recuperarEnPausa(e, 'preProrroga');
     interrumpir(ctx, e.fase === 'pre_prorroga' ? 'fin_tiempo_reglamentario' : 'final', 0, 'local');
   } else if (parte === 3) {
+    recuperarEnPausa(e, 'descansoProrroga');
     interrumpir(ctx, 'descanso_prorroga', 0, 'local');
     iniciarParte(ctx, 4);
   } else {
@@ -171,7 +179,7 @@ function estadisticasSalida(e: EstadoMotor): Estadisticas {
   const total = e.estadisticas.local.posesion + e.estadisticas.visitante.posesion || 1;
   const cansancio = (lado: 'local' | 'visitante') => {
     const enCampo = e.equipos[lado].jugadores.filter((j) => j.enCampo);
-    return enCampo.length ? Math.round((enCampo.reduce((a, j) => a + j.cansancio, 0) / enCampo.length) * 1000) / 1000 : 0;
+    return enCampo.length ? Math.round((enCampo.reduce((a, j) => a + (1 - j.energia / 100), 0) / enCampo.length) * 1000) / 1000 : 0;
   };
   const salida = (lado: 'local' | 'visitante', posesion: number) => {
     const s = e.estadisticas[lado];
@@ -221,6 +229,11 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
   const primeraAccion = estado.acciones.length;
   anotarFotograma(ctx);
   let puntoDecision = true;
+  // Al pitarse, no al acabar el paso: un balón parado encadena saque, tiro y otro saque (002/FR-025a). Con una incidencia
+  // pendiente esperan a resolverla, porque una formación se valida contra los jugadores que quedan en el campo.
+  const aplicarAlPitar = () => {
+    if (!estado.incidencias.some((i) => i.estado === 'pendiente')) aplicarPendientes(ctx, { cual: 'resto' });
+  };
 
   // Las acciones cambian la fase dentro del bucle: se lee siempre a través de esta función.
   const fase = (): Fase => estado.fase;
@@ -234,7 +247,9 @@ export function avanzar(entrada: EstadoMotor, modo: ModoAvance, opciones: Opcion
       for (let pasos = 0; pasos < MAX_PASOS; pasos++) {
         if (fase() === 'finalizado') break;
         ctx.interrupcion = false;
+        ctx.alInterrumpir = aplicarAlPitar;
         paso(ctx);
+        delete ctx.alInterrumpir;
         if (fase() !== 'finalizado') comprobarFinParte(ctx);
         // Lesiones y expulsiones del paso (spec 012): las decisiones de su parada (al reproducir), el corte de
         // «control total» o la resolución automática. Antes que las de la interrupción: en directo, esas se aplican

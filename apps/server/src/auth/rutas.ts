@@ -64,7 +64,7 @@ export async function usuarioDeLaPeticion(auth: Auth, req: FastifyRequest): Prom
 }
 
 /** Ganchos de Fastify que exigen sesión, usuario registrado, solo registrados o administrador. */
-export function crearHooksSesion(auth: Auth, alDenegarAdmin?: (usuario: UsuarioSesion) => void) {
+export function crearHooksSesion(auth: Auth, alDenegarAdmin?: (usuario: UsuarioSesion, ruta: string) => void) {
   const requiereSesion = async (req: FastifyRequest) => {
     req.usuario = await usuarioDeLaPeticion(auth, req);
     if (!req.usuario) throw errores.sinSesion();
@@ -84,7 +84,7 @@ export function crearHooksSesion(auth: Auth, alDenegarAdmin?: (usuario: UsuarioS
   const soloAdministrador = async (req: FastifyRequest) => {
     await requiereSesion(req);
     if (puede(req.usuario!.rol, 'entrar_panel')) return;
-    alDenegarAdmin?.(req.usuario!);
+    alDenegarAdmin?.(req.usuario!, `${req.method} ${req.routeOptions.url}`);
     throw errores.prohibido('SOLO_ADMINISTRADORES', 'Esta acción es solo para administradores');
   };
   return { requiereSesion, requiereRegistrado, soloRegistrados, soloAdministrador };

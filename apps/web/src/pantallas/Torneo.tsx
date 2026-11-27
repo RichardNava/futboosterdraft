@@ -212,6 +212,8 @@ export function Torneo() {
     );
   }
   if (vista.campeon && (verCampeon || !pantallas.campeonVisto)) {
+    // Abrirla la marca como vista: una actualización posterior no debe cerrarla mientras se mira.
+    if (!verCampeon) setVerCampeon(true);
     return (
       <PantallaCampeon
         partidaId={partidaId!}

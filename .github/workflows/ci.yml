@@ -21,16 +21,31 @@ jobs:
       - run: pnpm test
       - run: pnpm test:integration
       - run: pnpm test:equivalence
-      - run: pnpm --filter @fbd/engine bench
-      # Umbral de FR-028a, revisado en la spec 005: ≤ 120 ms por partido sin fotogramas, con métricas por jugador
-      # (spec 003) y en resolverResto desde el minuto 0. El motor mide unos 80 ms en CI; el paso bloquea.
-      - run: pnpm --filter @fbd/balance umbral-motor
+      # Spec 017 (FR-011, SC-011): repite todos los ataques y falla con una dependencia de producción alta o crítica.
+      - run: pnpm seguridad
+      - run: pnpm audit --prod --audit-level=high
       # 1.000 partidos por serie, los mismos con los que se validó la calibración (INI-05, parámetros 5.0.0): con 500, las
       # comprobaciones de un solo jugador (003/SC-007 Matador y Desbordante, 005/SC-004 Agresivo y Torpe) fallan por ruido.
       # Incluye las comprobaciones de la spec 002 (SC-007, SC-008, SC-011 y SC-018) y las de la serie sintética de la
       # spec 003 (003/SC-001 a 003/SC-009); la serie Core (003/SC-001c) y los torneos de NPC (003/SC-010) se lanzan aparte.
       # Sin `--pendientes` desde el 2026-11-16 (spec 015, tras la tanda 2): todas se cumplen y cualquier fallo bloquea.
       - run: pnpm balance --n 1000
+
+  # Job propio y sin `needs` (spec 018, R9): la medida debe salir aunque fallen las huellas o la calibración del job `ci`.
+  rendimiento-motor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @fbd/engine bench
+      # Umbral de 018/FR-039 (sustituye a 002/FR-028a): ≤ 60 ms por partido sin fotogramas, con métricas por jugador y
+      # en resolverResto desde el minuto 0, y ≤ 80 ms con fotogramas. El paso bloquea (FR-040).
+      - run: pnpm --filter @fbd/balance umbral-motor
 
   # Pruebas de diseño de la spec 004 (FR-040): contraste y reglas WCAG 2.1 AA con axe, desplazamiento horizontal,
   # lima reservado y foco visible en cada pantalla del inventario, y el flujo completo con teclado.

@@ -2,18 +2,18 @@
  * Curvas de la 8.0.0 (spec 015, FR-002, FR-006; contracts/motor.md M2.2 y M2.4): cada duelo, sin ajustes, cae en su
  * rango, y el remate sigue enfrentando remate contra parada.
  */
-import { PARAMETROS_V7, PARAMETROS_V8, type AccionCurva, type ParametrosEquilibrado } from '@fbd/domain';
+import { parametrosActuales, type AccionCurva, type ParametrosEquilibrado } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { probabilidad } from '../src/acciones/duelo';
 import { atributo } from '../src/modificadores/atributos';
 import { partido, titularEn } from './ayudas';
 
-/** Probabilidad (en %) de una acción con su curva de la 8.0.0, o la de la 7.0.0 si no tiene. */
+/** Probabilidad (en %) de una acción con su curva. */
 function curva(p: ParametrosEquilibrado, accion: AccionCurva | 'remate', atacante: number, defensor: number): number {
   const c =
     accion === 'remate'
       ? { base: p.acciones.gol.normal, m: 1 }
-      : (p.curvas?.[accion] ?? { base: { regate: p.acciones.regate, conduccion: p.acciones.conduccion, pase_corto: p.acciones.paseCorto }[accion], m: accion === 'pase_corto' ? p.acciones.pendientePase : 1 });
+      : p.curvas![accion]!;
   return probabilidad({ base: c.base, atacante, defensor, pendiente: c.m }, p) / 10;
 }
 
@@ -32,19 +32,15 @@ const FR002: [AccionCurva | 'remate', number, number, number, number][] = [
 
 describe('curvas de FR-002 con la 8.0.0 (M2.2)', () => {
   it.each(FR002)('%s %i contra %i entre %i y %i %%', (accion, at, def, min, max) => {
-    const v = curva(PARAMETROS_V8, accion, at, def);
+    const v = curva(parametrosActuales(), accion, at, def);
     expect(v).toBeGreaterThanOrEqual(min);
     expect(v).toBeLessThanOrEqual(max);
-  });
-
-  it('con la 7.0.0 el pase corto 55 contra 75 sigue siendo el de hoy (fuera de rango)', () => {
-    expect(curva(PARAMETROS_V7, 'pase_corto', 55, 75)).toBeGreaterThan(73);
   });
 });
 
 describe('remate contra parada (FR-006, M2.4)', () => {
   it('el tirador usa disparo (MED) o finalización (DEL) y el portero (agilidad + colocación) / 2', () => {
-    const e = partido('remate015', { version: PARAMETROS_V8.version, parametros: PARAMETROS_V8 });
+    const e = partido('remate015', { version: parametrosActuales().version, parametros: parametrosActuales() });
     const med = titularEn(e, 'local', 'MC-1');
     const del = titularEn(e, 'local', 'DC');
     const por = titularEn(e, 'visitante', 'POR');

@@ -153,20 +153,8 @@ function comprobacionesCansancio014(n: number, semilla: number): Comprobacion[] 
     ReturnType<typeof medirCansancio>
   >;
   const normal = medidas.normal;
-  const fila = (p: (typeof nombres)[number]) => `${p}: ${MINUTOS.map((k) => `${k}' ${Number.isNaN(medidas[p].energia[k]) ? '—' : medidas[p].energia[k].toFixed(0)}`).join(' ')}`;
+  // 014/SC-006 y SC-006b (energía al 90' y tras la prórroga) los sustituyen la curva de la spec 018 y 018/SC-003 (FR-023).
   return [
-    {
-      id: '014/SC-006',
-      descripcion: "Cansancio: sin rasgos, energía media 45–55 % al 90' (descuento incluido)",
-      ok: normal.energia[90] >= 45 && normal.energia[90] <= 55,
-      detalle: nombres.map(fila).join(' · '),
-    },
-    {
-      id: '014/SC-006b',
-      descripcion: "Cansancio: tras una prórroga, energía < 40 % (naranja o rojo)",
-      ok: normal.energia[120] < 40,
-      detalle: `normal 120' ${Number.isNaN(normal.energia[120]) ? '—' : normal.energia[120].toFixed(0)} %`,
-    },
     {
       id: '014/SC-006c',
       // Con el mismo rival, lo que pierde el equipo que se cansa frente al mismo equipo Incansable en los 10 últimos
@@ -182,6 +170,6 @@ function comprobacionesCansancio014(n: number, semilla: number): Comprobacion[] 
 export function gruposMotor014(): GrupoComprobaciones[] {
   return [
     { ids: ['014/SC-002', '014/SC-003', '014/SC-004', '014/SC-004b', '014/SC-005'], serie: 'sintetica', ejecutar: (o) => comprobacionesJugada014(o.n, o.seed) },
-    { ids: ['014/SC-006', '014/SC-006b', '014/SC-006c'], serie: 'sintetica', ejecutar: (o) => comprobacionesCansancio014(o.n, o.seed) },
+    { ids: ['014/SC-006c'], serie: 'sintetica', ejecutar: (o) => comprobacionesCansancio014(o.n, o.seed) },
   ];
 }

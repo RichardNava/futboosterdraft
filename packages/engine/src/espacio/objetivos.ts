@@ -23,7 +23,9 @@ import { decimasDeMetros, ULTIMO_TERCIO } from './campo';
 import { objetivosBalonParado } from './colocacion';
 import { aAbsoluta, aEquipo, ANCHO, CENTRO_Y, LARGO, lineaDe, type Punto } from './geometria';
 import { factorPericia, penultimoDefensor } from '../acciones/fueraDeJuego';
-import { correccionLinea, liderDeLinea, type DefensaLinea } from '../modificadores/liderazgo';
+import { gastarAccion } from '../modificadores/cansancio';
+import { marcajeVigente } from '../modificadores/marcajeEstrella';
+import { correccionLinea, liderazgoConEnergia, liderDeLinea, type DefensaLinea } from '../modificadores/liderazgo';
 
 export { lineaDe } from './geometria';
 
@@ -32,8 +34,8 @@ const rival = (lado: Lado): Lado => (lado === 'local' ? 'visitante' : 'local');
 const MARGEN = 150;
 /** Ticks (5 s reales a x2) que tarda en volver a la forma quien ha tenido un papel en la jugada. */
 const TICKS_VUELTA = 118;
-/** Margen dentro del rango de distancia entre líneas de FR-023 al acotar los objetivos. */
-const MARGEN_LINEAS = 150;
+/** Margen dentro del rango de distancia entre líneas de FR-023 al acotar los objetivos: cubre el retraso de decidir cada 4 ticks (spec 018). */
+const MARGEN_LINEAS = 250;
 const LINEA_DEFENSA = 0;
 const LINEA_MEDIO = 1;
 const LINEA_ATAQUE = 2;
@@ -55,23 +57,53 @@ export function papelLlegada(equipo: EquipoEstado, j: EquipoEstado['jugadores'][
   return pos === 'ED' || pos === 'EI' ? 'extremo' : pos === 'MCO' ? 'mediapunta' : null;
 }
 
-/** Spec 015, añadidos (R15): con `segundaLinea`, los medios centro e interiores (MC, MII, MID) llegan a la frontal. */
-function papelSegundaLinea(estado: EstadoMotor, equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): PapelLlegada | null {
+/** Spec 015, añadidos (R15): los medios centro e interiores (MC, MII, MID) llegan a la frontal. */
+function papelSegundaLinea(equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): PapelLlegada | null {
   const papel = papelLlegada(equipo, j);
-  if (papel || !estado.parametros.segundaLinea) return papel;
+  if (papel) return papel;
   const pos = posicionDe(equipo, j);
   return pos === 'MC' || pos === 'MII' || pos === 'MID' ? 'interior' : null;
 }
 
 /**
  * Intensidad de la llegada (milésimas, de 300 a 1200): 1 + (stat − 70) / pendienteStat, con el desmarque de los
- * delanteros o el posicionamiento de los medios (sin el cansancio: los objetivos no dependen del momento del partido).
+ * delanteros o el posicionamiento de los medios (sin la energía: los objetivos no dependen del momento del partido).
  */
 function intensidadLlegada(estado: EstadoMotor, j: EquipoEstado['jugadores'][number]): number {
   const stats = j.jugador.stats as unknown as Record<string, number>;
   const stat = stats.desmarque ?? stats.posicionamiento ?? 70;
   return Math.min(1200, Math.max(300, 1000 + dividir((stat - 70) * 1000, estado.parametros.espacio.llegadaAlArea.pendienteStat)));
 }
+
+interface FijosForma {
+  formacion: string;
+  casilla: string | null;
+  posicion: string | undefined;
+  linea: number;
+  papel: PapelLlegada | null;
+  intensidad: number;
+}
+
+/** Línea, papel e intensidad de llegada de cada jugador: solo cambian con su casilla, su posición o la formación. */
+const fijosForma = new WeakMap<EquipoEstado['jugadores'][number], FijosForma>();
+
+function fijosDe(estado: EstadoMotor, equipo: EquipoEstado, j: EquipoEstado['jugadores'][number]): FijosForma {
+  let f = fijosForma.get(j);
+  if (!f || f.formacion !== equipo.formacion || f.casilla !== j.casillaId || f.posicion !== j.posicion) {
+    f = {
+      formacion: equipo.formacion,
+      casilla: j.casillaId,
+      posicion: j.posicion,
+      linea: CODIGO_LINEA[lineaDe(equipo, j)],
+      papel: papelSegundaLinea(equipo, j),
+      intensidad: intensidadLlegada(estado, j),
+    };
+    fijosForma.set(j, f);
+  }
+  return f;
+}
+
+const mediaDe = (suma: number[], cuenta: number[], l: number) => (cuenta[l]! > 0 ? dividir(suma[l]!, cuenta[l]!) : null);
 
 /**
  * Objetivos de un equipo por su forma, escritos en `salida` en coordenadas absolutas. `xLinea` (coordenadas del equipo):
@@ -91,7 +123,7 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   const ancho = [mil(ba.defensa), mil(ba.medio), mil(ba.ataque), mil(ba.porteria)];
   const abrir = conBalon ? mil(p.aperturaConBalon) : -mil(p.cierreSinBalon);
   const desplazamiento = (conBalon ? p.desplazamientoFase.conBalon : p.desplazamientoFase.sinBalon) + p.desplazamientoBloque[t.alturaBloque];
-  const adelantada = t.lineaAdelantada && conBalon ? p.lineaAdelantada : 0;
+  const adelantada = t.lineaAdelantada ? p.lineaAdelantada : 0;
 
   const ids: number[] = [];
   const anclasY: number[] = [];
@@ -101,7 +133,7 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   const ys: number[] = [];
   const lineas: number[] = [];
   const anclasX: number[] = [];
-  // Spec 015 (US6, R9): con el bloque `liderazgo`, los defensas de la línea con su liderazgo (0 si no son DEF).
+  // Spec 015 (US6, R9): los defensas de la línea con su liderazgo (0 si no son DEF).
   const lid = xLinea !== undefined ? estado.parametros.liderazgo : undefined;
   const defensas: DefensaLinea[] = [];
   const suma = [0, 0, 0];
@@ -109,7 +141,8 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   const sumaAncla = [0, 0, 0];
   for (const j of equipo.jugadores) {
     if (!j.enCampo) continue;
-    const linea = CODIGO_LINEA[lineaDe(equipo, j)];
+    const fijos = fijosDe(estado, equipo, j);
+    const linea = fijos.linea;
     const ax = j.ancla ? j.ancla.x * 10 : 4500;
     const ay = j.ancla ? j.ancla.y * 10 : CENTRO_Y;
     let x = ax + por(bx - LARGO / 2, largo[linea]!);
@@ -128,13 +161,13 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
     ids.push(j.id);
     anclasX.push(ax);
     anclasY.push(ay);
-    papeles.push(papelSegundaLinea(estado, equipo, j));
-    intensidades.push(intensidadLlegada(estado, j));
+    papeles.push(fijos.papel);
+    intensidades.push(fijos.intensidad);
     xs.push(x);
     ys.push(y);
     lineas.push(linea);
     if (lid && linea === LINEA_DEFENSA) {
-      defensas.push({ x, y, liderazgo: j.jugador.demarcacion === 'DEF' ? ((j.jugador.stats as unknown as Record<string, number>).liderazgo ?? 0) : 0 });
+      defensas.push({ x, y, liderazgo: j.jugador.demarcacion === 'DEF' ? (liderazgoConEnergia(estado, j) ?? 0) : 0 });
     }
   }
 
@@ -143,10 +176,9 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   const [minimo, maximo] = conBalon ? p.separacionLineasConBalon : p.separacionLineasSinBalon;
   const min = minimo + MARGEN_LINEAS;
   const max = maximo - MARGEN_LINEAS;
-  const media = (l: number) => (cuenta[l]! > 0 ? dividir(suma[l]!, cuenta[l]!) : null);
-  const md = media(LINEA_DEFENSA);
-  const mm = media(LINEA_MEDIO);
-  const ma = media(LINEA_ATAQUE);
+  const md = mediaDe(suma, cuenta, LINEA_DEFENSA);
+  const mm = mediaDe(suma, cuenta, LINEA_MEDIO);
+  const ma = mediaDe(suma, cuenta, LINEA_ATAQUE);
   // Las otras líneas se acotan respecto a donde está el medio de verdad (los que están en la forma, cada
   // uno descontando su escalón dentro de la línea), no a donde va: el bloque se mueve junto aunque el medio
   // aún esté llegando a su sitio.
@@ -195,11 +227,13 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
   // Llegada al área (H11): con el balón en el último tercio o, ya en campo rival, mientras un compañero progresa
   // conduciendo o regateando. Cada uno llega con la intensidad de su desmarque o su posicionamiento.
   const accion = estado.espacio.accion;
-  const progresando =
-    accion !== null && (accion.tipo === 'conduccion' || accion.tipo === 'regate') && equipo.jugadores.some((j) => j.id === accion.deId);
+  let progresando = false;
+  if (accion !== null && (accion.tipo === 'conduccion' || accion.tipo === 'regate')) {
+    for (const j of equipo.jugadores) if (j.id === accion.deId) progresando = true;
+  }
   const llegada = conBalon && (bx >= ULTIMO_TERCIO || (progresando && bx >= p.llegadaAlArea.xProgresion)) ? p.llegadaAlArea : null;
   const ladoBalon = by - CENTRO_Y;
-  const xInterior = estado.parametros.segundaLinea?.xInterior;
+  const xInterior = estado.parametros.segundaLinea.xInterior;
   let k = 0;
   for (let i = 0; i < ids.length; i++) {
     let x = xs[i]!;
@@ -223,7 +257,7 @@ function objetivosDeForma(estado: EstadoMotor, equipo: EquipoEstado, salida: Rec
       } else if (extremo || papeles[i] === 'mediapunta') {
         // El extremo del lado del balón (sin cerrarse) y el mediapunta llegan a la frontal.
         x = Math.max(x, x + por(llegada.xMediapunta - x, f));
-      } else if (papeles[i] === 'interior' && xInterior !== undefined) {
+      } else if (papeles[i] === 'interior') {
         // Spec 015, añadidos (R15): el medio centro sale de su zona y llega a la frontal lejana (tiro y rechace).
         x = Math.max(x, x + por(xInterior - x, f));
       }
@@ -288,7 +322,7 @@ function seguirBalon(estado: EstadoMotor): void {
  * a destiempo para ellos (FR-011); por detrás del balón y en campo propio, libres.
  */
 function respetarLinea(estado: EstadoMotor, atacante: EquipoEstado, defensor: EquipoEstado, objetivos: Record<number, Punto>, penultimo: number): void {
-  const f = estado.parametros.fueraDeJuego!;
+  const f = estado.parametros.fueraDeJuego;
   const minimo = Math.max(penultimo, aEquipo(atacante.lado, estado.espacio.balon).x, LARGO / 2);
   for (const j of atacante.jugadores) {
     const o = objetivos[j.id];
@@ -321,13 +355,16 @@ export function calcularObjetivos(estado: EstadoMotor): Record<number, Punto> {
   // Marcaje individual: cada defensor de campo se acerca a su par (el rival más cercano a su objetivo).
   if (defensor.tactica.sistemaDefensivo === 'individual') {
     const marcaje = mil(p.marcajeIndividual);
+    const pareja = marcajeVigente(defensor);
     for (const j of defensor.jugadores) {
       if (!j.enCampo || j.casillaId === 'POR') continue;
       const o = objetivos[j.id];
       if (!o) continue;
-      let mejor: Punto | null = null;
+      // El marcador sigue a la estrella esté donde esté (spec 018, FR-026); los demás, a su rival más cercano.
+      let mejor: Punto | null = pareja?.marcadorId === j.id ? (esp.jugadores[pareja.estrellaId] ?? null) : null;
       let dm = 2000 * 2000;
       for (const r of atacante.jugadores) {
+        if (pareja?.marcadorId === j.id) break;
         if (!r.enCampo || r.casillaId === 'POR') continue;
         const q = esp.jugadores[r.id];
         if (!q) continue;
@@ -348,6 +385,12 @@ export function calcularObjetivos(estado: EstadoMotor): Record<number, Punto> {
   } else {
     // Presión sobre el balón: se colocan entre el balón y su portería, sin pisar al que lo lleva.
     const haciaPropia = defensor.lado === 'local' ? -1 : 1;
+    // La presión gasta al entrar, no por cada instante: así su coste no depende de la cadencia (spec 018, R4).
+    for (const id of presion.ids) {
+      if (esp.presion.lado === defensor.lado && esp.presion.presionadores.includes(id)) continue;
+      const j = defensor.jugadores.find((x) => x.id === id);
+      if (j) gastarAccion(estado, defensor, j, 'presion');
+    }
     for (const id of presion.ids) objetivos[id] = { x: acotar(esp.balon.x + haciaPropia * (p.radioSeparacion + 30), 0, LARGO), y: acotar(esp.balon.y, 0, ANCHO) };
     esp.presion = { lado: defensor.lado, presionadores: presion.ids, coordinada: presion.coordinada };
   }

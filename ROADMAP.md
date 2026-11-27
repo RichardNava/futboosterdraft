@@ -45,8 +45,8 @@ a la suya, y las que aún no tienen spec DEBEN tenerla antes de implementarse (c
 | [INI-13](#ini-13-modos-de-juego-adicionales) | Modos de juego adicionales: Modo Ruleta | sin spec | P2 | Pendiente | INI-05, INI-09 |
 | [INI-14](#ini-14-cosméticos-y-versiones-premium) | Cosméticos y versiones premium de cartas | 011 | P2 | Implementada | INI-08 |
 | [INI-15](#ini-15-retoques-visuales-y-sonoros) | Retoques visuales y sonoros | 007, 012, 013 | P1 | Hecho | INI-03, INI-04, INI-08 |
-| [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento) | Rework del motor: fatiga, tácticas y rendimiento | sin spec | P0 | Pendiente | INI-05 |
-| [INI-17](#ini-17-auditoría-de-seguridad-y-roles) | Auditoría de seguridad y roles (RBAC) | sin spec | P0 | Pendiente | — |
+| [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento) | Rework del motor: fatiga, tácticas y rendimiento | 018 | P0 | Parcial | INI-05 |
+| [INI-17](#ini-17-auditoría-de-seguridad-y-roles) | Auditoría de seguridad y roles (RBAC) | 017 | P0 | Implementada, sin validar | — |
 | [INI-18](#ini-18-multijugador-emparejamiento-y-recompensas) | Multijugador: emparejamiento y recompensas | sin spec | P2 | Pendiente | INI-07, INI-17 |
 | [INI-19](#ini-19-cosméticos-de-carta-y-de-campo) | Cosméticos de carta y de campo: dorsos, marcos y césped | sin spec | P2 | Pendiente | INI-14 |
 
@@ -228,19 +228,23 @@ cuesta simular los partidos.
 
 ## INI-06 Rendimiento del motor
 
-- **Objetivo**: que el motor cumpla 002/FR-028a (≤ 25 ms por partido sin fotogramas y ≤ 40 ms con fotogramas en
-  Node 22) para sostener torneos con muchos NPC.
+- **Objetivo**: que el motor cumpla [018/FR-039](specs/018-rework-motor/spec.md) (≤ 60 ms por partido sin fotogramas,
+  ≤ 80 ms con fotogramas y ≤ 60 ms con métricas y con `resolverResto`, en el CI con Node 22) para sostener torneos con
+  muchos NPC. Sustituye desde el 2026-11-26 al objetivo de 25 / 40 ms de este roadmap y a los 120 ms de 002/FR-028a.
 - **Alcance**: optimización de `packages/engine` sin cambiar resultados (la equivalencia y las semillas deben seguir idénticas).
-- **Specs**: [002](specs/002-mejoras-mvp/spec.md) FR-028a, T086.
+- **Specs**: [002](specs/002-mejoras-mvp/spec.md) FR-028a, T086; [018](specs/018-rework-motor/spec.md) FR-039 a FR-045.
 - **Prioridad / estado**: P1 · **Parcial**. Medido: 82,9 ms (002), 103 ms (004) y 107 ms (005) sin fotogramas. El
   umbral bloqueante del CI se subió a 120 ms (commit `e850c11`) para que no falle, lo que no cumple el requisito.
+  Con la 9.0.0 y los objetivos cada 8 ticks, 80,7 ms en el CI antes de optimizar (018/T055). Tras optimizar sin cambiar
+  la huella (018/T066 a T068), 53–54 ms en local con ids como los del catálogo y los máximos de FR-039 ya bloquean;
+  falta confirmarlo en el CI (018/T069).
 - **Dependencia**: tras INI-05, porque calibrar cambia el coste por partido y optimizar antes obliga a medir dos veces.
 - **2026-11-21**: el trabajo de esta iniciativa se hace dentro de la spec de [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento)
   (una sola spec para todos los cambios del motor). Sus criterios de cierre no cambian y se comprueban allí.
 - **Criterios de cierre**:
-  1. `pnpm --filter @fbd/engine bench` ≤ 25 / 40 ms en la máquina de referencia (que hay que fijar y documentar),
-     o FR-028a revisado en su spec con un objetivo justificado.
-  2. `umbral-motor` del CI con el objetivo de FR-028a.
+  1. ~~`pnpm --filter @fbd/engine bench` ≤ 25 / 40 ms en la máquina de referencia, o FR-028a revisado en su spec con
+     un objetivo justificado~~: revisado por 018/FR-039 (60 / 80 ms en el CI con Node 22).
+  2. `umbral-motor` del job `rendimiento-motor` del CI con los máximos de 018/FR-039, bloqueante.
   3. `pnpm test:equivalence` en verde sin cambios en los resultados.
   4. T086 marcada.
 
@@ -283,7 +287,9 @@ cuesta simular los partidos.
   spec propia y se relaciona con [INI-06](#ini-06-rendimiento-del-motor); los resultados deben seguir idénticos
   (`pnpm test:equivalence`) o, si cambian, justificarse con calibración (INI-05). **2026-11-21**: ese trabajo pasa a
   [INI-16](#ini-16-rework-del-motor-fatiga-tácticas-y-rendimiento); la medición en tres máquinas sigue aquí y se
-  hace después de INI-16 para no medir dos veces.
+  hace después de INI-16 para no medir dos veces. **2026-11-26**: la spec 018 repite la carga de 100 partidas con
+  el motor 9.0.0 ya optimizado (018/T084, FR-052) frente a la referencia del 94 % de CPU y ~15 s de apertura; sigue
+  **Parcial** hasta esa medida.
 - **Criterios de cierre**:
   1. Guion actualizado al protocolo vigente (T153 y T128 marcadas; son la misma tarea).
   2. 001/SC-017 cumplido, con servidor, base de datos y generador de carga en máquinas separadas, y resultado registrado.
@@ -516,15 +522,19 @@ cuesta simular los partidos.
 - **Alcance propuesto**:
   - Rework de la fatiga.
   - Más impacto de las tácticas en el resultado.
-  - [INI-06](#ini-06-rendimiento-del-motor): 002/FR-028a (≤ 25 ms por partido sin fotogramas y ≤ 40 ms con
-    fotogramas), hoy en unos 107 ms con el CI tolerando 120 ms.
+  - [INI-06](#ini-06-rendimiento-del-motor): 018/FR-039 (≤ 60 ms por partido sin fotogramas y ≤ 80 ms con
+    fotogramas), que sustituye a los 25 / 40 ms; la 8.0.0 medía unos 107 ms con el CI tolerando 120 ms.
   - El trabajo futuro de [INI-07](#ini-07-carga-y-escalabilidad-de-la-beta): con 100 partidas en 8 núcleos la CPU
     está al 94 % y la apertura de partidos sigue en ~15 s de p95.
 - **Orden dentro de la spec**: primero fatiga y tácticas, luego recalibrar y por último optimizar ("Decisiones",
   punto 3: calibrar antes que optimizar). La fatiga y las tácticas cambian los resultados, así que la equivalencia
   y las semillas se regeneran una vez, y la optimización posterior no debe volver a cambiarlos.
-- **Specs**: ninguna. **Requiere spec nueva**.
-- **Prioridad / estado**: P0 · **Pendiente**. Está en el camino crítico: el límite de INI-07 es el coste del motor.
+- **Specs**: [018](specs/018-rework-motor/spec.md).
+- **Prioridad / estado**: P0 · **Parcial**. Está en el camino crítico: el límite de INI-07 es el coste del motor.
+  A 2026-11-26: motor 9.0.0 con fatiga y tácticas nuevas, calibrado con los umbrales aprobados (`pnpm balance`, 79 de
+  79), huella 018 congelada, cierre de partidas al desplegar y efecto documentado en
+  [enfrentamientos.md](docs/juego/enfrentamientos.md). Optimización hecha en local (T066 a T068: 53–54 ms por
+  partido); falta confirmarla en el CI (T069), la fluidez de la 2D (T071) y la carga (T084).
 - **Riesgo**: cambiar fatiga y tácticas puede romper la calibración de INI-05 (76 de 76 en `pnpm balance`). Los
   umbrales nuevos los decide la persona responsable a partir de las mediciones.
 - **Dependencias**: INI-05 (hecha). Desbloquea la medición final de INI-07.
@@ -542,9 +552,10 @@ cuesta simular los partidos.
     todo lo que salga.
   - Gestión de roles (RBAC). Hoy no hay roles: la administración se hace por CLI (`ajuste`, `premium`).
   - Crear `robots.txt` (no existe en `apps/web/public/`).
-- **Specs**: ninguna. **Requiere spec nueva**; la auditoría es su primera fase y su informe fija el alcance de la
-  implementación.
-- **Prioridad / estado**: P0 · **Pendiente**. Recoge la revisión de seguridad que antes estaba en INI-10.
+- **Specs**: [017](specs/017-auditoria-seguridad-roles/spec.md), con su [informe](specs/017-auditoria-seguridad-roles/auditoria.md).
+- **Prioridad / estado**: P0 · **Implementada, sin validar** (2026-11-22): 40 hallazgos corregidos, 190 ataques bloqueados, roles,
+  panel y `robots.txt`. Para cerrarla falta la aprobación de la persona responsable (T110).
+  Hay que repetir la revisión sobre lo que integre INI-16. Recoge la revisión de seguridad que antes estaba en INI-10.
 - **Dependencias**: ninguna. Puede ir en paralelo a INI-16. Bloquea INI-10 y debe repetirse en lo que añada INI-18.
 - **Criterios de cierre**: los de su spec, como mínimo: informe de la auditoría con cada hallazgo cerrado o aceptado
   por decisión registrada; ningún hallazgo crítico o alto abierto; roles con pruebas de acceso denegado; `robots.txt`
@@ -598,6 +609,8 @@ cuesta simular los partidos.
    equipo, y la 004 ya prevé comparar con una versión anterior.
 5. **Criterios no medibles se reformulan en su spec**, no se aflojan en el CI. Hoy el CI tolera siete comprobaciones
    con `--pendientes` y un umbral de 120 ms frente a los 25 ms del requisito: este roadmap no las da por cumplidas.
+  (2026-11-26: el objetivo pasa a 60 / 80 ms con 018/FR-039 y no se da por cumplido hasta que el job
+  `rendimiento-motor` pase con él.)
 6. **Lo que no tiene spec no se implementa** (INI-10 a INI-14 e INI-16 a INI-19): primero `/speckit-specify`.
 
 ## Decisiones de la persona responsable (2026-11-20)
@@ -616,7 +629,7 @@ cuesta simular los partidos.
 | ~~7 comprobaciones de `balance` en `--pendientes` y 003/SC-001c~~: el CI ya no usa `--pendientes` (2026-11-16, spec 015; 76 de 76) | `.github/workflows/ci.yml` | INI-05 |
 | ~~Recorridos a mano de los quickstart de la 014 y la 015 (paso 5)~~: hechos el 2026-11-21 | `specs/014-…/quickstart.md`, `specs/015-…/quickstart.md` | INI-05 |
 | ~~Recorridos a mano de la 012 (T076, T089, T100, T106, T116) y la 013 (T073), y los quickstart de la 006 (T103, escenarios A–O), la 014 y la 015~~: pre-recorrido automático el 2026-11-20 y recorrido de la persona responsable el 2026-11-21 ([docs/recorrido-manual.md](docs/recorrido-manual.md)); tareas marcadas | `tasks.md` y `quickstart.md` de cada spec | INI-05, INI-08 (los de la 012 y la 013 ya no bloquean INI-15, cerrada) |
-| FR-028a: 25 / 40 ms por partido (CI a 120 ms) | `pnpm --filter @fbd/engine bench` | INI-06 (en INI-16) |
+| 018/FR-039 (sustituye a FR-028a): 60 / 80 ms por partido en el CI con Node 22 | job `rendimiento-motor` (`umbral-motor`) | INI-06 (en INI-16) |
 | 001/SC-017: carga de 100 partidas | `tools/load/beta-100.js` | INI-07 |
 | Pruebas con personas: 001/SC-003; 002/SC-001, SC-009, SC-007a; 003/SC-008, SC-011–SC-014, SC-016, SC-019; 004/SC-003, SC-004, SC-010 | checklists `validacion.md` | INI-01 a INI-03 |
 | 60 fps en un portátil medio con el navegador visible | 002/FR-025b | INI-01, INI-02 |

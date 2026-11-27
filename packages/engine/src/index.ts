@@ -11,7 +11,7 @@ export type { EstadoMotor, JugadorEnPartido, EquipoEstado, Incidencia } from './
 export { maxSustituciones, minutoDeJuego, minutoMostrable } from './estado/estado';
 export { avanzar, MAX_PASOS, type ResultadoTramo } from './tramos/avanzar';
 export { ordenJugadores } from './espacio/paso';
-export { energiaDe } from './modificadores/cansancio';
+export { curvaEnergia, energiaDe, type PerfilEnergia } from './modificadores/cansancio';
 // Curva de un duelo (spec 015): la herramienta de equilibrado comprueba las de FR-002 sin jugar partidos.
 export { probabilidad } from './acciones/duelo';
 // Liderazgo (spec 015, SC-006): la herramienta de equilibrado mide la exposición de la línea y el bonus del portero.

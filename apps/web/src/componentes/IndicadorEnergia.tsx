@@ -26,6 +26,17 @@ export function etiquetaEnergia(energia: number, penalizacion: number): string {
   return muestraPenalizacion(energia) && penalizacion > 0 ? `Energía ${energia} %, rinde un ${penalizacion} % menos` : `Energía ${energia} %`;
 }
 
+/** Penalización técnica (×0,5) y mental (×0,25), derivadas de la física que envía el servidor (spec 018, FR-021). */
+export function penalizacionesPorTipo(fisica: number): { fisica: number; tecnica: number; mental: number } {
+  return { fisica, tecnica: Math.round(fisica * 0.5), mental: Math.round(fisica * 0.25) };
+}
+
+/** Detalle de la penalización. Es aproximado porque la física llega ya redondeada (research R17). */
+export function detallePenalizacion(fisica: number): string {
+  const { tecnica, mental } = penalizacionesPorTipo(fisica);
+  return `Físicas −${fisica} %, técnicas −${tecnica} % y mentales −${mental} % (aproximado).`;
+}
+
 /** Boca de cada cara: de la sonrisa amplia a la muy triste (curva cuadrática en un círculo de 24 × 24). */
 const BOCA: Record<TramoEnergia, string> = {
   fresco: 'M7 14 Q12 19 17 14',
@@ -58,12 +69,13 @@ export function CaraEnergia({ tramo }: { tramo: TramoEnergia }) {
 /** Indicador completo: porcentaje y, debajo, la cara; la penalización la sube el CSS por encima del porcentaje. */
 export function IndicadorEnergia({ energia, penalizacion }: { energia: number; penalizacion: number }) {
   const tramo = tramoEnergia(energia);
-  const etiqueta = etiquetaEnergia(energia, penalizacion);
+  const conDetalle = muestraPenalizacion(energia) && penalizacion > 0;
+  const etiqueta = conDetalle ? `${etiquetaEnergia(energia, penalizacion)}. ${detallePenalizacion(penalizacion)}` : etiquetaEnergia(energia, penalizacion);
   return (
     <span className={`indicador-energia energia-${tramo}`} role="img" aria-label={etiqueta} title={etiqueta}>
       <span className="indicador-energia-porcentaje">{energia} %</span>
       <CaraEnergia tramo={tramo} />
-      {muestraPenalizacion(energia) && penalizacion > 0 && <span className="indicador-energia-penalizacion">−{penalizacion} %</span>}
+      {conDetalle && <span className="indicador-energia-penalizacion">−{penalizacion} %</span>}
     </span>
   );
 }

@@ -125,6 +125,9 @@ importers:
       tsup:
         specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.30)(tsx@4.23.15)(typescript@5.9.3)(yaml@2.9.1)
+      vitest:
+        specifier: ^4.1.12
+        version: 4.1.12(@opentelemetry/api@1.9.1)(@types/node@22.20.5)(vite@6.4.4(@types/node@22.20.5)(tsx@4.23.15)(yaml@2.9.1))
 
   apps/web:
     dependencies:

@@ -47,7 +47,7 @@ describe('reglas de administración', () => {
     await bd.detener();
   });
 
-  it('SEG-033: seguir con el rol anterior tras un cambio', async () => {
+  it('SEG-000: seguir con el rol anterior tras un cambio', async () => {
     const a = await admin();
     const u = await crearRegistrado(s.url);
     expect((await cambiarRol(a, u.id, 'administrador')).estado).toBe(200);
@@ -57,14 +57,14 @@ describe('reglas de administración', () => {
     expect((await peticion(s.url, '/api/admin/ajustes', { cookie: u.cookie })).estado).toBe(403);
   });
 
-  it('SEG-033: cambiarse el propio rol', async () => {
+  it('SEG-000: cambiarse el propio rol', async () => {
     const a = await admin();
     const r = await cambiarRol(a, a.id, 'jugador');
     expect(r.estado).toBe(409);
     expect(r.cuerpo.error.codigo).toBe('ROL_PROPIO');
   });
 
-  it('SEG-033: dos administradores se quitan el rol a la vez', async () => {
+  it('SEG-000: dos administradores se quitan el rol a la vez', async () => {
     const [a, b] = [await admin(), await admin()];
     const estados = (await Promise.all([cambiarRol(a, b.id, 'jugador'), cambiarRol(b, a.id, 'jugador')])).map((r) => r.estado).sort();
     expect(estados).toEqual([200, 403]);
@@ -72,7 +72,7 @@ describe('reglas de administración', () => {
     expect(rows[0]!.n).toBe(1);
   });
 
-  it('SEG-033: dar un rol a un invitado', async () => {
+  it('SEG-000: dar un rol a un invitado', async () => {
     const a = await admin();
     const i = await crearInvitado(s.url);
     const r = await cambiarRol(a, i.id, 'betatester');
@@ -80,7 +80,7 @@ describe('reglas de administración', () => {
     expect(r.cuerpo.error.codigo).toBe('INVITADO_SIN_ROL');
   });
 
-  it('SEG-033: nombrar administrador a una cuenta suspendida', async () => {
+  it('SEG-000: nombrar administrador a una cuenta suspendida', async () => {
     const a = await admin();
     const u = await crearRegistrado(s.url);
     await peticion(s.url, `/api/admin/cuentas/${u.id}/suspender`, { cookie: a.cookie, cuerpo: { motivo } });
@@ -89,7 +89,7 @@ describe('reglas de administración', () => {
     expect(r.cuerpo.error.codigo).toBe('CUENTA_SUSPENDIDA');
   });
 
-  it('SEG-033: seguir dentro tras ser suspendido', async () => {
+  it('SEG-000: seguir dentro tras ser suspendido', async () => {
     const a = await admin();
     const u = await crearRegistrado(s.url);
     const partidaId = await crearPartida(u);
@@ -118,7 +118,7 @@ describe('reglas de administración', () => {
     expect((await peticion(s.url, '/api/auth/login', { cuerpo: { email: u.email, password: 'contraseña-segura' } })).estado).toBe(200);
   });
 
-  it('SEG-033: una contraseña incorrecta no revela que la cuenta está suspendida', async () => {
+  it('SEG-000: una contraseña incorrecta no revela que la cuenta está suspendida', async () => {
     const a = await admin();
     const u = await crearRegistrado(s.url);
     await peticion(s.url, `/api/admin/cuentas/${u.id}/suspender`, { cookie: a.cookie, cuerpo: { motivo } });
@@ -126,7 +126,7 @@ describe('reglas de administración', () => {
     expect(r.estado).toBe(401);
   });
 
-  it('SEG-033: suspenderse a uno mismo, a un administrador o a un invitado', async () => {
+  it('SEG-000: suspenderse a uno mismo, a un administrador o a un invitado', async () => {
     const [a, b] = [await admin(), await admin()];
     const i = await crearInvitado(s.url);
     const propia = await peticion(s.url, `/api/admin/cuentas/${a.id}/suspender`, { cookie: a.cookie, cuerpo: { motivo } });
@@ -137,7 +137,7 @@ describe('reglas de administración', () => {
     }
   });
 
-  it('SEG-033: repetir una entrega de fragmentos, también a la vez', async () => {
+  it('SEG-000: repetir una entrega de fragmentos, también a la vez', async () => {
     const a = await admin();
     const b = await betatester();
     const idEntrega = randomUUID();
@@ -149,7 +149,7 @@ describe('reglas de administración', () => {
     expect(rows[0]!.n).toBe(1);
   });
 
-  it('SEG-033: reutilizar un idEntrega para otra cantidad u otra cuenta', async () => {
+  it('SEG-000: reutilizar un idEntrega para otra cantidad u otra cuenta', async () => {
     const a = await admin();
     const [b, c] = [await betatester(), await betatester()];
     const idEntrega = randomUUID();
@@ -162,7 +162,7 @@ describe('reglas de administración', () => {
     expect(await saldo(c.id)).toBe(0);
   });
 
-  it.each([10_001, 0, -5, 1.5])('SEG-033: entregar una cantidad no válida (%s)', async (cantidad) => {
+  it.each([10_001, 0, -5, 1.5])('SEG-000: entregar una cantidad no válida (%s)', async (cantidad) => {
     const a = await admin();
     const b = await betatester();
     const r = await entregar(a, b.id, cantidad);
@@ -170,7 +170,7 @@ describe('reglas de administración', () => {
     expect(await saldo(b.id)).toBe(0);
   });
 
-  it('SEG-033: entregar fragmentos a una cuenta sin el rol betatester', async () => {
+  it('SEG-000: entregar fragmentos a una cuenta sin el rol betatester', async () => {
     const a = await admin();
     const u = await crearRegistrado(s.url);
     const r = await entregar(a, u.id, 100);
@@ -178,7 +178,7 @@ describe('reglas de administración', () => {
     expect(await saldo(u.id)).toBe(0);
   });
 
-  it('SEG-033: cerrar una partida en la que juega el propio administrador', async () => {
+  it('SEG-000: cerrar una partida en la que juega el propio administrador', async () => {
     const a = await admin();
     const id = await crearPartida(a);
     const r = await peticion(s.url, `/api/admin/partidas/${id}/cerrar`, { cookie: a.cookie, cuerpo: { motivo } });
@@ -186,7 +186,7 @@ describe('reglas de administración', () => {
     expect(await estadoPartida(id)).toBe('buscando');
   });
 
-  it('SEG-033: cerrar dos veces una partida', async () => {
+  it('SEG-000: cerrar dos veces una partida', async () => {
     const a = await admin();
     const u = await crearRegistrado(s.url);
     const id = await crearPartida(u);
@@ -200,7 +200,7 @@ describe('reglas de administración', () => {
     expect(avisos.rows[0]!.texto).not.toContain(motivo);
   });
 
-  it('SEG-033: cobrar premios de una partida cerrada', async () => {
+  it('SEG-000: cobrar premios de una partida cerrada', async () => {
     const a = await admin();
     const { anfitrion: u, partida } = await partidaTrasDraft(s as unknown as ServidorPruebas);
     const id: string = partida.id;
@@ -215,7 +215,7 @@ describe('reglas de administración', () => {
     expect(await saldo(u.id)).toBe(0);
   });
 
-  it('SEG-033: alterar o borrar el registro de administración', async () => {
+  it('SEG-000: alterar o borrar el registro de administración', async () => {
     const a = await admin();
     const b = await betatester();
     await entregar(a, b.id, 100);
@@ -223,7 +223,7 @@ describe('reglas de administración', () => {
     await expect(bd.db.execute(sql`delete from registro_admin`)).rejects.toThrow();
   });
 
-  it('SEG-033: el registro conserva la acción sin el motivo de una cuenta eliminada', async () => {
+  it('SEG-000: el registro conserva la acción sin el motivo de una cuenta eliminada', async () => {
     const a = await admin();
     const b = await betatester();
     await entregar(a, b.id, 100);
@@ -233,7 +233,7 @@ describe('reglas de administración', () => {
     expect(r.cuerpo.entradas[0]).toMatchObject({ objeto: { tipo: 'cuenta', id: b.id, nombre: 'Cuenta eliminada' }, motivo: null, resultado: 'ok' });
   });
 
-  it('SEG-033: designar por consola un administrador cuando ya hay uno', async () => {
+  it('SEG-000: designar por consola un administrador cuando ya hay uno', async () => {
     const u = await crearRegistrado(s.url);
     await designarPrimerAdministrador(bd.db, u.email!);
     expect((await peticion(s.url, '/api/me', { cookie: u.cookie })).cuerpo.usuario.rol).toBe('administrador');
@@ -244,7 +244,7 @@ describe('reglas de administración', () => {
     expect(rows).toEqual([{ actor_tipo: 'consola', n: 1 }]);
   });
 
-  it('SEG-033: ejecutar una orden de consola caducada', async () => {
+  it('SEG-000: ejecutar una orden de consola caducada', async () => {
     const u = await crearRegistrado(s.url);
     const [vieja, nueva] = [await crearPartida(u), await crearPartida(u)];
     const orden = async (partidaId: string, intervalo: string) =>
@@ -259,7 +259,7 @@ describe('reglas de administración', () => {
     expect(await estadoPartida(nueva)).toBe('abandonada');
   });
 
-  it('SEG-033: ver datos de juego en la lista de partidas del panel', async () => {
+  it('SEG-000: ver datos de juego en la lista de partidas del panel', async () => {
     const a = await admin();
     const u = await crearRegistrado(s.url);
     await crearPartida(u);
@@ -267,7 +267,7 @@ describe('reglas de administración', () => {
     expect(Object.keys(r.cuerpo.partidas[0]).sort()).toEqual(['creadaEn', 'estado', 'humanos', 'id', 'modo', 'participaAdmin', 'participantes']);
   });
 
-  it('SEG-033: cambiar un ajuste a un valor o una clave desconocidos', async () => {
+  it('SEG-000: cambiar un ajuste a un valor o una clave desconocidos', async () => {
     const a = await admin();
     for (const [clave, estado] of [['identidad_cartas', 422], ['__proto__', 404], ['no_existe', 404]] as const) {
       const r = await peticion(s.url, `/api/admin/ajustes/${clave}`, { metodo: 'PUT', cookie: a.cookie, cuerpo: { valor: 'inventado', motivo } });

@@ -72,7 +72,7 @@ const MAXIMO_PENDIENTES = 500;
 
 /** Lectura del registro y acumulación de los accesos denegados. */
 export class RegistroAdmin {
-  private readonly denegados = new Map<string, { actorId: string; rol: Rol; intentos: number }>();
+  private readonly denegados = new Map<string, { actorId: string; rol: Rol; ruta: string; intentos: number }>();
   private temporizador: NodeJS.Timeout | null = null;
 
   constructor(
@@ -81,16 +81,16 @@ export class RegistroAdmin {
   ) {}
 
   /** Acumula el intento 10 s: el trigger impide incrementar una fila, y así nadie llena la tabla llamando en bucle. */
-  denegado(u: UsuarioSesion): void {
-    this.acumular(u.id, u.rol, 1);
+  denegado(u: UsuarioSesion, ruta: string): void {
+    this.acumular(u.id, u.rol, ruta, 1);
     if (this.denegados.size >= MAXIMO_PENDIENTES) void this.volcar();
     else this.programar();
   }
 
-  private acumular(actorId: string, rol: Rol, intentos: number): void {
-    const clave = `${actorId}:${rol}`;
+  private acumular(actorId: string, rol: Rol, ruta: string, intentos: number): void {
+    const clave = `${actorId}:${rol}:${ruta}`;
     const previo = this.denegados.get(clave);
-    this.denegados.set(clave, { actorId, rol, intentos: (previo?.intentos ?? 0) + intentos });
+    this.denegados.set(clave, { actorId, rol, ruta, intentos: (previo?.intentos ?? 0) + intentos });
   }
 
   private programar(): void {
@@ -99,7 +99,7 @@ export class RegistroAdmin {
     this.temporizador.unref();
   }
 
-  /** Inserta lo acumulado, una fila por actor. Si falla, lo conserva para el siguiente intento. */
+  /** Inserta lo acumulado, una fila por actor y acción intentada. Si falla, lo conserva para el siguiente intento. */
   async volcar(): Promise<void> {
     if (this.temporizador) clearTimeout(this.temporizador);
     this.temporizador = null;
@@ -108,11 +108,11 @@ export class RegistroAdmin {
     this.denegados.clear();
     try {
       await this.db.insert(registroAdmin).values(
-        lote.map((d) => fila({ actor: { id: d.actorId, tipo: 'cuenta', rol: d.rol }, accion: 'panel.acceso_denegado', resultado: 'denegado', intentos: d.intentos })),
+        lote.map((d) => fila({ actor: { id: d.actorId, tipo: 'cuenta', rol: d.rol }, accion: 'panel.acceso_denegado', valorNuevo: { ruta: d.ruta }, resultado: 'denegado', intentos: d.intentos })),
       );
     } catch (err) {
       this.logger.error({ err }, 'No se pudieron guardar los accesos denegados');
-      for (const d of lote) this.acumular(d.actorId, d.rol, d.intentos);
+      for (const d of lote) this.acumular(d.actorId, d.rol, d.ruta, d.intentos);
       this.programar();
     }
   }

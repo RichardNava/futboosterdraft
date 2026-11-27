@@ -16,6 +16,7 @@ import {
   type JugadorEnPartido,
 } from '../estado/estado';
 import { repartirAnclas } from '../espacio/geometria';
+import { terminarMarcaje } from '../modificadores/marcajeEstrella';
 import type { Lado } from '../tipos';
 import { emitir, type Contexto } from './contexto';
 
@@ -42,6 +43,7 @@ export function sustituir(ctx: Contexto, equipo: EquipoEstado, sale: JugadorEnPa
   sale.enCampo = false;
   sale.retirado = true;
   sale.casillaId = null;
+  terminarMarcaje(ctx.estado, sale.id);
   equipo.sustitucionesUsadas++;
   emitir(
     ctx,
@@ -82,6 +84,7 @@ function anotarIncidencia(ctx: Contexto, equipo: EquipoEstado, j: JugadorEnParti
   j.enCampo = false;
   j.retirado = true;
   j.casillaId = null;
+  terminarMarcaje(e, j.id);
   quitarDelCampo(ctx, j);
   if (e.balon.portadorId === j.id) e.balon.portadorId = 0;
 }

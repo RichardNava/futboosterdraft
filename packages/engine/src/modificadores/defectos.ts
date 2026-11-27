@@ -8,7 +8,7 @@
  * |---|---|---|
  * | Canchero, Impulsivo, Agresivo | `acciones/juego.ts`, `acciones/balonParado.ts` | probabilidad de falta, amarilla y roja directa |
  * | Frágil, De cristal | `acciones/lesiones.ts` | probabilidad de lesión × 3; gravedad siempre larga |
- * | Fatigado, Indisciplinado | `modificadores/cansancio.ts` | inicio en la 2.ª parte; ritmo × 1,5 |
+ * | Fatigado, Indisciplinado | `modificadores/cansancio.ts` | ritmo × 1,3; tramos 5 min antes y acciones × 1,5 |
  * | Torpe | `acciones/tiro.ts` | autogol en el despeje y en el desvío × 2 |
  * | Chupón | `acciones/opciones.ts` | peso de los pases × 0,5 |
  * | Mal defensor | `acciones/contexto.ts`, `acciones/receptor.ts`, `espacio/objetivos.ts` | peso como candidato defensivo × 0,5 |
@@ -19,10 +19,9 @@
  * | Revulsivo | `multiplicadorIndividual` | × 1,05 si entró desde el banquillo |
  *
  * Todas las condiciones se leen en el estado del momento, así que se reevalúan solas (FR-042). Un mismo defecto cuenta
- * una sola vez por equipo y defectos distintos se multiplican (FR-016). Con parámetros 1.x a 3.x, todo es neutro:
- * los factores valen 1, los sumandos 0 y los rasgos sin magnitud (De cristal, Fatigado) no se aplican.
+ * una sola vez por equipo y defectos distintos se multiplican (FR-016).
  */
-import { parametrosEfectivos, type Defecto, type GravedadLesion, type ParametrosDefectos } from '@fbd/domain';
+import type { Defecto, GravedadLesion, ParametrosDefectos } from '@fbd/domain';
 import { emitir, type Contexto } from '../acciones/contexto';
 import { enAreaRival } from '../espacio/campo';
 import { aEquipo } from '../espacio/geometria';
@@ -30,10 +29,7 @@ import { rival, type EquipoEstado, type EstadoMotor, type JugadorEnPartido } fro
 import { mediaEfectiva } from './atributos';
 import { tiene } from './virtudes';
 
-/** Si los parámetros son de la spec 005 o posteriores (traen la sección `defectos`). */
-export const conRasgos005 = (estado: EstadoMotor): boolean => estado.parametros.defectos !== undefined;
-
-const parametrosDefectos = (estado: EstadoMotor): ParametrosDefectos => parametrosEfectivos(estado.parametros).defectos;
+const parametrosDefectos = (estado: EstadoMotor): ParametrosDefectos => estado.parametros.defectos;
 
 const esPortero = (j: JugadorEnPartido) => j.casillaId === 'POR';
 
@@ -57,6 +53,18 @@ export function equipoConMultiplicadores(equipo: EquipoEstado): boolean {
   return v;
 }
 
+const malestarPorEquipo = new WeakMap<EquipoEstado, boolean>();
+
+/** Si la plantilla tiene algún Polémico o Rebelde (los rasgos no cambian durante el partido). */
+function equipoConMalestar(equipo: EquipoEstado): boolean {
+  let v = malestarPorEquipo.get(equipo);
+  if (v === undefined) {
+    v = equipo.jugadores.some((j) => conDefectos(j) && (tiene(j, 'Polemico') || tiene(j, 'Rebelde')));
+    malestarPorEquipo.set(equipo, v);
+  }
+  return v;
+}
+
 /** Polémico en el campo con su equipo perdiendo (el primero, si hay varios). */
 function polemicoActivo(estado: EstadoMotor, equipo: EquipoEstado): JugadorEnPartido | undefined {
   if (parametrosDefectos(estado).polemico <= 0) return undefined;
@@ -72,7 +80,6 @@ function rebeldeActivo(estado: EstadoMotor, equipo: EquipoEstado): JugadorEnPart
 
 /** Multiplicador de equipo a los stats de los jugadores en el campo (Polémico, Rebelde). */
 export function multiplicadorEquipo(estado: EstadoMotor, equipo: EquipoEstado): number {
-  if (!conRasgos005(estado)) return 1;
   const d = parametrosDefectos(estado);
   let m = 1;
   if (polemicoActivo(estado, equipo)) m *= 1 - d.polemico;
@@ -88,20 +95,20 @@ function esElMejor(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartid
 
 /** Multiplicador individual a los stats (Estrellita y Revulsivo). */
 export function multiplicadorIndividual(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido): number {
-  if (!conRasgos005(estado) || !j.enCampo) return 1;
+  if (!j.enCampo) return 1;
   const d = parametrosDefectos(estado);
   let m = 1;
   if (d.estrellita > 0 && conDefectos(j) && tiene(j, 'Estrellita') && !esElMejor(estado, equipo, j)) m *= 1 - d.estrellita;
   // Revulsivo (FR-034): +5 % desde que entra del banquillo hasta el final.
-  if (j.entroDesdeBanquillo && tiene(j, 'Revulsivo')) m *= 1 + parametrosEfectivos(estado.parametros).virtudes.revulsivo;
+  if (j.entroDesdeBanquillo && tiene(j, 'Revulsivo')) m *= 1 + estado.parametros.virtudes.revulsivo;
   return m;
 }
 
-/** De acero (FR-031): nunca se lesiona (solo con parámetros de la spec 005). */
-export const deAcero = (estado: EstadoMotor, j: JugadorEnPartido): boolean => conRasgos005(estado) && tiene(j, 'DeAcero');
+/** De acero (FR-031): nunca se lesiona. */
+export const deAcero = (_estado: EstadoMotor, j: JugadorEnPartido): boolean => tiene(j, 'DeAcero');
 
-/** Fair player (FR-033): nunca ve la roja, ni directa ni por doble amarilla (solo con parámetros de la spec 005). */
-export const fairPlayer = (estado: EstadoMotor, j: JugadorEnPartido): boolean => conRasgos005(estado) && tiene(j, 'FairPlayer');
+/** Fair player (FR-033): nunca ve la roja, ni directa ni por doble amarilla. */
+export const fairPlayer = (_estado: EstadoMotor, j: JugadorEnPartido): boolean => tiene(j, 'FairPlayer');
 
 /** Puntos que suma a un GOAT en el campo el Provocador del rival (una sola vez por equipo). */
 export function bonusProvocador(estado: EstadoMotor, equipo: EquipoEstado, j: JugadorEnPartido): number {
@@ -138,29 +145,21 @@ export function factorDefensivo(estado: EstadoMotor, j: JugadorEnPartido): numbe
   return esPortero(j) ? 1 : factor(estado, j, 'MalDefensor', (d) => d.malDefensor);
 }
 
-/** De cristal: sus lesiones son siempre de larga duración (solo con parámetros de la spec 005). */
-export function gravedadForzada(estado: EstadoMotor, j: JugadorEnPartido): GravedadLesion | undefined {
-  return conRasgos005(estado) && conDefectos(j) && tiene(j, 'DeCristal') ? 'larga' : undefined;
+/** De cristal: sus lesiones son siempre de larga duración. */
+export function gravedadForzada(_estado: EstadoMotor, j: JugadorEnPartido): GravedadLesion | undefined {
+  return conDefectos(j) && tiene(j, 'DeCristal') ? 'larga' : undefined;
 }
 
 /**
  * Multiplicador de la probabilidad de falta dentro del área rival (spec 005, research R2; `disciplina.factorFaltaArea`):
- * mantiene los penaltis al subir las faltas. Sin punto, se aplica siempre (duelos aéreos del área). Neutro en 3.x.
+ * mantiene los penaltis al subir las faltas. Sin punto, se aplica siempre (duelos aéreos del área).
  */
 export function factorFaltaArea(estado: EstadoMotor, atacante?: 'local' | 'visitante', punto?: { x: number; y: number }): number {
-  const f = parametrosEfectivos(estado.parametros).disciplina.factorFaltaArea;
+  const f = estado.parametros.disciplina.factorFaltaArea;
   if (f === 1) return 1;
   if (!atacante || !punto) return f;
   return enAreaRival(aEquipo(atacante, punto)) ? f : 1;
 }
-
-/** Fatigado: empieza a cansarse al comenzar la segunda parte si el inicio general es más tarde. */
-export function fatigado(estado: EstadoMotor, j: JugadorEnPartido): boolean {
-  return conRasgos005(estado) && conDefectos(j) && tiene(j, 'Fatigado');
-}
-
-/** Indisciplinado: multiplicador de su ritmo de cansancio. */
-export const factorCansancio = (estado: EstadoMotor, j: JugadorEnPartido) => factor(estado, j, 'Indisciplinado', (d) => d.indisciplinado);
 
 /**
  * Aviso de efectos colectivos (FR-044): emite `malestar` cuando se activa o se desactiva Polémico o Rebelde en un
@@ -168,9 +167,10 @@ export const factorCansancio = (estado: EstadoMotor, j: JugadorEnPartido) => fac
  */
 export function actualizarMalestar(ctx: Contexto): void {
   const e = ctx.estado;
-  if (!conRasgos005(e)) return;
   for (const lado of ['local', 'visitante'] as const) {
     const equipo = e.equipos[lado];
+    // Se llama en cada tick: sin Polémico ni Rebelde en la plantilla no hay nada que avisar.
+    if (!equipoConMalestar(equipo)) continue;
     const activos = e.malestar[lado];
     for (const [defecto, activo] of [
       ['Polemico', polemicoActivo(e, equipo)],

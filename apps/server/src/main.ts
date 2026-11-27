@@ -2,6 +2,7 @@
  * Punto de entrada del servidor.
  * Variables de entorno: ver `.env.example`. `--fake-clock` activa el reloj simulado (solo desarrollo).
  */
+import { cerrarPartidasMotor9 } from './actores/cierreMotor9';
 import { validarEntornoProduccion } from './entorno';
 import { conectar, urlBaseDatos } from './persistencia/db';
 import { aplicarMigraciones } from './persistencia/migrar';
@@ -25,10 +26,15 @@ async function principal(): Promise<void> {
   // Las migraciones pendientes se aplican al arrancar (MIGRAR_AL_ARRANCAR=false lo desactiva).
   if (process.env.MIGRAR_AL_ARRANCAR !== 'false') await aplicarMigraciones(conexion.db);
   // Hilos de simulación (spec 009, FR-007): por defecto, núcleos − 1; 0 simula en el hilo principal.
+  const reloj = relojFalso ? new RelojFalso(Date.now()) : new RelojReal();
+  // Cierre único de las partidas 8.x (spec 018, FR-046): antes de crear el servidor, para que ningún servicio las vea.
+  // Si falla, `principal` lanza y el proceso termina sin aceptar tráfico.
+  const cierre = await cerrarPartidasMotor9(conexion.db, reloj);
+  if (cierre.ejecutado) console.info('Cierre de partidas del motor 9.0.0', cierre);
   const { hilos, aviso } = hilosConfigurados(process.env.HILOS_SIMULACION);
   const servidor = await crearServidor({
     db: conexion.db,
-    reloj: relojFalso ? new RelojFalso(Date.now()) : new RelojReal(),
+    reloj,
     secreto,
     urlPublica: process.env.PUBLIC_URL ?? 'http://localhost:5173',
     smtpUrl: process.env.SMTP_URL,

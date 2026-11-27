@@ -1,7 +1,7 @@
 /**
  * Faltas, tarjetas, penaltis, faltas directas y fueras de juego (T086).
  */
-import { lanzadorEfectivo, parametrosEfectivos, type ParametrosEquilibrado } from '@fbd/domain';
+import { lanzadorEfectivo, type ParametrosEquilibrado } from '@fbd/domain';
 import { rival, type EquipoEstado, type JugadorEnPartido } from '../estado/estado';
 import { decimasDeMetros, distanciaPorteria, enAreaRival } from '../espacio/campo';
 import { aAbsoluta, aEquipo, CENTRO_Y, zonaCarrilDe, type Punto } from '../espacio/geometria';
@@ -38,7 +38,7 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
         d.probabilidadAmarillaPorFalta *
           1000 *
           (zona >= 4 ? 1.4 : 1) *
-          (culpable.amarillas > 0 ? parametrosEfectivos(e.parametros).disciplina.factorSegundaAmarilla : 1) *
+          (culpable.amarillas > 0 ? e.parametros.disciplina.factorSegundaAmarilla : 1) *
           factorAmarilla(e, culpable),
       ),
     )
@@ -46,11 +46,12 @@ export function falta(ctx: Contexto, atacante: EquipoEstado, victima: JugadorEnP
     amarilla(ctx, defensor, culpable);
   }
   // La falta puede lesionar a quien la recibe.
-  const lesionado = comprobarLesion(ctx, atacante, victima, 1.5);
+  comprobarLesion(ctx, atacante, victima, 1.5);
   if (e.fase === 'finalizado') return;
 
   interrumpir(ctx, 'falta', 16, atacante.lado);
-  const lanzadorBalon = lesionado ? atacante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR') : victima;
+  // La víctima puede haberse ido: lesionada o sustituida por una decisión aplicada al pitarse la falta.
+  const lanzadorBalon = victima.enCampo ? victima : atacante.jugadores.find((j) => j.enCampo && j.casillaId !== 'POR');
   // Penalti si el punto de la falta está dentro del área real (research R7), no por una probabilidad fija.
   if (enAreaRival(aEquipo(atacante.lado, e.espacio.balon))) {
     penalti(ctx, atacante);

@@ -2,7 +2,7 @@
  * Sonda del hallazgo H11: reparto de los goles por la posición de la casilla del goleador, en series con extremos y
  * mediapunta. `pnpm --filter @fbd/balance exec tsx src/sondaGoleadores.ts 200`
  */
-import { CASILLA_CENTRAL, FORMACIONES, PARAMETROS_V3, type FormacionId } from '@fbd/domain';
+import { parametrosActuales, CASILLA_CENTRAL, FORMACIONES, type FormacionId } from '@fbd/domain';
 import { equipoSintetico } from './equipos';
 import { serie } from './series';
 
@@ -11,7 +11,7 @@ const semillas = Number(process.argv[3] ?? 1);
 // Ajustes en memoria (JSON con las rutas a cambiar), p. ej. '{"espacio.llegadaAlArea.xExtremo":9300,"acciones.centroRaso":0.5}'.
 for (const [ruta, valor] of Object.entries(JSON.parse(process.argv[4] ?? '{}') as Record<string, number>)) {
   const partes = ruta.split('.');
-  let o = PARAMETROS_V3 as unknown as Record<string, unknown>;
+  let o = parametrosActuales() as unknown as Record<string, unknown>;
   for (const k of partes.slice(0, -1)) o = o[k] as Record<string, unknown>;
   o[partes.at(-1)!] = valor;
 }

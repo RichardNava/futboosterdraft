@@ -1,12 +1,12 @@
 /** Participante de referencia de SC-010 (spec 003, research R13; T089). */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { derivarSemilla, PARAMETROS_V3, Rng, semillaDesdeTexto, tacticaPorDefecto, type Jugador } from '@fbd/domain';
+import { parametrosActuales, derivarSemilla, Rng, semillaDesdeTexto, tacticaPorDefecto, type Jugador } from '@fbd/domain';
 import { describe, expect, it } from 'vitest';
 import { draftMesa } from '../src/checks/npc';
 import { alineacionReferencia, elegirCartaReferencia, FORMACIONES_REFERENCIA } from '../src/referencia';
 
-const p = PARAMETROS_V3;
+const p = parametrosActuales();
 const CORE = (JSON.parse(readFileSync(fileURLToPath(new URL('../../../data/core-real.json', import.meta.url)), 'utf-8')) as { jugadores: Jugador[] }).jugadores;
 
 describe('participante de referencia (T089)', () => {

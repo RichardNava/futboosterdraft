@@ -6,10 +6,10 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import fc from 'fast-check';
 import {
+  parametrosActuales,
   autoAlineacion,
   derivarSemilla,
   NIVELES_NPC,
-  PARAMETROS_V3,
   previsualizar,
   Rng,
   semillaDesdeTexto,
@@ -32,7 +32,7 @@ import {
 import { decidirAlineacionDetallada } from '../src/alineacion';
 import { erroresDe } from '../src/perfiles';
 
-const p = PARAMETROS_V3;
+const p = parametrosActuales();
 const RUTA_CORE = fileURLToPath(new URL('../../../data/core-real.json', import.meta.url));
 const CORE = (JSON.parse(readFileSync(RUTA_CORE, 'utf-8')) as { jugadores: Jugador[] }).jugadores;
 const CUPO = { POR: 3, DEF: 8, MED: 8, DEL: 5 } as const;

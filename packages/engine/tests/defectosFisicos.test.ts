@@ -3,9 +3,9 @@
  */
 import { describe, expect, it } from 'vitest';
 import { comprobarLesion } from '../src/acciones/lesiones';
-import { acumularCansancio } from '../src/modificadores/cansancio';
 import { contextoDe, ponerRasgos, titularEn } from './ayudas';
-import { conParametros, P4, partido4, razon } from './ayudasRasgos';
+import { jugarHasta } from './ayudasFatiga';
+import { conParametros, partido4, razon } from './ayudasRasgos';
 
 function lesiones(n: number, defectos: ('Fragil' | 'DeCristal')[], prob: number) {
   const q = conParametros((x) => {
@@ -38,30 +38,23 @@ describe('Frágil y De cristal (lesiones)', () => {
   });
 });
 
-describe('Fatigado e Indisciplinado (cansancio)', () => {
-  it('Fatigado empieza a cansarse al comenzar la segunda parte, aunque el inicio general sea el minuto 65', () => {
-    expect(P4.cansancio.inicioMin).toBe(65);
+describe('Fatigado e Indisciplinado (energía, spec 018)', () => {
+  it('Fatigado gasta ×1,3 y ya no empieza antes del tramo general', () => {
     const e = partido4('fatigado');
-    const eq = e.equipos.local;
     const fatigado = ponerRasgos(titularEn(e, 'local', 'MC-1'), { defectos: ['Fatigado'] });
     const normal = titularEn(e, 'local', 'MC-2');
-    e.reloj = { parte: 1, segundosEnParte: 44 * 60, paradas: 0, descuento: null };
-    acumularCansancio(e, eq, 60);
-    expect(fatigado.cansancio).toBe(0);
-    e.reloj = { parte: 2, segundosEnParte: 30, paradas: 0, descuento: null }; // minuto 46
-    acumularCansancio(e, eq, 60);
-    expect(fatigado.cansancio).toBeGreaterThan(0);
-    expect(normal.cansancio).toBe(0);
+    jugarHasta(e, 30);
+    expect(fatigado.energia).toBe(100);
+    jugarHasta(e, 45);
+    expect((100 - fatigado.energia) / (100 - normal.energia)).toBeCloseTo(1.3, 6);
   });
 
-  it('Indisciplinado acumula 1,5 veces el cansancio', () => {
+  it('Indisciplinado empieza 5 minutos antes en cada parte', () => {
     const e = partido4('indisciplinado');
-    const eq = e.equipos.local;
     const indisciplinado = ponerRasgos(titularEn(e, 'local', 'MC-1'), { defectos: ['Indisciplinado'] });
     const normal = titularEn(e, 'local', 'MC-2');
-    e.reloj = { parte: 2, segundosEnParte: 25 * 60, paradas: 0, descuento: null }; // minuto 70
-    acumularCansancio(e, eq, 300);
-    expect(normal.cansancio).toBeGreaterThan(0);
-    expect(indisciplinado.cansancio / normal.cansancio).toBeCloseTo(P4.defectos!.indisciplinado, 6);
+    jugarHasta(e, 30);
+    expect(indisciplinado.energia).toBeLessThan(100);
+    expect(normal.energia).toBe(100);
   });
 });

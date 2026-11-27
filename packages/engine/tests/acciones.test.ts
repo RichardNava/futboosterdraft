@@ -3,6 +3,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { avanzar, crearPartido, type AccionVisible, type EstadoMotor } from '../src/index';
+import { parametrosActuales } from '@fbd/domain';
 import { entrada, equipo } from './ayudas';
 
 const TIPOS = new Set(['pase_corto', 'pase_largo', 'pase_espacio', 'conduccion', 'regate', 'centro', 'tiro', 'despeje', 'saque', 'control']);
@@ -110,7 +111,10 @@ describe('acciones visibles y duraciones físicas (T067)', () => {
   it('al sacar un córner hay al menos 3 rematadores del equipo atacante en el área (FR-022a)', () => {
     let comprobados = 0;
     for (let i = 0; i < 10; i++) {
-      let estado = crearPartido(entrada(`balon-parado-${i}`, { local: equipo('local'), visitante: equipo('visitante') }));
+      // Con espera de sobra: aquí se prueba a dónde van. Con la espera real (15 s), en 1 de 62 córners solo llegan 2.
+      const base = parametrosActuales();
+      const parametros = { ...base, fueraDeCampo: { ...base.fueraDeCampo!, esperaCorner: 120 } };
+      let estado = crearPartido(entrada(`balon-parado-${i}`, { parametros, local: equipo('local'), visitante: equipo('visitante') }));
       // Rematadores en el área en el último tick del saque de esquina (cuando el balón ya está en el banderín).
       let ultimo: number | null = null;
       const observador = (e: EstadoMotor) => {

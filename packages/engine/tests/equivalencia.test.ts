@@ -14,7 +14,7 @@ import {
   type EventoPartido,
   type ResultadoTramo,
 } from '../src/index';
-import { DEFECTOS, PARAMETROS_V7, PARAMETROS_V8 } from '@fbd/domain';
+import { parametrosActuales, DEFECTOS } from '@fbd/domain';
 import { entrada, equipo } from './ayudas';
 
 const SEMILLAS = 200;
@@ -93,7 +93,7 @@ function entradaConDefectos(semilla: string): EntradaPartido {
     t.jugador = { ...t.jugador, defectos: [DEFECTOS[i % DEFECTOS.length]!, DEFECTOS[(i + 7) % DEFECTOS.length]!] };
   });
   for (const eq of [local, visitante]) eq.suplentes = eq.suplentes.map((j, i) => ({ ...j, defectos: [DEFECTOS[(i * 2) % DEFECTOS.length]!] }));
-  return entrada(semilla, { version: PARAMETROS_V7.version, parametros: PARAMETROS_V7, local, visitante });
+  return entrada(semilla, { version: parametrosActuales().version, parametros: parametrosActuales(), local, visitante });
 }
 
 describe('equivalencia entre modalidades con defectos (spec 005, T042; FR-041)', () => {
@@ -111,10 +111,10 @@ describe('equivalencia entre modalidades con defectos (spec 005, T042; FR-041)',
   });
 });
 
-describe('equivalencia entre modalidades con la 8.0.0 (spec 015, SC-010)', () => {
+describe('equivalencia entre modalidades con decisiones (spec 015, SC-010)', () => {
   it('con decisiones en juego, la 2D, la rápida y los cortes por ticks dan el mismo partido (30 semillas)', () => {
     for (let i = 0; i < 30; i++) {
-      const e = entrada(`eq-v8-${i}`, { version: PARAMETROS_V8.version, parametros: PARAMETROS_V8 });
+      const e = entrada(`eq-v8-${i}`, { version: parametrosActuales().version, parametros: parametrosActuales() });
       const d2 = jugar2D(e, { decisiones: true });
       const rapida = jugarRapida(e, d2.decisiones);
       const porTicks = jugarPorTicks(e, { decisiones: true });

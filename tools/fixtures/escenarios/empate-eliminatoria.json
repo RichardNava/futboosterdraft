@@ -1,7 +1,7 @@
 {
   "nombre": "empate-eliminatoria",
   "descripcion": "Partido de eliminatoria que acaba en empate tras la prórroga y se decide en la tanda de penaltis.",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "local": {
     "participanteId": "local",
     "jugadores": [
@@ -50,7 +50,7 @@
   },
   "eliminatoria": true,
   "semillas": [
-    "df82b96c1a75f272b361a23e1c319a81"
+    "93a4a6cb2bf914ea1182bb4a6777680c"
   ],
   "esperado": {}
 }

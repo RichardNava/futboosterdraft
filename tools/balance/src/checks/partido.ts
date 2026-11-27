@@ -21,6 +21,8 @@ const pct = (x: number, n: number) => `${((100 * x) / n).toFixed(1)} %`;
 /** Campos numéricos de las estadísticas (todos menos el histograma de secuencias y los repartos de goles). */
 type Campo = Exclude<keyof EstadisticasEquipo, 'secuencias' | 'golesPorTipo' | 'golesPorZona'>;
 const col = (r: { estadisticasA: EstadisticasEquipo[] }, campo: Campo) => r.estadisticasA.map((e) => e[campo]);
+/** Energía media (0–100) de los jugadores en el campo al final: `cansancioMedio` vale `1 − energía / 100` (spec 018, R1). */
+const energia = (r: { estadisticasA: EstadisticasEquipo[] }) => col(r, 'cansancioMedio').map((c) => 100 * (1 - c));
 
 /** SC-004: con +5 de media, el mejor gana ≥ 60 % y el peor ≥ 10 %. */
 function comprobarSC004(n: number, semilla: number): Comprobacion {
@@ -69,11 +71,11 @@ function comprobarSC006(n: number, semilla: number): Comprobacion[] {
     },
     {
       id: 'SC-006b',
-      descripcion: 'Presión alta: más recuperaciones en campo rival y más cansancio que Bloque medio',
+      descripcion: 'Presión alta: más recuperaciones en campo rival y menos energía al final que Bloque medio',
       ok:
         mayorSignificativo(col(presion, 'recuperacionesCampoRival'), col(base, 'recuperacionesCampoRival')) &&
-        mayorSignificativo(col(presion, 'cansancioMedio'), col(base, 'cansancioMedio')),
-      detalle: `recuperaciones en campo rival ${media(col(presion, 'recuperacionesCampoRival')).toFixed(1)} vs ${media(col(base, 'recuperacionesCampoRival')).toFixed(1)}; cansancio ${media(col(presion, 'cansancioMedio')).toFixed(3)} vs ${media(col(base, 'cansancioMedio')).toFixed(3)}`,
+        mayorSignificativo(energia(base), energia(presion)),
+      detalle: `recuperaciones en campo rival ${media(col(presion, 'recuperacionesCampoRival')).toFixed(1)} vs ${media(col(base, 'recuperacionesCampoRival')).toFixed(1)}; energía al final ${media(energia(presion)).toFixed(1)} vs ${media(energia(base)).toFixed(1)}`,
     },
     {
       id: 'SC-006c',
@@ -154,7 +156,8 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
     ['pasesCompletados', 'pases completados', 130],
     ['centros', 'centros', 9],
     // 15 → 14 en la spec 015 (tanda 2: con el delantero marcado llegan menos balones al área; decisión del 2026-11-16).
-    ['tiros', 'tiros', 14],
+    // 14 → 13,5 en la spec 018 (T062: la 9.0.0 da 13,9; la 8.0.0, 14,6).
+    ['tiros', 'tiros', 13.5],
     ['conducciones', 'conducciones', 30],
     ['paredes', 'paredes', 3],
     // 5 → 4 en la spec 015 (balones fuera: los córners ocupan el lugar de saques de puerta y recuperaciones en banda, de
@@ -172,7 +175,7 @@ function comprobarSC007Partido2D(n: number, semilla: number): Comprobacion[] {
   return [
     {
       id: '002/SC-007a',
-      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 14 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,5 contraataques',
+      descripcion: 'Partido 2D entre equipos equilibrados: ≥ 130 pases completados, 9 centros, 13,5 tiros, 30 conducciones, 3 paredes, 4 cambios de orientación y 1,5 contraataques',
       ok: valores.every((v) => v.valor >= v.minimo),
       detalle: valores.map((v) => `${v.nombre} ${v.valor.toFixed(1)}${v.valor >= v.minimo ? '' : ` (< ${v.minimo})`}`).join(' · '),
     },

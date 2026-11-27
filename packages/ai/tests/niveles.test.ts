@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { derivarSemilla, FORMACIONES_IDS, NIVELES_NPC, PARAMETROS_V3, PARAMETROS_V7, Rng, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
+import { parametrosActuales, derivarSemilla, FORMACIONES_IDS, NIVELES_NPC, Rng, semillaDesdeTexto, validarAlineacion, type Jugador } from '@fbd/domain';
 import { crearPartido, avanzar } from '@fbd/engine';
 import { describe, expect, it } from 'vitest';
 import { decidirAlineacion, decidirAlineacionDetallada, LIMITE_PRO_MS } from '../src/alineacion';
@@ -11,7 +11,7 @@ import { PERFILES, TODAS_LAS_FORMACIONES, type NivelIA } from '../src/perfiles';
 import { equipoDesdeAlineacion } from '../src/pro/simulacionPrueba';
 import { jugador, plantilla } from './ayudas';
 
-const p = PARAMETROS_V3;
+const p = parametrosActuales();
 
 describe('niveles de los NPC (T120)', () => {
   const sobre = [jugador('MC', 84), jugador('POR', 79), jugador('DC', 82), jugador('LI', 80), jugador('DCD', 81), jugador('MCO', 83), jugador('ED', 80), jugador('MD', 78)];
@@ -73,8 +73,8 @@ describe('niveles de los NPC (T120)', () => {
     const lv = decidirAlineacion('intermedio', visitante, new Set(), null, semillaDesdeTexto('v'));
     // El partido, con los parámetros que el motor simula (spec 014: solo la 7.x).
     let estado = crearPartido({
-      version: PARAMETROS_V7.version,
-      parametros: PARAMETROS_V7,
+      version: parametrosActuales().version,
+      parametros: parametrosActuales(),
       semilla: semillaDesdeTexto('partido'),
       eliminatoria: false,
       local: equipoDesdeAlineacion('L', la, new Map(local.map((j) => [j.id, j]))),
@@ -82,8 +82,8 @@ describe('niveles de los NPC (T120)', () => {
     });
     estado = avanzar(estado, 'parte').estado;
     expect(estado.fase).toBe('descanso');
-    // Cansancio alto forzado en todos los de campo: el PRO pide como mucho 5 − 1 (reserva) cambios.
-    for (const j of estado.equipos.local.jugadores) if (j.enCampo) j.cansancio = 0.9;
+    // Energía baja forzada en todos los de campo: el PRO pide como mucho 5 − 1 (reserva) cambios.
+    for (const j of estado.equipos.local.jugadores) if (j.enCampo) j.energia = 10;
     // La primera semilla sin el error de «cambio tardío» (los errores de nivel se prueban aparte).
     const cambios = Array.from({ length: 20 }, (_, i) => decidirEnPartido('PRO', estado, 'local', semillaDesdeTexto(`d${i}`)).filter((d) => d.tipo === 'sustitucion')).find(
       (c) => c.length > 0,
@@ -93,8 +93,73 @@ describe('niveles de los NPC (T120)', () => {
     const entran = cambios.map((d) => (d.tipo === 'sustitucion' ? d.datos.entra : 0));
     expect(new Set(entran).size).toBe(entran.length);
     for (const id of entran) expect(estado.equipos.local.jugadores.find((j) => j.id === id)!.enCampo).toBe(false);
-    // El amateur no hace cambios por cansancio.
+    // El amateur no hace cambios por energía.
     expect(decidirEnPartido('amateur', estado, 'local', semillaDesdeTexto('d')).filter((d) => d.tipo === 'sustitucion')).toHaveLength(0);
+  });
+});
+
+describe('cambios por energía (spec 018, FR-019, R16)', () => {
+  it('umbrales de partida y orden de los niveles', () => {
+    const u = (n: 'amateur' | 'intermedio' | 'avanzado' | 'PRO') => PERFILES[n].partido.umbralEnergia;
+    expect([u('amateur'), u('intermedio'), u('avanzado'), u('PRO')]).toEqual([0, 42, 53, 63]);
+  });
+
+  function enDescanso(energia: number, defectos: Jugador['defectos'] = []) {
+    const local = plantilla(80);
+    const visitante = plantilla(80);
+    const la = decidirAlineacion('intermedio', local, new Set(), null, semillaDesdeTexto('l'));
+    const lv = decidirAlineacion('intermedio', visitante, new Set(), null, semillaDesdeTexto('v'));
+    const q = parametrosActuales();
+    // Sin el error de «cambio tardío»: aquí solo se prueba el umbral.
+    const sinErrores = structuredClone(q);
+    for (const n of ['amateur', 'intermedio', 'avanzado', 'PRO'] as const) sinErrores.npc.errores[n].probabilidad.partido = 0;
+    const estado = avanzar(
+      crearPartido({
+        version: q.version,
+        parametros: q,
+        semilla: semillaDesdeTexto('umbral'),
+        eliminatoria: false,
+        local: equipoDesdeAlineacion('L', la, new Map(local.map((j) => [j.id, j]))),
+        visitante: equipoDesdeAlineacion('V', lv, new Map(visitante.map((j) => [j.id, j]))),
+      }),
+      'parte',
+    ).estado;
+    const campo = estado.equipos.local.jugadores.filter((j) => j.enCampo && j.jugador.demarcacion !== 'POR');
+    // Sin amarillas: los niveles altos cambian a un defensa amonestado aunque tenga energía.
+    for (const j of estado.equipos.local.jugadores) {
+      j.amarillas = 0;
+      if (j.enCampo) j.energia = 100;
+    }
+    const elegido = campo.find((j) => estado.equipos.local.jugadores.some((s) => !s.enCampo && !s.retirado && s.jugador.demarcacion === j.jugador.demarcacion))!;
+    elegido.energia = energia;
+    elegido.jugador = { ...elegido.jugador, defectos };
+    return { estado, elegido, sinErrores };
+  }
+
+  const cambia = (nivel: 'amateur' | 'intermedio' | 'avanzado' | 'PRO', energia: number, defectos: Jugador['defectos'] = []) => {
+    const { estado, elegido, sinErrores } = enDescanso(energia, defectos);
+    return decidirEnPartido(nivel, estado, 'local', semillaDesdeTexto('umbral-d'), sinErrores).some((d) => d.tipo === 'sustitucion' && d.datos.sale === elegido.id);
+  };
+
+  it.each([
+    ['intermedio', 41.9, 42],
+    ['avanzado', 52.9, 53],
+    ['PRO', 62.9, 63],
+  ] as const)('%s cambia por debajo de su umbral y no en el umbral', (nivel, debajo, umbral) => {
+    expect(cambia(nivel, debajo)).toBe(true);
+    expect(cambia(nivel, umbral)).toBe(false);
+  });
+
+  it('el Amateur nunca cambia por energía, ni a un Fatigado o Indisciplinado', () => {
+    expect(cambia('amateur', 1)).toBe(false);
+    expect(cambia('amateur', 1, ['Fatigado'])).toBe(false);
+    expect(cambia('amateur', 1, ['Indisciplinado'])).toBe(false);
+  });
+
+  it('a un Fatigado o Indisciplinado se le cambia antes', () => {
+    expect(cambia('avanzado', 60)).toBe(false);
+    expect(cambia('avanzado', 60, ['Fatigado'])).toBe(true);
+    expect(cambia('avanzado', 60, ['Indisciplinado'])).toBe(true);
   });
 });
 
