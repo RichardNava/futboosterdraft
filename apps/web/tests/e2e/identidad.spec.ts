@@ -79,15 +79,16 @@ test('equipación: rayas verticales blancas y rojas; la vista previa y la chapa 
   await expect(page.getByRole('status').filter({ hasText: 'Equipaciones guardadas' })).toBeVisible();
   const patron = await primera.locator('svg.camiseta').getAttribute('data-patron');
   expect(patron).toMatch(/^rayas:#ffffff@/);
+  const patronSegunda = await segunda.locator('svg.camiseta').getAttribute('data-patron');
 
-  // En la 2D, el equipo local (o el visitante, si choca) lleva el mismo patrón.
+  // En la 2D el equipo lleva la primera; de visitante, la segunda si la primera choca con el local (`equipacionEnPartido`).
   await page.goto(`/partidas/${id}/torneo`);
   await page.getByLabel('Simulación 2D').check();
   await page.getByRole('button', { name: 'Comenzar partido' }).click();
   const campo2d = page.locator('.campo-2d');
   await expect(campo2d).toBeVisible();
   const patrones = [await campo2d.getAttribute('data-patron-local'), await campo2d.getAttribute('data-patron-visitante')];
-  expect(patrones).toContain(patron);
+  expect(patrones.some((x) => x === patron || x === patronSegunda), JSON.stringify({ patrones, patron, patronSegunda })).toBe(true);
 });
 
 test('perfil: «Mi perfil» guarda los valores por defecto', async ({ page }) => {

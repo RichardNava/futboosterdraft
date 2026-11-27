@@ -1458,9 +1458,9 @@
     "semantic_hash": "bf488d5aa5849eb64c41f2c076d77b02"
   },
   "packages/engine/bench/partido.bench.ts": {
-    "mtime": 1795260651.9049773,
-    "seen": 1795294561.3129041,
-    "ast_hash": "2bb776742c61d4eefddb30487cd6218c",
+    "mtime": 1795712209.1423137,
+    "seen": 1795713618.9430313,
+    "ast_hash": "82834cee046d9aabe6ee89c9e6a8a281",
     "semantic_hash": ""
   },
   "packages/engine/package.json": {
@@ -1548,15 +1548,15 @@
     "semantic_hash": ""
   },
   "packages/engine/src/espacio/movimiento.ts": {
-    "mtime": 1795480689.02099,
-    "seen": 1795555325.1262958,
-    "ast_hash": "85f5ae481d3f995e576ee98dda71ba70",
+    "mtime": 1795711646.637203,
+    "seen": 1795713618.9464347,
+    "ast_hash": "01bd07194520b47ffceef6e5156e4ef4",
     "semantic_hash": ""
   },
   "packages/engine/src/espacio/objetivos.ts": {
-    "mtime": 1795565595.488133,
-    "seen": 1795588888.6568308,
-    "ast_hash": "3468a298a0f7d342c3ad7afa22cc1766",
+    "mtime": 1795711899.316837,
+    "seen": 1795713618.946437,
+    "ast_hash": "e07335e318adf02512e2b0d21b1e077e",
     "semantic_hash": ""
   },
   "packages/engine/src/espacio/paso.ts": {
@@ -1584,9 +1584,9 @@
     "semantic_hash": ""
   },
   "packages/engine/src/modificadores/cansancio.ts": {
-    "mtime": 1795651234.4142168,
-    "seen": 1795653267.6873443,
-    "ast_hash": "94e9409d70e7f1adead85fe681f3c1e7",
+    "mtime": 1795711995.0912094,
+    "seen": 1795713618.9471397,
+    "ast_hash": "03abf577ace397a658e51a865b9a6ee2",
     "semantic_hash": ""
   },
   "packages/engine/src/modificadores/formacionTactica.ts": {
@@ -1824,9 +1824,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/equipos.ts": {
-    "mtime": 1795260652.0909696,
-    "seen": 1795294561.3131354,
-    "ast_hash": "690a535c6ab4c7cc1afcecf4a121d763",
+    "mtime": 1795712108.2186954,
+    "seen": 1795713618.9628613,
+    "ast_hash": "f8dd30b56d76d5bb509ed9310df2d1c6",
     "semantic_hash": ""
   },
   "tools/balance/src/series.ts": {
@@ -1836,9 +1836,9 @@
     "semantic_hash": ""
   },
   "tools/balance/src/umbralMotor.ts": {
-    "mtime": 1795292280.4631646,
-    "seen": 1795294561.313152,
-    "ast_hash": "647dee22dd62aef4ae5433393be07e7f",
+    "mtime": 1795712148.718856,
+    "seen": 1795713618.9646075,
+    "ast_hash": "38c71f31afbe6c845d84effc6fa8941c",
     "semantic_hash": ""
   },
   "tools/balance/tsconfig.json": {
@@ -1998,9 +1998,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1795292325.7401884,
-    "seen": 1795294561.3134046,
-    "ast_hash": "51a3ef29216a7daf9ddafa036a6eaf9b",
+    "mtime": 1795712148.719458,
+    "seen": 1795713618.986775,
+    "ast_hash": "ddf406aaac1bf3d69b751c057afb5cc0",
     "semantic_hash": ""
   },
   ".specify/memory/constitution.md": {
@@ -2220,9 +2220,9 @@
     "semantic_hash": ""
   },
   "specs/002-mejoras-mvp/tasks.md": {
-    "mtime": 1795260651.976688,
-    "seen": 1795294561.3134735,
-    "ast_hash": "7ed2b24c2515f3866fe7083b105a6ce4",
+    "mtime": 1795712483.342375,
+    "seen": 1795713618.9924612,
+    "ast_hash": "03e2a24c5e8495298c6f6b94fe722d91",
     "semantic_hash": ""
   },
   "tools/load/README.md": {
@@ -3270,9 +3270,9 @@
     "semantic_hash": ""
   },
   "packages/engine/src/modificadores/defectos.ts": {
-    "mtime": 1795317179.1444256,
-    "seen": 1795321858.6349983,
-    "ast_hash": "6c0b8f526a66be9e115f6b1c57e81c1a",
+    "mtime": 1795711914.5418582,
+    "seen": 1795713618.947142,
+    "ast_hash": "d76e4aaaff21523d55638e0a6ead430d",
     "semantic_hash": ""
   },
   "packages/engine/src/modificadores/virtudes.ts": {
@@ -4920,9 +4920,9 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1795704925.0435243,
-    "seen": 1795704974.1804652,
-    "ast_hash": "71471bdf75a5266ac9d5eee7e71847d1",
+    "mtime": 1795712820.9797988,
+    "seen": 1795713618.987969,
+    "ast_hash": "c5c66d9956d56871df20c9973c7594f3",
     "semantic_hash": ""
   },
   "specs/008-datos-reales-core/checklists/requirements.md": {
@@ -13236,9 +13236,9 @@
     "semantic_hash": ""
   },
   "specs/018-rework-motor/tasks.md": {
-    "mtime": 1795704944.442235,
-    "seen": 1795704974.2089214,
-    "ast_hash": "5c53ba2fab112bf0d1e94357ec8a5cf0",
+    "mtime": 1795712489.34913,
+    "seen": 1795713619.0199656,
+    "ast_hash": "ab6aed46748e29d21c924b0951159e18",
     "semantic_hash": ""
   },
   "packages/engine/src/modificadores/marcajeEstrella.ts": {
@@ -13290,9 +13290,9 @@
     "semantic_hash": ""
   },
   "specs/018-rework-motor/informe-9.0.0.md": {
-    "mtime": 1795662791.349828,
-    "seen": 1795662834.0572805,
-    "ast_hash": "8433eb0e4fedaf04accd8ac75939817c",
+    "mtime": 1795712477.3064198,
+    "seen": 1795713619.0191677,
+    "ast_hash": "78fb40dd0e152538a313201d71d64c12",
     "semantic_hash": ""
   },
   "tools/balance/src/calibrarFatiga.ts": {

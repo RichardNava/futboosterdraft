@@ -3,12 +3,13 @@
  * desarrollo el HTML lo sirve Vite y no recibe la cabecera. Ejecutar con `E2E_BASE_URL=https://…`.
  */
 import { randomUUID } from 'node:crypto';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { fijarRol } from './ayudas';
 
 test.use({ ignoreHTTPSErrors: true });
 test.skip(!process.env.E2E_BASE_URL, 'Necesita la imagen de producción (E2E_BASE_URL)');
 
-test('las pantallas principales funcionan sin ninguna violación de CSP', async ({ page }) => {
+async function vigilarCsp(page: Page): Promise<string[]> {
   const violaciones: string[] = [];
   await page.addInitScript(() => {
     document.addEventListener('securitypolicyviolation', (e) => console.error(`CSP-VIOLADA ${e.violatedDirective} ${e.blockedURI}`));
@@ -16,6 +17,35 @@ test('las pantallas principales funcionan sin ninguna violación de CSP', async 
   page.on('console', (m) => {
     if (m.text().includes('CSP-VIOLADA') || /Content Security Policy/i.test(m.text())) violaciones.push(m.text());
   });
+  return violaciones;
+}
+
+test('el panel de administración funciona sin ninguna violación de CSP', async ({ page }) => {
+  test.skip(!process.env.DATABASE_URL, 'Necesita la base de datos de la imagen para dar el rol');
+  const violaciones = await vigilarCsp(page);
+  await page.goto('/');
+  const email = `e2e-${randomUUID()}@pruebas.test`;
+  await page.evaluate(async (correo) => {
+    const r = await fetch('/api/auth/registro', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email: correo, password: 'contraseña-segura', apodo: 'Panel CSP' }),
+    });
+    if (!r.ok) throw new Error(`registro ${r.status}`);
+  }, email);
+  fijarRol(email, 'administrador');
+  await page.goto('/admin');
+  for (const nombre of ['Partidas', 'Cuentas', 'Ajustes', 'Registro']) {
+    const pestana = page.getByRole('tab', { name: nombre });
+    await pestana.click();
+    await expect(pestana).toHaveAttribute('aria-selected', 'true');
+    await page.waitForLoadState('networkidle');
+  }
+  expect(violaciones).toEqual([]);
+});
+
+test('las pantallas principales funcionan sin ninguna violación de CSP', async ({ page }) => {
+  const violaciones = await vigilarCsp(page);
 
   const portada = await page.goto('/');
   expect(portada?.headers()['content-security-policy']).toContain("script-src 'self'");

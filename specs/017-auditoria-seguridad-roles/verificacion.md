@@ -2,10 +2,34 @@
 
 Generado por `pnpm seguridad`. Cada fila es un ataque que se repite contra el sistema.
 
-**128 de 128 ataques bloqueados.**
+**190 de 190 ataques bloqueados.**
 
 | Ataque | Hallazgo | Resultado |
 |---|---|---|
+| seguir con el rol anterior tras un cambio | SEG-000 | Bloqueado |
+| cambiarse el propio rol | SEG-000 | Bloqueado |
+| dos administradores se quitan el rol a la vez | SEG-000 | Bloqueado |
+| dar un rol a un invitado | SEG-000 | Bloqueado |
+| nombrar administrador a una cuenta suspendida | SEG-000 | Bloqueado |
+| seguir dentro tras ser suspendido | SEG-000 | Bloqueado |
+| una contraseña incorrecta no revela que la cuenta está suspendida | SEG-000 | Bloqueado |
+| suspenderse a uno mismo, a un administrador o a un invitado | SEG-000 | Bloqueado |
+| repetir una entrega de fragmentos, también a la vez | SEG-000 | Bloqueado |
+| reutilizar un idEntrega para otra cantidad u otra cuenta | SEG-000 | Bloqueado |
+| entregar una cantidad no válida (10001) | SEG-000 | Bloqueado |
+| entregar una cantidad no válida (0) | SEG-000 | Bloqueado |
+| entregar una cantidad no válida (-5) | SEG-000 | Bloqueado |
+| entregar una cantidad no válida (1.5) | SEG-000 | Bloqueado |
+| entregar fragmentos a una cuenta sin el rol betatester | SEG-000 | Bloqueado |
+| cerrar una partida en la que juega el propio administrador | SEG-000 | Bloqueado |
+| cerrar dos veces una partida | SEG-000 | Bloqueado |
+| cobrar premios de una partida cerrada | SEG-000 | Bloqueado |
+| alterar o borrar el registro de administración | SEG-000 | Bloqueado |
+| el registro conserva la acción sin el motivo de una cuenta eliminada | SEG-000 | Bloqueado |
+| designar por consola un administrador cuando ya hay uno | SEG-000 | Bloqueado |
+| ejecutar una orden de consola caducada | SEG-000 | Bloqueado |
+| ver datos de juego en la lista de partidas del panel | SEG-000 | Bloqueado |
+| cambiar un ajuste a un valor o una clave desconocidos | SEG-000 | Bloqueado |
 | leer el resumen de una partida ajena en torneo | SEG-007 | Bloqueado |
 | la sala de una partida abierta sigue visible para poder unirse | SEG-007 | Bloqueado |
 | leer la sala de la partida de un invitado, que no admite a nadie más | SEG-007 | Bloqueado |
@@ -106,6 +130,44 @@ Generado por `pnpm seguridad`. Cada fila es un ataque que se repite contra el si
 | una cuenta lanza 15 creaciones simultáneas | SEG-016 | Bloqueado |
 | colgar el servidor con más creaciones simultáneas que conexiones a la base de datos | SEG-016 | Bloqueado |
 | unirse a otra partida con el tope alcanzado, y la plaza se libera al abandonar | SEG-016 | Bloqueado |
+| la matriz tiene las 25 celdas «no» de FR-041 | SEG-000 | Bloqueado |
+| 'invitado' intenta 'coleccion_tienda_perfil' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'entrar_panel' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'entrar_panel' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'entrar_panel' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'cerrar_partida' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'cerrar_partida' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'cerrar_partida' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'suspender_cuentas' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'suspender_cuentas' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'suspender_cuentas' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'cambiar_ajustes' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'cambiar_ajustes' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'cambiar_ajustes' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'premium_cortesia' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'premium_cortesia' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'premium_cortesia' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'entregar_fragmentos' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'entregar_fragmentos' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'entregar_fragmentos' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'asignar_roles' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'asignar_roles' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'asignar_roles' | SEG-000 | Bloqueado |
+| 'invitado' intenta 'consultar_registro' | SEG-000 | Bloqueado |
+| 'jugador' intenta 'consultar_registro' | SEG-000 | Bloqueado |
+| 'betatester' intenta 'consultar_registro' | SEG-000 | Bloqueado |
+| llamar a la API de administración sin sesión | SEG-000 | Bloqueado |
+| asignarse un rol al registrarse | SEG-000 | Bloqueado |
+| la última cuenta administradora se elimina y deja el juego sin administradores | SEG-033 | Bloqueado |
+| dos administradores eliminan su cuenta a la vez | SEG-033 | Bloqueado |
+| cerrar una partida sin que el cierre quede en el registro | SEG-034 | Bloqueado |
+| una orden de consola retirada se ejecuta igualmente | SEG-035 | Bloqueado |
+| ocultar qué acción de administración se intentó | SEG-036 | Bloqueado |
+| repetir una entrega devuelve un saldo distinto del original | SEG-037 | Bloqueado |
+| el texto escrito por una cuenta sigue en el registro después de eliminarla | SEG-038 | Bloqueado |
+| los datos de las cuentas del panel quedan en la caché del navegador | SEG-039 | Bloqueado |
+| pedir una carta con un id fuera de rango para tirar la consulta | SEG-040 | Bloqueado |
+| inyectar SQL en el motivo y en los filtros del panel | SEG-000 | Bloqueado |
 | los buscadores pueden leer la portada y sus recursos | SEG-023 | Bloqueado |
 | un buscador rastrea /api/ | SEG-023 | Bloqueado |
 | un buscador rastrea /api/partidas | SEG-023 | Bloqueado |

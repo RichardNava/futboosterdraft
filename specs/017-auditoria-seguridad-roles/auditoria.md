@@ -1,12 +1,19 @@
 # Informe de auditoría de seguridad
 
-**Spec**: [017-auditoria-seguridad-roles](spec.md) | **Fecha**: 2026-11-21 | **Estado**: segunda ronda terminada: 32 hallazgos corregidos
+**Spec**: [017-auditoria-seguridad-roles](spec.md) | **Fecha**: 2026-11-22 | **Estado**: auditoría repetida: 40 hallazgos corregidos, pendiente de la aprobación de la persona responsable (T110)
 
 ## Resumen
 
-**La beta no puede abrirse todavía.** Los 31 hallazgos de la primera pasada y el SEG-032 están corregidos, y `pnpm seguridad`
-bloquea 128 ataques. Falta hacer los roles y el panel (US3), repetir la auditoría y ZAP (T103, T105) y tener pagos reales
-(INI-12).
+**La beta no puede abrirse todavía.** Los 40 hallazgos están corregidos y `pnpm seguridad` bloquea 190 ataques. Falta la
+aprobación de la persona responsable (T110), repetir la revisión al integrar INI-16 y tener pagos reales (INI-12).
+
+| Severidad | Primera pasada | SEG-032 | Segunda pasada | Total | Abiertos |
+|---|---|---|---|---|---|
+| Crítica | 1 | 0 | 0 | 1 | 0 |
+| Alta | 7 | 0 | 0 | 7 | 0 |
+| Media | 13 | 1 | 3 | 17 | 0 |
+| Baja | 10 | 0 | 5 | 15 | 0 |
+| **Total** | **31** | **1** | **8** | **40** | **0** |
 
 Hallazgos de la primera pasada:
 
@@ -48,7 +55,7 @@ Lo que **ha resistido** los ataques:
   servidores locales, en modo desarrollo o simulando producción con `iniciarServidorAtaque`
   (`apps/server/tests/seguridad/ayudas.ts`).
 - La imagen Docker real se construyó e inspeccionó, y ZAP se lanzó contra ella en una red y una base de datos aisladas.
-- Los puntos de entrada están en [inventario.json](inventario.json): 75 rutas HTTP y 9 mensajes WebSocket. La prueba
+- Los puntos de entrada están en [inventario.json](inventario.json): 84 rutas HTTP y 9 mensajes WebSocket. La prueba
   `pnpm --filter @fbd/server test:integration inventario` falla si falta o sobra alguno.
 - Las evidencias usan cuentas inventadas. Este informe no contiene secretos, tokens ni datos personales reales.
 
@@ -84,6 +91,41 @@ Esta tabla describe la primera pasada. El estado actual está en la ficha de cad
 | 14 | Imagen de despliegue | Usuario, contenido, secretos, herramientas | Corre como `node`, sin escritura en `/app`, sin secretos ni código fuente; incluye herramientas de pruebas | SEG-009 |
 | 15 | Dependencias | `pnpm audit` de producción y completo | 3 críticos y 8 altos en producción | SEG-008, 009, 031 |
 | 16 | Correo | Inyección de cabeceras y destinatarios, enlaces con otro `Host` | **Sin hallazgos** de inyección: los enlaces usan siempre `PUBLIC_URL`. Los errores SMTP filtran el correo | SEG-018 |
+
+## Segunda pasada (T103, FR-007)
+
+Repite la auditoría sobre lo cambiado desde la primera: roles, panel, consola, registro, suspensión, cierre de partidas y
+entregas a betatesters. Encontró **8 hallazgos nuevos** (SEG-033 a SEG-040), 3 medios y 5 bajos, todos corregidos. Cada ataque
+se ejecutó primero contra el código anterior, donde falló, y después contra la corrección.
+
+| Área | Qué se revisó | Resultado | Hallazgos |
+|---|---|---|---|
+| Autorización | Las 25 celdas «no» de FR-041 contra la API, sin sesión, último administrador, carreras entre administradores, rol al registrarse | La matriz se cumple; se podía eliminar la última cuenta administradora | SEG-033 |
+| Registro de administración | Trigger, atomicidad de cada acción, intentos denegados, cuentas eliminadas | Inalterable; un cierre podía quedar sin entrada, los denegados no decían la acción y quedaba texto de cuentas borradas | SEG-034, 036, 038 |
+| Consola | Designación, caducidad y retirada de órdenes | Una orden retirada podía ejecutarse | SEG-035 |
+| Sesiones | Suspensión con sesión y WebSocket abiertos, login, cambio de rol | Corte medido en 1,9 s contra la imagen real (máximo: 5 s) | Ninguno |
+| Economía | Entrega repetida, simultánea, reutilizada, fuera de tope, sin rol | Una sola suma; la repetición devolvía otro saldo | SEG-037 |
+| Integridad del juego | Lista de partidas del panel, premios tras el cierre, comandos en cola | Sin cartas, elecciones ni tácticas; una partida cerrada no reparte premios | Ninguno |
+| Inyección | `motivo`, búsqueda, filtros y cursores del panel | **Sin hallazgos**: todo va como parámetro | Ninguno |
+| Protecciones del navegador | Caché de las respuestas del panel | Faltaba `no-store` | SEG-039 |
+| Entradas | Ids fuera de rango, detectados por ZAP | Error 500 en una ruta pública | SEG-040 |
+
+### Decisiones de diseño revisadas
+
+Se mantienen y constan ya en [contracts/http-admin.md](contracts/http-admin.md):
+
+- La lista de cuentas no incluye invitados, porque ninguna acción del panel se les aplica.
+- Códigos añadidos: `CUENTA_NO_ENCONTRADA`, `AJUSTE_NO_ENCONTRADO` y `VALOR_NO_ADMITIDO`.
+- Una acción rechazada por una regla se registra como `denegado`, que es lo que pide FR-047.
+- Si dos administradores se quitan el rol a la vez, el segundo recibe `403 SOLO_ADMINISTRADORES`, porque al ejecutarse ya no lo
+  es.
+- `cerrar-partida` retira la orden si no hay respuesta en 15 s, salvo que el servidor ya la esté ejecutando.
+
+### Límites de esta pasada
+
+- **INI-16 no está en `main`**: la rama `018-rework-motor` sigue sin integrar y no se ha auditado. Hay que repetir
+  esta revisión sobre lo que cambie al fusionarla (T103).
+- Las pruebas con identificador `SEG-000` demuestran un control que no procede de ningún hallazgo.
 
 ## Hallazgos
 
@@ -413,6 +455,91 @@ Esta tabla describe la primera pasada. El estado actual está en la ficha de cad
   y las recuperaciones cuentan por correo y cliente, con un tope global por correo, y la cuenta recibe un aviso al quinto
   fallo seguido.
 
+### SEG-033. La última cuenta administradora puede eliminarse
+
+- **Área**: autorización de cada acción
+- **Severidad**: media. Rompe la regla de FR-043, pero solo puede hacerlo un administrador y se recupera por consola.
+- **Evidencia**: con una sola cuenta administradora, `DELETE /api/cuenta` respondía 200 y dejaba 0 administradores. Con dos,
+  dos borrados simultáneos también podían dejar 0.
+- **Riesgo**: el juego se queda sin nadie que pueda usar el panel hasta que alguien con acceso a la base de datos designe otra
+  cuenta.
+- **Estado**: corregido
+- **Cierre**: ataques `SEG-033` de `tests/seguridad/` (repaso-admin). El borrado toma el mismo bloqueo que los cambios de rol
+  y responde `409 ULTIMO_ADMINISTRADOR`.
+
+### SEG-034. Un cierre de partida podía quedar fuera del registro
+
+- **Área**: autorización de cada acción
+- **Severidad**: media. Una acción de administración podía no dejar rastro, y exige un fallo de la base de datos en ese momento.
+- **Evidencia**: forzando un error al insertar en `registro_admin`, la partida quedaba cerrada, sin entrada en el registro y
+  con el cobro de rareza ya devuelto.
+- **Riesgo**: se incumple FR-047 y el cierre no se puede reconstruir. Si fallaba el cambio de estado, el anfitrión recuperaba el
+  cobro y la partida seguía activa.
+- **Estado**: corregido
+- **Cierre**: ataque `SEG-034` de `tests/seguridad/` (repaso-admin). Estado, devolución y registro van en una transacción, y
+  la memoria de la partida solo cambia después de confirmarla.
+
+### SEG-035. Una orden de consola retirada podía ejecutarse igualmente
+
+- **Área**: autorización de cada acción
+- **Severidad**: baja. Depende de un instante concreto y solo afecta a quien ya opera la consola.
+- **Evidencia**: si `cerrar-partida` agotaba sus 15 s mientras el servidor ya ejecutaba la orden, la consola informaba de que
+  la había retirado y la partida se cerraba de todos modos.
+- **Riesgo**: quien administra cree que no ha pasado nada y puede repetir o decidir sobre un dato falso.
+- **Estado**: corregido
+- **Cierre**: ataque `SEG-035` de `tests/seguridad/` (repaso-admin). El servidor bloquea la orden mientras la ejecuta y la
+  consola espera a ese resultado.
+
+### SEG-036. Los accesos denegados no decían qué acción se intentó
+
+- **Área**: errores y datos personales en registros
+- **Severidad**: baja. No da acceso a nada, pero empobrece la detección de abusos.
+- **Evidencia**: los intentos se agrupaban solo por cuenta, así que el registro no distinguía leer la lista de cuentas de
+  intentar asignarse el rol de administrador.
+- **Riesgo**: se incumple FR-047, que exige registrar qué acción se intentó.
+- **Estado**: corregido
+- **Cierre**: ataque `SEG-036` de `tests/seguridad/` (repaso-admin). Se agrupan por cuenta y ruta, sin ids en la ruta, para que
+  variar el objetivo no llene la tabla.
+
+### SEG-037. Repetir una entrega de fragmentos devolvía otro saldo
+
+- **Área**: tienda y economía
+- **Severidad**: baja. No suma fragmentos: solo informa de un dato distinto.
+- **Evidencia**: tras entregar 1.000 y después 500, repetir la primera entrega respondía con saldo 1.500 en lugar de 1.000.
+- **Riesgo**: quien reintenta una entrega ve un resultado que no es el de esa operación, en contra del contrato.
+- **Estado**: corregido
+- **Cierre**: ataque `SEG-037` de `tests/seguridad/` (repaso-admin). La repetición lee el saldo guardado en el registro.
+
+### SEG-038. El texto escrito por una cuenta eliminada seguía en el registro
+
+- **Área**: errores y datos personales en registros
+- **Severidad**: media. Conserva texto libre de una persona que ha pedido borrar sus datos, visible solo para administradores.
+- **Evidencia**: al eliminar una cuenta solo se vaciaba `motivo` en las entradas donde era el objeto, no en las que había
+  escrito ella como administradora.
+- **Riesgo**: se incumple el caso límite de FR-047, que cubre cualquier cuenta que aparezca en el registro.
+- **Estado**: corregido
+- **Cierre**: ataque `SEG-038` de `tests/seguridad/` (repaso-admin). Se conservan la acción, los valores, las fechas y el
+  resultado, y se vacía el motivo en ambos casos.
+
+### SEG-039. Los datos del panel podían quedar en la caché del navegador
+
+- **Área**: protecciones del navegador
+- **Severidad**: baja. Exige acceso posterior al mismo equipo y navegador.
+- **Evidencia**: las respuestas de `/api/admin/*`, con correos y saldos, no llevaban ninguna indicación de caché.
+- **Riesgo**: en un equipo compartido, esos datos podrían recuperarse después de cerrar la sesión.
+- **Estado**: corregido
+- **Cierre**: ataque `SEG-039` de `tests/seguridad/` (repaso-admin). Todas responden con `Cache-Control: no-store`.
+
+### SEG-040. Un id de carta enorme provocaba un error interno
+
+- **Área**: validación de entradas y límites de uso
+- **Severidad**: baja. No revela datos ni cambia nada, aunque la ruta del catálogo no exige sesión.
+- **Evidencia**: lo detectó ZAP. `GET /api/catalogo/jugadores/3028815426685371253` respondía 500, porque el número no cabe en
+  la columna `integer`. Las rutas de la colección con ese id usaban la misma validación.
+- **Riesgo**: cualquiera podía llenar el registro de errores y ocultar fallos reales.
+- **Estado**: corregido
+- **Cierre**: ataque `SEG-040` de `tests/seguridad/` (repaso-admin). Un id fuera de rango responde `400 ID_INVALIDO`.
+
 ## Dependencias
 
 `pnpm audit --prod`: 3 críticos, 8 altos, 36 moderados y 6 bajos. `pnpm audit` completo: 3 críticos, 14 altos, 49
@@ -435,6 +562,9 @@ Las tareas T026 a T029 deben usar como mínimo las versiones en negrita.
 críticos, 0 altos, 4 moderados y 4 bajos. `vitest` sube a la 4.x y no a la 3.2, porque la 3.2 sigue exigiendo `tinypool` 1.x,
 la versión con los avisos críticos.
 
+**Segunda pasada (2026-11-22)**: `pnpm audit` completo, 0 críticos, 0 altos, 10 moderados y 5 bajos; `pnpm audit --prod`, 0
+críticos, 0 altos, 4 moderados y 4 bajos. `apps/server` declara ya `vitest` 4.1.12, que antes heredaba de la raíz.
+
 ## Escaneo externo (OWASP ZAP)
 
 `zap-baseline` y `zap-api-scan` (`ghcr.io/zaproxy/zaproxy:stable`) contra la imagen de producción, con 65 rutas y una
@@ -451,6 +581,25 @@ respondiendo al terminar.
 | Tipo de contenido inesperado en rutas inexistentes | Bajo | SEG-023 |
 | Marca de tiempo en el JS y en `/metrics` | Bajo | Falso positivo en el JS (números del bundle); `/metrics` queda cubierto por SEG-010 |
 | Avisos informativos (caché, aplicación moderna, errores 4xx, autenticación identificada) | Informativo | Sin acción: describen el funcionamiento normal |
+
+### Repetición sobre la imagen final (T105, 2026-11-22)
+
+`zap-baseline` y `zap-api-scan` contra la imagen final, detrás de HTTPS, en una red y una base de datos desechables, con una
+sesión de administrador y 72 operaciones: todas las de `/api/` menos `/api/dev/*`, que no existe en producción, y el cierre de
+sesión y el borrado de cuenta, que habrían dejado al escáner sin sesión. Resultado final: `FAIL: 0`, ningún error 500 y el
+servicio siguió respondiendo.
+
+| Alerta | Riesgo | Resolución |
+|---|---|---|
+| Inyección SQL en `motivo` (10 rutas en la última pasada; 14 y 7 en las anteriores) | Alto, confianza media | **Falso positivo comprobado**. ZAP añade ese campo a todas las rutas, y las 10 de la última pasada no lo leen. En el panel, señalado en una pasada anterior, va como parámetro y la pareja booleana de ZAP da respuestas idénticas (ataque `SEG-000` de repaso-admin). Las rutas señaladas cambian entre pasadas |
+| Error 500 en `/api/catalogo/jugadores/<id enorme>` | Bajo | Real: SEG-040, corregido |
+| Error 500 en `/api/coleccion` y `/api/tienda` | Bajo | Del entorno de escaneo: el servidor arrancó antes de cargar el catálogo. No se repite al arrancar con él cargado |
+| Falta `Cross-Origin-Embedder-Policy` | Bajo | No se añade, por decisión de la persona responsable (2026-11-21) |
+| Marca de tiempo en el JS | Bajo | Falso positivo: números del bundle |
+| Tipo de contenido inesperado | Bajo | Falso positivo: las direcciones sin extensión fuera de `/api/` son pantallas de la web |
+| Avisos informativos (caché, aplicación moderna, errores 4xx, sesión identificada) | Informativo | Sin acción: describen el funcionamiento normal |
+
+ZAP usó identificadores de ejemplo y los límites reales de uso, así que en las rutas con `:id` probó sobre todo la validación.
 
 ## Decisiones de riesgo
 

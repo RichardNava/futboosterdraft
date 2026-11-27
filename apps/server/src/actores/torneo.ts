@@ -211,7 +211,7 @@ function programarPlazos(c: ControladorPartida, deps: DependenciasTorneo, numero
 
 /** Vence el plazo de una jornada: se resuelve todo lo pendiente (FR-056a; spec 002, FR-030). */
 async function vencerJornada(c: ControladorPartida, ctx: ContextoComando, numero: number): Promise<void> {
-  if (!c.jornada || c.jornada.numero !== numero) return;
+  if (!c.jornada || c.jornada.numero !== numero || c.partida.estado !== 'en_torneo') return;
   // Duelos: al vencer el plazo, la alineación automática de quien no confirmó, también bloqueada.
   if (c.partida.modo === 'duelos') {
     await c.resolverDuelos?.(ctx, { forzar: true });
@@ -387,7 +387,7 @@ export function anotarResultado(c: ControladorPartida, t: EstadoTorneo, p: Parti
 
 /** Tras anunciar el final de un partido: actualización, cierre de jornada y lo que venga después. */
 async function despuesDePartido(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
-  if (!c.torneo || !c.jornada) return;
+  if (!c.torneo || !c.jornada || c.partida.estado !== 'en_torneo') return;
   const numero = c.jornada.numero;
   // Quien llama acaba de guardar `c.torneo` en este mismo comando, con el resultado del partido.
   const anterior = c.torneo;
@@ -460,7 +460,9 @@ export async function marcarPantallaVista(c: ControladorPartida, participanteId:
   else p.campeonVistoEn ??= new Date(ahora);
 }
 
-async function terminarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
+export async function terminarTorneo(c: ControladorPartida, ctx: ContextoComando, deps: DependenciasTorneo): Promise<void> {
+  // Una partida cerrada por un administrador no reparte premios, aunque un comando ya estuviera en la cola (spec 017, R21).
+  if (c.partida.estado !== 'en_torneo') return;
   await c.servicios.repoPartidas.actualizarEstado(c.id, 'terminada');
   c.partida = { ...c.partida, estado: transicion(c.partida.estado as 'en_torneo', 'terminar_torneo') };
   // Recompensa del campeón (spec 006, R14; FR-019): solo humanos registrados; idempotente por partida.

@@ -21,6 +21,8 @@ export class ConexionPartida {
   private temporizadorReintento: number | undefined;
   /** El servidor rechazó la conexión (sin sesión o sin permiso): ya no se reintenta sola. */
   sinReintento = false;
+  /** Código del último cierre: 4401 es que ya no hay sesión. */
+  codigoCierre: number | null = null;
   /** Diferencia servidor − cliente en ms. */
   desfaseMs = 0;
   conectada = false;
@@ -56,6 +58,7 @@ export class ConexionPartida {
     socket.onclose = (evento) => {
       window.clearInterval(this.temporizadorPing);
       // 4401/4403: sin sesión o sin permiso → no tiene sentido reintentar.
+      this.codigoCierre = evento.code;
       this.sinReintento = evento.code === 4401 || evento.code === 4403;
       this.cambiarConexion(false);
       if (this.cerradaAMano || this.sinReintento) return;

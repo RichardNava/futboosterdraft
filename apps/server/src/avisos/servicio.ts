@@ -10,7 +10,7 @@ import type { BaseDatos } from '../persistencia/db';
 import { avisos, usuarios } from '../persistencia/esquema/index';
 import type { Reloj } from '../programador/reloj';
 
-export type TipoAviso = 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado' | 'baja_sustituida';
+export type TipoAviso = 'jornada_abierta' | 'plazo_proximo' | 'partido_auto_resuelto' | 'torneo_terminado' | 'dorsal_asignado' | 'baja_sustituida' | 'partida_cerrada';
 
 interface NuevoAviso {
   usuarioId: string;
@@ -64,7 +64,7 @@ export class ServicioAvisos {
     await this.transporte.sendMail({
       to: usuario.email,
       subject: `Fútboosterdraft: ${a.texto}`,
-      text: `${a.texto}\n\n${this.urlPublica}/partidas/${a.partidaId}/torneo`,
+      text: `${a.texto}\n\n${this.urlPublica}${a.tipo === 'partida_cerrada' ? '/mis-partidas' : `/partidas/${a.partidaId}/torneo`}`,
     });
     await this.db.update(avisos).set({ enviadoEmailEn: new Date(this.reloj.ahora()) }).where(eq(avisos.id, avisoId));
   }

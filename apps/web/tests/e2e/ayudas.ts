@@ -1,4 +1,11 @@
+import { execSync } from 'node:child_process';
 import { expect, type Locator, type Page } from '@playwright/test';
+
+/** Fija el rol de una cuenta de prueba en la base de datos: la aplicación no tiene ninguna vía para concederlo (FR-044). */
+export const fijarRol = (email: string, rol: 'jugador' | 'administrador') => {
+  if (!/^e2e-[\w-]+@pruebas\.test$/.test(email)) throw new Error('Solo para cuentas creadas por los e2e');
+  execSync(`pnpm --filter @fbd/server exec tsx tests/helpers/fijarRol.ts ${email} ${rol}`, { stdio: 'pipe' });
+};
 
 /** Entra como invitado, crea una liga de 4 contra NPC y completa el draft adelantando el reloj simulado. */
 export async function partidaTrasDraft(page: Page, cuerpo: Record<string, unknown> = {}, { registrado = false } = {}): Promise<string> {

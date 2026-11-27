@@ -69,7 +69,7 @@ export const FilaGoleadores = z.object({
 export const MsgAviso = z.object({
   t: z.literal('aviso'),
   id: z.string(),
-  tipo: z.enum(['jornada_abierta', 'plazo_proximo', 'partido_auto_resuelto', 'torneo_terminado', 'dorsal_asignado']),
+  tipo: z.enum(['jornada_abierta', 'plazo_proximo', 'partido_auto_resuelto', 'torneo_terminado', 'dorsal_asignado', 'partida_cerrada']),
   partidaId: z.string(),
   partidoId: z.string().optional(),
   texto: z.string(),

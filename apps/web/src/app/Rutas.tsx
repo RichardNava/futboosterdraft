@@ -23,6 +23,17 @@ import { PantallaCargando } from '../componentes/Esqueleto';
 /** Pantallas de prueba: solo se incluyen en desarrollo. */
 const PruebasCartas = import.meta.env.DEV ? lazy(() => import('../pantallas/PruebasCartas').then((m) => ({ default: m.PruebasCartas }))) : null;
 
+/** Panel de administración (spec 017): su código solo se descarga al abrirlo. */
+const Admin = lazy(() => import('../pantallas/Admin').then((m) => ({ default: m.Admin })));
+
+/** Sin el rol, al inicio. Es comodidad: quien decide es el servidor (FR-021). */
+function SoloAdministrador({ children }: { children: ReactNode }) {
+  const { usuario, cargando } = useSesion();
+  if (cargando) return <PantallaCargando forma="filas" />;
+  if (usuario?.rol !== 'administrador') return <Navigate to="/" replace />;
+  return <Suspense fallback={<PantallaCargando forma="filas" />}>{children}</Suspense>;
+}
+
 function ConSesion({ children }: { children: ReactNode }) {
   const { usuario, cargando } = useSesion();
   if (cargando) return <PantallaCargando forma="filas" />;
@@ -86,6 +97,7 @@ const router = createBrowserRouter([
       { path: '/perfil', element: conSesion(<Perfil />), loader: cargar(() => [{ ruta: '/api/perfil' }]) },
       { path: '/coleccion', element: <ConSesionRegistrada><Coleccion /></ConSesionRegistrada>, loader: cargar(() => [{ ruta: '/api/coleccion' }]) },
       { path: '/tienda', element: conSesion(<Tienda />), loader: cargar(() => [{ ruta: '/api/tienda', fresco: true }]) },
+      { path: '/admin', element: <SoloAdministrador><Admin /></SoloAdministrador> },
       { path: '/partidas/nueva', element: conSesion(<CrearPartida />), loader: cargar(() => [{ ruta: '/api/partidas/niveles-rareza', fresco: true }]) },
       { path: '/partidas/:partidaId/sala', element: conSesion(<Sala />), loader: cargar((p) => [{ ruta: `/api/partidas/${p.partidaId}`, fresco: true }]) },
       { path: '/partidas/:partidaId/draft', element: conSesion(<Draft />) },

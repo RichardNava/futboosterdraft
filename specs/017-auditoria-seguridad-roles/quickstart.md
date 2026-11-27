@@ -12,18 +12,26 @@ pnpm seed
 pnpm dev
 ```
 
-Para los escenarios de producción (C y G), construye y arranca la imagen con valores de prueba:
+Para los escenarios C, D, E, F y G, construye la imagen y arráncala detrás de un proxy HTTPS local. Sin él, la dirección
+del navegador no coincide con `PUBLIC_URL`, el servidor rechaza sus POST con `403 ORIGEN_NO_PERMITIDO` y la cookie
+`Secure` no se guarda:
 
 ```bash
 docker build -t futboosterdraft:seguridad .
 docker run --rm -p 3000:3000 \
   -e DATABASE_URL=postgres://<usuario-propio>:<clave-propia>@host.docker.internal:5432/futboosterdraft \
   -e AUTH_SECRET="$(openssl rand -base64 48)" \
-  -e PUBLIC_URL=https://localhost \
-  -e PROXIES_CONFIANZA=0 \
+  -e PUBLIC_URL=https://localhost:8443 \
+  -e PROXIES_CONFIANZA=1 \
   -e METRICAS_TOKEN="$(openssl rand -hex 32)" \
   futboosterdraft:seguridad
+
+# En otra terminal. El certificado es local: acepta el aviso del navegador.
+docker run --rm --name proxy-fbd -p 8443:8443 --add-host=host.docker.internal:host-gateway caddy:2 \
+  caddy reverse-proxy --from https://localhost:8443 --to host.docker.internal:3000 --internal-certs
 ```
+
+La web de estos escenarios es `https://localhost:8443`.
 
 ## A. Informe (US1, SC-001)
 
@@ -47,9 +55,9 @@ pnpm seguridad
 Con la imagen en marcha:
 
 ```bash
-curl -i http://localhost:3000/healthz
-curl -i http://localhost:3000/metrics
-curl -i -X POST http://localhost:3000/api/dev/reloj/avanzar
+curl -ik https://localhost:8443/healthz
+curl -ik https://localhost:8443/metrics
+curl -ik -X POST https://localhost:8443/api/dev/reloj/avanzar
 ```
 
 **Resultado esperado**: `/healthz` responde solo `{"estado":"ok"}`; las otras dos, `404`.
@@ -64,7 +72,8 @@ Con una cuenta registrada, abre la tienda.
 
 ## D. Roles y panel (US3, SC-004, SC-008, SC-009)
 
-1. Registra dos cuentas y designa la primera:
+1. En `https://localhost:8443`, registra dos cuentas y designa la primera, con `DATABASE_URL` apuntando a la misma base
+   de datos que la imagen:
 
    ```bash
    pnpm --filter @fbd/server admin designar <email-de-prueba>
@@ -91,17 +100,22 @@ resto; los participantes de la partida cerrada reciben el aviso y no hay premios
 
 ## F. robots.txt (US4, SC-010)
 
-Con la imagen en marcha, abre `http://localhost:3000/robots.txt` y compruébalo con un validador de robots.
+Con la imagen y el proxy en marcha, abre `https://localhost:8443/robots.txt` y compruébalo con un validador de robots.
 
 **Resultado esperado**: se recibe texto; `/` está permitida; `/api/`, `/ws`, `/metrics`, `/admin`, `/partidas/x/draft`,
 `/?restablecer=x` y una ruta inventada están bloqueadas.
 
 ## G. Escaneo externo (FR-006)
 
-Con la imagen en marcha:
+ZAP no envía el nombre del servidor en TLS para `localhost` y Caddy corta la conexión, así que este escenario usa un nombre
+con dominio dentro de una red propia. Arranca la imagen con `--network fbd-zap --name fbd-app` y
+`PUBLIC_URL=https://juego.pruebas.test:8443`, con el catálogo ya cargado: se lee en memoria al arrancar.
 
 ```bash
-docker run --rm -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://host.docker.internal:3000
+docker network create fbd-zap
+docker run -d --name proxy-fbd --network fbd-zap --network-alias juego.pruebas.test caddy:2 \
+  caddy reverse-proxy --from https://juego.pruebas.test:8443 --to fbd-app:3000 --internal-certs
+docker run --rm -t --network fbd-zap ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://juego.pruebas.test:8443
 ```
 
 **Resultado esperado**: el informe de la auditoría recoge cada alerta y cómo se resolvió.

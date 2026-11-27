@@ -21,6 +21,9 @@ jobs:
       - run: pnpm test
       - run: pnpm test:integration
       - run: pnpm test:equivalence
+      # Spec 017 (FR-011, SC-011): repite todos los ataques y falla con una dependencia de producción alta o crítica.
+      - run: pnpm seguridad
+      - run: pnpm audit --prod --audit-level=high
       # 1.000 partidos por serie, los mismos con los que se validó la calibración (INI-05, parámetros 5.0.0): con 500, las
       # comprobaciones de un solo jugador (003/SC-007 Matador y Desbordante, 005/SC-004 Agresivo y Torpe) fallan por ruido.
       # Incluye las comprobaciones de la spec 002 (SC-007, SC-008, SC-011 y SC-018) y las de la serie sintética de la

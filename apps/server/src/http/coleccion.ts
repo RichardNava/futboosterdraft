@@ -6,15 +6,9 @@ import type { FastifyInstance } from 'fastify';
 import type { Auth } from '../auth/auth';
 import { crearHooksSesion } from '../auth/rutas';
 import type { ServicioEconomia } from '../economia/servicio';
-import { errores } from './errores';
+import { errores, idCarta } from './errores';
 
 const LIMITE_MOVIMIENTOS = 50;
-
-function idCarta(texto: string): number {
-  const id = Number(texto);
-  if (!Number.isInteger(id) || id < 1) throw errores.validacion('ID_INVALIDO', 'El id de la carta debe ser un entero');
-  return id;
-}
 
 /** Rutas de la colección y los fragmentos (solo registrados). */
 export function registrarRutasColeccion(app: FastifyInstance, auth: Auth, economia: ServicioEconomia): void {

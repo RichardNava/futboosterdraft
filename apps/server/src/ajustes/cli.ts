@@ -6,9 +6,9 @@
  * solo a las partidas nuevas.
  */
 import '../entorno';
-import { eq } from 'drizzle-orm';
+import { ACTOR_CONSOLA } from '../admin/registro';
+import { cambiarAjuste } from '../admin/servicio';
 import { conectar, urlBaseDatos } from '../persistencia/db';
-import { ajustes } from '../persistencia/esquema/index';
 import { AJUSTES_CONOCIDOS, type ClaveAjuste } from './servicio';
 
 async function principal(): Promise<void> {
@@ -20,13 +20,8 @@ async function principal(): Promise<void> {
   }
   const conexion = conectar(urlBaseDatos());
   try {
-    const [antes] = await conexion.db.select({ valor: ajustes.valor }).from(ajustes).where(eq(ajustes.clave, clave!));
-    const ahora = new Date();
-    await conexion.db
-      .insert(ajustes)
-      .values({ clave: clave!, valor: valor!, actualizadoEn: ahora })
-      .onConflictDoUpdate({ target: ajustes.clave, set: { valor: valor!, actualizadoEn: ahora } });
-    console.log(`${clave}: ${String(antes?.valor ?? `${admitidos[0]} (sin fila)`)} → ${valor}. Se aplica en ≤ 30 s a las partidas nuevas.`);
+    const { anterior } = await cambiarAjuste(conexion.db, ACTOR_CONSOLA, clave!, valor!, null);
+    console.log(`${clave}: ${String(anterior ?? `${admitidos[0]} (sin fila)`)} → ${valor}. Se aplica en ≤ 30 s a las partidas nuevas.`);
   } finally {
     await conexion.cerrar();
   }
